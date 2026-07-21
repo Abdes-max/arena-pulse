@@ -37,6 +37,10 @@ Un pictogramme abstrait combinant deux idées récurrentes observées comme moti
 - Pas exclusivement "sport co ballon rond" : à bannir, les codes couleur trop associés à un seul sport (ex. vert pelouse + blanc comme unique palette).
 - Pas un tableau de bord SaaS générique sans personnalité (mission §11 : éviter Bootstrap/Material non personnalisé, cartes partout, dégradés/ombres gratuits).
 
-## Décision volontairement différée
+## Décision prise : identité produit vs thèmes de tournoi
 
-Cette PR ne choisit pas de logo, ni de palette finale, ni de typographie finale. Elle propose 3 directions réellement différentes (voir `visual-language.md`) pour permettre un choix éclairé avant tout développement d'interface définitive.
+Le porteur de projet a tranché : les 3 directions ne sont **pas mutuellement exclusives**.
+- **Direction A · Ink & Signal** devient l'identité fixe du **produit Arena Pulse** (administration, site marketing), pour sa robustesse sur les écrans denses et sa neutralité multi-sports.
+- Les 3 directions (A, B, C) restent disponibles comme **thèmes visuels sélectionnables par l'organisateur** pour le site public et le diaporama de son propre tournoi (voir `visual-language.md`, section "Décision validée").
+
+Aucun logo définitif n'est encore produit (cette PR ne livre qu'une signature provisoire) — le choix de Direction A comme identité produit ne verrouille pas encore le design du logo final, qui reste à concevoir dans `feat/004-design-system-foundation`.

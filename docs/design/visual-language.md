@@ -193,6 +193,20 @@ Phases finales/brackets, mode diaporama plein écran, application mobile pour pu
 | Risque principal | Trop froid si mal dosé | Trop "marron" en sombre si mal calibré | Accessibilité (contraste) à surveiller |
 | Différenciation vs référence | Forte (aucun dashboard sportif ne ressemble à ça) | Forte (évite le cliché rouge/blanc club) | Très forte (aucun concurrent tournoi n'a cette énergie) |
 
-## Recommandation (non contraignante)
+## Décision validée : les 3 directions sont conservées, à des rôles différents
 
-Si une seule direction devait être choisie sans hybridation, **Direction A (Ink & Signal)** est recommandée comme base pour sa robustesse sur l'administration dense et sa neutralité multi-sports, avec des **emprunts ponctuels à la Direction C** pour les moments de phase finale/diaporama (traitement le plus spectaculaire). Ceci reste une recommandation, pas une décision : voir la maquette comparative pour trancher visuellement.
+Après revue de la maquette comparative, le porteur de projet a choisi de **conserver les 3 directions**, mais pas comme un choix exclusif : elles jouent deux rôles distincts dans le produit.
+
+1. **Identité produit Arena Pulse (fixe)** — l'administration (console de gestion) et le site marketing du produit utilisent **Direction A · Ink & Signal** comme identité unique et stable, quel que soit le tournoi consulté. Choix justifié par sa robustesse sur les écrans denses (calendrier, scores, structure de compétition) et sa neutralité multi-sports.
+2. **Thème visuel du tournoi (au choix de l'organisateur)** — chaque organisateur choisit, pour **son** tournoi, l'une des 3 directions (A, B ou C) comme thème appliqué au **site public de ce tournoi et à son mode diaporama**. L'administration et l'application mobile de suivi restent toujours dans l'identité Arena Pulse standard (Direction A), quel que soit le thème public choisi par l'organisateur — décision explicite pour garder une seule identité produit cohérente en interne, tout en offrant une vraie personnalisation aux organisateurs (mission §2 : "plus personnalisable").
+
+Cette approche est elle-même une différenciation par rapport à la référence : l'audit admin a repéré un onglet "Design" dans l'écran Présentation de Tournify sans l'ouvrir (`docs/product/screen-inventory.md`, écran A7) — la personnalisation visuelle par tournoi existe donc potentiellement déjà côté référence sous une forme non confirmée, mais Arena Pulse en fait une caractéristique assumée et documentée dès la conception, avec 3 directions complètes plutôt qu'un réglage superficiel.
+
+### Conséquences de conception (à documenter/implémenter dans les PR suivantes)
+- `docs/architecture/data-model.md` : `PublicPageConfiguration` porte un champ `theme` (`INK_SIGNAL` / `PULSE_EMBER` / `NEON_COURT`), qui pilote le rendu du site public et du diaporama de ce tournoi uniquement.
+- Le design system (`feat/004-design-system-foundation`) doit livrer **3 jeux de tokens complets dès le départ** (pas un seul), plus l'identité fixe de l'administration — pas une simple palette de secours.
+- Chaque composant public (cf. `component-inventory.md`) doit être conçu pour consommer des tokens de thème variables, jamais des couleurs codées en dur.
+- Un 4ᵉ thème (ou plus) pourra être ajouté ultérieurement sans changement de modèle (juste une nouvelle valeur d'énumération + un nouveau jeu de tokens) — extensibilité déjà prévue.
+
+### Point non tranché
+Le porteur de projet a explicitement choisi de limiter le thème au site public + diaporama pour la V1 (pas l'application mobile, pas l'administration du tournoi lui-même) — une extension du thème à l'app mobile ou à l'admin du tournoi reste une évolution future possible, à documenter dans `assumptions-and-open-questions.md` si elle est envisagée.

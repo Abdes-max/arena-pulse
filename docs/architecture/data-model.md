@@ -44,7 +44,7 @@ Statut : première proposition (mission §29), basée sur l'audit du site public
 
 ### Communication et suivi public
 - **Sponsor** — rattaché à un `Tournament`, avec logo et lien.
-- **PublicPageConfiguration** — personnalisation du site public (couleurs le cas échéant, textes éditoriaux, visibilité).
+- **PublicPageConfiguration** — personnalisation du site public : visibilité par page (cf. écran "Présentation" confirmé côté admin), textes éditoriaux, et un champ **`theme`** (`INK_SIGNAL` / `PULSE_EMBER` / `NEON_COURT`, extensible) choisi par l'organisateur. **Décision validée** (`docs/design/visual-language.md`) : ce thème pilote uniquement le rendu du site public et du mode diaporama de ce tournoi — l'administration et l'application mobile restent toujours dans l'identité produit Arena Pulse fixe (Direction A · Ink & Signal), quel que soit le thème choisi.
 - **FollowedTournament** / **FollowedTeam** — suivi favori d'un visiteur (compte ou appareil — mécanisme exact à confirmer, cf. question ouverte #5).
 - **NotificationSubscription** — abonnement aux notifications (push mobile / email) pour une `FollowedTeam` ou un `Tournament`.
 - **AuditEvent** — journal des actions sensibles (création/modification/suppression de tournoi, saisie/correction de score, changement de rôle, publication/dépublication).
