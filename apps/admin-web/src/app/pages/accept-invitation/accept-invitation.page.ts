@@ -89,6 +89,8 @@ export class AcceptInvitationPage {
   }
 
   protected goToLogin(): void {
-    void this.router.navigate(['/login'], { queryParams: { returnUrl: `/accept-invitation/${this.token}` } });
+    void this.router.navigate(['/login'], {
+      queryParams: { returnUrl: `/accept-invitation/${this.token}` },
+    });
   }
 }

@@ -10,36 +10,52 @@ export class OrganizationsService {
 
   listMembers(organizationId: string): Promise<OrganizationMember[]> {
     return firstValueFrom(
-      this.http.get<OrganizationMember[]>(`${environment.apiUrl}/organizations/${organizationId}/members`),
+      this.http.get<OrganizationMember[]>(
+        `${environment.apiUrl}/organizations/${organizationId}/members`,
+      ),
     );
   }
 
   changeRole(organizationId: string, memberId: string, role: OrganizationRole): Promise<void> {
     return firstValueFrom(
-      this.http.patch<void>(`${environment.apiUrl}/organizations/${organizationId}/members/${memberId}`, {
-        role,
-      }),
+      this.http.patch<void>(
+        `${environment.apiUrl}/organizations/${organizationId}/members/${memberId}`,
+        {
+          role,
+        },
+      ),
     );
   }
 
   removeMember(organizationId: string, memberId: string): Promise<void> {
     return firstValueFrom(
-      this.http.delete<void>(`${environment.apiUrl}/organizations/${organizationId}/members/${memberId}`),
+      this.http.delete<void>(
+        `${environment.apiUrl}/organizations/${organizationId}/members/${memberId}`,
+      ),
     );
   }
 
   listPendingInvitations(organizationId: string): Promise<PendingInvitation[]> {
     return firstValueFrom(
-      this.http.get<PendingInvitation[]>(`${environment.apiUrl}/organizations/${organizationId}/invitations`),
+      this.http.get<PendingInvitation[]>(
+        `${environment.apiUrl}/organizations/${organizationId}/invitations`,
+      ),
     );
   }
 
-  invite(organizationId: string, email: string, role: OrganizationRole): Promise<PendingInvitation> {
+  invite(
+    organizationId: string,
+    email: string,
+    role: OrganizationRole,
+  ): Promise<PendingInvitation> {
     return firstValueFrom(
-      this.http.post<PendingInvitation>(`${environment.apiUrl}/organizations/${organizationId}/invitations`, {
-        email,
-        role,
-      }),
+      this.http.post<PendingInvitation>(
+        `${environment.apiUrl}/organizations/${organizationId}/invitations`,
+        {
+          email,
+          role,
+        },
+      ),
     );
   }
 

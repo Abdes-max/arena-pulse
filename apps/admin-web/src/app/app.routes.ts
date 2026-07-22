@@ -14,12 +14,15 @@ export const routes: Routes = [
   {
     path: 'accept-invitation/:token',
     loadComponent: () =>
-      import('./pages/accept-invitation/accept-invitation.page').then((m) => m.AcceptInvitationPage),
+      import('./pages/accept-invitation/accept-invitation.page').then(
+        (m) => m.AcceptInvitationPage,
+      ),
   },
   {
     path: 'collaborators',
     canActivate: [authGuard],
-    loadComponent: () => import('./pages/collaborators/collaborators.page').then((m) => m.CollaboratorsPage),
+    loadComponent: () =>
+      import('./pages/collaborators/collaborators.page').then((m) => m.CollaboratorsPage),
   },
   { path: '**', redirectTo: 'login' },
 ];

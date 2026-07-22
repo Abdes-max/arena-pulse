@@ -59,7 +59,11 @@ export class AuthService {
   async silentRefresh(): Promise<boolean> {
     try {
       const response = await firstValueFrom(
-        this.http.post<TokenResponse>(`${environment.apiUrl}/auth/refresh`, {}, { withCredentials: true }),
+        this.http.post<TokenResponse>(
+          `${environment.apiUrl}/auth/refresh`,
+          {},
+          { withCredentials: true },
+        ),
       );
       this.accessToken.set(response.accessToken);
       await this.loadProfile();
@@ -78,7 +82,9 @@ export class AuthService {
 
   async logout(): Promise<void> {
     try {
-      await firstValueFrom(this.http.post(`${environment.apiUrl}/auth/logout`, {}, { withCredentials: true }));
+      await firstValueFrom(
+        this.http.post(`${environment.apiUrl}/auth/logout`, {}, { withCredentials: true }),
+      );
     } finally {
       this.clearSession();
     }
@@ -88,7 +94,12 @@ export class AuthService {
     const me = await firstValueFrom(
       this.http.get<MeResponse>(`${environment.apiUrl}/auth/me`, { withCredentials: true }),
     );
-    this.currentUserSignal.set({ id: me.id, email: me.email, firstName: me.firstName, lastName: me.lastName });
+    this.currentUserSignal.set({
+      id: me.id,
+      email: me.email,
+      firstName: me.firstName,
+      lastName: me.lastName,
+    });
     this.organizationsSignal.set(me.organizations);
   }
 

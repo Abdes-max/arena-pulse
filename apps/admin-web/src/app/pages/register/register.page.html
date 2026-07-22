@@ -1,7 +1,11 @@
 <main class="register-page">
   <form class="register-page__card" [formGroup]="form" (ngSubmit)="submit()">
     <h1>Créer votre organisation</h1>
-    <ap-text-field label="Nom de l'organisation" formControlName="organizationName" autocomplete="organization" />
+    <ap-text-field
+      label="Nom de l'organisation"
+      formControlName="organizationName"
+      autocomplete="organization"
+    />
     <ap-text-field label="Prénom" formControlName="firstName" autocomplete="given-name" />
     <ap-text-field label="Nom" formControlName="lastName" autocomplete="family-name" />
     <ap-text-field label="Email" type="email" formControlName="email" autocomplete="email" />

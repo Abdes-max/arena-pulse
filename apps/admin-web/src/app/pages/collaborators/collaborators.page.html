@@ -38,7 +38,9 @@
               </td>
               @if (isAdmin()) {
                 <td>
-                  <ap-button type="button" variant="ghost" (click)="removeMember(member)">Retirer</ap-button>
+                  <ap-button type="button" variant="ghost" (click)="removeMember(member)"
+                    >Retirer</ap-button
+                  >
                 </td>
               }
             </tr>
@@ -56,7 +58,8 @@
           <ul class="collaborators-page__pending-list">
             @for (invitation of pendingInvitations(); track invitation.id) {
               <li>
-                {{ invitation.email }} — {{ invitation.role === 'ORG_ADMIN' ? 'Administrateur' : 'Collaborateur' }}
+                {{ invitation.email }} —
+                {{ invitation.role === 'ORG_ADMIN' ? 'Administrateur' : 'Collaborateur' }}
                 <ap-button type="button" variant="ghost" (click)="revokeInvitation(invitation)">
                   Révoquer
                 </ap-button>
@@ -68,7 +71,11 @@
 
       <section>
         <h2>Inviter un collaborateur</h2>
-        <form class="collaborators-page__invite-form" [formGroup]="inviteForm" (ngSubmit)="invite()">
+        <form
+          class="collaborators-page__invite-form"
+          [formGroup]="inviteForm"
+          (ngSubmit)="invite()"
+        >
           <ap-text-field label="Email" type="email" formControlName="email" autocomplete="email" />
           <label class="collaborators-page__role-label">
             Rôle

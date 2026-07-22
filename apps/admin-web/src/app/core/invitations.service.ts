@@ -21,14 +21,20 @@ export class InvitationsService {
   private readonly http = inject(HttpClient);
 
   lookup(token: string): Promise<InvitationLookup> {
-    return firstValueFrom(this.http.get<InvitationLookup>(`${environment.apiUrl}/invitations/${token}`));
+    return firstValueFrom(
+      this.http.get<InvitationLookup>(`${environment.apiUrl}/invitations/${token}`),
+    );
   }
 
   accept(token: string, payload: AcceptInvitationPayload): Promise<AcceptInvitationResponse> {
     return firstValueFrom(
-      this.http.post<AcceptInvitationResponse>(`${environment.apiUrl}/invitations/${token}/accept`, payload, {
-        withCredentials: true,
-      }),
+      this.http.post<AcceptInvitationResponse>(
+        `${environment.apiUrl}/invitations/${token}/accept`,
+        payload,
+        {
+          withCredentials: true,
+        },
+      ),
     );
   }
 }

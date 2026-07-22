@@ -46,7 +46,9 @@ export class CollaboratorsPage {
     try {
       const [members, pending] = await Promise.all([
         this.organizationsService.listMembers(organizationId),
-        this.isAdmin() ? this.organizationsService.listPendingInvitations(organizationId) : Promise.resolve([]),
+        this.isAdmin()
+          ? this.organizationsService.listPendingInvitations(organizationId)
+          : Promise.resolve([]),
       ]);
       this.members.set(members);
       this.pendingInvitations.set(pending);
@@ -92,7 +94,9 @@ export class CollaboratorsPage {
     }
     try {
       await this.organizationsService.changeRole(organizationId, member.id, role);
-      this.members.update((members) => members.map((m) => (m.id === member.id ? { ...m, role } : m)));
+      this.members.update((members) =>
+        members.map((m) => (m.id === member.id ? { ...m, role } : m)),
+      );
     } catch (error) {
       this.errorMessage.set(
         error instanceof HttpErrorResponse && error.status === 409
@@ -125,6 +129,8 @@ export class CollaboratorsPage {
       return;
     }
     await this.organizationsService.revokeInvitation(organizationId, invitation.id);
-    this.pendingInvitations.update((invitations) => invitations.filter((i) => i.id !== invitation.id));
+    this.pendingInvitations.update((invitations) =>
+      invitations.filter((i) => i.id !== invitation.id),
+    );
   }
 }

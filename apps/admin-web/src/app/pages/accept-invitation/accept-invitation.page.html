@@ -28,7 +28,10 @@
       }
       @case ('log-in-required') {
         <h1>Rejoindre {{ invitation()?.organizationName }}</h1>
-        <p>Connectez-vous avec le compte <strong>{{ invitation()?.email }}</strong> pour accepter cette invitation.</p>
+        <p>
+          Connectez-vous avec le compte <strong>{{ invitation()?.email }}</strong> pour accepter
+          cette invitation.
+        </p>
         <ap-button type="button" (click)="goToLogin()">Se connecter</ap-button>
       }
       @case ('ready-to-accept') {

@@ -41,7 +41,7 @@ export class RegisterPage {
       if (error instanceof HttpErrorResponse && error.status === 409) {
         this.errorMessage.set('Un compte existe déjà avec cet email.');
       } else {
-        this.errorMessage.set("Une erreur est survenue, réessayez.");
+        this.errorMessage.set('Une erreur est survenue, réessayez.');
       }
     } finally {
       this.submitting.set(false);

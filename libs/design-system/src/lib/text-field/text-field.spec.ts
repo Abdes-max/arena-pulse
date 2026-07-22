@@ -5,7 +5,11 @@ import { TextField } from './text-field';
 
 @Component({
   imports: [TextField, ReactiveFormsModule],
-  template: `<ap-text-field [label]="label" [errorMessage]="errorMessage" [formControl]="control" />`,
+  template: `<ap-text-field
+    [label]="label"
+    [errorMessage]="errorMessage"
+    [formControl]="control"
+  />`,
 })
 class HostComponent {
   label = 'Email';
