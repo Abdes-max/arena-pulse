@@ -16,8 +16,8 @@ libs/
 ├── shared-models/        # types/interfaces partagés web + mobile
 ├── shared-utils/
 ├── authentication/       # logique d'auth partagée (tokens, guards)
-├── design-system/        # composants Angular partagés (public-web + admin-web)
-├── design-tokens/        # tokens partagés (web, mobile, email)
+├── design-system/        # composants Angular partagés (public-web + admin-web) — IMPLÉMENTÉ (feat/004)
+├── design-tokens/        # tokens partagés (web, mobile, email) — IMPLÉMENTÉ (feat/004)
 ├── realtime-client/      # client WebSocket/SSE partagé
 └── testing/              # utilitaires de test partagés
 
