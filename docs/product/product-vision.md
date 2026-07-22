@@ -22,6 +22,7 @@ D'après les points faibles identifiés dans `docs/product/opportunities.md` :
 - Retours utilisateur systématiques (confirmations visuelles) sur les actions asynchrones.
 - Filtres persistants sur le calendrier, au-delà de la seule recherche texte.
 - Accessibilité pensée dès le design system (labels, contrastes, focus).
+- **Thème visuel du tournoi au choix de l'organisateur** : contrairement à une identité visuelle unique imposée, chaque organisateur choisit parmi plusieurs directions artistiques (voir `docs/design/visual-language.md`) le thème appliqué au site public et au diaporama de son tournoi — l'administration garde toujours l'identité produit Arena Pulse (Direction A), pour une expérience de gestion cohérente quel que soit le tournoi.
 
 ## Valeurs de marque
 
