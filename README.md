@@ -21,7 +21,7 @@ Plateforme premium de gestion de tournois sportifs — site public, administrati
 ## Prérequis
 
 - Node.js 22+, npm 10+
-- PostgreSQL 15+ en local (ou via Docker Compose — prévu dans `feat/005-local-infrastructure`, pas encore présent)
+- Docker Desktop (ou Docker Engine + Compose) pour l'infrastructure locale (PostgreSQL, MinIO, Mailhog)
 
 ## Installation
 
@@ -47,13 +47,20 @@ npx prisma generate      # régénère le client Prisma
 ## Démarrage local
 
 ```bash
-npm run dev              # démarre public-web (4200), admin-web (4300) et l'API (3000) en parallèle
-npm run dev:public-web    # uniquement le site public
-npm run dev:admin-web     # uniquement l'administration
-npm run dev:api           # uniquement l'API NestJS
+npm run run               # démarre l'infra Docker (Postgres/MinIO/Mailhog) + api/public-web/admin-web
+npm run stop               # arrête tout ce que "npm run run" a démarré (les données sont conservées)
 ```
 
-L'API expose sa documentation OpenAPI sur `http://localhost:3000/api/docs` une fois démarrée.
+`npm run run` est idempotent : un service déjà démarré (le vôtre ou lancé autrement) est laissé tel quel plutôt que redémarré. Alternative pour le développement au jour le jour (suppose l'infra Docker déjà démarrée via `docker compose -f infra/compose/docker-compose.yml up -d`) :
+
+```bash
+npm run dev               # démarre public-web (4200), admin-web (4300) et l'API (3000) en parallèle
+npm run dev:public-web     # uniquement le site public
+npm run dev:admin-web      # uniquement l'administration
+npm run dev:api            # uniquement l'API NestJS
+```
+
+L'API expose sa documentation OpenAPI sur `http://localhost:3000/api/docs` une fois démarrée. La console MinIO est sur `http://localhost:9001` et l'interface Mailhog sur `http://localhost:8025`.
 
 ## Tests
 
@@ -79,7 +86,6 @@ npm run verify               # format:check + lint + build + test — à exécut
 
 ## Limites connues de ce socle
 
-- Pas encore de Docker Compose local (PostgreSQL doit être installé/lancé manuellement pour l'instant) — prévu dans `feat/005-local-infrastructure`.
 - Pas encore de build/tests mobiles (Ionic/Capacitor) — prévu dans `feat/017-mobile-foundation`.
 - Le job CI "End-to-end (Playwright)" n'a pas encore été exécuté/observé en conditions réelles (GitHub Actions) — à vérifier lors de la première exécution de la pipeline.
 - Aucun modèle Prisma n'est encore défini (schéma vide) — le modèle de données réel arrive avec les PR de fonctionnalités.
