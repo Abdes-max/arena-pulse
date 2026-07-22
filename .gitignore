@@ -23,6 +23,9 @@ test-results/
 *.log
 npm-debug.log
 
+# Local run state (npm run run / npm run stop)
+.run/
+
 # Env / secrets
 .env
 .env.*

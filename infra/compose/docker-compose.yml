@@ -1,0 +1,55 @@
+name: arena-pulse
+
+# Local development infrastructure only (feat/005-local-infrastructure).
+# Application code (public-web, admin-web, api) runs natively via `npm run run`
+# for fast hot-reload — only the infrastructure it depends on is containerized here.
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: arena_pulse
+      POSTGRES_PASSWORD: arena_pulse
+      POSTGRES_DB: arena_pulse
+    ports:
+      # Host-side port defaults to 5433 (not the more commonly-squatted 5432)
+      # to reduce collisions on a machine running several projects at once.
+      # Override with POSTGRES_HOST_PORT if needed.
+      - '${POSTGRES_HOST_PORT:-5433}:5432'
+    volumes:
+      - arena-pulse-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U arena_pulse -d arena_pulse']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  minio:
+    image: minio/minio:latest
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: arena_pulse
+      MINIO_ROOT_PASSWORD: arena_pulse_minio
+    ports:
+      - '9000:9000' # S3 API
+      - '9001:9001' # Web console
+    volumes:
+      - arena-pulse-minio:/data
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    restart: unless-stopped
+    ports:
+      - '1025:1025' # SMTP
+      - '8025:8025' # Web UI
+
+volumes:
+  arena-pulse-postgres:
+  arena-pulse-minio:

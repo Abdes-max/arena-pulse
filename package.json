@@ -5,6 +5,8 @@
   "packageManager": "npm@10.9.8",
   "scripts": {
     "ng": "ng",
+    "run": "node infra/scripts/run.mjs",
+    "stop": "node infra/scripts/stop.mjs",
     "dev": "npm run build:libs && concurrently -n public-web,admin-web,api -c blue,green,yellow \"npm:dev:public-web\" \"npm:dev:admin-web\" \"npm:dev:api\"",
     "dev:public-web": "ng serve public-web",
     "dev:admin-web": "ng serve admin-web --port 4300",
