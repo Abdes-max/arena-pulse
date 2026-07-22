@@ -43,4 +43,4 @@ Conformément à la mission (§4), les décisions suivantes sont considérées c
 - Choix final de la direction artistique (Arena Pulse ou alternative) — PR `design/002-brand-and-design-system`, non fusionnée avant choix.
 - Préréglages de permissions ("rôles" proposés à la création d'un administrateur) — amélioration ergonomique proposée, pas observée dans la référence, à valider avant implémentation.
 - Stratégie technique définitive du temps réel (WebSocket vs SSE) — dépend de contraintes d'hébergement non encore discutées.
-- Choix Keycloak vs authentification Spring Security "maison" (mission §27 : "Keycloak peut être utilisé si son intégration est justifiée").
+- Choix Keycloak vs authentification "maison" via `@nestjs/passport`/`passport-jwt` (mission §27 : "Keycloak peut être utilisé si son intégration est justifiée" — backend désormais NestJS, cf. `docs/architecture/adr/0002-backend-nestjs-instead-of-spring-boot.md`).
