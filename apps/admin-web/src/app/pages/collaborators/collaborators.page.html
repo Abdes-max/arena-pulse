@@ -1,0 +1,85 @@
+<main class="collaborators-page">
+  <h1>Collaborateurs</h1>
+
+  @if (loading()) {
+    <p>Chargement…</p>
+  } @else {
+    @if (errorMessage(); as message) {
+      <p class="collaborators-page__error" role="alert">{{ message }}</p>
+    }
+
+    <section>
+      <h2>Membres</h2>
+      <table class="collaborators-page__table">
+        <thead>
+          <tr>
+            <th scope="col">Nom</th>
+            <th scope="col">Email</th>
+            <th scope="col">Rôle</th>
+            @if (isAdmin()) {
+              <th scope="col">Actions</th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (member of members(); track member.id) {
+            <tr>
+              <td>{{ member.firstName }} {{ member.lastName }}</td>
+              <td>{{ member.email }}</td>
+              <td>
+                @if (isAdmin()) {
+                  <select [value]="member.role" (change)="onRoleChange(member, $event)">
+                    <option value="ORG_ADMIN">Administrateur</option>
+                    <option value="ORG_MEMBER">Collaborateur</option>
+                  </select>
+                } @else {
+                  {{ member.role === 'ORG_ADMIN' ? 'Administrateur' : 'Collaborateur' }}
+                }
+              </td>
+              @if (isAdmin()) {
+                <td>
+                  <ap-button type="button" variant="ghost" (click)="removeMember(member)">Retirer</ap-button>
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    </section>
+
+    @if (isAdmin()) {
+      <section>
+        <h2>Invitations en attente</h2>
+        @if (pendingInvitations().length === 0) {
+          <p>Aucune invitation en attente.</p>
+        } @else {
+          <ul class="collaborators-page__pending-list">
+            @for (invitation of pendingInvitations(); track invitation.id) {
+              <li>
+                {{ invitation.email }} — {{ invitation.role === 'ORG_ADMIN' ? 'Administrateur' : 'Collaborateur' }}
+                <ap-button type="button" variant="ghost" (click)="revokeInvitation(invitation)">
+                  Révoquer
+                </ap-button>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+
+      <section>
+        <h2>Inviter un collaborateur</h2>
+        <form class="collaborators-page__invite-form" [formGroup]="inviteForm" (ngSubmit)="invite()">
+          <ap-text-field label="Email" type="email" formControlName="email" autocomplete="email" />
+          <label class="collaborators-page__role-label">
+            Rôle
+            <select formControlName="role">
+              <option value="ORG_MEMBER">Collaborateur</option>
+              <option value="ORG_ADMIN">Administrateur</option>
+            </select>
+          </label>
+          <ap-button type="submit" [disabled]="inviting()">Inviter</ap-button>
+        </form>
+      </section>
+    }
+  }
+</main>
