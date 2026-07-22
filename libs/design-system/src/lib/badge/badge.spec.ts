@@ -37,4 +37,20 @@ describe('Badge', () => {
     expect(host.getAttribute('data-status')).toBe('qualified');
     expect(fixture.nativeElement.textContent).toContain('Qualifié pour la finale');
   });
+
+  it.each([
+    ['draft', 'Brouillon'],
+    ['published', 'Publié'],
+    ['unpublished', 'Dépublié'],
+    ['archived', 'Archivé'],
+  ] satisfies [BadgeStatus, string][])(
+    'renders the tournament lifecycle status "%s" with its French label',
+    (status, label) => {
+      const fixture = TestBed.createComponent(HostComponent);
+      fixture.componentInstance.status = status;
+      fixture.detectChanges();
+
+      expect(fixture.nativeElement.textContent.trim()).toBe(label);
+    },
+  );
 });
