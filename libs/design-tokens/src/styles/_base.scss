@@ -1,0 +1,64 @@
+// Design tokens shared by every theme: spacing, sizing, radii, motion,
+// breakpoints and z-index. Colors and typography are theme-specific —
+// see _ink-signal.scss, _pulse-ember.scss, _neon-court.scss.
+// Reference: docs/design/design-tokens-preview.md
+
+:root {
+  // Spacing (mission §15 — 4px scale)
+  --ap-space-1: 4px;
+  --ap-space-2: 8px;
+  --ap-space-3: 12px;
+  --ap-space-4: 16px;
+  --ap-space-6: 24px;
+  --ap-space-8: 32px;
+  --ap-space-12: 48px;
+  --ap-space-16: 64px;
+  --ap-space-24: 96px;
+
+  // Sizing
+  --ap-touch-target-min: 44px;
+
+  // Borders
+  --ap-border-width: 1px;
+  --ap-border-width-strong: 2px;
+
+  // Shadows — sobre, une seule échelle (mission §11 : éviter les ombres lourdes)
+  --ap-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.08);
+  --ap-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
+  --ap-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.16);
+
+  // Opacity
+  --ap-opacity-disabled: 0.4;
+  --ap-opacity-overlay: 0.6;
+
+  // Motion (docs/design/motion-guidelines.md)
+  --ap-motion-fast: 150ms;
+  --ap-motion-base: 250ms;
+  --ap-motion-emotional: 600ms;
+  --ap-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+
+  // Breakpoints (docs/design/responsive-guidelines.md) — for reference in TS via tokens.ts;
+  // actual media queries use literal px values since CSS custom properties cannot be used
+  // inside @media conditions.
+  --ap-breakpoint-xs: 0;
+  --ap-breakpoint-sm: 480px;
+  --ap-breakpoint-md: 768px;
+  --ap-breakpoint-lg: 1024px;
+  --ap-breakpoint-xl: 1440px;
+
+  // Z-index
+  --ap-z-base: 0;
+  --ap-z-dropdown: 100;
+  --ap-z-sticky: 200;
+  --ap-z-modal: 300;
+  --ap-z-toast: 400;
+  --ap-z-slideshow: 500;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --ap-motion-fast: 0ms;
+    --ap-motion-base: 0ms;
+    --ap-motion-emotional: 0ms;
+  }
+}

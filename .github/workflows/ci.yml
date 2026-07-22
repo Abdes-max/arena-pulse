@@ -18,6 +18,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run format:check
+      - run: npx ng lint design-tokens
+      - run: npx ng lint design-system
       - run: npm run lint:public-web
       - run: npm run lint:admin-web
       - run: npm run build:public-web
@@ -54,6 +56,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: npm run build:libs
       - run: npx playwright install --with-deps chromium
       - run: npm run e2e
 

@@ -3,6 +3,10 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "paths": {
+      "design-system": ["./dist/design-system"],
+      "design-tokens": ["./dist/design-tokens"]
+    },
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
@@ -32,6 +36,18 @@
     },
     {
       "path": "./apps/admin-web/tsconfig.spec.json"
+    },
+    {
+      "path": "./libs/design-tokens/tsconfig.lib.json"
+    },
+    {
+      "path": "./libs/design-tokens/tsconfig.spec.json"
+    },
+    {
+      "path": "./libs/design-system/tsconfig.lib.json"
+    },
+    {
+      "path": "./libs/design-system/tsconfig.spec.json"
     }
   ]
 }

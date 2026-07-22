@@ -1,0 +1,131 @@
+:host {
+  display: block;
+  font-family: var(--ap-font-body);
+}
+
+.ap-match-card {
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-lg);
+  padding: var(--ap-space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+}
+
+.ap-match-card__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  font-size: 0.72rem;
+  color: var(--ap-color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ap-match-card__competition {
+  font-weight: 700;
+}
+
+.ap-match-card__teams {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+}
+
+.ap-match-card__team {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-3);
+}
+
+.ap-match-card__team-name {
+  font-weight: 600;
+  color: var(--ap-color-fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ap-match-card__score {
+  font-family: var(--ap-font-heading);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--ap-color-fg);
+  min-width: 1.5em;
+  text-align: right;
+}
+
+.ap-match-card__footer {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  font-size: 0.8rem;
+  color: var(--ap-color-muted);
+}
+
+.ap-match-card__time {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+// --- compact: dense row for long lists (calendrier complet) ---
+:host([data-variant='compact']) .ap-match-card {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--ap-space-2) var(--ap-space-3);
+  border-radius: var(--ap-radius-sm);
+}
+
+:host([data-variant='compact']) .ap-match-card__teams {
+  flex-direction: row;
+  gap: var(--ap-space-2);
+}
+
+:host([data-variant='compact']) .ap-match-card__team {
+  gap: var(--ap-space-1);
+}
+
+:host([data-variant='compact']) .ap-match-card__score {
+  font-size: 0.85rem;
+}
+
+// --- live: la couleur signal de la direction marque le direct ---
+:host([data-variant='live']) .ap-match-card {
+  border-color: var(--ap-color-signal);
+  box-shadow: var(--ap-shadow-sm);
+}
+
+:host([data-variant='live']) .ap-match-card__score {
+  color: var(--ap-color-signal);
+}
+
+// --- result: l'équipe gagnante ressort, la perdante s'efface (jamais par la couleur seule : le score suffit) ---
+.ap-match-card__team--winner .ap-match-card__team-name,
+.ap-match-card__team--winner .ap-match-card__score {
+  font-weight: 800;
+}
+
+:host([data-variant='result'])
+  .ap-match-card__team:not(.ap-match-card__team--winner)
+  .ap-match-card__team-name {
+  color: var(--ap-color-muted);
+}
+
+// --- featured: mise en avant sur l'accueil public (mission §20) ---
+:host([data-variant='featured']) .ap-match-card {
+  padding: var(--ap-space-6);
+  border-width: var(--ap-border-width-strong);
+  border-color: var(--ap-color-signal);
+  box-shadow: var(--ap-shadow-md);
+}
+
+:host([data-variant='featured']) .ap-match-card__team-name {
+  font-size: 1.1rem;
+}
+
+:host([data-variant='featured']) .ap-match-card__score {
+  font-size: 2.25rem;
+}

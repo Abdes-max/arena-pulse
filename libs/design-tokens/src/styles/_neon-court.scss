@@ -1,0 +1,57 @@
+// Neon Court — thème de tournoi sélectionnable par l'organisateur
+// (site public + diaporama uniquement). Voir docs/design/visual-language.md.
+// Risque d'accessibilité le plus élevé des 3 directions : vérifier le
+// contraste avant tout usage réel (docs/design/accessibility-guidelines.md).
+
+[data-theme='neon-court'] {
+  --ap-font-heading: 'Russo One', Impact, 'Arial Black', sans-serif;
+  --ap-font-body: 'Chakra Petch', -apple-system, 'Segoe UI', sans-serif;
+  --ap-radius-sm: 2px;
+  --ap-radius-md: 2px;
+  --ap-radius-lg: 2px;
+  --ap-tracking-tight: 0.06em;
+  --ap-title-case: uppercase;
+
+  --ap-color-bg: #faf5ff;
+  --ap-color-surface: #ffffff;
+  --ap-color-fg: #2a1a4a;
+  --ap-color-muted: #6b5b95;
+  --ap-color-border: #e9d8fd;
+
+  --ap-color-primary: #6d28d9;
+  --ap-color-on-primary: #ffffff;
+  --ap-color-signal: #e11d48;
+  --ap-color-signal-soft: #ffe4ea;
+
+  --ap-color-win: #16a34a;
+  --ap-color-loss: #6b5b95;
+  --ap-color-draw: #b45309;
+
+  --ap-color-success: #16a34a;
+  --ap-color-info: #2563eb;
+  --ap-color-warning: #b45309;
+  --ap-color-error: #e11d48;
+  --ap-color-on-error: #ffffff;
+
+  &[data-mode='dark'] {
+    --ap-color-bg: #0f0f23;
+    --ap-color-surface: #1e1c35;
+    --ap-color-fg: #ece7fb;
+    --ap-color-muted: #a78bfa;
+    --ap-color-border: #322d55;
+
+    --ap-color-primary: #a78bfa;
+    --ap-color-on-primary: #0f0f23;
+    --ap-color-signal: #fb7185;
+    --ap-color-signal-soft: #3a1626;
+
+    --ap-color-win: #4ade80;
+    --ap-color-loss: #a78bfa;
+    --ap-color-draw: #fbbf24;
+
+    --ap-color-success: #4ade80;
+    --ap-color-info: #60a5fa;
+    --ap-color-warning: #fbbf24;
+    --ap-color-error: #fb7185;
+  }
+}
