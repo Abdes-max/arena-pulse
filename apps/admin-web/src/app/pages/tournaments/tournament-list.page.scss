@@ -1,0 +1,40 @@
+.tournament-list-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--ap-space-6);
+  color: var(--ap-color-fg);
+  font-family: var(--ap-font-body);
+}
+
+.tournament-list-page__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--ap-space-6);
+
+  h1 {
+    margin: 0;
+  }
+}
+
+.tournament-list-page__error {
+  color: var(--ap-color-error);
+  font-size: 0.9rem;
+}
+
+.tournament-list-page__table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    text-align: left;
+    padding: var(--ap-space-3);
+    border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+  }
+}
+
+.tournament-list-page__actions {
+  display: flex;
+  gap: var(--ap-space-2);
+}

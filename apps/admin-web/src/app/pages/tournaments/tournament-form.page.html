@@ -1,0 +1,135 @@
+<main class="tournament-form-page">
+  @if (loading()) {
+    <p>Chargement…</p>
+  } @else {
+    @if (errorMessage(); as message) {
+      <p class="tournament-form-page__error" role="alert">{{ message }}</p>
+    }
+
+    <h1>{{ isEditMode() ? 'Modifier le tournoi' : 'Créer un tournoi' }}</h1>
+
+    @if (isEditMode() && tournament(); as t) {
+      <div class="tournament-form-page__lifecycle">
+        <ap-badge [status]="statusBadge[t.status]" />
+        @if (isArchived()) {
+          <ap-button type="button" variant="ghost" (click)="unarchive()">Désarchiver</ap-button>
+        } @else {
+          @if (t.status === 'PUBLISHED') {
+            <ap-button type="button" variant="ghost" (click)="unpublish()">Dépublier</ap-button>
+          } @else {
+            <ap-button type="button" variant="ghost" (click)="publish()">Publier</ap-button>
+          }
+          <ap-button type="button" variant="ghost" (click)="archive()">Archiver</ap-button>
+        }
+        <ap-button type="button" variant="ghost" (click)="duplicate()">Dupliquer</ap-button>
+      </div>
+    }
+
+    <form class="tournament-form-page__form" [formGroup]="form" (ngSubmit)="submit()">
+      <ap-text-field label="Nom du tournoi" formControlName="name" />
+      <label class="tournament-form-page__select-label">
+        Sport
+        <select formControlName="sportId">
+          <option value="" disabled>Choisir un sport</option>
+          @for (sport of sports(); track sport.id) {
+            <option [value]="sport.id">{{ sport.name }}</option>
+          }
+        </select>
+      </label>
+      <label class="tournament-form-page__checkbox-label">
+        <input type="checkbox" formControlName="isOnline" />
+        Tournoi en ligne (eSport)
+      </label>
+      <ap-button type="submit" [disabled]="submitting() || isArchived()">
+        {{ isEditMode() ? 'Enregistrer' : 'Créer le tournoi' }}
+      </ap-button>
+    </form>
+
+    @if (isEditMode()) {
+      <section class="tournament-form-page__section">
+        <h2>Catégories et divisions</h2>
+        @for (category of categories(); track category.id) {
+          <div class="tournament-form-page__category">
+            <div class="tournament-form-page__category-header">
+              <strong>{{ category.name }}</strong>
+              <ap-button type="button" variant="ghost" (click)="removeCategory(category)">
+                Supprimer
+              </ap-button>
+            </div>
+            <ul class="tournament-form-page__division-list">
+              @for (division of category.divisions; track division.id) {
+                <li>
+                  {{ division.name }}
+                  <ap-button type="button" variant="ghost" (click)="removeDivision(category, division.id)">
+                    Retirer
+                  </ap-button>
+                </li>
+              }
+            </ul>
+            <div class="tournament-form-page__inline-form">
+              <input
+                type="text"
+                placeholder="Nouvelle division"
+                [value]="divisionNameFor(category.id)"
+                (input)="onNewDivisionNameChange(category.id, $event)"
+              />
+              <ap-button type="button" variant="ghost" (click)="addDivision(category)">Ajouter</ap-button>
+            </div>
+          </div>
+        }
+        <div class="tournament-form-page__inline-form">
+          <input
+            type="text"
+            placeholder="Nouvelle catégorie (ex. U10)"
+            [value]="newCategoryName()"
+            (input)="onNewCategoryNameChange($event)"
+          />
+          <ap-button type="button" variant="ghost" (click)="addCategory()">Ajouter une catégorie</ap-button>
+        </div>
+      </section>
+
+      <section class="tournament-form-page__section">
+        <h2>Administrateurs du tournoi</h2>
+        <ul class="tournament-form-page__administrator-list">
+          @for (administrator of administrators(); track administrator.id) {
+            <li>
+              {{ administrator.firstName }} {{ administrator.lastName }} ({{ administrator.email }}) —
+              {{ administrator.permissionKeys.join(', ') }}
+              <ap-button type="button" variant="ghost" (click)="removeAdministrator(administrator)">
+                Retirer
+              </ap-button>
+            </li>
+          }
+        </ul>
+
+        <div class="tournament-form-page__add-administrator">
+          <input
+            type="email"
+            placeholder="Email du collaborateur"
+            [value]="newAdministratorEmail()"
+            (input)="onNewAdministratorEmailChange($event)"
+          />
+          <div class="tournament-form-page__presets">
+            <ap-button type="button" variant="ghost" (click)="applyPresetFull()">
+              Administrateur complet
+            </ap-button>
+            <ap-button type="button" variant="ghost" (click)="applyPresetReferee()">
+              Arbitre (scores uniquement)
+            </ap-button>
+          </div>
+          @for (permission of permissions(); track permission.id) {
+            <label class="tournament-form-page__permission-checkbox">
+              <input
+                type="checkbox"
+                [checked]="newAdministratorPermissionKeys().includes(permission.key)"
+                (change)="togglePermission(permission.key, $event)"
+              />
+              {{ permission.label }}
+            </label>
+          }
+          <ap-button type="button" (click)="addAdministrator()">Ajouter comme administrateur</ap-button>
+        </div>
+      </section>
+    }
+  }
+</main>
