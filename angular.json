@@ -29,7 +29,10 @@
                 "input": "apps/public-web/public"
               }
             ],
-            "styles": ["apps/public-web/src/styles.scss"]
+            "styles": ["apps/public-web/src/styles.scss"],
+            "stylePreprocessorOptions": {
+              "includePaths": ["libs/design-tokens/src/styles"]
+            }
           },
           "configurations": {
             "production": {
@@ -102,7 +105,10 @@
                 "input": "apps/admin-web/public"
               }
             ],
-            "styles": ["apps/admin-web/src/styles.scss"]
+            "styles": ["apps/admin-web/src/styles.scss"],
+            "stylePreprocessorOptions": {
+              "includePaths": ["libs/design-tokens/src/styles"]
+            }
           },
           "configurations": {
             "production": {
@@ -148,6 +154,72 @@
           "options": {
             "lintFilePatterns": ["apps/admin-web/**/*.ts", "apps/admin-web/**/*.html"],
             "eslintConfig": "apps/admin-web/eslint.config.js"
+          }
+        }
+      }
+    },
+    "design-tokens": {
+      "projectType": "library",
+      "root": "libs/design-tokens",
+      "sourceRoot": "libs/design-tokens/src",
+      "prefix": "ap",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "libs/design-tokens/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "libs/design-tokens/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "libs/design-tokens/tsconfig.spec.json"
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": ["libs/design-tokens/**/*.ts", "libs/design-tokens/**/*.html"],
+            "eslintConfig": "libs/design-tokens/eslint.config.js"
+          }
+        }
+      }
+    },
+    "design-system": {
+      "projectType": "library",
+      "root": "libs/design-system",
+      "sourceRoot": "libs/design-system/src",
+      "prefix": "ap",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "libs/design-system/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "libs/design-system/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "libs/design-system/tsconfig.spec.json"
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": ["libs/design-system/**/*.ts", "libs/design-system/**/*.html"],
+            "eslintConfig": "libs/design-system/eslint.config.js"
           }
         }
       }

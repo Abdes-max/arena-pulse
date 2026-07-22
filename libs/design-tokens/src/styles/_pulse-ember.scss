@@ -1,0 +1,55 @@
+// Pulse Ember — thème de tournoi sélectionnable par l'organisateur
+// (site public + diaporama uniquement). Voir docs/design/visual-language.md.
+
+[data-theme='pulse-ember'] {
+  --ap-font-heading: 'Barlow Condensed', -apple-system, 'Segoe UI', sans-serif;
+  --ap-font-body: 'Barlow', -apple-system, 'Segoe UI', sans-serif;
+  --ap-radius-sm: 10px;
+  --ap-radius-md: 14px;
+  --ap-radius-lg: 20px;
+  --ap-tracking-tight: 0.01em;
+  --ap-title-case: uppercase;
+
+  --ap-color-bg: #fffbf7;
+  --ap-color-surface: #ffffff;
+  --ap-color-fg: #3a2a20;
+  --ap-color-muted: #8a7367;
+  --ap-color-border: #f0ddd3;
+
+  --ap-color-primary: #e4572e;
+  --ap-color-on-primary: #ffffff;
+  --ap-color-signal: #f5b700;
+  --ap-color-signal-soft: #fff2cf;
+
+  --ap-color-win: #2e9e5b;
+  --ap-color-loss: #8a7367;
+  --ap-color-draw: #d6432e;
+
+  --ap-color-success: #2e9e5b;
+  --ap-color-info: #2563eb;
+  --ap-color-warning: #f5b700;
+  --ap-color-error: #d6432e;
+  --ap-color-on-error: #ffffff;
+
+  &[data-mode='dark'] {
+    --ap-color-bg: #1c1410;
+    --ap-color-surface: #261d17;
+    --ap-color-fg: #f3e7de;
+    --ap-color-muted: #c9b8ad;
+    --ap-color-border: #3a2a20;
+
+    --ap-color-primary: #f2703f;
+    --ap-color-on-primary: #1a0e08;
+    --ap-color-signal: #f5c445;
+    --ap-color-signal-soft: #3a2f12;
+
+    --ap-color-win: #4ade80;
+    --ap-color-loss: #c9b8ad;
+    --ap-color-draw: #ff8a65;
+
+    --ap-color-success: #4ade80;
+    --ap-color-info: #60a5fa;
+    --ap-color-warning: #f5c445;
+    --ap-color-error: #ff8a65;
+  }
+}

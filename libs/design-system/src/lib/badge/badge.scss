@@ -1,0 +1,87 @@
+:host {
+  display: inline-flex;
+}
+
+.ap-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  font-family: var(--ap-font-body);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: var(--ap-space-1) var(--ap-space-3);
+  border-radius: var(--ap-radius-sm);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  color: var(--ap-color-fg);
+}
+
+.ap-badge__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+
+// Statuts "à venir" / "terminé" : neutres, pas d'alerte visuelle.
+:host([data-status='upcoming']) .ap-badge,
+:host([data-status='finished']) .ap-badge {
+  color: var(--ap-color-muted);
+}
+
+// En direct : couleur signal de la direction, avec pulsation.
+:host([data-status='live']) .ap-badge {
+  color: var(--ap-color-on-primary);
+  background: var(--ap-color-signal);
+  border-color: var(--ap-color-signal);
+}
+
+:host([data-status='live']) .ap-badge__dot {
+  animation: ap-badge-pulse 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host([data-status='live']) .ap-badge__dot {
+    animation: none;
+  }
+}
+
+@keyframes ap-badge-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(1.3);
+  }
+}
+
+// Reporté : avertissement — peut encore reprendre.
+:host([data-status='postponed']) .ap-badge {
+  color: var(--ap-color-warning);
+  border-color: var(--ap-color-warning);
+}
+
+// Annulé : neutre mais définitif — texte barré, jamais confondu avec une erreur système.
+:host([data-status='cancelled']) .ap-badge {
+  color: var(--ap-color-muted);
+}
+
+:host([data-status='cancelled']) .ap-badge__label {
+  text-decoration: line-through;
+}
+
+// Qualifié : résultat sportif positif (vert "win", pas la couleur "success" système).
+:host([data-status='qualified']) .ap-badge {
+  color: var(--ap-color-win);
+  border-color: var(--ap-color-win);
+}
+
+// Éliminé : résultat sportif neutre — jamais la couleur "error" système (docs/design/colors.md).
+:host([data-status='eliminated']) .ap-badge {
+  color: var(--ap-color-loss);
+}

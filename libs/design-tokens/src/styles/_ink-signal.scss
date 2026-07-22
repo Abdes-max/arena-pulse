@@ -1,0 +1,55 @@
+// Ink & Signal — identité produit Arena Pulse (admin + marketing) et thème
+// de tournoi disponible pour le site public. Voir docs/design/visual-language.md.
+
+[data-theme='ink-signal'] {
+  --ap-font-heading: 'Space Grotesk', -apple-system, 'Segoe UI', sans-serif;
+  --ap-font-body: 'Inter', -apple-system, 'Segoe UI', sans-serif;
+  --ap-radius-sm: 6px;
+  --ap-radius-md: 8px;
+  --ap-radius-lg: 10px;
+  --ap-tracking-tight: -0.01em;
+  --ap-title-case: none;
+
+  --ap-color-bg: #f8fafc;
+  --ap-color-surface: #ffffff;
+  --ap-color-fg: #1e293b;
+  --ap-color-muted: #64748b;
+  --ap-color-border: #e2e8f0;
+
+  --ap-color-primary: #1e293b;
+  --ap-color-on-primary: #ffffff;
+  --ap-color-signal: #0ea5c9;
+  --ap-color-signal-soft: #e0f6fb;
+
+  --ap-color-win: #16a34a;
+  --ap-color-loss: #64748b;
+  --ap-color-draw: #b45309;
+
+  --ap-color-success: #16a34a;
+  --ap-color-info: #2563eb;
+  --ap-color-warning: #d97706;
+  --ap-color-error: #dc2626;
+  --ap-color-on-error: #ffffff;
+
+  &[data-mode='dark'] {
+    --ap-color-bg: #0b1220;
+    --ap-color-surface: #141b2e;
+    --ap-color-fg: #e7ecf5;
+    --ap-color-muted: #94a3b8;
+    --ap-color-border: #1f2a44;
+
+    --ap-color-primary: #c7d2e5;
+    --ap-color-on-primary: #0b1220;
+    --ap-color-signal: #38bdf8;
+    --ap-color-signal-soft: #122536;
+
+    --ap-color-win: #22c55e;
+    --ap-color-loss: #94a3b8;
+    --ap-color-draw: #f5b942;
+
+    --ap-color-success: #22c55e;
+    --ap-color-info: #38bdf8;
+    --ap-color-warning: #f59e0b;
+    --ap-color-error: #ef4444;
+  }
+}

@@ -1,0 +1,38 @@
+<article class="ap-match-card">
+  @if (competitionLabel(); as label) {
+    <div class="ap-match-card__meta">
+      <span class="ap-match-card__competition">{{ label }}</span>
+      @if (variant() === 'live') {
+        <ap-badge status="live" />
+      }
+      @if (venue(); as v) {
+        <span class="ap-match-card__venue">{{ v }}</span>
+      }
+    </div>
+  }
+
+  <div class="ap-match-card__teams">
+    <div class="ap-match-card__team" [class.ap-match-card__team--winner]="homeIsWinner()">
+      <span class="ap-match-card__team-name">{{ homeTeam().name }}</span>
+      @if (hasScore()) {
+        <span class="ap-match-card__score">{{ homeScore() }}</span>
+      }
+    </div>
+    <div class="ap-match-card__team" [class.ap-match-card__team--winner]="awayIsWinner()">
+      <span class="ap-match-card__team-name">{{ awayTeam().name }}</span>
+      @if (hasScore()) {
+        <span class="ap-match-card__score">{{ awayScore() }}</span>
+      }
+    </div>
+  </div>
+
+  @if (!hasScore() && kickoff(); as time) {
+    <div class="ap-match-card__footer">
+      <ap-badge status="upcoming" />
+      <span class="ap-match-card__time">{{ time }}</span>
+      @if (venue(); as v) {
+        <span class="ap-match-card__venue">{{ v }}</span>
+      }
+    </div>
+  }
+</article>

@@ -1,0 +1,58 @@
+:host {
+  display: inline-block;
+}
+
+.ap-button {
+  font-family: var(--ap-font-body);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: var(--ap-title-case, none);
+  letter-spacing: var(--ap-tracking-tight, normal);
+  border-radius: var(--ap-radius-md);
+  border: var(--ap-border-width) solid transparent;
+  padding: var(--ap-space-3) var(--ap-space-6);
+  min-height: var(--ap-touch-target-min);
+  cursor: pointer;
+  transition:
+    background-color var(--ap-motion-fast) var(--ap-easing-standard),
+    border-color var(--ap-motion-fast) var(--ap-easing-standard),
+    opacity var(--ap-motion-fast) var(--ap-easing-standard);
+
+  &:focus-visible {
+    outline: var(--ap-border-width-strong) solid var(--ap-color-signal);
+    outline-offset: 2px;
+  }
+
+  :host([data-disabled]) & {
+    opacity: var(--ap-opacity-disabled);
+    cursor: not-allowed;
+  }
+}
+
+:host([data-variant='primary']) .ap-button {
+  background: var(--ap-color-primary);
+  color: var(--ap-color-on-primary);
+
+  &:hover:not(:disabled) {
+    filter: brightness(1.08);
+  }
+}
+
+:host([data-variant='secondary']) .ap-button {
+  background: var(--ap-color-surface);
+  color: var(--ap-color-fg);
+  border-color: var(--ap-color-border);
+
+  &:hover:not(:disabled) {
+    border-color: var(--ap-color-primary);
+  }
+}
+
+:host([data-variant='ghost']) .ap-button {
+  background: transparent;
+  color: var(--ap-color-fg);
+
+  &:hover:not(:disabled) {
+    background: var(--ap-color-signal-soft);
+  }
+}
