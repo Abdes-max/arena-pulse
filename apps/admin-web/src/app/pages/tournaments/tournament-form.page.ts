@@ -1,5 +1,12 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -41,7 +48,9 @@ export class TournamentFormPage {
   private readonly authService = inject(AuthService);
 
   protected readonly organization = computed(() => this.authService.organizations()[0] ?? null);
-  private readonly paramMap = toSignal(this.route.paramMap, { initialValue: this.route.snapshot.paramMap });
+  private readonly paramMap = toSignal(this.route.paramMap, {
+    initialValue: this.route.snapshot.paramMap,
+  });
   protected readonly tournamentId = computed(() => this.paramMap().get('tournamentId'));
   protected readonly isEditMode = computed(() => this.tournamentId() !== null);
   protected readonly statusBadge = STATUS_TO_BADGE;
@@ -109,7 +118,9 @@ export class TournamentFormPage {
       isOnline: tournament.isOnline,
     });
     this.categories.set(await this.tournamentsService.listCategories(organizationId, tournamentId));
-    this.administrators.set(await this.tournamentsService.listAdministrators(organizationId, tournamentId));
+    this.administrators.set(
+      await this.tournamentsService.listAdministrators(organizationId, tournamentId),
+    );
   }
 
   protected async submit(): Promise<void> {
@@ -123,11 +134,15 @@ export class TournamentFormPage {
       const { name, sportId, isOnline } = this.form.getRawValue();
       const tournamentId = this.tournamentId();
       if (this.isEditMode() && tournamentId) {
-        const updated = await this.tournamentsService.updateTournament(organizationId, tournamentId, {
-          name,
-          sportId,
-          isOnline,
-        });
+        const updated = await this.tournamentsService.updateTournament(
+          organizationId,
+          tournamentId,
+          {
+            name,
+            sportId,
+            isOnline,
+          },
+        );
         this.tournament.set(updated);
       } else {
         const created = await this.tournamentsService.createTournament(organizationId, {
@@ -214,7 +229,11 @@ export class TournamentFormPage {
       return;
     }
     try {
-      const category = await this.tournamentsService.createCategory(organizationId, tournamentId, name);
+      const category = await this.tournamentsService.createCategory(
+        organizationId,
+        tournamentId,
+        name,
+      );
       this.categories.update((categories) => [...categories, category]);
       this.newCategoryName.set('');
     } catch {
@@ -260,7 +279,9 @@ export class TournamentFormPage {
         name,
       );
       this.categories.update((categories) =>
-        categories.map((c) => (c.id === category.id ? { ...c, divisions: [...c.divisions, division] } : c)),
+        categories.map((c) =>
+          c.id === category.id ? { ...c, divisions: [...c.divisions, division] } : c,
+        ),
       );
       this.newDivisionNameByCategory.update((names) => ({ ...names, [category.id]: '' }));
     } catch {
@@ -278,7 +299,9 @@ export class TournamentFormPage {
       await this.tournamentsService.deleteDivision(organizationId, tournamentId, divisionId);
       this.categories.update((categories) =>
         categories.map((c) =>
-          c.id === category.id ? { ...c, divisions: c.divisions.filter((d) => d.id !== divisionId) } : c,
+          c.id === category.id
+            ? { ...c, divisions: c.divisions.filter((d) => d.id !== divisionId) }
+            : c,
         ),
       );
     } catch {
@@ -338,8 +361,14 @@ export class TournamentFormPage {
       return;
     }
     try {
-      await this.tournamentsService.removeAdministrator(organizationId, tournamentId, administrator.id);
-      this.administrators.update((administrators) => administrators.filter((a) => a.id !== administrator.id));
+      await this.tournamentsService.removeAdministrator(
+        organizationId,
+        tournamentId,
+        administrator.id,
+      );
+      this.administrators.update((administrators) =>
+        administrators.filter((a) => a.id !== administrator.id),
+      );
     } catch {
       this.errorMessage.set('Impossible de retirer cet administrateur.');
     }

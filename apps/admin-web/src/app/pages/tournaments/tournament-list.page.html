@@ -33,7 +33,9 @@
                 <ap-button type="button" variant="ghost" (click)="editTournament(tournament)">
                   Modifier
                 </ap-button>
-                <ap-button type="button" variant="ghost" (click)="duplicate(tournament)">Dupliquer</ap-button>
+                <ap-button type="button" variant="ghost" (click)="duplicate(tournament)"
+                  >Dupliquer</ap-button
+                >
                 <ap-button type="button" variant="ghost" (click)="toggleArchive(tournament)">
                   {{ tournament.status === 'ARCHIVED' ? 'Désarchiver' : 'Archiver' }}
                 </ap-button>

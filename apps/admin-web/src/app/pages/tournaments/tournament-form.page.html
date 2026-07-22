@@ -60,7 +60,11 @@
               @for (division of category.divisions; track division.id) {
                 <li>
                   {{ division.name }}
-                  <ap-button type="button" variant="ghost" (click)="removeDivision(category, division.id)">
+                  <ap-button
+                    type="button"
+                    variant="ghost"
+                    (click)="removeDivision(category, division.id)"
+                  >
                     Retirer
                   </ap-button>
                 </li>
@@ -73,7 +77,9 @@
                 [value]="divisionNameFor(category.id)"
                 (input)="onNewDivisionNameChange(category.id, $event)"
               />
-              <ap-button type="button" variant="ghost" (click)="addDivision(category)">Ajouter</ap-button>
+              <ap-button type="button" variant="ghost" (click)="addDivision(category)"
+                >Ajouter</ap-button
+              >
             </div>
           </div>
         }
@@ -84,7 +90,9 @@
             [value]="newCategoryName()"
             (input)="onNewCategoryNameChange($event)"
           />
-          <ap-button type="button" variant="ghost" (click)="addCategory()">Ajouter une catégorie</ap-button>
+          <ap-button type="button" variant="ghost" (click)="addCategory()"
+            >Ajouter une catégorie</ap-button
+          >
         </div>
       </section>
 
@@ -93,7 +101,8 @@
         <ul class="tournament-form-page__administrator-list">
           @for (administrator of administrators(); track administrator.id) {
             <li>
-              {{ administrator.firstName }} {{ administrator.lastName }} ({{ administrator.email }}) —
+              {{ administrator.firstName }} {{ administrator.lastName }} ({{ administrator.email }})
+              —
               {{ administrator.permissionKeys.join(', ') }}
               <ap-button type="button" variant="ghost" (click)="removeAdministrator(administrator)">
                 Retirer
@@ -127,7 +136,9 @@
               {{ permission.label }}
             </label>
           }
-          <ap-button type="button" (click)="addAdministrator()">Ajouter comme administrateur</ap-button>
+          <ap-button type="button" (click)="addAdministrator()"
+            >Ajouter comme administrateur</ap-button
+          >
         </div>
       </section>
     }
