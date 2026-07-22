@@ -33,6 +33,27 @@ jobs:
     defaults:
       run:
         working-directory: apps/api
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: arena_pulse
+          POSTGRES_PASSWORD: arena_pulse
+          POSTGRES_DB: arena_pulse
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U arena_pulse -d arena_pulse"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://arena_pulse:arena_pulse@localhost:5432/arena_pulse?schema=public
+      JWT_SECRET: ci-only-secret-never-used-outside-tests
+      JWT_EXPIRES_IN: 3600s
+      JWT_REFRESH_EXPIRES_IN: 30d
+      CORS_ORIGIN: http://localhost:4300
+      ADMIN_WEB_URL: http://localhost:4300
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -43,6 +64,7 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run build
+      - run: npx prisma migrate deploy
       - run: npm test
       - run: npm run test:e2e
 
