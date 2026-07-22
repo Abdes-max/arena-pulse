@@ -1,0 +1,33 @@
+.accept-invitation-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: var(--ap-space-6);
+}
+
+.accept-invitation-page__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-4);
+  width: 100%;
+  max-width: 400px;
+  color: var(--ap-color-fg);
+  font-family: var(--ap-font-body);
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ap-space-4);
+  }
+
+  h1 {
+    margin: 0 0 var(--ap-space-2);
+  }
+}
+
+.accept-invitation-page__error {
+  color: var(--ap-color-error);
+  font-size: 0.9rem;
+  margin: 0;
+}

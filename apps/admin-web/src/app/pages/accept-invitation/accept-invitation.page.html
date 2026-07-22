@@ -1,0 +1,49 @@
+<main class="accept-invitation-page">
+  <div class="accept-invitation-page__card">
+    @switch (state()) {
+      @case ('loading') {
+        <p>Chargement de l'invitation…</p>
+      }
+      @case ('error') {
+        <h1>Invitation introuvable</h1>
+        <p>Ce lien d'invitation est invalide, expiré ou déjà utilisé.</p>
+      }
+      @case ('new-account') {
+        <h1>Rejoindre {{ invitation()?.organizationName }}</h1>
+        <p>Créez votre compte pour accepter l'invitation ({{ invitation()?.email }}).</p>
+        <form [formGroup]="form" (ngSubmit)="submitNewAccount()">
+          <ap-text-field label="Prénom" formControlName="firstName" autocomplete="given-name" />
+          <ap-text-field label="Nom" formControlName="lastName" autocomplete="family-name" />
+          <ap-text-field
+            label="Mot de passe"
+            type="password"
+            formControlName="password"
+            autocomplete="new-password"
+          />
+          @if (errorMessage(); as message) {
+            <p class="accept-invitation-page__error" role="alert">{{ message }}</p>
+          }
+          <ap-button type="submit" [disabled]="submitting()">Accepter l'invitation</ap-button>
+        </form>
+      }
+      @case ('log-in-required') {
+        <h1>Rejoindre {{ invitation()?.organizationName }}</h1>
+        <p>
+          Connectez-vous avec le compte <strong>{{ invitation()?.email }}</strong> pour accepter
+          cette invitation.
+        </p>
+        <ap-button type="button" (click)="goToLogin()">Se connecter</ap-button>
+      }
+      @case ('ready-to-accept') {
+        <h1>Rejoindre {{ invitation()?.organizationName }}</h1>
+        <p>Vous êtes connecté·e en tant que {{ invitation()?.email }}.</p>
+        @if (errorMessage(); as message) {
+          <p class="accept-invitation-page__error" role="alert">{{ message }}</p>
+        }
+        <ap-button type="button" [disabled]="submitting()" (click)="acceptAsCurrentUser()">
+          Accepter l'invitation
+        </ap-button>
+      }
+    }
+  </div>
+</main>
