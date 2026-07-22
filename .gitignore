@@ -1,16 +1,37 @@
+# Dependencies
 node_modules/
+
+# Build output
 dist/
 build/
+out-tsc/
+www/
+android/
+ios/
+
+# Angular / Nest
 .angular/
+.nest/
+
+# Test artifacts
 coverage/
+playwright-report/
+test-results/
+.angular/cache
+
+# Logs
 *.log
+npm-debug.log
+
+# Env / secrets
 .env
 .env.*
 !.env.example
+
+# OS / IDE
 .DS_Store
 Thumbs.db
 .idea/
-.vscode/
-android/
-ios/
-www/
+.vscode/*
+!.vscode/extensions.json
+.claude/
