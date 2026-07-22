@@ -1,1 +1,18 @@
-/* You can add global styles to this file, and also import other style files */
+@forward 'index';
+
+// admin-web is part of the Arena Pulse product shell: it always uses the
+// ink-signal identity, regardless of any tournament's own theme choice
+// (docs/design/visual-language.md — "Décision validée").
+:root {
+  color-scheme: light dark;
+}
+
+html {
+  background: var(--ap-color-bg);
+  color: var(--ap-color-fg);
+  font-family: var(--ap-font-body);
+}
+
+body {
+  margin: 0;
+}
