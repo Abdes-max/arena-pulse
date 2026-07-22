@@ -16,5 +16,6 @@ import { OrganizationRoleGuard } from './guards/organization-role.guard';
     InvitationsController,
   ],
   providers: [OrganizationsService, InvitationsService, OrganizationRoleGuard],
+  exports: [OrganizationRoleGuard],
 })
 export class OrganizationsModule {}
