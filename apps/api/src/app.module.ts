@@ -10,6 +10,7 @@ import { OrganizationsModule } from './organizations/organizations.module';
 import { PermissionsModule } from './permissions/permissions.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { SportsModule } from './sports/sports.module';
+import { TournamentsModule } from './tournaments/tournaments.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { SportsModule } from './sports/sports.module';
     OrganizationsModule,
     SportsModule,
     PermissionsModule,
+    TournamentsModule,
   ],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: JwtAuthGuard }],

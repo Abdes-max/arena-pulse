@@ -36,7 +36,8 @@ describe('Reference data (e2e)', () => {
         organizationName: 'Ada Tournaments',
       })
       .expect(201);
-    const accessToken = (registerRes.body as { accessToken: string }).accessToken;
+    const accessToken = (registerRes.body as { accessToken: string })
+      .accessToken;
 
     const sportsRes = await request(app.getHttpServer())
       .get('/api/v1/sports')
@@ -51,6 +52,8 @@ describe('Reference data (e2e)', () => {
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(200);
     const permissions = permissionsRes.body as { key: string; label: string }[];
-    expect(permissions.map((permission) => permission.key)).toContain('MANAGE_SCORES');
+    expect(permissions.map((permission) => permission.key)).toContain(
+      'MANAGE_SCORES',
+    );
   });
 });
