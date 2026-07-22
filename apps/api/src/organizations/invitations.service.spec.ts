@@ -129,6 +129,32 @@ describe('InvitationsService', () => {
         expect.stringContaining('http://localhost:4300/accept-invitation/'),
       );
     });
+
+    it('still creates the invitation when sending the email fails', async () => {
+      prisma.organizationMember.findFirst.mockResolvedValue(null);
+      prisma.invitation.findFirst.mockResolvedValue(null);
+      prisma.organization.findUniqueOrThrow.mockResolvedValue({
+        id: 'org-1',
+        name: 'Ada Tournaments',
+      });
+      prisma.invitation.create.mockResolvedValue({
+        id: 'invitation-1',
+        email: 'new@example.com',
+        role: OrganizationRole.ORG_MEMBER,
+        status: InvitationStatus.PENDING,
+        expiresAt: new Date(),
+      });
+      mailService.sendInvitationEmail.mockRejectedValue(
+        new Error('SMTP unreachable'),
+      );
+
+      const result = await service.invite('org-1', 'inviter-1', {
+        email: 'new@example.com',
+        role: OrganizationRole.ORG_MEMBER,
+      });
+
+      expect(result.id).toBe('invitation-1');
+    });
   });
 
   describe('lookup', () => {

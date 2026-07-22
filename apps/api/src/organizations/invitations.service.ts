@@ -4,6 +4,7 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -20,6 +21,8 @@ const INVITATION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
 @Injectable()
 export class InvitationsService {
+  private readonly logger = new Logger(InvitationsService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly mailService: MailService,
@@ -70,11 +73,21 @@ export class InvitationsService {
       },
     });
 
-    await this.mailService.sendInvitationEmail(
-      dto.email,
-      organization.name,
-      this.buildInviteUrl(token),
-    );
+    try {
+      await this.mailService.sendInvitationEmail(
+        dto.email,
+        organization.name,
+        this.buildInviteUrl(token),
+      );
+    } catch (error) {
+      // The invitation itself is valid regardless of whether the email made
+      // it out — failing the whole request here would leave a PENDING
+      // invitation the admin can't see or retry (it already exists, so a
+      // second attempt would just hit the duplicate-pending-invite check).
+      this.logger.warn(
+        `Failed to send invitation email to ${dto.email}: ${(error as Error).message}`,
+      );
+    }
 
     return {
       id: invitation.id,

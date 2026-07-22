@@ -9,7 +9,11 @@ export class MailService {
 
   constructor(configService: ConfigService) {
     this.transporter = nodemailer.createTransport({
-      host: configService.get<string>('SMTP_HOST', 'localhost'),
+      // Default to the literal IPv4 loopback rather than "localhost": on some
+      // machines "localhost" resolves to an IPv6 address that isn't actually
+      // reachable even though IPv4 loopback is fine, breaking the SMTP
+      // connection to Mailhog.
+      host: configService.get<string>('SMTP_HOST', '127.0.0.1'),
       port: configService.get<number>('SMTP_PORT', 1025),
       secure: false,
     });
