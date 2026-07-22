@@ -119,7 +119,7 @@ describe('Tournaments (e2e)', () => {
     expect((unarchiveRes.body as TournamentResponseBody).status).toBe('DRAFT');
   });
 
-  it('duplicates an archived tournament as a fresh DRAFT clone', async () => {
+  it('duplicates an archived tournament, along with its categories and divisions, as a fresh DRAFT clone', async () => {
     const { accessToken, organizationId } = await registerOrganizer(app);
     const sportId = await firstSportId(app, accessToken);
     const auth = (req: request.Test) =>
@@ -130,6 +130,21 @@ describe('Tournaments (e2e)', () => {
       .send({ name: 'Édition 2025', sportId })
       .expect(201);
     const tournament = createRes.body as TournamentResponseBody;
+
+    const categoryRes = await auth(
+      request(app.getHttpServer()).post(`${base}/${tournament.id}/categories`),
+    )
+      .send({ name: 'U10' })
+      .expect(201);
+    const category = categoryRes.body as { id: string };
+
+    await auth(
+      request(app.getHttpServer()).post(
+        `${base}/${tournament.id}/categories/${category.id}/divisions`,
+      ),
+    )
+      .send({ name: 'Poule A', colorHex: '#FF0000' })
+      .expect(201);
 
     await auth(
       request(app.getHttpServer()).post(`${base}/${tournament.id}/archive`),
@@ -144,6 +159,79 @@ describe('Tournaments (e2e)', () => {
     expect(clone.name).toBe('Édition 2025 (copie)');
     expect(clone.status).toBe('DRAFT');
     expect(clone.id).not.toBe(tournament.id);
+
+    const clonedCategoriesRes = await auth(
+      request(app.getHttpServer()).get(`${base}/${clone.id}/categories`),
+    ).expect(200);
+    const clonedCategories = clonedCategoriesRes.body as {
+      name: string;
+      divisions: { name: string; colorHex: string }[];
+    }[];
+    expect(clonedCategories).toHaveLength(1);
+    expect(clonedCategories[0].name).toBe('U10');
+    expect(
+      clonedCategories[0].divisions.map((d) => ({
+        name: d.name,
+        colorHex: d.colorHex,
+      })),
+    ).toEqual([{ name: 'Poule A', colorHex: '#FF0000' }]);
+  });
+
+  it('manages categories and divisions, rejecting duplicate names and edits on an archived tournament', async () => {
+    const { accessToken, organizationId } = await registerOrganizer(app);
+    const sportId = await firstSportId(app, accessToken);
+    const auth = (req: request.Test) =>
+      req.set('Authorization', `Bearer ${accessToken}`);
+    const base = `/api/v1/organizations/${organizationId}/tournaments`;
+
+    const createRes = await auth(request(app.getHttpServer()).post(base))
+      .send({ name: 'Coupe', sportId })
+      .expect(201);
+    const tournament = createRes.body as TournamentResponseBody;
+    const categoriesBase = `${base}/${tournament.id}/categories`;
+
+    const categoryRes = await auth(
+      request(app.getHttpServer()).post(categoriesBase),
+    )
+      .send({ name: 'U10' })
+      .expect(201);
+    const category = categoryRes.body as { id: string };
+
+    await auth(request(app.getHttpServer()).post(categoriesBase))
+      .send({ name: 'U10' })
+      .expect(409);
+
+    const divisionsBase = `${base}/${tournament.id}/categories/${category.id}/divisions`;
+    const divisionRes = await auth(
+      request(app.getHttpServer()).post(divisionsBase),
+    )
+      .send({ name: 'Poule A' })
+      .expect(201);
+    const division = divisionRes.body as { id: string };
+
+    await auth(request(app.getHttpServer()).post(divisionsBase))
+      .send({ name: 'Poule A' })
+      .expect(409);
+
+    await auth(
+      request(app.getHttpServer()).patch(
+        `${base}/${tournament.id}/divisions/${division.id}`,
+      ),
+    )
+      .send({ name: 'Poule B' })
+      .expect(200);
+
+    await auth(
+      request(app.getHttpServer()).post(`${base}/${tournament.id}/archive`),
+    ).expect(200);
+
+    await auth(request(app.getHttpServer()).post(categoriesBase))
+      .send({ name: 'U12' })
+      .expect(409);
+
+    await auth(
+      request(app.getHttpServer()).delete(`${categoriesBase}/${category.id}`),
+    ).expect(409);
   });
 
   it('isolates tournaments between organizations', async () => {
