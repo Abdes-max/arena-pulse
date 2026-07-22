@@ -37,7 +37,7 @@ Cette matrice est mise à jour à chaque Pull Request. Version mise à jour apr�
 | Contenu | Sponsors | Oui | NON_ANALYSE | Oui | P2 | NON_ANALYSE | Absent du tournoi de référence utilisé, aucun écran dédié repéré lors de l'audit |
 | Contenu | Partage tournoi/match, QR code, affiche | Oui | Oui (QR code + affiche confirmés) | Oui (natif) | P2 | A_CONFIRMER | |
 | Affichage | Mode diaporama plein écran | Oui | Oui (onglet dédié confirmé) | N/A | P2 | A_CONFIRMER | Contenu non ouvert (précaution) |
-| Affichage | Personnalisation visuelle ("Design") | N/A | Oui (onglet confirmé) | N/A | P2 | A_CONFIRMER | Contenu non ouvert |
+| Affichage | Thème visuel du tournoi (choix parmi plusieurs directions artistiques pour le site public + diaporama) | Oui | Oui (sélection par l'organisateur) | N/A | P1 | SPECIFIE | Décision produit validée (`docs/design/visual-language.md`) : dépasse la référence (onglet "Design" observé côté admin Tournify sans être ouvert) — 3 thèmes complets proposés dès la conception plutôt qu'un simple réglage |
 | Mobile | Application native iOS/Android | N/A | Oui (activable par tournoi) | Oui | P0 | A_CONFIRMER | Toggle "Afficher le tournoi dans l'appli" confirmé côté admin ; app elle-même non auditée (hors périmètre §1) |
 
 **Légende N/A** : fonctionnalité non pertinente pour cette surface (ex. la génération de calendrier n'a pas de sens côté "public web").
