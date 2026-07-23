@@ -14,17 +14,20 @@ import { ApiTags } from '@nestjs/swagger';
 import { OrganizationRole } from '../../generated/prisma/client';
 import { RequireOrgRole } from '../organizations/decorators/require-org-role.decorator';
 import { OrganizationRoleGuard } from '../organizations/guards/organization-role.guard';
+import { RequireTournamentPermission } from './decorators/require-tournament-permission.decorator';
 import { CreateDivisionDto } from './dto/create-division.dto';
 import { UpdateDivisionDto } from './dto/update-division.dto';
 import { DivisionsService } from './divisions.service';
+import { TournamentPermissionGuard } from './guards/tournament-permission.guard';
 
 @ApiTags('tournaments')
-@UseGuards(OrganizationRoleGuard)
+@UseGuards(OrganizationRoleGuard, TournamentPermissionGuard)
 @Controller('organizations/:organizationId/tournaments/:tournamentId')
 export class DivisionsController {
   constructor(private readonly divisionsService: DivisionsService) {}
 
-  @RequireOrgRole(OrganizationRole.ORG_ADMIN)
+  @RequireOrgRole(OrganizationRole.ORG_MEMBER)
+  @RequireTournamentPermission('MANAGE_GENERAL')
   @Post('categories/:categoryId/divisions')
   create(
     @Param('organizationId') organizationId: string,
@@ -50,7 +53,8 @@ export class DivisionsController {
     return this.divisionsService.list(organizationId, tournamentId, categoryId);
   }
 
-  @RequireOrgRole(OrganizationRole.ORG_ADMIN)
+  @RequireOrgRole(OrganizationRole.ORG_MEMBER)
+  @RequireTournamentPermission('MANAGE_GENERAL')
   @Patch('divisions/:divisionId')
   update(
     @Param('organizationId') organizationId: string,
@@ -66,7 +70,8 @@ export class DivisionsController {
     );
   }
 
-  @RequireOrgRole(OrganizationRole.ORG_ADMIN)
+  @RequireOrgRole(OrganizationRole.ORG_MEMBER)
+  @RequireTournamentPermission('MANAGE_GENERAL')
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('divisions/:divisionId')
   remove(
