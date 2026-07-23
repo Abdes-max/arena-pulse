@@ -18,6 +18,8 @@ import { PlayersController } from './players.controller';
 import { PlayersService } from './players.service';
 import { RefereesController } from './referees.controller';
 import { RefereesService } from './referees.service';
+import { StandingRulesController } from './standing-rules.controller';
+import { StandingRulesService } from './standing-rules.service';
 import { TeamsController } from './teams.controller';
 import { TeamsService } from './teams.service';
 import { TimeSlotsController } from './timeslots.controller';
@@ -42,6 +44,7 @@ import { VenuesService } from './venues.service';
     RefereesController,
     PhasesController,
     GroupsController,
+    StandingRulesController,
   ],
   providers: [
     TournamentsService,
@@ -57,6 +60,7 @@ import { VenuesService } from './venues.service';
     RefereesService,
     PhasesService,
     GroupsService,
+    StandingRulesService,
   ],
   exports: [TournamentPermissionGuard],
 })

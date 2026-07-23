@@ -18,10 +18,12 @@ type PrismaMock = {
     update: jest.Mock;
     delete: jest.Mock;
   };
+  standingRule: { create: jest.Mock };
+  $transaction: jest.Mock;
 };
 
 function createPrismaMock(): PrismaMock {
-  return {
+  const mock: PrismaMock = {
     group: {
       findFirst: jest.fn(),
       findUnique: jest.fn(),
@@ -30,7 +32,13 @@ function createPrismaMock(): PrismaMock {
       update: jest.fn(),
       delete: jest.fn(),
     },
+    standingRule: { create: jest.fn() },
+    $transaction: jest.fn(),
   };
+  mock.$transaction.mockImplementation(
+    (callback: (tx: PrismaMock) => unknown) => callback(mock),
+  );
+  return mock;
 }
 
 describe('GroupsService', () => {

@@ -9,6 +9,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateGroupDto } from './dto/create-group.dto';
 import { UpdateGroupDto } from './dto/update-group.dto';
 import { PhasesService } from './phases.service';
+import { DEFAULT_TIE_BREAK_ORDER } from './standing-rule.constants';
 import { TournamentsService } from './tournaments.service';
 
 type GroupWithPhase = Group & {
@@ -40,8 +41,17 @@ export class GroupsService {
     this.assertGroupStage(phase.type);
     await this.assertNameAvailable(phaseId, dto.name);
 
-    const group = await this.prisma.group.create({
-      data: { phaseId, name: dto.name, position: dto.position ?? 0 },
+    // A Group always has exactly one StandingRule (mandatory per the data
+    // model), so it's created here alongside the group with sane defaults
+    // rather than lazily on first access.
+    const group = await this.prisma.$transaction(async (tx) => {
+      const created = await tx.group.create({
+        data: { phaseId, name: dto.name, position: dto.position ?? 0 },
+      });
+      await tx.standingRule.create({
+        data: { groupId: created.id, tieBreakOrder: DEFAULT_TIE_BREAK_ORDER },
+      });
+      return created;
     });
     return this.toSummary(group);
   }
