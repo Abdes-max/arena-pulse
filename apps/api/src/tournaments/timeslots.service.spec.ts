@@ -1,4 +1,8 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
 import { FieldsService } from './fields.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { TimeSlotsService } from './timeslots.service';
@@ -18,7 +22,7 @@ function createPrismaMock(): PrismaMock {
   return {
     timeSlot: {
       findUnique: jest.fn(),
-      findMany: jest.fn(),
+      findMany: jest.fn().mockResolvedValue([]),
       create: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
@@ -113,6 +117,79 @@ describe('TimeSlotsService', () => {
         startTime: '2026-05-01T12:00:00.000Z',
       }),
     ).rejects.toBeInstanceOf(BadRequestException);
+  });
+
+  it('rejects creating a time slot that overlaps another slot on the same field', async () => {
+    prisma.timeSlot.findMany.mockResolvedValue([
+      {
+        id: 'slot-existing',
+        fieldId: 'field-1',
+        startTime: new Date('2026-05-01T10:30:00.000Z'),
+        endTime: new Date('2026-05-01T11:30:00.000Z'),
+      },
+    ]);
+
+    await expect(
+      service.create('org-1', 'tournament-1', 'field-1', {
+        startTime: '2026-05-01T10:00:00.000Z',
+        endTime: '2026-05-01T11:00:00.000Z',
+      }),
+    ).rejects.toBeInstanceOf(ConflictException);
+    expect(prisma.timeSlot.create).not.toHaveBeenCalled();
+  });
+
+  it('allows creating a time slot that only touches another slot at the boundary', async () => {
+    prisma.timeSlot.findMany.mockResolvedValue([
+      {
+        id: 'slot-existing',
+        fieldId: 'field-1',
+        startTime: new Date('2026-05-01T11:00:00.000Z'),
+        endTime: new Date('2026-05-01T12:00:00.000Z'),
+      },
+    ]);
+    prisma.timeSlot.create.mockResolvedValue({
+      id: 'slot-1',
+      fieldId: 'field-1',
+      startTime: new Date('2026-05-01T10:00:00.000Z'),
+      endTime: new Date('2026-05-01T11:00:00.000Z'),
+      label: null,
+    });
+
+    await expect(
+      service.create('org-1', 'tournament-1', 'field-1', {
+        startTime: '2026-05-01T10:00:00.000Z',
+        endTime: '2026-05-01T11:00:00.000Z',
+      }),
+    ).resolves.not.toThrow();
+  });
+
+  it('rejects updating a time slot into an overlap, excluding itself from the check', async () => {
+    prisma.timeSlot.findUnique.mockResolvedValue({
+      id: 'slot-1',
+      fieldId: 'field-1',
+      startTime: new Date('2026-05-01T10:00:00.000Z'),
+      endTime: new Date('2026-05-01T11:00:00.000Z'),
+      field: { venue: { tournamentId: 'tournament-1' } },
+    });
+    prisma.timeSlot.findMany.mockResolvedValue([
+      {
+        id: 'slot-other',
+        fieldId: 'field-1',
+        startTime: new Date('2026-05-01T11:30:00.000Z'),
+        endTime: new Date('2026-05-01T12:30:00.000Z'),
+      },
+    ]);
+
+    await expect(
+      service.update('org-1', 'tournament-1', 'slot-1', {
+        startTime: '2026-05-01T11:00:00.000Z',
+        endTime: '2026-05-01T12:00:00.000Z',
+      }),
+    ).rejects.toBeInstanceOf(ConflictException);
+    const calls = prisma.timeSlot.findMany.mock.calls as [
+      { where: { id?: { not: string } } },
+    ][];
+    expect(calls[0][0].where.id).toEqual({ not: 'slot-1' });
   });
 
   it('rejects updating/removing a time slot that belongs to another tournament', async () => {
