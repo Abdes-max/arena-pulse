@@ -1,0 +1,166 @@
+<main class="team-list-page">
+  <h1>Équipes</h1>
+
+  @if (loading()) {
+    <p>Chargement…</p>
+  } @else {
+    @if (errorMessage(); as message) {
+      <p class="team-list-page__error" role="alert">{{ message }}</p>
+    }
+
+    <section class="team-list-page__section">
+      <h2>{{ editingTeamId() ? "Modifier l'équipe" : 'Ajouter une équipe' }}</h2>
+      <form class="team-list-page__form" (submit)="onFormSubmit($event)">
+        <input type="text" placeholder="Nom de l'équipe" [value]="formName()"
+          (input)="formName.set($any($event.target).value)" />
+        <select [value]="formCategoryId()" (change)="onFormCategoryChange($event)">
+          <option value="" disabled>Choisir une catégorie</option>
+          @for (category of categories(); track category.id) {
+            <option [value]="category.id">{{ category.name }}</option>
+          }
+        </select>
+        <select [value]="formDivisionId()" (change)="formDivisionId.set($any($event.target).value)">
+          <option value="">Aucune division</option>
+          @for (division of divisionsForSelectedCategory(); track division.id) {
+            <option [value]="division.id">{{ division.name }}</option>
+          }
+        </select>
+        <input type="text" placeholder="Responsable" [value]="formManagerName()"
+          (input)="formManagerName.set($any($event.target).value)" />
+        <input type="email" placeholder="Email du responsable" [value]="formManagerEmail()"
+          (input)="formManagerEmail.set($any($event.target).value)" />
+        <input type="tel" placeholder="Téléphone du responsable" [value]="formManagerPhone()"
+          (input)="formManagerPhone.set($any($event.target).value)" />
+        <div class="team-list-page__form-actions">
+          <ap-button type="submit">{{ editingTeamId() ? 'Enregistrer' : "Ajouter l'équipe" }}</ap-button>
+          @if (editingTeamId()) {
+            <ap-button type="button" variant="ghost" (click)="cancelEdit()">Annuler</ap-button>
+          }
+        </div>
+      </form>
+    </section>
+
+    <section class="team-list-page__section">
+      <div class="team-list-page__toolbar">
+        <ap-button type="button" variant="ghost" (click)="exportCsv()">Exporter</ap-button>
+        <ap-button
+          type="button"
+          variant="ghost"
+          [disabled]="selectedTeamIds().size === 0"
+          (click)="deleteSelected()"
+        >
+          Supprimer la sélection
+        </ap-button>
+      </div>
+
+      @if (teams().length === 0) {
+        <p>Aucune équipe pour l'instant.</p>
+      } @else {
+        <table class="team-list-page__table">
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col">Nom</th>
+              <th scope="col">Catégorie</th>
+              <th scope="col">Division</th>
+              <th scope="col">Responsable</th>
+              <th scope="col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (team of teams(); track team.id) {
+              <tr>
+                <td>
+                  <input
+                    type="checkbox"
+                    [checked]="isSelected(team.id)"
+                    (change)="toggleSelected(team.id, $event)"
+                  />
+                </td>
+                <td>{{ team.name }}</td>
+                <td>{{ team.categoryName }}</td>
+                <td>{{ team.divisionName ?? '—' }}</td>
+                <td>{{ team.managerName ?? '—' }}</td>
+                <td class="team-list-page__actions">
+                  <ap-button type="button" variant="ghost" (click)="startEdit(team)">
+                    Modifier
+                  </ap-button>
+                  <ap-button type="button" variant="ghost" (click)="togglePlayers(team)">
+                    Joueurs
+                  </ap-button>
+                  <ap-button type="button" variant="ghost" (click)="removeTeam(team)">
+                    Supprimer
+                  </ap-button>
+                </td>
+              </tr>
+              @if (expandedTeamId() === team.id) {
+                <tr>
+                  <td></td>
+                  <td colspan="5">
+                    <ul class="team-list-page__player-list">
+                      @for (player of players(); track player.id) {
+                        <li>
+                          {{ player.firstName }} {{ player.lastName }}
+                          @if (player.isCaptain) {
+                            <strong>(capitaine)</strong>
+                          }
+                          <ap-button type="button" variant="ghost" (click)="removePlayer(team, player)">
+                            Retirer
+                          </ap-button>
+                        </li>
+                      }
+                    </ul>
+                    <div class="team-list-page__inline-form">
+                      <input
+                        type="text"
+                        placeholder="Prénom"
+                        [value]="newPlayerFirstName()"
+                        (input)="onNewPlayerFirstNameChange($event)"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Nom"
+                        [value]="newPlayerLastName()"
+                        (input)="onNewPlayerLastNameChange($event)"
+                      />
+                      <ap-button type="button" variant="ghost" (click)="addPlayer(team)">
+                        Ajouter un joueur
+                      </ap-button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      }
+    </section>
+
+    <section class="team-list-page__section">
+      <h2>Importer des équipes (CSV)</h2>
+      <p class="team-list-page__hint">
+        Colonnes : nom;catégorie;division (division optionnelle). La catégorie et la division
+        doivent déjà exister.
+      </p>
+      <input type="file" accept=".csv,text/csv" (change)="onImportFileSelected($event)" />
+      <textarea
+        rows="5"
+        placeholder="nom;categorie;division"
+        [value]="importCsv()"
+        (input)="onImportCsvChange($event)"
+      ></textarea>
+      <ap-button type="button" (click)="runImport()">Importer</ap-button>
+
+      @if (importResult(); as result) {
+        <p>{{ result.created.length }} équipe(s) importée(s).</p>
+        @if (result.errors.length > 0) {
+          <ul class="team-list-page__import-errors">
+            @for (error of result.errors; track error.line) {
+              <li>Ligne {{ error.line }} : {{ error.message }}</li>
+            }
+          </ul>
+        }
+      }
+    </section>
+  }
+</main>
