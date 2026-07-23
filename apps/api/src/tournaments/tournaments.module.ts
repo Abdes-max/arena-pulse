@@ -22,6 +22,8 @@ import { QualificationRulesController } from './qualification-rules.controller';
 import { QualificationRulesService } from './qualification-rules.service';
 import { RefereesController } from './referees.controller';
 import { RefereesService } from './referees.service';
+import { ScheduleController } from './schedule.controller';
+import { ScheduleGenerationService } from './schedule-generation.service';
 import { StandingRulesController } from './standing-rules.controller';
 import { StandingRulesService } from './standing-rules.service';
 import { TeamsController } from './teams.controller';
@@ -51,6 +53,7 @@ import { VenuesService } from './venues.service';
     StandingRulesController,
     KnockoutBracketsController,
     QualificationRulesController,
+    ScheduleController,
   ],
   providers: [
     TournamentsService,
@@ -69,6 +72,7 @@ import { VenuesService } from './venues.service';
     StandingRulesService,
     KnockoutBracketsService,
     QualificationRulesService,
+    ScheduleGenerationService,
   ],
   exports: [TournamentPermissionGuard],
 })

@@ -1,0 +1,94 @@
+.schedule-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--ap-space-6);
+  color: var(--ap-color-fg);
+  font-family: var(--ap-font-body);
+}
+
+.schedule-page__error {
+  color: var(--ap-color-error);
+  font-size: 0.9rem;
+}
+
+.schedule-page__select-label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+  font-size: 0.85rem;
+  font-weight: 600;
+  max-width: 300px;
+  margin-top: var(--ap-space-4);
+}
+
+.schedule-page__section {
+  margin-top: var(--ap-space-6);
+}
+
+.schedule-page__fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ap-space-3);
+  margin-top: var(--ap-space-2);
+}
+
+.schedule-page__checkbox-label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--ap-space-2);
+  font-size: 0.85rem;
+}
+
+.schedule-page__inline-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ap-space-3);
+  align-items: center;
+  margin-top: var(--ap-space-3);
+
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ap-space-1);
+    font-size: 0.85rem;
+  }
+
+  input[type='number'] {
+    width: 5rem;
+  }
+}
+
+.schedule-page__field-column {
+  margin-top: var(--ap-space-4);
+  padding: var(--ap-space-3);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+}
+
+.schedule-page__match-list {
+  list-style: none;
+  margin: var(--ap-space-2) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+
+  li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ap-space-2);
+  }
+}
+
+.schedule-page__match-round {
+  font-weight: 600;
+  color: var(--ap-color-muted);
+}
+
+.schedule-page__match-time,
+.schedule-page__match-officials {
+  font-size: 0.85rem;
+  color: var(--ap-color-muted);
+}

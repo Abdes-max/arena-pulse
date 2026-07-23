@@ -92,6 +92,9 @@ describe('PhasesService', () => {
       name: 'Phase de poules',
       type: CompetitionPhaseType.GROUP_STAGE,
       position: 0,
+      matchDurationMinutes: 15,
+      breakDurationMinutes: 5,
+      refereesPerMatch: 1,
     });
 
     const result = await service.create('org-1', 'tournament-1', 'category-1', {
@@ -108,6 +111,9 @@ describe('PhasesService', () => {
       name: 'Phase de poules',
       type: CompetitionPhaseType.GROUP_STAGE,
       position: 0,
+      matchDurationMinutes: 15,
+      breakDurationMinutes: 5,
+      refereesPerMatch: 1,
       groups: [],
       knockoutBracket: null,
     });

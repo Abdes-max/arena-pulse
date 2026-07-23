@@ -1,0 +1,136 @@
+<main class="schedule-page">
+  <h1>Calendrier</h1>
+
+  @if (loading()) {
+    <p>Chargement…</p>
+  } @else {
+    @if (errorMessage(); as message) {
+      <p class="schedule-page__error" role="alert">{{ message }}</p>
+    }
+
+    @if (categories().length === 0) {
+      <p>Ajoutez d'abord une catégorie sur la page du tournoi.</p>
+    } @else {
+      <label class="schedule-page__select-label">
+        Catégorie
+        <select [value]="selectedCategoryId()" (change)="onCategoryChange($event)">
+          @for (category of categories(); track category.id) {
+            <option [value]="category.id">{{ category.name }}</option>
+          }
+        </select>
+      </label>
+
+      @if (groupStagePhases().length === 0) {
+        <p>Ajoutez d'abord une phase de poules sur la page Structure de cette catégorie.</p>
+      } @else {
+        <label class="schedule-page__select-label">
+          Phase
+          <select [value]="selectedPhaseId()" (change)="onPhaseChange($event)">
+            @for (phase of groupStagePhases(); track phase.id) {
+              <option [value]="phase.id">{{ phase.name }}</option>
+            }
+          </select>
+        </label>
+
+        <section class="schedule-page__section">
+          <h2>Générer le calendrier</h2>
+          @if (venues().length === 0) {
+            <p>Ajoutez d'abord un site et des terrains sur la page du tournoi.</p>
+          } @else {
+            <div class="schedule-page__fields">
+              @for (venue of venues(); track venue.id) {
+                @for (field of venue.fields; track field.id) {
+                  <label class="schedule-page__checkbox-label">
+                    <input
+                      type="checkbox"
+                      [checked]="selectedFieldIds().includes(field.id)"
+                      (change)="onFieldToggle(field.id, $event)"
+                    />
+                    {{ venue.name }} — {{ field.name }}
+                  </label>
+                }
+              }
+            </div>
+
+            <div class="schedule-page__inline-form">
+              <label>
+                Début
+                <input
+                  type="datetime-local"
+                  [value]="startDateTime()"
+                  (input)="onStartDateTimeChange($event)"
+                />
+              </label>
+              <label>
+                Durée de match (min)
+                <input
+                  type="number"
+                  min="1"
+                  [value]="matchDurationMinutes()"
+                  (input)="onMatchDurationChange($event)"
+                />
+              </label>
+              <label>
+                Pause (min)
+                <input
+                  type="number"
+                  min="0"
+                  [value]="breakDurationMinutes()"
+                  (input)="onBreakDurationChange($event)"
+                />
+              </label>
+              <label>
+                Arbitres par match
+                <input
+                  type="number"
+                  min="1"
+                  [value]="refereesPerMatch()"
+                  (input)="onRefereesPerMatchChange($event)"
+                />
+              </label>
+            </div>
+
+            <ap-button type="button" [disabled]="generating()" (click)="generateSchedule()">
+              Générer le calendrier
+            </ap-button>
+            <ap-button type="button" variant="ghost" (click)="resetSchedule()">
+              Vider le calendrier
+            </ap-button>
+          }
+        </section>
+
+        <section class="schedule-page__section">
+          <h2>Matchs planifiés</h2>
+          @if (matches().length === 0) {
+            <p>Aucun match généré pour cette phase.</p>
+          } @else {
+            @for (group of matchesByField(); track group.fieldName) {
+              <div class="schedule-page__field-column">
+                <h3>{{ group.fieldName }}</h3>
+                <ul class="schedule-page__match-list">
+                  @for (match of group.matches; track match.id) {
+                    <li>
+                      <span class="schedule-page__match-round">Round {{ match.round }}</span>
+                      {{ match.homeTeam?.name ?? '?' }} vs {{ match.awayTeam?.name ?? '?' }}
+                      @if (match.timeSlot; as slot) {
+                        <span class="schedule-page__match-time">
+                          {{ formatSlotTime(slot.startTime) }}
+                        </span>
+                      }
+                      @if (match.officials.length > 0) {
+                        <span class="schedule-page__match-officials">
+                          Arbitres :
+                          {{ match.officials.map(officialLabel).join(', ') }}
+                        </span>
+                      }
+                    </li>
+                  }
+                </ul>
+              </div>
+            }
+          }
+        </section>
+      }
+    }
+  }
+</main>

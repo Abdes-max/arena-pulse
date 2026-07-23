@@ -8,6 +8,8 @@ import { PrismaService } from '../../src/prisma/prisma.service';
 export async function resetDatabase(prisma: PrismaService): Promise<void> {
   await prisma.tournamentAdministratorPermission.deleteMany();
   await prisma.tournamentAdministrator.deleteMany();
+  await prisma.matchOfficial.deleteMany();
+  await prisma.match.deleteMany();
   await prisma.player.deleteMany();
   await prisma.qualificationRule.deleteMany();
   await prisma.standingRule.deleteMany();

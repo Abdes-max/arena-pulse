@@ -20,4 +20,19 @@ export class CreatePhaseDto {
   @IsInt()
   @Min(0)
   position?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  matchDurationMinutes?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  breakDurationMinutes?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  refereesPerMatch?: number;
 }
