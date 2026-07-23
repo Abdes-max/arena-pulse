@@ -80,6 +80,7 @@ export class TournamentsService {
               : null
             : undefined,
         isOnline: dto.isOnline,
+        teamsCanReferee: dto.teamsCanReferee,
       },
       include: { sport: true },
     });
@@ -299,6 +300,7 @@ export class TournamentsService {
       organizationId: tournament.organizationId,
       archivedAt: tournament.archivedAt,
       updatedAt: tournament.updatedAt,
+      teamsCanReferee: tournament.teamsCanReferee,
     };
   }
 }

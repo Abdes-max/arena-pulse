@@ -28,4 +28,8 @@ export class UpdateTournamentDto {
   @IsOptional()
   @IsBoolean()
   isOnline?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  teamsCanReferee?: boolean;
 }
