@@ -14,6 +14,8 @@ import { PlayersController } from './players.controller';
 import { PlayersService } from './players.service';
 import { TeamsController } from './teams.controller';
 import { TeamsService } from './teams.service';
+import { TimeSlotsController } from './timeslots.controller';
+import { TimeSlotsService } from './timeslots.service';
 import { TournamentsController } from './tournaments.controller';
 import { TournamentsService } from './tournaments.service';
 import { VenuesController } from './venues.controller';
@@ -30,6 +32,7 @@ import { VenuesService } from './venues.service';
     PlayersController,
     VenuesController,
     FieldsController,
+    TimeSlotsController,
   ],
   providers: [
     TournamentsService,
@@ -41,6 +44,7 @@ import { VenuesService } from './venues.service';
     PlayersService,
     VenuesService,
     FieldsService,
+    TimeSlotsService,
   ],
   exports: [TournamentPermissionGuard],
 })
