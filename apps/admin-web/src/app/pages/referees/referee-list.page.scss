@@ -1,0 +1,59 @@
+.referee-list-page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: var(--ap-space-6);
+  color: var(--ap-color-fg);
+  font-family: var(--ap-font-body);
+}
+
+.referee-list-page__error {
+  color: var(--ap-color-error);
+  font-size: 0.9rem;
+}
+
+.referee-list-page__toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  margin-top: var(--ap-space-4);
+  font-weight: 600;
+}
+
+.referee-list-page__section {
+  margin-top: var(--ap-space-8);
+}
+
+.referee-list-page__form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ap-space-3);
+  align-items: center;
+}
+
+.referee-list-page__form-actions {
+  display: flex;
+  gap: var(--ap-space-2);
+}
+
+.referee-list-page__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+
+  li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ap-space-3);
+    padding: var(--ap-space-2) 0;
+    border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+  }
+}
+
+.referee-list-page__actions {
+  display: flex;
+  gap: var(--ap-space-2);
+}

@@ -19,6 +19,7 @@ import {
   TournamentAdministrator,
   TournamentDetail,
   TournamentStatus,
+  Venue,
 } from '../../core/models';
 import { PermissionsService } from '../../core/permissions.service';
 import { SportsService } from '../../core/sports.service';
@@ -63,6 +64,7 @@ export class TournamentFormPage {
   protected readonly permissions = signal<Permission[]>([]);
   protected readonly tournament = signal<TournamentDetail | null>(null);
   protected readonly categories = signal<Category[]>([]);
+  protected readonly venues = signal<Venue[]>([]);
   protected readonly administrators = signal<TournamentAdministrator[]>([]);
 
   protected readonly isArchived = computed(() => this.tournament()?.status === 'ARCHIVED');
@@ -75,6 +77,8 @@ export class TournamentFormPage {
 
   protected readonly newCategoryName = signal('');
   protected readonly newDivisionNameByCategory = signal<Record<string, string>>({});
+  protected readonly newVenueName = signal('');
+  protected readonly newFieldNameByVenue = signal<Record<string, string>>({});
   protected readonly newAdministratorEmail = signal('');
   protected readonly newAdministratorPermissionKeys = signal<string[]>([]);
 
@@ -89,6 +93,8 @@ export class TournamentFormPage {
     this.loading.set(true);
     this.newCategoryName.set('');
     this.newDivisionNameByCategory.set({});
+    this.newVenueName.set('');
+    this.newFieldNameByVenue.set({});
     this.newAdministratorEmail.set('');
     this.newAdministratorPermissionKeys.set([]);
     try {
@@ -118,6 +124,7 @@ export class TournamentFormPage {
       isOnline: tournament.isOnline,
     });
     this.categories.set(await this.tournamentsService.listCategories(organizationId, tournamentId));
+    this.venues.set(await this.tournamentsService.listVenues(organizationId, tournamentId));
     this.administrators.set(
       await this.tournamentsService.listAdministrators(organizationId, tournamentId),
     );
@@ -306,6 +313,92 @@ export class TournamentFormPage {
       );
     } catch {
       this.errorMessage.set('Impossible de supprimer cette division.');
+    }
+  }
+
+  protected onNewVenueNameChange(event: Event): void {
+    this.newVenueName.set((event.target as HTMLInputElement).value);
+  }
+
+  protected async addVenue(): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const tournamentId = this.tournamentId();
+    const name = this.newVenueName().trim();
+    if (!organizationId || !tournamentId || !name) {
+      return;
+    }
+    try {
+      const venue = await this.tournamentsService.createVenue(organizationId, tournamentId, {
+        name,
+      });
+      this.venues.update((venues) => [...venues, venue]);
+      this.newVenueName.set('');
+    } catch {
+      this.errorMessage.set("Impossible d'ajouter ce site (nom déjà utilisé ?).");
+    }
+  }
+
+  protected async removeVenue(venue: Venue): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const tournamentId = this.tournamentId();
+    if (!organizationId || !tournamentId) {
+      return;
+    }
+    try {
+      await this.tournamentsService.deleteVenue(organizationId, tournamentId, venue.id);
+      this.venues.update((venues) => venues.filter((v) => v.id !== venue.id));
+    } catch {
+      this.errorMessage.set('Impossible de supprimer ce site.');
+    }
+  }
+
+  protected fieldNameFor(venueId: string): string {
+    return this.newFieldNameByVenue()[venueId] ?? '';
+  }
+
+  protected onNewFieldNameChange(venueId: string, event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.newFieldNameByVenue.update((names) => ({ ...names, [venueId]: value }));
+  }
+
+  protected async addField(venue: Venue): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const tournamentId = this.tournamentId();
+    const name = this.fieldNameFor(venue.id).trim();
+    if (!organizationId || !tournamentId || !name) {
+      return;
+    }
+    try {
+      const field = await this.tournamentsService.createField(
+        organizationId,
+        tournamentId,
+        venue.id,
+        { name },
+      );
+      this.venues.update((venues) =>
+        venues.map((v) => (v.id === venue.id ? { ...v, fields: [...v.fields, field] } : v)),
+      );
+      this.newFieldNameByVenue.update((names) => ({ ...names, [venue.id]: '' }));
+    } catch {
+      this.errorMessage.set("Impossible d'ajouter ce terrain (nom déjà utilisé ?).");
+    }
+  }
+
+  protected async removeField(venue: Venue, fieldId: string): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const tournamentId = this.tournamentId();
+    if (!organizationId || !tournamentId) {
+      return;
+    }
+    try {
+      await this.tournamentsService.deleteField(organizationId, tournamentId, fieldId);
+      this.venues.update((venues) =>
+        venues.map((v) =>
+          v.id === venue.id ? { ...v, fields: v.fields.filter((f) => f.id !== fieldId) } : v,
+        ),
+      );
+    } catch {
+      this.errorMessage.set('Impossible de supprimer ce terrain.');
     }
   }
 

@@ -1,0 +1,84 @@
+<main class="referee-list-page">
+  <h1>Arbitres</h1>
+
+  @if (loading()) {
+    <p>Chargement…</p>
+  } @else {
+    @if (errorMessage(); as message) {
+      <p class="referee-list-page__error" role="alert">{{ message }}</p>
+    }
+
+    <label class="referee-list-page__toggle">
+      <input
+        type="checkbox"
+        [checked]="tournament()?.teamsCanReferee ?? false"
+        (change)="toggleTeamsCanReferee($event)"
+      />
+      Équipes en qualité d'arbitres
+    </label>
+
+    <section class="referee-list-page__section">
+      <h2>{{ editingRefereeId() ? "Modifier l'arbitre" : 'Ajouter un arbitre' }}</h2>
+      <form class="referee-list-page__form" (submit)="onFormSubmit($event)">
+        <input
+          type="text"
+          placeholder="Prénom"
+          [value]="formFirstName()"
+          (input)="formFirstName.set($any($event.target).value)"
+        />
+        <input
+          type="text"
+          placeholder="Nom"
+          [value]="formLastName()"
+          (input)="formLastName.set($any($event.target).value)"
+        />
+        <input
+          type="email"
+          placeholder="Email"
+          [value]="formEmail()"
+          (input)="formEmail.set($any($event.target).value)"
+        />
+        <input
+          type="tel"
+          placeholder="Téléphone"
+          [value]="formPhone()"
+          (input)="formPhone.set($any($event.target).value)"
+        />
+        <div class="referee-list-page__form-actions">
+          <ap-button type="submit">{{ editingRefereeId() ? 'Enregistrer' : 'Ajouter' }}</ap-button>
+          @if (editingRefereeId()) {
+            <ap-button type="button" variant="ghost" (click)="cancelEdit()">Annuler</ap-button>
+          }
+        </div>
+      </form>
+    </section>
+
+    <section class="referee-list-page__section">
+      @if (referees().length === 0) {
+        <p>
+          Ajoutez des arbitres. Utilisez ensuite la page du calendrier pour assigner les arbitres
+          aux matchs.
+        </p>
+      } @else {
+        <ul class="referee-list-page__list">
+          @for (referee of referees(); track referee.id) {
+            <li>
+              {{ referee.firstName }} {{ referee.lastName }}
+              @if (referee.email) {
+                ({{ referee.email }})
+              }
+              <span class="referee-list-page__actions">
+                <ap-button type="button" variant="ghost" (click)="startEdit(referee)">
+                  Modifier
+                </ap-button>
+                <ap-button type="button" variant="ghost" (click)="removeReferee(referee)">
+                  Retirer
+                </ap-button>
+              </span>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  }
+</main>

@@ -71,6 +71,7 @@ export interface TournamentDetail extends Tournament {
   organizationId: string;
   archivedAt: string | null;
   updatedAt: string;
+  teamsCanReferee: boolean;
 }
 
 export interface Division {
@@ -125,4 +126,27 @@ export interface Player {
   lastName: string;
   jerseyNumber: number | null;
   isCaptain: boolean;
+}
+
+export interface Field {
+  id: string;
+  name: string;
+  surface: string | null;
+  position: number;
+}
+
+export interface Venue {
+  id: string;
+  name: string;
+  address: string | null;
+  position: number;
+  fields: Field[];
+}
+
+export interface Referee {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string | null;
+  phone: string | null;
 }

@@ -8,12 +8,20 @@ import { DivisionsService } from './divisions.service';
 import { TournamentPermissionGuard } from './guards/tournament-permission.guard';
 import { TournamentAdministratorsController } from './tournament-administrators.controller';
 import { TournamentAdministratorsService } from './tournament-administrators.service';
+import { FieldsController } from './fields.controller';
+import { FieldsService } from './fields.service';
 import { PlayersController } from './players.controller';
 import { PlayersService } from './players.service';
+import { RefereesController } from './referees.controller';
+import { RefereesService } from './referees.service';
 import { TeamsController } from './teams.controller';
 import { TeamsService } from './teams.service';
+import { TimeSlotsController } from './timeslots.controller';
+import { TimeSlotsService } from './timeslots.service';
 import { TournamentsController } from './tournaments.controller';
 import { TournamentsService } from './tournaments.service';
+import { VenuesController } from './venues.controller';
+import { VenuesService } from './venues.service';
 
 @Module({
   imports: [OrganizationsModule, PermissionsModule],
@@ -24,6 +32,10 @@ import { TournamentsService } from './tournaments.service';
     TournamentAdministratorsController,
     TeamsController,
     PlayersController,
+    VenuesController,
+    FieldsController,
+    TimeSlotsController,
+    RefereesController,
   ],
   providers: [
     TournamentsService,
@@ -33,6 +45,10 @@ import { TournamentsService } from './tournaments.service';
     TournamentPermissionGuard,
     TeamsService,
     PlayersService,
+    VenuesService,
+    FieldsService,
+    TimeSlotsService,
+    RefereesService,
   ],
   exports: [TournamentPermissionGuard],
 })

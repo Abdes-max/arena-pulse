@@ -15,74 +15,70 @@ import { OrganizationRole } from '../../generated/prisma/client';
 import { RequireOrgRole } from '../organizations/decorators/require-org-role.decorator';
 import { OrganizationRoleGuard } from '../organizations/guards/organization-role.guard';
 import { RequireTournamentPermission } from './decorators/require-tournament-permission.decorator';
-import { CreateDivisionDto } from './dto/create-division.dto';
-import { UpdateDivisionDto } from './dto/update-division.dto';
-import { DivisionsService } from './divisions.service';
+import { CreateFieldDto } from './dto/create-field.dto';
+import { UpdateFieldDto } from './dto/update-field.dto';
+import { FieldsService } from './fields.service';
 import { TournamentPermissionGuard } from './guards/tournament-permission.guard';
 
 @ApiTags('tournaments')
 @UseGuards(OrganizationRoleGuard, TournamentPermissionGuard)
 @Controller('organizations/:organizationId/tournaments/:tournamentId')
-export class DivisionsController {
-  constructor(private readonly divisionsService: DivisionsService) {}
+export class FieldsController {
+  constructor(private readonly fieldsService: FieldsService) {}
 
   @RequireOrgRole(OrganizationRole.ORG_MEMBER)
-  @RequireTournamentPermission('MANAGE_GENERAL')
-  @Post('categories/:categoryId/divisions')
+  @RequireTournamentPermission('MANAGE_SCHEDULE')
+  @Post('venues/:venueId/fields')
   create(
     @Param('organizationId') organizationId: string,
     @Param('tournamentId') tournamentId: string,
-    @Param('categoryId') categoryId: string,
-    @Body() dto: CreateDivisionDto,
+    @Param('venueId') venueId: string,
+    @Body() dto: CreateFieldDto,
   ) {
-    return this.divisionsService.create(
+    return this.fieldsService.create(
       organizationId,
       tournamentId,
-      categoryId,
+      venueId,
       dto,
     );
   }
 
   @RequireOrgRole(OrganizationRole.ORG_MEMBER)
-  @Get('categories/:categoryId/divisions')
+  @Get('venues/:venueId/fields')
   list(
     @Param('organizationId') organizationId: string,
     @Param('tournamentId') tournamentId: string,
-    @Param('categoryId') categoryId: string,
+    @Param('venueId') venueId: string,
   ) {
-    return this.divisionsService.list(organizationId, tournamentId, categoryId);
+    return this.fieldsService.list(organizationId, tournamentId, venueId);
   }
 
   @RequireOrgRole(OrganizationRole.ORG_MEMBER)
-  @RequireTournamentPermission('MANAGE_GENERAL')
-  @Patch('divisions/:divisionId')
+  @RequireTournamentPermission('MANAGE_SCHEDULE')
+  @Patch('fields/:fieldId')
   update(
     @Param('organizationId') organizationId: string,
     @Param('tournamentId') tournamentId: string,
-    @Param('divisionId') divisionId: string,
-    @Body() dto: UpdateDivisionDto,
+    @Param('fieldId') fieldId: string,
+    @Body() dto: UpdateFieldDto,
   ) {
-    return this.divisionsService.update(
+    return this.fieldsService.update(
       organizationId,
       tournamentId,
-      divisionId,
+      fieldId,
       dto,
     );
   }
 
   @RequireOrgRole(OrganizationRole.ORG_MEMBER)
-  @RequireTournamentPermission('MANAGE_GENERAL')
+  @RequireTournamentPermission('MANAGE_SCHEDULE')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @Delete('divisions/:divisionId')
+  @Delete('fields/:fieldId')
   remove(
     @Param('organizationId') organizationId: string,
     @Param('tournamentId') tournamentId: string,
-    @Param('divisionId') divisionId: string,
+    @Param('fieldId') fieldId: string,
   ) {
-    return this.divisionsService.remove(
-      organizationId,
-      tournamentId,
-      divisionId,
-    );
+    return this.fieldsService.remove(organizationId, tournamentId, fieldId);
   }
 }

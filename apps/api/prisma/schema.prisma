@@ -126,16 +126,19 @@ model Tournament {
   status         TournamentStatus @default(DRAFT)
   startDate      DateTime?
   endDate        DateTime?
-  isOnline       Boolean          @default(false)
-  archivedAt     DateTime?
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
+  isOnline        Boolean          @default(false)
+  teamsCanReferee Boolean          @default(false)
+  archivedAt      DateTime?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 
   organization   Organization              @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   sport          Sport                     @relation(fields: [sportId], references: [id], onDelete: Restrict)
   categories     Category[]
   administrators TournamentAdministrator[]
   teams          Team[]
+  venues         Venue[]
+  referees       Referee[]
 
   @@index([organizationId])
   @@index([sportId])
@@ -210,6 +213,50 @@ model Player {
   @@index([teamId])
 }
 
+model Venue {
+  id           String   @id @default(uuid())
+  tournamentId String
+  name         String
+  address      String?
+  position     Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  fields     Field[]
+
+  @@unique([tournamentId, name])
+}
+
+model Field {
+  id        String   @id @default(uuid())
+  venueId   String
+  name      String
+  surface   String?
+  position  Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  venue     Venue      @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  timeSlots TimeSlot[]
+
+  @@unique([venueId, name])
+}
+
+model TimeSlot {
+  id        String   @id @default(uuid())
+  fieldId   String
+  startTime DateTime
+  endTime   DateTime
+  label     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  field Field @relation(fields: [fieldId], references: [id], onDelete: Cascade)
+
+  @@index([fieldId])
+}
+
 // Catalog (not a fixed enum) so new permissions can be added without a schema
 // migration — 10 seeded rows matching docs/product/roles-and-permissions.md.
 model Permission {
@@ -246,4 +293,19 @@ model TournamentAdministratorPermission {
 
   @@unique([tournamentAdministratorId, permissionId])
   @@index([permissionId])
+}
+
+model Referee {
+  id           String   @id @default(uuid())
+  tournamentId String
+  firstName    String
+  lastName     String
+  email        String?
+  phone        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+
+  @@index([tournamentId])
 }
