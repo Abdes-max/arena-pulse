@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { CompetitionPhaseType, Match } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { GenerateScheduleDto } from './dto/generate-schedule.dto';
+import { MATCH_INCLUDE, toMatchSummary } from './match-summary.util';
 import { PhasesService } from './phases.service';
 import { generateRoundRobinFixtures } from './round-robin.util';
 import { TournamentsService } from './tournaments.service';
@@ -16,36 +17,6 @@ interface FlatFixture {
 type RefereePoolEntry =
   | { refereeId: string; refereeingTeamId?: never }
   | { refereeId?: never; refereeingTeamId: string };
-
-type MatchWithRelations = Match & {
-  homeTeam: { id: string; name: string } | null;
-  awayTeam: { id: string; name: string } | null;
-  timeSlot: {
-    id: string;
-    startTime: Date;
-    endTime: Date;
-    field: { id: string; name: string };
-  } | null;
-  officials: {
-    id: string;
-    referee: { id: string; firstName: string; lastName: string } | null;
-    refereeingTeam: { id: string; name: string } | null;
-  }[];
-};
-
-const MATCH_INCLUDE = {
-  homeTeam: { select: { id: true, name: true } },
-  awayTeam: { select: { id: true, name: true } },
-  timeSlot: {
-    include: { field: { select: { id: true, name: true } } },
-  },
-  officials: {
-    include: {
-      referee: { select: { id: true, firstName: true, lastName: true } },
-      refereeingTeam: { select: { id: true, name: true } },
-    },
-  },
-} as const;
 
 @Injectable()
 export class ScheduleGenerationService {
@@ -169,7 +140,7 @@ export class ScheduleGenerationService {
       include: MATCH_INCLUDE,
       orderBy: [{ round: 'asc' }],
     });
-    return matches.map((match) => this.toSummary(match));
+    return matches.map((match) => toMatchSummary(match));
   }
 
   async reset(
@@ -212,7 +183,7 @@ export class ScheduleGenerationService {
       include: MATCH_INCLUDE,
       orderBy: [{ timeSlot: { startTime: 'asc' } }],
     });
-    return matches.map((match) => this.toSummary(match));
+    return matches.map((match) => toMatchSummary(match));
   }
 
   private async assertFieldsBelongToTournament(
@@ -276,29 +247,5 @@ export class ScheduleGenerationService {
       picks.push(eligible[(matchIndex + i) % eligible.length]);
     }
     return picks;
-  }
-
-  private toSummary(match: MatchWithRelations) {
-    return {
-      id: match.id,
-      groupId: match.groupId,
-      round: match.round,
-      status: match.status,
-      homeTeam: match.homeTeam,
-      awayTeam: match.awayTeam,
-      timeSlot: match.timeSlot
-        ? {
-            id: match.timeSlot.id,
-            startTime: match.timeSlot.startTime,
-            endTime: match.timeSlot.endTime,
-            field: match.timeSlot.field,
-          }
-        : null,
-      officials: match.officials.map((official) => ({
-        id: official.id,
-        referee: official.referee,
-        refereeingTeam: official.refereeingTeam,
-      })),
-    };
   }
 }
