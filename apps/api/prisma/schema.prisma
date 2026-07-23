@@ -34,9 +34,9 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  memberships                 OrganizationMember[]
-  refreshTokens               RefreshToken[]
-  sentInvitations             Invitation[]              @relation("InvitedBy")
+  memberships                  OrganizationMember[]
+  refreshTokens                RefreshToken[]
+  sentInvitations              Invitation[]              @relation("InvitedBy")
   tournamentAdministratorRoles TournamentAdministrator[]
 }
 
@@ -119,13 +119,13 @@ model Sport {
 }
 
 model Tournament {
-  id             String           @id @default(uuid())
-  organizationId String
-  sportId        String
-  name           String
-  status         TournamentStatus @default(DRAFT)
-  startDate      DateTime?
-  endDate        DateTime?
+  id              String           @id @default(uuid())
+  organizationId  String
+  sportId         String
+  name            String
+  status          TournamentStatus @default(DRAFT)
+  startDate       DateTime?
+  endDate         DateTime?
   isOnline        Boolean          @default(false)
   teamsCanReferee Boolean          @default(false)
   archivedAt      DateTime?
@@ -152,7 +152,7 @@ model Category {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  tournament Tournament         @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   divisions  Division[]
   teams      Team[]
   phases     CompetitionPhase[]
@@ -189,11 +189,14 @@ model Team {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
-  category   Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  division   Division?  @relation(fields: [divisionId], references: [id], onDelete: SetNull)
-  group      Group?     @relation(fields: [groupId], references: [id], onDelete: SetNull)
-  players    Player[]
+  tournament        Tournament      @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  category          Category        @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  division          Division?       @relation(fields: [divisionId], references: [id], onDelete: SetNull)
+  group             Group?          @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  players           Player[]
+  homeMatches       Match[]         @relation("MatchHomeTeam")
+  awayMatches       Match[]         @relation("MatchAwayTeam")
+  refereeingMatches MatchOfficial[] @relation("MatchOfficialTeam")
 
   @@unique([tournamentId, name])
   @@index([tournamentId])
@@ -223,13 +226,16 @@ enum CompetitionPhaseType {
 }
 
 model CompetitionPhase {
-  id         String               @id @default(uuid())
-  categoryId String
-  name       String
-  type       CompetitionPhaseType
-  position   Int                  @default(0)
-  createdAt  DateTime             @default(now())
-  updatedAt  DateTime             @updatedAt
+  id                   String               @id @default(uuid())
+  categoryId           String
+  name                 String
+  type                 CompetitionPhaseType
+  position             Int                  @default(0)
+  matchDurationMinutes Int                  @default(15)
+  breakDurationMinutes Int                  @default(5)
+  refereesPerMatch     Int                  @default(1)
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
 
   category        Category            @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   groups          Group[]
@@ -251,6 +257,7 @@ model Group {
   teams              Team[]
   qualificationRules QualificationRule[]
   standingRule       StandingRule?
+  matches            Match[]
 
   @@unique([phaseId, name])
 }
@@ -336,9 +343,53 @@ model TimeSlot {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  field Field @relation(fields: [fieldId], references: [id], onDelete: Cascade)
+  field Field  @relation(fields: [fieldId], references: [id], onDelete: Cascade)
+  match Match?
 
   @@index([fieldId])
+}
+
+enum MatchStatus {
+  SCHEDULED
+  LIVE
+  COMPLETED
+  POSTPONED
+  CANCELLED
+  FORFEITED
+}
+
+model Match {
+  id         String      @id @default(uuid())
+  groupId    String
+  homeTeamId String?
+  awayTeamId String?
+  timeSlotId String?     @unique
+  round      Int
+  status     MatchStatus @default(SCHEDULED)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  group     Group           @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  homeTeam  Team?           @relation("MatchHomeTeam", fields: [homeTeamId], references: [id], onDelete: SetNull)
+  awayTeam  Team?           @relation("MatchAwayTeam", fields: [awayTeamId], references: [id], onDelete: SetNull)
+  timeSlot  TimeSlot?       @relation(fields: [timeSlotId], references: [id], onDelete: SetNull)
+  officials MatchOfficial[]
+
+  @@index([groupId])
+}
+
+model MatchOfficial {
+  id               String   @id @default(uuid())
+  matchId          String
+  refereeId        String?
+  refereeingTeamId String?
+  createdAt        DateTime @default(now())
+
+  match          Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  referee        Referee? @relation(fields: [refereeId], references: [id], onDelete: Cascade)
+  refereeingTeam Team?    @relation("MatchOfficialTeam", fields: [refereeingTeamId], references: [id], onDelete: Cascade)
+
+  @@index([matchId])
 }
 
 // Catalog (not a fixed enum) so new permissions can be added without a schema
@@ -389,7 +440,8 @@ model Referee {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  tournament        Tournament      @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  officiatedMatches MatchOfficial[]
 
   @@index([tournamentId])
 }

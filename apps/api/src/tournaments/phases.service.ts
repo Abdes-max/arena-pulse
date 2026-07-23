@@ -46,6 +46,15 @@ export class PhasesService {
         name: dto.name,
         type: dto.type,
         position: dto.position ?? 0,
+        ...(dto.matchDurationMinutes !== undefined && {
+          matchDurationMinutes: dto.matchDurationMinutes,
+        }),
+        ...(dto.breakDurationMinutes !== undefined && {
+          breakDurationMinutes: dto.breakDurationMinutes,
+        }),
+        ...(dto.refereesPerMatch !== undefined && {
+          refereesPerMatch: dto.refereesPerMatch,
+        }),
       },
     });
     return this.toSummary({ ...phase, groups: [], knockoutBracket: null });
@@ -85,7 +94,13 @@ export class PhasesService {
 
     const updated = await this.prisma.competitionPhase.update({
       where: { id: phaseId },
-      data: { name: dto.name, position: dto.position },
+      data: {
+        name: dto.name,
+        position: dto.position,
+        matchDurationMinutes: dto.matchDurationMinutes,
+        breakDurationMinutes: dto.breakDurationMinutes,
+        refereesPerMatch: dto.refereesPerMatch,
+      },
       include: {
         groups: { orderBy: { position: 'asc' } },
         knockoutBracket: true,
@@ -158,6 +173,9 @@ export class PhasesService {
       name: phase.name,
       type: phase.type,
       position: phase.position,
+      matchDurationMinutes: phase.matchDurationMinutes,
+      breakDurationMinutes: phase.breakDurationMinutes,
+      refereesPerMatch: phase.refereesPerMatch,
       groups: phase.groups.map((group) => ({
         id: group.id,
         name: group.name,
