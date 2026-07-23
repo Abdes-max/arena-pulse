@@ -18,6 +18,8 @@ import { PhasesController } from './phases.controller';
 import { PhasesService } from './phases.service';
 import { PlayersController } from './players.controller';
 import { PlayersService } from './players.service';
+import { QualificationRulesController } from './qualification-rules.controller';
+import { QualificationRulesService } from './qualification-rules.service';
 import { RefereesController } from './referees.controller';
 import { RefereesService } from './referees.service';
 import { StandingRulesController } from './standing-rules.controller';
@@ -48,6 +50,7 @@ import { VenuesService } from './venues.service';
     GroupsController,
     StandingRulesController,
     KnockoutBracketsController,
+    QualificationRulesController,
   ],
   providers: [
     TournamentsService,
@@ -65,6 +68,7 @@ import { VenuesService } from './venues.service';
     GroupsService,
     StandingRulesService,
     KnockoutBracketsService,
+    QualificationRulesService,
   ],
   exports: [TournamentPermissionGuard],
 })
