@@ -7,6 +7,14 @@ export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: {
     path: "prisma/migrations",
+    // ts-node can't resolve the generated Prisma client's ".js"-suffixed
+    // relative imports (a nodenext resolution quirk — nest build's tsc
+    // pipeline handles it fine, ts-node's require hook doesn't), so the seed
+    // runs against the compiled output instead of the raw .ts source.
+    // A wrapper script (not "npm run build && node ...") because Prisma's
+    // seed runner splits this string on spaces without a shell, silently
+    // dropping everything after the first command instead of chaining them.
+    seed: "node prisma/seed-runner.cjs",
   },
   datasource: {
     url: process.env["DATABASE_URL"],

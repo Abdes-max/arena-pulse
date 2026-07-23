@@ -34,9 +34,10 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  memberships     OrganizationMember[]
-  refreshTokens   RefreshToken[]
-  sentInvitations Invitation[]         @relation("InvitedBy")
+  memberships                 OrganizationMember[]
+  refreshTokens               RefreshToken[]
+  sentInvitations             Invitation[]              @relation("InvitedBy")
+  tournamentAdministratorRoles TournamentAdministrator[]
 }
 
 model Organization {
@@ -47,6 +48,7 @@ model Organization {
 
   members     OrganizationMember[]
   invitations Invitation[]
+  tournaments Tournament[]
 }
 
 model OrganizationMember {
@@ -97,4 +99,109 @@ model Invitation {
 
   @@index([organizationId])
   @@index([email])
+}
+
+enum TournamentStatus {
+  DRAFT
+  PUBLISHED
+  UNPUBLISHED
+  ARCHIVED
+}
+
+// Global reference data (not scoped by organization) — seeded, no CRUD in this PR.
+model Sport {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tournaments Tournament[]
+}
+
+model Tournament {
+  id             String           @id @default(uuid())
+  organizationId String
+  sportId        String
+  name           String
+  status         TournamentStatus @default(DRAFT)
+  startDate      DateTime?
+  endDate        DateTime?
+  isOnline       Boolean          @default(false)
+  archivedAt     DateTime?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  organization   Organization              @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  sport          Sport                     @relation(fields: [sportId], references: [id], onDelete: Restrict)
+  categories     Category[]
+  administrators TournamentAdministrator[]
+
+  @@index([organizationId])
+  @@index([sportId])
+}
+
+model Category {
+  id           String   @id @default(uuid())
+  tournamentId String
+  name         String
+  position     Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  divisions  Division[]
+
+  @@unique([tournamentId, name])
+}
+
+model Division {
+  id         String   @id @default(uuid())
+  categoryId String
+  name       String
+  colorHex   String?
+  position   Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([categoryId, name])
+}
+
+// Catalog (not a fixed enum) so new permissions can be added without a schema
+// migration — 10 seeded rows matching docs/product/roles-and-permissions.md.
+model Permission {
+  id       String @id @default(uuid())
+  key      String @unique
+  label    String
+  position Int    @default(0)
+
+  administratorGrants TournamentAdministratorPermission[]
+}
+
+model TournamentAdministrator {
+  id           String   @id @default(uuid())
+  tournamentId String
+  userId       String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tournament  Tournament                          @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  user        User                                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  permissions TournamentAdministratorPermission[]
+
+  @@unique([tournamentId, userId])
+  @@index([userId])
+}
+
+model TournamentAdministratorPermission {
+  id                        String @id @default(uuid())
+  tournamentAdministratorId String
+  permissionId              String
+
+  tournamentAdministrator TournamentAdministrator @relation(fields: [tournamentAdministratorId], references: [id], onDelete: Cascade)
+  permission              Permission              @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([tournamentAdministratorId, permissionId])
+  @@index([permissionId])
 }

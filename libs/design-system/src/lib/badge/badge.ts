@@ -7,7 +7,17 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
  * application error.
  */
 export type BadgeStatus =
-  'upcoming' | 'live' | 'finished' | 'postponed' | 'cancelled' | 'qualified' | 'eliminated';
+  | 'upcoming'
+  | 'live'
+  | 'finished'
+  | 'postponed'
+  | 'cancelled'
+  | 'qualified'
+  | 'eliminated'
+  | 'draft'
+  | 'published'
+  | 'unpublished'
+  | 'archived';
 
 const DEFAULT_LABELS: Record<BadgeStatus, string> = {
   upcoming: 'À venir',
@@ -17,6 +27,10 @@ const DEFAULT_LABELS: Record<BadgeStatus, string> = {
   cancelled: 'Annulé',
   qualified: 'Qualifié',
   eliminated: 'Éliminé',
+  draft: 'Brouillon',
+  published: 'Publié',
+  unpublished: 'Dépublié',
+  archived: 'Archivé',
 };
 
 @Component({

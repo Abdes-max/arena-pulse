@@ -85,3 +85,30 @@
 :host([data-status='eliminated']) .ap-badge {
   color: var(--ap-color-loss);
 }
+
+// Statuts de cycle de vie d'un tournoi (draft/published/unpublished/archived).
+// Brouillon : pas encore visible, neutre — comme "upcoming".
+:host([data-status='draft']) .ap-badge {
+  color: var(--ap-color-muted);
+}
+
+// Publié : état positif et actif.
+:host([data-status='published']) .ap-badge {
+  color: var(--ap-color-win);
+  border-color: var(--ap-color-win);
+}
+
+// Dépublié : réversible, nécessite attention — comme "postponed".
+:host([data-status='unpublished']) .ap-badge {
+  color: var(--ap-color-warning);
+  border-color: var(--ap-color-warning);
+}
+
+// Archivé : définitif mais neutre — jamais la couleur "error" système.
+:host([data-status='archived']) .ap-badge {
+  color: var(--ap-color-muted);
+}
+
+:host([data-status='archived']) .ap-badge__label {
+  text-decoration: line-through;
+}

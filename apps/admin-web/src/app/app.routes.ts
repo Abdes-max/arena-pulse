@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { authGuard } from './core/auth.guard';
 
 export const routes: Routes = [
-  { path: '', pathMatch: 'full', redirectTo: 'collaborators' },
+  { path: '', pathMatch: 'full', redirectTo: 'tournaments' },
   {
     path: 'login',
     loadComponent: () => import('./pages/login/login.page').then((m) => m.LoginPage),
@@ -19,10 +19,31 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'collaborators',
+    path: '',
     canActivate: [authGuard],
-    loadComponent: () =>
-      import('./pages/collaborators/collaborators.page').then((m) => m.CollaboratorsPage),
+    loadComponent: () => import('./shell/app-shell').then((m) => m.AppShell),
+    children: [
+      {
+        path: 'tournaments',
+        loadComponent: () =>
+          import('./pages/tournaments/tournament-list.page').then((m) => m.TournamentListPage),
+      },
+      {
+        path: 'tournaments/new',
+        loadComponent: () =>
+          import('./pages/tournaments/tournament-form.page').then((m) => m.TournamentFormPage),
+      },
+      {
+        path: 'tournaments/:tournamentId',
+        loadComponent: () =>
+          import('./pages/tournaments/tournament-form.page').then((m) => m.TournamentFormPage),
+      },
+      {
+        path: 'collaborators',
+        loadComponent: () =>
+          import('./pages/collaborators/collaborators.page').then((m) => m.CollaboratorsPage),
+      },
+    ],
   },
   { path: '**', redirectTo: 'login' },
 ];

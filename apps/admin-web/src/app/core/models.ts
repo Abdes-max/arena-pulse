@@ -41,3 +41,57 @@ export interface InvitationLookup {
   role: OrganizationRole;
   requiresNewAccount: boolean;
 }
+
+export interface Sport {
+  id: string;
+  name: string;
+}
+
+export interface Permission {
+  id: string;
+  key: string;
+  label: string;
+}
+
+export type TournamentStatus = 'DRAFT' | 'PUBLISHED' | 'UNPUBLISHED' | 'ARCHIVED';
+
+export interface Tournament {
+  id: string;
+  name: string;
+  status: TournamentStatus;
+  sportId: string;
+  sportName: string;
+  startDate: string | null;
+  endDate: string | null;
+  isOnline: boolean;
+  createdAt: string;
+}
+
+export interface TournamentDetail extends Tournament {
+  organizationId: string;
+  archivedAt: string | null;
+  updatedAt: string;
+}
+
+export interface Division {
+  id: string;
+  name: string;
+  colorHex: string | null;
+  position: number;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  position: number;
+  divisions: Division[];
+}
+
+export interface TournamentAdministrator {
+  id: string;
+  userId: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  permissionKeys: string[];
+}

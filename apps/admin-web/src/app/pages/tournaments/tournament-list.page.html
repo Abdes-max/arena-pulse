@@ -1,0 +1,49 @@
+<main class="tournament-list-page">
+  <div class="tournament-list-page__header">
+    <h1>Tournois</h1>
+    <ap-button type="button" (click)="goToCreate()">Créer un tournoi</ap-button>
+  </div>
+
+  @if (loading()) {
+    <p>Chargement…</p>
+  } @else {
+    @if (errorMessage(); as message) {
+      <p class="tournament-list-page__error" role="alert">{{ message }}</p>
+    }
+
+    @if (tournaments().length === 0) {
+      <p>Aucun tournoi pour l'instant.</p>
+    } @else {
+      <table class="tournament-list-page__table">
+        <thead>
+          <tr>
+            <th scope="col">Nom</th>
+            <th scope="col">Sport</th>
+            <th scope="col">Statut</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (tournament of tournaments(); track tournament.id) {
+            <tr>
+              <td>{{ tournament.name }}</td>
+              <td>{{ tournament.sportName }}</td>
+              <td><ap-badge [status]="statusBadge[tournament.status]" /></td>
+              <td class="tournament-list-page__actions">
+                <ap-button type="button" variant="ghost" (click)="editTournament(tournament)">
+                  Modifier
+                </ap-button>
+                <ap-button type="button" variant="ghost" (click)="duplicate(tournament)"
+                  >Dupliquer</ap-button
+                >
+                <ap-button type="button" variant="ghost" (click)="toggleArchive(tournament)">
+                  {{ tournament.status === 'ARCHIVED' ? 'Désarchiver' : 'Archiver' }}
+                </ap-button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  }
+</main>

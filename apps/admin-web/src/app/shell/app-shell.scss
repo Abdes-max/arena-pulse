@@ -1,0 +1,33 @@
+.app-shell {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-shell__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--ap-space-4) var(--ap-space-6);
+  border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+}
+
+.app-shell__nav {
+  display: flex;
+  gap: var(--ap-space-6);
+
+  a {
+    font-family: var(--ap-font-body);
+    font-weight: 600;
+    color: var(--ap-color-fg);
+    text-decoration: none;
+
+    &.app-shell__link--active {
+      color: var(--ap-color-primary);
+    }
+  }
+}
+
+.app-shell__content {
+  flex: 1;
+}

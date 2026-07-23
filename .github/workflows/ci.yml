@@ -66,6 +66,7 @@ jobs:
       - run: npm run lint
       - run: npm run build
       - run: npx prisma migrate deploy
+      - run: npx prisma db seed
       - run: npm test
       - run: npm run test:e2e
 
