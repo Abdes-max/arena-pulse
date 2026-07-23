@@ -175,6 +175,9 @@ export interface CompetitionPhase {
   name: string;
   type: CompetitionPhaseType;
   position: number;
+  matchDurationMinutes: number;
+  breakDurationMinutes: number;
+  refereesPerMatch: number;
   groups: CompetitionGroup[];
   knockoutBracket: KnockoutBracket | null;
 }
@@ -196,4 +199,29 @@ export interface QualificationRule {
   toPosition: number;
   targetPhaseId: string;
   targetPhaseName: string;
+}
+
+export type MatchStatus =
+  'SCHEDULED' | 'LIVE' | 'COMPLETED' | 'POSTPONED' | 'CANCELLED' | 'FORFEITED';
+
+export interface MatchOfficial {
+  id: string;
+  referee: { id: string; firstName: string; lastName: string } | null;
+  refereeingTeam: { id: string; name: string } | null;
+}
+
+export interface Match {
+  id: string;
+  groupId: string;
+  round: number;
+  status: MatchStatus;
+  homeTeam: { id: string; name: string } | null;
+  awayTeam: { id: string; name: string } | null;
+  timeSlot: {
+    id: string;
+    startTime: string;
+    endTime: string;
+    field: { id: string; name: string };
+  } | null;
+  officials: MatchOfficial[];
 }

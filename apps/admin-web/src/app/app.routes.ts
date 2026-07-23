@@ -53,6 +53,10 @@ export const routes: Routes = [
           import('./pages/structure/structure.page').then((m) => m.StructurePage),
       },
       {
+        path: 'tournaments/:tournamentId/schedule',
+        loadComponent: () => import('./pages/schedule/schedule.page').then((m) => m.SchedulePage),
+      },
+      {
         path: 'collaborators',
         loadComponent: () =>
           import('./pages/collaborators/collaborators.page').then((m) => m.CollaboratorsPage),
