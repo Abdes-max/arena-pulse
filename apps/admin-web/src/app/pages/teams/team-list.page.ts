@@ -290,12 +290,10 @@ export class TeamListPage {
       return;
     }
     try {
-      const player = await this.teamsService.addPlayer(
-        organizationId,
-        this.tournamentId,
-        team.id,
-        { firstName, lastName },
-      );
+      const player = await this.teamsService.addPlayer(organizationId, this.tournamentId, team.id, {
+        firstName,
+        lastName,
+      });
       this.players.update((players) => [...players, player]);
       this.newPlayerFirstName.set('');
       this.newPlayerLastName.set('');

@@ -40,8 +40,7 @@ export const routes: Routes = [
       },
       {
         path: 'tournaments/:tournamentId/teams',
-        loadComponent: () =>
-          import('./pages/teams/team-list.page').then((m) => m.TeamListPage),
+        loadComponent: () => import('./pages/teams/team-list.page').then((m) => m.TeamListPage),
       },
       {
         path: 'collaborators',

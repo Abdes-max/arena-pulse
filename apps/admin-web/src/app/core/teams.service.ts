@@ -53,9 +53,7 @@ export class TeamsService {
     tournamentId: string,
     payload: CreateTeamPayload,
   ): Promise<Team> {
-    return firstValueFrom(
-      this.http.post<Team>(this.base(organizationId, tournamentId), payload),
-    );
+    return firstValueFrom(this.http.post<Team>(this.base(organizationId, tournamentId), payload));
   }
 
   updateTeam(
@@ -75,17 +73,17 @@ export class TeamsService {
     );
   }
 
-  bulkDeleteTeams(
-    organizationId: string,
-    tournamentId: string,
-    teamIds: string[],
-  ): Promise<void> {
+  bulkDeleteTeams(organizationId: string, tournamentId: string, teamIds: string[]): Promise<void> {
     return firstValueFrom(
       this.http.post<void>(`${this.base(organizationId, tournamentId)}/bulk-delete`, { teamIds }),
     );
   }
 
-  importTeams(organizationId: string, tournamentId: string, csv: string): Promise<TeamImportResult> {
+  importTeams(
+    organizationId: string,
+    tournamentId: string,
+    csv: string,
+  ): Promise<TeamImportResult> {
     return firstValueFrom(
       this.http.post<TeamImportResult>(`${this.base(organizationId, tournamentId)}/import`, {
         csv,

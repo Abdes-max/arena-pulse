@@ -11,8 +11,12 @@
     <section class="team-list-page__section">
       <h2>{{ editingTeamId() ? "Modifier l'équipe" : 'Ajouter une équipe' }}</h2>
       <form class="team-list-page__form" (submit)="onFormSubmit($event)">
-        <input type="text" placeholder="Nom de l'équipe" [value]="formName()"
-          (input)="formName.set($any($event.target).value)" />
+        <input
+          type="text"
+          placeholder="Nom de l'équipe"
+          [value]="formName()"
+          (input)="formName.set($any($event.target).value)"
+        />
         <select [value]="formCategoryId()" (change)="onFormCategoryChange($event)">
           <option value="" disabled>Choisir une catégorie</option>
           @for (category of categories(); track category.id) {
@@ -25,14 +29,28 @@
             <option [value]="division.id">{{ division.name }}</option>
           }
         </select>
-        <input type="text" placeholder="Responsable" [value]="formManagerName()"
-          (input)="formManagerName.set($any($event.target).value)" />
-        <input type="email" placeholder="Email du responsable" [value]="formManagerEmail()"
-          (input)="formManagerEmail.set($any($event.target).value)" />
-        <input type="tel" placeholder="Téléphone du responsable" [value]="formManagerPhone()"
-          (input)="formManagerPhone.set($any($event.target).value)" />
+        <input
+          type="text"
+          placeholder="Responsable"
+          [value]="formManagerName()"
+          (input)="formManagerName.set($any($event.target).value)"
+        />
+        <input
+          type="email"
+          placeholder="Email du responsable"
+          [value]="formManagerEmail()"
+          (input)="formManagerEmail.set($any($event.target).value)"
+        />
+        <input
+          type="tel"
+          placeholder="Téléphone du responsable"
+          [value]="formManagerPhone()"
+          (input)="formManagerPhone.set($any($event.target).value)"
+        />
         <div class="team-list-page__form-actions">
-          <ap-button type="submit">{{ editingTeamId() ? 'Enregistrer' : "Ajouter l'équipe" }}</ap-button>
+          <ap-button type="submit">{{
+            editingTeamId() ? 'Enregistrer' : "Ajouter l'équipe"
+          }}</ap-button>
           @if (editingTeamId()) {
             <ap-button type="button" variant="ghost" (click)="cancelEdit()">Annuler</ap-button>
           }
@@ -104,7 +122,11 @@
                           @if (player.isCaptain) {
                             <strong>(capitaine)</strong>
                           }
-                          <ap-button type="button" variant="ghost" (click)="removePlayer(team, player)">
+                          <ap-button
+                            type="button"
+                            variant="ghost"
+                            (click)="removePlayer(team, player)"
+                          >
                             Retirer
                           </ap-button>
                         </li>
