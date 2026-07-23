@@ -49,4 +49,40 @@ export class ScheduleService {
       ),
     );
   }
+
+  moveMatch(
+    organizationId: string,
+    tournamentId: string,
+    matchId: string,
+    timeSlotId: string | null,
+  ): Promise<Match> {
+    return firstValueFrom(
+      this.http.patch<Match>(
+        `${this.base(organizationId, tournamentId)}/matches/${matchId}/timeslot`,
+        { timeSlotId },
+      ),
+    );
+  }
+
+  addOfficial(
+    organizationId: string,
+    tournamentId: string,
+    matchId: string,
+    payload: { refereeId?: string; refereeingTeamId?: string },
+  ): Promise<Match> {
+    return firstValueFrom(
+      this.http.post<Match>(
+        `${this.base(organizationId, tournamentId)}/matches/${matchId}/officials`,
+        payload,
+      ),
+    );
+  }
+
+  removeOfficial(organizationId: string, tournamentId: string, officialId: string): Promise<void> {
+    return firstValueFrom(
+      this.http.delete<void>(
+        `${this.base(organizationId, tournamentId)}/match-officials/${officialId}`,
+      ),
+    );
+  }
 }

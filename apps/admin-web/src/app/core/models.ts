@@ -153,6 +153,14 @@ export interface Referee {
   phone: string | null;
 }
 
+export interface TimeSlot {
+  id: string;
+  fieldId: string;
+  startTime: string;
+  endTime: string;
+  label: string | null;
+}
+
 export type CompetitionPhaseType = 'GROUP_STAGE' | 'KNOCKOUT';
 
 export interface KnockoutBracket {
