@@ -27,6 +27,7 @@ export interface UpdateTournamentPayload {
   startDate?: string | null;
   endDate?: string | null;
   isOnline?: boolean;
+  teamsCanReferee?: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
