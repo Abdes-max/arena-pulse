@@ -95,3 +95,34 @@ export interface TournamentAdministrator {
   lastName: string;
   permissionKeys: string[];
 }
+
+export interface Team {
+  id: string;
+  name: string;
+  categoryId: string;
+  categoryName: string;
+  divisionId: string | null;
+  divisionName: string | null;
+  managerName: string | null;
+  managerEmail: string | null;
+  managerPhone: string | null;
+  position: number;
+}
+
+export interface TeamImportError {
+  line: number;
+  message: string;
+}
+
+export interface TeamImportResult {
+  created: Team[];
+  errors: TeamImportError[];
+}
+
+export interface Player {
+  id: string;
+  firstName: string;
+  lastName: string;
+  jerseyNumber: number | null;
+  isCaptain: boolean;
+}
