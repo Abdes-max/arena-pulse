@@ -1,0 +1,255 @@
+<main class="structure-page">
+  <h1>Structure de compétition</h1>
+
+  @if (loading()) {
+    <p>Chargement…</p>
+  } @else {
+    @if (errorMessage(); as message) {
+      <p class="structure-page__error" role="alert">{{ message }}</p>
+    }
+
+    @if (categories().length === 0) {
+      <p>Ajoutez d'abord une catégorie sur la page du tournoi.</p>
+    } @else {
+      <label class="structure-page__category-select">
+        Catégorie
+        <select [value]="selectedCategoryId()" (change)="onCategoryChange($event)">
+          @for (category of categories(); track category.id) {
+            <option [value]="category.id">{{ category.name }}</option>
+          }
+        </select>
+      </label>
+
+      <section class="structure-page__section">
+        <h2>Ajouter une phase</h2>
+        <div class="structure-page__inline-form">
+          <input
+            type="text"
+            placeholder="Nom de la phase (ex. Phase de poules)"
+            [value]="newPhaseName()"
+            (input)="onNewPhaseNameChange($event)"
+          />
+          <select [value]="newPhaseType()" (change)="onNewPhaseTypeChange($event)">
+            <option value="GROUP_STAGE">Poules</option>
+            <option value="KNOCKOUT">Élimination directe</option>
+          </select>
+          <ap-button type="button" (click)="addPhase()">Ajouter la phase</ap-button>
+        </div>
+      </section>
+
+      @for (phase of phases(); track phase.id) {
+        <section class="structure-page__phase">
+          <div class="structure-page__phase-header">
+            <h2>
+              {{ phase.name }}
+              <span class="structure-page__phase-type">
+                ({{ phase.type === 'GROUP_STAGE' ? 'Poules' : 'Élimination directe' }})
+              </span>
+            </h2>
+            <ap-button type="button" variant="ghost" (click)="removePhase(phase)">
+              Supprimer la phase
+            </ap-button>
+          </div>
+
+          @if (phase.type === 'GROUP_STAGE') {
+            @for (group of phase.groups; track group.id) {
+              <div class="structure-page__group">
+                <div class="structure-page__group-header">
+                  <strong>{{ group.name }}</strong>
+                  <div class="structure-page__group-actions">
+                    <ap-button type="button" variant="ghost" (click)="toggleGroupDetails(group)">
+                      {{ expandedGroupId() === group.id ? 'Masquer' : 'Détails' }}
+                    </ap-button>
+                    <ap-button type="button" variant="ghost" (click)="removeGroup(phase, group)">
+                      Supprimer
+                    </ap-button>
+                  </div>
+                </div>
+
+                <ul class="structure-page__team-list">
+                  @for (team of teamsForGroup(group.id); track team.id) {
+                    <li>
+                      {{ team.name }}
+                      <ap-button type="button" variant="ghost" (click)="unassignTeam(team)">
+                        Retirer
+                      </ap-button>
+                    </li>
+                  }
+                </ul>
+
+                @if (expandedGroupId() === group.id) {
+                  <div class="structure-page__group-details">
+                    <div class="structure-page__inline-form">
+                      <select
+                        [value]="newTeamIdToAssign()"
+                        (change)="onNewTeamIdToAssignChange($event)"
+                      >
+                        <option value="" disabled>Choisir une équipe</option>
+                        @for (team of unassignedTeams(); track team.id) {
+                          <option [value]="team.id">{{ team.name }}</option>
+                        }
+                      </select>
+                      <ap-button
+                        type="button"
+                        variant="ghost"
+                        (click)="assignTeamToExpandedGroup()"
+                      >
+                        Ajouter l'équipe à la poule
+                      </ap-button>
+                    </div>
+
+                    @if (groupStandingRule(); as rule) {
+                      <h3>Barème de points</h3>
+                      <div class="structure-page__standing-rule">
+                        <label>
+                          Victoire
+                          <input
+                            type="number"
+                            [value]="rule.winPoints"
+                            (input)="updateStandingRuleField('winPoints', $event)"
+                          />
+                        </label>
+                        <label>
+                          Nul
+                          <input
+                            type="number"
+                            [value]="rule.drawPoints"
+                            (input)="updateStandingRuleField('drawPoints', $event)"
+                          />
+                        </label>
+                        <label>
+                          Défaite
+                          <input
+                            type="number"
+                            [value]="rule.lossPoints"
+                            (input)="updateStandingRuleField('lossPoints', $event)"
+                          />
+                        </label>
+                        <label class="structure-page__checkbox-label">
+                          <input
+                            type="checkbox"
+                            [checked]="rule.supplementaryStandingEnabled"
+                            (change)="
+                              toggleStandingRuleFlag('supplementaryStandingEnabled', $event)
+                            "
+                          />
+                          Classement additionnel (fair-play)
+                        </label>
+                        <label class="structure-page__checkbox-label">
+                          <input
+                            type="checkbox"
+                            [checked]="rule.penaltyShootoutEnabled"
+                            (change)="toggleStandingRuleFlag('penaltyShootoutEnabled', $event)"
+                          />
+                          Tirs au but en cas d'égalité
+                        </label>
+                        <p class="structure-page__hint">
+                          Critères de départage : {{ rule.tieBreakOrder.join(' → ') }}
+                        </p>
+                        <ap-button type="button" (click)="saveStandingRule()"
+                          >Enregistrer</ap-button
+                        >
+                      </div>
+                    }
+
+                    <h3>Règles de qualification</h3>
+                    <ul class="structure-page__qualification-list">
+                      @for (rule of groupQualificationRules(); track rule.id) {
+                        <li>
+                          Positions {{ rule.fromPosition }}–{{ rule.toPosition }} →
+                          {{ rule.targetPhaseName }}
+                          <ap-button
+                            type="button"
+                            variant="ghost"
+                            (click)="removeQualificationRule(rule)"
+                          >
+                            Supprimer
+                          </ap-button>
+                        </li>
+                      }
+                    </ul>
+                    <div class="structure-page__inline-form">
+                      <input
+                        type="number"
+                        min="1"
+                        placeholder="De"
+                        [value]="newQualificationRuleForm().fromPosition"
+                        (input)="updateQualificationRuleField('fromPosition', $event)"
+                      />
+                      <input
+                        type="number"
+                        min="1"
+                        placeholder="À"
+                        [value]="newQualificationRuleForm().toPosition"
+                        (input)="updateQualificationRuleField('toPosition', $event)"
+                      />
+                      <select
+                        [value]="newQualificationRuleForm().targetPhaseId"
+                        (change)="updateQualificationRuleField('targetPhaseId', $event)"
+                      >
+                        <option value="" disabled>Phase cible</option>
+                        @for (target of otherPhases(phase.id); track target.id) {
+                          <option [value]="target.id">{{ target.name }}</option>
+                        }
+                      </select>
+                      <ap-button type="button" variant="ghost" (click)="addQualificationRule()">
+                        Ajouter la règle
+                      </ap-button>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+            <div class="structure-page__inline-form">
+              <input
+                type="text"
+                placeholder="Nouvelle poule (ex. Poule A)"
+                [value]="groupNameFor(phase.id)"
+                (input)="onNewGroupNameChange(phase.id, $event)"
+              />
+              <ap-button type="button" variant="ghost" (click)="addGroup(phase)">
+                Ajouter une poule
+              </ap-button>
+            </div>
+          } @else {
+            @if (phase.knockoutBracket; as bracket) {
+              <p>
+                <strong>{{ bracket.name }}</strong> — {{ bracket.size }} équipes
+                @if (bracket.hasRankingMatch) {
+                  · petite finale
+                }
+              </p>
+              <ap-button type="button" variant="ghost" (click)="removeBracket(phase)">
+                Supprimer le tableau
+              </ap-button>
+            } @else {
+              <div class="structure-page__inline-form">
+                <input
+                  type="text"
+                  placeholder="Nom du tableau (ex. Champions League)"
+                  [value]="bracketFormFor(phase.id).name"
+                  (input)="onBracketFormChange(phase.id, 'name', $event)"
+                />
+                <input
+                  type="number"
+                  min="2"
+                  [value]="bracketFormFor(phase.id).size"
+                  (input)="onBracketFormChange(phase.id, 'size', $event)"
+                />
+                <label class="structure-page__checkbox-label">
+                  <input
+                    type="checkbox"
+                    [checked]="bracketFormFor(phase.id).hasRankingMatch"
+                    (change)="onBracketFormChange(phase.id, 'hasRankingMatch', $event)"
+                  />
+                  Petite finale
+                </label>
+                <ap-button type="button" (click)="createBracket(phase)">Créer le tableau</ap-button>
+              </div>
+            }
+          }
+        </section>
+      }
+    }
+  }
+</main>

@@ -48,6 +48,11 @@ export const routes: Routes = [
           import('./pages/referees/referee-list.page').then((m) => m.RefereeListPage),
       },
       {
+        path: 'tournaments/:tournamentId/structure',
+        loadComponent: () =>
+          import('./pages/structure/structure.page').then((m) => m.StructurePage),
+      },
+      {
         path: 'collaborators',
         loadComponent: () =>
           import('./pages/collaborators/collaborators.page').then((m) => m.CollaboratorsPage),

@@ -104,6 +104,8 @@ export interface Team {
   categoryName: string;
   divisionId: string | null;
   divisionName: string | null;
+  groupId: string | null;
+  groupName: string | null;
   managerName: string | null;
   managerEmail: string | null;
   managerPhone: string | null;
@@ -149,4 +151,49 @@ export interface Referee {
   lastName: string;
   email: string | null;
   phone: string | null;
+}
+
+export type CompetitionPhaseType = 'GROUP_STAGE' | 'KNOCKOUT';
+
+export interface KnockoutBracket {
+  id: string;
+  phaseId: string;
+  name: string;
+  size: number;
+  hasRankingMatch: boolean;
+}
+
+export interface CompetitionGroup {
+  id: string;
+  phaseId: string;
+  name: string;
+  position: number;
+}
+
+export interface CompetitionPhase {
+  id: string;
+  name: string;
+  type: CompetitionPhaseType;
+  position: number;
+  groups: CompetitionGroup[];
+  knockoutBracket: KnockoutBracket | null;
+}
+
+export interface StandingRule {
+  groupId: string;
+  winPoints: number;
+  drawPoints: number;
+  lossPoints: number;
+  tieBreakOrder: string[];
+  supplementaryStandingEnabled: boolean;
+  penaltyShootoutEnabled: boolean;
+}
+
+export interface QualificationRule {
+  id: string;
+  groupId: string;
+  fromPosition: number;
+  toPosition: number;
+  targetPhaseId: string;
+  targetPhaseName: string;
 }

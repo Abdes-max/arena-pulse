@@ -44,8 +44,11 @@ export class TeamsService {
     return `${environment.apiUrl}/organizations/${organizationId}/tournaments/${tournamentId}/teams`;
   }
 
-  listTeams(organizationId: string, tournamentId: string): Promise<Team[]> {
-    return firstValueFrom(this.http.get<Team[]>(this.base(organizationId, tournamentId)));
+  listTeams(organizationId: string, tournamentId: string, categoryId?: string): Promise<Team[]> {
+    const url = categoryId
+      ? `${this.base(organizationId, tournamentId)}?categoryId=${categoryId}`
+      : this.base(organizationId, tournamentId);
+    return firstValueFrom(this.http.get<Team[]>(url));
   }
 
   createTeam(
@@ -70,6 +73,19 @@ export class TeamsService {
   deleteTeam(organizationId: string, tournamentId: string, teamId: string): Promise<void> {
     return firstValueFrom(
       this.http.delete<void>(`${this.base(organizationId, tournamentId)}/${teamId}`),
+    );
+  }
+
+  assignGroup(
+    organizationId: string,
+    tournamentId: string,
+    teamId: string,
+    groupId: string | null,
+  ): Promise<Team> {
+    return firstValueFrom(
+      this.http.patch<Team>(`${this.base(organizationId, tournamentId)}/${teamId}/group`, {
+        groupId,
+      }),
     );
   }
 
