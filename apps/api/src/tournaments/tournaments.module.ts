@@ -8,6 +8,8 @@ import { DivisionsService } from './divisions.service';
 import { TournamentPermissionGuard } from './guards/tournament-permission.guard';
 import { TournamentAdministratorsController } from './tournament-administrators.controller';
 import { TournamentAdministratorsService } from './tournament-administrators.service';
+import { TeamsController } from './teams.controller';
+import { TeamsService } from './teams.service';
 import { TournamentsController } from './tournaments.controller';
 import { TournamentsService } from './tournaments.service';
 
@@ -18,6 +20,7 @@ import { TournamentsService } from './tournaments.service';
     CategoriesController,
     DivisionsController,
     TournamentAdministratorsController,
+    TeamsController,
   ],
   providers: [
     TournamentsService,
@@ -25,6 +28,7 @@ import { TournamentsService } from './tournaments.service';
     DivisionsService,
     TournamentAdministratorsService,
     TournamentPermissionGuard,
+    TeamsService,
   ],
   exports: [TournamentPermissionGuard],
 })
