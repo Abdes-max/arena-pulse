@@ -83,6 +83,14 @@ export class RefereesService {
     await this.prisma.referee.delete({ where: { id: refereeId } });
   }
 
+  /** Used by MatchesService to validate a refereeId belongs to the tournament in the URL. */
+  async assertRefereeExists(
+    tournamentId: string,
+    refereeId: string,
+  ): Promise<Referee> {
+    return this.getOrThrow(tournamentId, refereeId);
+  }
+
   private async getOrThrow(
     tournamentId: string,
     refereeId: string,

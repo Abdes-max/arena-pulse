@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -8,6 +9,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateTimeSlotDto } from './dto/create-timeslot.dto';
 import { UpdateTimeSlotDto } from './dto/update-timeslot.dto';
 import { FieldsService } from './fields.service';
+import { timeRangesOverlap } from './time-overlap.util';
 import { TournamentsService } from './tournaments.service';
 
 @Injectable()
@@ -32,6 +34,7 @@ export class TimeSlotsService {
     const startTime = new Date(dto.startTime);
     const endTime = new Date(dto.endTime);
     this.assertValidRange(startTime, endTime);
+    await this.assertNoFieldOverlap(fieldId, startTime, endTime);
 
     const timeSlot = await this.prisma.timeSlot.create({
       data: { fieldId, startTime, endTime, label: dto.label },
@@ -71,6 +74,12 @@ export class TimeSlotsService {
       : timeSlot.startTime;
     const endTime = dto.endTime ? new Date(dto.endTime) : timeSlot.endTime;
     this.assertValidRange(startTime, endTime);
+    await this.assertNoFieldOverlap(
+      timeSlot.fieldId,
+      startTime,
+      endTime,
+      timeSlotId,
+    );
 
     const updated = await this.prisma.timeSlot.update({
       where: { id: timeSlotId },
@@ -110,6 +119,28 @@ export class TimeSlotsService {
     if (endTime <= startTime) {
       throw new BadRequestException(
         'La fin du créneau doit être après son début.',
+      );
+    }
+  }
+
+  private async assertNoFieldOverlap(
+    fieldId: string,
+    startTime: Date,
+    endTime: Date,
+    excludingTimeSlotId?: string,
+  ): Promise<void> {
+    const others = await this.prisma.timeSlot.findMany({
+      where: {
+        fieldId,
+        ...(excludingTimeSlotId ? { id: { not: excludingTimeSlotId } } : {}),
+      },
+    });
+    const overlaps = others.some((other) =>
+      timeRangesOverlap(startTime, endTime, other.startTime, other.endTime),
+    );
+    if (overlaps) {
+      throw new ConflictException(
+        'Ce créneau chevauche un autre créneau existant sur ce terrain.',
       );
     }
   }

@@ -100,34 +100,141 @@
         </section>
 
         <section class="schedule-page__section">
-          <h2>Matchs planifiés</h2>
+          <h2>Éditeur du calendrier</h2>
           @if (matches().length === 0) {
             <p>Aucun match généré pour cette phase.</p>
           } @else {
-            @for (group of matchesByField(); track group.fieldName) {
-              <div class="schedule-page__field-column">
-                <h3>{{ group.fieldName }}</h3>
-                <ul class="schedule-page__match-list">
-                  @for (match of group.matches; track match.id) {
-                    <li>
-                      <span class="schedule-page__match-round">Round {{ match.round }}</span>
-                      {{ match.homeTeam?.name ?? '?' }} vs {{ match.awayTeam?.name ?? '?' }}
-                      @if (match.timeSlot; as slot) {
-                        <span class="schedule-page__match-time">
-                          {{ formatSlotTime(slot.startTime) }}
-                        </span>
-                      }
-                      @if (match.officials.length > 0) {
-                        <span class="schedule-page__match-officials">
-                          Arbitres :
-                          {{ match.officials.map(officialLabel).join(', ') }}
-                        </span>
-                      }
-                    </li>
-                  }
-                </ul>
+            <p class="schedule-page__hint">
+              Glissez-déposez un match vers un créneau libre pour le replanifier, ou vers « Non
+              planifiés » pour le retirer du calendrier.
+            </p>
+
+            <div class="schedule-page__editor">
+              <div
+                class="schedule-page__unscheduled"
+                (dragover)="onSlotDragOver($event)"
+                (drop)="onUnscheduledDrop($event)"
+              >
+                <h3>Non planifiés</h3>
+                @if (unscheduledMatches().length === 0) {
+                  <p class="schedule-page__empty">Aucun match en attente.</p>
+                }
+                @for (match of unscheduledMatches(); track match.id) {
+                  <div
+                    class="schedule-page__match-chip"
+                    draggable="true"
+                    (dragstart)="onMatchDragStart(match.id, $event)"
+                  >
+                    <span class="schedule-page__match-round">R{{ match.round }}</span>
+                    {{ match.homeTeam?.name ?? '?' }} vs {{ match.awayTeam?.name ?? '?' }}
+                  </div>
+                }
               </div>
-            }
+
+              <div class="schedule-page__grid">
+                @for (field of fields(); track field.id) {
+                  <div class="schedule-page__field-column">
+                    <h3>{{ field.venueName }} — {{ field.name }}</h3>
+
+                    @for (slot of timeSlotsByField().get(field.id) ?? []; track slot.id) {
+                      <div
+                        class="schedule-page__slot"
+                        [class.schedule-page__slot--occupied]="matchBySlotId().has(slot.id)"
+                        (dragover)="onSlotDragOver($event)"
+                        (drop)="onSlotDrop(slot.id, $event)"
+                      >
+                        <span class="schedule-page__slot-time">
+                          {{ formatSlotTime(slot.startTime) }}
+                          @if (slot.label) {
+                            — {{ slot.label }}
+                          }
+                        </span>
+
+                        @if (matchBySlotId().get(slot.id); as match) {
+                          <div
+                            class="schedule-page__match-chip"
+                            draggable="true"
+                            (dragstart)="onMatchDragStart(match.id, $event)"
+                          >
+                            <span class="schedule-page__match-round">R{{ match.round }}</span>
+                            {{ match.homeTeam?.name ?? '?' }} vs {{ match.awayTeam?.name ?? '?' }}
+
+                            <div class="schedule-page__officials">
+                              @for (official of match.officials; track official.id) {
+                                <span class="schedule-page__official-chip">
+                                  {{ officialLabel(official) }}
+                                  <button
+                                    type="button"
+                                    aria-label="Retirer cet officiel"
+                                    (click)="onRemoveOfficial(official.id, match.id)"
+                                  >
+                                    ×
+                                  </button>
+                                </span>
+                              }
+                              <select (change)="onAddReferee(match.id, $event)">
+                                <option value="">+ Arbitre…</option>
+                                @for (referee of availableReferees(match); track referee.id) {
+                                  <option [value]="referee.id">
+                                    {{ referee.firstName }} {{ referee.lastName }}
+                                  </option>
+                                }
+                              </select>
+                              @if (teamsCanReferee()) {
+                                <select (change)="onAddRefereeingTeam(match.id, $event)">
+                                  <option value="">+ Équipe arbitre…</option>
+                                  @for (team of availableRefereeingTeams(match); track team.id) {
+                                    <option [value]="team.id">{{ team.name }}</option>
+                                  }
+                                </select>
+                              }
+                            </div>
+                          </div>
+                        } @else {
+                          <button
+                            type="button"
+                            class="schedule-page__delete-slot"
+                            (click)="deleteTimeSlot(field.id, slot.id)"
+                          >
+                            Supprimer le créneau
+                          </button>
+                        }
+                      </div>
+                    }
+
+                    <div class="schedule-page__inline-form">
+                      <label>
+                        Début
+                        <input
+                          type="datetime-local"
+                          [value]="draftFor(field.id).start"
+                          (input)="onSlotDraftChange(field.id, 'start', $event)"
+                        />
+                      </label>
+                      <label>
+                        Fin
+                        <input
+                          type="datetime-local"
+                          [value]="draftFor(field.id).end"
+                          (input)="onSlotDraftChange(field.id, 'end', $event)"
+                        />
+                      </label>
+                      <label>
+                        Libellé
+                        <input
+                          type="text"
+                          [value]="draftFor(field.id).label"
+                          (input)="onSlotDraftChange(field.id, 'label', $event)"
+                        />
+                      </label>
+                      <ap-button type="button" variant="ghost" (click)="addTimeSlot(field.id)">
+                        + Créneau
+                      </ap-button>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
           }
         </section>
       }

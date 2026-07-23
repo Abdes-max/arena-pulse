@@ -14,6 +14,8 @@ import { GroupsController } from './groups.controller';
 import { GroupsService } from './groups.service';
 import { KnockoutBracketsController } from './knockout-brackets.controller';
 import { KnockoutBracketsService } from './knockout-brackets.service';
+import { MatchesController } from './matches.controller';
+import { MatchesService } from './matches.service';
 import { PhasesController } from './phases.controller';
 import { PhasesService } from './phases.service';
 import { PlayersController } from './players.controller';
@@ -54,6 +56,7 @@ import { VenuesService } from './venues.service';
     KnockoutBracketsController,
     QualificationRulesController,
     ScheduleController,
+    MatchesController,
   ],
   providers: [
     TournamentsService,
@@ -73,6 +76,7 @@ import { VenuesService } from './venues.service';
     KnockoutBracketsService,
     QualificationRulesService,
     ScheduleGenerationService,
+    MatchesService,
   ],
   exports: [TournamentPermissionGuard],
 })
