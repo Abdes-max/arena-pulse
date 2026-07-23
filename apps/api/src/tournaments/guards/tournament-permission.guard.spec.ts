@@ -65,9 +65,9 @@ describe('TournamentPermissionGuard', () => {
     });
     const guard = createGuard('MANAGE_PARTICIPANTS');
 
-    await expect(
-      guard.canActivate(createContext(params, user)),
-    ).resolves.toBe(true);
+    await expect(guard.canActivate(createContext(params, user))).resolves.toBe(
+      true,
+    );
     expect(prisma.tournamentAdministrator.findUnique).not.toHaveBeenCalled();
   });
 
@@ -106,8 +106,8 @@ describe('TournamentPermissionGuard', () => {
     });
     const guard = createGuard('MANAGE_PARTICIPANTS');
 
-    await expect(
-      guard.canActivate(createContext(params, user)),
-    ).resolves.toBe(true);
+    await expect(guard.canActivate(createContext(params, user))).resolves.toBe(
+      true,
+    );
   });
 });

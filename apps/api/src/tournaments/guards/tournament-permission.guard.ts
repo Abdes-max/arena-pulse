@@ -51,7 +51,9 @@ export class TournamentPermissionGuard implements CanActivate {
       where: { organizationId_userId: { organizationId, userId } },
     });
     if (!membership) {
-      throw new ForbiddenException("Vous n'êtes pas membre de cette organisation.");
+      throw new ForbiddenException(
+        "Vous n'êtes pas membre de cette organisation.",
+      );
     }
     if (membership.role === OrganizationRole.ORG_ADMIN) {
       return true;
@@ -62,7 +64,9 @@ export class TournamentPermissionGuard implements CanActivate {
       include: { permissions: { include: { permission: true } } },
     });
     if (!administrator) {
-      throw new ForbiddenException("Vous n'êtes pas administrateur de ce tournoi.");
+      throw new ForbiddenException(
+        "Vous n'êtes pas administrateur de ce tournoi.",
+      );
     }
     const hasPermission = administrator.permissions.some(
       (grant) => grant.permission.key === requiredPermissionKey,
