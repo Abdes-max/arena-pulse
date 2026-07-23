@@ -93,6 +93,20 @@ export class DivisionsService {
     await this.prisma.division.delete({ where: { id: divisionId } });
   }
 
+  /** Used by TeamsService to validate an optional divisionId belongs to the team's category. */
+  async assertDivisionExists(
+    categoryId: string,
+    divisionId: string,
+  ): Promise<Division> {
+    const division = await this.prisma.division.findUnique({
+      where: { id: divisionId },
+    });
+    if (!division || division.categoryId !== categoryId) {
+      throw new NotFoundException('Division introuvable.');
+    }
+    return division;
+  }
+
   private async getOrThrowForTournament(
     tournamentId: string,
     divisionId: string,

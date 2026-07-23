@@ -39,6 +39,10 @@ export const routes: Routes = [
           import('./pages/tournaments/tournament-form.page').then((m) => m.TournamentFormPage),
       },
       {
+        path: 'tournaments/:tournamentId/teams',
+        loadComponent: () => import('./pages/teams/team-list.page').then((m) => m.TeamListPage),
+      },
+      {
         path: 'collaborators',
         loadComponent: () =>
           import('./pages/collaborators/collaborators.page').then((m) => m.CollaboratorsPage),

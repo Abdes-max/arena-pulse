@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Badge, BadgeStatus, Button, TextField } from 'design-system';
 import { AuthService } from '../../core/auth.service';
 import {
@@ -33,7 +33,7 @@ const STATUS_TO_BADGE: Record<TournamentStatus, BadgeStatus> = {
 
 @Component({
   selector: 'app-tournament-form-page',
-  imports: [ReactiveFormsModule, Button, TextField, Badge],
+  imports: [ReactiveFormsModule, RouterLink, Button, TextField, Badge],
   templateUrl: './tournament-form.page.html',
   styleUrl: './tournament-form.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

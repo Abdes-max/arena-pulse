@@ -22,6 +22,7 @@
           <ap-button type="button" variant="ghost" (click)="archive()">Archiver</ap-button>
         }
         <ap-button type="button" variant="ghost" (click)="duplicate()">Dupliquer</ap-button>
+        <a [routerLink]="['/tournaments', tournamentId(), 'teams']">Équipes</a>
       </div>
     }
 

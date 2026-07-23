@@ -112,4 +112,34 @@ describe('DivisionsService', () => {
       service.remove('org-1', 'tournament-1', 'division-1'),
     ).rejects.toBeInstanceOf(NotFoundException);
   });
+
+  describe('assertDivisionExists', () => {
+    it('returns the division when it belongs to the given category', async () => {
+      const division = { id: 'division-1', categoryId: 'category-1' };
+      prisma.division.findUnique.mockResolvedValue(division);
+
+      await expect(
+        service.assertDivisionExists('category-1', 'division-1'),
+      ).resolves.toEqual(division);
+    });
+
+    it('rejects a division belonging to a different category', async () => {
+      prisma.division.findUnique.mockResolvedValue({
+        id: 'division-1',
+        categoryId: 'other-category',
+      });
+
+      await expect(
+        service.assertDivisionExists('category-1', 'division-1'),
+      ).rejects.toBeInstanceOf(NotFoundException);
+    });
+
+    it('rejects when the division does not exist', async () => {
+      prisma.division.findUnique.mockResolvedValue(null);
+
+      await expect(
+        service.assertDivisionExists('category-1', 'division-1'),
+      ).rejects.toBeInstanceOf(NotFoundException);
+    });
+  });
 });

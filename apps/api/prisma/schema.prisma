@@ -135,6 +135,7 @@ model Tournament {
   sport          Sport                     @relation(fields: [sportId], references: [id], onDelete: Restrict)
   categories     Category[]
   administrators TournamentAdministrator[]
+  teams          Team[]
 
   @@index([organizationId])
   @@index([sportId])
@@ -150,6 +151,7 @@ model Category {
 
   tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   divisions  Division[]
+  teams      Team[]
 
   @@unique([tournamentId, name])
 }
@@ -164,8 +166,48 @@ model Division {
   updatedAt  DateTime @updatedAt
 
   category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  teams    Team[]
 
   @@unique([categoryId, name])
+}
+
+model Team {
+  id           String   @id @default(uuid())
+  tournamentId String
+  categoryId   String
+  divisionId   String?
+  name         String
+  managerName  String?
+  managerEmail String?
+  managerPhone String?
+  position     Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  category   Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  division   Division?  @relation(fields: [divisionId], references: [id], onDelete: SetNull)
+  players    Player[]
+
+  @@unique([tournamentId, name])
+  @@index([tournamentId])
+  @@index([categoryId])
+  @@index([divisionId])
+}
+
+model Player {
+  id           String   @id @default(uuid())
+  teamId       String
+  firstName    String
+  lastName     String
+  jerseyNumber Int?
+  isCaptain    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@index([teamId])
 }
 
 // Catalog (not a fixed enum) so new permissions can be added without a schema
