@@ -5,10 +5,12 @@ import { environment } from '../../environments/environment';
 import {
   Category,
   Division,
+  Field,
   Tournament,
   TournamentAdministrator,
   TournamentDetail,
   TournamentStatus,
+  Venue,
 } from './models';
 
 export interface CreateTournamentPayload {
@@ -161,6 +163,48 @@ export class TournamentsService {
       this.http.delete<void>(
         `${this.base(organizationId)}/${tournamentId}/divisions/${divisionId}`,
       ),
+    );
+  }
+
+  listVenues(organizationId: string, tournamentId: string): Promise<Venue[]> {
+    return firstValueFrom(
+      this.http.get<Venue[]>(`${this.base(organizationId)}/${tournamentId}/venues`),
+    );
+  }
+
+  createVenue(
+    organizationId: string,
+    tournamentId: string,
+    payload: { name: string; address?: string },
+  ): Promise<Venue> {
+    return firstValueFrom(
+      this.http.post<Venue>(`${this.base(organizationId)}/${tournamentId}/venues`, payload),
+    );
+  }
+
+  deleteVenue(organizationId: string, tournamentId: string, venueId: string): Promise<void> {
+    return firstValueFrom(
+      this.http.delete<void>(`${this.base(organizationId)}/${tournamentId}/venues/${venueId}`),
+    );
+  }
+
+  createField(
+    organizationId: string,
+    tournamentId: string,
+    venueId: string,
+    payload: { name: string; surface?: string },
+  ): Promise<Field> {
+    return firstValueFrom(
+      this.http.post<Field>(
+        `${this.base(organizationId)}/${tournamentId}/venues/${venueId}/fields`,
+        payload,
+      ),
+    );
+  }
+
+  deleteField(organizationId: string, tournamentId: string, fieldId: string): Promise<void> {
+    return firstValueFrom(
+      this.http.delete<void>(`${this.base(organizationId)}/${tournamentId}/fields/${fieldId}`),
     );
   }
 

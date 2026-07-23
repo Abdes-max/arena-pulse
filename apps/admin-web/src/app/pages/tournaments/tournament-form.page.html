@@ -98,6 +98,48 @@
       </section>
 
       <section class="tournament-form-page__section">
+        <h2>Sites et terrains</h2>
+        @for (venue of venues(); track venue.id) {
+          <div class="tournament-form-page__category">
+            <div class="tournament-form-page__category-header">
+              <strong>{{ venue.name }}</strong>
+              <ap-button type="button" variant="ghost" (click)="removeVenue(venue)">
+                Supprimer
+              </ap-button>
+            </div>
+            <ul class="tournament-form-page__division-list">
+              @for (field of venue.fields; track field.id) {
+                <li>
+                  {{ field.name }}
+                  <ap-button type="button" variant="ghost" (click)="removeField(venue, field.id)">
+                    Retirer
+                  </ap-button>
+                </li>
+              }
+            </ul>
+            <div class="tournament-form-page__inline-form">
+              <input
+                type="text"
+                placeholder="Nouveau terrain"
+                [value]="fieldNameFor(venue.id)"
+                (input)="onNewFieldNameChange(venue.id, $event)"
+              />
+              <ap-button type="button" variant="ghost" (click)="addField(venue)">Ajouter</ap-button>
+            </div>
+          </div>
+        }
+        <div class="tournament-form-page__inline-form">
+          <input
+            type="text"
+            placeholder="Nouveau site (ex. Stade municipal)"
+            [value]="newVenueName()"
+            (input)="onNewVenueNameChange($event)"
+          />
+          <ap-button type="button" variant="ghost" (click)="addVenue()">Ajouter un site</ap-button>
+        </div>
+      </section>
+
+      <section class="tournament-form-page__section">
         <h2>Administrateurs du tournoi</h2>
         <ul class="tournament-form-page__administrator-list">
           @for (administrator of administrators(); track administrator.id) {
