@@ -12,6 +12,8 @@ import { FieldsController } from './fields.controller';
 import { FieldsService } from './fields.service';
 import { GroupsController } from './groups.controller';
 import { GroupsService } from './groups.service';
+import { KnockoutBracketsController } from './knockout-brackets.controller';
+import { KnockoutBracketsService } from './knockout-brackets.service';
 import { PhasesController } from './phases.controller';
 import { PhasesService } from './phases.service';
 import { PlayersController } from './players.controller';
@@ -45,6 +47,7 @@ import { VenuesService } from './venues.service';
     PhasesController,
     GroupsController,
     StandingRulesController,
+    KnockoutBracketsController,
   ],
   providers: [
     TournamentsService,
@@ -61,6 +64,7 @@ import { VenuesService } from './venues.service';
     PhasesService,
     GroupsService,
     StandingRulesService,
+    KnockoutBracketsService,
   ],
   exports: [TournamentPermissionGuard],
 })
