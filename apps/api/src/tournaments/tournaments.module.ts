@@ -10,6 +10,10 @@ import { TournamentAdministratorsController } from './tournament-administrators.
 import { TournamentAdministratorsService } from './tournament-administrators.service';
 import { FieldsController } from './fields.controller';
 import { FieldsService } from './fields.service';
+import { GroupsController } from './groups.controller';
+import { GroupsService } from './groups.service';
+import { PhasesController } from './phases.controller';
+import { PhasesService } from './phases.service';
 import { PlayersController } from './players.controller';
 import { PlayersService } from './players.service';
 import { RefereesController } from './referees.controller';
@@ -36,6 +40,8 @@ import { VenuesService } from './venues.service';
     FieldsController,
     TimeSlotsController,
     RefereesController,
+    PhasesController,
+    GroupsController,
   ],
   providers: [
     TournamentsService,
@@ -49,6 +55,8 @@ import { VenuesService } from './venues.service';
     FieldsService,
     TimeSlotsService,
     RefereesService,
+    PhasesService,
+    GroupsService,
   ],
   exports: [TournamentPermissionGuard],
 })
