@@ -1,21 +1,25 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Category, Division, Team } from '../../generated/prisma/client';
+import { Category, Division, Group, Team } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CategoriesService } from './categories.service';
 import { DivisionsService } from './divisions.service';
+import { AssignTeamGroupDto } from './dto/assign-team-group.dto';
 import { BulkDeleteTeamsDto } from './dto/bulk-delete-teams.dto';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { UpdateTeamDto } from './dto/update-team.dto';
+import { GroupsService } from './groups.service';
 import { parseTeamsCsv, serializeTeamsCsv } from './teams-csv.util';
 import { TournamentsService } from './tournaments.service';
 
 type TeamWithRelations = Team & {
   category: Category;
   division: Division | null;
+  group: Group | null;
 };
 
 @Injectable()
@@ -25,6 +29,7 @@ export class TeamsService {
     private readonly tournamentsService: TournamentsService,
     private readonly categoriesService: CategoriesService,
     private readonly divisionsService: DivisionsService,
+    private readonly groupsService: GroupsService,
   ) {}
 
   async create(
@@ -59,7 +64,7 @@ export class TeamsService {
         managerPhone: dto.managerPhone,
       },
     });
-    return this.toSummary({ ...team, category, division });
+    return this.toSummary({ ...team, category, division, group: null });
   }
 
   async list(
@@ -77,7 +82,7 @@ export class TeamsService {
         categoryId: filters.categoryId,
         divisionId: filters.divisionId,
       },
-      include: { category: true, division: true },
+      include: { category: true, division: true, group: true },
       orderBy: [{ position: 'asc' }, { name: 'asc' }],
     });
     return teams.map((team) => this.toSummary(team));
@@ -146,6 +151,7 @@ export class TeamsService {
       ...updated,
       category,
       division: division !== undefined ? division : team.division,
+      group: team.group,
     });
   }
 
@@ -237,7 +243,9 @@ export class TeamsService {
           name: row.name,
         },
       });
-      created.push(this.toSummary({ ...team, category, division }));
+      created.push(
+        this.toSummary({ ...team, category, division, group: null }),
+      );
     }
 
     return { created, errors };
@@ -270,13 +278,51 @@ export class TeamsService {
     return this.getOrThrow(tournamentId, teamId);
   }
 
+  async assignGroup(
+    organizationId: string,
+    tournamentId: string,
+    teamId: string,
+    dto: AssignTeamGroupDto,
+  ) {
+    await this.tournamentsService.assertTournamentIsEditable(
+      organizationId,
+      tournamentId,
+    );
+    const team = await this.getOrThrow(tournamentId, teamId);
+
+    let group: Group | null = null;
+    if (dto.groupId !== null) {
+      const candidate = await this.groupsService.assertGroupExists(
+        tournamentId,
+        dto.groupId,
+      );
+      if (candidate.phase.categoryId !== team.categoryId) {
+        throw new BadRequestException(
+          "Cette poule n'appartient pas à la catégorie de l'équipe.",
+        );
+      }
+      group = candidate;
+    }
+
+    const updated = await this.prisma.team.update({
+      where: { id: teamId },
+      data: { groupId: group?.id ?? null },
+    });
+    return this.toSummary({
+      ...updated,
+      category: team.category,
+      division: team.division,
+      group,
+    });
+  }
+
   private async getOrThrow(
     tournamentId: string,
     teamId: string,
   ): Promise<TeamWithRelations> {
     const team = await this.prisma.team.findUnique({
       where: { id: teamId },
-      include: { category: true, division: true },
+      include: { category: true, division: true, group: true },
     });
     if (!team || team.tournamentId !== tournamentId) {
       throw new NotFoundException('Équipe introuvable.');
@@ -311,6 +357,8 @@ export class TeamsService {
       categoryName: team.category.name,
       divisionId: team.divisionId,
       divisionName: team.division?.name ?? null,
+      groupId: team.groupId,
+      groupName: team.group?.name ?? null,
       managerName: team.managerName,
       managerEmail: team.managerEmail,
       managerPhone: team.managerPhone,

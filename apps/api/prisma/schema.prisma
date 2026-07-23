@@ -155,6 +155,7 @@ model Category {
   tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   divisions  Division[]
   teams      Team[]
+  phases     CompetitionPhase[]
 
   @@unique([tournamentId, name])
 }
@@ -179,6 +180,7 @@ model Team {
   tournamentId String
   categoryId   String
   divisionId   String?
+  groupId      String?
   name         String
   managerName  String?
   managerEmail String?
@@ -190,11 +192,13 @@ model Team {
   tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   category   Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   division   Division?  @relation(fields: [divisionId], references: [id], onDelete: SetNull)
+  group      Group?     @relation(fields: [groupId], references: [id], onDelete: SetNull)
   players    Player[]
 
   @@unique([tournamentId, name])
   @@index([tournamentId])
   @@index([categoryId])
+  @@index([groupId])
   @@index([divisionId])
 }
 
@@ -211,6 +215,86 @@ model Player {
   team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
 
   @@index([teamId])
+}
+
+enum CompetitionPhaseType {
+  GROUP_STAGE
+  KNOCKOUT
+}
+
+model CompetitionPhase {
+  id         String               @id @default(uuid())
+  categoryId String
+  name       String
+  type       CompetitionPhaseType
+  position   Int                  @default(0)
+  createdAt  DateTime             @default(now())
+  updatedAt  DateTime             @updatedAt
+
+  category        Category            @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  groups          Group[]
+  knockoutBracket KnockoutBracket?
+  incomingRules   QualificationRule[] @relation("QualificationTargetPhase")
+
+  @@unique([categoryId, name])
+}
+
+model Group {
+  id        String   @id @default(uuid())
+  phaseId   String
+  name      String
+  position  Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  phase              CompetitionPhase    @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+  teams              Team[]
+  qualificationRules QualificationRule[]
+  standingRule       StandingRule?
+
+  @@unique([phaseId, name])
+}
+
+model StandingRule {
+  id                           String   @id @default(uuid())
+  groupId                      String   @unique
+  winPoints                    Int      @default(3)
+  drawPoints                   Int      @default(1)
+  lossPoints                   Int      @default(0)
+  tieBreakOrder                String[]
+  supplementaryStandingEnabled Boolean  @default(false)
+  penaltyShootoutEnabled       Boolean  @default(false)
+  createdAt                    DateTime @default(now())
+  updatedAt                    DateTime @updatedAt
+
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+}
+
+model KnockoutBracket {
+  id              String   @id @default(uuid())
+  phaseId         String   @unique
+  name            String
+  size            Int
+  hasRankingMatch Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  phase CompetitionPhase @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+}
+
+model QualificationRule {
+  id            String   @id @default(uuid())
+  groupId       String
+  fromPosition  Int
+  toPosition    Int
+  targetPhaseId String
+  createdAt     DateTime @default(now())
+
+  group       Group            @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  targetPhase CompetitionPhase @relation("QualificationTargetPhase", fields: [targetPhaseId], references: [id], onDelete: Cascade)
+
+  @@index([groupId])
+  @@index([targetPhaseId])
 }
 
 model Venue {

@@ -1,6 +1,7 @@
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { DivisionsService } from './divisions.service';
+import { GroupsService } from './groups.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { TeamsService } from './teams.service';
 import { TournamentsService } from './tournaments.service';
@@ -43,6 +44,7 @@ describe('TeamsService', () => {
   };
   let categoriesService: { assertCategoryExists: jest.Mock };
   let divisionsService: { assertDivisionExists: jest.Mock };
+  let groupsService: { assertGroupExists: jest.Mock };
   let service: TeamsService;
 
   const category = {
@@ -72,11 +74,15 @@ describe('TeamsService', () => {
     divisionsService = {
       assertDivisionExists: jest.fn().mockResolvedValue(division),
     };
+    groupsService = {
+      assertGroupExists: jest.fn(),
+    };
     service = new TeamsService(
       prisma as unknown as PrismaService,
       tournamentsService as unknown as TournamentsService,
       categoriesService as unknown as CategoriesService,
       divisionsService as unknown as DivisionsService,
+      groupsService as unknown as GroupsService,
     );
   });
 
@@ -113,6 +119,7 @@ describe('TeamsService', () => {
         name: 'Les Aigles',
         categoryId: 'category-1',
         divisionId: null,
+        groupId: null,
         managerName: null,
         managerEmail: null,
         managerPhone: null,
@@ -132,6 +139,8 @@ describe('TeamsService', () => {
         categoryName: 'U10',
         divisionId: null,
         divisionName: null,
+        groupId: null,
+        groupName: null,
         managerName: null,
         managerEmail: null,
         managerPhone: null,
@@ -302,6 +311,84 @@ describe('TeamsService', () => {
       expect(csv).toBe(
         'nom;categorie;division\r\nLes Aigles;U10;Poule A\r\nLes Lions;U12;',
       );
+    });
+  });
+
+  describe('assignGroup', () => {
+    const existingTeam = {
+      id: 'team-1',
+      tournamentId: 'tournament-1',
+      categoryId: 'category-1',
+      category,
+      division: null,
+      group: null,
+    };
+
+    it('rejects assigning a group from a different category', async () => {
+      prisma.team.findUnique.mockResolvedValue(existingTeam);
+      groupsService.assertGroupExists.mockResolvedValue({
+        id: 'group-1',
+        phase: { categoryId: 'other-category' },
+      });
+
+      await expect(
+        service.assignGroup('org-1', 'tournament-1', 'team-1', {
+          groupId: 'group-1',
+        }),
+      ).rejects.toThrow(/appartient pas/);
+    });
+
+    it('assigns a group belonging to the same category', async () => {
+      prisma.team.findUnique.mockResolvedValue(existingTeam);
+      groupsService.assertGroupExists.mockResolvedValue({
+        id: 'group-1',
+        name: 'Poule A',
+        phase: { categoryId: 'category-1' },
+      });
+      prisma.team.update.mockResolvedValue({
+        ...existingTeam,
+        groupId: 'group-1',
+      });
+
+      const result = await service.assignGroup(
+        'org-1',
+        'tournament-1',
+        'team-1',
+        {
+          groupId: 'group-1',
+        },
+      );
+
+      expect(prisma.team.update).toHaveBeenCalledWith({
+        where: { id: 'team-1' },
+        data: { groupId: 'group-1' },
+      });
+      expect(result.groupId).toBe('group-1');
+      expect(result.groupName).toBe('Poule A');
+    });
+
+    it('clears the group when groupId is null', async () => {
+      prisma.team.findUnique.mockResolvedValue({
+        ...existingTeam,
+        groupId: 'group-1',
+      });
+      prisma.team.update.mockResolvedValue({ ...existingTeam, groupId: null });
+
+      const result = await service.assignGroup(
+        'org-1',
+        'tournament-1',
+        'team-1',
+        {
+          groupId: null,
+        },
+      );
+
+      expect(groupsService.assertGroupExists).not.toHaveBeenCalled();
+      expect(prisma.team.update).toHaveBeenCalledWith({
+        where: { id: 'team-1' },
+        data: { groupId: null },
+      });
+      expect(result.groupId).toBeNull();
     });
   });
 });

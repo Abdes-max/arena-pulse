@@ -17,6 +17,7 @@ import { OrganizationRole } from '../../generated/prisma/client';
 import { RequireOrgRole } from '../organizations/decorators/require-org-role.decorator';
 import { OrganizationRoleGuard } from '../organizations/guards/organization-role.guard';
 import { RequireTournamentPermission } from './decorators/require-tournament-permission.decorator';
+import { AssignTeamGroupDto } from './dto/assign-team-group.dto';
 import { BulkDeleteTeamsDto } from './dto/bulk-delete-teams.dto';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { ImportTeamsDto } from './dto/import-teams.dto';
@@ -113,6 +114,23 @@ export class TeamsController {
     @Body() dto: UpdateTeamDto,
   ) {
     return this.teamsService.update(organizationId, tournamentId, teamId, dto);
+  }
+
+  @RequireOrgRole(OrganizationRole.ORG_MEMBER)
+  @RequireTournamentPermission('MANAGE_PHASES')
+  @Patch(':teamId/group')
+  assignGroup(
+    @Param('organizationId') organizationId: string,
+    @Param('tournamentId') tournamentId: string,
+    @Param('teamId') teamId: string,
+    @Body() dto: AssignTeamGroupDto,
+  ) {
+    return this.teamsService.assignGroup(
+      organizationId,
+      tournamentId,
+      teamId,
+      dto,
+    );
   }
 
   @RequireOrgRole(OrganizationRole.ORG_MEMBER)
