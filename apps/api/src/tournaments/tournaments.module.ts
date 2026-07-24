@@ -26,6 +26,8 @@ import { RefereesController } from './referees.controller';
 import { RefereesService } from './referees.service';
 import { ScheduleController } from './schedule.controller';
 import { ScheduleGenerationService } from './schedule-generation.service';
+import { ScoresController } from './scores.controller';
+import { ScoresService } from './scores.service';
 import { StandingRulesController } from './standing-rules.controller';
 import { StandingRulesService } from './standing-rules.service';
 import { TeamsController } from './teams.controller';
@@ -57,6 +59,7 @@ import { VenuesService } from './venues.service';
     QualificationRulesController,
     ScheduleController,
     MatchesController,
+    ScoresController,
   ],
   providers: [
     TournamentsService,
@@ -77,6 +80,7 @@ import { VenuesService } from './venues.service';
     QualificationRulesService,
     ScheduleGenerationService,
     MatchesService,
+    ScoresService,
   ],
   exports: [TournamentPermissionGuard],
 })
