@@ -3,6 +3,7 @@ import { Match } from '../../generated/prisma/client';
 export type MatchWithRelations = Match & {
   homeTeam: { id: string; name: string } | null;
   awayTeam: { id: string; name: string } | null;
+  forfeitedTeam: { id: string; name: string } | null;
   timeSlot: {
     id: string;
     startTime: Date;
@@ -14,11 +15,20 @@ export type MatchWithRelations = Match & {
     referee: { id: string; firstName: string; lastName: string } | null;
     refereeingTeam: { id: string; name: string } | null;
   }[];
+  score: {
+    homeScore: number;
+    awayScore: number;
+    homePenaltyScore: number | null;
+    awayPenaltyScore: number | null;
+    isValidated: boolean;
+    validatedAt: Date | null;
+  } | null;
 };
 
 export const MATCH_INCLUDE = {
   homeTeam: { select: { id: true, name: true } },
   awayTeam: { select: { id: true, name: true } },
+  forfeitedTeam: { select: { id: true, name: true } },
   timeSlot: {
     include: { field: { select: { id: true, name: true } } },
   },
@@ -26,6 +36,16 @@ export const MATCH_INCLUDE = {
     include: {
       referee: { select: { id: true, firstName: true, lastName: true } },
       refereeingTeam: { select: { id: true, name: true } },
+    },
+  },
+  score: {
+    select: {
+      homeScore: true,
+      awayScore: true,
+      homePenaltyScore: true,
+      awayPenaltyScore: true,
+      isValidated: true,
+      validatedAt: true,
     },
   },
 } as const;
@@ -38,6 +58,7 @@ export function toMatchSummary(match: MatchWithRelations) {
     status: match.status,
     homeTeam: match.homeTeam,
     awayTeam: match.awayTeam,
+    forfeitedTeam: match.forfeitedTeam,
     timeSlot: match.timeSlot
       ? {
           id: match.timeSlot.id,
@@ -51,5 +72,6 @@ export function toMatchSummary(match: MatchWithRelations) {
       referee: official.referee,
       refereeingTeam: official.refereeingTeam,
     })),
+    score: match.score,
   };
 }

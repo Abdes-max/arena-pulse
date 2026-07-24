@@ -1,0 +1,116 @@
+.scores-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: var(--ap-space-6);
+  color: var(--ap-color-fg);
+  font-family: var(--ap-font-body);
+}
+
+.scores-page__error {
+  color: var(--ap-color-error);
+  font-size: 0.9rem;
+}
+
+.scores-page__select-label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+  font-size: 0.85rem;
+  font-weight: 600;
+  max-width: 300px;
+  margin-top: var(--ap-space-4);
+}
+
+.scores-page__progress {
+  margin-top: var(--ap-space-4);
+  font-weight: 600;
+  color: var(--ap-color-muted);
+}
+
+.scores-page__slot {
+  margin-top: var(--ap-space-5);
+
+  h2 {
+    font-size: 1rem;
+    margin-bottom: var(--ap-space-2);
+  }
+}
+
+.scores-page__match-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+}
+
+.scores-page__match {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ap-space-2);
+  padding: var(--ap-space-2);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  font-size: 0.9rem;
+}
+
+.scores-page__field-name {
+  font-size: 0.75rem;
+  color: var(--ap-color-muted);
+  min-width: 5rem;
+}
+
+.scores-page__team {
+  font-weight: 600;
+}
+
+.scores-page__score-input {
+  width: 3rem;
+  text-align: center;
+}
+
+.scores-page__penalty-label {
+  font-size: 0.75rem;
+  color: var(--ap-color-muted);
+  margin-left: var(--ap-space-2);
+}
+
+.scores-page__validated-badge {
+  color: var(--ap-color-success);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.scores-page__forfeit-badge {
+  color: var(--ap-color-error);
+  font-weight: 600;
+}
+
+.scores-page__clear {
+  font-size: 0.75rem;
+  color: var(--ap-color-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.scores-page__forfeit-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-1);
+  font-size: 0.75rem;
+  color: var(--ap-color-muted);
+
+  button {
+    font-size: 0.75rem;
+    background: none;
+    border: var(--ap-border-width) solid var(--ap-color-border);
+    border-radius: var(--ap-radius-sm);
+    cursor: pointer;
+    padding: 0.1rem 0.4rem;
+  }
+}

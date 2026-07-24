@@ -38,6 +38,8 @@ model User {
   refreshTokens                RefreshToken[]
   sentInvitations              Invitation[]              @relation("InvitedBy")
   tournamentAdministratorRoles TournamentAdministrator[]
+  validatedMatchScores         MatchScore[]              @relation("MatchScoreValidatedBy")
+  recordedMatchScores          MatchScore[]              @relation("MatchScoreRecordedBy")
 }
 
 model Organization {
@@ -196,6 +198,7 @@ model Team {
   players           Player[]
   homeMatches       Match[]         @relation("MatchHomeTeam")
   awayMatches       Match[]         @relation("MatchAwayTeam")
+  forfeitedMatches  Match[]         @relation("MatchForfeitedTeam")
   refereeingMatches MatchOfficial[] @relation("MatchOfficialTeam")
 
   @@unique([tournamentId, name])
@@ -359,21 +362,24 @@ enum MatchStatus {
 }
 
 model Match {
-  id         String      @id @default(uuid())
-  groupId    String
-  homeTeamId String?
-  awayTeamId String?
-  timeSlotId String?     @unique
-  round      Int
-  status     MatchStatus @default(SCHEDULED)
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
+  id              String      @id @default(uuid())
+  groupId         String
+  homeTeamId      String?
+  awayTeamId      String?
+  timeSlotId      String?     @unique
+  forfeitedTeamId String?
+  round           Int
+  status          MatchStatus @default(SCHEDULED)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
 
-  group     Group           @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  homeTeam  Team?           @relation("MatchHomeTeam", fields: [homeTeamId], references: [id], onDelete: SetNull)
-  awayTeam  Team?           @relation("MatchAwayTeam", fields: [awayTeamId], references: [id], onDelete: SetNull)
-  timeSlot  TimeSlot?       @relation(fields: [timeSlotId], references: [id], onDelete: SetNull)
-  officials MatchOfficial[]
+  group         Group           @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  homeTeam      Team?           @relation("MatchHomeTeam", fields: [homeTeamId], references: [id], onDelete: SetNull)
+  awayTeam      Team?           @relation("MatchAwayTeam", fields: [awayTeamId], references: [id], onDelete: SetNull)
+  forfeitedTeam Team?           @relation("MatchForfeitedTeam", fields: [forfeitedTeamId], references: [id], onDelete: SetNull)
+  timeSlot      TimeSlot?       @relation(fields: [timeSlotId], references: [id], onDelete: SetNull)
+  officials     MatchOfficial[]
+  score         MatchScore?
 
   @@index([groupId])
 }
@@ -390,6 +396,28 @@ model MatchOfficial {
   refereeingTeam Team?    @relation("MatchOfficialTeam", fields: [refereeingTeamId], references: [id], onDelete: Cascade)
 
   @@index([matchId])
+}
+
+// Kept separate from Match (rather than plain score columns) so the
+// provisional/validated distinction and its audit trail (mission §10.1) have
+// somewhere to live without overloading Match with scoring-specific fields.
+model MatchScore {
+  id               String    @id @default(uuid())
+  matchId          String    @unique
+  homeScore        Int
+  awayScore        Int
+  homePenaltyScore Int?
+  awayPenaltyScore Int?
+  isValidated      Boolean   @default(false)
+  validatedAt      DateTime?
+  validatedById    String?
+  recordedById     String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  match       Match @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  validatedBy User? @relation("MatchScoreValidatedBy", fields: [validatedById], references: [id], onDelete: SetNull)
+  recordedBy  User? @relation("MatchScoreRecordedBy", fields: [recordedById], references: [id], onDelete: SetNull)
 }
 
 // Catalog (not a fixed enum) so new permissions can be added without a schema
