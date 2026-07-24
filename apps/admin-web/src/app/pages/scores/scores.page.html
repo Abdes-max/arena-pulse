@@ -1,0 +1,171 @@
+<main class="scores-page">
+  <h1>Scores</h1>
+
+  @if (loading()) {
+    <p>Chargement…</p>
+  } @else {
+    @if (errorMessage(); as message) {
+      <p class="scores-page__error" role="alert">{{ message }}</p>
+    }
+
+    @if (categories().length === 0) {
+      <p>Ajoutez d'abord une catégorie sur la page du tournoi.</p>
+    } @else {
+      <label class="scores-page__select-label">
+        Catégorie
+        <select [value]="selectedCategoryId()" (change)="onCategoryChange($event)">
+          @for (category of categories(); track category.id) {
+            <option [value]="category.id">{{ category.name }}</option>
+          }
+        </select>
+      </label>
+
+      @if (phases().length === 0) {
+        <p>Ajoutez d'abord une phase sur la page Structure de cette catégorie.</p>
+      } @else {
+        <label class="scores-page__select-label">
+          Phase
+          <select [value]="selectedPhaseId()" (change)="onPhaseChange($event)">
+            @for (phase of phases(); track phase.id) {
+              <option [value]="phase.id">{{ phase.name }}</option>
+            }
+          </select>
+        </label>
+
+        @if (matches().length === 0) {
+          <p>Aucun match dans cette phase.</p>
+        } @else {
+          <p class="scores-page__progress">
+            {{ progress().entered }}/{{ progress().total }} scores saisis
+          </p>
+
+          @for (slot of matchesByTimeSlot().slots; track slot.startTime + slot.fieldName) {
+            <section class="scores-page__slot">
+              <h2>{{ formatSlotTime(slot.startTime) }}</h2>
+              <ul class="scores-page__match-list">
+                @for (match of slot.matches; track match.id) {
+                  <li class="scores-page__match">
+                    <span class="scores-page__field-name">{{ match.timeSlot!.field.name }}</span>
+
+                    @if (match.status === 'FORFEITED') {
+                      <span class="scores-page__forfeit-badge">
+                        Forfait : {{ match.forfeitedTeam?.name }}
+                      </span>
+                      <ap-button type="button" variant="ghost" (click)="undoForfeit(match)">
+                        Annuler le forfait
+                      </ap-button>
+                    } @else {
+                      <span class="scores-page__team">{{ match.homeTeam?.name ?? '?' }}</span>
+                      <input
+                        class="scores-page__score-input"
+                        type="number"
+                        min="0"
+                        [value]="draftFor(match).home"
+                        (input)="onDraftChange(match, 'home', $event)"
+                      />
+                      <span>-</span>
+                      <input
+                        class="scores-page__score-input"
+                        type="number"
+                        min="0"
+                        [value]="draftFor(match).away"
+                        (input)="onDraftChange(match, 'away', $event)"
+                      />
+                      <span class="scores-page__team">{{ match.awayTeam?.name ?? '?' }}</span>
+
+                      @if (isDraw(match) && penaltyShootoutEnabled(match)) {
+                        <span class="scores-page__penalty-label">Tirs au but</span>
+                        <input
+                          class="scores-page__score-input"
+                          type="number"
+                          min="0"
+                          [value]="draftFor(match).homePenalty"
+                          (input)="onDraftChange(match, 'homePenalty', $event)"
+                        />
+                        <span>-</span>
+                        <input
+                          class="scores-page__score-input"
+                          type="number"
+                          min="0"
+                          [value]="draftFor(match).awayPenalty"
+                          (input)="onDraftChange(match, 'awayPenalty', $event)"
+                        />
+                      }
+
+                      <ap-button type="button" variant="ghost" (click)="saveScore(match)">
+                        Enregistrer
+                      </ap-button>
+
+                      @if (match.score) {
+                        @if (match.score.isValidated) {
+                          <span class="scores-page__validated-badge">Validé</span>
+                        } @else {
+                          <ap-button type="button" (click)="validateScore(match)"
+                            >Valider</ap-button
+                          >
+                        }
+                        <button
+                          type="button"
+                          class="scores-page__clear"
+                          (click)="clearScore(match)"
+                        >
+                          Effacer
+                        </button>
+                      }
+
+                      <span class="scores-page__forfeit-actions">
+                        Forfait :
+                        @if (match.homeTeam) {
+                          <button type="button" (click)="declareForfeit(match, match.homeTeam.id)">
+                            {{ match.homeTeam.name }}
+                          </button>
+                        }
+                        @if (match.awayTeam) {
+                          <button type="button" (click)="declareForfeit(match, match.awayTeam.id)">
+                            {{ match.awayTeam.name }}
+                          </button>
+                        }
+                      </span>
+                    }
+                  </li>
+                }
+              </ul>
+            </section>
+          }
+
+          @if (matchesByTimeSlot().unscheduled.length > 0) {
+            <section class="scores-page__slot">
+              <h2>Sans créneau</h2>
+              <ul class="scores-page__match-list">
+                @for (match of matchesByTimeSlot().unscheduled; track match.id) {
+                  <li class="scores-page__match">
+                    <span class="scores-page__team">{{ match.homeTeam?.name ?? '?' }}</span>
+                    <input
+                      class="scores-page__score-input"
+                      type="number"
+                      min="0"
+                      [value]="draftFor(match).home"
+                      (input)="onDraftChange(match, 'home', $event)"
+                    />
+                    <span>-</span>
+                    <input
+                      class="scores-page__score-input"
+                      type="number"
+                      min="0"
+                      [value]="draftFor(match).away"
+                      (input)="onDraftChange(match, 'away', $event)"
+                    />
+                    <span class="scores-page__team">{{ match.awayTeam?.name ?? '?' }}</span>
+                    <ap-button type="button" variant="ghost" (click)="saveScore(match)">
+                      Enregistrer
+                    </ap-button>
+                  </li>
+                }
+              </ul>
+            </section>
+          }
+        }
+      }
+    }
+  }
+</main>

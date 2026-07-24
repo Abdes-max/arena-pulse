@@ -218,6 +218,15 @@ export interface MatchOfficial {
   refereeingTeam: { id: string; name: string } | null;
 }
 
+export interface MatchScore {
+  homeScore: number;
+  awayScore: number;
+  homePenaltyScore: number | null;
+  awayPenaltyScore: number | null;
+  isValidated: boolean;
+  validatedAt: string | null;
+}
+
 export interface Match {
   id: string;
   groupId: string;
@@ -225,6 +234,7 @@ export interface Match {
   status: MatchStatus;
   homeTeam: { id: string; name: string } | null;
   awayTeam: { id: string; name: string } | null;
+  forfeitedTeam: { id: string; name: string } | null;
   timeSlot: {
     id: string;
     startTime: string;
@@ -232,4 +242,5 @@ export interface Match {
     field: { id: string; name: string };
   } | null;
   officials: MatchOfficial[];
+  score: MatchScore | null;
 }
