@@ -209,6 +209,34 @@ export interface QualificationRule {
   targetPhaseName: string;
 }
 
+export interface StandingRow {
+  teamId: string;
+  teamName: string;
+  played: number;
+  won: number;
+  drawn: number;
+  lost: number;
+  goalsFor: number;
+  goalsAgainst: number;
+  goalDifference: number;
+  points: number;
+  position: number;
+}
+
+export interface Standings {
+  rows: StandingRow[];
+  isComplete: boolean;
+}
+
+export interface Qualification {
+  ruleId: string;
+  fromPosition: number;
+  toPosition: number;
+  targetPhaseId: string;
+  targetPhaseName: string;
+  qualifiedTeams: { id: string; name: string; position: number }[];
+}
+
 export type MatchStatus =
   'SCHEDULED' | 'LIVE' | 'COMPLETED' | 'POSTPONED' | 'CANCELLED' | 'FORFEITED';
 
