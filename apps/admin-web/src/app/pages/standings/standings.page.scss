@@ -1,0 +1,71 @@
+.standings-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--ap-space-6);
+  color: var(--ap-color-fg);
+  font-family: var(--ap-font-body);
+}
+
+.standings-page__error {
+  color: var(--ap-color-error);
+  font-size: 0.9rem;
+}
+
+.standings-page__select-label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+  font-size: 0.85rem;
+  font-weight: 600;
+  max-width: 300px;
+  margin-top: var(--ap-space-4);
+}
+
+.standings-page__group {
+  margin-top: var(--ap-space-6);
+
+  h2 {
+    font-size: 1.1rem;
+  }
+}
+
+.standings-page__provisional {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--ap-color-muted);
+}
+
+.standings-page__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  margin-top: var(--ap-space-2);
+
+  th,
+  td {
+    padding: var(--ap-space-1) var(--ap-space-2);
+    text-align: center;
+    border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+  }
+
+  th:nth-child(2),
+  td:nth-child(2) {
+    text-align: left;
+  }
+}
+
+.standings-page__points {
+  font-weight: 700;
+}
+
+.standings-page__qualifications {
+  list-style: none;
+  margin: var(--ap-space-2) 0 0;
+  padding: 0;
+  font-size: 0.85rem;
+  color: var(--ap-color-muted);
+
+  li {
+    margin-top: var(--ap-space-1);
+  }
+}

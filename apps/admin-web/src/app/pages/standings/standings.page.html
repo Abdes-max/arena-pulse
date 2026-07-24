@@ -1,0 +1,106 @@
+<main class="standings-page">
+  <h1>Classement</h1>
+
+  @if (loading()) {
+    <p>Chargement…</p>
+  } @else {
+    @if (errorMessage(); as message) {
+      <p class="standings-page__error" role="alert">{{ message }}</p>
+    }
+
+    @if (categories().length === 0) {
+      <p>Ajoutez d'abord une catégorie sur la page du tournoi.</p>
+    } @else {
+      <label class="standings-page__select-label">
+        Catégorie
+        <select [value]="selectedCategoryId()" (change)="onCategoryChange($event)">
+          @for (category of categories(); track category.id) {
+            <option [value]="category.id">{{ category.name }}</option>
+          }
+        </select>
+      </label>
+
+      @if (groupStagePhases().length === 0) {
+        <p>Ajoutez d'abord une phase de poules sur la page Structure de cette catégorie.</p>
+      } @else {
+        <label class="standings-page__select-label">
+          Phase
+          <select [value]="selectedPhaseId()" (change)="onPhaseChange($event)">
+            @for (phase of groupStagePhases(); track phase.id) {
+              <option [value]="phase.id">{{ phase.name }}</option>
+            }
+          </select>
+        </label>
+
+        @if (groupStandings().length === 0) {
+          <p>Ajoutez d'abord une poule à cette phase.</p>
+        } @else {
+          @for (group of groupStandings(); track group.groupId) {
+            <section class="standings-page__group">
+              <h2>
+                {{ group.groupName }}
+                @if (!group.standings.isComplete) {
+                  <span class="standings-page__provisional">(provisoire)</span>
+                }
+              </h2>
+
+              <table class="standings-page__table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Équipe</th>
+                    <th>J</th>
+                    <th>G</th>
+                    <th>N</th>
+                    <th>P</th>
+                    <th>BP</th>
+                    <th>BC</th>
+                    <th>+/-</th>
+                    <th>Pts</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (row of group.standings.rows; track row.teamId) {
+                    <tr>
+                      <td>{{ row.position }}</td>
+                      <td>{{ row.teamName }}</td>
+                      <td>{{ row.played }}</td>
+                      <td>{{ row.won }}</td>
+                      <td>{{ row.drawn }}</td>
+                      <td>{{ row.lost }}</td>
+                      <td>{{ row.goalsFor }}</td>
+                      <td>{{ row.goalsAgainst }}</td>
+                      <td>{{ row.goalDifference }}</td>
+                      <td class="standings-page__points">{{ row.points }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+
+              @if (group.qualifications.length > 0) {
+                <ul class="standings-page__qualifications">
+                  @for (qualification of group.qualifications; track qualification.ruleId) {
+                    <li>
+                      {{ qualification.fromPosition }}
+                      @if (qualification.toPosition !== qualification.fromPosition) {
+                        – {{ qualification.toPosition }}
+                      }
+                      → {{ qualification.targetPhaseName }} :
+                      @if (qualification.qualifiedTeams.length === 0) {
+                        <span class="standings-page__provisional"
+                          >aucune équipe pour l'instant</span
+                        >
+                      } @else {
+                        {{ qualification.qualifiedTeams.map((t) => t.name).join(', ') }}
+                      }
+                    </li>
+                  }
+                </ul>
+              }
+            </section>
+          }
+        }
+      }
+    }
+  }
+</main>
