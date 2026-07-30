@@ -110,6 +110,15 @@ enum TournamentStatus {
   ARCHIVED
 }
 
+// Visual theme applied to a tournament's public site + slideshow only —
+// admin-web and the marketing site always stay on Ink & Signal regardless
+// of what an organizer picks here (docs/design/visual-language.md).
+enum PublicTheme {
+  INK_SIGNAL
+  PULSE_EMBER
+  NEON_COURT
+}
+
 // Global reference data (not scoped by organization) — seeded, no CRUD in this PR.
 model Sport {
   id        String   @id @default(uuid())
@@ -131,6 +140,7 @@ model Tournament {
   endDate         DateTime?
   isOnline        Boolean          @default(false)
   teamsCanReferee Boolean          @default(false)
+  theme           PublicTheme      @default(INK_SIGNAL)
   archivedAt      DateTime?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt

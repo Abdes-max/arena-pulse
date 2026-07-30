@@ -1,11 +1,13 @@
 import {
   IsBoolean,
+  IsEnum,
   IsISO8601,
   IsOptional,
   IsString,
   IsUUID,
   MinLength,
 } from 'class-validator';
+import { PublicTheme } from '../../../generated/prisma/client';
 
 export class CreateTournamentDto {
   @IsString()
@@ -26,4 +28,8 @@ export class CreateTournamentDto {
   @IsOptional()
   @IsBoolean()
   isOnline?: boolean;
+
+  @IsOptional()
+  @IsEnum(PublicTheme)
+  theme?: PublicTheme;
 }

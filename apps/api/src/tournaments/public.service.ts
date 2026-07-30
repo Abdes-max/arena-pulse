@@ -65,6 +65,7 @@ export class PublicService {
       startDate: tournament.startDate,
       endDate: tournament.endDate,
       isOnline: tournament.isOnline,
+      theme: tournament.theme,
       venues,
     };
   }

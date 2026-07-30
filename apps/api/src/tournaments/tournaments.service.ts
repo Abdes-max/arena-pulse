@@ -32,6 +32,7 @@ export class TournamentsService {
         startDate: dto.startDate ? new Date(dto.startDate) : undefined,
         endDate: dto.endDate ? new Date(dto.endDate) : undefined,
         isOnline: dto.isOnline ?? false,
+        theme: dto.theme,
       },
       include: { sport: true },
     });
@@ -83,6 +84,7 @@ export class TournamentsService {
             : undefined,
         isOnline: dto.isOnline,
         teamsCanReferee: dto.teamsCanReferee,
+        theme: dto.theme,
       },
       include: { sport: true },
     });
@@ -155,6 +157,7 @@ export class TournamentsService {
           startDate: source.startDate,
           endDate: source.endDate,
           isOnline: source.isOnline,
+          theme: source.theme,
           status: TournamentStatus.DRAFT,
         },
       });
@@ -315,6 +318,7 @@ export class TournamentsService {
       startDate: tournament.startDate,
       endDate: tournament.endDate,
       isOnline: tournament.isOnline,
+      theme: tournament.theme,
       createdAt: tournament.createdAt,
     };
   }

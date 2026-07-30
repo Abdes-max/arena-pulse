@@ -303,4 +303,47 @@ describe('Public tournament site (e2e)', () => {
       new Date(matches[1].timeSlot!.startTime).getTime(),
     );
   });
+
+  it("exposes the organizer's chosen public theme, defaulting to INK_SIGNAL", async () => {
+    const registerRes = await request(app.getHttpServer())
+      .post('/api/v1/auth/register')
+      .send({
+        email: 'organizer@example.com',
+        password: 'a-very-strong-password',
+        firstName: 'Ada',
+        lastName: 'Lovelace',
+        organizationName: 'Ada Tournaments',
+      })
+      .expect(201);
+    const { accessToken, organization } = registerRes.body as AuthResponseBody;
+    const organizationId = organization!.id;
+    const auth = (req: request.Test) =>
+      req.set('Authorization', `Bearer ${accessToken}`);
+    const base = `/api/v1/organizations/${organizationId}/tournaments`;
+
+    const sportRes = await auth(
+      request(app.getHttpServer()).get('/api/v1/sports'),
+    ).expect(200);
+    const sportId = (sportRes.body as { id: string }[])[0].id;
+
+    const tournamentRes = await auth(request(app.getHttpServer()).post(base))
+      .send({ name: 'Coupe Thème', sportId })
+      .expect(201);
+    const tournamentId = (tournamentRes.body as { id: string }).id;
+    const slug = (tournamentRes.body as { slug: string }).slug;
+    expect(tournamentRes.body).toMatchObject({ theme: 'INK_SIGNAL' });
+
+    await auth(request(app.getHttpServer()).patch(`${base}/${tournamentId}`))
+      .send({ theme: 'PULSE_EMBER' })
+      .expect(200);
+
+    await auth(
+      request(app.getHttpServer()).post(`${base}/${tournamentId}/publish`),
+    ).expect(200);
+
+    const publicRes = await request(app.getHttpServer())
+      .get(`/api/v1/public/tournaments/${slug}`)
+      .expect(200);
+    expect(publicRes.body).toMatchObject({ theme: 'PULSE_EMBER' });
+  });
 });
