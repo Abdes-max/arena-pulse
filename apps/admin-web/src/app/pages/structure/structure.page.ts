@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Button } from 'design-system';
@@ -446,6 +447,37 @@ export class StructurePage {
       );
     } catch {
       this.errorMessage.set('Impossible de supprimer ce tableau.');
+    }
+  }
+
+  protected readonly generatingBracketId = signal<string | null>(null);
+  protected readonly bracketGeneratedMessage = signal<string | null>(null);
+
+  protected async generateBracketMatches(phase: CompetitionPhase): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const bracketId = phase.knockoutBracket?.id;
+    if (!organizationId || !bracketId) {
+      return;
+    }
+    this.generatingBracketId.set(bracketId);
+    this.errorMessage.set(null);
+    this.bracketGeneratedMessage.set(null);
+    try {
+      const matches = await this.competitionFormatsService.generateBracketMatches(
+        organizationId,
+        this.tournamentId,
+        bracketId,
+      );
+      this.bracketGeneratedMessage.set(`${matches.length} match(s) générés pour ce tableau.`);
+    } catch (error) {
+      this.errorMessage.set(
+        error instanceof HttpErrorResponse && error.status === 400
+          ? ((error.error as { message?: string })?.message ??
+              'Les équipes qualifiées ne correspondent pas encore à la taille du tableau.')
+          : 'Impossible de générer les matchs de ce tableau.',
+      );
+    } finally {
+      this.generatingBracketId.set(null);
     }
   }
 }

@@ -257,7 +257,10 @@ export interface MatchScore {
 
 export interface Match {
   id: string;
-  groupId: string;
+  groupId: string | null;
+  knockoutBracketId: string | null;
+  bracketSlot: number | null;
+  isThirdPlaceMatch: boolean;
   round: number;
   status: MatchStatus;
   homeTeam: { id: string; name: string } | null;
