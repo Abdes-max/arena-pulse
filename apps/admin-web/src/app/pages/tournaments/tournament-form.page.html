@@ -46,6 +46,14 @@
         <input type="checkbox" formControlName="isOnline" />
         Tournoi en ligne (eSport)
       </label>
+      <label class="tournament-form-page__select-label">
+        Thème du site public
+        <select formControlName="theme">
+          <option value="INK_SIGNAL">Ink & Signal</option>
+          <option value="PULSE_EMBER">Pulse Ember</option>
+          <option value="NEON_COURT">Neon Court</option>
+        </select>
+      </label>
       <ap-button type="submit" [disabled]="submitting() || isArchived()">
         {{ isEditMode() ? 'Enregistrer' : 'Créer le tournoi' }}
       </ap-button>

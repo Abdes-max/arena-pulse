@@ -6,6 +6,7 @@ import {
   Category,
   Division,
   Field,
+  PublicTheme,
   Tournament,
   TournamentAdministrator,
   TournamentDetail,
@@ -19,6 +20,7 @@ export interface CreateTournamentPayload {
   startDate?: string;
   endDate?: string;
   isOnline?: boolean;
+  theme?: PublicTheme;
 }
 
 export interface UpdateTournamentPayload {
@@ -28,6 +30,7 @@ export interface UpdateTournamentPayload {
   endDate?: string | null;
   isOnline?: boolean;
   teamsCanReferee?: boolean;
+  theme?: PublicTheme;
 }
 
 @Injectable({ providedIn: 'root' })
