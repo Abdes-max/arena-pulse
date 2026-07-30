@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { OrganizationsModule } from '../organizations/organizations.module';
 import { PermissionsModule } from '../permissions/permissions.module';
+import { BracketsService } from './brackets.service';
 import { CategoriesController } from './categories.controller';
 import { CategoriesService } from './categories.service';
 import { DivisionsController } from './divisions.controller';
@@ -20,6 +21,8 @@ import { PhasesController } from './phases.controller';
 import { PhasesService } from './phases.service';
 import { PlayersController } from './players.controller';
 import { PlayersService } from './players.service';
+import { PublicController } from './public.controller';
+import { PublicService } from './public.service';
 import { QualificationRulesController } from './qualification-rules.controller';
 import { QualificationRulesService } from './qualification-rules.service';
 import { RefereesController } from './referees.controller';
@@ -63,6 +66,7 @@ import { VenuesService } from './venues.service';
     MatchesController,
     ScoresController,
     StandingsController,
+    PublicController,
   ],
   providers: [
     TournamentsService,
@@ -85,6 +89,8 @@ import { VenuesService } from './venues.service';
     MatchesService,
     ScoresService,
     StandingsService,
+    BracketsService,
+    PublicService,
   ],
   exports: [TournamentPermissionGuard],
 })
