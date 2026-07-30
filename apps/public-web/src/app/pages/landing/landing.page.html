@@ -1,0 +1,37 @@
+<header class="landing-page__hero">
+  <p class="landing-page__eyebrow">Arena Pulse</p>
+  <h1>Organisez vos tournois, du bracket au site public, en un seul outil.</h1>
+  <p class="landing-page__subtitle">
+    Poules, tableaux à élimination, calendrier, arbitrage et classements — et un site public
+    généré automatiquement pour chacun de vos tournois, sans configuration supplémentaire.
+  </p>
+  <a class="landing-page__cta" [href]="registerUrl">Créer mon tournoi</a>
+</header>
+
+<section class="landing-page__features">
+  @for (feature of features; track feature.title) {
+    <article class="landing-page__feature">
+      <h2>{{ feature.title }}</h2>
+      <p>{{ feature.description }}</p>
+    </article>
+  }
+</section>
+
+<section class="landing-page__preview">
+  <h2>Un site public, prêt pour vos participants</h2>
+  <div class="landing-page__preview-mockup" aria-hidden="true">
+    <div class="landing-page__preview-bar"></div>
+    <div class="landing-page__preview-card"></div>
+    <div class="landing-page__preview-card"></div>
+    <div class="landing-page__preview-card"></div>
+  </div>
+  <p>
+    Équipes, calendrier, classements de poules, tableau à élimination et classement final —
+    partagez un seul lien avec vos participants et spectateurs.
+  </p>
+</section>
+
+<footer class="landing-page__final-cta">
+  <h2>Prêt à organiser votre prochain tournoi ?</h2>
+  <a class="landing-page__cta" [href]="registerUrl">Créer mon tournoi</a>
+</footer>

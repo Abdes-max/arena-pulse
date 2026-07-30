@@ -1,0 +1,200 @@
+@if (loading()) {
+  <p>Chargement…</p>
+} @else if (categories().length === 0) {
+  <p>Aucune catégorie pour ce tournoi.</p>
+} @else {
+  <label class="standings-page__select-label">
+    Catégorie
+    <select [value]="selectedCategoryId()" (change)="onCategoryChange($event)">
+      @for (category of categories(); track category.id) {
+        <option [value]="category.id">{{ category.name }}</option>
+      }
+    </select>
+  </label>
+
+  @if (tabs().length === 0) {
+    <p>Aucune phase pour cette catégorie.</p>
+  } @else {
+    <nav class="standings-page__tabs">
+      @for (tab of tabs(); track tab.id) {
+        <button
+          type="button"
+          class="standings-page__tab"
+          [class.standings-page__tab--active]="selectedTab() === tab.id"
+          (click)="selectTab(tab.id)"
+        >
+          {{ tab.label }}
+        </button>
+      }
+    </nav>
+
+    @if (groupStandingsByPhase().get(selectedTab()); as groups) {
+      @for (group of groups; track group.groupId) {
+        <section class="standings-page__group">
+          <h2>
+            {{ group.groupName }}
+            @if (!group.standings.isComplete) {
+              <span class="standings-page__provisional">(provisoire)</span>
+            }
+          </h2>
+          <table class="standings-page__table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Équipe</th>
+                <th>J</th>
+                <th>G</th>
+                <th>N</th>
+                <th>P</th>
+                <th>BP</th>
+                <th>BC</th>
+                <th>+/-</th>
+                <th>Pts</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of group.standings.rows; track row.teamId) {
+                <tr [class.standings-page__row--qualified]="isQualified(group, row.teamId)">
+                  <td>{{ row.position }}</td>
+                  <td>{{ row.teamName }}</td>
+                  <td>{{ row.played }}</td>
+                  <td>{{ row.won }}</td>
+                  <td>{{ row.drawn }}</td>
+                  <td>{{ row.lost }}</td>
+                  <td>{{ row.goalsFor }}</td>
+                  <td>{{ row.goalsAgainst }}</td>
+                  <td>{{ row.goalDifference }}</td>
+                  <td class="standings-page__points">{{ row.points }}</td>
+                  <td>
+                    @if (isQualified(group, row.teamId)) {
+                      <ap-badge status="qualified" />
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+
+          @if (group.qualifications.length > 0) {
+            <ul class="standings-page__qualifications">
+              @for (qualification of group.qualifications; track qualification.ruleId) {
+                <li>
+                  <span class="standings-page__qualification-rule">
+                    {{ qualification.fromPosition }}
+                    @if (qualification.toPosition !== qualification.fromPosition) {
+                      – {{ qualification.toPosition }}
+                    }
+                    → {{ qualification.targetPhaseName }} :
+                  </span>
+                  @if (qualification.qualifiedTeams.length === 0) {
+                    <span class="standings-page__provisional">à déterminer</span>
+                  } @else {
+                    @for (team of qualification.qualifiedTeams; track team.id) {
+                      <ap-badge status="qualified" [label]="team.name" />
+                    }
+                  }
+                </li>
+              }
+            </ul>
+          }
+        </section>
+      }
+    }
+
+    @if (bracketByPhase().get(selectedTab()); as bracket) {
+      @if (bracket.rounds.length === 0) {
+        <p class="standings-page__empty">Le tableau n'a pas encore été généré pour cette phase.</p>
+      } @else {
+        <div class="standings-page__bracket" [style.height.px]="bracketHeight(bracket)">
+          @for (round of bracket.rounds; track round.round) {
+            <div class="standings-page__bracket-round">
+              <h3>{{ round.label }}</h3>
+              <div class="standings-page__bracket-round-matches">
+                @for (match of round.matches; track match.id) {
+                  <div class="standings-page__bracket-slot">
+                    <ap-bracket-match
+                      [homeTeam]="match.homeTeam ?? { name: '—' }"
+                      [awayTeam]="match.awayTeam ?? { name: '—' }"
+                      [homeScore]="match.score?.homeScore"
+                      [awayScore]="match.score?.awayScore"
+                      [forfeitedTeamName]="
+                        match.status === 'FORFEITED' ? match.forfeitedTeam?.name : undefined
+                      "
+                    />
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        @if (bracket.thirdPlaceMatch; as match) {
+          <div class="standings-page__third-place">
+            <h3>Match pour la 3e place</h3>
+            <ap-bracket-match
+              [homeTeam]="match.homeTeam ?? { name: '—' }"
+              [awayTeam]="match.awayTeam ?? { name: '—' }"
+              [homeScore]="match.score?.homeScore"
+              [awayScore]="match.score?.awayScore"
+              [forfeitedTeamName]="
+                match.status === 'FORFEITED' ? match.forfeitedTeam?.name : undefined
+              "
+            />
+          </div>
+        }
+      }
+    }
+
+    @if (selectedTab() === 'final') {
+      @if (finalRanking().length === 0) {
+        <p class="standings-page__empty">
+          Le classement final sera disponible une fois les tableaux de phase finale complétés.
+        </p>
+      } @else {
+        @if (podium(); as p) {
+          <div class="standings-page__podium">
+            <div class="standings-page__podium-step standings-page__podium-step--2">
+              <span class="standings-page__podium-rank">2</span>
+              <span class="standings-page__podium-name">{{ p.second.teamName }}</span>
+              <span class="standings-page__podium-stage">{{ p.second.stageLabel }}</span>
+            </div>
+            <div class="standings-page__podium-step standings-page__podium-step--1">
+              <span class="standings-page__podium-rank">1</span>
+              <span class="standings-page__podium-name">{{ p.first.teamName }}</span>
+              <span class="standings-page__podium-stage">{{ p.first.stageLabel }}</span>
+            </div>
+            <div class="standings-page__podium-step standings-page__podium-step--3">
+              <span class="standings-page__podium-rank">3</span>
+              <span class="standings-page__podium-name">{{ p.third.teamName }}</span>
+              <span class="standings-page__podium-stage">{{ p.third.stageLabel }}</span>
+            </div>
+          </div>
+        }
+
+        @if (finalRankingRest().length > 0) {
+          <table class="standings-page__table standings-page__final-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Équipe</th>
+                <th>Tableau</th>
+                <th>Résultat</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of finalRankingRest(); track row.teamId + row.phaseId) {
+                <tr>
+                  <td>{{ row.position }}</td>
+                  <td>{{ row.teamName }}</td>
+                  <td>{{ row.phaseName }}</td>
+                  <td>{{ row.stageLabel }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      }
+    }
+  }
+}

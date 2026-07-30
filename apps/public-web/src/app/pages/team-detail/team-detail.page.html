@@ -1,0 +1,92 @@
+@if (loading()) {
+  <p>Chargement…</p>
+} @else if (errorMessage(); as message) {
+  <p class="team-detail-page__error" role="alert">{{ message }}</p>
+} @else if (team(); as t) {
+  <h2>{{ t.name }}</h2>
+  <p class="team-detail-page__meta">
+    {{ t.categoryName }}
+    @if (t.groupName) {
+      — {{ t.groupName }}
+    }
+  </p>
+
+  @if (t.standing; as standing) {
+    <section class="team-detail-page__section">
+      <h3>Classement de poule</h3>
+      <div class="team-detail-page__stats">
+        <div class="team-detail-page__stat">
+          <span class="team-detail-page__stat-value">{{ standing.position }}</span>
+          <span class="team-detail-page__stat-label">Position</span>
+        </div>
+        <div class="team-detail-page__stat">
+          <span class="team-detail-page__stat-value">{{ standing.played }}</span>
+          <span class="team-detail-page__stat-label">Joués</span>
+        </div>
+        <div class="team-detail-page__stat">
+          <span class="team-detail-page__stat-value"
+            >{{ standing.won }} / {{ standing.drawn }} / {{ standing.lost }}</span
+          >
+          <span class="team-detail-page__stat-label">V / N / D</span>
+        </div>
+        <div class="team-detail-page__stat">
+          <span class="team-detail-page__stat-value"
+            >{{ standing.goalsFor }} - {{ standing.goalsAgainst }}</span
+          >
+          <span class="team-detail-page__stat-label">Buts ({{ standing.goalDifference }})</span>
+        </div>
+        <div class="team-detail-page__stat team-detail-page__stat--highlight">
+          <span class="team-detail-page__stat-value">{{ standing.points }}</span>
+          <span class="team-detail-page__stat-label">Points</span>
+        </div>
+      </div>
+    </section>
+  }
+
+  @if (upcomingMatches().length > 0) {
+    <section class="team-detail-page__section">
+      <h3>À venir</h3>
+      <div class="team-detail-page__matches">
+        @for (match of upcomingMatches(); track match.id) {
+          <ap-match-card
+            variant="upcoming"
+            [homeTeam]="match.homeTeam ?? { name: '?' }"
+            [awayTeam]="match.awayTeam ?? { name: '?' }"
+            [kickoff]="match.timeSlot ? formatKickoff(match.timeSlot.startTime) : undefined"
+            [venue]="match.timeSlot?.field?.name"
+            [competitionLabel]="competitionLabel(match)"
+          />
+        }
+      </div>
+    </section>
+  }
+
+  @if (playedMatches().length > 0) {
+    <section class="team-detail-page__section">
+      <h3>Joués</h3>
+      <div class="team-detail-page__matches">
+        @for (match of playedMatches(); track match.id) {
+          @if (match.status === 'FORFEITED') {
+            <p class="team-detail-page__forfeit">
+              Forfait : {{ match.forfeitedTeam?.name }} ({{ competitionLabel(match) }})
+            </p>
+          } @else {
+            <ap-match-card
+              variant="result"
+              [homeTeam]="match.homeTeam ?? { name: '?' }"
+              [awayTeam]="match.awayTeam ?? { name: '?' }"
+              [homeScore]="match.score?.homeScore"
+              [awayScore]="match.score?.awayScore"
+              [venue]="match.timeSlot?.field?.name"
+              [competitionLabel]="competitionLabel(match)"
+            />
+          }
+        }
+      </div>
+    </section>
+  }
+
+  @if (upcomingMatches().length === 0 && playedMatches().length === 0) {
+    <p class="team-detail-page__empty">Aucun match planifié pour cette équipe.</p>
+  }
+}

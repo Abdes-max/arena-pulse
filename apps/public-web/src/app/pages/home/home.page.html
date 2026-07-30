@@ -1,0 +1,69 @@
+@if (tournament(); as t) {
+  @if (upcomingMatches().length > 0) {
+    <section class="home-page__section">
+      <h2>Prochains matchs</h2>
+      <div class="home-page__upcoming">
+        @for (match of upcomingMatches(); track match.id; let first = $first) {
+          <ap-match-card
+            [variant]="first ? 'featured' : 'compact'"
+            [homeTeam]="match.homeTeam ?? { name: '?' }"
+            [awayTeam]="match.awayTeam ?? { name: '?' }"
+            [kickoff]="match.timeSlot ? formatKickoff(match.timeSlot.startTime) : undefined"
+            [venue]="match.timeSlot?.field?.name"
+            [competitionLabel]="competitionLabel(match)"
+          />
+        }
+      </div>
+    </section>
+  }
+
+  @if (categories().length > 0) {
+    <section class="home-page__section">
+      <h2>Catégories</h2>
+      <ul class="home-page__categories">
+        @for (category of categories(); track category.id) {
+          <li>{{ category.name }}</li>
+        }
+      </ul>
+    </section>
+  }
+
+  @if (t.venues.length > 0) {
+    <section class="home-page__section">
+      <h2>Infos pratiques</h2>
+      <div class="home-page__venues">
+        @for (venue of t.venues; track venue.id) {
+          <article class="home-page__venue">
+            <div class="home-page__venue-header">
+              <svg
+                class="home-page__venue-icon"
+                viewBox="0 0 24 24"
+                width="18"
+                height="18"
+                aria-hidden="true"
+              >
+                <path
+                  fill="currentColor"
+                  d="M12 2c-4.4 0-8 3.6-8 8 0 5.4 7 11.5 7.3 11.7.2.2.5.3.7.3s.5-.1.7-.3C12.9 21.5 20 15.4 20 10c0-4.4-3.6-8-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"
+                />
+              </svg>
+              <h3>{{ venue.name }}</h3>
+            </div>
+            @if (venue.address) {
+              <p class="home-page__address">{{ venue.address }}</p>
+            }
+            @if (venue.fields.length > 0) {
+              <ul class="home-page__fields">
+                @for (field of venue.fields; track field.id) {
+                  <li>{{ field.name }}</li>
+                }
+              </ul>
+            }
+          </article>
+        }
+      </div>
+    </section>
+  }
+} @else {
+  <p>Chargement…</p>
+}
