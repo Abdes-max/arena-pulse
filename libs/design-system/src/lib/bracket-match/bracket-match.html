@@ -1,0 +1,21 @@
+<article class="ap-bracket-match">
+  <div class="ap-bracket-match__team" [class.ap-bracket-match__team--winner]="homeIsWinner()">
+    <span class="ap-bracket-match__team-name">{{ homeTeam().name }}</span>
+    @if (hasScore()) {
+      <span class="ap-bracket-match__score">{{ homeScore() }}</span>
+    }
+  </div>
+  <div class="ap-bracket-match__team" [class.ap-bracket-match__team--winner]="awayIsWinner()">
+    <span class="ap-bracket-match__team-name">{{ awayTeam().name }}</span>
+    @if (hasScore()) {
+      <span class="ap-bracket-match__score">{{ awayScore() }}</span>
+    }
+  </div>
+
+  @if (forfeitedTeamName(); as name) {
+    <div class="ap-bracket-match__forfeit">
+      <ap-badge status="cancelled" label="Forfait" />
+      <span>{{ name }}</span>
+    </div>
+  }
+</article>
