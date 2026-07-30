@@ -32,7 +32,11 @@ export class SchedulePage {
         continue;
       }
       const date = new Date(match.timeSlot.startTime);
-      const key = date.toISOString().slice(0, 10);
+      // Local calendar day, matching the locale-formatted label below and
+      // each match's own displayed kickoff time (formatKickoff) — using the
+      // UTC day here would split/merge matches inconsistently with what's
+      // shown on screen whenever a match falls near local midnight.
+      const key = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
       const entry = days.get(key) ?? {
         label: date.toLocaleDateString('fr-FR', {
           weekday: 'long',
@@ -44,8 +48,12 @@ export class SchedulePage {
       entry.matches.push(match);
       days.set(key, entry);
     }
+    // filteredMatches() is already chronologically sorted, so insertion
+    // order into the Map already reflects day order — no extra sort needed
+    // (and a string sort on the "year-month-day" key above would be wrong
+    // since it isn't zero-padded).
     return {
-      days: [...days.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([, day]) => day),
+      days: [...days.values()],
       unscheduled,
     };
   });
