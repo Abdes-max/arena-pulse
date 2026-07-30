@@ -1,10 +1,17 @@
-<label [for]="inputId" class="ap-text-field__label">{{ label() }}</label>
+<label
+  [for]="inputId"
+  class="ap-text-field__label"
+  [class.ap-text-field__label--hidden]="hideLabel()"
+>
+  {{ label() }}
+</label>
 <input
   [id]="inputId"
   class="ap-text-field__input"
   [type]="type()"
-  [value]="value()"
+  [value]="displayValue()"
   [disabled]="disabled()"
+  [attr.placeholder]="placeholder()"
   [attr.autocomplete]="autocomplete()"
   [attr.aria-invalid]="errorMessage() ? true : null"
   [attr.aria-describedby]="errorMessage() ? errorId : null"

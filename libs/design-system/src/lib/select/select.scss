@@ -2,7 +2,7 @@
   display: block;
 }
 
-.ap-text-field__label {
+.ap-select__label {
   display: block;
   font-family: var(--ap-font-body);
   font-weight: 600;
@@ -11,7 +11,9 @@
   margin-bottom: var(--ap-space-2);
 }
 
-.ap-text-field__label--hidden {
+// Visually hidden but still reachable by screen readers — for compact
+// filter bars where a floating label would break the layout.
+.ap-select__label--hidden {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -23,7 +25,7 @@
   border: 0;
 }
 
-.ap-text-field__input {
+.ap-select__control {
   display: block;
   width: 100%;
   box-sizing: border-box;
@@ -34,8 +36,22 @@
   background: var(--ap-color-surface);
   border: var(--ap-border-width) solid var(--ap-color-border);
   border-radius: var(--ap-radius-md);
-  padding: var(--ap-space-3) var(--ap-space-4);
+  padding: var(--ap-space-3) var(--ap-space-8) var(--ap-space-3) var(--ap-space-4);
+  appearance: none;
+  cursor: pointer;
   transition: border-color var(--ap-motion-fast) var(--ap-easing-standard);
+
+  // Theme-aware chevron built from two gradients (a CSS-only "V"), so its
+  // color follows --ap-color-muted per theme instead of a hardcoded SVG fill.
+  background-image: linear-gradient(45deg, transparent 50%, var(--ap-color-muted) 50%),
+    linear-gradient(135deg, var(--ap-color-muted) 50%, transparent 50%);
+  background-position:
+    calc(100% - 22px) center,
+    calc(100% - 17px) center;
+  background-size:
+    5px 5px,
+    5px 5px;
+  background-repeat: no-repeat;
 
   &:focus-visible {
     outline: var(--ap-border-width-strong) solid var(--ap-color-signal);
@@ -46,14 +62,4 @@
     opacity: var(--ap-opacity-disabled);
     cursor: not-allowed;
   }
-}
-
-:host([data-invalid]) .ap-text-field__input {
-  border-color: var(--ap-color-error);
-}
-
-.ap-text-field__error {
-  margin-top: var(--ap-space-2);
-  font-size: 0.85rem;
-  color: var(--ap-color-error);
 }
