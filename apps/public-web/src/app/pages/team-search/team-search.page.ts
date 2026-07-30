@@ -1,12 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { Select, TextField } from 'design-system';
 import { PublicApiService } from '../../core/public-api.service';
 import { TournamentContextService } from '../../core/tournament-context.service';
 import { Category, PublicTeam } from '../../core/models';
 
 @Component({
   selector: 'app-team-search-page',
-  imports: [RouterLink],
+  imports: [RouterLink, Select, TextField],
   templateUrl: './team-search.page.html',
   styleUrl: './team-search.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -47,12 +48,17 @@ export class TeamSearchPage {
     this.teams.set(await this.api.listTeams(slug, this.selectedCategoryId() || undefined));
   }
 
-  protected async onCategoryChange(event: Event): Promise<void> {
-    this.selectedCategoryId.set((event.target as HTMLSelectElement).value);
+  protected readonly categoryOptions = computed(() => [
+    { value: '', label: 'Toutes' },
+    ...this.categories().map((category) => ({ value: category.id, label: category.name })),
+  ]);
+
+  protected async onCategoryChange(categoryId: string): Promise<void> {
+    this.selectedCategoryId.set(categoryId);
     await this.loadTeams();
   }
 
-  protected onQueryChange(event: Event): void {
-    this.query.set((event.target as HTMLInputElement).value);
+  protected onQueryChange(query: string): void {
+    this.query.set(query);
   }
 }

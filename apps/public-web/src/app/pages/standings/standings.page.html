@@ -3,14 +3,13 @@
 } @else if (categories().length === 0) {
   <p>Aucune catégorie pour ce tournoi.</p>
 } @else {
-  <label class="standings-page__select-label">
-    Catégorie
-    <select [value]="selectedCategoryId()" (change)="onCategoryChange($event)">
-      @for (category of categories(); track category.id) {
-        <option [value]="category.id">{{ category.name }}</option>
-      }
-    </select>
-  </label>
+  <ap-select
+    class="standings-page__category-select"
+    label="Catégorie"
+    [value]="selectedCategoryId()"
+    [options]="categoryOptions()"
+    (valueChange)="onCategoryChange($event)"
+  />
 
   @if (tabs().length === 0) {
     <p>Aucune phase pour cette catégorie.</p>

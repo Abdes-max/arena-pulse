@@ -1,9 +1,5 @@
-.standings-page__select-label {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ap-space-1);
-  font-size: 0.85rem;
-  font-weight: 600;
+.standings-page__category-select {
+  display: block;
   max-width: 260px;
   margin-bottom: var(--ap-space-4);
 }

@@ -11,20 +11,8 @@
   background: var(--ap-color-bg);
 }
 
-.team-search-page__select-label {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ap-space-1);
-  font-size: 0.85rem;
-  font-weight: 600;
-}
-
 .team-search-page__search {
   flex: 1 1 240px;
-  padding: var(--ap-space-2) var(--ap-space-3);
-  border: var(--ap-border-width) solid var(--ap-color-border);
-  border-radius: var(--ap-radius-md);
-  font-size: 0.9rem;
 }
 
 .team-search-page__empty {

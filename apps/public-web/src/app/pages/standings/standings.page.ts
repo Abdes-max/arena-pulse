@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { Badge, BracketMatch } from 'design-system';
+import { Badge, BracketMatch, Select } from 'design-system';
 import { PublicApiService } from '../../core/public-api.service';
 import { TournamentContextService } from '../../core/tournament-context.service';
 import { Category, CompetitionPhase, Match, Qualification, Standings } from '../../core/models';
@@ -28,7 +28,7 @@ const BRACKET_ROW_HEIGHT = 96;
 
 @Component({
   selector: 'app-standings-page',
-  imports: [Badge, BracketMatch],
+  imports: [Badge, BracketMatch, Select],
   templateUrl: './standings.page.html',
   styleUrl: './standings.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -79,8 +79,12 @@ export class StandingsPage {
     }
   }
 
-  protected async onCategoryChange(event: Event): Promise<void> {
-    this.selectedCategoryId.set((event.target as HTMLSelectElement).value);
+  protected readonly categoryOptions = computed(() =>
+    this.categories().map((category) => ({ value: category.id, label: category.name })),
+  );
+
+  protected async onCategoryChange(categoryId: string): Promise<void> {
+    this.selectedCategoryId.set(categoryId);
     await this.loadPhases();
   }
 

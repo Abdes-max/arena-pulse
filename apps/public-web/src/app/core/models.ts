@@ -1,5 +1,8 @@
 export type TournamentStatus = 'DRAFT' | 'PUBLISHED' | 'UNPUBLISHED' | 'ARCHIVED';
 
+/** Visual theme of this tournament's public site + slideshow, chosen by its organizer. */
+export type PublicTheme = 'INK_SIGNAL' | 'PULSE_EMBER' | 'NEON_COURT';
+
 export interface Field {
   id: string;
   name: string;
@@ -24,6 +27,7 @@ export interface PublicTournament {
   startDate: string | null;
   endDate: string | null;
   isOnline: boolean;
+  theme: PublicTheme;
   venues: Venue[];
 }
 

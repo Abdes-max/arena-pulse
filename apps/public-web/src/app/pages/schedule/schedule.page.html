@@ -4,32 +4,30 @@
   <p>Aucune catégorie pour ce tournoi.</p>
 } @else {
   <div class="schedule-page__controls">
-    <label class="schedule-page__select-label">
-      Catégorie
-      <select [value]="selectedCategoryId()" (change)="onCategoryChange($event)">
-        @for (category of categories(); track category.id) {
-          <option [value]="category.id">{{ category.name }}</option>
-        }
-      </select>
-    </label>
+    <ap-select
+      label="Catégorie"
+      [value]="selectedCategoryId()"
+      [options]="categoryOptions()"
+      (valueChange)="onCategoryChange($event)"
+    />
 
     @if (phases().length > 0) {
-      <label class="schedule-page__select-label">
-        Phase
-        <select [value]="selectedPhaseId()" (change)="onPhaseChange($event)">
-          @for (phase of phases(); track phase.id) {
-            <option [value]="phase.id">{{ phase.name }}</option>
-          }
-        </select>
-      </label>
+      <ap-select
+        label="Phase"
+        [value]="selectedPhaseId()"
+        [options]="phaseOptions()"
+        (valueChange)="onPhaseChange($event)"
+      />
     }
 
-    <input
+    <ap-text-field
       class="schedule-page__search"
       type="search"
+      label="Rechercher une équipe ou un arbitre"
       placeholder="Rechercher une équipe ou un arbitre…"
+      [hideLabel]="true"
       [value]="query()"
-      (input)="onQueryChange($event)"
+      (valueChange)="onQueryChange($event)"
     />
   </div>
 

@@ -3,23 +3,22 @@
 } @else {
   <div class="team-search-page__controls">
     @if (categories().length > 1) {
-      <label class="team-search-page__select-label">
-        Catégorie
-        <select [value]="selectedCategoryId()" (change)="onCategoryChange($event)">
-          <option value="">Toutes</option>
-          @for (category of categories(); track category.id) {
-            <option [value]="category.id">{{ category.name }}</option>
-          }
-        </select>
-      </label>
+      <ap-select
+        label="Catégorie"
+        [value]="selectedCategoryId()"
+        [options]="categoryOptions()"
+        (valueChange)="onCategoryChange($event)"
+      />
     }
 
-    <input
+    <ap-text-field
       class="team-search-page__search"
       type="search"
+      label="Rechercher une équipe"
       placeholder="Rechercher une équipe…"
+      [hideLabel]="true"
       [value]="query()"
-      (input)="onQueryChange($event)"
+      (valueChange)="onQueryChange($event)"
     />
   </div>
 

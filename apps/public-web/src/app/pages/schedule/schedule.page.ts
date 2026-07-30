@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { MatchCard } from 'design-system';
+import { MatchCard, Select, TextField } from 'design-system';
 import { PublicApiService } from '../../core/public-api.service';
 import { TournamentContextService } from '../../core/tournament-context.service';
 import { Category, CompetitionPhase, Match } from '../../core/models';
 
 @Component({
   selector: 'app-schedule-page',
-  imports: [MatchCard],
+  imports: [MatchCard, Select, TextField],
   templateUrl: './schedule.page.html',
   styleUrl: './schedule.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -102,8 +102,16 @@ export class SchedulePage {
     }
   }
 
-  protected async onCategoryChange(event: Event): Promise<void> {
-    this.selectedCategoryId.set((event.target as HTMLSelectElement).value);
+  protected readonly categoryOptions = computed(() =>
+    this.categories().map((category) => ({ value: category.id, label: category.name })),
+  );
+
+  protected readonly phaseOptions = computed(() =>
+    this.phases().map((phase) => ({ value: phase.id, label: phase.name })),
+  );
+
+  protected async onCategoryChange(categoryId: string): Promise<void> {
+    this.selectedCategoryId.set(categoryId);
     await this.loadPhases();
   }
 
@@ -121,8 +129,8 @@ export class SchedulePage {
     }
   }
 
-  protected async onPhaseChange(event: Event): Promise<void> {
-    this.selectedPhaseId.set((event.target as HTMLSelectElement).value);
+  protected async onPhaseChange(phaseId: string): Promise<void> {
+    this.selectedPhaseId.set(phaseId);
     await this.loadMatches();
   }
 
@@ -139,8 +147,8 @@ export class SchedulePage {
     );
   }
 
-  protected onQueryChange(event: Event): void {
-    this.query.set((event.target as HTMLInputElement).value);
+  protected onQueryChange(query: string): void {
+    this.query.set(query);
   }
 
   protected formatKickoff(startTime: string): string {
