@@ -51,41 +51,33 @@
             </div>
 
             <div class="schedule-page__inline-form">
-              <label>
-                Début
-                <input
-                  type="datetime-local"
-                  [value]="startDateTime()"
-                  (input)="onStartDateTimeChange($event)"
-                />
-              </label>
-              <label>
-                Durée de match (min)
-                <input
-                  type="number"
-                  min="1"
-                  [value]="matchDurationMinutes()"
-                  (input)="onMatchDurationChange($event)"
-                />
-              </label>
-              <label>
-                Pause (min)
-                <input
-                  type="number"
-                  min="0"
-                  [value]="breakDurationMinutes()"
-                  (input)="onBreakDurationChange($event)"
-                />
-              </label>
-              <label>
-                Arbitres par match
-                <input
-                  type="number"
-                  min="1"
-                  [value]="refereesPerMatch()"
-                  (input)="onRefereesPerMatchChange($event)"
-                />
-              </label>
+              <ap-text-field
+                label="Début"
+                type="datetime-local"
+                [value]="startDateTime()"
+                (valueChange)="onStartDateTimeChange($event)"
+              />
+              <ap-text-field
+                label="Durée de match (min)"
+                type="number"
+                [min]="1"
+                [value]="matchDurationMinutes()"
+                (valueChange)="onMatchDurationChange($event)"
+              />
+              <ap-text-field
+                label="Pause (min)"
+                type="number"
+                [min]="0"
+                [value]="breakDurationMinutes()"
+                (valueChange)="onBreakDurationChange($event)"
+              />
+              <ap-text-field
+                label="Arbitres par match"
+                type="number"
+                [min]="1"
+                [value]="refereesPerMatch()"
+                (valueChange)="onRefereesPerMatchChange($event)"
+              />
             </div>
 
             <ap-button type="button" [disabled]="generating()" (click)="generateSchedule()">
@@ -201,30 +193,23 @@
                     }
 
                     <div class="schedule-page__inline-form">
-                      <label>
-                        Début
-                        <input
-                          type="datetime-local"
-                          [value]="draftFor(field.id).start"
-                          (input)="onSlotDraftChange(field.id, 'start', $event)"
-                        />
-                      </label>
-                      <label>
-                        Fin
-                        <input
-                          type="datetime-local"
-                          [value]="draftFor(field.id).end"
-                          (input)="onSlotDraftChange(field.id, 'end', $event)"
-                        />
-                      </label>
-                      <label>
-                        Libellé
-                        <input
-                          type="text"
-                          [value]="draftFor(field.id).label"
-                          (input)="onSlotDraftChange(field.id, 'label', $event)"
-                        />
-                      </label>
+                      <ap-text-field
+                        label="Début"
+                        type="datetime-local"
+                        [value]="draftFor(field.id).start"
+                        (valueChange)="onSlotDraftChange(field.id, 'start', $event)"
+                      />
+                      <ap-text-field
+                        label="Fin"
+                        type="datetime-local"
+                        [value]="draftFor(field.id).end"
+                        (valueChange)="onSlotDraftChange(field.id, 'end', $event)"
+                      />
+                      <ap-text-field
+                        label="Libellé"
+                        [value]="draftFor(field.id).label"
+                        (valueChange)="onSlotDraftChange(field.id, 'label', $event)"
+                      />
                       <ap-button type="button" variant="ghost" (click)="addTimeSlot(field.id)">
                         + Créneau
                       </ap-button>

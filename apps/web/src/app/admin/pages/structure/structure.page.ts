@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Button, Select, SelectOption } from 'design-system';
+import { Button, Select, SelectOption, TextField } from 'design-system';
 import { AuthService } from '../../core/auth.service';
 import { CompetitionFormatsService } from '../../core/competition-formats.service';
 import {
@@ -18,7 +18,7 @@ import { TournamentsService } from '../../core/tournaments.service';
 
 @Component({
   selector: 'app-structure-page',
-  imports: [Button, Select],
+  imports: [Button, Select, TextField],
   templateUrl: './structure.page.html',
   styleUrl: './structure.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -134,8 +134,8 @@ export class StructurePage {
     }
   }
 
-  protected onNewPhaseNameChange(event: Event): void {
-    this.newPhaseName.set((event.target as HTMLInputElement).value);
+  protected onNewPhaseNameChange(value: string): void {
+    this.newPhaseName.set(value);
   }
 
   protected onNewPhaseTypeChange(type: string): void {
@@ -180,8 +180,7 @@ export class StructurePage {
     return this.newGroupNameByPhase()[phaseId] ?? '';
   }
 
-  protected onNewGroupNameChange(phaseId: string, event: Event): void {
-    const value = (event.target as HTMLInputElement).value;
+  protected onNewGroupNameChange(phaseId: string, value: string): void {
     this.newGroupNameByPhase.update((names) => ({ ...names, [phaseId]: value }));
   }
 
@@ -259,9 +258,9 @@ export class StructurePage {
     }
   }
 
-  protected updateStandingRuleField(field: keyof StandingRule, event: Event): void {
-    const value = (event.target as HTMLInputElement).valueAsNumber;
-    this.groupStandingRule.update((rule) => (rule ? { ...rule, [field]: value } : rule));
+  protected updateStandingRuleField(field: keyof StandingRule, value: string): void {
+    const numericValue = Number(value);
+    this.groupStandingRule.update((rule) => (rule ? { ...rule, [field]: numericValue } : rule));
   }
 
   protected toggleStandingRuleFlag(field: keyof StandingRule, event: Event): void {
@@ -340,8 +339,10 @@ export class StructurePage {
     }
   }
 
-  protected updateQualificationRuleField(field: 'fromPosition' | 'toPosition', event: Event): void {
-    const value = (event.target as HTMLInputElement).value;
+  protected updateQualificationRuleField(
+    field: 'fromPosition' | 'toPosition',
+    value: string,
+  ): void {
     this.newQualificationRuleForm.update((form) => ({ ...form, [field]: value }));
   }
 
@@ -414,17 +415,20 @@ export class StructurePage {
     );
   }
 
-  protected onBracketFormChange(
-    phaseId: string,
-    field: 'name' | 'size' | 'hasRankingMatch',
-    event: Event,
-  ): void {
+  protected onBracketFormChange(phaseId: string, field: 'name' | 'size', value: string): void {
     const current = this.bracketFormFor(phaseId);
-    const target = event.target as HTMLInputElement;
-    const value = field === 'hasRankingMatch' ? target.checked : target.value;
     this.newBracketFormByPhase.update((forms) => ({
       ...forms,
       [phaseId]: { ...current, [field]: value },
+    }));
+  }
+
+  protected onBracketRankingMatchChange(phaseId: string, event: Event): void {
+    const current = this.bracketFormFor(phaseId);
+    const checked = (event.target as HTMLInputElement).checked;
+    this.newBracketFormByPhase.update((forms) => ({
+      ...forms,
+      [phaseId]: { ...current, hasRankingMatch: checked },
     }));
   }
 

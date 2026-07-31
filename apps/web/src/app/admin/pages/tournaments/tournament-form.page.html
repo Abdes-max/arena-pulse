@@ -102,11 +102,12 @@
               }
             </ul>
             <div class="tournament-form-page__inline-form">
-              <input
-                type="text"
+              <ap-text-field
+                label="Nouvelle division"
+                [hideLabel]="true"
                 placeholder="Nouvelle division"
                 [value]="divisionNameFor(category.id)"
-                (input)="onNewDivisionNameChange(category.id, $event)"
+                (valueChange)="onNewDivisionNameChange(category.id, $event)"
               />
               <ap-button type="button" variant="ghost" (click)="addDivision(category)"
                 >Ajouter</ap-button
@@ -115,11 +116,12 @@
           </div>
         }
         <div class="tournament-form-page__inline-form">
-          <input
-            type="text"
+          <ap-text-field
+            label="Nouvelle catégorie"
+            [hideLabel]="true"
             placeholder="Nouvelle catégorie (ex. U10)"
             [value]="newCategoryName()"
-            (input)="onNewCategoryNameChange($event)"
+            (valueChange)="onNewCategoryNameChange($event)"
           />
           <ap-button type="button" variant="ghost" (click)="addCategory()"
             >Ajouter une catégorie</ap-button
@@ -148,22 +150,24 @@
               }
             </ul>
             <div class="tournament-form-page__inline-form">
-              <input
-                type="text"
+              <ap-text-field
+                label="Nouveau terrain"
+                [hideLabel]="true"
                 placeholder="Nouveau terrain"
                 [value]="fieldNameFor(venue.id)"
-                (input)="onNewFieldNameChange(venue.id, $event)"
+                (valueChange)="onNewFieldNameChange(venue.id, $event)"
               />
               <ap-button type="button" variant="ghost" (click)="addField(venue)">Ajouter</ap-button>
             </div>
           </div>
         }
         <div class="tournament-form-page__inline-form">
-          <input
-            type="text"
+          <ap-text-field
+            label="Nouveau site"
+            [hideLabel]="true"
             placeholder="Nouveau site (ex. Stade municipal)"
             [value]="newVenueName()"
-            (input)="onNewVenueNameChange($event)"
+            (valueChange)="onNewVenueNameChange($event)"
           />
           <ap-button type="button" variant="ghost" (click)="addVenue()">Ajouter un site</ap-button>
         </div>
@@ -185,11 +189,13 @@
         </ul>
 
         <div class="tournament-form-page__add-administrator">
-          <input
+          <ap-text-field
+            label="Email du collaborateur"
+            [hideLabel]="true"
             type="email"
             placeholder="Email du collaborateur"
             [value]="newAdministratorEmail()"
-            (input)="onNewAdministratorEmailChange($event)"
+            (valueChange)="onNewAdministratorEmailChange($event)"
           />
           <div class="tournament-form-page__presets">
             <ap-button type="button" variant="ghost" (click)="applyPresetFull()">

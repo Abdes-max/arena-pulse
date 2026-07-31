@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Button, Select, SelectOption } from 'design-system';
+import { Button, Select, SelectOption, TextField } from 'design-system';
 import { AuthService } from '../../core/auth.service';
 import { Category, Player, Team, TeamImportResult } from '../../core/models';
 import { TeamsService } from '../../core/teams.service';
@@ -8,7 +8,7 @@ import { TournamentsService } from '../../core/tournaments.service';
 
 @Component({
   selector: 'app-team-list-page',
-  imports: [Button, Select],
+  imports: [Button, Select, TextField],
   templateUrl: './team-list.page.html',
   styleUrl: './team-list.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -286,12 +286,12 @@ export class TeamListPage {
     }
   }
 
-  protected onNewPlayerFirstNameChange(event: Event): void {
-    this.newPlayerFirstName.set((event.target as HTMLInputElement).value);
+  protected onNewPlayerFirstNameChange(value: string): void {
+    this.newPlayerFirstName.set(value);
   }
 
-  protected onNewPlayerLastNameChange(event: Event): void {
-    this.newPlayerLastName.set((event.target as HTMLInputElement).value);
+  protected onNewPlayerLastNameChange(value: string): void {
+    this.newPlayerLastName.set(value);
   }
 
   protected async addPlayer(team: Team): Promise<void> {

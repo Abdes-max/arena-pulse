@@ -11,11 +11,12 @@
     <section class="team-list-page__section">
       <h2>{{ editingTeamId() ? "Modifier l'équipe" : 'Ajouter une équipe' }}</h2>
       <form class="team-list-page__form" (submit)="onFormSubmit($event)">
-        <input
-          type="text"
+        <ap-text-field
+          label="Nom de l'équipe"
+          [hideLabel]="true"
           placeholder="Nom de l'équipe"
           [value]="formName()"
-          (input)="formName.set($any($event.target).value)"
+          (valueChange)="formName.set($event)"
         />
         <ap-select
           label="Catégorie"
@@ -31,23 +32,28 @@
           [value]="formDivisionId()"
           (valueChange)="formDivisionId.set($event)"
         />
-        <input
-          type="text"
+        <ap-text-field
+          label="Responsable"
+          [hideLabel]="true"
           placeholder="Responsable"
           [value]="formManagerName()"
-          (input)="formManagerName.set($any($event.target).value)"
+          (valueChange)="formManagerName.set($event)"
         />
-        <input
+        <ap-text-field
+          label="Email du responsable"
+          [hideLabel]="true"
           type="email"
           placeholder="Email du responsable"
           [value]="formManagerEmail()"
-          (input)="formManagerEmail.set($any($event.target).value)"
+          (valueChange)="formManagerEmail.set($event)"
         />
-        <input
+        <ap-text-field
+          label="Téléphone du responsable"
+          [hideLabel]="true"
           type="tel"
           placeholder="Téléphone du responsable"
           [value]="formManagerPhone()"
-          (input)="formManagerPhone.set($any($event.target).value)"
+          (valueChange)="formManagerPhone.set($event)"
         />
         <div class="team-list-page__form-actions">
           <ap-button type="submit">{{
@@ -135,17 +141,19 @@
                       }
                     </ul>
                     <div class="team-list-page__inline-form">
-                      <input
-                        type="text"
+                      <ap-text-field
+                        label="Prénom"
+                        [hideLabel]="true"
                         placeholder="Prénom"
                         [value]="newPlayerFirstName()"
-                        (input)="onNewPlayerFirstNameChange($event)"
+                        (valueChange)="onNewPlayerFirstNameChange($event)"
                       />
-                      <input
-                        type="text"
+                      <ap-text-field
+                        label="Nom"
+                        [hideLabel]="true"
                         placeholder="Nom"
                         [value]="newPlayerLastName()"
-                        (input)="onNewPlayerLastNameChange($event)"
+                        (valueChange)="onNewPlayerLastNameChange($event)"
                       />
                       <ap-button type="button" variant="ghost" (click)="addPlayer(team)">
                         Ajouter un joueur

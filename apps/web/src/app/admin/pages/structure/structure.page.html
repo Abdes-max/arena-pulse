@@ -22,11 +22,12 @@
       <section class="structure-page__section">
         <h2>Ajouter une phase</h2>
         <div class="structure-page__inline-form">
-          <input
-            type="text"
+          <ap-text-field
+            label="Nom de la phase"
+            [hideLabel]="true"
             placeholder="Nom de la phase (ex. Phase de poules)"
             [value]="newPhaseName()"
-            (input)="onNewPhaseNameChange($event)"
+            (valueChange)="onNewPhaseNameChange($event)"
           />
           <ap-select
             label="Type de phase"
@@ -101,30 +102,24 @@
                     @if (groupStandingRule(); as rule) {
                       <h3>Barème de points</h3>
                       <div class="structure-page__standing-rule">
-                        <label>
-                          Victoire
-                          <input
-                            type="number"
-                            [value]="rule.winPoints"
-                            (input)="updateStandingRuleField('winPoints', $event)"
-                          />
-                        </label>
-                        <label>
-                          Nul
-                          <input
-                            type="number"
-                            [value]="rule.drawPoints"
-                            (input)="updateStandingRuleField('drawPoints', $event)"
-                          />
-                        </label>
-                        <label>
-                          Défaite
-                          <input
-                            type="number"
-                            [value]="rule.lossPoints"
-                            (input)="updateStandingRuleField('lossPoints', $event)"
-                          />
-                        </label>
+                        <ap-text-field
+                          label="Victoire"
+                          type="number"
+                          [value]="rule.winPoints.toString()"
+                          (valueChange)="updateStandingRuleField('winPoints', $event)"
+                        />
+                        <ap-text-field
+                          label="Nul"
+                          type="number"
+                          [value]="rule.drawPoints.toString()"
+                          (valueChange)="updateStandingRuleField('drawPoints', $event)"
+                        />
+                        <ap-text-field
+                          label="Défaite"
+                          type="number"
+                          [value]="rule.lossPoints.toString()"
+                          (valueChange)="updateStandingRuleField('lossPoints', $event)"
+                        />
                         <label class="structure-page__checkbox-label">
                           <input
                             type="checkbox"
@@ -169,19 +164,23 @@
                       }
                     </ul>
                     <div class="structure-page__inline-form">
-                      <input
+                      <ap-text-field
+                        label="De"
+                        [hideLabel]="true"
                         type="number"
-                        min="1"
+                        [min]="1"
                         placeholder="De"
                         [value]="newQualificationRuleForm().fromPosition"
-                        (input)="updateQualificationRuleField('fromPosition', $event)"
+                        (valueChange)="updateQualificationRuleField('fromPosition', $event)"
                       />
-                      <input
+                      <ap-text-field
+                        label="À"
+                        [hideLabel]="true"
                         type="number"
-                        min="1"
+                        [min]="1"
                         placeholder="À"
                         [value]="newQualificationRuleForm().toPosition"
-                        (input)="updateQualificationRuleField('toPosition', $event)"
+                        (valueChange)="updateQualificationRuleField('toPosition', $event)"
                       />
                       <ap-select
                         label="Phase cible"
@@ -199,11 +198,12 @@
               </div>
             }
             <div class="structure-page__inline-form">
-              <input
-                type="text"
+              <ap-text-field
+                label="Nouvelle poule"
+                [hideLabel]="true"
                 placeholder="Nouvelle poule (ex. Poule A)"
                 [value]="groupNameFor(phase.id)"
-                (input)="onNewGroupNameChange(phase.id, $event)"
+                (valueChange)="onNewGroupNameChange(phase.id, $event)"
               />
               <ap-button type="button" variant="ghost" (click)="addGroup(phase)">
                 Ajouter une poule
@@ -232,23 +232,26 @@
               }
             } @else {
               <div class="structure-page__inline-form">
-                <input
-                  type="text"
+                <ap-text-field
+                  label="Nom du tableau"
+                  [hideLabel]="true"
                   placeholder="Nom du tableau (ex. Champions League)"
                   [value]="bracketFormFor(phase.id).name"
-                  (input)="onBracketFormChange(phase.id, 'name', $event)"
+                  (valueChange)="onBracketFormChange(phase.id, 'name', $event)"
                 />
-                <input
+                <ap-text-field
+                  label="Taille du tableau"
+                  [hideLabel]="true"
                   type="number"
-                  min="2"
+                  [min]="2"
                   [value]="bracketFormFor(phase.id).size"
-                  (input)="onBracketFormChange(phase.id, 'size', $event)"
+                  (valueChange)="onBracketFormChange(phase.id, 'size', $event)"
                 />
                 <label class="structure-page__checkbox-label">
                   <input
                     type="checkbox"
                     [checked]="bracketFormFor(phase.id).hasRankingMatch"
-                    (change)="onBracketFormChange(phase.id, 'hasRankingMatch', $event)"
+                    (change)="onBracketRankingMatchChange(phase.id, $event)"
                   />
                   Petite finale
                 </label>

@@ -238,8 +238,8 @@ export class TournamentFormPage {
     }
   }
 
-  protected onNewCategoryNameChange(event: Event): void {
-    this.newCategoryName.set((event.target as HTMLInputElement).value);
+  protected onNewCategoryNameChange(value: string): void {
+    this.newCategoryName.set(value);
   }
 
   protected async addCategory(): Promise<void> {
@@ -280,8 +280,7 @@ export class TournamentFormPage {
     return this.newDivisionNameByCategory()[categoryId] ?? '';
   }
 
-  protected onNewDivisionNameChange(categoryId: string, event: Event): void {
-    const value = (event.target as HTMLInputElement).value;
+  protected onNewDivisionNameChange(categoryId: string, value: string): void {
     this.newDivisionNameByCategory.update((names) => ({ ...names, [categoryId]: value }));
   }
 
@@ -330,8 +329,8 @@ export class TournamentFormPage {
     }
   }
 
-  protected onNewVenueNameChange(event: Event): void {
-    this.newVenueName.set((event.target as HTMLInputElement).value);
+  protected onNewVenueNameChange(value: string): void {
+    this.newVenueName.set(value);
   }
 
   protected async addVenue(): Promise<void> {
@@ -370,8 +369,7 @@ export class TournamentFormPage {
     return this.newFieldNameByVenue()[venueId] ?? '';
   }
 
-  protected onNewFieldNameChange(venueId: string, event: Event): void {
-    const value = (event.target as HTMLInputElement).value;
+  protected onNewFieldNameChange(venueId: string, value: string): void {
     this.newFieldNameByVenue.update((names) => ({ ...names, [venueId]: value }));
   }
 
@@ -416,8 +414,8 @@ export class TournamentFormPage {
     }
   }
 
-  protected onNewAdministratorEmailChange(event: Event): void {
-    this.newAdministratorEmail.set((event.target as HTMLInputElement).value);
+  protected onNewAdministratorEmailChange(value: string): void {
+    this.newAdministratorEmail.set(value);
   }
 
   protected togglePermission(key: string, event: Event): void {

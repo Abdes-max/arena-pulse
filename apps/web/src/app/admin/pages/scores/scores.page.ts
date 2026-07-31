@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Button, Select, SelectOption } from 'design-system';
+import { Button, Select, SelectOption, TextField } from 'design-system';
 import { AuthService } from '../../core/auth.service';
 import { CompetitionFormatsService } from '../../core/competition-formats.service';
 import { Category, CompetitionPhase, Match, StandingRule } from '../../core/models';
@@ -20,7 +20,7 @@ const EMPTY_DRAFT: ScoreDraft = { home: '', away: '', homePenalty: '', awayPenal
 
 @Component({
   selector: 'app-scores-page',
-  imports: [Button, Select],
+  imports: [Button, Select, TextField],
   templateUrl: './scores.page.html',
   styleUrl: './scores.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -224,8 +224,7 @@ export class ScoresPage {
     return draft.home !== '' && draft.away !== '' && draft.home === draft.away;
   }
 
-  protected onDraftChange(match: Match, key: keyof ScoreDraft, event: Event): void {
-    const value = (event.target as HTMLInputElement).value;
+  protected onDraftChange(match: Match, key: keyof ScoreDraft, value: string): void {
     this.scoreDrafts.update((drafts) => {
       const next = new Map(drafts);
       next.set(match.id, { ...this.draftFor(match), [key]: value });

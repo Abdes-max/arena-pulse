@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Button, Select, SelectOption } from 'design-system';
+import { Button, Select, SelectOption, TextField } from 'design-system';
 import { AuthService } from '../../core/auth.service';
 import { CompetitionFormatsService } from '../../core/competition-formats.service';
 import {
@@ -30,7 +30,7 @@ const EMPTY_DRAFT: TimeSlotDraft = { start: '', end: '', label: '' };
 
 @Component({
   selector: 'app-schedule-page',
-  imports: [Button, Select],
+  imports: [Button, Select, TextField],
   templateUrl: './schedule.page.html',
   styleUrl: './schedule.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -237,20 +237,20 @@ export class SchedulePage {
     );
   }
 
-  protected onStartDateTimeChange(event: Event): void {
-    this.startDateTime.set((event.target as HTMLInputElement).value);
+  protected onStartDateTimeChange(value: string): void {
+    this.startDateTime.set(value);
   }
 
-  protected onMatchDurationChange(event: Event): void {
-    this.matchDurationMinutes.set((event.target as HTMLInputElement).value);
+  protected onMatchDurationChange(value: string): void {
+    this.matchDurationMinutes.set(value);
   }
 
-  protected onBreakDurationChange(event: Event): void {
-    this.breakDurationMinutes.set((event.target as HTMLInputElement).value);
+  protected onBreakDurationChange(value: string): void {
+    this.breakDurationMinutes.set(value);
   }
 
-  protected onRefereesPerMatchChange(event: Event): void {
-    this.refereesPerMatch.set((event.target as HTMLInputElement).value);
+  protected onRefereesPerMatchChange(value: string): void {
+    this.refereesPerMatch.set(value);
   }
 
   protected async generateSchedule(): Promise<void> {
@@ -468,8 +468,7 @@ export class SchedulePage {
     return this.newSlotDrafts().get(fieldId) ?? EMPTY_DRAFT;
   }
 
-  protected onSlotDraftChange(fieldId: string, key: keyof TimeSlotDraft, event: Event): void {
-    const value = (event.target as HTMLInputElement).value;
+  protected onSlotDraftChange(fieldId: string, key: keyof TimeSlotDraft, value: string): void {
     this.newSlotDrafts.update((drafts) => {
       const next = new Map(drafts);
       next.set(fieldId, { ...this.draftFor(fieldId), [key]: value });

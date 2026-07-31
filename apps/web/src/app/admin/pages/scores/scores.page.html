@@ -54,39 +54,47 @@
                       </ap-button>
                     } @else {
                       <span class="scores-page__team">{{ match.homeTeam?.name ?? '?' }}</span>
-                      <input
+                      <ap-text-field
                         class="scores-page__score-input"
+                        label="Score à domicile"
+                        [hideLabel]="true"
                         type="number"
-                        min="0"
+                        [min]="0"
                         [value]="draftFor(match).home"
-                        (input)="onDraftChange(match, 'home', $event)"
+                        (valueChange)="onDraftChange(match, 'home', $event)"
                       />
                       <span>-</span>
-                      <input
+                      <ap-text-field
                         class="scores-page__score-input"
+                        label="Score à l'extérieur"
+                        [hideLabel]="true"
                         type="number"
-                        min="0"
+                        [min]="0"
                         [value]="draftFor(match).away"
-                        (input)="onDraftChange(match, 'away', $event)"
+                        (valueChange)="onDraftChange(match, 'away', $event)"
                       />
                       <span class="scores-page__team">{{ match.awayTeam?.name ?? '?' }}</span>
 
                       @if (isDraw(match) && penaltyShootoutEnabled(match)) {
                         <span class="scores-page__penalty-label">Tirs au but</span>
-                        <input
+                        <ap-text-field
                           class="scores-page__score-input"
+                          label="Tirs au but à domicile"
+                          [hideLabel]="true"
                           type="number"
-                          min="0"
+                          [min]="0"
                           [value]="draftFor(match).homePenalty"
-                          (input)="onDraftChange(match, 'homePenalty', $event)"
+                          (valueChange)="onDraftChange(match, 'homePenalty', $event)"
                         />
                         <span>-</span>
-                        <input
+                        <ap-text-field
                           class="scores-page__score-input"
+                          label="Tirs au but à l'extérieur"
+                          [hideLabel]="true"
                           type="number"
-                          min="0"
+                          [min]="0"
                           [value]="draftFor(match).awayPenalty"
-                          (input)="onDraftChange(match, 'awayPenalty', $event)"
+                          (valueChange)="onDraftChange(match, 'awayPenalty', $event)"
                         />
                       }
 
@@ -138,20 +146,24 @@
                 @for (match of matchesByTimeSlot().unscheduled; track match.id) {
                   <li class="scores-page__match">
                     <span class="scores-page__team">{{ match.homeTeam?.name ?? '?' }}</span>
-                    <input
+                    <ap-text-field
                       class="scores-page__score-input"
+                      label="Score à domicile"
+                      [hideLabel]="true"
                       type="number"
-                      min="0"
+                      [min]="0"
                       [value]="draftFor(match).home"
-                      (input)="onDraftChange(match, 'home', $event)"
+                      (valueChange)="onDraftChange(match, 'home', $event)"
                     />
                     <span>-</span>
-                    <input
+                    <ap-text-field
                       class="scores-page__score-input"
+                      label="Score à l'extérieur"
+                      [hideLabel]="true"
                       type="number"
-                      min="0"
+                      [min]="0"
                       [value]="draftFor(match).away"
-                      (input)="onDraftChange(match, 'away', $event)"
+                      (valueChange)="onDraftChange(match, 'away', $event)"
                     />
                     <span class="scores-page__team">{{ match.awayTeam?.name ?? '?' }}</span>
                     <ap-button type="button" variant="ghost" (click)="saveScore(match)">

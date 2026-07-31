@@ -17,3 +17,33 @@ html {
 body {
   margin: 0;
 }
+
+// Themed baseline for the handful of native form controls the design
+// system doesn't wrap in a component (checkboxes, file inputs, textareas --
+// ap-select/ap-text-field cover everything else). Kept minimal on purpose:
+// just enough to match the palette, not a full custom control.
+input[type='checkbox'] {
+  accent-color: var(--ap-color-primary);
+}
+
+input[type='file'],
+textarea {
+  font-family: var(--ap-font-body);
+  font-size: 1rem;
+  color: var(--ap-color-fg);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  padding: var(--ap-space-3) var(--ap-space-4);
+}
+
+textarea {
+  box-sizing: border-box;
+  width: 100%;
+  font-family: monospace;
+
+  &:focus-visible {
+    outline: var(--ap-border-width-strong) solid var(--ap-color-signal);
+    outline-offset: 2px;
+  }
+}

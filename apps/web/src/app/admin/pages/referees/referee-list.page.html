@@ -20,29 +20,35 @@
     <section class="referee-list-page__section">
       <h2>{{ editingRefereeId() ? "Modifier l'arbitre" : 'Ajouter un arbitre' }}</h2>
       <form class="referee-list-page__form" (submit)="onFormSubmit($event)">
-        <input
-          type="text"
+        <ap-text-field
+          label="Prénom"
+          [hideLabel]="true"
           placeholder="Prénom"
           [value]="formFirstName()"
-          (input)="formFirstName.set($any($event.target).value)"
+          (valueChange)="formFirstName.set($event)"
         />
-        <input
-          type="text"
+        <ap-text-field
+          label="Nom"
+          [hideLabel]="true"
           placeholder="Nom"
           [value]="formLastName()"
-          (input)="formLastName.set($any($event.target).value)"
+          (valueChange)="formLastName.set($event)"
         />
-        <input
+        <ap-text-field
+          label="Email"
+          [hideLabel]="true"
           type="email"
           placeholder="Email"
           [value]="formEmail()"
-          (input)="formEmail.set($any($event.target).value)"
+          (valueChange)="formEmail.set($event)"
         />
-        <input
+        <ap-text-field
+          label="Téléphone"
+          [hideLabel]="true"
           type="tel"
           placeholder="Téléphone"
           [value]="formPhone()"
-          (input)="formPhone.set($any($event.target).value)"
+          (valueChange)="formPhone.set($event)"
         />
         <div class="referee-list-page__form-actions">
           <ap-button type="submit">{{ editingRefereeId() ? 'Enregistrer' : 'Ajouter' }}</ap-button>
