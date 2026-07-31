@@ -19,11 +19,5 @@ export default defineConfig({
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,
     },
-    {
-      command: 'npm run dev:admin-web -- --port 4300',
-      url: 'http://localhost:4300',
-      reuseExistingServer: !process.env.CI,
-      timeout: 120_000,
-    },
   ],
 });

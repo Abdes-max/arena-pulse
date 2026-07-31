@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 // Starts local infrastructure (Docker Compose: PostgreSQL, MinIO, Mailhog) and
-// the 3 native apps (api, public-web, admin-web). Safe to re-run: any Arena
-// Pulse service already running is left alone instead of started twice. On a
-// machine running several projects, a plain "is the port open" check can't
-// tell our dev server apart from someone else's — so each app is verified by
-// its actual response, not just whether the port answers.
+// the 2 native apps (api, web — mobile is started separately via
+// `npm run dev:mobile`). Safe to re-run: any Arena Pulse service already
+// running is left alone instead of started twice. On a machine running
+// several projects, a plain "is the port open" check can't tell our dev
+// server apart from someone else's — so each app is verified by its actual
+// response, not just whether the port answers.
 import { spawn, spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, openSync, readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -84,22 +85,13 @@ async function main() {
   console.log('3/4 — API (NestJS)');
   await ensureNativeService('api', 'npm', ['--prefix', 'apps/api', 'run', 'start:dev'], 3000, '/api/v1', 'Hello World');
 
-  console.log('4/4 — Web apps (Angular)');
-  await ensureNativeService('web', 'npx', ['ng', 'serve', 'web'], 4200, '/', 'PublicWeb');
-  await ensureNativeService(
-    'admin-web',
-    'npx',
-    ['ng', 'serve', 'admin-web', '--port', '4300'],
-    4300,
-    '/',
-    'AdminWeb',
-  );
+  console.log('4/4 — Web app (Angular)');
+  await ensureNativeService('web', 'npx', ['ng', 'serve', 'web'], 4200, '/', 'Arena Pulse');
 
   writeFileSync(pidsFile, JSON.stringify(pids, null, 2));
 
   console.log('\nArena Pulse:');
-  console.log('  web         http://localhost:4200');
-  console.log('  admin-web   http://localhost:4300');
+  console.log('  web         http://localhost:4200 (site public + /admin)');
   console.log('  api         http://localhost:3000/api/docs');
   console.log('  minio       http://localhost:9001 (console)');
   console.log('  mailhog     http://localhost:8025');

@@ -24,16 +24,13 @@ jobs:
       - run: npx ng lint api-client
       - run: npx ng lint realtime-client
       - run: npm run lint:web
-      - run: npm run lint:admin-web
       - run: npm run lint:mobile
       - run: npm run build:web
-      - run: npm run build:admin-web
       - run: npm run build:mobile
       - run: npm run test:shared-models
       - run: npm run test:api-client
       - run: npm run test:realtime-client
       - run: npm run test:web
-      - run: npm run test:admin-web
       - run: npm run test:mobile
 
   api:
@@ -61,8 +58,8 @@ jobs:
       JWT_SECRET: ci-only-secret-never-used-outside-tests
       JWT_EXPIRES_IN: 3600s
       JWT_REFRESH_EXPIRES_IN: 30d
-      CORS_ORIGIN: http://localhost:4300
-      ADMIN_WEB_URL: http://localhost:4300
+      CORS_ORIGIN: http://localhost:4200
+      ADMIN_WEB_URL: http://localhost:4200
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
