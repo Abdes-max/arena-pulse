@@ -25,6 +25,7 @@ import { PublicController } from './public.controller';
 import { PublicService } from './public.service';
 import { QualificationRulesController } from './qualification-rules.controller';
 import { QualificationRulesService } from './qualification-rules.service';
+import { RealtimeService } from './realtime.service';
 import { RefereesController } from './referees.controller';
 import { RefereesService } from './referees.service';
 import { ScheduleController } from './schedule.controller';
@@ -91,6 +92,7 @@ import { VenuesService } from './venues.service';
     StandingsService,
     BracketsService,
     PublicService,
+    RealtimeService,
   ],
   exports: [TournamentPermissionGuard],
 })

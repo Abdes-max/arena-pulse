@@ -8,6 +8,7 @@ import { KnockoutBracket, MatchScore } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { isPowerOfTwo, seedOrder } from './bracket-seeding.util';
 import { MATCH_INCLUDE, toMatchSummary } from './match-summary.util';
+import { RealtimeService } from './realtime.service';
 import { StandingsService } from './standings.service';
 import { TournamentsService } from './tournaments.service';
 
@@ -38,6 +39,7 @@ export class BracketsService {
     private readonly prisma: PrismaService,
     private readonly tournamentsService: TournamentsService,
     private readonly standingsService: StandingsService,
+    private readonly realtimeService: RealtimeService,
   ) {}
 
   async generateMatches(
@@ -124,6 +126,7 @@ export class BracketsService {
   async tryAdvanceRound(bracketId: string, round: number): Promise<void> {
     const bracket = await this.prisma.knockoutBracket.findUnique({
       where: { id: bracketId },
+      include: { phase: { include: { category: true } } },
     });
     if (!bracket) {
       return;
@@ -190,6 +193,17 @@ export class BracketsService {
       }
     }
     await this.prisma.match.createMany({ data: rows });
+    const created = await this.prisma.match.findMany({
+      where: { knockoutBracketId: bracketId, round: nextRound },
+      select: { id: true },
+    });
+    for (const { id: matchId } of created) {
+      this.realtimeService.emit({
+        tournamentId: bracket.phase.category.tournamentId,
+        type: 'match-updated',
+        matchId,
+      });
+    }
   }
 
   private getWinnerTeamId(match: MatchOutcomeInput): string | null {
