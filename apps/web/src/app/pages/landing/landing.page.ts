@@ -1,5 +1,7 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { Button } from 'design-system';
+import { ThemeService } from 'design-tokens';
 
 interface Feature {
   title: string;
@@ -8,12 +10,21 @@ interface Feature {
 
 @Component({
   selector: 'app-landing-page',
-  imports: [RouterLink],
+  imports: [RouterLink, Button],
   templateUrl: './landing.page.html',
   styleUrl: './landing.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LandingPage {
+  private readonly themeService = inject(ThemeService);
+
+  protected readonly mode = this.themeService.mode;
+
+  protected toggleMode(): void {
+    const next = this.mode() === 'dark' ? 'light' : 'dark';
+    this.themeService.setMode(document.documentElement, next);
+  }
+
   protected readonly features: Feature[] = [
     {
       title: 'Poules et classements',

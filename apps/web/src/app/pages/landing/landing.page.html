@@ -1,5 +1,8 @@
 <nav class="landing-page__nav">
   <span class="landing-page__nav-brand">Arena Pulse</span>
+  <ap-button type="button" variant="ghost" (click)="toggleMode()">
+    {{ mode() === 'dark' ? 'Mode clair' : 'Mode sombre' }}
+  </ap-button>
   <a class="landing-page__nav-login" routerLink="/login">Se connecter</a>
 </nav>
 
