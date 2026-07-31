@@ -66,6 +66,7 @@ export interface Permission {
 export interface Tournament {
   id: string;
   name: string;
+  slug: string;
   status: TournamentStatus;
   sportId: string;
   sportName: string;
