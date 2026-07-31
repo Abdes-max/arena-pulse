@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { environment } from '../../../environments/environment';
+import { RouterLink } from '@angular/router';
 
 interface Feature {
   title: string;
@@ -8,15 +8,12 @@ interface Feature {
 
 @Component({
   selector: 'app-landing-page',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './landing.page.html',
   styleUrl: './landing.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LandingPage {
-  protected readonly registerUrl = `${environment.adminUrl}/register`;
-  protected readonly loginUrl = `${environment.adminUrl}/login`;
-
   protected readonly features: Feature[] = [
     {
       title: 'Poules et classements',

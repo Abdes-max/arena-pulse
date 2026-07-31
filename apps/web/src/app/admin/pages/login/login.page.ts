@@ -34,7 +34,7 @@ export class LoginPage {
     try {
       const { email, password } = this.form.getRawValue();
       await this.authService.login(email, password);
-      const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/tournaments';
+      const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/admin/tournaments';
       await this.router.navigateByUrl(returnUrl);
     } catch {
       this.errorMessage.set('Email ou mot de passe incorrect.');

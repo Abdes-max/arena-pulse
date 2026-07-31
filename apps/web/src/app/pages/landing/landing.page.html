@@ -1,6 +1,6 @@
 <nav class="landing-page__nav">
   <span class="landing-page__nav-brand">Arena Pulse</span>
-  <a class="landing-page__nav-login" [href]="loginUrl">Se connecter</a>
+  <a class="landing-page__nav-login" routerLink="/login">Se connecter</a>
 </nav>
 
 <header class="landing-page__hero">
@@ -10,7 +10,7 @@
     Poules, tableaux à élimination, calendrier, arbitrage et classements — et un site public généré
     automatiquement pour chacun de vos tournois, sans configuration supplémentaire.
   </p>
-  <a class="landing-page__cta" [href]="registerUrl">Créer mon tournoi</a>
+  <a class="landing-page__cta" routerLink="/register">Créer mon tournoi</a>
 </header>
 
 <section class="landing-page__features">
@@ -38,5 +38,5 @@
 
 <footer class="landing-page__final-cta">
   <h2>Prêt à organiser votre prochain tournoi ?</h2>
-  <a class="landing-page__cta" [href]="registerUrl">Créer mon tournoi</a>
+  <a class="landing-page__cta" routerLink="/register">Créer mon tournoi</a>
 </footer>

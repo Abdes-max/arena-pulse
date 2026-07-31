@@ -139,28 +139,28 @@ export class TournamentListPage {
         break;
       case 'add-team':
         if (latest) {
-          void this.router.navigate(['/tournaments', latest.id, 'teams']);
+          void this.router.navigate(['/admin/tournaments', latest.id, 'teams']);
         }
         break;
       case 'structure':
         if (latest) {
-          void this.router.navigate(['/tournaments', latest.id, 'structure']);
+          void this.router.navigate(['/admin/tournaments', latest.id, 'structure']);
         }
         break;
       case 'publish':
         if (latest) {
-          void this.router.navigate(['/tournaments', latest.id]);
+          void this.router.navigate(['/admin/tournaments', latest.id]);
         }
         break;
     }
   }
 
   protected goToCreate(): void {
-    void this.router.navigateByUrl('/tournaments/new');
+    void this.router.navigateByUrl('/admin/tournaments/new');
   }
 
   protected editTournament(tournament: Tournament): void {
-    void this.router.navigate(['/tournaments', tournament.id]);
+    void this.router.navigate(['/admin/tournaments', tournament.id]);
   }
 
   protected async duplicate(tournament: Tournament): Promise<void> {

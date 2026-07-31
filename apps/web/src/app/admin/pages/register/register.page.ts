@@ -36,7 +36,7 @@ export class RegisterPage {
     this.errorMessage.set(null);
     try {
       await this.authService.register(this.form.getRawValue());
-      await this.router.navigateByUrl('/tournaments');
+      await this.router.navigateByUrl('/admin/tournaments');
     } catch (error) {
       if (error instanceof HttpErrorResponse && error.status === 409) {
         this.errorMessage.set('Un compte existe déjà avec cet email.');

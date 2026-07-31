@@ -162,7 +162,7 @@ export class TournamentFormPage {
           isOnline,
           theme,
         });
-        await this.router.navigate(['/tournaments', created.id]);
+        await this.router.navigate(['/admin/tournaments', created.id]);
       }
     } catch {
       this.errorMessage.set("Impossible d'enregistrer le tournoi.");
@@ -203,7 +203,7 @@ export class TournamentFormPage {
     }
     try {
       const clone = await this.tournamentsService.duplicate(organizationId, tournamentId);
-      await this.router.navigate(['/tournaments', clone.id]);
+      await this.router.navigate(['/admin/tournaments', clone.id]);
     } catch {
       this.errorMessage.set('Impossible de dupliquer ce tournoi.');
     }

@@ -66,7 +66,7 @@ export class AcceptInvitationPage {
       if (response.accessToken) {
         await this.authService.applyAccessToken(response.accessToken);
       }
-      await this.router.navigateByUrl('/tournaments');
+      await this.router.navigateByUrl('/admin/tournaments');
     } catch {
       this.errorMessage.set('Une erreur est survenue, réessayez.');
     } finally {
@@ -80,7 +80,7 @@ export class AcceptInvitationPage {
     try {
       await this.invitationsService.accept(this.token, {});
       await this.authService.loadProfile();
-      await this.router.navigateByUrl('/tournaments');
+      await this.router.navigateByUrl('/admin/tournaments');
     } catch {
       this.errorMessage.set('Une erreur est survenue, réessayez.');
     } finally {
