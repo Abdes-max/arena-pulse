@@ -10,6 +10,7 @@ import { ActivatedRoute } from '@angular/router';
 import { PublicApiService } from 'api-client';
 import {
   IonBadge,
+  IonButton,
   IonContent,
   IonItem,
   IonLabel,
@@ -17,11 +18,12 @@ import {
   IonListHeader,
 } from '@ionic/angular/standalone';
 import { PublicTeamDetail } from 'shared-models';
+import { FavoritesService } from '../../core/favorites.service';
 import { TournamentContextService } from '../../core/tournament-context.service';
 
 @Component({
   selector: 'app-team-detail-page',
-  imports: [IonContent, IonList, IonListHeader, IonItem, IonLabel, IonBadge],
+  imports: [IonContent, IonList, IonListHeader, IonItem, IonLabel, IonBadge, IonButton],
   templateUrl: './team-detail.page.html',
   styleUrl: './team-detail.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,6 +32,7 @@ export class TeamDetailPage {
   private readonly route = inject(ActivatedRoute);
   private readonly api = inject(PublicApiService);
   private readonly context = inject(TournamentContextService);
+  protected readonly favorites = inject(FavoritesService);
 
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal<string | null>(null);
@@ -64,6 +67,18 @@ export class TeamDetailPage {
       this.errorMessage.set('Impossible de charger cette équipe.');
     } finally {
       this.loading.set(false);
+    }
+  }
+
+  protected isFavorite(): boolean {
+    const team = this.team();
+    return team ? this.favorites.isFavorite(this.context.slug(), team.id) : false;
+  }
+
+  protected toggleFavorite(): void {
+    const team = this.team();
+    if (team) {
+      this.favorites.toggle(this.context.slug(), team.id, team.name);
     }
   }
 

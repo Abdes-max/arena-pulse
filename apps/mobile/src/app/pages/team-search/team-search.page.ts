@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { PublicApiService } from 'api-client';
 import {
+  IonButton,
   IonContent,
   IonItem,
   IonLabel,
@@ -11,12 +12,12 @@ import {
   IonSelectOption,
 } from '@ionic/angular/standalone';
 import { Category, PublicTeam } from 'shared-models';
+import { FavoritesService } from '../../core/favorites.service';
 import { TournamentContextService } from '../../core/tournament-context.service';
 
 @Component({
   selector: 'app-team-search-page',
   imports: [
-    RouterLink,
     IonContent,
     IonSelect,
     IonSelectOption,
@@ -24,6 +25,7 @@ import { TournamentContextService } from '../../core/tournament-context.service'
     IonList,
     IonItem,
     IonLabel,
+    IonButton,
   ],
   templateUrl: './team-search.page.html',
   styleUrl: './team-search.page.scss',
@@ -31,7 +33,9 @@ import { TournamentContextService } from '../../core/tournament-context.service'
 })
 export class TeamSearchPage {
   private readonly api = inject(PublicApiService);
+  private readonly router = inject(Router);
   private readonly context = inject(TournamentContextService);
+  protected readonly favorites = inject(FavoritesService);
 
   protected readonly loading = signal(true);
   protected readonly categories = signal<Category[]>([]);
@@ -72,5 +76,18 @@ export class TeamSearchPage {
 
   protected onQueryChange(query: string | null | undefined): void {
     this.query.set(query ?? '');
+  }
+
+  protected goToTeam(team: PublicTeam): void {
+    void this.router.navigate(['/', this.context.slug(), 'team', team.id]);
+  }
+
+  protected isFavorite(team: PublicTeam): boolean {
+    return this.favorites.isFavorite(this.context.slug(), team.id);
+  }
+
+  protected toggleFavorite(event: Event, team: PublicTeam): void {
+    event.stopPropagation();
+    this.favorites.toggle(this.context.slug(), team.id, team.name);
   }
 }

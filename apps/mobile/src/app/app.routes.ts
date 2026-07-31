@@ -31,6 +31,11 @@ export const routes: Routes = [
           import('./pages/team-search/team-search.page').then((m) => m.TeamSearchPage),
       },
       {
+        path: 'favorites',
+        loadComponent: () =>
+          import('./pages/favorites/favorites.page').then((m) => m.FavoritesPage),
+      },
+      {
         path: 'team/:teamId',
         loadComponent: () =>
           import('./pages/team-detail/team-detail.page').then((m) => m.TeamDetailPage),

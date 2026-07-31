@@ -1,0 +1,23 @@
+@if (teams().length === 0) {
+  <ion-content class="favorites-page__status">
+    <p>Aucune équipe favorite pour ce tournoi. Ajoutez-en depuis sa fiche ou la recherche.</p>
+  </ion-content>
+} @else {
+  <ion-content class="favorites-page">
+    <ion-list>
+      @for (team of teams(); track team.teamId) {
+        <ion-item (click)="goToTeam(team.teamId)" class="favorites-page__row">
+          <ion-label>{{ team.teamName }}</ion-label>
+          <ion-button
+            slot="end"
+            fill="clear"
+            aria-label="Retirer des favoris"
+            (click)="$event.stopPropagation(); removeFavorite(team.teamId, team.teamName)"
+          >
+            ★
+          </ion-button>
+        </ion-item>
+      }
+    </ion-list>
+  </ion-content>
+}

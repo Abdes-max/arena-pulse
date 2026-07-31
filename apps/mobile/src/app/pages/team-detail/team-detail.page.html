@@ -17,6 +17,14 @@
             · {{ t.groupName }}
           }
         </span>
+        <ion-button
+          class="team-detail-page__favorite"
+          fill="clear"
+          [attr.aria-label]="isFavorite() ? 'Retirer des favoris' : 'Ajouter aux favoris'"
+          (click)="toggleFavorite()"
+        >
+          {{ isFavorite() ? '★ Favori' : '☆ Favori' }}
+        </ion-button>
       </ion-list-header>
 
       @if (t.standing; as standing) {
