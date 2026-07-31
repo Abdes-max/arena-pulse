@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Button } from 'design-system';
+import { Button, TextField } from 'design-system';
 import { AuthService } from '../../core/auth.service';
 import { Referee, TournamentDetail } from '../../core/models';
 import { RefereesService } from '../../core/referees.service';
@@ -8,7 +8,7 @@ import { TournamentsService } from '../../core/tournaments.service';
 
 @Component({
   selector: 'app-referee-list-page',
-  imports: [Button],
+  imports: [Button, TextField],
   templateUrl: './referee-list.page.html',
   styleUrl: './referee-list.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

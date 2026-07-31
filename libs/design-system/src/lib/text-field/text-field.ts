@@ -9,7 +9,8 @@ import {
 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
-export type TextFieldType = 'text' | 'email' | 'password' | 'search';
+export type TextFieldType =
+  'text' | 'email' | 'password' | 'search' | 'tel' | 'number' | 'datetime-local';
 
 let nextId = 0;
 
@@ -42,6 +43,7 @@ export class TextField implements ControlValueAccessor {
   readonly errorMessage = input<string | null>(null);
   readonly autocomplete = input<string | null>(null);
   readonly placeholder = input<string | null>(null);
+  readonly min = input<number | string | null>(null);
 
   /**
    * Controlled-component inputs, for pages that render from plain signals
@@ -54,14 +56,22 @@ export class TextField implements ControlValueAccessor {
   protected readonly inputId = `ap-text-field-${nextId++}`;
   protected readonly errorId = `${this.inputId}-error`;
 
-  private readonly cvaValue = signal<string | null>(null);
-  protected readonly displayValue = computed(() => this.cvaValue() ?? this.value());
+  // Only trust cvaValue once Angular forms actually calls writeValue() -- a
+  // controlled (non-form) consumer that clears its own signal after handling
+  // valueChange (e.g. an "add then reset the field" form) must keep winning,
+  // not get stuck on the last keystroke forever. Same fix as ap-select.
+  private readonly isCvaBound = signal(false);
+  private readonly cvaValue = signal('');
+  protected readonly displayValue = computed(() =>
+    this.isCvaBound() ? this.cvaValue() : this.value(),
+  );
   protected readonly disabled = signal(false);
 
   private onChange: (value: string) => void = noop;
   private onTouched: () => void = noop;
 
   writeValue(value: string): void {
+    this.isCvaBound.set(true);
     this.cvaValue.set(value ?? '');
   }
 
@@ -79,7 +89,9 @@ export class TextField implements ControlValueAccessor {
 
   protected handleInput(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
-    this.cvaValue.set(value);
+    if (this.isCvaBound()) {
+      this.cvaValue.set(value);
+    }
     this.onChange(value);
     this.valueChange.emit(value);
   }
