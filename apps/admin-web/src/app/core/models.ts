@@ -1,3 +1,13 @@
+import {
+  CompetitionGroup,
+  CompetitionPhaseType,
+  KnockoutBracket,
+  PublicTheme,
+  TournamentStatus,
+} from 'shared-models';
+
+export * from 'shared-models';
+
 export type OrganizationRole = 'ORG_ADMIN' | 'ORG_MEMBER';
 
 export interface User {
@@ -52,11 +62,6 @@ export interface Permission {
   key: string;
   label: string;
 }
-
-export type TournamentStatus = 'DRAFT' | 'PUBLISHED' | 'UNPUBLISHED' | 'ARCHIVED';
-
-/** Visual theme of a tournament's public site + slideshow only — admin-web itself always stays Ink & Signal. */
-export type PublicTheme = 'INK_SIGNAL' | 'PULSE_EMBER' | 'NEON_COURT';
 
 export interface Tournament {
   id: string;
@@ -134,21 +139,6 @@ export interface Player {
   isCaptain: boolean;
 }
 
-export interface Field {
-  id: string;
-  name: string;
-  surface: string | null;
-  position: number;
-}
-
-export interface Venue {
-  id: string;
-  name: string;
-  address: string | null;
-  position: number;
-  fields: Field[];
-}
-
 export interface Referee {
   id: string;
   firstName: string;
@@ -163,23 +153,6 @@ export interface TimeSlot {
   startTime: string;
   endTime: string;
   label: string | null;
-}
-
-export type CompetitionPhaseType = 'GROUP_STAGE' | 'KNOCKOUT';
-
-export interface KnockoutBracket {
-  id: string;
-  phaseId: string;
-  name: string;
-  size: number;
-  hasRankingMatch: boolean;
-}
-
-export interface CompetitionGroup {
-  id: string;
-  phaseId: string;
-  name: string;
-  position: number;
 }
 
 export interface CompetitionPhase {
@@ -213,69 +186,3 @@ export interface QualificationRule {
   targetPhaseName: string;
 }
 
-export interface StandingRow {
-  teamId: string;
-  teamName: string;
-  played: number;
-  won: number;
-  drawn: number;
-  lost: number;
-  goalsFor: number;
-  goalsAgainst: number;
-  goalDifference: number;
-  points: number;
-  position: number;
-}
-
-export interface Standings {
-  rows: StandingRow[];
-  isComplete: boolean;
-}
-
-export interface Qualification {
-  ruleId: string;
-  fromPosition: number;
-  toPosition: number;
-  targetPhaseId: string;
-  targetPhaseName: string;
-  qualifiedTeams: { id: string; name: string; position: number }[];
-}
-
-export type MatchStatus =
-  'SCHEDULED' | 'LIVE' | 'COMPLETED' | 'POSTPONED' | 'CANCELLED' | 'FORFEITED';
-
-export interface MatchOfficial {
-  id: string;
-  referee: { id: string; firstName: string; lastName: string } | null;
-  refereeingTeam: { id: string; name: string } | null;
-}
-
-export interface MatchScore {
-  homeScore: number;
-  awayScore: number;
-  homePenaltyScore: number | null;
-  awayPenaltyScore: number | null;
-  isValidated: boolean;
-  validatedAt: string | null;
-}
-
-export interface Match {
-  id: string;
-  groupId: string | null;
-  knockoutBracketId: string | null;
-  bracketSlot: number | null;
-  isThirdPlaceMatch: boolean;
-  round: number;
-  status: MatchStatus;
-  homeTeam: { id: string; name: string } | null;
-  awayTeam: { id: string; name: string } | null;
-  forfeitedTeam: { id: string; name: string } | null;
-  timeSlot: {
-    id: string;
-    startTime: string;
-    endTime: string;
-    field: { id: string; name: string };
-  } | null;
-  officials: MatchOfficial[];
-  score: MatchScore | null;
-}
