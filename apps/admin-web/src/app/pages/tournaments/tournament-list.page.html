@@ -11,6 +11,14 @@
       <p class="tournament-list-page__error" role="alert">{{ message }}</p>
     }
 
+    @if (showOnboarding()) {
+      <app-onboarding-checklist
+        [steps]="onboardingSteps()"
+        (stepClick)="onOnboardingStepClick($event)"
+        (dismiss)="dismissOnboarding()"
+      />
+    }
+
     @if (tournaments().length === 0) {
       <p>Aucun tournoi pour l'instant.</p>
     } @else {
