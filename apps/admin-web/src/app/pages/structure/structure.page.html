@@ -219,9 +219,19 @@
                   · petite finale
                 }
               </p>
+              <ap-button
+                type="button"
+                [disabled]="generatingBracketId() === bracket.id"
+                (click)="generateBracketMatches(phase)"
+              >
+                Générer les matchs du tableau
+              </ap-button>
               <ap-button type="button" variant="ghost" (click)="removeBracket(phase)">
                 Supprimer le tableau
               </ap-button>
+              @if (bracketGeneratedMessage(); as message) {
+                <p class="structure-page__success">{{ message }}</p>
+              }
             } @else {
               <div class="structure-page__inline-form">
                 <input

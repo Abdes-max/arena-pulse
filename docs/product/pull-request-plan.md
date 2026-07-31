@@ -28,5 +28,8 @@ Confirmation du découpage proposé par la mission (§38), sans modification à 
 | 22 | `feat/022-accessibility-hardening` | Durcissement accessibilité |
 | 23 | `feat/023-observability` | Observabilité |
 | 24 | `feat/024-deployment` | Déploiement |
+| 25 | `feat/025-player-registration-and-payments` | Comptes joueurs publics, inscription en ligne sur le site public, paiement (prestataire à choisir), suivi organisateur des paiements |
+| 26 | `feat/026-rating-system` | Système de rating (ELO/Glicko à arbitrer) en complément du classement par points existant, mis à jour à chaque match validé |
+| 27 | `feat/027-ai-assistant` | Assistant en langage naturel côté admin (création de compétition, requêtes sur les données du tournoi) |
 
 **Point d'attention identifié lors de cet audit** : l'admin n'étant pas encore analysée, le contenu exact de `feat/012-schedule-editor` (vue par terrain/équipe/poule, historique, undo/redo) et `feat/013-scorekeeping` (centre de gestion du direct) pourra nécessiter un début de scission une fois l'audit admin réalisé, si la complexité observée le justifie. Ce sera réévalué dans la prochaine mise à jour de ce document.

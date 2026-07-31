@@ -55,6 +55,9 @@ export interface Permission {
 
 export type TournamentStatus = 'DRAFT' | 'PUBLISHED' | 'UNPUBLISHED' | 'ARCHIVED';
 
+/** Visual theme of a tournament's public site + slideshow only — admin-web itself always stays Ink & Signal. */
+export type PublicTheme = 'INK_SIGNAL' | 'PULSE_EMBER' | 'NEON_COURT';
+
 export interface Tournament {
   id: string;
   name: string;
@@ -64,6 +67,7 @@ export interface Tournament {
   startDate: string | null;
   endDate: string | null;
   isOnline: boolean;
+  theme: PublicTheme;
   createdAt: string;
 }
 
@@ -257,7 +261,10 @@ export interface MatchScore {
 
 export interface Match {
   id: string;
-  groupId: string;
+  groupId: string | null;
+  knockoutBracketId: string | null;
+  bracketSlot: number | null;
+  isThirdPlaceMatch: boolean;
   round: number;
   status: MatchStatus;
   homeTeam: { id: string; name: string } | null;

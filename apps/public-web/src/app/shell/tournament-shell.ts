@@ -1,0 +1,81 @@
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  effect,
+  inject,
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { DEFAULT_THEME, ThemeName, ThemeService } from 'design-tokens';
+import { TournamentContextService } from '../core/tournament-context.service';
+import { PublicTheme } from '../core/models';
+
+/** Maps the backend's PublicTheme enum to design-tokens' ThemeName (data-theme values). */
+const THEME_MAP: Record<PublicTheme, ThemeName> = {
+  INK_SIGNAL: 'ink-signal',
+  PULSE_EMBER: 'pulse-ember',
+  NEON_COURT: 'neon-court',
+};
+
+@Component({
+  selector: 'app-tournament-shell',
+  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  providers: [TournamentContextService],
+  templateUrl: './tournament-shell.html',
+  styleUrl: './tournament-shell.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class TournamentShell {
+  private readonly route = inject(ActivatedRoute);
+  private readonly themeService = inject(ThemeService);
+  private readonly destroyRef = inject(DestroyRef);
+  protected readonly context = inject(TournamentContextService);
+
+  protected readonly tournament = this.context.tournament;
+  protected readonly loading = this.context.loading;
+  protected readonly errorMessage = this.context.errorMessage;
+
+  protected readonly formattedDates = computed(() => {
+    const tournament = this.tournament();
+    if (!tournament?.startDate) {
+      return null;
+    }
+    const start = new Date(tournament.startDate).toLocaleDateString('fr-FR');
+    if (!tournament.endDate || tournament.endDate === tournament.startDate) {
+      return start;
+    }
+    return `${start} – ${new Date(tournament.endDate).toLocaleDateString('fr-FR')}`;
+  });
+
+  constructor() {
+    this.route.paramMap.pipe(takeUntilDestroyed()).subscribe((params) => {
+      const slug = params.get('slug');
+      if (slug) {
+        void this.context.load(slug);
+      }
+    });
+
+    // The tournament's own theme (organizer choice) governs the public site
+    // and slideshow only — applied to <html> here, and reset back to the
+    // fixed product identity on the way out so the landing page (and any
+    // other route outside this shell) never inherits it.
+    effect(() => {
+      const tournament = this.tournament();
+      if (!tournament) {
+        return;
+      }
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      this.themeService.apply(
+        document.documentElement,
+        THEME_MAP[tournament.theme],
+        prefersDark ? 'dark' : 'light',
+      );
+    });
+
+    this.destroyRef.onDestroy(() => {
+      this.themeService.apply(document.documentElement, DEFAULT_THEME, 'light');
+    });
+  }
+}

@@ -1,0 +1,42 @@
+@if (loading()) {
+  <p>Chargement…</p>
+} @else {
+  <div class="team-search-page__controls">
+    @if (categories().length > 1) {
+      <ap-select
+        label="Catégorie"
+        [value]="selectedCategoryId()"
+        [options]="categoryOptions()"
+        (valueChange)="onCategoryChange($event)"
+      />
+    }
+
+    <ap-text-field
+      class="team-search-page__search"
+      type="search"
+      label="Rechercher une équipe"
+      placeholder="Rechercher une équipe…"
+      [hideLabel]="true"
+      [value]="query()"
+      (valueChange)="onQueryChange($event)"
+    />
+  </div>
+
+  @if (filteredTeams().length === 0) {
+    <p class="team-search-page__empty">Aucune équipe trouvée.</p>
+  } @else {
+    <div class="team-search-page__grid">
+      @for (team of filteredTeams(); track team.id) {
+        <a class="team-search-page__team" [routerLink]="['../team', team.id]">
+          <span class="team-search-page__team-name">{{ team.name }}</span>
+          <span class="team-search-page__team-meta">
+            {{ team.categoryName }}
+            @if (team.divisionName) {
+              — {{ team.divisionName }}
+            }
+          </span>
+        </a>
+      }
+    </div>
+  }
+}

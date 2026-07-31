@@ -13,6 +13,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { DuplicateTournamentDto } from './dto/duplicate-tournament.dto';
 import { UpdateTournamentDto } from './dto/update-tournament.dto';
+import { generateSlug } from './slug.util';
 
 type TournamentWithSport = Tournament & { sport: Sport };
 
@@ -27,9 +28,11 @@ export class TournamentsService {
         organizationId,
         sportId: dto.sportId,
         name: dto.name,
+        slug: generateSlug(dto.name),
         startDate: dto.startDate ? new Date(dto.startDate) : undefined,
         endDate: dto.endDate ? new Date(dto.endDate) : undefined,
         isOnline: dto.isOnline ?? false,
+        theme: dto.theme,
       },
       include: { sport: true },
     });
@@ -81,6 +84,7 @@ export class TournamentsService {
             : undefined,
         isOnline: dto.isOnline,
         teamsCanReferee: dto.teamsCanReferee,
+        theme: dto.theme,
       },
       include: { sport: true },
     });
@@ -149,9 +153,11 @@ export class TournamentsService {
           organizationId,
           sportId: source.sportId,
           name: newName,
+          slug: generateSlug(newName),
           startDate: source.startDate,
           endDate: source.endDate,
           isOnline: source.isOnline,
+          theme: source.theme,
           status: TournamentStatus.DRAFT,
         },
       });
@@ -224,6 +230,27 @@ export class TournamentsService {
     return this.getOrThrow(organizationId, tournamentId);
   }
 
+  /**
+   * Public-site lookup: no organizationId (visitors don't know it), and only
+   * a PUBLISHED tournament is findable — everything else (draft, unpublished,
+   * archived, or no such slug) reads identically as "not found" so the public
+   * site never leaks whether a private tournament exists.
+   */
+  async getPublicBySlug(slug: string) {
+    const tournament = await this.prisma.tournament.findUnique({
+      where: { slug },
+      include: { sport: true },
+    });
+    if (!tournament || tournament.status !== TournamentStatus.PUBLISHED) {
+      throw new NotFoundException('Tournoi introuvable.');
+    }
+    return {
+      organizationId: tournament.organizationId,
+      tournamentId: tournament.id,
+      ...this.toSummary(tournament),
+    };
+  }
+
   private async getOrThrow(
     organizationId: string,
     tournamentId: string,
@@ -284,12 +311,14 @@ export class TournamentsService {
     return {
       id: tournament.id,
       name: tournament.name,
+      slug: tournament.slug,
       status: tournament.status,
       sportId: tournament.sportId,
       sportName: tournament.sport.name,
       startDate: tournament.startDate,
       endDate: tournament.endDate,
       isOnline: tournament.isOnline,
+      theme: tournament.theme,
       createdAt: tournament.createdAt,
     };
   }

@@ -1,0 +1,97 @@
+.tournament-shell__status {
+  padding: var(--ap-space-6);
+  text-align: center;
+  color: var(--ap-color-muted);
+}
+
+.tournament-shell__status--error {
+  color: var(--ap-color-error);
+}
+
+.tournament-shell__hero {
+  background: var(--ap-color-surface);
+  border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+}
+
+.tournament-shell__hero-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: var(--ap-space-8) var(--ap-space-6) 0;
+
+  h1 {
+    margin: var(--ap-space-1) 0 0;
+    font-family: var(--ap-font-heading);
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    letter-spacing: var(--ap-tracking-tight);
+    text-transform: var(--ap-title-case);
+  }
+}
+
+.tournament-shell__sport {
+  margin: 0;
+  color: var(--ap-color-signal);
+  font-weight: 700;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.tournament-shell__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ap-space-1) var(--ap-space-4);
+  margin: var(--ap-space-2) 0 0;
+  color: var(--ap-color-muted);
+  font-size: 0.9rem;
+}
+
+.tournament-shell__nav {
+  display: flex;
+  gap: var(--ap-space-6);
+  max-width: 1100px;
+  margin: var(--ap-space-6) auto 0;
+  padding: 0 var(--ap-space-6);
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  a {
+    position: relative;
+    display: inline-block;
+    flex: none;
+    padding: var(--ap-space-2) 0;
+    color: var(--ap-color-muted);
+    text-decoration: none;
+    font-weight: 600;
+    white-space: nowrap;
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 2px;
+      background: var(--ap-color-primary);
+      transform: scaleX(0);
+      transition: transform var(--ap-motion-fast) var(--ap-easing-standard);
+    }
+  }
+}
+
+.tournament-shell__nav-link--active {
+  color: var(--ap-color-fg);
+
+  &::after {
+    transform: scaleX(1);
+  }
+}
+
+.tournament-shell__content {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: var(--ap-space-6);
+}

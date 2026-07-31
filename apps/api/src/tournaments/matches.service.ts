@@ -8,17 +8,22 @@ import { Match, MatchOfficial, TimeSlot } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { AddMatchOfficialDto } from './dto/add-match-official.dto';
 import { AssignMatchTimeslotDto } from './dto/assign-match-timeslot.dto';
+import {
+  MATCH_TOURNAMENT_INCLUDE,
+  matchBelongsToTournament,
+  MatchWithTournamentOwner,
+} from './match-ownership.util';
 import { MATCH_INCLUDE, toMatchSummary } from './match-summary.util';
 import { RefereesService } from './referees.service';
 import { TeamsService } from './teams.service';
 import { timeRangesOverlap } from './time-overlap.util';
 import { TournamentsService } from './tournaments.service';
 
-type MatchWithConflictData = Match & {
-  group: { phase: { category: { tournamentId: string } } };
-  officials: MatchOfficial[];
-  timeSlot: TimeSlot | null;
-};
+type MatchWithConflictData = Match &
+  MatchWithTournamentOwner & {
+    officials: MatchOfficial[];
+    timeSlot: TimeSlot | null;
+  };
 
 interface OfficialIdentity {
   refereeId: string | null;
@@ -166,17 +171,10 @@ export class MatchesService {
     const official = await this.prisma.matchOfficial.findUnique({
       where: { id: officialId },
       include: {
-        match: {
-          include: {
-            group: { include: { phase: { include: { category: true } } } },
-          },
-        },
+        match: { include: MATCH_TOURNAMENT_INCLUDE },
       },
     });
-    if (
-      !official ||
-      official.match.group.phase.category.tournamentId !== tournamentId
-    ) {
+    if (!official || !matchBelongsToTournament(official.match, tournamentId)) {
       throw new NotFoundException('Officiel introuvable.');
     }
     await this.prisma.matchOfficial.delete({ where: { id: officialId } });
@@ -189,12 +187,12 @@ export class MatchesService {
     const match = await this.prisma.match.findUnique({
       where: { id: matchId },
       include: {
-        group: { include: { phase: { include: { category: true } } } },
+        ...MATCH_TOURNAMENT_INCLUDE,
         officials: true,
         timeSlot: true,
       },
     });
-    if (!match || match.group.phase.category.tournamentId !== tournamentId) {
+    if (!match || !matchBelongsToTournament(match, tournamentId)) {
       throw new NotFoundException('Match introuvable.');
     }
     return match;

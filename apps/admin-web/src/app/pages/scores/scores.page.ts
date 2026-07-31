@@ -184,6 +184,9 @@ export class ScoresPage {
   }
 
   protected penaltyShootoutEnabled(match: Match): boolean {
+    if (!match.groupId) {
+      return false;
+    }
     return this.standingRulesByGroup().get(match.groupId)?.penaltyShootoutEnabled ?? false;
   }
 

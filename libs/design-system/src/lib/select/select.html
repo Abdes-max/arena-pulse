@@ -1,0 +1,13 @@
+<label [for]="selectId" class="ap-select__label" [class.ap-select__label--hidden]="hideLabel()">
+  {{ label() }}
+</label>
+<select
+  [id]="selectId"
+  class="ap-select__control"
+  [value]="value()"
+  (change)="handleChange($event)"
+>
+  @for (option of options(); track option.value) {
+    <option [value]="option.value">{{ option.label }}</option>
+  }
+</select>

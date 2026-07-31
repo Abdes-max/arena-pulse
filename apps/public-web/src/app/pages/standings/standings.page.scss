@@ -1,0 +1,262 @@
+.standings-page__category-select {
+  display: block;
+  max-width: 260px;
+  margin-bottom: var(--ap-space-4);
+}
+
+.standings-page__tabs {
+  display: flex;
+  gap: var(--ap-space-2);
+  border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+  margin-bottom: var(--ap-space-6);
+}
+
+.standings-page__tab {
+  padding: var(--ap-space-2) var(--ap-space-4);
+  border: none;
+  background: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--ap-color-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+}
+
+.standings-page__tab--active {
+  color: var(--ap-color-fg);
+  border-bottom-color: var(--ap-color-primary);
+}
+
+.standings-page__group {
+  margin-top: var(--ap-space-6);
+
+  h2 {
+    font-size: 1.1rem;
+  }
+}
+
+.standings-page__provisional {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--ap-color-muted);
+}
+
+.standings-page__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  margin-top: var(--ap-space-2);
+
+  th,
+  td {
+    padding: var(--ap-space-1) var(--ap-space-2);
+    text-align: center;
+    border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+  }
+
+  th {
+    position: sticky;
+    top: 0;
+    background: var(--ap-color-bg);
+    color: var(--ap-color-muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  th:nth-child(2),
+  td:nth-child(2) {
+    text-align: left;
+  }
+}
+
+.standings-page__row--qualified {
+  background: var(--ap-color-signal-soft);
+}
+
+.standings-page__final-table {
+  th:nth-child(3),
+  td:nth-child(3),
+  th:nth-child(4),
+  td:nth-child(4) {
+    text-align: left;
+  }
+}
+
+.standings-page__points {
+  font-weight: 700;
+}
+
+.standings-page__qualifications {
+  list-style: none;
+  margin: var(--ap-space-2) 0 0;
+  padding: 0;
+  font-size: 0.85rem;
+  color: var(--ap-color-muted);
+
+  li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ap-space-1) var(--ap-space-2);
+    margin-top: var(--ap-space-2);
+  }
+}
+
+.standings-page__qualification-rule {
+  font-weight: 600;
+  color: var(--ap-color-fg);
+}
+
+.standings-page__empty {
+  color: var(--ap-color-muted);
+}
+
+// --- Tableau à élimination : arbre connecté ---
+// Repose sur la propriété de `justify-content: space-around` : dans une
+// colonne de M créneaux répartis sur une hauteur H, le centre du créneau i
+// est exactement le milieu des deux créneaux "parents" (2i et 2i+1) du tour
+// précédent, dès lors que toutes les colonnes partagent la même hauteur H
+// (fixée depuis le composant via [style.height.px]). Les connecteurs n'ont
+// donc besoin d'aucune valeur calculée par créneau, seulement de CSS.
+.standings-page__bracket {
+  --bracket-gap: 40px;
+  display: flex;
+  align-items: stretch;
+  overflow-x: auto;
+  padding-bottom: var(--ap-space-3);
+}
+
+.standings-page__bracket-round {
+  display: flex;
+  flex-direction: column;
+  flex: none;
+  width: 200px;
+
+  & + & {
+    margin-left: var(--bracket-gap);
+  }
+
+  h3 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ap-color-muted);
+    margin: 0 0 var(--ap-space-3);
+  }
+}
+
+.standings-page__bracket-round-matches {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.standings-page__bracket-slot {
+  position: relative;
+}
+
+// Connecteur sortant : du bord droit de la carte vers le point de fusion
+// avec son partenaire de paire — un demi-coin par créneau (haut pour le
+// premier de la paire, bas pour le second), qui se rejoignent exactement
+// au milieu grâce à la symétrie de `space-around`.
+.standings-page__bracket-round:not(:last-child) .standings-page__bracket-slot::after {
+  content: '';
+  position: absolute;
+  right: calc(var(--bracket-gap) / -2);
+  width: calc(var(--bracket-gap) / 2);
+  height: 50%;
+  border-right: var(--ap-border-width) solid var(--ap-color-border);
+}
+
+.standings-page__bracket-round:not(:last-child)
+  .standings-page__bracket-slot:nth-child(odd)::after {
+  top: 50%;
+  border-top: var(--ap-border-width) solid var(--ap-color-border);
+}
+
+.standings-page__bracket-round:not(:last-child)
+  .standings-page__bracket-slot:nth-child(even)::after {
+  top: 0;
+  border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+}
+
+// Connecteur entrant : du point de fusion (déjà tracé côté sortant) jusqu'au
+// bord gauche de la carte du tour suivant.
+.standings-page__bracket-round:not(:first-child) .standings-page__bracket-slot::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: calc(var(--bracket-gap) / -2);
+  width: calc(var(--bracket-gap) / 2);
+  border-top: var(--ap-border-width) solid var(--ap-color-border);
+}
+
+.standings-page__third-place {
+  margin-top: var(--ap-space-6);
+
+  h3 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ap-color-muted);
+    margin: 0 0 var(--ap-space-3);
+  }
+}
+
+// --- Classement final : podium ---
+.standings-page__podium {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: var(--ap-space-3);
+  margin: var(--ap-space-4) 0 var(--ap-space-8);
+}
+
+.standings-page__podium-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ap-space-1);
+  width: 160px;
+  padding: var(--ap-space-4) var(--ap-space-2);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-lg) var(--ap-radius-lg) 0 0;
+  text-align: center;
+}
+
+.standings-page__podium-rank {
+  font-family: var(--ap-font-heading);
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--ap-color-signal);
+}
+
+.standings-page__podium-name {
+  font-weight: 700;
+}
+
+.standings-page__podium-stage {
+  font-size: 0.75rem;
+  color: var(--ap-color-muted);
+}
+
+.standings-page__podium-step--1 {
+  order: 2;
+  padding-top: var(--ap-space-8);
+  border-color: var(--ap-color-signal);
+
+  .standings-page__podium-rank {
+    font-size: 2.25rem;
+  }
+}
+
+.standings-page__podium-step--2 {
+  order: 1;
+}
+
+.standings-page__podium-step--3 {
+  order: 3;
+}

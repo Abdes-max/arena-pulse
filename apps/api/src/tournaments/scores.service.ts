@@ -6,8 +6,10 @@ import {
 } from '@nestjs/common';
 import { Match, MatchScore } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { BracketsService } from './brackets.service';
 import { ForfeitMatchDto } from './dto/forfeit-match.dto';
 import { UpsertMatchScoreDto } from './dto/upsert-match-score.dto';
+import { matchBelongsToTournament } from './match-ownership.util';
 import { MATCH_INCLUDE, toMatchSummary } from './match-summary.util';
 import { TournamentsService } from './tournaments.service';
 
@@ -16,7 +18,8 @@ type MatchWithScoringData = Match & {
   group: {
     phase: { category: { tournamentId: string } };
     standingRule: { penaltyShootoutEnabled: boolean } | null;
-  };
+  } | null;
+  knockoutBracket: { phase: { category: { tournamentId: string } } } | null;
 };
 
 @Injectable()
@@ -24,6 +27,7 @@ export class ScoresService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly tournamentsService: TournamentsService,
+    private readonly bracketsService: BracketsService,
   ) {}
 
   async upsertScore(
@@ -90,8 +94,12 @@ export class ScoresService {
       throw new BadRequestException('Aucun score saisi pour ce match.');
     }
     const isDraw = match.score.homeScore === match.score.awayScore;
+    // A knockout match must always produce a winner; a group-stage draw only
+    // needs a shootout if the group's StandingRule opts into one.
     const needsShootout =
-      isDraw && match.group.standingRule?.penaltyShootoutEnabled;
+      isDraw &&
+      (match.knockoutBracket !== null ||
+        Boolean(match.group?.standingRule?.penaltyShootoutEnabled));
     if (needsShootout && match.score.homePenaltyScore === null) {
       throw new BadRequestException(
         'Une séance de tirs au but est requise pour départager ce match nul.',
@@ -119,6 +127,12 @@ export class ScoresService {
       data: { status: 'COMPLETED' },
       include: MATCH_INCLUDE,
     });
+    if (match.knockoutBracketId) {
+      await this.bracketsService.tryAdvanceRound(
+        match.knockoutBracketId,
+        match.round,
+      );
+    }
     return toMatchSummary(updated);
   }
 
@@ -173,6 +187,12 @@ export class ScoresService {
       where: { id: matchId },
       include: MATCH_INCLUDE,
     });
+    if (match.knockoutBracketId) {
+      await this.bracketsService.tryAdvanceRound(
+        match.knockoutBracketId,
+        match.round,
+      );
+    }
     return toMatchSummary(updated);
   }
 
@@ -227,9 +247,12 @@ export class ScoresService {
             standingRule: { select: { penaltyShootoutEnabled: true } },
           },
         },
+        knockoutBracket: {
+          include: { phase: { include: { category: true } } },
+        },
       },
     });
-    if (!match || match.group.phase.category.tournamentId !== tournamentId) {
+    if (!match || !matchBelongsToTournament(match, tournamentId)) {
       throw new NotFoundException('Match introuvable.');
     }
     return match;

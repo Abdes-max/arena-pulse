@@ -54,6 +54,9 @@ export function toMatchSummary(match: MatchWithRelations) {
   return {
     id: match.id,
     groupId: match.groupId,
+    knockoutBracketId: match.knockoutBracketId,
+    bracketSlot: match.bracketSlot,
+    isThirdPlaceMatch: match.isThirdPlaceMatch,
     round: match.round,
     status: match.status,
     homeTeam: match.homeTeam,

@@ -1,0 +1,27 @@
+<section class="onboarding-checklist">
+  <header class="onboarding-checklist__header">
+    <div>
+      <h2>Bien démarrer</h2>
+      <p>{{ completedCount() }} / {{ steps().length }} étapes complétées</p>
+    </div>
+    <ap-button type="button" variant="ghost" (click)="dismiss.emit()">Plus tard</ap-button>
+  </header>
+
+  <ul class="onboarding-checklist__list">
+    @for (step of steps(); track step.key) {
+      <li class="onboarding-checklist__step" [class.onboarding-checklist__step--done]="step.done">
+        <div class="onboarding-checklist__step-text">
+          <strong>{{ step.title }}</strong>
+          <span>{{ step.description }}</span>
+        </div>
+        @if (step.done) {
+          <ap-badge status="published" label="Fait" />
+        } @else {
+          <ap-button type="button" variant="ghost" (click)="onStepClick(step)">
+            {{ step.actionLabel }}
+          </ap-button>
+        }
+      </li>
+    }
+  </ul>
+</section>

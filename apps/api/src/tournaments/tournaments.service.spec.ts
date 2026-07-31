@@ -95,6 +95,10 @@ describe('TournamentsService', () => {
 
       expect(result.status).toBe(TournamentStatus.DRAFT);
       expect(result.sportName).toBe('Football');
+      const calls = prisma.tournament.create.mock.calls as {
+        data: { slug: string };
+      }[][];
+      expect(calls[0][0].data.slug).toMatch(/^coupe-de-printemps-[0-9a-f]{8}$/);
     });
   });
 

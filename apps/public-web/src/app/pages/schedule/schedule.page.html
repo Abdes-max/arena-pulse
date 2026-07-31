@@ -1,0 +1,87 @@
+@if (loading()) {
+  <p>Chargement…</p>
+} @else if (categories().length === 0) {
+  <p>Aucune catégorie pour ce tournoi.</p>
+} @else {
+  <div class="schedule-page__controls">
+    <ap-select
+      label="Catégorie"
+      [value]="selectedCategoryId()"
+      [options]="categoryOptions()"
+      (valueChange)="onCategoryChange($event)"
+    />
+
+    @if (phases().length > 0) {
+      <ap-select
+        label="Phase"
+        [value]="selectedPhaseId()"
+        [options]="phaseOptions()"
+        (valueChange)="onPhaseChange($event)"
+      />
+    }
+
+    <ap-text-field
+      class="schedule-page__search"
+      type="search"
+      label="Rechercher une équipe ou un arbitre"
+      placeholder="Rechercher une équipe ou un arbitre…"
+      [hideLabel]="true"
+      [value]="query()"
+      (valueChange)="onQueryChange($event)"
+    />
+  </div>
+
+  @if (filteredMatches().length === 0) {
+    <p class="schedule-page__empty">Aucun match pour cette phase.</p>
+  } @else {
+    @for (day of matchesByDay().days; track day.label) {
+      <section class="schedule-page__day">
+        <h3 class="schedule-page__day-label">{{ day.label }}</h3>
+        <div class="schedule-page__grid">
+          @for (match of day.matches; track match.id) {
+            @if (match.status === 'FORFEITED') {
+              <p class="schedule-page__forfeit">
+                {{ match.homeTeam?.name }} vs {{ match.awayTeam?.name }} — forfait :
+                {{ match.forfeitedTeam?.name }}
+              </p>
+            } @else {
+              <ap-match-card
+                [variant]="match.score ? 'result' : 'upcoming'"
+                [homeTeam]="match.homeTeam ?? { name: '?' }"
+                [awayTeam]="match.awayTeam ?? { name: '?' }"
+                [homeScore]="match.score?.homeScore"
+                [awayScore]="match.score?.awayScore"
+                [kickoff]="match.timeSlot ? formatKickoff(match.timeSlot.startTime) : undefined"
+                [venue]="match.timeSlot?.field?.name"
+                [competitionLabel]="competitionLabel(match)"
+              />
+            }
+          }
+        </div>
+      </section>
+    }
+
+    @if (matchesByDay().unscheduled.length > 0) {
+      <section class="schedule-page__day">
+        <h3 class="schedule-page__day-label">Non planifié</h3>
+        <div class="schedule-page__grid">
+          @for (match of matchesByDay().unscheduled; track match.id) {
+            @if (match.status === 'FORFEITED') {
+              <p class="schedule-page__forfeit">
+                {{ match.homeTeam?.name }} vs {{ match.awayTeam?.name }} — forfait :
+                {{ match.forfeitedTeam?.name }}
+              </p>
+            } @else {
+              <ap-match-card
+                variant="upcoming"
+                [homeTeam]="match.homeTeam ?? { name: '?' }"
+                [awayTeam]="match.awayTeam ?? { name: '?' }"
+                [competitionLabel]="competitionLabel(match)"
+              />
+            }
+          }
+        </div>
+      </section>
+    }
+  }
+}

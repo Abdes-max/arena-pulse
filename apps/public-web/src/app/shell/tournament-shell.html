@@ -1,0 +1,42 @@
+@if (loading()) {
+  <p class="tournament-shell__status">Chargement…</p>
+} @else if (errorMessage(); as message) {
+  <p class="tournament-shell__status tournament-shell__status--error" role="alert">
+    {{ message }}
+  </p>
+} @else if (tournament(); as t) {
+  <header class="tournament-shell__hero">
+    <div class="tournament-shell__hero-inner">
+      <p class="tournament-shell__sport">{{ t.sportName }}</p>
+      <h1>{{ t.name }}</h1>
+      <p class="tournament-shell__meta">
+        @if (formattedDates(); as dates) {
+          <span>{{ dates }}</span>
+        }
+        @if (t.venues.length > 0) {
+          <span>
+            {{ t.venues.length }}
+            {{ t.venues.length > 1 ? 'lieux' : 'lieu' }}
+          </span>
+        }
+      </p>
+    </div>
+
+    <nav class="tournament-shell__nav">
+      <a
+        routerLink="."
+        [routerLinkActiveOptions]="{ exact: true }"
+        routerLinkActive="tournament-shell__nav-link--active"
+      >
+        Tournoi
+      </a>
+      <a routerLink="team" routerLinkActive="tournament-shell__nav-link--active">Équipes</a>
+      <a routerLink="standings" routerLinkActive="tournament-shell__nav-link--active">Classement</a>
+      <a routerLink="schedule" routerLinkActive="tournament-shell__nav-link--active">Calendrier</a>
+    </nav>
+  </header>
+
+  <main class="tournament-shell__content">
+    <router-outlet />
+  </main>
+}

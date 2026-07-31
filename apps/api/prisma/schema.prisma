@@ -110,6 +110,15 @@ enum TournamentStatus {
   ARCHIVED
 }
 
+// Visual theme applied to a tournament's public site + slideshow only —
+// admin-web and the marketing site always stay on Ink & Signal regardless
+// of what an organizer picks here (docs/design/visual-language.md).
+enum PublicTheme {
+  INK_SIGNAL
+  PULSE_EMBER
+  NEON_COURT
+}
+
 // Global reference data (not scoped by organization) — seeded, no CRUD in this PR.
 model Sport {
   id        String   @id @default(uuid())
@@ -125,11 +134,13 @@ model Tournament {
   organizationId  String
   sportId         String
   name            String
+  slug            String           @unique
   status          TournamentStatus @default(DRAFT)
   startDate       DateTime?
   endDate         DateTime?
   isOnline        Boolean          @default(false)
   teamsCanReferee Boolean          @default(false)
+  theme           PublicTheme      @default(INK_SIGNAL)
   archivedAt      DateTime?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
@@ -289,7 +300,8 @@ model KnockoutBracket {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  phase CompetitionPhase @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+  phase   CompetitionPhase @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+  matches Match[]
 }
 
 model QualificationRule {
@@ -362,26 +374,31 @@ enum MatchStatus {
 }
 
 model Match {
-  id              String      @id @default(uuid())
-  groupId         String
-  homeTeamId      String?
-  awayTeamId      String?
-  timeSlotId      String?     @unique
-  forfeitedTeamId String?
-  round           Int
-  status          MatchStatus @default(SCHEDULED)
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  id                String      @id @default(uuid())
+  groupId           String?
+  knockoutBracketId String?
+  bracketSlot       Int?
+  isThirdPlaceMatch Boolean     @default(false)
+  homeTeamId        String?
+  awayTeamId        String?
+  timeSlotId        String?     @unique
+  forfeitedTeamId   String?
+  round             Int
+  status            MatchStatus @default(SCHEDULED)
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
 
-  group         Group           @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  homeTeam      Team?           @relation("MatchHomeTeam", fields: [homeTeamId], references: [id], onDelete: SetNull)
-  awayTeam      Team?           @relation("MatchAwayTeam", fields: [awayTeamId], references: [id], onDelete: SetNull)
-  forfeitedTeam Team?           @relation("MatchForfeitedTeam", fields: [forfeitedTeamId], references: [id], onDelete: SetNull)
-  timeSlot      TimeSlot?       @relation(fields: [timeSlotId], references: [id], onDelete: SetNull)
-  officials     MatchOfficial[]
-  score         MatchScore?
+  group           Group?           @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  knockoutBracket KnockoutBracket? @relation(fields: [knockoutBracketId], references: [id], onDelete: Cascade)
+  homeTeam        Team?            @relation("MatchHomeTeam", fields: [homeTeamId], references: [id], onDelete: SetNull)
+  awayTeam        Team?            @relation("MatchAwayTeam", fields: [awayTeamId], references: [id], onDelete: SetNull)
+  forfeitedTeam   Team?            @relation("MatchForfeitedTeam", fields: [forfeitedTeamId], references: [id], onDelete: SetNull)
+  timeSlot        TimeSlot?        @relation(fields: [timeSlotId], references: [id], onDelete: SetNull)
+  officials       MatchOfficial[]
+  score           MatchScore?
 
   @@index([groupId])
+  @@index([knockoutBracketId])
 }
 
 model MatchOfficial {

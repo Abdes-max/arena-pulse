@@ -1,0 +1,61 @@
+:host {
+  display: block;
+  width: 200px;
+  font-family: var(--ap-font-body);
+}
+
+.ap-bracket-match {
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  overflow: hidden;
+}
+
+.ap-bracket-match__team {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-2);
+  padding: var(--ap-space-2) var(--ap-space-3);
+
+  & + & {
+    border-top: var(--ap-border-width) solid var(--ap-color-border);
+  }
+}
+
+.ap-bracket-match__team-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ap-color-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ap-bracket-match__score {
+  font-family: var(--ap-font-heading);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--ap-color-fg);
+  min-width: 1.25em;
+  text-align: right;
+}
+
+.ap-bracket-match__team--winner {
+  .ap-bracket-match__team-name {
+    color: var(--ap-color-fg);
+  }
+
+  .ap-bracket-match__score {
+    font-weight: 800;
+  }
+}
+
+.ap-bracket-match__forfeit {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  padding: var(--ap-space-1) var(--ap-space-3) var(--ap-space-2);
+  font-size: 0.72rem;
+  color: var(--ap-color-muted);
+}

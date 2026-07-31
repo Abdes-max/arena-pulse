@@ -1,11 +1,13 @@
 import {
   IsBoolean,
+  IsEnum,
   IsISO8601,
   IsOptional,
   IsString,
   IsUUID,
   MinLength,
 } from 'class-validator';
+import { PublicTheme } from '../../../generated/prisma/client';
 
 export class UpdateTournamentDto {
   @IsOptional()
@@ -32,4 +34,8 @@ export class UpdateTournamentDto {
   @IsOptional()
   @IsBoolean()
   teamsCanReferee?: boolean;
+
+  @IsOptional()
+  @IsEnum(PublicTheme)
+  theme?: PublicTheme;
 }

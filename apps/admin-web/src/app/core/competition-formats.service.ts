@@ -7,6 +7,7 @@ import {
   CompetitionPhase,
   CompetitionPhaseType,
   KnockoutBracket,
+  Match,
   QualificationRule,
   StandingRule,
 } from './models';
@@ -151,6 +152,19 @@ export class CompetitionFormatsService {
     return firstValueFrom(
       this.http.delete<void>(
         `${this.base(organizationId, tournamentId)}/knockout-brackets/${bracketId}`,
+      ),
+    );
+  }
+
+  generateBracketMatches(
+    organizationId: string,
+    tournamentId: string,
+    bracketId: string,
+  ): Promise<Match[]> {
+    return firstValueFrom(
+      this.http.post<Match[]>(
+        `${this.base(organizationId, tournamentId)}/knockout-brackets/${bracketId}/generate-matches`,
+        {},
       ),
     );
   }

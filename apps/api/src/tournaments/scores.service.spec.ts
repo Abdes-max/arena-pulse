@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { BracketsService } from './brackets.service';
 import { ScoresService } from './scores.service';
 import { TournamentsService } from './tournaments.service';
 
@@ -55,6 +56,8 @@ function baseMatch(overrides: Partial<Record<string, unknown>> = {}) {
     forfeitedTeam: null,
     timeSlot: null,
     officials: [],
+    knockoutBracketId: null,
+    knockoutBracket: null,
     group: {
       phase: { category: { tournamentId: TOURNAMENT_ID } },
       standingRule: null,
@@ -66,6 +69,7 @@ function baseMatch(overrides: Partial<Record<string, unknown>> = {}) {
 describe('ScoresService', () => {
   let prisma: PrismaMock;
   let tournamentsService: { assertTournamentIsEditable: jest.Mock };
+  let bracketsService: { tryAdvanceRound: jest.Mock };
   let service: ScoresService;
 
   beforeEach(() => {
@@ -75,9 +79,11 @@ describe('ScoresService', () => {
         .fn()
         .mockResolvedValue({ id: TOURNAMENT_ID }),
     };
+    bracketsService = { tryAdvanceRound: jest.fn() };
     service = new ScoresService(
       prisma as unknown as PrismaService,
       tournamentsService as unknown as TournamentsService,
+      bracketsService as unknown as BracketsService,
     );
   });
 
@@ -231,6 +237,55 @@ describe('ScoresService', () => {
       ).rejects.toBeInstanceOf(BadRequestException);
     });
 
+    it('requires a penalty shootout for a knockout draw regardless of any group standing rule', async () => {
+      prisma.match.findUnique.mockResolvedValue(
+        baseMatch({
+          groupId: null,
+          group: null,
+          knockoutBracketId: 'bracket-1',
+          knockoutBracket: {
+            phase: { category: { tournamentId: TOURNAMENT_ID } },
+          },
+          score: {
+            homeScore: 1,
+            awayScore: 1,
+            homePenaltyScore: null,
+            awayPenaltyScore: null,
+          },
+        }),
+      );
+
+      await expect(
+        service.validateScore('org-1', TOURNAMENT_ID, 'match-1', USER_ID),
+      ).rejects.toBeInstanceOf(BadRequestException);
+    });
+
+    it('triggers bracket round advancement when a knockout match is validated', async () => {
+      prisma.match.findUnique.mockResolvedValue(
+        baseMatch({
+          knockoutBracketId: 'bracket-1',
+          knockoutBracket: {
+            phase: { category: { tournamentId: TOURNAMENT_ID } },
+          },
+          round: 1,
+          score: {
+            homeScore: 2,
+            awayScore: 1,
+            homePenaltyScore: null,
+            awayPenaltyScore: null,
+          },
+        }),
+      );
+      prisma.match.update.mockResolvedValue(baseMatch({ status: 'COMPLETED' }));
+
+      await service.validateScore('org-1', TOURNAMENT_ID, 'match-1', USER_ID);
+
+      expect(bracketsService.tryAdvanceRound).toHaveBeenCalledWith(
+        'bracket-1',
+        1,
+      );
+    });
+
     it('rejects a penalty shootout with no winner', async () => {
       prisma.match.findUnique.mockResolvedValue(
         baseMatch({
@@ -327,10 +382,40 @@ describe('ScoresService', () => {
       expect(prisma.matchScore.deleteMany).toHaveBeenCalledWith({
         where: { matchId: 'match-1' },
       });
+      expect(bracketsService.tryAdvanceRound).not.toHaveBeenCalled();
       expect(prisma.match.update).toHaveBeenCalledWith(
         expect.objectContaining({
           data: { status: 'FORFEITED', forfeitedTeamId: 'team-away' },
         }),
+      );
+    });
+
+    it('triggers bracket round advancement when a knockout match is forfeited', async () => {
+      prisma.match.findUnique.mockResolvedValue(
+        baseMatch({
+          knockoutBracketId: 'bracket-1',
+          knockoutBracket: {
+            phase: { category: { tournamentId: TOURNAMENT_ID } },
+          },
+          round: 2,
+        }),
+      );
+      prisma.match.findUniqueOrThrow.mockResolvedValue(
+        baseMatch({
+          status: 'FORFEITED',
+          forfeitedTeamId: 'team-away',
+          knockoutBracketId: 'bracket-1',
+          round: 2,
+        }),
+      );
+
+      await service.declareForfeit('org-1', TOURNAMENT_ID, 'match-1', {
+        teamId: 'team-away',
+      });
+
+      expect(bracketsService.tryAdvanceRound).toHaveBeenCalledWith(
+        'bracket-1',
+        2,
       );
     });
   });

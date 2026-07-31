@@ -15,6 +15,7 @@ import { AuthService } from '../../core/auth.service';
 import {
   Category,
   Permission,
+  PublicTheme,
   Sport,
   TournamentAdministrator,
   TournamentDetail,
@@ -73,6 +74,7 @@ export class TournamentFormPage {
     name: ['', Validators.required],
     sportId: ['', Validators.required],
     isOnline: [false],
+    theme: ['INK_SIGNAL' as PublicTheme],
   });
 
   protected readonly newCategoryName = signal('');
@@ -122,6 +124,7 @@ export class TournamentFormPage {
       name: tournament.name,
       sportId: tournament.sportId,
       isOnline: tournament.isOnline,
+      theme: tournament.theme,
     });
     this.categories.set(await this.tournamentsService.listCategories(organizationId, tournamentId));
     this.venues.set(await this.tournamentsService.listVenues(organizationId, tournamentId));
@@ -138,7 +141,7 @@ export class TournamentFormPage {
     this.submitting.set(true);
     this.errorMessage.set(null);
     try {
-      const { name, sportId, isOnline } = this.form.getRawValue();
+      const { name, sportId, isOnline, theme } = this.form.getRawValue();
       const tournamentId = this.tournamentId();
       if (this.isEditMode() && tournamentId) {
         const updated = await this.tournamentsService.updateTournament(
@@ -148,6 +151,7 @@ export class TournamentFormPage {
             name,
             sportId,
             isOnline,
+            theme,
           },
         );
         this.tournament.set(updated);
@@ -156,6 +160,7 @@ export class TournamentFormPage {
           name,
           sportId,
           isOnline,
+          theme,
         });
         await this.router.navigate(['/tournaments', created.id]);
       }

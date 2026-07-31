@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
@@ -13,6 +14,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { OrganizationRole } from '../../generated/prisma/client';
 import { RequireOrgRole } from '../organizations/decorators/require-org-role.decorator';
 import { OrganizationRoleGuard } from '../organizations/guards/organization-role.guard';
+import { BracketsService } from './brackets.service';
 import { RequireTournamentPermission } from './decorators/require-tournament-permission.decorator';
 import { CreateKnockoutBracketDto } from './dto/create-knockout-bracket.dto';
 import { UpdateKnockoutBracketDto } from './dto/update-knockout-bracket.dto';
@@ -25,6 +27,7 @@ import { KnockoutBracketsService } from './knockout-brackets.service';
 export class KnockoutBracketsController {
   constructor(
     private readonly knockoutBracketsService: KnockoutBracketsService,
+    private readonly bracketsService: BracketsService,
   ) {}
 
   @RequireOrgRole(OrganizationRole.ORG_MEMBER)
@@ -71,6 +74,35 @@ export class KnockoutBracketsController {
     @Param('bracketId') bracketId: string,
   ) {
     return this.knockoutBracketsService.remove(
+      organizationId,
+      tournamentId,
+      bracketId,
+    );
+  }
+
+  @RequireOrgRole(OrganizationRole.ORG_MEMBER)
+  @RequireTournamentPermission('MANAGE_SCHEDULE')
+  @Post('knockout-brackets/:bracketId/generate-matches')
+  generateMatches(
+    @Param('organizationId') organizationId: string,
+    @Param('tournamentId') tournamentId: string,
+    @Param('bracketId') bracketId: string,
+  ) {
+    return this.bracketsService.generateMatches(
+      organizationId,
+      tournamentId,
+      bracketId,
+    );
+  }
+
+  @RequireOrgRole(OrganizationRole.ORG_MEMBER)
+  @Get('knockout-brackets/:bracketId/matches')
+  listMatches(
+    @Param('organizationId') organizationId: string,
+    @Param('tournamentId') tournamentId: string,
+    @Param('bracketId') bracketId: string,
+  ) {
+    return this.bracketsService.listMatches(
       organizationId,
       tournamentId,
       bracketId,
