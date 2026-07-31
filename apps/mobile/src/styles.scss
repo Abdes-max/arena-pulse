@@ -1,0 +1,19 @@
+@forward 'index';
+
+// mobile renders one tournament at a time. Its `[data-theme]` is set at
+// runtime from that tournament's chosen theme (ink-signal | pulse-ember |
+// neon-court) — see libs/design-tokens ThemeService. The value below is
+// only a development-time default.
+:root {
+  color-scheme: light dark;
+}
+
+html {
+  background: var(--ap-color-bg);
+  color: var(--ap-color-fg);
+  font-family: var(--ap-font-body);
+}
+
+body {
+  margin: 0;
+}

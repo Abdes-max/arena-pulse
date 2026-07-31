@@ -1,0 +1,86 @@
+@if (loading()) {
+  <ion-content class="team-detail-page__status">
+    <p>Chargement…</p>
+  </ion-content>
+} @else if (errorMessage(); as message) {
+  <ion-content class="team-detail-page__status">
+    <p role="alert">{{ message }}</p>
+  </ion-content>
+} @else if (team(); as t) {
+  <ion-content class="team-detail-page">
+    <ion-list>
+      <ion-list-header>
+        {{ t.name }}
+        <span class="team-detail-page__meta">
+          — {{ t.categoryName }}
+          @if (t.groupName) {
+            · {{ t.groupName }}
+          }
+        </span>
+      </ion-list-header>
+
+      @if (t.standing; as standing) {
+        <ion-item>
+          <ion-label>
+            <h2>Poule</h2>
+            <p>
+              Position {{ standing.position }} · {{ standing.played }} joués · {{ standing.won }}V
+              {{ standing.drawn }}N {{ standing.lost }}D · {{ standing.points }} pts
+            </p>
+          </ion-label>
+        </ion-item>
+      }
+    </ion-list>
+
+    @if (upcomingMatches().length > 0) {
+      <ion-list>
+        <ion-list-header>À venir</ion-list-header>
+        @for (match of upcomingMatches(); track match.id) {
+          <ion-item>
+            <ion-label>
+              <h2>{{ match.homeTeam?.name ?? '?' }} — {{ match.awayTeam?.name ?? '?' }}</h2>
+              <p>
+                {{ competitionLabel(match) }}
+                @if (match.timeSlot) {
+                  · {{ formatKickoff(match.timeSlot.startTime) }} · {{ match.timeSlot.field.name }}
+                }
+              </p>
+            </ion-label>
+          </ion-item>
+        }
+      </ion-list>
+    }
+
+    @if (playedMatches().length > 0) {
+      <ion-list>
+        <ion-list-header>Joués</ion-list-header>
+        @for (match of playedMatches(); track match.id) {
+          <ion-item>
+            @if (match.status === 'FORFEITED') {
+              <ion-label>
+                <p>Forfait : {{ match.forfeitedTeam?.name }} ({{ competitionLabel(match) }})</p>
+              </ion-label>
+            } @else {
+              <ion-label>
+                <h2>{{ match.homeTeam?.name ?? '?' }} — {{ match.awayTeam?.name ?? '?' }}</h2>
+                <p>{{ competitionLabel(match) }}</p>
+              </ion-label>
+              @if (match.score) {
+                <ion-label slot="end" class="team-detail-page__score">
+                  {{ match.score.homeScore }} - {{ match.score.awayScore }}
+                </ion-label>
+              }
+              @if (match.status === 'LIVE') {
+                <ion-badge slot="end" color="danger">{{ statusLabel(match) }}</ion-badge>
+              }
+            }
+          </ion-item>
+        }
+      </ion-list>
+    }
+
+    @if (upcomingMatches().length === 0 && playedMatches().length === 0) {
+      <p class="team-detail-page__empty">Aucun match planifié pour cette équipe.</p>
+    }
+  </ion-content>
+}

@@ -1,0 +1,50 @@
+@if (loading()) {
+  <ion-content class="team-search-page__status">
+    <p>Chargement…</p>
+  </ion-content>
+} @else {
+  <ion-content class="team-search-page">
+    <ion-searchbar
+      placeholder="Rechercher une équipe…"
+      [value]="query()"
+      (ionInput)="onQueryChange($event.detail.value)"
+    />
+
+    @if (categories().length > 0) {
+      <ion-list>
+        <ion-item>
+          <ion-select
+            label="Catégorie"
+            [value]="selectedCategoryId()"
+            (ionChange)="onCategoryChange($event.detail.value)"
+          >
+            <ion-select-option value="">Toutes</ion-select-option>
+            @for (category of categories(); track category.id) {
+              <ion-select-option [value]="category.id">{{ category.name }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+      </ion-list>
+    }
+
+    @if (filteredTeams().length === 0) {
+      <p class="team-search-page__empty">Aucune équipe trouvée.</p>
+    } @else {
+      <ion-list>
+        @for (team of filteredTeams(); track team.id) {
+          <ion-item [routerLink]="['../team', team.id]" button>
+            <ion-label>
+              <h2>{{ team.name }}</h2>
+              <p>
+                {{ team.categoryName }}
+                @if (team.groupName) {
+                  — {{ team.groupName }}
+                }
+              </p>
+            </ion-label>
+          </ion-item>
+        }
+      </ion-list>
+    }
+  </ion-content>
+}
