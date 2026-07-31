@@ -3,10 +3,14 @@
 }
 
 .ap-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-family: var(--ap-font-body);
   font-weight: 600;
   font-size: 0.9rem;
   text-transform: var(--ap-title-case, none);
+  text-decoration: none;
   letter-spacing: var(--ap-tracking-tight, normal);
   border-radius: var(--ap-radius-md);
   border: var(--ap-border-width) solid transparent;

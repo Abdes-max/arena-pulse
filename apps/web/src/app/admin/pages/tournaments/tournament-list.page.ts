@@ -163,6 +163,10 @@ export class TournamentListPage {
     void this.router.navigate(['/admin/tournaments', tournament.id]);
   }
 
+  protected publicUrl(tournament: Tournament): string {
+    return `/${tournament.slug}`;
+  }
+
   protected async duplicate(tournament: Tournament): Promise<void> {
     const organizationId = this.organization()?.id;
     if (!organizationId) {

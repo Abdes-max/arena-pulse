@@ -44,6 +44,9 @@
                 <ap-button type="button" variant="ghost" (click)="duplicate(tournament)"
                   >Dupliquer</ap-button
                 >
+                <ap-button variant="ghost" [href]="publicUrl(tournament)" target="_blank">
+                  Lien public
+                </ap-button>
                 <ap-button type="button" variant="ghost" (click)="toggleArchive(tournament)">
                   {{ tournament.status === 'ARCHIVED' ? 'Désarchiver' : 'Archiver' }}
                 </ap-button>
