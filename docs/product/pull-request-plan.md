@@ -2,34 +2,39 @@
 
 Confirmation du découpage proposé par la mission (§38), sans modification à ce stade — l'audit du site public n'a pas révélé de raison de le réviser. Il sera réévalué après l'audit de l'administration (une PR intermédiaire pourrait s'avérer nécessaire, par ex. pour un "centre de gestion du direct" si celui-ci s'avère plus complexe que prévu).
 
-| # | Branche | Contenu |
-| - | --- | --- |
-| 1 | `docs/001-functional-audit` | Cette PR : audit fonctionnel, inventaire, matrice de parité, architecture et modèle de données initiaux |
-| 2 | `design/002-brand-and-design-system` | 3 directions artistiques, fondations de marque, design tokens, premiers composants — **non fusionnée avant choix explicite** |
-| 3 | `feat/003-project-foundation` | Squelette monorepo, CI de base, conventions |
-| 4 | `feat/004-design-system-foundation` | Implémentation du design system choisi |
-| 5 | `feat/005-local-infrastructure` | Docker Compose local (PostgreSQL, backend, web, stockage, mailcatcher) |
-| 6 | `feat/006-authentication-organizations` | Auth, organisations, collaborateurs |
-| 7 | `feat/007-tournament-management` | CRUD tournoi, duplication, archivage |
-| 8 | `feat/008-teams-and-participants` | Équipes, joueurs, import/export |
-| 9 | `feat/009-fields-and-referees` | Sites, terrains, créneaux, arbitres |
-| 10 | `feat/010-competition-formats` | Poules, phases finales, règles de qualification/classement |
-| 11 | `feat/011-schedule-generation` | Génération automatique du calendrier |
-| 12 | `feat/012-schedule-editor` | Édition manuelle, glisser-déposer, conflits |
-| 13 | `feat/013-scorekeeping` | Saisie/correction/validation des scores, forfaits, pénalités |
-| 14 | `feat/014-standings-and-qualification` | Recalcul automatique classements/qualifications |
-| 15 | `feat/015-public-tournament-web` | Site public complet |
-| 16 | `feat/016-realtime-updates` | Temps réel (WebSocket/SSE) |
-| 17 | `feat/017-mobile-foundation` | Socle Ionic/Capacitor |
-| 18 | `feat/018-team-following` | Favoris, suivi d'équipe mobile |
-| 19 | `feat/019-mobile-notifications` | Notifications push |
-| 20 | `feat/020-offline-mode` | Mode hors connexion |
-| 21 | `feat/021-security-hardening` | Durcissement sécurité |
-| 22 | `feat/022-accessibility-hardening` | Durcissement accessibilité |
-| 23 | `feat/023-observability` | Observabilité |
-| 24 | `feat/024-deployment` | Déploiement |
-| 25 | `feat/025-player-registration-and-payments` | Comptes joueurs publics, inscription en ligne sur le site public, paiement (prestataire à choisir), suivi organisateur des paiements |
-| 26 | `feat/026-rating-system` | Système de rating (ELO/Glicko à arbitrer) en complément du classement par points existant, mis à jour à chaque match validé |
-| 27 | `feat/027-ai-assistant` | Assistant en langage naturel côté admin (création de compétition, requêtes sur les données du tournoi) |
+**Numérotation** : la colonne `#` est le numéro de cet item dans le plan, pas nécessairement le numéro de PR GitHub réel. Les items 1 à 17 correspondent exactement aux PR #1–17 (branche et numéro identiques). À partir de là, une série de corrections/ajustements remontés en direct par le porteur de projet pendant les tests manuels (lien de connexion sur la vitrine, fusion admin-web/public-web en une seule app, thème admin, etc. — hors plan initial) a consommé les PR #18 à #25 sans faire avancer les items planifiés. Les items 18+ ci-dessous partent donc en réalité en **PR #26 et suivantes**, avec des branches nommées sur la numérotation réelle (`feat/026-...`), pas sur le numéro de ligne du tableau.
+
+| # | Branche (prévue) | Contenu | État |
+| --- | --- | --- | --- |
+| 1 | `docs/001-functional-audit` | Cette PR : audit fonctionnel, inventaire, matrice de parité, architecture et modèle de données initiaux | ✅ Fusionné (PR #1) |
+| 2 | `design/002-brand-and-design-system` | 3 directions artistiques, fondations de marque, design tokens, premiers composants — **non fusionnée avant choix explicite** | ✅ Fusionné (PR #2) |
+| 3 | `feat/003-project-foundation` | Squelette monorepo, CI de base, conventions | ✅ Fusionné (PR #3) |
+| 4 | `feat/004-design-system-foundation` | Implémentation du design system choisi | ✅ Fusionné (PR #4) |
+| 5 | `feat/005-local-infrastructure` | Docker Compose local (PostgreSQL, backend, web, stockage, mailcatcher) | ✅ Fusionné (PR #5) |
+| 6 | `feat/006-authentication-organizations` | Auth, organisations, collaborateurs | ✅ Fusionné (PR #6) |
+| 7 | `feat/007-tournament-management` | CRUD tournoi, duplication, archivage | ✅ Fusionné (PR #7) |
+| 8 | `feat/008-teams-and-participants` | Équipes, joueurs, import/export | ✅ Fusionné (PR #8) |
+| 9 | `feat/009-fields-and-referees` | Sites, terrains, créneaux, arbitres | ✅ Fusionné (PR #9) |
+| 10 | `feat/010-competition-formats` | Poules, phases finales, règles de qualification/classement | ✅ Fusionné (PR #10) |
+| 11 | `feat/011-schedule-generation` | Génération automatique du calendrier | ✅ Fusionné (PR #11) |
+| 12 | `feat/012-schedule-editor` | Édition manuelle, glisser-déposer, conflits | ✅ Fusionné (PR #12) |
+| 13 | `feat/013-scorekeeping` | Saisie/correction/validation des scores, forfaits, pénalités | ✅ Fusionné (PR #13) |
+| 14 | `feat/014-standings-and-qualification` | Recalcul automatique classements/qualifications | ✅ Fusionné (PR #14) |
+| 15 | `feat/015-public-tournament-web` | Site public complet | ✅ Fusionné (PR #15) |
+| 16 | `feat/016-realtime-updates` | Temps réel (WebSocket/SSE) | ✅ Fusionné (PR #16) |
+| 17 | `feat/017-mobile-foundation` | Socle Ionic/Capacitor | ✅ Fusionné (PR #17) |
+| — | *(hors plan)* | Corrections remontées pendant les tests manuels : lien de connexion sur la vitrine, smoke test shared-models, lien public tournoi, fusion admin-web + public-web → `apps/web`, mode sombre partout, thème admin/selects/sous-menu, inputs restants thémés | ✅ Fusionné (PR #18–#25) |
+| 18 | `feat/026-team-following` | Favoris, suivi d'équipe mobile | 🚧 En cours (PR #26) |
+| 19 | `feat/027-mobile-notifications` | Notifications push | ⬜ Non commencé |
+| 20 | `feat/028-offline-mode` | Mode hors connexion | ⬜ Non commencé |
+| 21 | `feat/029-security-hardening` | Durcissement sécurité | ⬜ Non commencé |
+| 22 | `feat/030-accessibility-hardening` | Durcissement accessibilité | ⬜ Non commencé |
+| 23 | `feat/031-observability` | Observabilité | ⬜ Non commencé |
+| 24 | `feat/032-deployment` | Déploiement | ⬜ Non commencé |
+| 25 | `feat/033-player-registration-and-payments` | Comptes joueurs publics, inscription en ligne sur le site public, paiement (prestataire à choisir), suivi organisateur des paiements | ⬜ Non commencé |
+| 26 | `feat/034-rating-system` | Système de rating (ELO/Glicko à arbitrer) en complément du classement par points existant, mis à jour à chaque match validé | ⬜ Non commencé |
+| 27 | `feat/035-ai-assistant` | Assistant en langage naturel côté admin (création de compétition, requêtes sur les données du tournoi) | ⬜ Non commencé |
 
 **Point d'attention identifié lors de cet audit** : l'admin n'étant pas encore analysée, le contenu exact de `feat/012-schedule-editor` (vue par terrain/équipe/poule, historique, undo/redo) et `feat/013-scorekeeping` (centre de gestion du direct) pourra nécessiter un début de scission une fois l'audit admin réalisé, si la complexité observée le justifie. Ce sera réévalué dans la prochaine mise à jour de ce document.
+
+*(Point réévalué depuis : la scission anticipée ne s'est pas avérée nécessaire — `feat/012` et `feat/013` ont été livrées telles quelles.)*
