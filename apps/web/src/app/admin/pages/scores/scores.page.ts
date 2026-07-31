@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Button } from 'design-system';
+import { Button, Select, SelectOption } from 'design-system';
 import { AuthService } from '../../core/auth.service';
 import { CompetitionFormatsService } from '../../core/competition-formats.service';
 import { Category, CompetitionPhase, Match, StandingRule } from '../../core/models';
@@ -20,7 +20,7 @@ const EMPTY_DRAFT: ScoreDraft = { home: '', away: '', homePenalty: '', awayPenal
 
 @Component({
   selector: 'app-scores-page',
-  imports: [Button],
+  imports: [Button, Select],
   templateUrl: './scores.page.html',
   styleUrl: './scores.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -46,6 +46,13 @@ export class ScoresPage {
   protected readonly matches = signal<Match[]>([]);
   protected readonly standingRulesByGroup = signal<Map<string, StandingRule>>(new Map());
   protected readonly scoreDrafts = signal<Map<string, ScoreDraft>>(new Map());
+
+  protected readonly categoryOptions = computed<SelectOption[]>(() =>
+    this.categories().map((category) => ({ value: category.id, label: category.name })),
+  );
+  protected readonly phaseOptions = computed<SelectOption[]>(() =>
+    this.phases().map((phase) => ({ value: phase.id, label: phase.name })),
+  );
 
   protected readonly progress = computed(() => {
     const matches = this.matches();
@@ -102,8 +109,8 @@ export class ScoresPage {
     }
   }
 
-  protected async onCategoryChange(event: Event): Promise<void> {
-    this.selectedCategoryId.set((event.target as HTMLSelectElement).value);
+  protected async onCategoryChange(categoryId: string): Promise<void> {
+    this.selectedCategoryId.set(categoryId);
     await this.loadPhases();
   }
 
@@ -131,8 +138,8 @@ export class ScoresPage {
     }
   }
 
-  protected async onPhaseChange(event: Event): Promise<void> {
-    this.selectedPhaseId.set((event.target as HTMLSelectElement).value);
+  protected async onPhaseChange(phaseId: string): Promise<void> {
+    this.selectedPhaseId.set(phaseId);
     await this.onPhaseSelected();
   }
 

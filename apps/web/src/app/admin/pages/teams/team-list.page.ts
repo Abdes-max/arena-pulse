@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Button } from 'design-system';
+import { Button, Select, SelectOption } from 'design-system';
 import { AuthService } from '../../core/auth.service';
 import { Category, Player, Team, TeamImportResult } from '../../core/models';
 import { TeamsService } from '../../core/teams.service';
@@ -8,7 +8,7 @@ import { TournamentsService } from '../../core/tournaments.service';
 
 @Component({
   selector: 'app-team-list-page',
-  imports: [Button],
+  imports: [Button, Select],
   templateUrl: './team-list.page.html',
   styleUrl: './team-list.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -32,6 +32,18 @@ export class TeamListPage {
     const category = this.categories().find((c) => c.id === this.formCategoryId());
     return category?.divisions ?? [];
   });
+
+  protected readonly categoryOptions = computed<SelectOption[]>(() => [
+    { value: '', label: 'Choisir une catégorie', disabled: true },
+    ...this.categories().map((category) => ({ value: category.id, label: category.name })),
+  ]);
+  protected readonly divisionOptions = computed<SelectOption[]>(() => [
+    { value: '', label: 'Aucune division' },
+    ...this.divisionsForSelectedCategory().map((division) => ({
+      value: division.id,
+      label: division.name,
+    })),
+  ]);
 
   protected readonly editingTeamId = signal<string | null>(null);
   protected readonly formName = signal('');
@@ -72,8 +84,8 @@ export class TeamListPage {
     }
   }
 
-  protected onFormCategoryChange(event: Event): void {
-    this.formCategoryId.set((event.target as HTMLSelectElement).value);
+  protected onFormCategoryChange(categoryId: string): void {
+    this.formCategoryId.set(categoryId);
     this.formDivisionId.set('');
   }
 

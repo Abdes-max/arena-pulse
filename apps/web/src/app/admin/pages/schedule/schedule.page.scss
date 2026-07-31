@@ -11,12 +11,7 @@
   font-size: 0.9rem;
 }
 
-.schedule-page__select-label {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ap-space-2);
-  font-size: 0.85rem;
-  font-weight: 600;
+.schedule-page__select {
   max-width: 300px;
   margin-top: var(--ap-space-4);
 }

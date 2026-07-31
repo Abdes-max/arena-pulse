@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Button } from 'design-system';
+import { Button, Select, SelectOption } from 'design-system';
 import { AuthService } from '../../core/auth.service';
 import { CompetitionFormatsService } from '../../core/competition-formats.service';
 import {
@@ -30,7 +30,7 @@ const EMPTY_DRAFT: TimeSlotDraft = { start: '', end: '', label: '' };
 
 @Component({
   selector: 'app-schedule-page',
-  imports: [Button],
+  imports: [Button, Select],
   templateUrl: './schedule.page.html',
   styleUrl: './schedule.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -73,6 +73,13 @@ export class SchedulePage {
 
   protected readonly groupStagePhases = computed(() =>
     this.phases().filter((phase) => phase.type === 'GROUP_STAGE'),
+  );
+
+  protected readonly categoryOptions = computed<SelectOption[]>(() =>
+    this.categories().map((category) => ({ value: category.id, label: category.name })),
+  );
+  protected readonly phaseOptions = computed<SelectOption[]>(() =>
+    this.groupStagePhases().map((phase) => ({ value: phase.id, label: phase.name })),
   );
 
   protected readonly fields = computed(() =>
@@ -147,8 +154,8 @@ export class SchedulePage {
     this.timeSlotsByField.set(new Map(entries));
   }
 
-  protected async onCategoryChange(event: Event): Promise<void> {
-    this.selectedCategoryId.set((event.target as HTMLSelectElement).value);
+  protected async onCategoryChange(categoryId: string): Promise<void> {
+    this.selectedCategoryId.set(categoryId);
     await this.loadTeams();
     await this.loadPhases();
   }
@@ -193,8 +200,8 @@ export class SchedulePage {
     }
   }
 
-  protected async onPhaseChange(event: Event): Promise<void> {
-    this.selectedPhaseId.set((event.target as HTMLSelectElement).value);
+  protected async onPhaseChange(phaseId: string): Promise<void> {
+    this.selectedPhaseId.set(phaseId);
     await this.onPhaseSelected();
   }
 
@@ -313,6 +320,16 @@ export class SchedulePage {
     return this.referees().filter((referee) => !assignedIds.has(referee.id));
   }
 
+  protected refereeOptions(match: Match): SelectOption[] {
+    return [
+      { value: '', label: '+ Arbitre…' },
+      ...this.availableReferees(match).map((referee) => ({
+        value: referee.id,
+        label: `${referee.firstName} ${referee.lastName}`,
+      })),
+    ];
+  }
+
   protected availableRefereeingTeams(match: Match): Team[] {
     const assignedIds = new Set(
       match.officials
@@ -321,6 +338,13 @@ export class SchedulePage {
     );
     const excludedIds = new Set([match.homeTeam?.id, match.awayTeam?.id]);
     return this.teams().filter((team) => !assignedIds.has(team.id) && !excludedIds.has(team.id));
+  }
+
+  protected refereeingTeamOptions(match: Match): SelectOption[] {
+    return [
+      { value: '', label: '+ Équipe arbitre…' },
+      ...this.availableRefereeingTeams(match).map((team) => ({ value: team.id, label: team.name })),
+    ];
   }
 
   protected onMatchDragStart(matchId: string, event: DragEvent): void {
@@ -377,19 +401,13 @@ export class SchedulePage {
     }
   }
 
-  protected onAddReferee(matchId: string, event: Event): void {
-    const select = event.target as HTMLSelectElement;
-    const refereeId = select.value;
-    select.value = '';
+  protected onAddReferee(matchId: string, refereeId: string): void {
     if (refereeId) {
       void this.addOfficial(matchId, { refereeId });
     }
   }
 
-  protected onAddRefereeingTeam(matchId: string, event: Event): void {
-    const select = event.target as HTMLSelectElement;
-    const refereeingTeamId = select.value;
-    select.value = '';
+  protected onAddRefereeingTeam(matchId: string, refereeingTeamId: string): void {
     if (refereeingTeamId) {
       void this.addOfficial(matchId, { refereeingTeamId });
     }

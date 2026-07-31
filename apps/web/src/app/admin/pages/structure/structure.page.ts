@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Button } from 'design-system';
+import { Button, Select, SelectOption } from 'design-system';
 import { AuthService } from '../../core/auth.service';
 import { CompetitionFormatsService } from '../../core/competition-formats.service';
 import {
@@ -18,7 +18,7 @@ import { TournamentsService } from '../../core/tournaments.service';
 
 @Component({
   selector: 'app-structure-page',
-  imports: [Button],
+  imports: [Button, Select],
   templateUrl: './structure.page.html',
   styleUrl: './structure.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -62,6 +62,18 @@ export class StructurePage {
     this.teams().filter((team) => team.groupId === null),
   );
 
+  protected readonly categoryOptions = computed<SelectOption[]>(() =>
+    this.categories().map((category) => ({ value: category.id, label: category.name })),
+  );
+  protected readonly phaseTypeOptions: SelectOption[] = [
+    { value: 'GROUP_STAGE', label: 'Poules' },
+    { value: 'KNOCKOUT', label: 'Élimination directe' },
+  ];
+  protected readonly unassignedTeamOptions = computed<SelectOption[]>(() => [
+    { value: '', label: 'Choisir une équipe', disabled: true },
+    ...this.unassignedTeams().map((team) => ({ value: team.id, label: team.name })),
+  ]);
+
   constructor() {
     void this.loadCategories();
   }
@@ -94,8 +106,8 @@ export class StructurePage {
     }
   }
 
-  protected async onCategoryChange(event: Event): Promise<void> {
-    this.selectedCategoryId.set((event.target as HTMLSelectElement).value);
+  protected async onCategoryChange(categoryId: string): Promise<void> {
+    this.selectedCategoryId.set(categoryId);
     this.expandedGroupId.set(null);
     await this.loadCategoryData();
   }
@@ -126,8 +138,8 @@ export class StructurePage {
     this.newPhaseName.set((event.target as HTMLInputElement).value);
   }
 
-  protected onNewPhaseTypeChange(event: Event): void {
-    this.newPhaseType.set((event.target as HTMLSelectElement).value as CompetitionPhaseType);
+  protected onNewPhaseTypeChange(type: string): void {
+    this.newPhaseType.set(type as CompetitionPhaseType);
   }
 
   protected async addPhase(): Promise<void> {
@@ -285,8 +297,8 @@ export class StructurePage {
     }
   }
 
-  protected onNewTeamIdToAssignChange(event: Event): void {
-    this.newTeamIdToAssign.set((event.target as HTMLSelectElement).value);
+  protected onNewTeamIdToAssignChange(teamId: string): void {
+    this.newTeamIdToAssign.set(teamId);
   }
 
   protected async assignTeamToExpandedGroup(): Promise<void> {
@@ -328,12 +340,23 @@ export class StructurePage {
     }
   }
 
-  protected updateQualificationRuleField(
-    field: 'fromPosition' | 'toPosition' | 'targetPhaseId',
-    event: Event,
-  ): void {
-    const value = (event.target as HTMLInputElement | HTMLSelectElement).value;
+  protected updateQualificationRuleField(field: 'fromPosition' | 'toPosition', event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
     this.newQualificationRuleForm.update((form) => ({ ...form, [field]: value }));
+  }
+
+  protected onTargetPhaseChange(targetPhaseId: string): void {
+    this.newQualificationRuleForm.update((form) => ({ ...form, targetPhaseId }));
+  }
+
+  protected targetPhaseOptions(currentPhaseId: string): SelectOption[] {
+    return [
+      { value: '', label: 'Phase cible', disabled: true },
+      ...this.otherPhases(currentPhaseId).map((target) => ({
+        value: target.id,
+        label: target.name,
+      })),
+    ];
   }
 
   protected async addQualificationRule(): Promise<void> {

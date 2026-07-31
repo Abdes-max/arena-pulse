@@ -1,12 +1,17 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { Button } from 'design-system';
-import { ThemeService } from 'design-tokens';
+import { Button, Select, SelectOption } from 'design-system';
+import { THEMES, ThemeName, ThemeService } from 'design-tokens';
 import { AuthService } from '../core/auth.service';
+
+const THEME_OPTIONS: SelectOption[] = THEMES.map((theme) => ({
+  value: theme.name,
+  label: theme.label,
+}));
 
 @Component({
   selector: 'app-shell',
-  imports: [RouterLink, RouterLinkActive, RouterOutlet, Button],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet, Button, Select],
   templateUrl: './app-shell.html',
   styleUrl: './app-shell.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -17,10 +22,16 @@ export class AppShell {
   private readonly themeService = inject(ThemeService);
 
   protected readonly mode = this.themeService.mode;
+  protected readonly theme = this.themeService.adminTheme;
+  protected readonly themeOptions = THEME_OPTIONS;
 
   protected toggleMode(): void {
     const next = this.mode() === 'dark' ? 'light' : 'dark';
     this.themeService.setMode(document.documentElement, next);
+  }
+
+  protected onThemeChange(theme: string): void {
+    this.themeService.setAdminTheme(document.documentElement, theme as ThemeName);
   }
 
   protected async logout(): Promise<void> {

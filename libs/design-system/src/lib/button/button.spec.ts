@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { Button } from './button';
 
 @Component({
@@ -19,6 +20,12 @@ class LinkHostComponent {
   href = 'https://example.com';
   target: string | undefined;
 }
+
+@Component({
+  imports: [Button],
+  template: `<ap-button routerLink="/admin/tournaments">Tournois</ap-button>`,
+})
+class RouterLinkHostComponent {}
 
 describe('Button', () => {
   it('renders its projected content', async () => {
@@ -64,5 +71,15 @@ describe('Button', () => {
 
     const link = fixture.nativeElement.querySelector('a');
     expect(link.getAttribute('target')).toBe('_blank');
+  });
+
+  it('renders an anchor with routerLink instead of a button when routerLink is set', () => {
+    TestBed.configureTestingModule({ providers: [provideRouter([])] });
+    const fixture = TestBed.createComponent(RouterLinkHostComponent);
+    fixture.detectChanges();
+
+    const link = fixture.nativeElement.querySelector('a');
+    expect(link.getAttribute('href')).toBe('/admin/tournaments');
+    expect(fixture.nativeElement.querySelector('button')).toBeNull();
   });
 });

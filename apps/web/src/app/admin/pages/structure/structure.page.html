@@ -11,14 +11,13 @@
     @if (categories().length === 0) {
       <p>Ajoutez d'abord une catégorie sur la page du tournoi.</p>
     } @else {
-      <label class="structure-page__category-select">
-        Catégorie
-        <select [value]="selectedCategoryId()" (change)="onCategoryChange($event)">
-          @for (category of categories(); track category.id) {
-            <option [value]="category.id">{{ category.name }}</option>
-          }
-        </select>
-      </label>
+      <ap-select
+        class="structure-page__category-select"
+        label="Catégorie"
+        [options]="categoryOptions()"
+        [value]="selectedCategoryId()"
+        (valueChange)="onCategoryChange($event)"
+      />
 
       <section class="structure-page__section">
         <h2>Ajouter une phase</h2>
@@ -29,10 +28,13 @@
             [value]="newPhaseName()"
             (input)="onNewPhaseNameChange($event)"
           />
-          <select [value]="newPhaseType()" (change)="onNewPhaseTypeChange($event)">
-            <option value="GROUP_STAGE">Poules</option>
-            <option value="KNOCKOUT">Élimination directe</option>
-          </select>
+          <ap-select
+            label="Type de phase"
+            [hideLabel]="true"
+            [options]="phaseTypeOptions"
+            [value]="newPhaseType()"
+            (valueChange)="onNewPhaseTypeChange($event)"
+          />
           <ap-button type="button" (click)="addPhase()">Ajouter la phase</ap-button>
         </div>
       </section>
@@ -80,15 +82,13 @@
                 @if (expandedGroupId() === group.id) {
                   <div class="structure-page__group-details">
                     <div class="structure-page__inline-form">
-                      <select
+                      <ap-select
+                        label="Choisir une équipe"
+                        [hideLabel]="true"
+                        [options]="unassignedTeamOptions()"
                         [value]="newTeamIdToAssign()"
-                        (change)="onNewTeamIdToAssignChange($event)"
-                      >
-                        <option value="" disabled>Choisir une équipe</option>
-                        @for (team of unassignedTeams(); track team.id) {
-                          <option [value]="team.id">{{ team.name }}</option>
-                        }
-                      </select>
+                        (valueChange)="onNewTeamIdToAssignChange($event)"
+                      />
                       <ap-button
                         type="button"
                         variant="ghost"
@@ -183,15 +183,13 @@
                         [value]="newQualificationRuleForm().toPosition"
                         (input)="updateQualificationRuleField('toPosition', $event)"
                       />
-                      <select
+                      <ap-select
+                        label="Phase cible"
+                        [hideLabel]="true"
+                        [options]="targetPhaseOptions(phase.id)"
                         [value]="newQualificationRuleForm().targetPhaseId"
-                        (change)="updateQualificationRuleField('targetPhaseId', $event)"
-                      >
-                        <option value="" disabled>Phase cible</option>
-                        @for (target of otherPhases(phase.id); track target.id) {
-                          <option [value]="target.id">{{ target.name }}</option>
-                        }
-                      </select>
+                        (valueChange)="onTargetPhaseChange($event)"
+                      />
                       <ap-button type="button" variant="ghost" (click)="addQualificationRule()">
                         Ajouter la règle
                       </ap-button>
