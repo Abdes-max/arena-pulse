@@ -52,7 +52,8 @@ export const routes: Routes = [
       },
       {
         path: 'tournaments/:tournamentId/teams',
-        loadComponent: () => import('./admin/pages/teams/team-list.page').then((m) => m.TeamListPage),
+        loadComponent: () =>
+          import('./admin/pages/teams/team-list.page').then((m) => m.TeamListPage),
       },
       {
         path: 'tournaments/:tournamentId/referees',
@@ -81,9 +82,7 @@ export const routes: Routes = [
       {
         path: 'collaborators',
         loadComponent: () =>
-          import('./admin/pages/collaborators/collaborators.page').then(
-            (m) => m.CollaboratorsPage,
-          ),
+          import('./admin/pages/collaborators/collaborators.page').then((m) => m.CollaboratorsPage),
       },
     ],
   },
