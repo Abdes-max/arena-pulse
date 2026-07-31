@@ -1,3 +1,11 @@
-<button class="ap-button" [type]="type()" [disabled]="disabled()">
-  <ng-content />
-</button>
+<ng-template #content><ng-content /></ng-template>
+
+@if (href(); as url) {
+  <a class="ap-button" [href]="url" [target]="target()" rel="noopener">
+    <ng-container [ngTemplateOutlet]="content" />
+  </a>
+} @else {
+  <button class="ap-button" [type]="type()" [disabled]="disabled()">
+    <ng-container [ngTemplateOutlet]="content" />
+  </button>
+}
