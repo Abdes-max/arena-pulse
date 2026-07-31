@@ -10,7 +10,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { DEFAULT_THEME, ThemeName, ThemeService } from 'design-tokens';
 import { TournamentContextService } from '../core/tournament-context.service';
-import { PublicTheme } from '../core/models';
+import { PublicTheme } from 'shared-models';
 
 /** Maps the backend's PublicTheme enum to design-tokens' ThemeName (data-theme values). */
 const THEME_MAP: Record<PublicTheme, ThemeName> = {

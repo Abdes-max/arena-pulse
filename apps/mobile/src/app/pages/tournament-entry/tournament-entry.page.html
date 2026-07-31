@@ -1,0 +1,17 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Arena Pulse</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="tournament-entry-page">
+  <p>Suivez un tournoi en entrant son identifiant (fourni par l'organisateur).</p>
+  <ion-input
+    label="Identifiant du tournoi"
+    labelPlacement="stacked"
+    placeholder="ex. coupe-de-printemps-2026"
+    [value]="slug()"
+    (ionInput)="onSlugChange($event.detail.value)"
+  />
+  <ion-button expand="block" (click)="go()">Voir le tournoi</ion-button>
+</ion-content>

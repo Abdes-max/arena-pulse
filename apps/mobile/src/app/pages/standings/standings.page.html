@@ -1,0 +1,53 @@
+@if (loading()) {
+  <ion-content class="standings-page__status">
+    <p>Chargement…</p>
+  </ion-content>
+} @else if (categories().length === 0) {
+  <ion-content class="standings-page__status">
+    <p>Aucune catégorie pour ce tournoi.</p>
+  </ion-content>
+} @else {
+  <ion-content class="standings-page">
+    <ion-list>
+      <ion-item>
+        <ion-select
+          label="Catégorie"
+          [value]="selectedCategoryId()"
+          (ionChange)="onCategoryChange($event.detail.value)"
+        >
+          @for (category of categories(); track category.id) {
+            <ion-select-option [value]="category.id">{{ category.name }}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+    </ion-list>
+
+    @if (!hasGroupStagePhase()) {
+      <p class="standings-page__empty">
+        Pas encore de classement pour cette catégorie, ou tableau à élimination uniquement (non
+        affiché ici — consultez le site public complet).
+      </p>
+    } @else {
+      @for (group of groupStandings(); track group.groupId) {
+        <ion-list>
+          <ion-list-header>{{ group.groupName }}</ion-list-header>
+          @for (row of group.standings.rows; track row.teamId) {
+            <ion-item>
+              <ion-label>
+                <h2>{{ row.position }}. {{ row.teamName }}</h2>
+                <p>
+                  {{ row.played }} joués · {{ row.won }}V {{ row.drawn }}N {{ row.lost }}D ·
+                  {{ row.goalsFor }}-{{ row.goalsAgainst }}
+                </p>
+              </ion-label>
+              @if (isQualified(group, row.teamId)) {
+                <ion-badge slot="end" color="success">Qualifié</ion-badge>
+              }
+              <ion-label slot="end" class="standings-page__points">{{ row.points }} pts</ion-label>
+            </ion-item>
+          }
+        </ion-list>
+      }
+    }
+  </ion-content>
+}

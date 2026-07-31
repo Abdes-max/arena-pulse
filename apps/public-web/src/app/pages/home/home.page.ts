@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 import { MatchCard } from 'design-system';
-import { PublicApiService } from '../../core/public-api.service';
+import { PublicApiService } from 'api-client';
 import { TournamentContextService } from '../../core/tournament-context.service';
-import { Category, Match } from '../../core/models';
+import { Category, Match } from 'shared-models';
 
 @Component({
   selector: 'app-home-page',

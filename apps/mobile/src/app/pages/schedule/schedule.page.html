@@ -1,0 +1,70 @@
+@if (loading()) {
+  <ion-content class="schedule-page__status">
+    <p>Chargement…</p>
+  </ion-content>
+} @else if (categories().length === 0) {
+  <ion-content class="schedule-page__status">
+    <p>Aucune catégorie pour ce tournoi.</p>
+  </ion-content>
+} @else {
+  <ion-content class="schedule-page">
+    <ion-list>
+      <ion-item>
+        <ion-select
+          label="Catégorie"
+          [value]="selectedCategoryId()"
+          (ionChange)="onCategoryChange($event.detail.value)"
+        >
+          @for (category of categories(); track category.id) {
+            <ion-select-option [value]="category.id">{{ category.name }}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+      @if (phases().length > 0) {
+        <ion-item>
+          <ion-select
+            label="Phase"
+            [value]="selectedPhaseId()"
+            (ionChange)="onPhaseChange($event.detail.value)"
+          >
+            @for (phase of phases(); track phase.id) {
+              <ion-select-option [value]="phase.id">{{ phase.name }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+      }
+    </ion-list>
+
+    @if (matchesByDay().length === 0) {
+      <p class="schedule-page__empty">Aucun match pour cette phase.</p>
+    } @else {
+      @for (day of matchesByDay(); track day.label) {
+        <ion-list>
+          <ion-list-header>{{ day.label }}</ion-list-header>
+          @for (match of day.matches; track match.id) {
+            <ion-item>
+              <ion-label>
+                <h2>{{ match.homeTeam?.name ?? '?' }} — {{ match.awayTeam?.name ?? '?' }}</h2>
+                <p>
+                  {{ competitionLabel(match) }}
+                  @if (match.timeSlot) {
+                    · {{ formatKickoff(match.timeSlot.startTime) }} ·
+                    {{ match.timeSlot.field.name }}
+                  }
+                </p>
+              </ion-label>
+              @if (match.score) {
+                <ion-label slot="end" class="schedule-page__score">
+                  {{ match.score.homeScore }} - {{ match.score.awayScore }}
+                </ion-label>
+              }
+              <ion-badge slot="end" [color]="match.status === 'LIVE' ? 'danger' : 'medium'">
+                {{ statusLabel(match) }}
+              </ion-badge>
+            </ion-item>
+          }
+        </ion-list>
+      }
+    }
+  </ion-content>
+}

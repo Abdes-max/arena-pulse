@@ -4,8 +4,11 @@
   "compileOnSave": false,
   "compilerOptions": {
     "paths": {
+      "api-client": ["./dist/api-client"],
       "design-system": ["./dist/design-system"],
-      "design-tokens": ["./dist/design-tokens"]
+      "design-tokens": ["./dist/design-tokens"],
+      "realtime-client": ["./dist/realtime-client"],
+      "shared-models": ["./dist/shared-models"]
     },
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
@@ -48,6 +51,30 @@
     },
     {
       "path": "./libs/design-system/tsconfig.spec.json"
+    },
+    {
+      "path": "./libs/shared-models/tsconfig.lib.json"
+    },
+    {
+      "path": "./libs/shared-models/tsconfig.spec.json"
+    },
+    {
+      "path": "./libs/api-client/tsconfig.lib.json"
+    },
+    {
+      "path": "./libs/api-client/tsconfig.spec.json"
+    },
+    {
+      "path": "./libs/realtime-client/tsconfig.lib.json"
+    },
+    {
+      "path": "./libs/realtime-client/tsconfig.spec.json"
+    },
+    {
+      "path": "./apps/mobile/tsconfig.app.json"
+    },
+    {
+      "path": "./apps/mobile/tsconfig.spec.json"
     }
   ]
 }

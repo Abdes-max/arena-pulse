@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { CompetitionPhase, Match } from '../../core/models';
+import { CompetitionPhase, Match } from 'shared-models';
 import { computeFinalRanking } from './final-ranking.util';
 
 function team(id: string, name: string) {

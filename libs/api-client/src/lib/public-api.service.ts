@@ -1,7 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { environment } from '../../environments/environment';
 import {
   Category,
   CompetitionPhase,
@@ -11,14 +10,16 @@ import {
   PublicTournament,
   Qualification,
   Standings,
-} from './models';
+} from 'shared-models';
+import { API_CLIENT_CONFIG } from './api-client.config';
 
 @Injectable({ providedIn: 'root' })
 export class PublicApiService {
   private readonly http = inject(HttpClient);
+  private readonly config = inject(API_CLIENT_CONFIG);
 
   private base(slug: string): string {
-    return `${environment.apiUrl}/public/tournaments/${slug}`;
+    return `${this.config.apiUrl}/public/tournaments/${slug}`;
   }
 
   getTournament(slug: string): Promise<PublicTournament> {
@@ -67,9 +68,10 @@ export class PublicApiService {
   }
 
   listUpcomingMatches(slug: string, limit?: number): Promise<Match[]> {
-    const params = limit !== undefined ? new HttpParams().set('limit', limit) : undefined;
     return firstValueFrom(
-      this.http.get<Match[]>(`${this.base(slug)}/matches/upcoming`, { params }),
+      this.http.get<Match[]>(`${this.base(slug)}/matches/upcoming`, {
+        params: limit !== undefined ? new HttpParams().set('limit', limit) : undefined,
+      }),
     );
   }
 }

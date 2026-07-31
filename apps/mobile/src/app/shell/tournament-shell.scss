@@ -1,0 +1,19 @@
+.tournament-shell__status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  --padding-start: 16px;
+  --padding-end: 16px;
+}
+
+.tournament-shell__dates {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+ion-tab-button.tab-selected {
+  color: var(--ap-color-signal);
+}

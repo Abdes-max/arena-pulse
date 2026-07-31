@@ -1,0 +1,34 @@
+@if (loading()) {
+  <ion-content class="tournament-shell__status">
+    <p>Chargement…</p>
+  </ion-content>
+} @else if (errorMessage(); as message) {
+  <ion-content class="tournament-shell__status">
+    <p role="alert">{{ message }}</p>
+  </ion-content>
+} @else if (tournament(); as t) {
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>
+        {{ t.name }}
+        @if (formattedDates(); as dates) {
+          <span class="tournament-shell__dates">{{ dates }}</span>
+        }
+      </ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content class="tournament-shell__content">
+    <router-outlet />
+  </ion-content>
+
+  <ion-tab-bar>
+    <ion-tab-button routerLink="schedule" routerLinkActive="tab-selected">
+      Calendrier
+    </ion-tab-button>
+    <ion-tab-button routerLink="standings" routerLinkActive="tab-selected">
+      Classements
+    </ion-tab-button>
+    <ion-tab-button routerLink="team" routerLinkActive="tab-selected"> Équipes </ion-tab-button>
+  </ion-tab-bar>
+}
