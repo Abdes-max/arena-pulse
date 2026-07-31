@@ -185,4 +185,3 @@ export interface QualificationRule {
   targetPhaseId: string;
   targetPhaseName: string;
 }
-
