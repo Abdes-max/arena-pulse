@@ -10,3 +10,13 @@
   opacity: 0.7;
   padding: 16px;
 }
+
+// No `button`/`routerLink` on ion-item (see team-search.page.ts's goToTeam) --
+// nesting the favorite ion-button inside Ionic's native <a>/<button> item
+// wrapper causes both the star's click AND the item's navigation to fire from
+// a single click, since stopPropagation() can't stop a native anchor's own
+// default action. A plain clickable row avoids that invalid nested-interactive
+// markup entirely.
+.team-search-page__row {
+  cursor: pointer;
+}

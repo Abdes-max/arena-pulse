@@ -1,0 +1,15 @@
+.favorites-page__status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  --padding-start: 16px;
+  --padding-end: 16px;
+}
+
+// See team-search.page.scss for why this row is plain-clickable rather than
+// using ion-item's button/routerLink (would nest the favorite ion-button
+// inside a native anchor/button, breaking its own click handling).
+.favorites-page__row {
+  cursor: pointer;
+}

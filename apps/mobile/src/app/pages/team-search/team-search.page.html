@@ -32,7 +32,7 @@
     } @else {
       <ion-list>
         @for (team of filteredTeams(); track team.id) {
-          <ion-item [routerLink]="['../team', team.id]" button>
+          <ion-item (click)="goToTeam(team)" class="team-search-page__row">
             <ion-label>
               <h2>{{ team.name }}</h2>
               <p>
@@ -42,6 +42,14 @@
                 }
               </p>
             </ion-label>
+            <ion-button
+              slot="end"
+              fill="clear"
+              [attr.aria-label]="isFavorite(team) ? 'Retirer des favoris' : 'Ajouter aux favoris'"
+              (click)="toggleFavorite($event, team)"
+            >
+              {{ isFavorite(team) ? '★' : '☆' }}
+            </ion-button>
           </ion-item>
         }
       </ion-list>
