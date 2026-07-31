@@ -7,30 +7,30 @@
   },
   "newProjectRoot": "apps",
   "projects": {
-    "public-web": {
+    "web": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
           "style": "scss"
         }
       },
-      "root": "apps/public-web",
-      "sourceRoot": "apps/public-web/src",
+      "root": "apps/web",
+      "sourceRoot": "apps/web/src",
       "prefix": "app",
       "architect": {
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "browser": "apps/public-web/src/main.ts",
-            "tsConfig": "apps/public-web/tsconfig.app.json",
+            "browser": "apps/web/src/main.ts",
+            "tsConfig": "apps/web/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
             "assets": [
               {
                 "glob": "**/*",
-                "input": "apps/public-web/public"
+                "input": "apps/web/public"
               }
             ],
-            "styles": ["apps/public-web/src/styles.scss"],
+            "styles": ["apps/web/src/styles.scss"],
             "stylePreprocessorOptions": {
               "includePaths": ["libs/design-tokens/src/styles"]
             }
@@ -57,8 +57,8 @@
               "sourceMap": true,
               "fileReplacements": [
                 {
-                  "replace": "apps/public-web/src/environments/environment.ts",
-                  "with": "apps/public-web/src/environments/environment.development.ts"
+                  "replace": "apps/web/src/environments/environment.ts",
+                  "with": "apps/web/src/environments/environment.development.ts"
                 }
               ]
             }
@@ -69,10 +69,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "public-web:build:production"
+              "buildTarget": "web:build:production"
             },
             "development": {
-              "buildTarget": "public-web:build:development"
+              "buildTarget": "web:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -83,8 +83,8 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": ["apps/public-web/**/*.ts", "apps/public-web/**/*.html"],
-            "eslintConfig": "apps/public-web/eslint.config.js"
+            "lintFilePatterns": ["apps/web/**/*.ts", "apps/web/**/*.html"],
+            "eslintConfig": "apps/web/eslint.config.js"
           }
         }
       }

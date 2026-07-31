@@ -23,16 +23,16 @@ jobs:
       - run: npx ng lint shared-models
       - run: npx ng lint api-client
       - run: npx ng lint realtime-client
-      - run: npm run lint:public-web
+      - run: npm run lint:web
       - run: npm run lint:admin-web
       - run: npm run lint:mobile
-      - run: npm run build:public-web
+      - run: npm run build:web
       - run: npm run build:admin-web
       - run: npm run build:mobile
       - run: npm run test:shared-models
       - run: npm run test:api-client
       - run: npm run test:realtime-client
-      - run: npm run test:public-web
+      - run: npm run test:web
       - run: npm run test:admin-web
       - run: npm run test:mobile
 

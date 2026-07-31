@@ -85,7 +85,7 @@ async function main() {
   await ensureNativeService('api', 'npm', ['--prefix', 'apps/api', 'run', 'start:dev'], 3000, '/api/v1', 'Hello World');
 
   console.log('4/4 — Web apps (Angular)');
-  await ensureNativeService('public-web', 'npx', ['ng', 'serve', 'public-web'], 4200, '/', 'PublicWeb');
+  await ensureNativeService('web', 'npx', ['ng', 'serve', 'web'], 4200, '/', 'PublicWeb');
   await ensureNativeService(
     'admin-web',
     'npx',
@@ -98,7 +98,7 @@ async function main() {
   writeFileSync(pidsFile, JSON.stringify(pids, null, 2));
 
   console.log('\nArena Pulse:');
-  console.log('  public-web  http://localhost:4200');
+  console.log('  web         http://localhost:4200');
   console.log('  admin-web   http://localhost:4300');
   console.log('  api         http://localhost:3000/api/docs');
   console.log('  minio       http://localhost:9001 (console)');
