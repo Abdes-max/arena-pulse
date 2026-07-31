@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// Stops whatever `npm run run` started: the native api/public-web/admin-web
-// processes it tracked, plus the Docker Compose infrastructure. Safe to
-// re-run: processes that are already gone are skipped rather than erroring.
+// Stops whatever `npm run run` started: the native api/web processes it
+// tracked, plus the Docker Compose infrastructure. Safe to re-run: processes
+// that are already gone are skipped rather than erroring.
 import { spawnSync } from 'node:child_process';
 import { existsSync, readFileSync, rmSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -29,7 +29,7 @@ function killTree(pid) {
 }
 
 async function main() {
-  console.log('1/2 — Stopping native processes (api, public-web, admin-web)');
+  console.log('1/2 — Stopping native processes (api, web)');
   if (existsSync(pidsFile)) {
     const pids = JSON.parse(readFileSync(pidsFile, 'utf8'));
     for (const [name, info] of Object.entries(pids)) {

@@ -1,0 +1,14 @@
+<div class="app-shell">
+  <header class="app-shell__header">
+    <nav class="app-shell__nav">
+      <a routerLink="/admin/tournaments" routerLinkActive="app-shell__link--active">Tournois</a>
+      <a routerLink="/admin/collaborators" routerLinkActive="app-shell__link--active"
+        >Collaborateurs</a
+      >
+    </nav>
+    <ap-button type="button" variant="ghost" (click)="logout()">Se déconnecter</ap-button>
+  </header>
+  <main class="app-shell__content">
+    <router-outlet />
+  </main>
+</div>

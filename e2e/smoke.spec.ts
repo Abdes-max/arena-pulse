@@ -1,15 +1,13 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('public-web', () => {
-  test('home page loads', async ({ page }) => {
+test.describe('web', () => {
+  test('landing page loads', async ({ page }) => {
     await page.goto('http://localhost:4200');
-    await expect(page).toHaveTitle(/PublicWeb/i);
+    await expect(page).toHaveTitle(/Arena Pulse/i);
   });
-});
 
-test.describe('admin-web', () => {
-  test('home page loads', async ({ page }) => {
-    await page.goto('http://localhost:4300');
-    await expect(page).toHaveTitle(/AdminWeb/i);
+  test('unauthenticated access to /admin redirects to /login', async ({ page }) => {
+    await page.goto('http://localhost:4200/admin/tournaments');
+    await expect(page).toHaveURL(/\/login/);
   });
 });

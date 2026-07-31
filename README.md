@@ -6,7 +6,7 @@ Plateforme premium de gestion de tournois sportifs — site public, administrati
 
 ## Stack technique
 
-- **Frontend** : Angular 22 (`apps/public-web`, `apps/admin-web`), composants standalone, tests unitaires Vitest, tests end-to-end Playwright.
+- **Frontend** : Angular 22 (`apps/web` — vitrine, site public de tournoi et administration sous `/admin`), composants standalone, tests unitaires Vitest, tests end-to-end Playwright.
 - **Backend** : NestJS (TypeScript, `apps/api`), Prisma + PostgreSQL, validation via `class-validator`, documentation OpenAPI via `@nestjs/swagger`, authentification `@nestjs/passport` + JWT.
 - **Mobile** : Ionic Angular + Capacitor — prévu dans `feat/017-mobile-foundation`, pas encore présent dans ce dépôt.
 - Voir `docs/architecture/architecture-overview.md` et `docs/architecture/adr/0002-backend-nestjs-instead-of-spring-boot.md` pour le détail et la justification de ces choix (écart assumé par rapport à la stack Java/Spring Boot suggérée dans la mission d'origine, à la demande explicite du porteur de projet).
@@ -47,16 +47,15 @@ npx prisma generate      # régénère le client Prisma
 ## Démarrage local
 
 ```bash
-npm run run               # démarre l'infra Docker (Postgres/MinIO/Mailhog) + api/public-web/admin-web
+npm run run               # démarre l'infra Docker (Postgres/MinIO/Mailhog) + api/web
 npm run stop               # arrête tout ce que "npm run run" a démarré (les données sont conservées)
 ```
 
 `npm run run` est idempotent : un service déjà démarré (le vôtre ou lancé autrement) est laissé tel quel plutôt que redémarré. Alternative pour le développement au jour le jour (suppose l'infra Docker déjà démarrée via `docker compose -f infra/compose/docker-compose.yml up -d`) :
 
 ```bash
-npm run dev               # démarre public-web (4200), admin-web (4300) et l'API (3000) en parallèle
-npm run dev:public-web     # uniquement le site public
-npm run dev:admin-web      # uniquement l'administration
+npm run dev               # démarre web (4200, vitrine + site public + /admin) et l'API (3000) en parallèle
+npm run dev:web            # uniquement le frontend
 npm run dev:api            # uniquement l'API NestJS
 ```
 
@@ -65,7 +64,7 @@ L'API expose sa documentation OpenAPI sur `http://localhost:3000/api/docs` une f
 ## Tests
 
 ```bash
-npm run test              # tests unitaires (public-web, admin-web, api)
+npm run test              # tests unitaires (web, api)
 npm run e2e                # tests end-to-end Playwright (nécessite `npx playwright install` au préalable)
 npm run test:api:e2e       # tests end-to-end de l'API (Jest + Supertest)
 ```
