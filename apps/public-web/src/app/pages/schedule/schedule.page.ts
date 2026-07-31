@@ -7,9 +7,9 @@ import {
   signal,
 } from '@angular/core';
 import { MatchCard, MatchCardVariant, Select, TextField } from 'design-system';
-import { PublicApiService } from '../../core/public-api.service';
+import { PublicApiService } from 'api-client';
 import { TournamentContextService } from '../../core/tournament-context.service';
-import { Category, CompetitionPhase, Match } from '../../core/models';
+import { Category, CompetitionPhase, Match } from 'shared-models';
 
 @Component({
   selector: 'app-schedule-page',

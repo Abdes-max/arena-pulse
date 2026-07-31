@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Select, TextField } from 'design-system';
-import { PublicApiService } from '../../core/public-api.service';
+import { PublicApiService } from 'api-client';
 import { TournamentContextService } from '../../core/tournament-context.service';
-import { Category, PublicTeam } from '../../core/models';
+import { Category, PublicTeam } from 'shared-models';
 
 @Component({
   selector: 'app-team-search-page',

@@ -1,9 +1,8 @@
 import { Injectable, OnDestroy, inject, signal } from '@angular/core';
+import { PublicApiService } from 'api-client';
+import { TournamentEventStream } from 'realtime-client';
+import { PublicTournament } from 'shared-models';
 import { environment } from '../../environments/environment';
-import { PublicApiService } from './public-api.service';
-import { PublicTournament } from './models';
-
-const EVENT_DEBOUNCE_MS = 300;
 
 /**
  * Provided per TournamentShell instance (not root) so each visited tournament
@@ -12,6 +11,7 @@ const EVENT_DEBOUNCE_MS = 300;
 @Injectable()
 export class TournamentContextService implements OnDestroy {
   private readonly api = inject(PublicApiService);
+  private readonly stream = new TournamentEventStream();
 
   readonly slug = signal('');
   readonly tournament = signal<PublicTournament | null>(null);
@@ -23,10 +23,7 @@ export class TournamentContextService implements OnDestroy {
    * not the match payload itself, so pages just re-run whatever fetch they
    * already have (docs/architecture/realtime-strategy.md).
    */
-  readonly lastMatchEvent = signal<{ matchId: string } | null>(null);
-
-  private eventSource: EventSource | null = null;
-  private debounceHandle: ReturnType<typeof setTimeout> | null = null;
+  readonly lastMatchEvent = this.stream.lastEvent;
 
   async load(slug: string): Promise<void> {
     if (this.slug() === slug && this.tournament()) {
@@ -37,7 +34,7 @@ export class TournamentContextService implements OnDestroy {
     this.errorMessage.set(null);
     try {
       this.tournament.set(await this.api.getTournament(slug));
-      this.connectRealtime(slug);
+      this.stream.connect(`${environment.apiUrl}/public/tournaments/${slug}/events`);
     } catch {
       this.tournament.set(null);
       this.errorMessage.set("Ce tournoi n'existe pas ou n'est pas publié.");
@@ -46,24 +43,7 @@ export class TournamentContextService implements OnDestroy {
     }
   }
 
-  private connectRealtime(slug: string): void {
-    this.eventSource?.close();
-    this.eventSource = new EventSource(`${environment.apiUrl}/public/tournaments/${slug}/events`);
-    this.eventSource.onmessage = (message: MessageEvent<string>) => {
-      const payload = JSON.parse(message.data) as { matchId: string };
-      if (this.debounceHandle) {
-        clearTimeout(this.debounceHandle);
-      }
-      this.debounceHandle = setTimeout(() => {
-        this.lastMatchEvent.set({ matchId: payload.matchId });
-      }, EVENT_DEBOUNCE_MS);
-    };
-  }
-
   ngOnDestroy(): void {
-    this.eventSource?.close();
-    if (this.debounceHandle) {
-      clearTimeout(this.debounceHandle);
-    }
+    this.stream.close();
   }
 }

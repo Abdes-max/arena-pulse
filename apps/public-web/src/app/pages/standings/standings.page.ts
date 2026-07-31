@@ -7,9 +7,9 @@ import {
   signal,
 } from '@angular/core';
 import { Badge, BracketMatch, Select } from 'design-system';
-import { PublicApiService } from '../../core/public-api.service';
+import { PublicApiService } from 'api-client';
 import { TournamentContextService } from '../../core/tournament-context.service';
-import { Category, CompetitionPhase, Match, Qualification, Standings } from '../../core/models';
+import { Category, CompetitionPhase, Match, Qualification, Standings } from 'shared-models';
 import { computeFinalRanking, FinalRankingRow } from './final-ranking.util';
 
 interface GroupStandings {

@@ -1,4 +1,4 @@
-import { CompetitionPhase, Match } from '../../core/models';
+import { CompetitionPhase, Match } from 'shared-models';
 
 export interface FinalRankingRow {
   position: number;

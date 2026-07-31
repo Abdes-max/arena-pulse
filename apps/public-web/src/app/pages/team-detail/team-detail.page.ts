@@ -8,9 +8,9 @@ import {
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MatchCard, MatchCardVariant } from 'design-system';
-import { PublicApiService } from '../../core/public-api.service';
+import { PublicApiService } from 'api-client';
 import { TournamentContextService } from '../../core/tournament-context.service';
-import { PublicTeamDetail } from '../../core/models';
+import { PublicTeamDetail } from 'shared-models';
 
 @Component({
   selector: 'app-team-detail-page',
