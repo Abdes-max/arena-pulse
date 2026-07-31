@@ -195,7 +195,7 @@ describe('Public tournament site (e2e)', () => {
     expect(matchesRes.body).toEqual([]);
   });
 
-  it('lists a tournament\'s soonest scheduled matches, in chronological order', async () => {
+  it("lists a tournament's soonest scheduled matches, in chronological order", async () => {
     const registerRes = await request(app.getHttpServer())
       .post('/api/v1/auth/register')
       .send({
@@ -279,7 +279,9 @@ describe('Public tournament site (e2e)', () => {
       .expect(201);
     const fieldId = (fieldRes.body as { id: string }).id;
 
-    const farFuture = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString();
+    const farFuture = new Date(
+      Date.now() + 365 * 24 * 60 * 60 * 1000,
+    ).toISOString();
     await auth(
       request(app.getHttpServer()).post(
         `${base}/${tournamentId}/phases/${phaseId}/generate-schedule`,
@@ -299,9 +301,9 @@ describe('Public tournament site (e2e)', () => {
       timeSlot: { startTime: string } | null;
     }[];
     expect(matches).toHaveLength(2);
-    expect(new Date(matches[0].timeSlot!.startTime).getTime()).toBeLessThanOrEqual(
-      new Date(matches[1].timeSlot!.startTime).getTime(),
-    );
+    expect(
+      new Date(matches[0].timeSlot!.startTime).getTime(),
+    ).toBeLessThanOrEqual(new Date(matches[1].timeSlot!.startTime).getTime());
   });
 
   it("exposes the organizer's chosen public theme, defaulting to INK_SIGNAL", async () => {

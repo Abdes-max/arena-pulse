@@ -1,5 +1,13 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  MessageEvent,
+  Param,
+  Query,
+  Sse,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { Observable } from 'rxjs';
 import { Public } from '../auth/decorators/public.decorator';
 import { PublicService } from './public.service';
 
@@ -75,7 +83,18 @@ export class PublicController {
   }
 
   @Get(':slug/matches/upcoming')
-  getUpcomingMatches(@Param('slug') slug: string, @Query('limit') limit?: string) {
-    return this.publicService.getUpcomingMatches(slug, limit ? Number(limit) : undefined);
+  getUpcomingMatches(
+    @Param('slug') slug: string,
+    @Query('limit') limit?: string,
+  ) {
+    return this.publicService.getUpcomingMatches(
+      slug,
+      limit ? Number(limit) : undefined,
+    );
+  }
+
+  @Sse(':slug/events')
+  streamEvents(@Param('slug') slug: string): Observable<MessageEvent> {
+    return this.publicService.streamMatchEvents(slug);
   }
 }

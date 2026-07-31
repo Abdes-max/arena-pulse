@@ -11,6 +11,7 @@ import { ForfeitMatchDto } from './dto/forfeit-match.dto';
 import { UpsertMatchScoreDto } from './dto/upsert-match-score.dto';
 import { matchBelongsToTournament } from './match-ownership.util';
 import { MATCH_INCLUDE, toMatchSummary } from './match-summary.util';
+import { RealtimeService } from './realtime.service';
 import { TournamentsService } from './tournaments.service';
 
 type MatchWithScoringData = Match & {
@@ -28,6 +29,7 @@ export class ScoresService {
     private readonly prisma: PrismaService,
     private readonly tournamentsService: TournamentsService,
     private readonly bracketsService: BracketsService,
+    private readonly realtimeService: RealtimeService,
   ) {}
 
   async upsertScore(
@@ -76,6 +78,7 @@ export class ScoresService {
       data: { status: 'LIVE' },
       include: MATCH_INCLUDE,
     });
+    this.realtimeService.emit({ tournamentId, type: 'match-updated', matchId });
     return toMatchSummary(updated);
   }
 
@@ -133,6 +136,7 @@ export class ScoresService {
         match.round,
       );
     }
+    this.realtimeService.emit({ tournamentId, type: 'match-updated', matchId });
     return toMatchSummary(updated);
   }
 
@@ -156,6 +160,7 @@ export class ScoresService {
       data: { status: 'SCHEDULED' },
       include: MATCH_INCLUDE,
     });
+    this.realtimeService.emit({ tournamentId, type: 'match-updated', matchId });
     return toMatchSummary(updated);
   }
 
@@ -193,6 +198,7 @@ export class ScoresService {
         match.round,
       );
     }
+    this.realtimeService.emit({ tournamentId, type: 'match-updated', matchId });
     return toMatchSummary(updated);
   }
 
@@ -215,6 +221,7 @@ export class ScoresService {
       data: { status: 'SCHEDULED', forfeitedTeamId: null },
       include: MATCH_INCLUDE,
     });
+    this.realtimeService.emit({ tournamentId, type: 'match-updated', matchId });
     return toMatchSummary(updated);
   }
 

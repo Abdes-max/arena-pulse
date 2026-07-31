@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { BracketsService } from './brackets.service';
+import { RealtimeService } from './realtime.service';
 import { ScoresService } from './scores.service';
 import { TournamentsService } from './tournaments.service';
 
@@ -70,6 +71,7 @@ describe('ScoresService', () => {
   let prisma: PrismaMock;
   let tournamentsService: { assertTournamentIsEditable: jest.Mock };
   let bracketsService: { tryAdvanceRound: jest.Mock };
+  let realtimeService: { emit: jest.Mock };
   let service: ScoresService;
 
   beforeEach(() => {
@@ -80,10 +82,12 @@ describe('ScoresService', () => {
         .mockResolvedValue({ id: TOURNAMENT_ID }),
     };
     bracketsService = { tryAdvanceRound: jest.fn() };
+    realtimeService = { emit: jest.fn() };
     service = new ScoresService(
       prisma as unknown as PrismaService,
       tournamentsService as unknown as TournamentsService,
       bracketsService as unknown as BracketsService,
+      realtimeService as unknown as RealtimeService,
     );
   });
 

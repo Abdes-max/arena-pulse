@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { BracketsService } from './brackets.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { RealtimeService } from './realtime.service';
 import { StandingsService } from './standings.service';
 import { TournamentsService } from './tournaments.service';
 
@@ -100,6 +101,7 @@ describe('BracketsService', () => {
       prisma as unknown as PrismaService,
       tournamentsService as unknown as TournamentsService,
       standingsService as unknown as StandingsService,
+      { emit: jest.fn() } as unknown as RealtimeService,
     );
   });
 
@@ -298,6 +300,7 @@ describe('BracketsService', () => {
       prisma.knockoutBracket.findUnique.mockResolvedValue({
         size: 4,
         hasRankingMatch: false,
+        phase: { category: { tournamentId: TOURNAMENT_ID } },
       });
       prisma.match.findMany.mockResolvedValue([
         {
@@ -349,6 +352,7 @@ describe('BracketsService', () => {
       prisma.knockoutBracket.findUnique.mockResolvedValue({
         size: 4,
         hasRankingMatch: true,
+        phase: { category: { tournamentId: TOURNAMENT_ID } },
       });
       prisma.match.findMany.mockResolvedValue([
         {
@@ -414,6 +418,7 @@ describe('BracketsService', () => {
       prisma.knockoutBracket.findUnique.mockResolvedValue({
         size: 4,
         hasRankingMatch: false,
+        phase: { category: { tournamentId: TOURNAMENT_ID } },
       });
       prisma.match.findMany.mockResolvedValue([
         {

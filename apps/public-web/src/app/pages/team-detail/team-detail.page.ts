@@ -1,6 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { MatchCard } from 'design-system';
+import { MatchCard, MatchCardVariant } from 'design-system';
 import { PublicApiService } from '../../core/public-api.service';
 import { TournamentContextService } from '../../core/tournament-context.service';
 import { PublicTeamDetail } from '../../core/models';
@@ -33,6 +40,11 @@ export class TeamDetailPage {
 
   constructor() {
     void this.load();
+    effect(() => {
+      if (this.context.lastMatchEvent()) {
+        void this.load();
+      }
+    });
   }
 
   private async load(): Promise<void> {
@@ -46,6 +58,10 @@ export class TeamDetailPage {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  protected variantFor(match: PublicTeamDetail['matches'][number]): MatchCardVariant {
+    return match.status === 'LIVE' ? 'live' : 'result';
   }
 
   protected formatKickoff(startTime: string): string {
