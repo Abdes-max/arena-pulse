@@ -28,10 +28,13 @@
               <td>{{ member.email }}</td>
               <td>
                 @if (isAdmin()) {
-                  <select [value]="member.role" (change)="onRoleChange(member, $event)">
-                    <option value="ORG_ADMIN">Administrateur</option>
-                    <option value="ORG_MEMBER">Collaborateur</option>
-                  </select>
+                  <ap-select
+                    label="Rôle"
+                    [hideLabel]="true"
+                    [options]="roleOptions"
+                    [value]="member.role"
+                    (valueChange)="onRoleChange(member, $event)"
+                  />
                 } @else {
                   {{ member.role === 'ORG_ADMIN' ? 'Administrateur' : 'Collaborateur' }}
                 }
@@ -77,13 +80,7 @@
           (ngSubmit)="invite()"
         >
           <ap-text-field label="Email" type="email" formControlName="email" autocomplete="email" />
-          <label class="collaborators-page__role-label">
-            Rôle
-            <select formControlName="role">
-              <option value="ORG_MEMBER">Collaborateur</option>
-              <option value="ORG_ADMIN">Administrateur</option>
-            </select>
-          </label>
+          <ap-select label="Rôle" [options]="roleOptions" formControlName="role" />
           <ap-button type="submit" [disabled]="inviting()">Inviter</ap-button>
         </form>
       </section>

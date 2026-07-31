@@ -32,4 +32,14 @@ describe('ThemeService', () => {
     expect(element.getAttribute('data-theme')).toBe('neon-court');
     expect(element.getAttribute('data-mode')).toBe('dark');
   });
+
+  it('remembers the admin theme choice separately, defaulting to ink-signal', () => {
+    expect(service.adminTheme()).toBe('ink-signal');
+
+    service.setAdminTheme(element, 'pulse-ember');
+
+    expect(service.adminTheme()).toBe('pulse-ember');
+    expect(element.getAttribute('data-theme')).toBe('pulse-ember');
+    expect(service.theme()).toBe('pulse-ember');
+  });
 });

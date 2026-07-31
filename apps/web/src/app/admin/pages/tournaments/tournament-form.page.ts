@@ -10,7 +10,7 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Badge, BadgeStatus, Button, TextField } from 'design-system';
+import { Badge, BadgeStatus, Button, Select, SelectOption, TextField } from 'design-system';
 import { AuthService } from '../../core/auth.service';
 import {
   Category,
@@ -35,7 +35,7 @@ const STATUS_TO_BADGE: Record<TournamentStatus, BadgeStatus> = {
 
 @Component({
   selector: 'app-tournament-form-page',
-  imports: [ReactiveFormsModule, RouterLink, Button, TextField, Badge],
+  imports: [ReactiveFormsModule, RouterLink, Button, TextField, Select, Badge],
   templateUrl: './tournament-form.page.html',
   styleUrl: './tournament-form.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -62,6 +62,15 @@ export class TournamentFormPage {
   protected readonly errorMessage = signal<string | null>(null);
 
   protected readonly sports = signal<Sport[]>([]);
+  protected readonly sportOptions = computed<SelectOption[]>(() => [
+    { value: '', label: 'Choisir un sport', disabled: true },
+    ...this.sports().map((sport) => ({ value: sport.id, label: sport.name })),
+  ]);
+  protected readonly themeOptions: SelectOption[] = [
+    { value: 'INK_SIGNAL', label: 'Ink & Signal' },
+    { value: 'PULSE_EMBER', label: 'Pulse Ember' },
+    { value: 'NEON_COURT', label: 'Neon Court' },
+  ];
   protected readonly permissions = signal<Permission[]>([]);
   protected readonly tournament = signal<TournamentDetail | null>(null);
   protected readonly categories = signal<Category[]>([]);

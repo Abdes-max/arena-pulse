@@ -28,6 +28,16 @@
   }
 }
 
+.app-shell__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-3);
+}
+
+.app-shell__theme-select {
+  width: 160px;
+}
+
 .app-shell__content {
   flex: 1;
 }

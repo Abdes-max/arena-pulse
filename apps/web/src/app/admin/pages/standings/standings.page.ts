@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Select, SelectOption } from 'design-system';
 import { AuthService } from '../../core/auth.service';
 import { CompetitionFormatsService } from '../../core/competition-formats.service';
 import { Category, CompetitionPhase, Qualification, Standings } from '../../core/models';
@@ -15,7 +16,7 @@ interface GroupStandings {
 
 @Component({
   selector: 'app-standings-page',
-  imports: [],
+  imports: [Select],
   templateUrl: './standings.page.html',
   styleUrl: './standings.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -41,6 +42,13 @@ export class StandingsPage {
 
   protected readonly groupStagePhases = computed(() =>
     this.phases().filter((phase) => phase.type === 'GROUP_STAGE'),
+  );
+
+  protected readonly categoryOptions = computed<SelectOption[]>(() =>
+    this.categories().map((category) => ({ value: category.id, label: category.name })),
+  );
+  protected readonly phaseOptions = computed<SelectOption[]>(() =>
+    this.groupStagePhases().map((phase) => ({ value: phase.id, label: phase.name })),
   );
 
   constructor() {
@@ -71,8 +79,8 @@ export class StandingsPage {
     }
   }
 
-  protected async onCategoryChange(event: Event): Promise<void> {
-    this.selectedCategoryId.set((event.target as HTMLSelectElement).value);
+  protected async onCategoryChange(categoryId: string): Promise<void> {
+    this.selectedCategoryId.set(categoryId);
     await this.loadPhases();
   }
 
@@ -101,8 +109,8 @@ export class StandingsPage {
     }
   }
 
-  protected async onPhaseChange(event: Event): Promise<void> {
-    this.selectedPhaseId.set((event.target as HTMLSelectElement).value);
+  protected async onPhaseChange(phaseId: string): Promise<void> {
+    this.selectedPhaseId.set(phaseId);
     await this.loadStandings();
   }
 

@@ -17,18 +17,20 @@
           [value]="formName()"
           (input)="formName.set($any($event.target).value)"
         />
-        <select [value]="formCategoryId()" (change)="onFormCategoryChange($event)">
-          <option value="" disabled>Choisir une catégorie</option>
-          @for (category of categories(); track category.id) {
-            <option [value]="category.id">{{ category.name }}</option>
-          }
-        </select>
-        <select [value]="formDivisionId()" (change)="formDivisionId.set($any($event.target).value)">
-          <option value="">Aucune division</option>
-          @for (division of divisionsForSelectedCategory(); track division.id) {
-            <option [value]="division.id">{{ division.name }}</option>
-          }
-        </select>
+        <ap-select
+          label="Catégorie"
+          [hideLabel]="true"
+          [options]="categoryOptions()"
+          [value]="formCategoryId()"
+          (valueChange)="onFormCategoryChange($event)"
+        />
+        <ap-select
+          label="Division"
+          [hideLabel]="true"
+          [options]="divisionOptions()"
+          [value]="formDivisionId()"
+          (valueChange)="formDivisionId.set($event)"
+        />
         <input
           type="text"
           placeholder="Responsable"

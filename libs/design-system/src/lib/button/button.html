@@ -1,6 +1,15 @@
 <ng-template #content><ng-content /></ng-template>
 
-@if (href(); as url) {
+@if (routerLink(); as link) {
+  <a
+    class="ap-button"
+    [routerLink]="link"
+    routerLinkActive="ap-button--active"
+    [routerLinkActiveOptions]="{ exact: routerLinkExact() }"
+  >
+    <ng-container [ngTemplateOutlet]="content" />
+  </a>
+} @else if (href(); as url) {
   <a class="ap-button" [href]="url" [target]="target()" rel="noopener">
     <ng-container [ngTemplateOutlet]="content" />
   </a>

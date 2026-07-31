@@ -22,38 +22,55 @@
           <ap-button type="button" variant="ghost" (click)="archive()">Archiver</ap-button>
         }
         <ap-button type="button" variant="ghost" (click)="duplicate()">Dupliquer</ap-button>
-        <a [routerLink]="['/admin/tournaments', tournamentId(), 'teams']">Équipes</a>
-        <a [routerLink]="['/admin/tournaments', tournamentId(), 'referees']">Arbitres</a>
-        <a [routerLink]="['/admin/tournaments', tournamentId(), 'structure']">Structure</a>
-        <a [routerLink]="['/admin/tournaments', tournamentId(), 'schedule']">Calendrier</a>
-        <a [routerLink]="['/admin/tournaments', tournamentId(), 'scores']">Scores</a>
-        <a [routerLink]="['/admin/tournaments', tournamentId(), 'standings']">Classement</a>
       </div>
+      <nav class="tournament-form-page__submenu">
+        <ap-button
+          variant="secondary"
+          [routerLink]="['/admin/tournaments', tournamentId(), 'teams']"
+        >
+          Équipes
+        </ap-button>
+        <ap-button
+          variant="secondary"
+          [routerLink]="['/admin/tournaments', tournamentId(), 'referees']"
+        >
+          Arbitres
+        </ap-button>
+        <ap-button
+          variant="secondary"
+          [routerLink]="['/admin/tournaments', tournamentId(), 'structure']"
+        >
+          Structure
+        </ap-button>
+        <ap-button
+          variant="secondary"
+          [routerLink]="['/admin/tournaments', tournamentId(), 'schedule']"
+        >
+          Calendrier
+        </ap-button>
+        <ap-button
+          variant="secondary"
+          [routerLink]="['/admin/tournaments', tournamentId(), 'scores']"
+        >
+          Scores
+        </ap-button>
+        <ap-button
+          variant="secondary"
+          [routerLink]="['/admin/tournaments', tournamentId(), 'standings']"
+        >
+          Classement
+        </ap-button>
+      </nav>
     }
 
     <form class="tournament-form-page__form" [formGroup]="form" (ngSubmit)="submit()">
       <ap-text-field label="Nom du tournoi" formControlName="name" />
-      <label class="tournament-form-page__select-label">
-        Sport
-        <select formControlName="sportId">
-          <option value="" disabled>Choisir un sport</option>
-          @for (sport of sports(); track sport.id) {
-            <option [value]="sport.id">{{ sport.name }}</option>
-          }
-        </select>
-      </label>
+      <ap-select label="Sport" [options]="sportOptions()" formControlName="sportId" />
       <label class="tournament-form-page__checkbox-label">
         <input type="checkbox" formControlName="isOnline" />
         Tournoi en ligne (eSport)
       </label>
-      <label class="tournament-form-page__select-label">
-        Thème du site public
-        <select formControlName="theme">
-          <option value="INK_SIGNAL">Ink & Signal</option>
-          <option value="PULSE_EMBER">Pulse Ember</option>
-          <option value="NEON_COURT">Neon Court</option>
-        </select>
-      </label>
+      <ap-select label="Thème du site public" [options]="themeOptions" formControlName="theme" />
       <ap-button type="submit" [disabled]="submitting() || isArchived()">
         {{ isEditMode() ? 'Enregistrer' : 'Créer le tournoi' }}
       </ap-button>

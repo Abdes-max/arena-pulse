@@ -6,10 +6,20 @@
         >Collaborateurs</a
       >
     </nav>
-    <ap-button type="button" variant="ghost" (click)="toggleMode()">
-      {{ mode() === 'dark' ? 'Mode clair' : 'Mode sombre' }}
-    </ap-button>
-    <ap-button type="button" variant="ghost" (click)="logout()">Se déconnecter</ap-button>
+    <div class="app-shell__controls">
+      <ap-select
+        class="app-shell__theme-select"
+        label="Thème"
+        [hideLabel]="true"
+        [options]="themeOptions"
+        [value]="theme()"
+        (valueChange)="onThemeChange($event)"
+      />
+      <ap-button type="button" variant="ghost" (click)="toggleMode()">
+        {{ mode() === 'dark' ? 'Mode clair' : 'Mode sombre' }}
+      </ap-button>
+      <ap-button type="button" variant="ghost" (click)="logout()">Se déconnecter</ap-button>
+    </div>
   </header>
   <main class="app-shell__content">
     <router-outlet />

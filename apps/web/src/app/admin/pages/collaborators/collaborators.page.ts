@@ -1,14 +1,19 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Button, TextField } from 'design-system';
+import { Button, Select, SelectOption, TextField } from 'design-system';
 import { AuthService } from '../../core/auth.service';
 import { OrganizationMember, OrganizationRole, PendingInvitation } from '../../core/models';
 import { OrganizationsService } from '../../core/organizations.service';
 
+const ROLE_OPTIONS: SelectOption[] = [
+  { value: 'ORG_MEMBER', label: 'Collaborateur' },
+  { value: 'ORG_ADMIN', label: 'Administrateur' },
+];
+
 @Component({
   selector: 'app-collaborators-page',
-  imports: [ReactiveFormsModule, Button, TextField],
+  imports: [ReactiveFormsModule, Button, Select, TextField],
   templateUrl: './collaborators.page.html',
   styleUrl: './collaborators.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -21,6 +26,7 @@ export class CollaboratorsPage {
   protected readonly organization = computed(() => this.authService.organizations()[0] ?? null);
   protected readonly isAdmin = computed(() => this.organization()?.role === 'ORG_ADMIN');
 
+  protected readonly roleOptions = ROLE_OPTIONS;
   protected readonly members = signal<OrganizationMember[]>([]);
   protected readonly pendingInvitations = signal<PendingInvitation[]>([]);
   protected readonly loading = signal(true);
@@ -82,9 +88,8 @@ export class CollaboratorsPage {
     }
   }
 
-  protected onRoleChange(member: OrganizationMember, event: Event): void {
-    const role = (event.target as HTMLSelectElement).value as OrganizationRole;
-    void this.changeRole(member, role);
+  protected onRoleChange(member: OrganizationMember, role: string): void {
+    void this.changeRole(member, role as OrganizationRole);
   }
 
   private async changeRole(member: OrganizationMember, role: OrganizationRole): Promise<void> {

@@ -23,7 +23,18 @@
   display: flex;
   align-items: center;
   gap: var(--ap-space-3);
+  margin-bottom: var(--ap-space-4);
+}
+
+.tournament-form-page__submenu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ap-space-2);
+  padding: var(--ap-space-3);
   margin-bottom: var(--ap-space-6);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
 }
 
 .tournament-form-page__form {
@@ -33,18 +44,13 @@
   max-width: 400px;
 }
 
-.tournament-form-page__select-label,
 .tournament-form-page__checkbox-label {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
   gap: var(--ap-space-2);
   font-size: 0.85rem;
   font-weight: 600;
-}
-
-.tournament-form-page__checkbox-label {
-  flex-direction: row;
-  align-items: center;
 }
 
 .tournament-form-page__category {

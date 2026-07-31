@@ -1,11 +1,12 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost';
 
 @Component({
   selector: 'ap-button',
-  imports: [NgTemplateOutlet],
+  imports: [NgTemplateOutlet, RouterLink, RouterLinkActive],
   templateUrl: './button.html',
   styleUrl: './button.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -21,4 +22,7 @@ export class Button {
   /** When set, renders an <a> instead of a <button> — same look, but for navigation rather than an action. */
   readonly href = input<string | undefined>(undefined);
   readonly target = input<string | undefined>(undefined);
+  /** When set, renders an <a routerLink> instead of a <button> — for in-app navigation (e.g. a tab-style sub-menu), with the active tab highlighted automatically. Takes precedence over `href`. */
+  readonly routerLink = input<string | unknown[] | undefined>(undefined);
+  readonly routerLinkExact = input(false);
 }
