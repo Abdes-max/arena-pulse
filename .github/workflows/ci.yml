@@ -29,6 +29,7 @@ jobs:
       - run: npm run build:public-web
       - run: npm run build:admin-web
       - run: npm run build:mobile
+      - run: npm run test:shared-models
       - run: npm run test:api-client
       - run: npm run test:realtime-client
       - run: npm run test:public-web
