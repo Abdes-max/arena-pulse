@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Badge, BadgeStatus, Button } from 'design-system';
+import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/auth.service';
 import { Tournament, TournamentStatus } from '../../core/models';
 import { TeamsService } from '../../core/teams.service';
@@ -161,6 +162,10 @@ export class TournamentListPage {
 
   protected editTournament(tournament: Tournament): void {
     void this.router.navigate(['/tournaments', tournament.id]);
+  }
+
+  protected publicUrl(tournament: Tournament): string {
+    return `${environment.publicUrl}/${tournament.slug}`;
   }
 
   protected async duplicate(tournament: Tournament): Promise<void> {
