@@ -25,7 +25,7 @@ export class LandingPage {
     {
       title: 'Tableaux à élimination',
       description:
-        "Générez un tableau à élimination directe à partir des équipes qualifiées, avec avancement automatique des vainqueurs à chaque tour.",
+        'Générez un tableau à élimination directe à partir des équipes qualifiées, avec avancement automatique des vainqueurs à chaque tour.',
     },
     {
       title: 'Calendrier et arbitrage',

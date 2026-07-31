@@ -9,10 +9,7 @@
 
   <ul class="onboarding-checklist__list">
     @for (step of steps(); track step.key) {
-      <li
-        class="onboarding-checklist__step"
-        [class.onboarding-checklist__step--done]="step.done"
-      >
+      <li class="onboarding-checklist__step" [class.onboarding-checklist__step--done]="step.done">
         <div class="onboarding-checklist__step-text">
           <strong>{{ step.title }}</strong>
           <span>{{ step.description }}</span>

@@ -170,7 +170,8 @@
   border-right: var(--ap-border-width) solid var(--ap-color-border);
 }
 
-.standings-page__bracket-round:not(:last-child) .standings-page__bracket-slot:nth-child(odd)::after {
+.standings-page__bracket-round:not(:last-child)
+  .standings-page__bracket-slot:nth-child(odd)::after {
   top: 50%;
   border-top: var(--ap-border-width) solid var(--ap-color-border);
 }
