@@ -35,12 +35,6 @@
       "path": "./apps/web/tsconfig.spec.json"
     },
     {
-      "path": "./apps/admin-web/tsconfig.app.json"
-    },
-    {
-      "path": "./apps/admin-web/tsconfig.spec.json"
-    },
-    {
       "path": "./libs/design-tokens/tsconfig.lib.json"
     },
     {

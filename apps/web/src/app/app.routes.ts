@@ -1,10 +1,91 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './admin/core/auth.guard';
+import { resetThemeGuard } from './admin/core/reset-theme.guard';
 
 export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
     loadComponent: () => import('./pages/landing/landing.page').then((m) => m.LandingPage),
+  },
+  {
+    path: 'login',
+    loadComponent: () => import('./admin/pages/login/login.page').then((m) => m.LoginPage),
+  },
+  {
+    path: 'register',
+    loadComponent: () => import('./admin/pages/register/register.page').then((m) => m.RegisterPage),
+  },
+  {
+    path: 'accept-invitation/:token',
+    loadComponent: () =>
+      import('./admin/pages/accept-invitation/accept-invitation.page').then(
+        (m) => m.AcceptInvitationPage,
+      ),
+  },
+  {
+    path: 'admin',
+    canActivate: [resetThemeGuard, authGuard],
+    loadComponent: () => import('./admin/shell/app-shell').then((m) => m.AppShell),
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'tournaments' },
+      {
+        path: 'tournaments',
+        loadComponent: () =>
+          import('./admin/pages/tournaments/tournament-list.page').then(
+            (m) => m.TournamentListPage,
+          ),
+      },
+      {
+        path: 'tournaments/new',
+        loadComponent: () =>
+          import('./admin/pages/tournaments/tournament-form.page').then(
+            (m) => m.TournamentFormPage,
+          ),
+      },
+      {
+        path: 'tournaments/:tournamentId',
+        loadComponent: () =>
+          import('./admin/pages/tournaments/tournament-form.page').then(
+            (m) => m.TournamentFormPage,
+          ),
+      },
+      {
+        path: 'tournaments/:tournamentId/teams',
+        loadComponent: () => import('./admin/pages/teams/team-list.page').then((m) => m.TeamListPage),
+      },
+      {
+        path: 'tournaments/:tournamentId/referees',
+        loadComponent: () =>
+          import('./admin/pages/referees/referee-list.page').then((m) => m.RefereeListPage),
+      },
+      {
+        path: 'tournaments/:tournamentId/structure',
+        loadComponent: () =>
+          import('./admin/pages/structure/structure.page').then((m) => m.StructurePage),
+      },
+      {
+        path: 'tournaments/:tournamentId/schedule',
+        loadComponent: () =>
+          import('./admin/pages/schedule/schedule.page').then((m) => m.SchedulePage),
+      },
+      {
+        path: 'tournaments/:tournamentId/scores',
+        loadComponent: () => import('./admin/pages/scores/scores.page').then((m) => m.ScoresPage),
+      },
+      {
+        path: 'tournaments/:tournamentId/standings',
+        loadComponent: () =>
+          import('./admin/pages/standings/standings.page').then((m) => m.StandingsPage),
+      },
+      {
+        path: 'collaborators',
+        loadComponent: () =>
+          import('./admin/pages/collaborators/collaborators.page').then(
+            (m) => m.CollaboratorsPage,
+          ),
+      },
+    ],
   },
   {
     path: ':slug',
@@ -35,4 +116,5 @@ export const routes: Routes = [
       },
     ],
   },
+  { path: '**', redirectTo: '' },
 ];

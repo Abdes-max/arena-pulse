@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
-import { environment } from '../../environments/environment';
+import { environment } from '../../../environments/environment';
 import { OrganizationMember, OrganizationRole, PendingInvitation } from './models';
 
 @Injectable({ providedIn: 'root' })
