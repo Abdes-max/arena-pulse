@@ -6,6 +6,9 @@
         >Collaborateurs</a
       >
     </nav>
+    <ap-button type="button" variant="ghost" (click)="toggleMode()">
+      {{ mode() === 'dark' ? 'Mode clair' : 'Mode sombre' }}
+    </ap-button>
     <ap-button type="button" variant="ghost" (click)="logout()">Se déconnecter</ap-button>
   </header>
   <main class="app-shell__content">

@@ -22,12 +22,12 @@
           <ap-button type="button" variant="ghost" (click)="archive()">Archiver</ap-button>
         }
         <ap-button type="button" variant="ghost" (click)="duplicate()">Dupliquer</ap-button>
-        <a [routerLink]="['/tournaments', tournamentId(), 'teams']">Équipes</a>
-        <a [routerLink]="['/tournaments', tournamentId(), 'referees']">Arbitres</a>
-        <a [routerLink]="['/tournaments', tournamentId(), 'structure']">Structure</a>
-        <a [routerLink]="['/tournaments', tournamentId(), 'schedule']">Calendrier</a>
-        <a [routerLink]="['/tournaments', tournamentId(), 'scores']">Scores</a>
-        <a [routerLink]="['/tournaments', tournamentId(), 'standings']">Classement</a>
+        <a [routerLink]="['/admin/tournaments', tournamentId(), 'teams']">Équipes</a>
+        <a [routerLink]="['/admin/tournaments', tournamentId(), 'referees']">Arbitres</a>
+        <a [routerLink]="['/admin/tournaments', tournamentId(), 'structure']">Structure</a>
+        <a [routerLink]="['/admin/tournaments', tournamentId(), 'schedule']">Calendrier</a>
+        <a [routerLink]="['/admin/tournaments', tournamentId(), 'scores']">Scores</a>
+        <a [routerLink]="['/admin/tournaments', tournamentId(), 'standings']">Classement</a>
       </div>
     }
 
