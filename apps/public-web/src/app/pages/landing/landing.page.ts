@@ -15,6 +15,7 @@ interface Feature {
 })
 export class LandingPage {
   protected readonly registerUrl = `${environment.adminUrl}/register`;
+  protected readonly loginUrl = `${environment.adminUrl}/login`;
 
   protected readonly features: Feature[] = [
     {

@@ -2,6 +2,38 @@
   display: block;
 }
 
+.landing-page__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: var(--ap-space-6) var(--ap-space-6) 0;
+}
+
+.landing-page__nav-brand {
+  font-family: var(--ap-font-heading);
+  font-weight: 700;
+  letter-spacing: var(--ap-tracking-tight);
+}
+
+.landing-page__nav-login {
+  padding: var(--ap-space-2) var(--ap-space-4);
+  border-radius: var(--ap-radius-md);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  color: var(--ap-color-fg);
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    background var(--ap-motion-fast) var(--ap-easing-standard),
+    border-color var(--ap-motion-fast) var(--ap-easing-standard);
+
+  &:hover {
+    background: var(--ap-color-surface);
+    border-color: var(--ap-color-signal);
+  }
+}
+
 .landing-page__hero {
   max-width: 720px;
   margin: 0 auto;
