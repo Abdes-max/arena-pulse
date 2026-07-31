@@ -1,9 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, MessageEvent } from '@nestjs/common';
+import { Observable, from, map, switchMap } from 'rxjs';
 import { PrismaService } from '../prisma/prisma.service';
 import { BracketsService } from './brackets.service';
 import { CategoriesService } from './categories.service';
 import { MATCH_INCLUDE, toMatchSummary } from './match-summary.util';
 import { PhasesService } from './phases.service';
+import { RealtimeService } from './realtime.service';
 import { ScheduleGenerationService } from './schedule-generation.service';
 import { StandingsService } from './standings.service';
 import { StandingRow } from './standings.util';
@@ -48,6 +50,7 @@ export class PublicService {
     private readonly standingsService: StandingsService,
     private readonly scheduleGenerationService: ScheduleGenerationService,
     private readonly bracketsService: BracketsService,
+    private readonly realtimeService: RealtimeService,
   ) {}
 
   async getTournament(slug: string) {
@@ -170,7 +173,11 @@ export class PublicService {
         status: 'SCHEDULED',
         timeSlot: { startTime: { gte: new Date() } },
         OR: [
-          { group: { phase: { category: { tournamentId: tournament.tournamentId } } } },
+          {
+            group: {
+              phase: { category: { tournamentId: tournament.tournamentId } },
+            },
+          },
           {
             knockoutBracket: {
               phase: { category: { tournamentId: tournament.tournamentId } },
@@ -183,6 +190,20 @@ export class PublicService {
       take: limit,
     });
     return matches.map((match) => toMatchSummary(match));
+  }
+
+  /**
+   * SSE stream for a tournament's public site (docs/architecture/realtime-strategy.md).
+   * Emits a minimal "something changed" signal per match, never the match
+   * payload itself — the client already has REST endpoints for that shape.
+   */
+  streamMatchEvents(slug: string): Observable<MessageEvent> {
+    return from(this.resolveTournament(slug)).pipe(
+      switchMap((tournament) =>
+        this.realtimeService.forTournament(tournament.tournamentId),
+      ),
+      map((event) => ({ data: { type: event.type, matchId: event.matchId } })),
+    );
   }
 
   private resolveTournament(slug: string) {
