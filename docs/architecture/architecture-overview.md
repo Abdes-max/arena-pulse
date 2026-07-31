@@ -8,17 +8,17 @@ Statut : première proposition (mission §27-§28), à affiner lors de `feat/003
 apps/
 ├── admin-web/      # Angular 22 — administration
 ├── public-web/     # Angular 22 — site public
-├── mobile/         # Ionic Angular + Capacitor — iOS/Android
+├── mobile/         # Ionic Angular + Capacitor — Android — IMPLÉMENTÉ (feat/017, iOS différé)
 └── api/            # NestJS (TypeScript) — backend
 
 libs/
-├── api-client/           # client HTTP généré/partagé (à partir d'OpenAPI)
-├── shared-models/        # types/interfaces partagés web + mobile
+├── api-client/           # client HTTP partagé (endpoints publics) — IMPLÉMENTÉ (feat/017)
+├── shared-models/        # types/interfaces partagés web + mobile — IMPLÉMENTÉ (feat/017)
 ├── shared-utils/
-├── authentication/       # logique d'auth partagée (tokens, guards)
+├── authentication/       # logique d'auth partagée (tokens, guards) — non nécessaire pour le socle mobile (suivi public anonyme, voir feat/017), à construire si un besoin d'auth mobile apparaît
 ├── design-system/        # composants Angular partagés (public-web + admin-web) — IMPLÉMENTÉ (feat/004)
 ├── design-tokens/        # tokens partagés (web, mobile, email) — IMPLÉMENTÉ (feat/004)
-├── realtime-client/      # client WebSocket/SSE partagé
+├── realtime-client/      # client SSE partagé (web + mobile) — IMPLÉMENTÉ (feat/017)
 └── testing/              # utilitaires de test partagés
 
 infra/
@@ -40,8 +40,8 @@ docs/
 
 ## Mobile
 
-- Ionic Angular + Capacitor, builds Android et iOS.
-- Partage avec le web via les libs `shared-models`, `api-client`, `authentication`, `design-tokens`, `realtime-client` — **pas** de partage forcé des composants UI (mission §27 : "ne force pas le partage des composants lorsque les usages web et mobile diffèrent").
+- Ionic Angular + Capacitor. **IMPLÉMENTÉ (feat/017)** pour Android ; iOS différé (pas de Mac/CI macOS disponible au moment de cette PR — voir `docs/architecture/mobile-foundation.md`).
+- Partage avec le web via les libs `shared-models`, `api-client`, `design-tokens`, `realtime-client` — **pas** de partage forcé des composants UI (mission §27 : "ne force pas le partage des composants lorsque les usages web et mobile diffèrent"), l'app mobile utilise les composants Ionic natifs. Pas de lib `authentication` pour l'instant : le socle mobile ne couvre que le suivi public anonyme (mêmes capacités que `public-web`), sans compte utilisateur.
 - L'administration reste web-responsive dans un premier temps (mission §10.3) ; l'app mobile cible en priorité joueurs/parents/coachs/arbitres/bénévoles/spectateurs.
 
 ## Backend
