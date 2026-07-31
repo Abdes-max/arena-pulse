@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 import { MatchCard } from 'design-system';
 import { PublicApiService } from '../../core/public-api.service';
 import { TournamentContextService } from '../../core/tournament-context.service';
@@ -20,13 +20,23 @@ export class HomePage {
   protected readonly upcomingMatches = signal<Match[]>([]);
 
   constructor() {
+    void this.load();
+    effect(() => {
+      if (this.context.lastMatchEvent()) {
+        void this.api
+          .listUpcomingMatches(this.context.slug(), 3)
+          .then((matches) => this.upcomingMatches.set(matches));
+      }
+    });
+  }
+
+  private async load(): Promise<void> {
     const slug = this.context.slug();
-    if (slug) {
-      void this.api.listCategories(slug).then((categories) => this.categories.set(categories));
-      void this.api
-        .listUpcomingMatches(slug, 3)
-        .then((matches) => this.upcomingMatches.set(matches));
+    if (!slug) {
+      return;
     }
+    this.categories.set(await this.api.listCategories(slug));
+    this.upcomingMatches.set(await this.api.listUpcomingMatches(slug, 3));
   }
 
   protected formatKickoff(startTime: string): string {

@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { Badge, BracketMatch, Select } from 'design-system';
 import { PublicApiService } from '../../core/public-api.service';
 import { TournamentContextService } from '../../core/tournament-context.service';
@@ -62,6 +69,11 @@ export class StandingsPage {
 
   constructor() {
     void this.loadCategories();
+    effect(() => {
+      if (this.context.lastMatchEvent()) {
+        void this.loadPhases();
+      }
+    });
   }
 
   private async loadCategories(): Promise<void> {

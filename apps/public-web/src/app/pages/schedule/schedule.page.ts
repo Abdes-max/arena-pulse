@@ -1,5 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { MatchCard, Select, TextField } from 'design-system';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
+import { MatchCard, MatchCardVariant, Select, TextField } from 'design-system';
 import { PublicApiService } from '../../core/public-api.service';
 import { TournamentContextService } from '../../core/tournament-context.service';
 import { Category, CompetitionPhase, Match } from '../../core/models';
@@ -85,6 +92,11 @@ export class SchedulePage {
 
   constructor() {
     void this.loadCategories();
+    effect(() => {
+      if (this.context.lastMatchEvent()) {
+        void this.loadMatches();
+      }
+    });
   }
 
   private async loadCategories(): Promise<void> {
@@ -149,6 +161,13 @@ export class SchedulePage {
 
   protected onQueryChange(query: string): void {
     this.query.set(query);
+  }
+
+  protected variantFor(match: Match): MatchCardVariant {
+    if (match.status === 'LIVE') {
+      return 'live';
+    }
+    return match.score ? 'result' : 'upcoming';
   }
 
   protected formatKickoff(startTime: string): string {

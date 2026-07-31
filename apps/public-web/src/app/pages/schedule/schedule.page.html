@@ -46,7 +46,7 @@
               </p>
             } @else {
               <ap-match-card
-                [variant]="match.score ? 'result' : 'upcoming'"
+                [variant]="variantFor(match)"
                 [homeTeam]="match.homeTeam ?? { name: '?' }"
                 [awayTeam]="match.awayTeam ?? { name: '?' }"
                 [homeScore]="match.score?.homeScore"
