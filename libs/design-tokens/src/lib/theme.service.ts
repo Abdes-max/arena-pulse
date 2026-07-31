@@ -5,11 +5,11 @@ import { DEFAULT_MODE, DEFAULT_THEME, ThemeMode, ThemeName } from './theme.types
  * Applies a ThemeName/ThemeMode pair to a DOM element via `data-theme` /
  * `data-mode` attributes, which the SCSS tokens in styles/*.scss key off.
  *
- * The Arena Pulse product shell (admin-web, and public-web's own chrome)
- * always uses `ink-signal`. A tournament's public site reads its theme
- * from `PublicPageConfiguration.theme` and applies it to its own root
- * element instead — never to the whole document — so an organizer's theme
- * choice never leaks into the product shell.
+ * The Arena Pulse product shell (apps/web's /admin section, and its own
+ * marketing/landing chrome) always uses `ink-signal`. A tournament's public
+ * site reads its theme from `PublicPageConfiguration.theme` and applies it
+ * to its own root element instead — never to the whole document — so an
+ * organizer's theme choice never leaks into the product shell.
  */
 @Injectable({ providedIn: 'root' })
 export class ThemeService {

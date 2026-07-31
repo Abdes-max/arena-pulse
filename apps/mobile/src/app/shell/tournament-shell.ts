@@ -77,7 +77,7 @@ export class TournamentShell {
 
     // The tournament's own theme (organizer choice) governs the mobile view
     // only — applied to <html> here, and reset back to the fixed product
-    // identity on the way out, same pattern as public-web's TournamentShell.
+    // identity on the way out, same pattern as apps/web's TournamentShell.
     effect(() => {
       const tournament = this.tournament();
       if (!tournament) {

@@ -27,8 +27,8 @@ complexité pour scaler à plusieurs instances (sessions collantes ou
 adaptateur Redis).
 
 **Portée** : le site public uniquement. La collaboration temps réel côté
-admin-web (plusieurs organisateurs sur le même écran) n'a jamais été
-demandée ni auditée côté référence — hors scope.
+dashboard organisateur (`/admin`, plusieurs organisateurs sur le même
+écran) n'a jamais été demandée ni auditée côté référence — hors scope.
 
 ## Format des événements
 
@@ -49,7 +49,7 @@ matchs de tour suivant).
 ## Endpoint
 
 `GET /api/v1/public/tournaments/:slug/events` — flux SSE, public (comme le
-reste de `PublicController`), un flux par tournoi. Le client (`public-web`,
+reste de `PublicController`), un flux par tournoi. Le client (`apps/web`'s
 `TournamentContextService`) ouvre la connexion une fois le tournoi chargé,
 et la ferme au changement de tournoi ou à la destruction du composant.
 

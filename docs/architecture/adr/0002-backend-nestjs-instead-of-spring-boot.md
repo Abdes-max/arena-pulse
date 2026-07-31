@@ -20,7 +20,7 @@ Le backend Arena Pulse est développé en **NestJS** (Node.js/TypeScript), avec 
 ## Justification
 
 - Le porteur de projet connaît/préfère l'écosystème Node.js/TypeScript pour l'ensemble de la stack.
-- **Un seul langage (TypeScript) sur tout le produit** : `public-web`, `admin-web`, `mobile` (Ionic Angular) et désormais `api` partagent TypeScript, ce qui permet un partage réel de types (`libs/shared-models`) entre le frontend et le backend sans duplication ni génération de client à partir d'un contrat séparé — un avantage concret que la combinaison Angular + Java n'offrait pas.
+- **Un seul langage (TypeScript) sur tout le produit** : `apps/web` (fusion de public-web/admin-web), `mobile` (Ionic Angular) et désormais `api` partagent TypeScript, ce qui permet un partage réel de types (`libs/shared-models`) entre le frontend et le backend sans duplication ni génération de client à partir d'un contrat séparé — un avantage concret que la combinaison Angular + Java n'offrait pas.
 - NestJS a une architecture modulaire proche de Spring (modules, injection de dépendances, décorateurs), ce qui préserve l'essentiel de l'architecture documentée dans `architecture-overview.md` (juste transposée en TypeScript) : contrôleurs ≈ `@Controller`, services ≈ `@Injectable`, modules ≈ `@Module`.
 
 ## Conséquences

@@ -27,7 +27,8 @@ Capacitor par-dessus.
 
 - **`libs/shared-models`** : les interfaces publiques de tournoi (`Match`,
   `PublicTournament`, `Standings`, etc.), déplacées telles quelles depuis
-  `apps/public-web/src/app/core/models.ts`. `admin-web` réexporte les 13
+  `apps/public-web/src/app/core/models.ts` (chemin devenu `apps/web/...`
+  depuis la fusion public-web/admin-web). `admin-web` réexporte les 13
   interfaces qu'il partageait déjà à l'identique avec public-web
   (`export * from 'shared-models'` en tête de son propre `models.ts`) sans
   toucher ses ~10 services consommateurs — ses types propres au domaine

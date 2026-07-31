@@ -111,8 +111,8 @@ enum TournamentStatus {
 }
 
 // Visual theme applied to a tournament's public site + slideshow only —
-// admin-web and the marketing site always stay on Ink & Signal regardless
-// of what an organizer picks here (docs/design/visual-language.md).
+// the /admin dashboard and the marketing site always stay on Ink & Signal
+// regardless of what an organizer picks here (docs/design/visual-language.md).
 enum PublicTheme {
   INK_SIGNAL
   PULSE_EMBER
