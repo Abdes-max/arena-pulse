@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Button } from 'design-system';
 import { DEFAULT_THEME, ThemeName, ThemeService } from 'design-tokens';
 import { TournamentContextService } from '../core/tournament-context.service';
 import { PublicTheme } from 'shared-models';
@@ -21,7 +22,7 @@ const THEME_MAP: Record<PublicTheme, ThemeName> = {
 
 @Component({
   selector: 'app-tournament-shell',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, Button],
   providers: [TournamentContextService],
   templateUrl: './tournament-shell.html',
   styleUrl: './tournament-shell.scss',
@@ -36,6 +37,12 @@ export class TournamentShell {
   protected readonly tournament = this.context.tournament;
   protected readonly loading = this.context.loading;
   protected readonly errorMessage = this.context.errorMessage;
+  protected readonly mode = this.themeService.mode;
+
+  protected toggleMode(): void {
+    const next = this.mode() === 'dark' ? 'light' : 'dark';
+    this.themeService.setMode(document.documentElement, next);
+  }
 
   protected readonly formattedDates = computed(() => {
     const tournament = this.tournament();
@@ -60,22 +67,19 @@ export class TournamentShell {
     // The tournament's own theme (organizer choice) governs the public site
     // and slideshow only — applied to <html> here, and reset back to the
     // fixed product identity on the way out so the landing page (and any
-    // other route outside this shell) never inherits it.
+    // other route outside this shell) never inherits it. Light/dark mode is
+    // a separate, user-toggled preference (see `mode`/`toggleMode` above)
+    // that survives this theme swap in both directions.
     effect(() => {
       const tournament = this.tournament();
       if (!tournament) {
         return;
       }
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      this.themeService.apply(
-        document.documentElement,
-        THEME_MAP[tournament.theme],
-        prefersDark ? 'dark' : 'light',
-      );
+      this.themeService.setTheme(document.documentElement, THEME_MAP[tournament.theme]);
     });
 
     this.destroyRef.onDestroy(() => {
-      this.themeService.apply(document.documentElement, DEFAULT_THEME, 'light');
+      this.themeService.setTheme(document.documentElement, DEFAULT_THEME);
     });
   }
 }
