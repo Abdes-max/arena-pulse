@@ -16,6 +16,12 @@
         }
       </ion-title>
     </ion-toolbar>
+    @if (cachedAt(); as cachedAt) {
+      <div class="tournament-shell__offline-banner" role="status">
+        <span>Dernières données du {{ cache.formatTimestamp(cachedAt) }}</span>
+        <ion-button size="small" fill="clear" (click)="retry()">Réessayer</ion-button>
+      </div>
+    }
   </ion-header>
 
   <ion-content class="tournament-shell__content">

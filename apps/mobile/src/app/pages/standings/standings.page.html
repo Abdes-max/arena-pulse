@@ -2,12 +2,23 @@
   <ion-content class="standings-page__status">
     <p>Chargement…</p>
   </ion-content>
+} @else if (errorMessage(); as message) {
+  <ion-content class="standings-page__status">
+    <p role="alert">{{ message }}</p>
+    <ion-button (click)="retry()">Réessayer</ion-button>
+  </ion-content>
 } @else if (categories().length === 0) {
   <ion-content class="standings-page__status">
     <p>Aucune catégorie pour ce tournoi.</p>
   </ion-content>
 } @else {
   <ion-content class="standings-page">
+    @if (cachedAt(); as cachedAt) {
+      <div class="standings-page__offline-banner" role="status">
+        <span>Dernières données du {{ cache.formatTimestamp(cachedAt) }}</span>
+        <ion-button size="small" fill="clear" (click)="retry()">Réessayer</ion-button>
+      </div>
+    }
     <ion-list>
       <ion-item>
         <ion-select

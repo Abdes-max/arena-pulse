@@ -19,6 +19,7 @@ import {
 } from '@ionic/angular/standalone';
 import { PublicTeamDetail } from 'shared-models';
 import { FavoritesService } from '../../core/favorites.service';
+import { OfflineCacheService } from '../../core/offline-cache.service';
 import { TournamentContextService } from '../../core/tournament-context.service';
 
 @Component({
@@ -33,10 +34,12 @@ export class TeamDetailPage {
   private readonly api = inject(PublicApiService);
   private readonly context = inject(TournamentContextService);
   protected readonly favorites = inject(FavoritesService);
+  protected readonly cache = inject(OfflineCacheService);
 
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly team = signal<PublicTeamDetail | null>(null);
+  protected readonly cachedAt = signal<number | null>(null);
 
   private readonly isDecided = (match: PublicTeamDetail['matches'][number]) =>
     match.score !== null || match.status === 'FORFEITED';
@@ -60,14 +63,29 @@ export class TeamDetailPage {
   private async load(): Promise<void> {
     const slug = this.context.slug();
     const teamId = this.route.snapshot.paramMap.get('teamId')!;
+    const cacheKey = `team:${slug}:${teamId}`;
     this.loading.set(true);
+    this.errorMessage.set(null);
     try {
-      this.team.set(await this.api.getTeam(slug, teamId));
-    } catch {
-      this.errorMessage.set('Impossible de charger cette équipe.');
+      const team = await this.api.getTeam(slug, teamId);
+      this.team.set(team);
+      this.cachedAt.set(null);
+      this.cache.set(cacheKey, team);
+    } catch (error) {
+      const cached = this.cache.get<PublicTeamDetail>(cacheKey);
+      if (this.cache.isNetworkFailure(error) && cached) {
+        this.team.set(cached.data);
+        this.cachedAt.set(cached.cachedAt);
+      } else {
+        this.errorMessage.set('Impossible de charger cette équipe.');
+      }
     } finally {
       this.loading.set(false);
     }
+  }
+
+  protected retry(): void {
+    void this.load();
   }
 
   protected isFavorite(): boolean {

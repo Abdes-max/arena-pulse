@@ -26,8 +26,8 @@ Confirmation du découpage proposé par la mission (§38), sans modification à 
 | — | *(hors plan)* | Corrections remontées pendant les tests manuels : lien de connexion sur la vitrine, smoke test shared-models, lien public tournoi, fusion admin-web + public-web → `apps/web`, mode sombre partout, thème admin/selects/sous-menu, inputs restants thémés | ✅ Fusionné (PR #18–#25) |
 | 18 | `feat/026-team-following` | Favoris, suivi d'équipe mobile | ✅ Fusionné (PR #26) |
 | — | *(hors plan)* | Script de test sur émulateur Android (`npm run emulator:mobile`), pont des thèmes design-tokens vers les composants Ionic (mobile ne rendait aucun des 3 thèmes de tournoi jusqu'ici) | ✅ Fusionné (PR #27) |
-| 19 | `feat/028-mobile-notifications` | Notifications push | 🚧 En cours (PR #28) |
-| 20 | `feat/029-offline-mode` | Mode hors connexion | ⬜ Non commencé |
+| 19 | `feat/028-mobile-notifications` | Notifications push | ✅ Fusionné (PR #28) |
+| 20 | `feat/029-offline-mode` | Mode hors connexion | 🚧 En cours (PR #29) |
 | 21 | `feat/030-security-hardening` | Durcissement sécurité | ⬜ Non commencé |
 | 22 | `feat/031-accessibility-hardening` | Durcissement accessibilité | ⬜ Non commencé |
 | 23 | `feat/032-observability` | Observabilité | ⬜ Non commencé |

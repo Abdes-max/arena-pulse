@@ -13,3 +13,14 @@
   font-weight: 400;
   opacity: 0.8;
 }
+
+.tournament-shell__offline-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-2);
+  padding: var(--ap-space-2) var(--ap-space-4);
+  font-size: 0.8rem;
+  background: var(--ap-color-signal-soft);
+  color: var(--ap-color-fg);
+}

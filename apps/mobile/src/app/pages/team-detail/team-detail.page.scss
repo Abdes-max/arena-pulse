@@ -24,3 +24,14 @@
   opacity: 0.7;
   padding: 16px;
 }
+
+.team-detail-page__offline-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-2);
+  padding: var(--ap-space-2) var(--ap-space-4);
+  font-size: 0.8rem;
+  background: var(--ap-color-signal-soft);
+  color: var(--ap-color-fg);
+}

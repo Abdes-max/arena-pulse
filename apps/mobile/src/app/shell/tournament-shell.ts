@@ -10,6 +10,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { DEFAULT_THEME, ThemeName, ThemeService } from 'design-tokens';
 import {
+  IonButton,
   IonContent,
   IonHeader,
   IonTabBar,
@@ -20,6 +21,7 @@ import {
 import { PublicTheme } from 'shared-models';
 import { FavoritesService } from '../core/favorites.service';
 import { NotificationsService } from '../core/notifications.service';
+import { OfflineCacheService } from '../core/offline-cache.service';
 import { TournamentContextService } from '../core/tournament-context.service';
 
 /** Maps the backend's PublicTheme enum to design-tokens' ThemeName (data-theme values). */
@@ -41,6 +43,7 @@ const THEME_MAP: Record<PublicTheme, ThemeName> = {
     IonContent,
     IonTabBar,
     IonTabButton,
+    IonButton,
   ],
   providers: [TournamentContextService],
   templateUrl: './tournament-shell.html',
@@ -53,11 +56,13 @@ export class TournamentShell {
   private readonly destroyRef = inject(DestroyRef);
   private readonly favorites = inject(FavoritesService);
   private readonly notifications = inject(NotificationsService);
+  protected readonly cache = inject(OfflineCacheService);
   protected readonly context = inject(TournamentContextService);
 
   protected readonly tournament = this.context.tournament;
   protected readonly loading = this.context.loading;
   protected readonly errorMessage = this.context.errorMessage;
+  protected readonly cachedAt = this.context.cachedAt;
 
   protected readonly formattedDates = computed(() => {
     const tournament = this.tournament();
@@ -112,5 +117,9 @@ export class TournamentShell {
       }
       void this.notifications.checkFavoriteUpdates(slug, this.favorites.favoritesFor(slug));
     });
+  }
+
+  protected retry(): void {
+    void this.context.load(this.context.slug());
   }
 }
