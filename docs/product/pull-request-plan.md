@@ -24,7 +24,7 @@ Confirmation du découpage proposé par la mission (§38), sans modification à 
 | 16 | `feat/016-realtime-updates` | Temps réel (WebSocket/SSE) | ✅ Fusionné (PR #16) |
 | 17 | `feat/017-mobile-foundation` | Socle Ionic/Capacitor | ✅ Fusionné (PR #17) |
 | — | *(hors plan)* | Corrections remontées pendant les tests manuels : lien de connexion sur la vitrine, smoke test shared-models, lien public tournoi, fusion admin-web + public-web → `apps/web`, mode sombre partout, thème admin/selects/sous-menu, inputs restants thémés | ✅ Fusionné (PR #18–#25) |
-| 18 | `feat/026-team-following` | Favoris, suivi d'équipe mobile | 🚧 En cours (PR #26) |
+| 18 | `feat/026-team-following` | Favoris, suivi d'équipe mobile | ✅ Fusionné (PR #26) |
 | 19 | `feat/027-mobile-notifications` | Notifications push | ⬜ Non commencé |
 | 20 | `feat/028-offline-mode` | Mode hors connexion | ⬜ Non commencé |
 | 21 | `feat/029-security-hardening` | Durcissement sécurité | ⬜ Non commencé |

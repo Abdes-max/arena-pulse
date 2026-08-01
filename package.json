@@ -10,6 +10,7 @@
     "dev": "npm run build:libs && concurrently -n web,mobile,api -c blue,magenta,yellow \"npm:dev:web\" \"npm:dev:mobile\" \"npm:dev:api\"",
     "dev:web": "ng serve web",
     "dev:mobile": "ng serve mobile --port 4400",
+    "emulator:mobile": "node infra/scripts/run-mobile-emulator.mjs",
     "dev:api": "npm --prefix apps/api run start:dev",
     "build:libs": "ng build design-tokens && ng build design-system && ng build shared-models && ng build api-client && ng build realtime-client",
     "build": "npm run build:libs && ng build web && ng build mobile && npm run build:api",

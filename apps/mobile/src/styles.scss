@@ -6,6 +6,27 @@
 // only a development-time default.
 :root {
   color-scheme: light dark;
+
+  // Bridges design-tokens' theme-scoped --ap-* custom properties into
+  // Ionic's own CSS variable system. Ionic's shadow-DOM components (ion-*)
+  // only ever read --ion-* -- they never see --ap-* directly -- so without
+  // this, ThemeService.apply() (tournament-shell.ts) changes the raw tokens
+  // but has no visible effect on Ionic's own chrome (buttons, toolbars, tab
+  // bar, item backgrounds), which keeps rendering Ionic's stock blue.
+  --ion-font-family: var(--ap-font-body);
+  --ion-background-color: var(--ap-color-bg);
+  --ion-text-color: var(--ap-color-fg);
+  --ion-border-color: var(--ap-color-border);
+  --ion-item-background: var(--ap-color-surface);
+  --ion-toolbar-background: var(--ap-color-surface);
+  --ion-toolbar-color: var(--ap-color-fg);
+  --ion-tab-bar-background: var(--ap-color-surface);
+  --ion-tab-bar-color: var(--ap-color-muted);
+  --ion-tab-bar-color-selected: var(--ap-color-signal);
+  --ion-color-primary: var(--ap-color-primary);
+  --ion-color-primary-contrast: var(--ap-color-on-primary);
+  --ion-color-danger: var(--ap-color-error);
+  --ion-color-danger-contrast: var(--ap-color-on-error);
 }
 
 html {
