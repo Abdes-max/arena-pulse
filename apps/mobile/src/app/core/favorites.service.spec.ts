@@ -1,11 +1,16 @@
 import { TestBed } from '@angular/core/testing';
+import { vi } from 'vitest';
 import { FavoritesService } from './favorites.service';
+import { NotificationsService } from './notifications.service';
 
 const STORAGE_KEY = 'arena-pulse:favorite-teams';
 
 describe('FavoritesService', () => {
   beforeEach(() => {
     localStorage.clear();
+    TestBed.configureTestingModule({
+      providers: [{ provide: NotificationsService, useValue: { requestPermission: vi.fn() } }],
+    });
   });
 
   it('starts empty when nothing is stored', () => {

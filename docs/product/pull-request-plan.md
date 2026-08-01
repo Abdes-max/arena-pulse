@@ -2,7 +2,7 @@
 
 Confirmation du découpage proposé par la mission (§38), sans modification à ce stade — l'audit du site public n'a pas révélé de raison de le réviser. Il sera réévalué après l'audit de l'administration (une PR intermédiaire pourrait s'avérer nécessaire, par ex. pour un "centre de gestion du direct" si celui-ci s'avère plus complexe que prévu).
 
-**Numérotation** : la colonne `#` est le numéro de cet item dans le plan, pas nécessairement le numéro de PR GitHub réel. Les items 1 à 17 correspondent exactement aux PR #1–17 (branche et numéro identiques). À partir de là, une série de corrections/ajustements remontés en direct par le porteur de projet pendant les tests manuels (lien de connexion sur la vitrine, fusion admin-web/public-web en une seule app, thème admin, etc. — hors plan initial) a consommé les PR #18 à #25 sans faire avancer les items planifiés. Les items 18+ ci-dessous partent donc en réalité en **PR #26 et suivantes**, avec des branches nommées sur la numérotation réelle (`feat/026-...`), pas sur le numéro de ligne du tableau.
+**Numérotation** : la colonne `#` est le numéro de cet item dans le plan, pas nécessairement le numéro de PR GitHub réel. Les items 1 à 17 correspondent exactement aux PR #1–17 (branche et numéro identiques). À partir de là, une série de corrections/ajustements remontés en direct par le porteur de projet pendant les tests manuels (lien de connexion sur la vitrine, fusion admin-web/public-web en une seule app, thème admin, etc. — hors plan initial) a consommé les PR #18 à #25, puis la PR #27 (script de test émulateur Android + thèmes mobile), sans faire avancer les items planifiés. Les items 19+ ci-dessous partent donc en réalité en **PR #28 et suivantes**, avec des branches nommées sur la numérotation réelle (`feat/028-...`), pas sur le numéro de ligne du tableau.
 
 | # | Branche (prévue) | Contenu | État |
 | --- | --- | --- | --- |
@@ -25,15 +25,16 @@ Confirmation du découpage proposé par la mission (§38), sans modification à 
 | 17 | `feat/017-mobile-foundation` | Socle Ionic/Capacitor | ✅ Fusionné (PR #17) |
 | — | *(hors plan)* | Corrections remontées pendant les tests manuels : lien de connexion sur la vitrine, smoke test shared-models, lien public tournoi, fusion admin-web + public-web → `apps/web`, mode sombre partout, thème admin/selects/sous-menu, inputs restants thémés | ✅ Fusionné (PR #18–#25) |
 | 18 | `feat/026-team-following` | Favoris, suivi d'équipe mobile | ✅ Fusionné (PR #26) |
-| 19 | `feat/027-mobile-notifications` | Notifications push | ⬜ Non commencé |
-| 20 | `feat/028-offline-mode` | Mode hors connexion | ⬜ Non commencé |
-| 21 | `feat/029-security-hardening` | Durcissement sécurité | ⬜ Non commencé |
-| 22 | `feat/030-accessibility-hardening` | Durcissement accessibilité | ⬜ Non commencé |
-| 23 | `feat/031-observability` | Observabilité | ⬜ Non commencé |
-| 24 | `feat/032-deployment` | Déploiement | ⬜ Non commencé |
-| 25 | `feat/033-player-registration-and-payments` | Comptes joueurs publics, inscription en ligne sur le site public, paiement (prestataire à choisir), suivi organisateur des paiements | ⬜ Non commencé |
-| 26 | `feat/034-rating-system` | Système de rating (ELO/Glicko à arbitrer) en complément du classement par points existant, mis à jour à chaque match validé | ⬜ Non commencé |
-| 27 | `feat/035-ai-assistant` | Assistant en langage naturel côté admin (création de compétition, requêtes sur les données du tournoi) | ⬜ Non commencé |
+| — | *(hors plan)* | Script de test sur émulateur Android (`npm run emulator:mobile`), pont des thèmes design-tokens vers les composants Ionic (mobile ne rendait aucun des 3 thèmes de tournoi jusqu'ici) | ✅ Fusionné (PR #27) |
+| 19 | `feat/028-mobile-notifications` | Notifications push | 🚧 En cours (PR #28) |
+| 20 | `feat/029-offline-mode` | Mode hors connexion | ⬜ Non commencé |
+| 21 | `feat/030-security-hardening` | Durcissement sécurité | ⬜ Non commencé |
+| 22 | `feat/031-accessibility-hardening` | Durcissement accessibilité | ⬜ Non commencé |
+| 23 | `feat/032-observability` | Observabilité | ⬜ Non commencé |
+| 24 | `feat/033-deployment` | Déploiement | ⬜ Non commencé |
+| 25 | `feat/034-player-registration-and-payments` | Comptes joueurs publics, inscription en ligne sur le site public, paiement (prestataire à choisir), suivi organisateur des paiements | ⬜ Non commencé |
+| 26 | `feat/035-rating-system` | Système de rating (ELO/Glicko à arbitrer) en complément du classement par points existant, mis à jour à chaque match validé | ⬜ Non commencé |
+| 27 | `feat/036-ai-assistant` | Assistant en langage naturel côté admin (création de compétition, requêtes sur les données du tournoi) | ⬜ Non commencé |
 
 **Point d'attention identifié lors de cet audit** : l'admin n'étant pas encore analysée, le contenu exact de `feat/012-schedule-editor` (vue par terrain/équipe/poule, historique, undo/redo) et `feat/013-scorekeeping` (centre de gestion du direct) pourra nécessiter un début de scission une fois l'audit admin réalisé, si la complexité observée le justifie. Ce sera réévalué dans la prochaine mise à jour de ce document.
 

@@ -36,11 +36,19 @@
 //    watching dist/* caught a rebuild mid-write once and got its Vite
 //    dependency pre-bundle wedged on a stale copy of realtime-client, which
 //    then only showed up as a "Cannot find module" error in the WebView.
-import { spawn, spawnSync } from 'node:child_process';
+import { spawn } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { isPortInUse, waitForPort, fetchMatches } from './lib/ports.mjs';
+import {
+  isWin,
+  resolveAndroidSdk,
+  run,
+  runCapture,
+  connectedEmulatorId as connectedEmulatorIdFor,
+  killPort,
+} from './lib/android.mjs';
 
 const rootDir = path.resolve(fileURLToPath(import.meta.url), '../../..');
 const mobileDir = path.join(rootDir, 'apps/mobile');
@@ -53,33 +61,15 @@ const MOBILE_PORT = 4400;
 const API_PORT = Number(process.env.API_PORT) || 3000;
 const AVD_NAME = process.env.AVD_NAME; // optional -- defaults to the first AVD found
 
-const isWin = process.platform === 'win32';
-const sdkRoot = process.env.ANDROID_HOME || process.env.ANDROID_SDK_ROOT;
-if (!sdkRoot) {
+const sdk = resolveAndroidSdk();
+if (!sdk) {
   console.error(
     "ANDROID_HOME/ANDROID_SDK_ROOT is not set. Install Android Studio's SDK and create an AVD first.",
   );
   process.exit(1);
 }
-const adb = path.join(sdkRoot, 'platform-tools', isWin ? 'adb.exe' : 'adb');
-const emulatorBin = path.join(sdkRoot, 'emulator', isWin ? 'emulator.exe' : 'emulator');
-
-function run(cmd, args, options = {}) {
-  return spawnSync(cmd, args, { stdio: 'inherit', shell: isWin, ...options });
-}
-
-function runCapture(cmd, args, options = {}) {
-  return spawnSync(cmd, args, { encoding: 'utf8', shell: isWin, ...options });
-}
-
-function connectedEmulatorId() {
-  const devices = runCapture(adb, ['devices']).stdout ?? '';
-  return devices
-    .split('\n')
-    .slice(1)
-    .map((line) => line.split('\t')[0]?.trim())
-    .find((id) => id?.startsWith('emulator-'));
-}
+const { adb, emulatorBin } = sdk;
+const connectedEmulatorId = () => connectedEmulatorIdFor(adb);
 
 async function ensureEmulatorRunning() {
   const alreadyRunning = connectedEmulatorId();
@@ -119,30 +109,6 @@ async function ensureEmulatorRunning() {
   }
   console.log(`✓ Emulator booted (${id}).`);
   return id;
-}
-
-function killPort(port) {
-  if (isWin) {
-    const netstat = runCapture('netstat', ['-ano']).stdout ?? '';
-    const pids = new Set(
-      netstat
-        .split('\n')
-        .filter((line) => line.includes(`:${port} `) && line.includes('LISTENING'))
-        .map((line) => line.trim().split(/\s+/).pop())
-        .filter(Boolean),
-    );
-    for (const pid of pids) {
-      spawnSync('taskkill', ['/PID', pid, '/T', '/F'], { stdio: 'ignore' });
-    }
-  } else {
-    const pids = (runCapture('lsof', ['-ti', `tcp:${port}`]).stdout ?? '')
-      .split('\n')
-      .map((line) => line.trim())
-      .filter(Boolean);
-    for (const pid of pids) {
-      spawnSync('kill', ['-9', pid], { stdio: 'ignore' });
-    }
-  }
 }
 
 /** Always restarts fresh -- see the file-header note on why reusing a stale instance is unsafe here. */

@@ -18,6 +18,8 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { PublicTheme } from 'shared-models';
+import { FavoritesService } from '../core/favorites.service';
+import { NotificationsService } from '../core/notifications.service';
 import { TournamentContextService } from '../core/tournament-context.service';
 
 /** Maps the backend's PublicTheme enum to design-tokens' ThemeName (data-theme values). */
@@ -49,6 +51,8 @@ export class TournamentShell {
   private readonly route = inject(ActivatedRoute);
   private readonly themeService = inject(ThemeService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly favorites = inject(FavoritesService);
+  private readonly notifications = inject(NotificationsService);
   protected readonly context = inject(TournamentContextService);
 
   protected readonly tournament = this.context.tournament;
@@ -93,6 +97,20 @@ export class TournamentShell {
 
     this.destroyRef.onDestroy(() => {
       this.themeService.apply(document.documentElement, DEFAULT_THEME, 'light');
+    });
+
+    // Re-checks favorited teams' matches for this tournament whenever the
+    // realtime stream ticks (see TournamentContextService.lastMatchEvent),
+    // and once up front to establish a baseline without notifying on
+    // pre-existing state -- see NotificationsService.
+    effect(() => {
+      const tournament = this.tournament();
+      const slug = this.context.slug();
+      this.context.lastMatchEvent();
+      if (!tournament || !slug) {
+        return;
+      }
+      void this.notifications.checkFavoriteUpdates(slug, this.favorites.favoritesFor(slug));
     });
   }
 }
