@@ -10,6 +10,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import type { CookieOptions, Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-user.decorator';
@@ -21,12 +22,24 @@ import type { AuthenticatedUser } from './strategies/jwt.strategy';
 export const REFRESH_TOKEN_COOKIE = 'refresh_token';
 export const REFRESH_TOKEN_PATH = '/api/v1/auth';
 
+// Well below the app-wide default (100/min, see app.module.ts) -- these are
+// the credential-stuffing/brute-force-sensitive endpoints. Relaxed under
+// Jest (NODE_ENV=test) for the same reason as app.module.ts's throttler
+// config -- the e2e suite logs in far more than 5 times a minute.
+const AUTH_THROTTLE = {
+  default: {
+    limit: process.env.NODE_ENV === 'test' ? 100_000 : 5,
+    ttl: 60_000,
+  },
+};
+
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Public()
+  @Throttle(AUTH_THROTTLE)
   @Post('register')
   async register(
     @Body() dto: RegisterDto,
@@ -47,6 +60,7 @@ export class AuthController {
   }
 
   @Public()
+  @Throttle(AUTH_THROTTLE)
   @HttpCode(HttpStatus.OK)
   @Post('login')
   async login(
@@ -67,6 +81,7 @@ export class AuthController {
   }
 
   @Public()
+  @Throttle(AUTH_THROTTLE)
   @HttpCode(HttpStatus.OK)
   @Post('refresh')
   async refresh(
