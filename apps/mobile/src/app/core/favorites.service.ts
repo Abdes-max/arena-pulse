@@ -1,4 +1,5 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
+import { NotificationsService } from './notifications.service';
 
 export interface FavoriteTeam {
   tournamentSlug: string;
@@ -16,6 +17,7 @@ const STORAGE_KEY = 'arena-pulse:favorite-teams';
  */
 @Injectable({ providedIn: 'root' })
 export class FavoritesService {
+  private readonly notifications = inject(NotificationsService);
   private readonly favoritesState = signal<FavoriteTeam[]>(this.readFromStorage());
 
   readonly favorites = this.favoritesState.asReadonly();
@@ -42,6 +44,9 @@ export class FavoritesService {
       : [...current, { tournamentSlug, teamId, teamName }];
     this.favoritesState.set(next);
     this.writeToStorage(next);
+    if (!exists) {
+      void this.notifications.requestPermission();
+    }
   }
 
   private readFromStorage(): FavoriteTeam[] {
