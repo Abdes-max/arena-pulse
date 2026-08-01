@@ -1,5 +1,6 @@
 .standings-page__status {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
@@ -14,4 +15,15 @@
 .standings-page__points {
   font-weight: 700;
   margin-inline-end: 8px;
+}
+
+.standings-page__offline-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-2);
+  padding: var(--ap-space-2) var(--ap-space-4);
+  font-size: 0.8rem;
+  background: var(--ap-color-signal-soft);
+  color: var(--ap-color-fg);
 }

@@ -8,6 +8,12 @@
   </ion-content>
 } @else if (team(); as t) {
   <ion-content class="team-detail-page">
+    @if (cachedAt(); as cachedAt) {
+      <div class="team-detail-page__offline-banner" role="status">
+        <span>Dernières données du {{ cache.formatTimestamp(cachedAt) }}</span>
+        <ion-button size="small" fill="clear" (click)="retry()">Réessayer</ion-button>
+      </div>
+    }
     <ion-list>
       <ion-list-header>
         {{ t.name }}
