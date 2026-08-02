@@ -1,0 +1,92 @@
+# Self-hostable production stack: postgres + api + web (nginx), on a single
+# Docker host. No external managed service is assumed -- this is the
+# generic baseline (see docs/architecture/adr/0004-deployment-strategy.md
+# for why a specific PaaS/cloud target was deliberately left undecided).
+#
+# Usage: from the repo root,
+#   cp infra/deployment/.env.example infra/deployment/.env   # then edit it
+#   docker compose -f infra/deployment/docker-compose.prod.yml --env-file infra/deployment/.env up -d --build
+#
+# This stack terminates plain HTTP on ${WEB_HOST_PORT:-8080}. Put a real
+# TLS-terminating reverse proxy (Caddy, Traefik, nginx-on-the-host...) in
+# front of it for anything public -- provisioning a domain/certificate is
+# outside what this compose file can decide for you.
+
+name: arena-pulse-prod
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-arena_pulse}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
+      POSTGRES_DB: ${POSTGRES_DB:-arena_pulse}
+    volumes:
+      - arena-pulse-postgres-prod:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-arena_pulse} -d ${POSTGRES_DB:-arena_pulse}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # One-shot: applies pending Prisma migrations, then exits. Uses the
+  # `build` stage of api.Dockerfile (full source + Prisma CLI), not the
+  # pruned `runtime` stage the `api` service below runs -- `runtime` has no
+  # devDependencies, so no `prisma` CLI to run `migrate deploy` with.
+  migrate:
+    build:
+      context: ../../apps/api
+      dockerfile: ../../infra/docker/api.Dockerfile
+      target: build
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-arena_pulse}:${POSTGRES_PASSWORD:?}@postgres:5432/${POSTGRES_DB:-arena_pulse}?schema=public
+    command: ['npx', 'prisma', 'migrate', 'deploy']
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  api:
+    build:
+      context: ../../apps/api
+      dockerfile: ../../infra/docker/api.Dockerfile
+      target: runtime
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      API_PORT: 3000
+      DATABASE_URL: postgresql://${POSTGRES_USER:-arena_pulse}:${POSTGRES_PASSWORD:?}@postgres:5432/${POSTGRES_DB:-arena_pulse}?schema=public
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set -- e.g. openssl rand -base64 48}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-3600s}
+      JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-30d}
+      # Same-origin in this deployment shape (web's nginx proxies /api/ to
+      # this service) -- still required (main.ts refuses to boot in
+      # production without it) and worth setting correctly for the case a
+      # client calls the API directly rather than through the nginx proxy.
+      CORS_ORIGIN: ${WEB_PUBLIC_ORIGIN:?WEB_PUBLIC_ORIGIN must be set, e.g. https://tournois.example.com}
+      ADMIN_WEB_URL: ${WEB_PUBLIC_ORIGIN:?}
+      SMTP_HOST: ${SMTP_HOST:?SMTP_HOST must be set -- MailModule has no auth support yet, see the ADR}
+      SMTP_PORT: ${SMTP_PORT:-587}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ['CMD', 'node', '-e', "fetch('http://127.0.0.1:3000/api/v1/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  web:
+    build:
+      context: ../..
+      dockerfile: infra/docker/web.Dockerfile
+    restart: unless-stopped
+    ports:
+      - '${WEB_HOST_PORT:-8080}:8080'
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  arena-pulse-postgres-prod:

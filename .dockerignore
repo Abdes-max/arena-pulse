@@ -1,0 +1,23 @@
+# Build context for infra/docker/web.Dockerfile only (repo root). apps/api
+# is a separate npm project (own package.json/lockfile, not an npm
+# workspace member of the root) and irrelevant to the web build -- excluding
+# it here also keeps apps/api/.env (real local secrets) out of this context
+# entirely, on top of apps/api/.dockerignore doing the same for its own
+# build.
+node_modules
+**/node_modules
+dist
+**/dist
+coverage
+**/coverage
+.angular
+**/.angular
+.git
+apps/api
+apps/mobile
+**/.env
+**/.env.*
+*.log
+.agents
+docs
+infra/compose
