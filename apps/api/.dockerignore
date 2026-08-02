@@ -1,0 +1,11 @@
+# Build context for infra/docker/api.Dockerfile (apps/api). .env is real
+# local secrets and must never reach the Docker daemon/an image layer.
+node_modules
+dist
+generated
+coverage
+.env
+.env.*
+*.log
+test
+*.md
