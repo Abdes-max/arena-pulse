@@ -231,7 +231,7 @@
   font-family: var(--ap-font-heading);
   font-size: 1.75rem;
   font-weight: 800;
-  color: var(--ap-color-signal);
+  color: var(--ap-color-signal-text);
 }
 
 .standings-page__podium-name {
@@ -246,7 +246,7 @@
 .standings-page__podium-step--1 {
   order: 2;
   padding-top: var(--ap-space-8);
-  border-color: var(--ap-color-signal);
+  border-color: var(--ap-color-signal-text);
 
   .standings-page__podium-rank {
     font-size: 2.25rem;

@@ -28,8 +28,9 @@ Confirmation du découpage proposé par la mission (§38), sans modification à 
 | — | *(hors plan)* | Script de test sur émulateur Android (`npm run emulator:mobile`), pont des thèmes design-tokens vers les composants Ionic (mobile ne rendait aucun des 3 thèmes de tournoi jusqu'ici) | ✅ Fusionné (PR #27) |
 | 19 | `feat/028-mobile-notifications` | Notifications push | ✅ Fusionné (PR #28) |
 | 20 | `feat/029-offline-mode` | Mode hors connexion | ✅ Fusionné (PR #29) |
-| 21 | `feat/030-security-hardening` | Durcissement sécurité | 🚧 En cours (PR #30) |
-| 22 | `feat/031-accessibility-hardening` | Durcissement accessibilité | ⬜ Non commencé |
+| 21 | `feat/030-security-hardening` | Durcissement sécurité | ✅ Fusionné (PR #30) |
+| — | *(hors plan)* | Mises à jour Dependabot des workflows CI (`actions/checkout` v4→v7, `actions/setup-node` v4→v7) | ✅ Fusionné (PR #31–#32) |
+| 22 | `feat/033-accessibility-hardening` | Durcissement accessibilité | 🚧 En cours (PR #33) |
 | 23 | `feat/032-observability` | Observabilité | ⬜ Non commencé |
 | 24 | `feat/033-deployment` | Déploiement | ⬜ Non commencé |
 | 25 | `feat/034-player-registration-and-payments` | Comptes joueurs publics, inscription en ligne sur le site public, paiement (prestataire à choisir), suivi organisateur des paiements | ⬜ Non commencé |

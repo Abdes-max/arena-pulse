@@ -53,6 +53,13 @@
   --ap-z-modal: 300;
   --ap-z-toast: 400;
   --ap-z-slideshow: 500;
+
+  // Keyboard focus ring (docs/design/accessibility-guidelines.md: "focus
+  // visible jamais retiré"). --ap-color-primary rather than --ap-color-signal:
+  // measured against each theme's own background, signal fails the WCAG
+  // 3:1 non-text contrast minimum in Ink & Signal and Pulse Ember's light
+  // mode (2.77:1 / 1.75:1) -- primary passes comfortably everywhere.
+  --ap-color-focus: var(--ap-color-primary);
 }
 
 @media (prefers-reduced-motion: reduce) {

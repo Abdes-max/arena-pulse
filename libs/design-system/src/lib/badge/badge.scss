@@ -32,8 +32,11 @@
 }
 
 // En direct : couleur signal de la direction, avec pulsation.
+// --ap-color-on-signal, not --ap-color-on-primary: white fails WCAG AA
+// against --ap-color-signal in 2 of the 3 themes (see the theme files) --
+// on-signal is chosen per theme specifically to contrast with signal.
 :host([data-status='live']) .ap-badge {
-  color: var(--ap-color-on-primary);
+  color: var(--ap-color-on-signal);
   background: var(--ap-color-signal);
   border-color: var(--ap-color-signal);
 }

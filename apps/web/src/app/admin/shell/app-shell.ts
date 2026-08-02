@@ -34,6 +34,14 @@ export class AppShell {
     this.themeService.setAdminTheme(document.documentElement, theme as ThemeName);
   }
 
+  // index.html sets <base href="/">, so a plain href="#main-content" resolves
+  // against that base (i.e. navigates to "/") instead of jumping within the
+  // current route -- handled manually here instead.
+  protected focusMainContent(event: Event): void {
+    event.preventDefault();
+    document.getElementById('main-content')?.focus();
+  }
+
   protected async logout(): Promise<void> {
     await this.authService.logout();
     await this.router.navigateByUrl('/login');

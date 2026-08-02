@@ -1,4 +1,8 @@
 <div class="app-shell">
+  <a class="skip-link" href="#main-content" (click)="focusMainContent($event)"
+    >Aller au contenu principal</a
+  >
+
   <header class="app-shell__header">
     <nav class="app-shell__nav">
       <a routerLink="/admin/tournaments" routerLinkActive="app-shell__link--active">Tournois</a>
@@ -21,7 +25,7 @@
       <ap-button type="button" variant="ghost" (click)="logout()">Se déconnecter</ap-button>
     </div>
   </header>
-  <main class="app-shell__content">
+  <main class="app-shell__content" id="main-content" tabindex="-1">
     <router-outlet />
   </main>
 </div>

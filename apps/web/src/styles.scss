@@ -18,6 +18,29 @@ body {
   margin: 0;
 }
 
+// Skip-link (docs/design/accessibility-guidelines.md) -- used by both shells
+// (public tournament + /admin) so a keyboard/screen-reader user can jump
+// straight past the header nav to <main id="main-content">. Off-screen
+// until focused, matching the standard pattern.
+.skip-link {
+  position: absolute;
+  top: -100%;
+  left: var(--ap-space-4);
+  z-index: var(--ap-z-toast);
+  padding: var(--ap-space-3) var(--ap-space-4);
+  background: var(--ap-color-surface);
+  color: var(--ap-color-fg);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  text-decoration: none;
+
+  &:focus-visible {
+    top: var(--ap-space-4);
+    outline: var(--ap-border-width-strong) solid var(--ap-color-focus);
+    outline-offset: 2px;
+  }
+}
+
 // Themed baseline for the handful of native form controls the design
 // system doesn't wrap in a component (checkboxes, file inputs, textareas --
 // ap-select/ap-text-field cover everything else). Kept minimal on purpose:
@@ -43,7 +66,7 @@ textarea {
   font-family: monospace;
 
   &:focus-visible {
-    outline: var(--ap-border-width-strong) solid var(--ap-color-signal);
+    outline: var(--ap-border-width-strong) solid var(--ap-color-focus);
     outline-offset: 2px;
   }
 }

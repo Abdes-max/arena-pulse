@@ -30,7 +30,7 @@
 
   &:hover {
     background: var(--ap-color-surface);
-    border-color: var(--ap-color-signal);
+    border-color: var(--ap-color-signal-text);
   }
 }
 
@@ -50,7 +50,7 @@
 
 .landing-page__eyebrow {
   margin: 0;
-  color: var(--ap-color-signal);
+  color: var(--ap-color-signal-text);
   font-weight: 700;
   font-size: 0.85rem;
   text-transform: uppercase;
