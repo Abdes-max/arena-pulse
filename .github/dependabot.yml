@@ -1,0 +1,30 @@
+version: 2
+updates:
+  # apps/api has its own package-lock.json, separate from the root workspace.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    groups:
+      angular:
+        patterns:
+          - '@angular/*'
+          - '@angular-eslint/*'
+          - '@ionic/*'
+          - '@capacitor/*'
+
+  - package-ecosystem: npm
+    directory: /apps/api
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    groups:
+      nestjs:
+        patterns:
+          - '@nestjs/*'
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
