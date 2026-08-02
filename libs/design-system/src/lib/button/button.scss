@@ -23,7 +23,7 @@
     opacity var(--ap-motion-fast) var(--ap-easing-standard);
 
   &:focus-visible {
-    outline: var(--ap-border-width-strong) solid var(--ap-color-signal);
+    outline: var(--ap-border-width-strong) solid var(--ap-color-focus);
     outline-offset: 2px;
   }
 
@@ -65,6 +65,6 @@
 // (RouterLinkActive adds this class) — wins over the variant's own colors.
 .ap-button--active {
   background: var(--ap-color-signal-soft);
-  color: var(--ap-color-signal);
-  border-color: var(--ap-color-signal);
+  color: var(--ap-color-signal-text);
+  border-color: var(--ap-color-signal-text);
 }

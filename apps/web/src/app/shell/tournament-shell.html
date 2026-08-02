@@ -5,6 +5,10 @@
     {{ message }}
   </p>
 } @else if (tournament(); as t) {
+  <a class="skip-link" href="#main-content" (click)="focusMainContent($event)"
+    >Aller au contenu principal</a
+  >
+
   <header class="tournament-shell__hero">
     <div class="tournament-shell__hero-inner">
       <p class="tournament-shell__sport">{{ t.sportName }}</p>
@@ -39,7 +43,7 @@
     </nav>
   </header>
 
-  <main class="tournament-shell__content">
+  <main class="tournament-shell__content" id="main-content" tabindex="-1">
     <router-outlet />
   </main>
 }

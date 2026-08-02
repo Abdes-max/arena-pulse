@@ -44,6 +44,14 @@ export class TournamentShell {
     this.themeService.setMode(document.documentElement, next);
   }
 
+  // index.html sets <base href="/">, so a plain href="#main-content" resolves
+  // against that base (i.e. navigates to "/") instead of jumping within the
+  // current route -- handled manually here instead.
+  protected focusMainContent(event: Event): void {
+    event.preventDefault();
+    document.getElementById('main-content')?.focus();
+  }
+
   protected readonly formattedDates = computed(() => {
     const tournament = this.tournament();
     if (!tournament?.startDate) {

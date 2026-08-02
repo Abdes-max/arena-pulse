@@ -93,13 +93,16 @@
 }
 
 // --- live: la couleur signal de la direction marque le direct ---
+// --ap-color-signal-text (not the raw --ap-color-signal used for fills
+// elsewhere) since this is text/a border on the card's own light surface --
+// see the theme files for the measured contrast that makes this necessary.
 :host([data-variant='live']) .ap-match-card {
-  border-color: var(--ap-color-signal);
+  border-color: var(--ap-color-signal-text);
   box-shadow: var(--ap-shadow-sm);
 }
 
 :host([data-variant='live']) .ap-match-card__score {
-  color: var(--ap-color-signal);
+  color: var(--ap-color-signal-text);
 }
 
 // --- result: l'équipe gagnante ressort, la perdante s'efface (jamais par la couleur seule : le score suffit) ---
@@ -118,7 +121,7 @@
 :host([data-variant='featured']) .ap-match-card {
   padding: var(--ap-space-6);
   border-width: var(--ap-border-width-strong);
-  border-color: var(--ap-color-signal);
+  border-color: var(--ap-color-signal-text);
   box-shadow: var(--ap-shadow-md);
 }
 

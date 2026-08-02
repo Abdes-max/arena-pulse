@@ -55,7 +55,7 @@
   background-repeat: no-repeat;
 
   &:focus-visible {
-    outline: var(--ap-border-width-strong) solid var(--ap-color-signal);
+    outline: var(--ap-border-width-strong) solid var(--ap-color-focus);
     outline-offset: 2px;
   }
 

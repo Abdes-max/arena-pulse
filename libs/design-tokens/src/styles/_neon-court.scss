@@ -22,15 +22,30 @@
   --ap-color-on-primary: #ffffff;
   --ap-color-signal: #e11d48;
   --ap-color-signal-soft: #ffe4ea;
+  // Darkened signal for use *as text/border* (docs/design/accessibility-guidelines.md:
+  // WCAG AA) -- the raw crimson reaches only 4.38:1 against this theme's
+  // background, just under the 4.5:1 text minimum (though it does clear
+  // the 3:1 UI-component minimum already). --ap-color-signal itself is
+  // unchanged for fills.
+  --ap-color-signal-text: #cb1a41;
+  // Text color for content placed *on* a --ap-color-signal fill (e.g. the
+  // "live" badge) -- unlike the other 2 themes, white (on-primary) already
+  // passes here (4.70:1), so this is just an alias.
+  --ap-color-on-signal: var(--ap-color-on-primary);
 
-  --ap-color-win: #16a34a;
+  // --ap-color-win darkened from #16a34a (3.07:1 against this theme's
+  // background as small bold text -- the badge component's actual usage --
+  // fails WCAG AA's 4.5:1). loss/draw already pass and are unchanged.
+  --ap-color-win: #12823b;
   --ap-color-loss: #6b5b95;
   --ap-color-draw: #b45309;
 
   --ap-color-success: #16a34a;
   --ap-color-info: #2563eb;
   --ap-color-warning: #b45309;
-  --ap-color-error: #e11d48;
+  // Shares --ap-color-signal-text's darkening -- same base color and the
+  // same badge-text contrast failure (4.38:1).
+  --ap-color-error: #cb1a41;
   --ap-color-on-error: #ffffff;
 
   &[data-mode='dark'] {
@@ -44,6 +59,10 @@
     --ap-color-on-primary: #0f0f23;
     --ap-color-signal: #fb7185;
     --ap-color-signal-soft: #3a1626;
+    // Signal already passes both thresholds against this theme's dark
+    // background (7.01:1) -- no darkening needed here, unlike light mode.
+    --ap-color-signal-text: var(--ap-color-signal);
+    --ap-color-on-signal: var(--ap-color-bg);
 
     --ap-color-win: #4ade80;
     --ap-color-loss: #a78bfa;
