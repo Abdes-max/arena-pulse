@@ -1,6 +1,7 @@
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import {
   ApplicationConfig,
+  ErrorHandler,
   inject,
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
@@ -12,10 +13,12 @@ import { environment } from '../environments/environment';
 import { routes } from './app.routes';
 import { authInterceptor } from './admin/core/auth.interceptor';
 import { AuthService } from './admin/core/auth.service';
+import { GlobalErrorHandler } from './core/global-error-handler';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
+    { provide: ErrorHandler, useClass: GlobalErrorHandler },
     provideRouter(routes),
     // Adds an Authorization header only `if (token)` — a no-op for anonymous
     // public-site requests with no admin session, so this is safe to share.
