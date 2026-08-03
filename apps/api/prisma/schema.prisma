@@ -152,23 +152,30 @@ model Tournament {
   teams          Team[]
   venues         Venue[]
   referees       Referee[]
+  registrations  Registration[]
 
   @@index([organizationId])
   @@index([sportId])
 }
 
 model Category {
-  id           String   @id @default(uuid())
-  tournamentId String
-  name         String
-  position     Int      @default(0)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                      String   @id @default(uuid())
+  tournamentId            String
+  name                    String
+  position                Int      @default(0)
+  // Null = free to join (no online registration/payment step required).
+  // Amount in the smallest currency unit (e.g. cents), matching Stripe's
+  // own convention -- see docs/architecture/adr/0005-player-registration-and-payments.md.
+  registrationFeeCents    Int?
+  registrationFeeCurrency String?  @default("eur")
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
 
-  tournament Tournament         @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
-  divisions  Division[]
-  teams      Team[]
-  phases     CompetitionPhase[]
+  tournament    Tournament         @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  divisions     Division[]
+  teams         Team[]
+  phases        CompetitionPhase[]
+  registrations Registration[]
 
   @@unique([tournamentId, name])
 }
@@ -211,6 +218,9 @@ model Team {
   awayMatches       Match[]         @relation("MatchAwayTeam")
   forfeitedMatches  Match[]         @relation("MatchForfeitedTeam")
   refereeingMatches MatchOfficial[] @relation("MatchOfficialTeam")
+  // Set once a paid/free online registration materializes this team --
+  // null for teams an organizer created directly (the pre-existing path).
+  registration      Registration?
 
   @@unique([tournamentId, name])
   @@index([tournamentId])
@@ -248,6 +258,12 @@ model CompetitionPhase {
   matchDurationMinutes Int                  @default(15)
   breakDurationMinutes Int                  @default(5)
   refereesPerMatch     Int                  @default(1)
+  // GROUP_STAGE only (ignored for KNOCKOUT, which has no round-robin
+  // fixtures to double) -- see ScheduleGenerationService.generate, which
+  // rejects a second generate-schedule call while matches already exist for
+  // the phase, so this is read once per "clean" generation rather than
+  // toggled after matches exist.
+  doubleRoundRobin     Boolean              @default(false)
   createdAt            DateTime             @default(now())
   updatedAt            DateTime             @updatedAt
 
@@ -489,4 +505,98 @@ model Referee {
   officiatedMatches MatchOfficial[]
 
   @@index([tournamentId])
+}
+
+// --- Public player accounts + online registration + payments ---
+// (feat/036-player-registration-and-payments, see
+// docs/architecture/adr/0005-player-registration-and-payments.md)
+//
+// PlayerAccount is deliberately separate from User: User is exclusively an
+// organizer/collaborator concept (always tied to an OrganizationMember --
+// see AuthService.register, which creates a User + Organization together in
+// one transaction). A PlayerAccount never belongs to an organization; it
+// authenticates on entirely different routes (/api/v1/player-auth/*) with
+// its own JWT strategy that rejects an organizer's access token and vice
+// versa (both tokens carry a `type` claim precisely to prevent that mixup).
+
+model PlayerAccount {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  firstName    String
+  lastName     String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  refreshTokens PlayerRefreshToken[]
+  registrations Registration[]
+}
+
+model PlayerRefreshToken {
+  id                String    @id @default(uuid())
+  playerAccountId   String
+  tokenHash         String    @unique
+  familyId          String
+  createdAt         DateTime  @default(now())
+  expiresAt         DateTime
+  revokedAt         DateTime?
+  replacedByTokenId String?
+
+  playerAccount PlayerAccount @relation(fields: [playerAccountId], references: [id], onDelete: Cascade)
+
+  @@index([playerAccountId])
+}
+
+enum RegistrationStatus {
+  PENDING_PAYMENT
+  PAID
+  CANCELLED
+}
+
+// One registration = one team's entry into one category, submitted by a
+// PlayerAccount (the captain/registrant) on the tournament's public site.
+// Free categories (registrationFeeCents null on Category) skip Stripe
+// entirely and go straight to PAID with amountCents 0. `team`/`players`
+// materialize (Team + Player rows, the pre-existing organizer-facing
+// models) only once status reaches PAID -- see RegistrationsService.
+model Registration {
+  id                      String             @id @default(uuid())
+  tournamentId            String
+  categoryId              String
+  playerAccountId         String
+  teamName                String
+  managerEmail            String
+  managerPhone            String?
+  status                  RegistrationStatus @default(PENDING_PAYMENT)
+  amountCents             Int
+  currency                String
+  stripeCheckoutSessionId String?            @unique
+  stripePaymentIntentId   String?
+  teamId                  String?            @unique
+  createdAt               DateTime           @default(now())
+  paidAt                  DateTime?
+
+  tournament    Tournament           @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  category      Category             @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  playerAccount PlayerAccount        @relation(fields: [playerAccountId], references: [id], onDelete: Cascade)
+  team          Team?                @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  players       RegistrationPlayer[]
+
+  @@index([tournamentId])
+  @@index([categoryId])
+  @@index([playerAccountId])
+}
+
+// The roster submitted at registration time -- copied into real Player rows
+// (linked to the materialized Team) once the registration reaches PAID.
+model RegistrationPlayer {
+  id             String  @id @default(uuid())
+  registrationId String
+  firstName      String
+  lastName       String
+  jerseyNumber   Int?
+
+  registration Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
+
+  @@index([registrationId])
 }

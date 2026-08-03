@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Button, Select, SelectOption, TextField } from 'design-system';
+import { TournamentSubmenu } from '../../shared/tournament-submenu';
 import { AuthService } from '../../core/auth.service';
 import { CompetitionFormatsService } from '../../core/competition-formats.service';
 import {
@@ -30,7 +31,7 @@ const EMPTY_DRAFT: TimeSlotDraft = { start: '', end: '', label: '' };
 
 @Component({
   selector: 'app-schedule-page',
-  imports: [Button, Select, TextField],
+  imports: [Button, Select, TextField, TournamentSubmenu],
   templateUrl: './schedule.page.html',
   styleUrl: './schedule.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -71,15 +72,18 @@ export class SchedulePage {
   protected readonly breakDurationMinutes = signal('');
   protected readonly refereesPerMatch = signal('');
 
-  protected readonly groupStagePhases = computed(() =>
-    this.phases().filter((phase) => phase.type === 'GROUP_STAGE'),
+  protected readonly selectedPhase = computed(
+    () => this.phases().find((phase) => phase.id === this.selectedPhaseId()) ?? null,
   );
 
   protected readonly categoryOptions = computed<SelectOption[]>(() =>
     this.categories().map((category) => ({ value: category.id, label: category.name })),
   );
   protected readonly phaseOptions = computed<SelectOption[]>(() =>
-    this.groupStagePhases().map((phase) => ({ value: phase.id, label: phase.name })),
+    this.phases().map((phase) => ({
+      value: phase.id,
+      label: `${phase.name} (${phase.type === 'GROUP_STAGE' ? 'Poules' : 'Élimination directe'})`,
+    })),
   );
 
   protected readonly fields = computed(() =>
@@ -190,9 +194,9 @@ export class SchedulePage {
         categoryId,
       );
       this.phases.set(phases);
-      const firstGroupStage = phases.find((phase) => phase.type === 'GROUP_STAGE');
-      if (firstGroupStage) {
-        this.selectedPhaseId.set(firstGroupStage.id);
+      const defaultPhase = phases.find((phase) => phase.type === 'GROUP_STAGE') ?? phases[0];
+      if (defaultPhase) {
+        this.selectedPhaseId.set(defaultPhase.id);
         await this.onPhaseSelected();
       }
     } catch {
@@ -258,13 +262,25 @@ export class SchedulePage {
     const phaseId = this.selectedPhaseId();
     const fieldIds = this.selectedFieldIds();
     const startDateTime = this.startDateTime();
-    if (!organizationId || !phaseId || fieldIds.length === 0 || !startDateTime) {
+    if (!organizationId || !phaseId) {
       return;
     }
+    if (fieldIds.length === 0) {
+      this.errorMessage.set('Sélectionnez au moins un terrain avant de générer le calendrier.');
+      return;
+    }
+    if (!startDateTime) {
+      this.errorMessage.set('Renseignez une date de début avant de générer le calendrier.');
+      return;
+    }
+    this.errorMessage.set(null);
     this.generating.set(true);
     try {
-      this.matches.set(
-        await this.scheduleService.generateSchedule(organizationId, this.tournamentId, phaseId, {
+      const generated = await this.scheduleService.generateSchedule(
+        organizationId,
+        this.tournamentId,
+        phaseId,
+        {
           fieldIds,
           startDateTime: new Date(startDateTime).toISOString(),
           matchDurationMinutes: this.matchDurationMinutes()
@@ -274,11 +290,80 @@ export class SchedulePage {
             ? Number(this.breakDurationMinutes())
             : undefined,
           refereesPerMatch: this.refereesPerMatch() ? Number(this.refereesPerMatch()) : undefined,
-        }),
+        },
       );
+      this.matches.set(generated);
+      // Round-robin fixtures need at least 2 teams per group -- a silent
+      // empty result here almost always means every group in this phase is
+      // still empty or has a single team (e.g. teams created but never
+      // assigned to a group on the Structure page).
+      if (generated.length === 0) {
+        this.errorMessage.set(
+          "Aucun match n'a pu être généré : assignez au moins deux équipes à chaque poule de cette phase sur la page Structure, puis réessayez.",
+        );
+      }
       await this.loadTimeSlots();
-    } catch {
-      this.errorMessage.set('Impossible de générer le calendrier.');
+    } catch (error) {
+      this.errorMessage.set(
+        error instanceof HttpErrorResponse && error.status === 409
+          ? 'Des matchs existent déjà pour cette phase. Videz le calendrier avant d’en générer un nouveau.'
+          : 'Impossible de générer le calendrier.',
+      );
+    } finally {
+      this.generating.set(false);
+    }
+  }
+
+  /** Reserves a slot on these fields for every round of the bracket (round 1 immediately gets real opponents; later rounds claim their reservation automatically once known, as their own scores validate). */
+  protected async generateKnockoutMatches(): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const bracketId = this.selectedPhase()?.knockoutBracket?.id;
+    const fieldIds = this.selectedFieldIds();
+    const startDateTime = this.startDateTime();
+    if (!organizationId || !bracketId) {
+      return;
+    }
+    if (fieldIds.length === 0) {
+      this.errorMessage.set('Sélectionnez au moins un terrain avant de générer le tableau.');
+      return;
+    }
+    if (!startDateTime) {
+      this.errorMessage.set('Renseignez une date de début avant de générer le tableau.');
+      return;
+    }
+    this.errorMessage.set(null);
+    this.generating.set(true);
+    try {
+      const generated = await this.competitionFormatsService.generateBracketMatches(
+        organizationId,
+        this.tournamentId,
+        bracketId,
+        {
+          fieldIds,
+          startDateTime: new Date(startDateTime).toISOString(),
+          matchDurationMinutes: this.matchDurationMinutes()
+            ? Number(this.matchDurationMinutes())
+            : undefined,
+          breakDurationMinutes: this.breakDurationMinutes()
+            ? Number(this.breakDurationMinutes())
+            : undefined,
+        },
+      );
+      this.matches.set(generated);
+      await this.loadTimeSlots();
+    } catch (error) {
+      if (error instanceof HttpErrorResponse && error.status === 409) {
+        this.errorMessage.set(
+          'Les matchs de ce tableau ont déjà été générés. Videz le calendrier avant d’en générer de nouveaux.',
+        );
+      } else if (error instanceof HttpErrorResponse && error.status === 400) {
+        this.errorMessage.set(
+          (error.error as { message?: string })?.message ??
+            'Impossible de générer les matchs du tableau.',
+        );
+      } else {
+        this.errorMessage.set('Impossible de générer les matchs du tableau.');
+      }
     } finally {
       this.generating.set(false);
     }

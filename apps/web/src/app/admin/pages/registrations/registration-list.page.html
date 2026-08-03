@@ -1,0 +1,46 @@
+<main class="registration-list-page">
+  <h1>Inscriptions et paiements</h1>
+  <app-tournament-submenu [tournamentId]="tournamentId" />
+
+  @if (loading()) {
+    <p>Chargement…</p>
+  } @else if (errorMessage(); as message) {
+    <p class="registration-list-page__error" role="alert">{{ message }}</p>
+  } @else if (registrations().length === 0) {
+    <p>Aucune inscription pour ce tournoi pour le moment.</p>
+  } @else {
+    <table class="registration-list-page__table">
+      <thead>
+        <tr>
+          <th>Équipe</th>
+          <th>Catégorie</th>
+          <th>Responsable</th>
+          <th>Montant</th>
+          <th>Statut</th>
+          <th>Inscrite le</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (registration of registrations(); track registration.id) {
+          <tr>
+            <td>{{ registration.teamName }}</td>
+            <td>{{ registration.categoryName }}</td>
+            <td>
+              {{ registration.registrant.firstName }} {{ registration.registrant.lastName }}
+              <br />
+              <a [href]="'mailto:' + registration.managerEmail">{{ registration.managerEmail }}</a>
+            </td>
+            <td>{{ formatAmount(registration) }}</td>
+            <td>
+              <ap-badge
+                [status]="statusBadge[registration.status]"
+                [label]="statusLabel[registration.status]"
+              />
+            </td>
+            <td>{{ registration.createdAt | date: 'short' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</main>

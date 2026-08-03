@@ -4,7 +4,10 @@ import { firstValueFrom } from 'rxjs';
 import {
   Category,
   CompetitionPhase,
+  CreateRegistrationPayload,
+  CreateRegistrationResult,
   Match,
+  PlayerRegistration,
   PublicTeam,
   PublicTeamDetail,
   PublicTournament,
@@ -72,6 +75,25 @@ export class PublicApiService {
       this.http.get<Match[]>(`${this.base(slug)}/matches/upcoming`, {
         params: limit !== undefined ? new HttpParams().set('limit', limit) : undefined,
       }),
+    );
+  }
+
+  createRegistration(
+    slug: string,
+    categoryId: string,
+    payload: CreateRegistrationPayload,
+  ): Promise<CreateRegistrationResult> {
+    return firstValueFrom(
+      this.http.post<CreateRegistrationResult>(
+        `${this.base(slug)}/categories/${categoryId}/registrations`,
+        payload,
+      ),
+    );
+  }
+
+  listMyRegistrations(): Promise<PlayerRegistration[]> {
+    return firstValueFrom(
+      this.http.get<PlayerRegistration[]>(`${this.config.apiUrl}/public/registrations/me`),
     );
   }
 }

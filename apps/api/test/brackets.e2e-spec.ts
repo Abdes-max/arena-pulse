@@ -17,6 +17,11 @@ interface MatchResponseBody {
   isThirdPlaceMatch: boolean;
   homeTeam: { id: string; name: string } | null;
   awayTeam: { id: string; name: string } | null;
+  timeSlot: {
+    id: string;
+    startTime: string;
+    field: { id: string; name: string };
+  } | null;
 }
 
 async function registerOrganizer(app: INestApplication<App>) {
@@ -222,8 +227,19 @@ describe('Knockout bracket generation and advancement (e2e)', () => {
         `${base}/${tournamentId}/knockout-brackets/${bracketId}/generate-matches`,
       ),
     ).expect(201);
-    const round1 = generatedRes.body as MatchResponseBody[];
+    const generated = generatedRes.body as MatchResponseBody[];
+    // Every round is created in one go now -- round 1 with real opponents,
+    // round 2 (final + 3rd-place, since hasRankingMatch is true) as
+    // undetermined placeholders, so the organizer can see/schedule the
+    // whole bracket immediately instead of just the first round.
+    expect(generated).toHaveLength(4);
+    const round1 = generated.filter((m) => m.round === 1);
     expect(round1).toHaveLength(2);
+    const placeholders = generated.filter((m) => m.round === 2);
+    expect(placeholders).toHaveLength(2);
+    expect(
+      placeholders.every((m) => m.homeTeam === null && m.awayTeam === null),
+    ).toBe(true);
     // Standard 4-team seeding: seed1 (Alpha) vs seed4 (Delta), seed2 (Beta) vs seed3 (Gamma).
     const alphaDelta = findMatch(round1, 'Alpha', 'Delta');
     const betaGamma = findMatch(round1, 'Beta', 'Gamma');
@@ -235,7 +251,7 @@ describe('Knockout bracket generation and advancement (e2e)', () => {
       ),
     ).expect(409);
 
-    // Validating only one semifinal doesn't advance anything yet.
+    // Validating only one semifinal doesn't decide the final/3rd-place yet.
     await auth(
       request(app.getHttpServer()).put(
         `${base}/${tournamentId}/matches/${alphaDelta.id}/score`,
@@ -254,7 +270,13 @@ describe('Knockout bracket generation and advancement (e2e)', () => {
         `${base}/${tournamentId}/knockout-brackets/${bracketId}/matches`,
       ),
     ).expect(200);
-    expect(matchesRes.body as MatchResponseBody[]).toHaveLength(2);
+    const allMatchesSoFar = matchesRes.body as MatchResponseBody[];
+    expect(allMatchesSoFar).toHaveLength(4);
+    expect(
+      allMatchesSoFar
+        .filter((m) => m.round === 2)
+        .every((m) => m.homeTeam === null && m.awayTeam === null),
+    ).toBe(true);
 
     // Validating the second semifinal completes the round — the final and
     // the 3rd-place match (Gamma, the loser, is the only prior loser besides
@@ -314,5 +336,223 @@ describe('Knockout bracket generation and advancement (e2e)', () => {
       ),
     ).expect(200);
     expect(matchesRes.body as MatchResponseBody[]).toHaveLength(4);
+  });
+
+  it('schedules every round onto chosen fields up front, so the semifinal and final land pre-scheduled the moment they exist', async () => {
+    const { accessToken, organizationId } = await registerOrganizer(app);
+    const sportId = await firstSportId(app, accessToken);
+    const auth = (req: request.Test) =>
+      req.set('Authorization', `Bearer ${accessToken}`);
+    const base = `/api/v1/organizations/${organizationId}/tournaments`;
+
+    const tournamentRes = await auth(request(app.getHttpServer()).post(base))
+      .send({ name: 'Coupe', sportId })
+      .expect(201);
+    const tournamentId = (tournamentRes.body as { id: string }).id;
+
+    const categoryRes = await auth(
+      request(app.getHttpServer()).post(`${base}/${tournamentId}/categories`),
+    )
+      .send({ name: 'U10' })
+      .expect(201);
+    const categoryId = (categoryRes.body as { id: string }).id;
+
+    const poolPhaseRes = await auth(
+      request(app.getHttpServer()).post(
+        `${base}/${tournamentId}/categories/${categoryId}/phases`,
+      ),
+    )
+      .send({ name: 'Phase de poules', type: 'GROUP_STAGE' })
+      .expect(201);
+    const poolPhaseId = (poolPhaseRes.body as { id: string }).id;
+
+    const bracketPhaseRes = await auth(
+      request(app.getHttpServer()).post(
+        `${base}/${tournamentId}/categories/${categoryId}/phases`,
+      ),
+    )
+      .send({ name: 'Finale', type: 'KNOCKOUT' })
+      .expect(201);
+    const bracketPhaseId = (bracketPhaseRes.body as { id: string }).id;
+
+    const bracketRes = await auth(
+      request(app.getHttpServer()).post(
+        `${base}/${tournamentId}/phases/${bracketPhaseId}/knockout-bracket`,
+      ),
+    )
+      .send({ name: 'Finale', size: 4, hasRankingMatch: true })
+      .expect(201);
+    const bracketId = (bracketRes.body as { id: string }).id;
+
+    const groupRes = await auth(
+      request(app.getHttpServer()).post(
+        `${base}/${tournamentId}/phases/${poolPhaseId}/groups`,
+      ),
+    )
+      .send({ name: 'Poule A' })
+      .expect(201);
+    const groupId = (groupRes.body as { id: string }).id;
+
+    for (const name of ['Alpha', 'Beta', 'Gamma', 'Delta']) {
+      const teamRes = await auth(
+        request(app.getHttpServer()).post(`${base}/${tournamentId}/teams`),
+      )
+        .send({ name, categoryId })
+        .expect(201);
+      const teamId = (teamRes.body as { id: string }).id;
+      await auth(
+        request(app.getHttpServer()).patch(
+          `${base}/${tournamentId}/teams/${teamId}/group`,
+        ),
+      )
+        .send({ groupId })
+        .expect(200);
+    }
+
+    await auth(
+      request(app.getHttpServer()).post(
+        `${base}/${tournamentId}/groups/${groupId}/qualification-rules`,
+      ),
+    )
+      .send({ fromPosition: 1, toPosition: 4, targetPhaseId: bracketPhaseId })
+      .expect(201);
+
+    const venueRes = await auth(
+      request(app.getHttpServer()).post(`${base}/${tournamentId}/venues`),
+    )
+      .send({ name: 'Stade' })
+      .expect(201);
+    const venueId = (venueRes.body as { id: string }).id;
+    const fieldRes = await auth(
+      request(app.getHttpServer()).post(
+        `${base}/${tournamentId}/venues/${venueId}/fields`,
+      ),
+    )
+      .send({ name: 'Terrain 1' })
+      .expect(201);
+    const fieldId = (fieldRes.body as { id: string }).id;
+
+    const generateRes = await auth(
+      request(app.getHttpServer()).post(
+        `${base}/${tournamentId}/phases/${poolPhaseId}/generate-schedule`,
+      ),
+    )
+      .send({ fieldIds: [fieldId], startDateTime: '2026-08-01T09:00:00.000Z' })
+      .expect(201);
+    const poolMatches = generateRes.body as MatchResponseBody[];
+
+    const winnerScore = (
+      match: MatchResponseBody,
+      winnerName: string,
+      goals: number,
+    ) =>
+      match.homeTeam?.name === winnerName
+        ? { homeScore: goals, awayScore: 0 }
+        : { homeScore: 0, awayScore: goals };
+
+    for (const [match, winner, goals] of [
+      [findMatch(poolMatches, 'Alpha', 'Beta'), 'Alpha', 3],
+      [findMatch(poolMatches, 'Alpha', 'Gamma'), 'Alpha', 2],
+      [findMatch(poolMatches, 'Alpha', 'Delta'), 'Alpha', 1],
+      [findMatch(poolMatches, 'Beta', 'Gamma'), 'Beta', 2],
+      [findMatch(poolMatches, 'Beta', 'Delta'), 'Beta', 2],
+      [findMatch(poolMatches, 'Gamma', 'Delta'), 'Gamma', 1],
+    ] as const) {
+      await auth(
+        request(app.getHttpServer()).put(
+          `${base}/${tournamentId}/matches/${match.id}/score`,
+        ),
+      )
+        .send(winnerScore(match, winner, goals))
+        .expect(200);
+      await auth(
+        request(app.getHttpServer()).post(
+          `${base}/${tournamentId}/matches/${match.id}/score/validate`,
+        ),
+      ).expect(201);
+    }
+
+    // Schedule every round (quarterfinal here is round 1, final+3rd-place is
+    // round 2) onto the same field up front -- this is the part under test.
+    const bracketMatchesRes = await auth(
+      request(app.getHttpServer()).post(
+        `${base}/${tournamentId}/knockout-brackets/${bracketId}/generate-matches`,
+      ),
+    )
+      .send({
+        fieldIds: [fieldId],
+        startDateTime: '2026-08-02T09:00:00.000Z',
+        matchDurationMinutes: 20,
+        breakDurationMinutes: 5,
+      })
+      .expect(201);
+    const generated = bracketMatchesRes.body as MatchResponseBody[];
+    // All 4 matches exist immediately: 2 quarterfinals with real opponents,
+    // and the final + 3rd-place as undetermined placeholders -- every one
+    // of them already has its own time slot on the field chosen above.
+    expect(generated).toHaveLength(4);
+    expect(generated.every((match) => match.timeSlot !== null)).toBe(true);
+    const placeholdersBefore = generated.filter((m) => m.round === 2);
+    expect(
+      placeholdersBefore.every(
+        (m) => m.homeTeam === null && m.awayTeam === null,
+      ),
+    ).toBe(true);
+
+    const round1 = generated.filter((m) => m.round === 1);
+    const alphaDelta = findMatch(round1, 'Alpha', 'Delta');
+    const betaGamma = findMatch(round1, 'Beta', 'Gamma');
+
+    for (const [match, homeScore, awayScore] of [
+      [alphaDelta, 3, 0],
+      [betaGamma, 2, 1],
+    ] as const) {
+      await auth(
+        request(app.getHttpServer()).put(
+          `${base}/${tournamentId}/matches/${match.id}/score`,
+        ),
+      )
+        .send({ homeScore, awayScore })
+        .expect(200);
+      await auth(
+        request(app.getHttpServer()).post(
+          `${base}/${tournamentId}/matches/${match.id}/score/validate`,
+        ),
+      ).expect(201);
+    }
+
+    const matchesRes = await auth(
+      request(app.getHttpServer()).get(
+        `${base}/${tournamentId}/knockout-brackets/${bracketId}/matches`,
+      ),
+    ).expect(200);
+    const allMatches = matchesRes.body as MatchResponseBody[];
+    expect(allMatches).toHaveLength(4);
+    const final = allMatches.find((m) => m.round === 2 && !m.isThirdPlaceMatch);
+    const thirdPlace = allMatches.find(
+      (m) => m.round === 2 && m.isThirdPlaceMatch,
+    );
+    const finalPlaceholder = placeholdersBefore.find(
+      (m) => !m.isThirdPlaceMatch,
+    );
+    const thirdPlacePlaceholder = placeholdersBefore.find(
+      (m) => m.isThirdPlaceMatch,
+    );
+
+    expect(final).toBeTruthy();
+    // Same match row filled in, not a fresh one -- same id, same pre-chosen slot.
+    expect(final!.id).toBe(finalPlaceholder!.id);
+    expect(final!.timeSlot?.id).toBe(finalPlaceholder!.timeSlot!.id);
+    expect([final!.homeTeam?.name, final!.awayTeam?.name].sort()).toEqual([
+      'Alpha',
+      'Beta',
+    ]);
+
+    expect(thirdPlace).toBeTruthy();
+    expect(thirdPlace!.id).toBe(thirdPlacePlaceholder!.id);
+    expect(thirdPlace!.timeSlot?.id).toBe(thirdPlacePlaceholder!.timeSlot!.id);
+    // Confirms they landed on genuinely different, pre-scheduled slots rather
+    // than both coincidentally pointing at the same one.
+    expect(final!.timeSlot!.id).not.toBe(thirdPlace!.timeSlot!.id);
   });
 });

@@ -16,6 +16,11 @@ export interface CreatePhasePayload {
   name: string;
   type: CompetitionPhaseType;
   position?: number;
+  doubleRoundRobin?: boolean;
+}
+
+export interface UpdatePhasePayload {
+  doubleRoundRobin?: boolean;
 }
 
 export interface CreateGroupPayload {
@@ -36,6 +41,15 @@ export interface CreateKnockoutBracketPayload {
   name: string;
   size: number;
   hasRankingMatch?: boolean;
+}
+
+export interface GenerateBracketMatchesPayload {
+  // Round 1 only -- omit to leave it unscheduled (placed later by hand on
+  // the Calendrier page's drag-and-drop editor), same as before this existed.
+  fieldIds?: string[];
+  startDateTime?: string;
+  matchDurationMinutes?: number;
+  breakDurationMinutes?: number;
 }
 
 export interface CreateQualificationRulePayload {
@@ -73,6 +87,20 @@ export class CompetitionFormatsService {
     return firstValueFrom(
       this.http.post<CompetitionPhase>(
         `${this.base(organizationId, tournamentId)}/categories/${categoryId}/phases`,
+        payload,
+      ),
+    );
+  }
+
+  updatePhase(
+    organizationId: string,
+    tournamentId: string,
+    phaseId: string,
+    payload: UpdatePhasePayload,
+  ): Promise<CompetitionPhase> {
+    return firstValueFrom(
+      this.http.patch<CompetitionPhase>(
+        `${this.base(organizationId, tournamentId)}/phases/${phaseId}`,
         payload,
       ),
     );
@@ -160,11 +188,12 @@ export class CompetitionFormatsService {
     organizationId: string,
     tournamentId: string,
     bracketId: string,
+    payload: GenerateBracketMatchesPayload = {},
   ): Promise<Match[]> {
     return firstValueFrom(
       this.http.post<Match[]>(
         `${this.base(organizationId, tournamentId)}/knockout-brackets/${bracketId}/generate-matches`,
-        {},
+        payload,
       ),
     );
   }

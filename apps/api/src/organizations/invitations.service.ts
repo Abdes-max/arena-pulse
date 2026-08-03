@@ -225,6 +225,7 @@ export class InvitationsService {
       accessToken: this.tokenService.signAccessToken({
         sub: user.id,
         email: user.email,
+        type: 'organizer',
       }),
       expiresIn: this.tokenService.accessTokenExpiresInSeconds,
       refreshToken: issued.token,

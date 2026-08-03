@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+} from '@nestjs/common';
 import { CompetitionPhaseType, Match } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { GenerateScheduleDto } from './dto/generate-schedule.dto';
@@ -45,6 +49,17 @@ export class ScheduleGenerationService {
         'Le calendrier ne peut être généré que pour une phase de poules.',
       );
     }
+    // Generating again without resetting first used to silently create a
+    // second, fully duplicate set of matches on top of the existing ones --
+    // reject outright instead, and point at the explicit reset endpoint.
+    const existingMatchCount = await this.prisma.match.count({
+      where: { group: { phaseId } },
+    });
+    if (existingMatchCount > 0) {
+      throw new ConflictException(
+        'Des matchs existent déjà pour cette phase. Videz le calendrier avant d’en générer un nouveau.',
+      );
+    }
     await this.assertFieldsBelongToTournament(tournamentId, dto.fieldIds);
 
     const matchDurationMinutes =
@@ -69,11 +84,15 @@ export class ScheduleGenerationService {
       include: { teams: { orderBy: { position: 'asc' } } },
     });
 
-    const fixtures: FlatFixture[] = groups.flatMap((group) =>
-      generateRoundRobinFixtures(group.teams.map((team) => team.id)).map(
-        (fixture) => ({ ...fixture, groupId: group.id }),
-      ),
-    );
+    const fixtures: FlatFixture[] = groups.flatMap((group) => {
+      const singleLeg = generateRoundRobinFixtures(
+        group.teams.map((team) => team.id),
+      );
+      const legs = phase.doubleRoundRobin
+        ? [...singleLeg, ...this.returnLeg(singleLeg)]
+        : singleLeg;
+      return legs.map((fixture) => ({ ...fixture, groupId: group.id }));
+    });
     fixtures.sort((a, b) => a.round - b.round);
 
     if (fixtures.length === 0) {
@@ -154,8 +173,15 @@ export class ScheduleGenerationService {
     );
     await this.phasesService.assertPhaseExists(tournamentId, phaseId);
 
+    // Same reasoning as list() below -- a phase's matches live on its
+    // groups (GROUP_STAGE) or directly on its knockout bracket (KNOCKOUT),
+    // never both, so clearing only by `group` silently left a knockout
+    // bracket's matches in place.
+    const phaseMatchFilter = {
+      OR: [{ group: { phaseId } }, { knockoutBracket: { phaseId } }],
+    };
     const matches = await this.prisma.match.findMany({
-      where: { group: { phaseId } },
+      where: phaseMatchFilter,
       select: { id: true, timeSlotId: true },
     });
     const timeSlotIds = matches
@@ -166,7 +192,7 @@ export class ScheduleGenerationService {
       this.prisma.matchOfficial.deleteMany({
         where: { matchId: { in: matches.map((match) => match.id) } },
       }),
-      this.prisma.match.deleteMany({ where: { group: { phaseId } } }),
+      this.prisma.match.deleteMany({ where: phaseMatchFilter }),
       this.prisma.timeSlot.deleteMany({ where: { id: { in: timeSlotIds } } }),
     ]);
   }
@@ -178,12 +204,34 @@ export class ScheduleGenerationService {
     );
     await this.phasesService.assertPhaseExists(tournamentId, phaseId);
 
+    // A match belongs to this phase either via its group (GROUP_STAGE) or
+    // directly via a knockout bracket (KNOCKOUT) -- a phase's matches are
+    // never split across both, but querying only `group` silently returned
+    // nothing at all for a KNOCKOUT phase, hiding real, already-generated
+    // bracket matches from the Scores page.
     const matches = await this.prisma.match.findMany({
-      where: { group: { phaseId } },
+      where: { OR: [{ group: { phaseId } }, { knockoutBracket: { phaseId } }] },
       include: MATCH_INCLUDE,
-      orderBy: [{ timeSlot: { startTime: 'asc' } }],
+      // `round` orders a bracket's rounds sensibly (semis before the final);
+      // `timeSlot` is the tiebreaker within a round-robin round.
+      orderBy: [{ round: 'asc' }, { timeSlot: { startTime: 'asc' } }],
     });
     return matches.map((match) => toMatchSummary(match));
+  }
+
+  /** The reverse half of a double round-robin: same pairings, home/away swapped, rounds continuing after the first leg's. */
+  private returnLeg(
+    singleLeg: ReturnType<typeof generateRoundRobinFixtures>,
+  ): ReturnType<typeof generateRoundRobinFixtures> {
+    if (singleLeg.length === 0) {
+      return [];
+    }
+    const maxRound = Math.max(...singleLeg.map((fixture) => fixture.round));
+    return singleLeg.map((fixture) => ({
+      round: fixture.round + maxRound,
+      homeTeamId: fixture.awayTeamId,
+      awayTeamId: fixture.homeTeamId,
+    }));
   }
 
   private async assertFieldsBelongToTournament(

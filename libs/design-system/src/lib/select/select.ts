@@ -3,6 +3,7 @@ import {
   Component,
   ElementRef,
   computed,
+  effect,
   forwardRef,
   input,
   output,
@@ -81,6 +82,31 @@ export class Select implements ControlValueAccessor {
 
   private onChange: (value: string) => void = noop;
   private onTouched: () => void = noop;
+
+  constructor() {
+    // Nothing to pick between: if exactly one non-disabled option exists
+    // (ignoring a "Choisir…" placeholder, which is always disabled) and
+    // nothing is selected yet, select it automatically instead of making
+    // the user open the menu just to confirm the only choice available.
+    // Re-runs as `options()` shrinks (e.g. assigning teams to a group one
+    // by one) so the last remaining choice gets the same treatment.
+    effect(() => {
+      const selectable = this.options().filter((option) => !option.disabled);
+      if (selectable.length !== 1 || this.displayValue() !== '') {
+        return;
+      }
+      const onlyValue = selectable[0].value;
+      if (onlyValue === '') {
+        return;
+      }
+      if (this.isCvaBound()) {
+        this.cvaValue.set(onlyValue);
+        this.onChange(onlyValue);
+      } else {
+        this.valueChange.emit(onlyValue);
+      }
+    });
+  }
 
   writeValue(value: string): void {
     this.isCvaBound.set(true);

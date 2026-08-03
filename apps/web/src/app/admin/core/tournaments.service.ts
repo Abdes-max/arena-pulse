@@ -119,9 +119,34 @@ export class TournamentsService {
     );
   }
 
-  createCategory(organizationId: string, tournamentId: string, name: string): Promise<Category> {
+  createCategory(
+    organizationId: string,
+    tournamentId: string,
+    name: string,
+    registrationFeeCents?: number,
+    registrationFeeCurrency?: string,
+  ): Promise<Category> {
     return firstValueFrom(
-      this.http.post<Category>(`${this.base(organizationId)}/${tournamentId}/categories`, { name }),
+      this.http.post<Category>(`${this.base(organizationId)}/${tournamentId}/categories`, {
+        name,
+        registrationFeeCents,
+        registrationFeeCurrency,
+      }),
+    );
+  }
+
+  updateCategoryFee(
+    organizationId: string,
+    tournamentId: string,
+    categoryId: string,
+    registrationFeeCents: number | null,
+    registrationFeeCurrency?: string,
+  ): Promise<Category> {
+    return firstValueFrom(
+      this.http.patch<Category>(
+        `${this.base(organizationId)}/${tournamentId}/categories/${categoryId}`,
+        { registrationFeeCents, registrationFeeCurrency },
+      ),
     );
   }
 

@@ -28,7 +28,13 @@ export class CategoriesService {
     await this.assertNameAvailable(tournamentId, dto.name);
 
     const category = await this.prisma.category.create({
-      data: { tournamentId, name: dto.name, position: dto.position ?? 0 },
+      data: {
+        tournamentId,
+        name: dto.name,
+        position: dto.position ?? 0,
+        registrationFeeCents: dto.registrationFeeCents,
+        registrationFeeCurrency: dto.registrationFeeCurrency,
+      },
     });
     return this.toSummary(category, []);
   }
@@ -65,7 +71,12 @@ export class CategoriesService {
 
     const updated = await this.prisma.category.update({
       where: { id: categoryId },
-      data: { name: dto.name, position: dto.position },
+      data: {
+        name: dto.name,
+        position: dto.position,
+        registrationFeeCents: dto.registrationFeeCents,
+        registrationFeeCurrency: dto.registrationFeeCurrency,
+      },
     });
     return this.toSummary(updated, []);
   }
@@ -128,6 +139,8 @@ export class CategoriesService {
       id: category.id,
       name: category.name,
       position: category.position,
+      registrationFeeCents: category.registrationFeeCents,
+      registrationFeeCurrency: category.registrationFeeCurrency,
       divisions: divisions.map((division) => ({
         id: division.id,
         name: division.name,

@@ -13,7 +13,9 @@ import { HealthModule } from './health/health.module';
 import { MailModule } from './mail/mail.module';
 import { OrganizationsModule } from './organizations/organizations.module';
 import { PermissionsModule } from './permissions/permissions.module';
+import { PlayerAuthModule } from './player-auth/player-auth.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { RegistrationsModule } from './registrations/registrations.module';
 import { SportsModule } from './sports/sports.module';
 import { TournamentsModule } from './tournaments/tournaments.module';
 
@@ -33,11 +35,13 @@ import { TournamentsModule } from './tournaments/tournaments.module';
     ]),
     PrismaModule,
     AuthModule,
+    PlayerAuthModule,
     MailModule,
     OrganizationsModule,
     SportsModule,
     PermissionsModule,
     TournamentsModule,
+    RegistrationsModule,
     HealthModule,
   ],
   controllers: [AppController],

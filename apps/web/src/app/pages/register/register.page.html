@@ -1,0 +1,70 @@
+<main class="register-page">
+  <h1>Inscrire une équipe</h1>
+
+  @if (loading()) {
+    <p>Chargement…</p>
+  } @else {
+    @if (errorMessage(); as message) {
+      <p class="register-page__error" role="alert">{{ message }}</p>
+    }
+
+    <form class="register-page__form" [formGroup]="form" (ngSubmit)="submit()">
+      <ap-select
+        label="Catégorie"
+        [options]="categoryOptions()"
+        [value]="selectedCategoryId()"
+        (valueChange)="onCategoryChange($event)"
+      />
+
+      @if (selectedCategory(); as category) {
+        <p class="register-page__fee">
+          Tarif d'inscription : <strong>{{ selectedCategoryFee() }}</strong>
+        </p>
+
+        <ap-text-field label="Nom de l'équipe" formControlName="teamName" />
+        <ap-text-field
+          label="Email du responsable"
+          type="email"
+          formControlName="managerEmail"
+          autocomplete="email"
+        />
+        <ap-text-field
+          label="Téléphone du responsable"
+          type="tel"
+          formControlName="managerPhone"
+          autocomplete="tel"
+        />
+
+        <fieldset class="register-page__roster" formArrayName="players">
+          <legend>Joueurs</legend>
+          @for (player of playersArray.controls; track $index; let i = $index) {
+            <div class="register-page__player-row" [formGroupName]="i">
+              <ap-text-field label="Prénom" [hideLabel]="true" placeholder="Prénom" formControlName="firstName" />
+              <ap-text-field label="Nom" [hideLabel]="true" placeholder="Nom" formControlName="lastName" />
+              <ap-text-field
+                label="N°"
+                [hideLabel]="true"
+                type="number"
+                placeholder="N°"
+                formControlName="jerseyNumber"
+              />
+              <ap-button
+                type="button"
+                variant="ghost"
+                [disabled]="playersArray.length <= 1"
+                (click)="removePlayer(i)"
+              >
+                Retirer
+              </ap-button>
+            </div>
+          }
+          <ap-button type="button" variant="ghost" (click)="addPlayer()">Ajouter un joueur</ap-button>
+        </fieldset>
+
+        <ap-button type="submit" [disabled]="form.invalid || submitting()">
+          {{ selectedCategoryFee() === 'Gratuit' ? "S'inscrire" : 'Procéder au paiement' }}
+        </ap-button>
+      }
+    </form>
+  }
+</main>

@@ -1,5 +1,6 @@
 <main class="scores-page">
   <h1>Scores</h1>
+  <app-tournament-submenu [tournamentId]="tournamentId" />
 
   @if (loading()) {
     <p>Chargement…</p>

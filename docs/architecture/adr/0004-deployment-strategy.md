@@ -12,7 +12,7 @@ cible d'hébergement choisie. Avant de commencer, la question a été posée exp
 de projet : PaaS (Railway/Render/Fly.io...), VPS auto-hébergé via Docker Compose, ou seulement les
 briques génériques sans cible précise. Réponse : **seulement les briques génériques** — cohérent
 avec les décisions déjà prises pour le prestataire de paiement
-(`feat/034-player-registration-and-payments`, non commencé) et pour le tracking d'erreurs
+(`feat/036-player-registration-and-payments`, non commencé à l'époque) et pour le tracking d'erreurs
 (`docs/architecture/adr/0003-observability-strategy.md`) : ne pas provisionner de compte/service
 externe sans que le porteur de projet ne le décide et ne le crée lui-même.
 

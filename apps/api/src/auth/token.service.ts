@@ -3,9 +3,15 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
+// `type` distinguishes an organizer access token from a PlayerAccount one
+// (see player-auth/token-payload.ts) -- both are signed with the same
+// JWT_SECRET, so without this claim a player token would pass
+// JwtStrategy.validate and vice versa, resolving `sub` against the wrong
+// table entirely.
 export interface AccessTokenPayload {
   sub: string;
   email: string;
+  type: 'organizer';
 }
 
 export interface IssuedRefreshToken {
@@ -39,7 +45,10 @@ export class TokenService {
     private readonly configService: ConfigService,
   ) {}
 
-  signAccessToken(payload: AccessTokenPayload): string {
+  // Generic over the payload shape so PlayerAuthService (a different `type`
+  // claim, see AccessTokenPayload above) can reuse this same signer/rotation
+  // logic instead of duplicating it.
+  signAccessToken<T extends object>(payload: T): string {
     return this.jwtService.sign(payload, {
       expiresIn: this.accessTokenExpiresInSeconds,
     });

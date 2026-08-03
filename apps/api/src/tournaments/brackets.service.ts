@@ -4,13 +4,23 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { KnockoutBracket, MatchScore } from '../../generated/prisma/client';
+import {
+  Category,
+  CompetitionPhase,
+  KnockoutBracket,
+  MatchScore,
+} from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { isPowerOfTwo, seedOrder } from './bracket-seeding.util';
+import { GenerateBracketMatchesDto } from './dto/generate-bracket-matches.dto';
 import { MATCH_INCLUDE, toMatchSummary } from './match-summary.util';
 import { RealtimeService } from './realtime.service';
 import { StandingsService } from './standings.service';
 import { TournamentsService } from './tournaments.service';
+
+type BracketWithPhase = KnockoutBracket & {
+  phase: CompetitionPhase & { category: Category };
+};
 
 interface QualifiedEntry {
   teamId: string;
@@ -46,6 +56,7 @@ export class BracketsService {
     organizationId: string,
     tournamentId: string,
     bracketId: string,
+    dto: GenerateBracketMatchesDto = {},
   ) {
     await this.tournamentsService.assertTournamentIsEditable(
       organizationId,
@@ -78,24 +89,133 @@ export class BracketsService {
       );
     }
 
+    // Every round is created now, in one go -- not just round 1. Rounds
+    // after the first have no real opponents yet (their winners aren't
+    // decided), so those matches start with null home/away teams; the
+    // Scores page filters those out until tryAdvanceRound fills them in,
+    // but they still occupy a real calendar slot from the start if fields
+    // were chosen, which is the whole point: the organizer can plan the
+    // full day (quarters, semis, final) up front.
+    const totalRounds = Math.log2(bracket.size);
     const order = seedOrder(bracket.size);
+    const slotDefs: {
+      round: number;
+      bracketSlot: number;
+      isThirdPlaceMatch: boolean;
+      homeTeamId: string | null;
+      awayTeamId: string | null;
+    }[] = Array.from({ length: order.length / 2 }, (_, slot) => ({
+      round: 1,
+      bracketSlot: slot,
+      isThirdPlaceMatch: false,
+      homeTeamId: qualified[order[slot * 2] - 1].teamId,
+      awayTeamId: qualified[order[slot * 2 + 1] - 1].teamId,
+    }));
+    for (let round = 2; round <= totalRounds; round++) {
+      const matchesInRound = bracket.size / 2 ** round;
+      for (let slot = 0; slot < matchesInRound; slot++) {
+        slotDefs.push({
+          round,
+          bracketSlot: slot,
+          isThirdPlaceMatch: false,
+          homeTeamId: null,
+          awayTeamId: null,
+        });
+      }
+      if (round === totalRounds && bracket.hasRankingMatch) {
+        slotDefs.push({
+          round,
+          bracketSlot: 0,
+          isThirdPlaceMatch: true,
+          homeTeamId: null,
+          awayTeamId: null,
+        });
+      }
+    }
+
+    // Optional -- schedules every one of the slots above onto these fields,
+    // continuing the same field rotation across all rounds.
+    const timeSlotIds = dto.fieldIds?.length
+      ? await this.scheduleAllRounds(
+          tournamentId,
+          bracket,
+          dto,
+          slotDefs.length,
+        )
+      : slotDefs.map(() => null);
+
     const created = await this.prisma.$transaction(
-      Array.from({ length: order.length / 2 }, (_, slot) => {
-        const home = qualified[order[slot * 2] - 1];
-        const away = qualified[order[slot * 2 + 1] - 1];
-        return this.prisma.match.create({
+      slotDefs.map((slotDef, index) =>
+        this.prisma.match.create({
           data: {
             knockoutBracketId: bracketId,
-            round: 1,
-            bracketSlot: slot,
-            homeTeamId: home.teamId,
-            awayTeamId: away.teamId,
+            round: slotDef.round,
+            bracketSlot: slotDef.bracketSlot,
+            isThirdPlaceMatch: slotDef.isThirdPlaceMatch,
+            homeTeamId: slotDef.homeTeamId,
+            awayTeamId: slotDef.awayTeamId,
+            ...(timeSlotIds[index] && { timeSlotId: timeSlotIds[index] }),
           },
           include: MATCH_INCLUDE,
-        });
-      }),
+        }),
+      ),
     );
     return created.map((match) => toMatchSummary(match));
+  }
+
+  private async scheduleAllRounds(
+    tournamentId: string,
+    bracket: BracketWithPhase,
+    dto: GenerateBracketMatchesDto,
+    slotCount: number,
+  ): Promise<string[]> {
+    const fieldIds = dto.fieldIds!;
+    if (!dto.startDateTime) {
+      throw new BadRequestException(
+        'Une date de début est requise pour planifier ce tableau sur des terrains.',
+      );
+    }
+    const fields = await this.prisma.field.findMany({
+      where: { id: { in: fieldIds }, venue: { tournamentId } },
+    });
+    if (fields.length !== new Set(fieldIds).size) {
+      throw new BadRequestException(
+        "Un ou plusieurs terrains n'appartiennent pas à ce tournoi.",
+      );
+    }
+
+    const matchDurationMinutes =
+      dto.matchDurationMinutes ?? bracket.phase.matchDurationMinutes;
+    const breakDurationMinutes =
+      dto.breakDurationMinutes ?? bracket.phase.breakDurationMinutes;
+    const slotDurationMs =
+      (matchDurationMinutes + breakDurationMinutes) * 60_000;
+    const fieldCursors = new Map<string, Date>(
+      fieldIds.map((fieldId) => [fieldId, new Date(dto.startDateTime!)]),
+    );
+
+    // Sequential on purpose: each iteration reads then advances the shared
+    // per-field cursor before its own `await`, the same way
+    // ScheduleGenerationService schedules round-robin fixtures -- Promise.all
+    // still parallelizes the actual DB writes since .map() invokes every
+    // callback synchronously up to its first await before any of them settle.
+    return Promise.all(
+      Array.from({ length: slotCount }, async (_, index) => {
+        const fieldId = fieldIds[index % fieldIds.length];
+        const startTime = fieldCursors.get(fieldId)!;
+        const endTime = new Date(
+          startTime.getTime() + matchDurationMinutes * 60_000,
+        );
+        fieldCursors.set(
+          fieldId,
+          new Date(startTime.getTime() + slotDurationMs),
+        );
+        const timeSlot = await this.prisma.timeSlot.create({
+          data: { fieldId, startTime, endTime },
+        });
+        return timeSlot.id;
+      }),
+    );
   }
 
   async listMatches(
@@ -153,51 +273,62 @@ export class BracketsService {
     }
 
     const nextRound = round + 1;
-    const alreadyAdvanced = await this.prisma.match.count({
+
+    // generateMatches now creates every round up front, including this one,
+    // as null-team placeholders -- so "does it exist" no longer means
+    // "already advanced". What does: any of them already has a team
+    // assigned (this function is safe to call more than once per match, and
+    // must be a no-op on repeat calls once it's already filled these in).
+    const nextRoundMatches = await this.prisma.match.findMany({
       where: { knockoutBracketId: bracketId, round: nextRound },
+      orderBy: { bracketSlot: 'asc' },
     });
-    if (alreadyAdvanced > 0) {
+    if (
+      nextRoundMatches.length === 0 ||
+      nextRoundMatches.some(
+        (match) => match.homeTeamId !== null || match.awayTeamId !== null,
+      )
+    ) {
       return;
     }
 
     const isSemifinalRound = nextRound === totalRounds;
-    const rows: {
-      knockoutBracketId: string;
-      round: number;
-      bracketSlot: number;
-      isThirdPlaceMatch: boolean;
-      homeTeamId: string | null;
-      awayTeamId: string | null;
-    }[] = [];
+    const updated: string[] = [];
     for (let i = 0; i < outcomes.length; i += 2) {
       const home = outcomes[i];
       const away = outcomes[i + 1];
       const slot = i / 2;
-      rows.push({
-        knockoutBracketId: bracketId,
-        round: nextRound,
-        bracketSlot: slot,
-        isThirdPlaceMatch: false,
-        homeTeamId: home.winnerTeamId,
-        awayTeamId: away.winnerTeamId,
-      });
-      if (isSemifinalRound && bracket.hasRankingMatch) {
-        rows.push({
-          knockoutBracketId: bracketId,
-          round: nextRound,
-          bracketSlot: slot,
-          isThirdPlaceMatch: true,
-          homeTeamId: this.getLoserTeamId(home.match),
-          awayTeamId: this.getLoserTeamId(away.match),
+
+      const match = nextRoundMatches.find(
+        (m) => m.bracketSlot === slot && !m.isThirdPlaceMatch,
+      );
+      if (match) {
+        await this.prisma.match.update({
+          where: { id: match.id },
+          data: {
+            homeTeamId: home.winnerTeamId,
+            awayTeamId: away.winnerTeamId,
+          },
         });
+        updated.push(match.id);
+      }
+      if (isSemifinalRound && bracket.hasRankingMatch) {
+        const rankingMatch = nextRoundMatches.find(
+          (m) => m.bracketSlot === slot && m.isThirdPlaceMatch,
+        );
+        if (rankingMatch) {
+          await this.prisma.match.update({
+            where: { id: rankingMatch.id },
+            data: {
+              homeTeamId: this.getLoserTeamId(home.match),
+              awayTeamId: this.getLoserTeamId(away.match),
+            },
+          });
+          updated.push(rankingMatch.id);
+        }
       }
     }
-    await this.prisma.match.createMany({ data: rows });
-    const created = await this.prisma.match.findMany({
-      where: { knockoutBracketId: bracketId, round: nextRound },
-      select: { id: true },
-    });
-    for (const { id: matchId } of created) {
+    for (const matchId of updated) {
       this.realtimeService.emit({
         tournamentId: bracket.phase.category.tournamentId,
         type: 'match-updated',
@@ -299,7 +430,7 @@ export class BracketsService {
   private async getOrThrowForTournament(
     tournamentId: string,
     bracketId: string,
-  ): Promise<KnockoutBracket> {
+  ): Promise<BracketWithPhase> {
     const bracket = await this.prisma.knockoutBracket.findUnique({
       where: { id: bracketId },
       include: { phase: { include: { category: true } } },

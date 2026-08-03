@@ -16,8 +16,11 @@ type PrismaMock = {
     create: jest.Mock;
     createMany: jest.Mock;
     findMany: jest.Mock;
+    update: jest.Mock;
   };
   qualificationRule: { findMany: jest.Mock };
+  timeSlot: { findMany: jest.Mock; create: jest.Mock };
+  field: { findMany: jest.Mock };
   $transaction: jest.Mock;
 };
 
@@ -38,8 +41,14 @@ function createPrismaMock(): PrismaMock {
       })),
       createMany: jest.fn().mockResolvedValue({ count: 0 }),
       findMany: jest.fn().mockResolvedValue([]),
+      update: jest.fn(),
     },
     qualificationRule: { findMany: jest.fn().mockResolvedValue([]) },
+    // Only exercised when a round is reserved onto fields (generateMatches
+    // with fieldIds, or tryAdvanceRound picking up such a reservation) --
+    // no existing test does either, so an empty result is the correct default.
+    timeSlot: { findMany: jest.fn().mockResolvedValue([]), create: jest.fn() },
+    field: { findMany: jest.fn().mockResolvedValue([]) },
     $transaction: jest.fn((ops: unknown[]) => Promise.all(ops)),
   };
 }
@@ -156,7 +165,7 @@ describe('BracketsService', () => {
       ).rejects.toBeInstanceOf(BadRequestException);
     });
 
-    it('seeds round 1 with the standard bracket pairing for a 4-team bracket', async () => {
+    it('seeds round 1 with the standard bracket pairing for a 4-team bracket, and creates round 2 as an undetermined placeholder', async () => {
       prisma.knockoutBracket.findUnique.mockResolvedValue(
         bracketFixture({ size: 4 }),
       );
@@ -193,6 +202,7 @@ describe('BracketsService', () => {
           knockoutBracketId: 'bracket-1',
           round: 1,
           bracketSlot: 0,
+          isThirdPlaceMatch: false,
           homeTeamId: 'a1',
           awayTeamId: 'b2',
         },
@@ -203,11 +213,27 @@ describe('BracketsService', () => {
           knockoutBracketId: 'bracket-1',
           round: 1,
           bracketSlot: 1,
+          isThirdPlaceMatch: false,
           homeTeamId: 'b1',
           awayTeamId: 'a2',
         },
         include: expect.anything() as unknown,
       });
+      // The final (round 2) is created up front too, but with no opponents
+      // yet -- that's the whole point: the organizer can see/schedule the
+      // full bracket immediately, not just round 1.
+      expect(prisma.match.create).toHaveBeenCalledWith({
+        data: {
+          knockoutBracketId: 'bracket-1',
+          round: 2,
+          bracketSlot: 0,
+          isThirdPlaceMatch: false,
+          homeTeamId: null,
+          awayTeamId: null,
+        },
+        include: expect.anything() as unknown,
+      });
+      expect(prisma.match.create).toHaveBeenCalledTimes(3);
     });
   });
 
@@ -253,210 +279,245 @@ describe('BracketsService', () => {
 
       await service.tryAdvanceRound('bracket-1', 1);
 
-      expect(prisma.match.createMany).not.toHaveBeenCalled();
+      expect(prisma.match.update).not.toHaveBeenCalled();
     });
 
-    it('does nothing when the next round already exists (idempotent)', async () => {
+    it('does nothing when the next round is already decided (idempotent)', async () => {
       prisma.knockoutBracket.findUnique.mockResolvedValue({
         size: 4,
         hasRankingMatch: false,
       });
-      prisma.match.findMany.mockResolvedValue([
-        {
-          homeTeamId: 'a',
-          awayTeamId: 'b',
-          forfeitedTeamId: null,
-          status: 'COMPLETED',
-          score: {
-            homeScore: 1,
-            awayScore: 0,
-            homePenaltyScore: null,
-            awayPenaltyScore: null,
-            isValidated: true,
-          },
-        },
-        {
-          homeTeamId: 'c',
-          awayTeamId: 'd',
-          forfeitedTeamId: null,
-          status: 'COMPLETED',
-          score: {
-            homeScore: 2,
-            awayScore: 1,
-            homePenaltyScore: null,
-            awayPenaltyScore: null,
-            isValidated: true,
-          },
-        },
-      ]);
-      prisma.match.count.mockResolvedValue(1);
+      // Round 1 (the query filtered to isThirdPlaceMatch: false) is fully
+      // decided; round 2's placeholder was already filled in by a previous
+      // call -- both teams are non-null, so this must be a no-op.
+      prisma.match.findMany.mockImplementation(
+        (args: { where: { round: number; isThirdPlaceMatch?: boolean } }) =>
+          Promise.resolve(
+            args.where.isThirdPlaceMatch === false
+              ? [
+                  {
+                    homeTeamId: 'a',
+                    awayTeamId: 'b',
+                    forfeitedTeamId: null,
+                    status: 'COMPLETED',
+                    score: {
+                      homeScore: 1,
+                      awayScore: 0,
+                      homePenaltyScore: null,
+                      awayPenaltyScore: null,
+                      isValidated: true,
+                    },
+                  },
+                  {
+                    homeTeamId: 'c',
+                    awayTeamId: 'd',
+                    forfeitedTeamId: null,
+                    status: 'COMPLETED',
+                    score: {
+                      homeScore: 2,
+                      awayScore: 1,
+                      homePenaltyScore: null,
+                      awayPenaltyScore: null,
+                      isValidated: true,
+                    },
+                  },
+                ]
+              : [
+                  {
+                    id: 'final-match',
+                    bracketSlot: 0,
+                    isThirdPlaceMatch: false,
+                    homeTeamId: 'a',
+                    awayTeamId: 'c',
+                  },
+                ],
+          ),
+      );
 
       await service.tryAdvanceRound('bracket-1', 1);
 
-      expect(prisma.match.createMany).not.toHaveBeenCalled();
+      expect(prisma.match.update).not.toHaveBeenCalled();
     });
 
-    it('creates the final once both semifinal-round matches are decided', async () => {
+    it('fills in the final once both semifinal-round matches are decided', async () => {
       prisma.knockoutBracket.findUnique.mockResolvedValue({
         size: 4,
         hasRankingMatch: false,
         phase: { category: { tournamentId: TOURNAMENT_ID } },
       });
-      prisma.match.findMany.mockResolvedValue([
-        {
-          homeTeamId: 'a',
-          awayTeamId: 'b',
-          forfeitedTeamId: null,
-          status: 'COMPLETED',
-          score: {
-            homeScore: 1,
-            awayScore: 0,
-            homePenaltyScore: null,
-            awayPenaltyScore: null,
-            isValidated: true,
-          },
-        },
-        {
-          homeTeamId: 'c',
-          awayTeamId: 'd',
-          forfeitedTeamId: null,
-          status: 'COMPLETED',
-          score: {
-            homeScore: 2,
-            awayScore: 1,
-            homePenaltyScore: null,
-            awayPenaltyScore: null,
-            isValidated: true,
-          },
-        },
-      ]);
-      prisma.match.count.mockResolvedValue(0);
+      prisma.match.findMany.mockImplementation(
+        (args: { where: { round: number; isThirdPlaceMatch?: boolean } }) =>
+          Promise.resolve(
+            args.where.isThirdPlaceMatch === false
+              ? [
+                  {
+                    homeTeamId: 'a',
+                    awayTeamId: 'b',
+                    forfeitedTeamId: null,
+                    status: 'COMPLETED',
+                    score: {
+                      homeScore: 1,
+                      awayScore: 0,
+                      homePenaltyScore: null,
+                      awayPenaltyScore: null,
+                      isValidated: true,
+                    },
+                  },
+                  {
+                    homeTeamId: 'c',
+                    awayTeamId: 'd',
+                    forfeitedTeamId: null,
+                    status: 'COMPLETED',
+                    score: {
+                      homeScore: 2,
+                      awayScore: 1,
+                      homePenaltyScore: null,
+                      awayPenaltyScore: null,
+                      isValidated: true,
+                    },
+                  },
+                ]
+              : // Created up front by generateMatches, still undetermined.
+                [
+                  {
+                    id: 'final-match',
+                    bracketSlot: 0,
+                    isThirdPlaceMatch: false,
+                    homeTeamId: null,
+                    awayTeamId: null,
+                  },
+                ],
+          ),
+      );
 
       await service.tryAdvanceRound('bracket-1', 1);
 
-      expect(prisma.match.createMany).toHaveBeenCalledWith({
-        data: [
-          {
-            knockoutBracketId: 'bracket-1',
-            round: 2,
-            bracketSlot: 0,
-            isThirdPlaceMatch: false,
-            homeTeamId: 'a',
-            awayTeamId: 'c',
-          },
-        ],
+      expect(prisma.match.update).toHaveBeenCalledWith({
+        where: { id: 'final-match' },
+        data: { homeTeamId: 'a', awayTeamId: 'c' },
       });
+      expect(prisma.match.update).toHaveBeenCalledTimes(1);
     });
 
-    it('also creates the 3rd-place match when the bracket has a ranking match', async () => {
+    it('also fills in the 3rd-place match when the bracket has a ranking match', async () => {
       prisma.knockoutBracket.findUnique.mockResolvedValue({
         size: 4,
         hasRankingMatch: true,
         phase: { category: { tournamentId: TOURNAMENT_ID } },
       });
-      prisma.match.findMany.mockResolvedValue([
-        {
-          homeTeamId: 'a',
-          awayTeamId: 'b',
-          forfeitedTeamId: null,
-          status: 'COMPLETED',
-          score: {
-            homeScore: 1,
-            awayScore: 0,
-            homePenaltyScore: null,
-            awayPenaltyScore: null,
-            isValidated: true,
-          },
-        },
-        {
-          homeTeamId: 'c',
-          awayTeamId: 'd',
-          forfeitedTeamId: null,
-          status: 'COMPLETED',
-          score: {
-            homeScore: 2,
-            awayScore: 1,
-            homePenaltyScore: null,
-            awayPenaltyScore: null,
-            isValidated: true,
-          },
-        },
-      ]);
-      prisma.match.count.mockResolvedValue(0);
+      prisma.match.findMany.mockImplementation(
+        (args: { where: { round: number; isThirdPlaceMatch?: boolean } }) =>
+          Promise.resolve(
+            args.where.isThirdPlaceMatch === false
+              ? [
+                  {
+                    homeTeamId: 'a',
+                    awayTeamId: 'b',
+                    forfeitedTeamId: null,
+                    status: 'COMPLETED',
+                    score: {
+                      homeScore: 1,
+                      awayScore: 0,
+                      homePenaltyScore: null,
+                      awayPenaltyScore: null,
+                      isValidated: true,
+                    },
+                  },
+                  {
+                    homeTeamId: 'c',
+                    awayTeamId: 'd',
+                    forfeitedTeamId: null,
+                    status: 'COMPLETED',
+                    score: {
+                      homeScore: 2,
+                      awayScore: 1,
+                      homePenaltyScore: null,
+                      awayPenaltyScore: null,
+                      isValidated: true,
+                    },
+                  },
+                ]
+              : [
+                  {
+                    id: 'final-match',
+                    bracketSlot: 0,
+                    isThirdPlaceMatch: false,
+                    homeTeamId: null,
+                    awayTeamId: null,
+                  },
+                  {
+                    id: 'third-place-match',
+                    bracketSlot: 0,
+                    isThirdPlaceMatch: true,
+                    homeTeamId: null,
+                    awayTeamId: null,
+                  },
+                ],
+          ),
+      );
 
       await service.tryAdvanceRound('bracket-1', 1);
 
-      expect(prisma.match.createMany).toHaveBeenCalledWith({
-        data: [
-          {
-            knockoutBracketId: 'bracket-1',
-            round: 2,
-            bracketSlot: 0,
-            isThirdPlaceMatch: false,
-            homeTeamId: 'a',
-            awayTeamId: 'c',
-          },
-          {
-            knockoutBracketId: 'bracket-1',
-            round: 2,
-            bracketSlot: 0,
-            isThirdPlaceMatch: true,
-            homeTeamId: 'b',
-            awayTeamId: 'd',
-          },
-        ],
+      expect(prisma.match.update).toHaveBeenCalledWith({
+        where: { id: 'final-match' },
+        data: { homeTeamId: 'a', awayTeamId: 'c' },
       });
+      expect(prisma.match.update).toHaveBeenCalledWith({
+        where: { id: 'third-place-match' },
+        data: { homeTeamId: 'b', awayTeamId: 'd' },
+      });
+      expect(prisma.match.update).toHaveBeenCalledTimes(2);
     });
 
     it('treats the non-forfeiting team as the winner of a forfeited match', async () => {
-      prisma.knockoutBracket.findUnique.mockResolvedValue({
-        size: 2,
-        hasRankingMatch: false,
-      });
-      // size 2 => totalRounds = 1, so round 1 IS the final; use size 4 instead
-      // to actually exercise advancement with a forfeit involved.
       prisma.knockoutBracket.findUnique.mockResolvedValue({
         size: 4,
         hasRankingMatch: false,
         phase: { category: { tournamentId: TOURNAMENT_ID } },
       });
-      prisma.match.findMany.mockResolvedValue([
-        {
-          homeTeamId: 'a',
-          awayTeamId: 'b',
-          forfeitedTeamId: 'a',
-          status: 'FORFEITED',
-          score: null,
-        },
-        {
-          homeTeamId: 'c',
-          awayTeamId: 'd',
-          forfeitedTeamId: null,
-          status: 'COMPLETED',
-          score: {
-            homeScore: 2,
-            awayScore: 1,
-            homePenaltyScore: null,
-            awayPenaltyScore: null,
-            isValidated: true,
-          },
-        },
-      ]);
-      prisma.match.count.mockResolvedValue(0);
+      prisma.match.findMany.mockImplementation(
+        (args: { where: { round: number; isThirdPlaceMatch?: boolean } }) =>
+          Promise.resolve(
+            args.where.isThirdPlaceMatch === false
+              ? [
+                  {
+                    homeTeamId: 'a',
+                    awayTeamId: 'b',
+                    forfeitedTeamId: 'a',
+                    status: 'FORFEITED',
+                    score: null,
+                  },
+                  {
+                    homeTeamId: 'c',
+                    awayTeamId: 'd',
+                    forfeitedTeamId: null,
+                    status: 'COMPLETED',
+                    score: {
+                      homeScore: 2,
+                      awayScore: 1,
+                      homePenaltyScore: null,
+                      awayPenaltyScore: null,
+                      isValidated: true,
+                    },
+                  },
+                ]
+              : [
+                  {
+                    id: 'final-match',
+                    bracketSlot: 0,
+                    isThirdPlaceMatch: false,
+                    homeTeamId: null,
+                    awayTeamId: null,
+                  },
+                ],
+          ),
+      );
 
       await service.tryAdvanceRound('bracket-1', 1);
 
-      expect(prisma.match.createMany).toHaveBeenCalledWith({
-        data: [
-          {
-            knockoutBracketId: 'bracket-1',
-            round: 2,
-            bracketSlot: 0,
-            isThirdPlaceMatch: false,
-            homeTeamId: 'b',
-            awayTeamId: 'c',
-          },
-        ],
+      expect(prisma.match.update).toHaveBeenCalledWith({
+        where: { id: 'final-match' },
+        data: { homeTeamId: 'b', awayTeamId: 'c' },
       });
     });
   });

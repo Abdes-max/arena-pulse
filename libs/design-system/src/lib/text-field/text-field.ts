@@ -44,6 +44,8 @@ export class TextField implements ControlValueAccessor {
   readonly autocomplete = input<string | null>(null);
   readonly placeholder = input<string | null>(null);
   readonly min = input<number | string | null>(null);
+  /** type="number" only -- amount +/- steps by. */
+  readonly step = input<number>(1);
 
   /**
    * Controlled-component inputs, for pages that render from plain signals
@@ -89,14 +91,41 @@ export class TextField implements ControlValueAccessor {
 
   protected handleInput(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
+    this.setValue(value);
+  }
+
+  protected handleBlur(): void {
+    this.onTouched();
+  }
+
+  /**
+   * Native number-input spin buttons are hidden (see text-field.scss) since
+   * they overlap the digit(s) in a narrow field -- these replace them,
+   * rendered beside the input instead of inside it.
+   */
+  protected increment(): void {
+    this.step_(this.step());
+  }
+
+  protected decrement(): void {
+    this.step_(-this.step());
+  }
+
+  private step_(delta: number): void {
+    const current = Number(this.displayValue());
+    let next = (Number.isFinite(current) ? current : 0) + delta;
+    const min = this.min();
+    if (min !== null && next < Number(min)) {
+      next = Number(min);
+    }
+    this.setValue(String(next));
+  }
+
+  private setValue(value: string): void {
     if (this.isCvaBound()) {
       this.cvaValue.set(value);
     }
     this.onChange(value);
     this.valueChange.emit(value);
-  }
-
-  protected handleBlur(): void {
-    this.onTouched();
   }
 }

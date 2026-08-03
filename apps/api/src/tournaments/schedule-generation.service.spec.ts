@@ -11,7 +11,12 @@ type PrismaMock = {
   referee: { findMany: jest.Mock };
   team: { findMany: jest.Mock };
   competitionPhase: { update: jest.Mock };
-  match: { create: jest.Mock; findMany: jest.Mock; deleteMany: jest.Mock };
+  match: {
+    create: jest.Mock;
+    findMany: jest.Mock;
+    deleteMany: jest.Mock;
+    count: jest.Mock;
+  };
   timeSlot: { create: jest.Mock; deleteMany: jest.Mock };
   matchOfficial: { create: jest.Mock; deleteMany: jest.Mock };
   $transaction: jest.Mock;
@@ -52,6 +57,7 @@ function createPrismaMock(): PrismaMock {
       })),
       findMany: jest.fn().mockResolvedValue([]),
       deleteMany: jest.fn(),
+      count: jest.fn().mockResolvedValue(0),
     },
     timeSlot: {
       create: jest.fn().mockImplementation(({ data }: TimeSlotCreateArgs) => ({

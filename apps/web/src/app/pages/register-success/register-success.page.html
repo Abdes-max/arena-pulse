@@ -1,0 +1,25 @@
+<main class="register-success-page">
+  @if (loading()) {
+    <p>Vérification du paiement…</p>
+  } @else if (registration(); as registration) {
+    @if (registration.status === 'PAID') {
+      <h1>Inscription confirmée</h1>
+      <p>
+        L'équipe <strong>{{ registration.teamName }}</strong> est inscrite en
+        {{ registration.category.name }}.
+      </p>
+    } @else if (registration.status === 'PENDING_PAYMENT') {
+      <h1>Paiement en cours de confirmation</h1>
+      <p>
+        Votre inscription pour <strong>{{ registration.teamName }}</strong> sera confirmée dès que
+        le paiement sera validé. Vous pouvez recharger cette page dans quelques instants.
+      </p>
+    } @else {
+      <h1>Inscription annulée</h1>
+    }
+    <a [routerLink]="['/', context.slug()]">Retour au tournoi</a>
+  } @else {
+    <h1>Inscription introuvable</h1>
+    <a [routerLink]="['/', context.slug()]">Retour au tournoi</a>
+  }
+</main>

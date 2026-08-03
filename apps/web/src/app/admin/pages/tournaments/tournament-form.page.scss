@@ -26,17 +26,6 @@
   margin-bottom: var(--ap-space-4);
 }
 
-.tournament-form-page__submenu {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--ap-space-2);
-  padding: var(--ap-space-3);
-  margin-bottom: var(--ap-space-6);
-  background: var(--ap-color-surface);
-  border: var(--ap-border-width) solid var(--ap-color-border);
-  border-radius: var(--ap-radius-md);
-}
-
 .tournament-form-page__form {
   display: flex;
   flex-direction: column;

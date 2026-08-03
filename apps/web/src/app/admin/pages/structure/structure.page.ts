@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Button, Select, SelectOption, TextField } from 'design-system';
+import { TournamentSubmenu } from '../../shared/tournament-submenu';
 import { AuthService } from '../../core/auth.service';
 import { CompetitionFormatsService } from '../../core/competition-formats.service';
 import {
@@ -9,16 +10,33 @@ import {
   CompetitionGroup,
   CompetitionPhase,
   CompetitionPhaseType,
-  QualificationRule,
   StandingRule,
   Team,
 } from '../../core/models';
 import { TeamsService } from '../../core/teams.service';
 import { TournamentsService } from '../../core/tournaments.service';
 
+/**
+ * The barème/qualification rules are stored per-group in the API (each
+ * CompetitionGroup has its own StandingRule and QualificationRule rows),
+ * but the product decision is that they read as one setting per group-stage
+ * phase, not repeated per pool. This groups the identical rows created
+ * across every pool of a phase into a single displayed entry, while still
+ * tracking each pool's underlying row id so a save/delete can fan out to
+ * all of them.
+ */
+interface QualificationRuleGroup {
+  key: string;
+  fromPosition: number;
+  toPosition: number;
+  targetPhaseId: string;
+  targetPhaseName: string;
+  ruleIdsByGroupId: Map<string, string>;
+}
+
 @Component({
   selector: 'app-structure-page',
-  imports: [Button, Select, TextField],
+  imports: [Button, Select, TextField, TournamentSubmenu],
   templateUrl: './structure.page.html',
   styleUrl: './structure.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -43,20 +61,24 @@ export class StructurePage {
 
   protected readonly newPhaseName = signal('');
   protected readonly newPhaseType = signal<CompetitionPhaseType>('GROUP_STAGE');
+  protected readonly newPhaseDoubleRoundRobin = signal(false);
   protected readonly newGroupNameByPhase = signal<Record<string, string>>({});
   protected readonly newBracketFormByPhase = signal<
     Record<string, { name: string; size: string; hasRankingMatch: boolean }>
   >({});
 
   protected readonly expandedGroupId = signal<string | null>(null);
-  protected readonly groupStandingRule = signal<StandingRule | null>(null);
-  protected readonly groupQualificationRules = signal<QualificationRule[]>([]);
   protected readonly newTeamIdToAssign = signal('');
-  protected readonly newQualificationRuleForm = signal({
-    fromPosition: '1',
-    toPosition: '1',
-    targetPhaseId: '',
-  });
+
+  // Keyed by phaseId -- one barème / one set of qualification rules per
+  // group-stage phase, applied under the hood to every pool it contains.
+  protected readonly phaseStandingRule = signal<Map<string, StandingRule>>(new Map());
+  protected readonly phaseQualificationRuleGroups = signal<Map<string, QualificationRuleGroup[]>>(
+    new Map(),
+  );
+  protected readonly newQualificationRuleFormByPhase = signal<
+    Record<string, { fromPosition: string; toPosition: string; targetPhaseId: string }>
+  >({});
 
   protected readonly unassignedTeams = computed(() =>
     this.teams().filter((team) => team.groupId === null),
@@ -119,19 +141,84 @@ export class StructurePage {
       return;
     }
     try {
-      this.phases.set(
-        await this.competitionFormatsService.listPhases(
-          organizationId,
-          this.tournamentId,
-          categoryId,
-        ),
+      const phases = await this.competitionFormatsService.listPhases(
+        organizationId,
+        this.tournamentId,
+        categoryId,
       );
+      this.phases.set(phases);
       this.teams.set(
         await this.teamsService.listTeams(organizationId, this.tournamentId, categoryId),
       );
+      await this.loadPhaseRules(phases);
     } catch {
       this.errorMessage.set('Impossible de charger la structure de cette catégorie.');
     }
+  }
+
+  /** Loads the phase-level barème/qualification rules, represented by (and kept in sync across) every pool of each group-stage phase. */
+  private async loadPhaseRules(phases: CompetitionPhase[]): Promise<void> {
+    const organizationId = this.organization()?.id;
+    if (!organizationId) {
+      return;
+    }
+    const groupStagePhases = phases.filter(
+      (phase) => phase.type === 'GROUP_STAGE' && phase.groups.length > 0,
+    );
+
+    const standingEntries = await Promise.all(
+      groupStagePhases.map(
+        async (phase) =>
+          [
+            phase.id,
+            await this.competitionFormatsService.getStandingRule(
+              organizationId,
+              this.tournamentId,
+              phase.groups[0].id,
+            ),
+          ] as const,
+      ),
+    );
+    this.phaseStandingRule.set(new Map(standingEntries));
+
+    const qualificationEntries = await Promise.all(
+      groupStagePhases.map(async (phase) => {
+        const perGroupRules = await Promise.all(
+          phase.groups.map(
+            async (group) =>
+              [
+                group.id,
+                await this.competitionFormatsService.listQualificationRules(
+                  organizationId,
+                  this.tournamentId,
+                  group.id,
+                ),
+              ] as const,
+          ),
+        );
+        const dedup = new Map<string, QualificationRuleGroup>();
+        for (const [groupId, rules] of perGroupRules) {
+          for (const rule of rules) {
+            const key = `${rule.fromPosition}-${rule.toPosition}-${rule.targetPhaseId}`;
+            const existing = dedup.get(key);
+            if (existing) {
+              existing.ruleIdsByGroupId.set(groupId, rule.id);
+            } else {
+              dedup.set(key, {
+                key,
+                fromPosition: rule.fromPosition,
+                toPosition: rule.toPosition,
+                targetPhaseId: rule.targetPhaseId,
+                targetPhaseName: rule.targetPhaseName,
+                ruleIdsByGroupId: new Map([[groupId, rule.id]]),
+              });
+            }
+          }
+        }
+        return [phase.id, [...dedup.values()]] as [string, QualificationRuleGroup[]];
+      }),
+    );
+    this.phaseQualificationRuleGroups.set(new Map(qualificationEntries));
   }
 
   protected onNewPhaseNameChange(value: string): void {
@@ -140,6 +227,10 @@ export class StructurePage {
 
   protected onNewPhaseTypeChange(type: string): void {
     this.newPhaseType.set(type as CompetitionPhaseType);
+  }
+
+  protected onNewPhaseDoubleRoundRobinChange(event: Event): void {
+    this.newPhaseDoubleRoundRobin.set((event.target as HTMLInputElement).checked);
   }
 
   protected async addPhase(): Promise<void> {
@@ -154,12 +245,38 @@ export class StructurePage {
         organizationId,
         this.tournamentId,
         categoryId,
-        { name, type: this.newPhaseType() },
+        {
+          name,
+          type: this.newPhaseType(),
+          doubleRoundRobin:
+            this.newPhaseType() === 'GROUP_STAGE' ? this.newPhaseDoubleRoundRobin() : undefined,
+        },
       );
       this.phases.update((phases) => [...phases, phase]);
       this.newPhaseName.set('');
+      this.newPhaseDoubleRoundRobin.set(false);
     } catch {
       this.errorMessage.set("Impossible d'ajouter cette phase (nom déjà utilisé ?).");
+    }
+  }
+
+  /** Toggling this after matches already exist has no retroactive effect -- ScheduleGenerationService reads it fresh on the next "clean" generation. */
+  protected async toggleDoubleRoundRobin(phase: CompetitionPhase, event: Event): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const doubleRoundRobin = (event.target as HTMLInputElement).checked;
+    if (!organizationId) {
+      return;
+    }
+    try {
+      const updated = await this.competitionFormatsService.updatePhase(
+        organizationId,
+        this.tournamentId,
+        phase.id,
+        { doubleRoundRobin },
+      );
+      this.phases.update((phases) => phases.map((p) => (p.id === phase.id ? updated : p)));
+    } catch {
+      this.errorMessage.set('Impossible de modifier ce réglage.');
     }
   }
 
@@ -201,8 +318,50 @@ export class StructurePage {
         phases.map((p) => (p.id === phase.id ? { ...p, groups: [...p.groups, group] } : p)),
       );
       this.newGroupNameByPhase.update((names) => ({ ...names, [phase.id]: '' }));
+      await this.applyPhaseRulesToGroup(phase.id, group.id);
     } catch {
       this.errorMessage.set("Impossible d'ajouter cette poule (nom déjà utilisé ?).");
+    }
+  }
+
+  /** A new pool starts with its own default barème/no qualification rules -- immediately bring it in line with the rest of the phase, so "one setting per phase" holds even for pools added afterwards. */
+  private async applyPhaseRulesToGroup(phaseId: string, groupId: string): Promise<void> {
+    const organizationId = this.organization()?.id;
+    if (!organizationId) {
+      return;
+    }
+    const rule = this.phaseStandingRule().get(phaseId);
+    if (rule) {
+      await this.competitionFormatsService.updateStandingRule(
+        organizationId,
+        this.tournamentId,
+        groupId,
+        {
+          winPoints: rule.winPoints,
+          drawPoints: rule.drawPoints,
+          lossPoints: rule.lossPoints,
+          tieBreakOrder: rule.tieBreakOrder,
+          supplementaryStandingEnabled: rule.supplementaryStandingEnabled,
+          penaltyShootoutEnabled: rule.penaltyShootoutEnabled,
+        },
+      );
+    }
+    const ruleGroups = this.phaseQualificationRuleGroups().get(phaseId) ?? [];
+    for (const ruleGroup of ruleGroups) {
+      const created = await this.competitionFormatsService.createQualificationRule(
+        organizationId,
+        this.tournamentId,
+        groupId,
+        {
+          fromPosition: ruleGroup.fromPosition,
+          toPosition: ruleGroup.toPosition,
+          targetPhaseId: ruleGroup.targetPhaseId,
+        },
+      );
+      ruleGroup.ruleIdsByGroupId.set(groupId, created.id);
+    }
+    if (ruleGroups.length > 0) {
+      this.phaseQualificationRuleGroups.update((map) => new Map(map).set(phaseId, [...ruleGroups]));
     }
   }
 
@@ -221,76 +380,81 @@ export class StructurePage {
       if (this.expandedGroupId() === group.id) {
         this.expandedGroupId.set(null);
       }
+      // Deleting the pool cascades its StandingRule/QualificationRule rows server-side --
+      // drop the now-stale group id from the phase-level bookkeeping too.
+      this.phaseQualificationRuleGroups.update((map) => {
+        const ruleGroups = map.get(phase.id);
+        if (!ruleGroups) {
+          return map;
+        }
+        for (const ruleGroup of ruleGroups) {
+          ruleGroup.ruleIdsByGroupId.delete(group.id);
+        }
+        return new Map(map).set(phase.id, [...ruleGroups]);
+      });
     } catch {
       this.errorMessage.set('Impossible de supprimer cette poule.');
     }
   }
 
-  protected async toggleGroupDetails(group: CompetitionGroup): Promise<void> {
-    const organizationId = this.organization()?.id;
-    if (!organizationId) {
-      return;
-    }
-    if (this.expandedGroupId() === group.id) {
-      this.expandedGroupId.set(null);
-      return;
-    }
-    this.expandedGroupId.set(group.id);
+  protected toggleGroupDetails(group: CompetitionGroup): void {
+    this.expandedGroupId.set(this.expandedGroupId() === group.id ? null : group.id);
     this.newTeamIdToAssign.set('');
-    this.newQualificationRuleForm.set({ fromPosition: '1', toPosition: '1', targetPhaseId: '' });
-    try {
-      this.groupStandingRule.set(
-        await this.competitionFormatsService.getStandingRule(
-          organizationId,
-          this.tournamentId,
-          group.id,
-        ),
-      );
-      this.groupQualificationRules.set(
-        await this.competitionFormatsService.listQualificationRules(
-          organizationId,
-          this.tournamentId,
-          group.id,
-        ),
-      );
-    } catch {
-      this.errorMessage.set('Impossible de charger le détail de cette poule.');
-    }
   }
 
-  protected updateStandingRuleField(field: keyof StandingRule, value: string): void {
+  protected standingRuleFor(phaseId: string): StandingRule | undefined {
+    return this.phaseStandingRule().get(phaseId);
+  }
+
+  protected updateStandingRuleField(phaseId: string, field: keyof StandingRule, value: string): void {
     const numericValue = Number(value);
-    this.groupStandingRule.update((rule) => (rule ? { ...rule, [field]: numericValue } : rule));
+    this.phaseStandingRule.update((map) => {
+      const rule = map.get(phaseId);
+      if (!rule) {
+        return map;
+      }
+      return new Map(map).set(phaseId, { ...rule, [field]: numericValue });
+    });
   }
 
-  protected toggleStandingRuleFlag(field: keyof StandingRule, event: Event): void {
+  protected toggleStandingRuleFlag(phaseId: string, field: keyof StandingRule, event: Event): void {
     const checked = (event.target as HTMLInputElement).checked;
-    this.groupStandingRule.update((rule) => (rule ? { ...rule, [field]: checked } : rule));
+    this.phaseStandingRule.update((map) => {
+      const rule = map.get(phaseId);
+      if (!rule) {
+        return map;
+      }
+      return new Map(map).set(phaseId, { ...rule, [field]: checked });
+    });
   }
 
-  protected async saveStandingRule(): Promise<void> {
+  /** Saves the barème to every pool of this phase at once -- it's one setting per phase, not per pool. */
+  protected async saveStandingRule(phase: CompetitionPhase): Promise<void> {
     const organizationId = this.organization()?.id;
-    const groupId = this.expandedGroupId();
-    const rule = this.groupStandingRule();
-    if (!organizationId || !groupId || !rule) {
+    const rule = this.phaseStandingRule().get(phase.id);
+    if (!organizationId || !rule || phase.groups.length === 0) {
       return;
     }
+    const payload = {
+      winPoints: rule.winPoints,
+      drawPoints: rule.drawPoints,
+      lossPoints: rule.lossPoints,
+      tieBreakOrder: rule.tieBreakOrder,
+      supplementaryStandingEnabled: rule.supplementaryStandingEnabled,
+      penaltyShootoutEnabled: rule.penaltyShootoutEnabled,
+    };
     try {
-      this.groupStandingRule.set(
-        await this.competitionFormatsService.updateStandingRule(
-          organizationId,
-          this.tournamentId,
-          groupId,
-          {
-            winPoints: rule.winPoints,
-            drawPoints: rule.drawPoints,
-            lossPoints: rule.lossPoints,
-            tieBreakOrder: rule.tieBreakOrder,
-            supplementaryStandingEnabled: rule.supplementaryStandingEnabled,
-            penaltyShootoutEnabled: rule.penaltyShootoutEnabled,
-          },
+      const updated = await Promise.all(
+        phase.groups.map((group) =>
+          this.competitionFormatsService.updateStandingRule(
+            organizationId,
+            this.tournamentId,
+            group.id,
+            payload,
+          ),
         ),
       );
+      this.phaseStandingRule.update((map) => new Map(map).set(phase.id, updated[0]));
     } catch {
       this.errorMessage.set('Impossible d’enregistrer le barème de points.');
     }
@@ -339,15 +503,38 @@ export class StructurePage {
     }
   }
 
+  protected qualificationRuleGroupsFor(phaseId: string): QualificationRuleGroup[] {
+    return this.phaseQualificationRuleGroups().get(phaseId) ?? [];
+  }
+
+  protected qualificationRuleFormFor(phaseId: string) {
+    return (
+      this.newQualificationRuleFormByPhase()[phaseId] ?? {
+        fromPosition: '1',
+        toPosition: '1',
+        targetPhaseId: '',
+      }
+    );
+  }
+
   protected updateQualificationRuleField(
+    phaseId: string,
     field: 'fromPosition' | 'toPosition',
     value: string,
   ): void {
-    this.newQualificationRuleForm.update((form) => ({ ...form, [field]: value }));
+    const current = this.qualificationRuleFormFor(phaseId);
+    this.newQualificationRuleFormByPhase.update((forms) => ({
+      ...forms,
+      [phaseId]: { ...current, [field]: value },
+    }));
   }
 
-  protected onTargetPhaseChange(targetPhaseId: string): void {
-    this.newQualificationRuleForm.update((form) => ({ ...form, targetPhaseId }));
+  protected onTargetPhaseChange(phaseId: string, targetPhaseId: string): void {
+    const current = this.qualificationRuleFormFor(phaseId);
+    this.newQualificationRuleFormByPhase.update((forms) => ({
+      ...forms,
+      [phaseId]: { ...current, targetPhaseId },
+    }));
   }
 
   protected targetPhaseOptions(currentPhaseId: string): SelectOption[] {
@@ -360,42 +547,76 @@ export class StructurePage {
     ];
   }
 
-  protected async addQualificationRule(): Promise<void> {
+  /** Creates the rule on every pool of this phase at once -- it's one setting per phase, not per pool. */
+  protected async addQualificationRule(phase: CompetitionPhase): Promise<void> {
     const organizationId = this.organization()?.id;
-    const groupId = this.expandedGroupId();
-    const form = this.newQualificationRuleForm();
-    if (!organizationId || !groupId || !form.targetPhaseId) {
+    const form = this.qualificationRuleFormFor(phase.id);
+    if (!organizationId || !form.targetPhaseId || phase.groups.length === 0) {
       return;
     }
+    const payload = {
+      fromPosition: Number(form.fromPosition),
+      toPosition: Number(form.toPosition),
+      targetPhaseId: form.targetPhaseId,
+    };
     try {
-      const rule = await this.competitionFormatsService.createQualificationRule(
-        organizationId,
-        this.tournamentId,
-        groupId,
-        {
-          fromPosition: Number(form.fromPosition),
-          toPosition: Number(form.toPosition),
-          targetPhaseId: form.targetPhaseId,
-        },
+      const created = await Promise.all(
+        phase.groups.map((group) =>
+          this.competitionFormatsService.createQualificationRule(
+            organizationId,
+            this.tournamentId,
+            group.id,
+            payload,
+          ),
+        ),
       );
-      this.groupQualificationRules.update((rules) => [...rules, rule]);
+      const ruleGroup: QualificationRuleGroup = {
+        key: `${payload.fromPosition}-${payload.toPosition}-${payload.targetPhaseId}`,
+        fromPosition: payload.fromPosition,
+        toPosition: payload.toPosition,
+        targetPhaseId: payload.targetPhaseId,
+        targetPhaseName: created[0].targetPhaseName,
+        ruleIdsByGroupId: new Map(
+          phase.groups.map((group, index) => [group.id, created[index].id]),
+        ),
+      };
+      this.phaseQualificationRuleGroups.update((map) => {
+        const next = new Map(map);
+        next.set(phase.id, [...(next.get(phase.id) ?? []), ruleGroup]);
+        return next;
+      });
     } catch {
       this.errorMessage.set("Impossible d'ajouter cette règle de qualification.");
     }
   }
 
-  protected async removeQualificationRule(rule: QualificationRule): Promise<void> {
+  /** Removes the rule from every pool of this phase at once. */
+  protected async removeQualificationRule(
+    phase: CompetitionPhase,
+    ruleGroup: QualificationRuleGroup,
+  ): Promise<void> {
     const organizationId = this.organization()?.id;
     if (!organizationId) {
       return;
     }
     try {
-      await this.competitionFormatsService.deleteQualificationRule(
-        organizationId,
-        this.tournamentId,
-        rule.id,
+      await Promise.all(
+        [...ruleGroup.ruleIdsByGroupId.values()].map((ruleId) =>
+          this.competitionFormatsService.deleteQualificationRule(
+            organizationId,
+            this.tournamentId,
+            ruleId,
+          ),
+        ),
       );
-      this.groupQualificationRules.update((rules) => rules.filter((r) => r.id !== rule.id));
+      this.phaseQualificationRuleGroups.update((map) => {
+        const next = new Map(map);
+        next.set(
+          phase.id,
+          (next.get(phase.id) ?? []).filter((g) => g.key !== ruleGroup.key),
+        );
+        return next;
+      });
     } catch {
       this.errorMessage.set('Impossible de supprimer cette règle de qualification.');
     }

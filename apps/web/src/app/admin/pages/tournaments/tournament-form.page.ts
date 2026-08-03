@@ -9,8 +9,9 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Badge, BadgeStatus, Button, Select, SelectOption, TextField } from 'design-system';
+import { TournamentSubmenu } from '../../shared/tournament-submenu';
 import { AuthService } from '../../core/auth.service';
 import {
   Category,
@@ -35,7 +36,7 @@ const STATUS_TO_BADGE: Record<TournamentStatus, BadgeStatus> = {
 
 @Component({
   selector: 'app-tournament-form-page',
-  imports: [ReactiveFormsModule, RouterLink, Button, TextField, Select, Badge],
+  imports: [ReactiveFormsModule, Button, TextField, Select, Badge, TournamentSubmenu],
   templateUrl: './tournament-form.page.html',
   styleUrl: './tournament-form.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -87,6 +88,8 @@ export class TournamentFormPage {
   });
 
   protected readonly newCategoryName = signal('');
+  protected readonly newCategoryFeeCents = signal('');
+  protected readonly categoryFeeDraftById = signal<Record<string, string>>({});
   protected readonly newDivisionNameByCategory = signal<Record<string, string>>({});
   protected readonly newVenueName = signal('');
   protected readonly newFieldNameByVenue = signal<Record<string, string>>({});
@@ -103,6 +106,8 @@ export class TournamentFormPage {
   private async load(): Promise<void> {
     this.loading.set(true);
     this.newCategoryName.set('');
+    this.newCategoryFeeCents.set('');
+    this.categoryFeeDraftById.set({});
     this.newDivisionNameByCategory.set({});
     this.newVenueName.set('');
     this.newFieldNameByVenue.set({});
@@ -135,7 +140,16 @@ export class TournamentFormPage {
       isOnline: tournament.isOnline,
       theme: tournament.theme,
     });
-    this.categories.set(await this.tournamentsService.listCategories(organizationId, tournamentId));
+    const categories = await this.tournamentsService.listCategories(organizationId, tournamentId);
+    this.categories.set(categories);
+    this.categoryFeeDraftById.set(
+      Object.fromEntries(
+        categories.map((category) => [
+          category.id,
+          category.registrationFeeCents !== null ? String(category.registrationFeeCents) : '',
+        ]),
+      ),
+    );
     this.venues.set(await this.tournamentsService.listVenues(organizationId, tournamentId));
     this.administrators.set(
       await this.tournamentsService.listAdministrators(organizationId, tournamentId),
@@ -242,6 +256,10 @@ export class TournamentFormPage {
     this.newCategoryName.set(value);
   }
 
+  protected onNewCategoryFeeCentsChange(value: string): void {
+    this.newCategoryFeeCents.set(value);
+  }
+
   protected async addCategory(): Promise<void> {
     const organizationId = this.organization()?.id;
     const tournamentId = this.tournamentId();
@@ -249,16 +267,50 @@ export class TournamentFormPage {
     if (!organizationId || !tournamentId || !name) {
       return;
     }
+    const feeCents = this.newCategoryFeeCents().trim();
     try {
       const category = await this.tournamentsService.createCategory(
         organizationId,
         tournamentId,
         name,
+        feeCents ? Number(feeCents) : undefined,
       );
       this.categories.update((categories) => [...categories, category]);
+      this.categoryFeeDraftById.update((drafts) => ({ ...drafts, [category.id]: feeCents }));
       this.newCategoryName.set('');
+      this.newCategoryFeeCents.set('');
     } catch {
       this.errorMessage.set("Impossible d'ajouter cette catégorie (nom déjà utilisé ?).");
+    }
+  }
+
+  protected categoryFeeDraftFor(categoryId: string): string {
+    return this.categoryFeeDraftById()[categoryId] ?? '';
+  }
+
+  protected onCategoryFeeDraftChange(categoryId: string, value: string): void {
+    this.categoryFeeDraftById.update((drafts) => ({ ...drafts, [categoryId]: value }));
+  }
+
+  protected async saveCategoryFee(category: Category): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const tournamentId = this.tournamentId();
+    if (!organizationId || !tournamentId) {
+      return;
+    }
+    const draft = this.categoryFeeDraftFor(category.id).trim();
+    try {
+      const updated = await this.tournamentsService.updateCategoryFee(
+        organizationId,
+        tournamentId,
+        category.id,
+        draft ? Number(draft) : null,
+      );
+      this.categories.update((categories) =>
+        categories.map((c) => (c.id === category.id ? updated : c)),
+      );
+    } catch {
+      this.errorMessage.set("Impossible d'enregistrer le tarif de cette catégorie.");
     }
   }
 

@@ -95,6 +95,8 @@ export interface Category {
   id: string;
   name: string;
   position: number;
+  registrationFeeCents: number | null;
+  registrationFeeCurrency: string | null;
   divisions: Division[];
 }
 
@@ -164,6 +166,8 @@ export interface CompetitionPhase {
   matchDurationMinutes: number;
   breakDurationMinutes: number;
   refereesPerMatch: number;
+  // GROUP_STAGE only -- always false for KNOCKOUT (two-legged elimination ties are not supported).
+  doubleRoundRobin: boolean;
   groups: CompetitionGroup[];
   knockoutBracket: KnockoutBracket | null;
 }
