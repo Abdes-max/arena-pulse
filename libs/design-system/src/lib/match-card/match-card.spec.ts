@@ -65,9 +65,7 @@ describe('MatchCard', () => {
     fixture.componentInstance.awayScore = 1;
     fixture.detectChanges();
 
-    expect(
-      fixture.nativeElement.querySelector('ap-badge[status="finished"]'),
-    ).toBeNull();
+    expect(fixture.nativeElement.querySelector('ap-badge[status="finished"]')).toBeNull();
   });
 
   it('declares no winner on a draw', () => {

@@ -5,23 +5,49 @@ Comptes organisateurs actuellement valides dans la base Postgres locale
 `a-very-strong-password`.
 
 **Attention** : la suite e2e de `apps/api` (`npm run test:e2e`) tronque
-entièrement la base dev à chaque exécution. Ces comptes (et les tournois
-associés) disparaissent alors et doivent être recréés — voir la section
-« Régénérer » ci-dessous. (Dernier reset : e2e complet lancé pendant les
-vérifications de `feat/036-player-registration-and-payments` ; les comptes
-`demo-*`/`worldcup2026-*` d'une précédente version de ce fichier ont été
-perdus à cette occasion et remplacés par le compte ci-dessous.)
+entièrement la base dev à chaque exécution. Voir « Lancer les e2e sans
+perdre les données » ci-dessous pour sauvegarder/restaurer autour d'un run.
 
 | Email                        | Mot de passe             | Organisation       | Rôle / usage                                                                                                                                          |
 | ----------------------------- | ------------------------ | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `test-organizer@example.com` | `a-very-strong-password` | Organisation Test  | Recréé manuellement après un reset e2e. Tournoi "Tournoi Test" (Football, catégorie Senior) avec une phase de poules (2 groupes de 5 équipes) et une phase finale à élimination directe (tableau de 8, petite finale activée) — pensé pour tester calendrier/scores/tableaux. Une copie ("Tournoi Test (copie)") existe aussi, créée via le bouton Dupliquer. |
+| `test-organizer@example.com` | `a-very-strong-password` | Organisation Test  | Tournoi "Tournoi Test" (`tournoi-test-6aff787e`, Football, catégorie Senior) : phase de poules (2 groupes de 5 équipes) puis phase finale à élimination directe (tableau de 8, petite finale activée), **jouée jusqu'au bout** — tous les scores sont saisis, y compris la finale et la petite finale (vainqueur : ASA, 2–1 en finale contre FC Aixois ; 3ᵉ place : Luynes, 2–1 contre Tholonet). Sert à vérifier l'affichage d'un tournoi entièrement terminé (tags "Terminé", classements figés, etc.). Une copie ("Tournoi Test (copie)", `tournoi-test-copie-15008496`) existe aussi, créée via le bouton Dupliquer, sans résultats saisis. |
 
-## Régénérer après un reset e2e
+## Lancer les e2e sans perdre les données
+
+La suite e2e (`npm run test:e2e` dans `apps/api`) fait un `TRUNCATE` complet
+de la base dev à chaque run. Pour la lancer sans perdre un jeu de données
+construit à la main, sauvegarder puis restaurer autour du run :
+
+```bash
+# Sauvegarde (depuis la racine du repo, conteneur Postgres démarré)
+docker exec arena-pulse-postgres-1 pg_dump -U arena_pulse -d arena_pulse --format=custom -f /tmp/arena_pulse_backup.dump
+docker cp arena-pulse-postgres-1:/tmp/arena_pulse_backup.dump ./arena_pulse_backup.dump
+
+# ... lancer npm run test:e2e dans apps/api ...
+
+# Restauration
+docker cp ./arena_pulse_backup.dump arena-pulse-postgres-1:/tmp/arena_pulse_backup.dump
+docker exec arena-pulse-postgres-1 psql -U arena_pulse -d postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'arena_pulse' AND pid <> pg_backend_pid();"
+docker exec arena-pulse-postgres-1 psql -U arena_pulse -d postgres -c "DROP DATABASE arena_pulse;"
+docker exec arena-pulse-postgres-1 psql -U arena_pulse -d postgres -c "CREATE DATABASE arena_pulse OWNER arena_pulse;"
+docker exec arena-pulse-postgres-1 pg_restore -U arena_pulse -d arena_pulse /tmp/arena_pulse_backup.dump
+```
+
+Sous Git Bash sur Windows, préfixer les commandes `docker exec`/`docker cp`
+qui manipulent des chemins commençant par `/tmp/...` avec
+`MSYS_NO_PATHCONV=1` pour éviter que Git Bash ne les réinterprète comme des
+chemins Windows.
+
+Après restauration, vérifier `npx prisma migrate status` (depuis
+`apps/api`) : doit rester "Database schema is up to date!" — sinon la
+sauvegarde a été prise sur un schéma différent des migrations actuelles.
+
+## Régénérer depuis zéro (si aucune sauvegarde n'a été prise)
 
 Aucun script de restauration n'est versionné pour ce jeu de données précis
 — à recréer à la main via l'UI (inscription organisateur, tournoi,
-catégorie, phase de poules + phase finale, équipes, calendrier). Pour un
-jeu de données plus riche et scripté, voir les datasets alternatifs
+catégorie, phase de poules + phase finale, équipes, calendrier, scores).
+Pour un jeu de données plus riche et scripté, voir les datasets alternatifs
 ci-dessous.
 
 Datasets alternatifs, plus riches, pour une vérification UI générale (créent

@@ -39,8 +39,18 @@
           <legend>Joueurs</legend>
           @for (player of playersArray.controls; track $index; let i = $index) {
             <div class="register-page__player-row" [formGroupName]="i">
-              <ap-text-field label="Prénom" [hideLabel]="true" placeholder="Prénom" formControlName="firstName" />
-              <ap-text-field label="Nom" [hideLabel]="true" placeholder="Nom" formControlName="lastName" />
+              <ap-text-field
+                label="Prénom"
+                [hideLabel]="true"
+                placeholder="Prénom"
+                formControlName="firstName"
+              />
+              <ap-text-field
+                label="Nom"
+                [hideLabel]="true"
+                placeholder="Nom"
+                formControlName="lastName"
+              />
               <ap-text-field
                 label="N°"
                 [hideLabel]="true"
@@ -58,7 +68,9 @@
               </ap-button>
             </div>
           }
-          <ap-button type="button" variant="ghost" (click)="addPlayer()">Ajouter un joueur</ap-button>
+          <ap-button type="button" variant="ghost" (click)="addPlayer()"
+            >Ajouter un joueur</ap-button
+          >
         </fieldset>
 
         <ap-button type="submit" [disabled]="form.invalid || submitting()">

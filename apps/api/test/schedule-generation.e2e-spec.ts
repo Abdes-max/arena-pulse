@@ -422,7 +422,13 @@ describe('Schedule generation (e2e)', () => {
         `${base}/${tournamentId}/phases/${knockoutPhaseId}/matches`,
       ),
     ).expect(200);
-    expect(listRes.body as MatchResponseBody[]).toHaveLength(2);
+    // A size-4 bracket generates all rounds upfront: 2 round-1 matches with
+    // real teams plus the round-2 (final) match as a null-team placeholder.
+    const matches = listRes.body as MatchResponseBody[];
+    expect(matches).toHaveLength(3);
+    expect(matches.filter((match) => match.round === 2)).toEqual([
+      expect.objectContaining({ homeTeam: null, awayTeam: null }),
+    ]);
   });
 
   it('rejects generation for a phase belonging to another tournament', async () => {

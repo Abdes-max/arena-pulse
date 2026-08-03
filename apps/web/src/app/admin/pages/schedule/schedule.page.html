@@ -88,7 +88,11 @@
                 Générer le calendrier
               </ap-button>
             } @else if (phase.knockoutBracket) {
-              <ap-button type="button" [disabled]="generating()" (click)="generateKnockoutMatches()">
+              <ap-button
+                type="button"
+                [disabled]="generating()"
+                (click)="generateKnockoutMatches()"
+              >
                 Générer les matchs du tableau
               </ap-button>
               <p class="schedule-page__hint">

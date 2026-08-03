@@ -12,5 +12,7 @@ export function isPlayerScopedRequest(url: string): boolean {
   // The `/public/` check matters: an organizer's own registrations list
   // (/organizations/:id/tournaments/:id/registrations) also contains
   // "registrations" and must keep using the organizer token instead.
-  return url.includes('/player-auth') || (url.includes('/public/') && url.includes('/registrations'));
+  return (
+    url.includes('/player-auth') || (url.includes('/public/') && url.includes('/registrations'))
+  );
 }

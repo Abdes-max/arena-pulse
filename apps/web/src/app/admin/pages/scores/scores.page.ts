@@ -328,12 +328,7 @@ export class ScoresPage {
     }
     this.errorMessage.set(null);
     try {
-      await this.scoresService.declareForfeit(
-        organizationId,
-        this.tournamentId,
-        match.id,
-        teamId,
-      );
+      await this.scoresService.declareForfeit(organizationId, this.tournamentId, match.id, teamId);
       // Same reasoning as validateScore -- a forfeit can also advance a
       // knockout round, filling in matches this page hadn't loaded yet.
       await this.loadMatches();

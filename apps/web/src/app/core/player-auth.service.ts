@@ -41,11 +41,9 @@ export class PlayerAuthService {
 
   async register(payload: PlayerRegisterPayload): Promise<void> {
     const response = await firstValueFrom(
-      this.http.post<PlayerTokenResponse>(
-        `${environment.apiUrl}/player-auth/register`,
-        payload,
-        { withCredentials: true },
-      ),
+      this.http.post<PlayerTokenResponse>(`${environment.apiUrl}/player-auth/register`, payload, {
+        withCredentials: true,
+      }),
     );
     this.accessToken.set(response.accessToken);
     await this.loadProfile();
@@ -85,11 +83,7 @@ export class PlayerAuthService {
   async logout(): Promise<void> {
     try {
       await firstValueFrom(
-        this.http.post(
-          `${environment.apiUrl}/player-auth/logout`,
-          {},
-          { withCredentials: true },
-        ),
+        this.http.post(`${environment.apiUrl}/player-auth/logout`, {}, { withCredentials: true }),
       );
     } finally {
       this.clearSession();

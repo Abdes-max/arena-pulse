@@ -406,7 +406,11 @@ export class StructurePage {
     return this.phaseStandingRule().get(phaseId);
   }
 
-  protected updateStandingRuleField(phaseId: string, field: keyof StandingRule, value: string): void {
+  protected updateStandingRuleField(
+    phaseId: string,
+    field: keyof StandingRule,
+    value: string,
+  ): void {
     const numericValue = Number(value);
     this.phaseStandingRule.update((map) => {
       const rule = map.get(phaseId);

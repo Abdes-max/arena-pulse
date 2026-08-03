@@ -32,9 +32,7 @@ export const routes: Routes = [
   {
     path: 'player/register',
     loadComponent: () =>
-      import('./pages/player-auth/register/player-register.page').then(
-        (m) => m.PlayerRegisterPage,
-      ),
+      import('./pages/player-auth/register/player-register.page').then((m) => m.PlayerRegisterPage),
   },
   {
     path: 'admin',

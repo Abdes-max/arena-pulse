@@ -78,9 +78,7 @@
             @if (standingRuleFor(phase.id); as rule) {
               <div class="structure-page__phase-rules">
                 <h3>Barème de points</h3>
-                <p class="structure-page__hint">
-                  S'applique à toutes les poules de cette phase.
-                </p>
+                <p class="structure-page__hint">S'applique à toutes les poules de cette phase.</p>
                 <div class="structure-page__standing-rule">
                   <ap-text-field
                     label="Victoire"
@@ -127,9 +125,7 @@
                 </div>
 
                 <h3>Règles de qualification</h3>
-                <p class="structure-page__hint">
-                  S'applique à toutes les poules de cette phase.
-                </p>
+                <p class="structure-page__hint">S'applique à toutes les poules de cette phase.</p>
                 <ul class="structure-page__qualification-list">
                   @for (ruleGroup of qualificationRuleGroupsFor(phase.id); track ruleGroup.key) {
                     <li>
