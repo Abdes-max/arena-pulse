@@ -24,7 +24,14 @@ function createPrismaMock(): PrismaMock {
   };
 }
 
-function ratingRow(overrides: Partial<Record<string, unknown>> = {}) {
+interface RatingRowOverrides {
+  teamName?: string;
+  rating?: number;
+  ratingDeviation?: number;
+  matchesPlayed?: number;
+}
+
+function ratingRow(overrides: RatingRowOverrides = {}) {
   return {
     id: `rating-${overrides.teamName ?? 'x'}`,
     organizationId: 'org-1',
