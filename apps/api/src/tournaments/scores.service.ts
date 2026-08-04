@@ -11,6 +11,7 @@ import { ForfeitMatchDto } from './dto/forfeit-match.dto';
 import { UpsertMatchScoreDto } from './dto/upsert-match-score.dto';
 import { matchBelongsToTournament } from './match-ownership.util';
 import { MATCH_INCLUDE, toMatchSummary } from './match-summary.util';
+import { RatingsService } from './ratings.service';
 import { RealtimeService } from './realtime.service';
 import { TournamentsService } from './tournaments.service';
 
@@ -29,6 +30,7 @@ export class ScoresService {
     private readonly prisma: PrismaService,
     private readonly tournamentsService: TournamentsService,
     private readonly bracketsService: BracketsService,
+    private readonly ratingsService: RatingsService,
     private readonly realtimeService: RealtimeService,
   ) {}
 
@@ -136,6 +138,7 @@ export class ScoresService {
         match.round,
       );
     }
+    await this.ratingsService.recordMatchResult(organizationId, updated);
     this.realtimeService.emit({ tournamentId, type: 'match-updated', matchId });
     return toMatchSummary(updated);
   }
@@ -198,6 +201,7 @@ export class ScoresService {
         match.round,
       );
     }
+    await this.ratingsService.recordMatchResult(organizationId, updated);
     this.realtimeService.emit({ tournamentId, type: 'match-updated', matchId });
     return toMatchSummary(updated);
   }

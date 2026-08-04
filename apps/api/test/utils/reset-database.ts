@@ -29,6 +29,7 @@ export async function resetDatabase(prisma: PrismaService): Promise<void> {
   await prisma.refreshToken.deleteMany();
   await prisma.invitation.deleteMany();
   await prisma.organizationMember.deleteMany();
+  await prisma.teamRating.deleteMany();
   await prisma.organization.deleteMany();
   await prisma.user.deleteMany();
   await prisma.playerRefreshToken.deleteMany();

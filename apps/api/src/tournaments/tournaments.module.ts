@@ -25,6 +25,7 @@ import { PublicController } from './public.controller';
 import { PublicService } from './public.service';
 import { QualificationRulesController } from './qualification-rules.controller';
 import { QualificationRulesService } from './qualification-rules.service';
+import { RatingsService } from './ratings.service';
 import { RealtimeService } from './realtime.service';
 import { RefereesController } from './referees.controller';
 import { RefereesService } from './referees.service';
@@ -91,6 +92,7 @@ import { VenuesService } from './venues.service';
     ScoresService,
     StandingsService,
     BracketsService,
+    RatingsService,
     PublicService,
     RealtimeService,
   ],

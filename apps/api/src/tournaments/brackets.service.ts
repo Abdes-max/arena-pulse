@@ -8,11 +8,11 @@ import {
   Category,
   CompetitionPhase,
   KnockoutBracket,
-  MatchScore,
 } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { isPowerOfTwo, seedOrder } from './bracket-seeding.util';
 import { GenerateBracketMatchesDto } from './dto/generate-bracket-matches.dto';
+import { getLoserTeamId, getWinnerTeamId } from './match-outcome.util';
 import { MATCH_INCLUDE, toMatchSummary } from './match-summary.util';
 import { RealtimeService } from './realtime.service';
 import { StandingsService } from './standings.service';
@@ -26,21 +26,6 @@ interface QualifiedEntry {
   teamId: string;
   position: number;
   groupName: string;
-}
-
-interface MatchOutcomeInput {
-  homeTeamId: string | null;
-  awayTeamId: string | null;
-  forfeitedTeamId: string | null;
-  status: string;
-  score: Pick<
-    MatchScore,
-    | 'homeScore'
-    | 'awayScore'
-    | 'homePenaltyScore'
-    | 'awayPenaltyScore'
-    | 'isValidated'
-  > | null;
 }
 
 @Injectable()
@@ -266,7 +251,7 @@ export class BracketsService {
     }
     const outcomes = roundMatches.map((match) => ({
       match,
-      winnerTeamId: this.getWinnerTeamId(match),
+      winnerTeamId: getWinnerTeamId(match),
     }));
     if (outcomes.some((outcome) => outcome.winnerTeamId === null)) {
       return;
@@ -320,8 +305,8 @@ export class BracketsService {
           await this.prisma.match.update({
             where: { id: rankingMatch.id },
             data: {
-              homeTeamId: this.getLoserTeamId(home.match),
-              awayTeamId: this.getLoserTeamId(away.match),
+              homeTeamId: getLoserTeamId(home.match),
+              awayTeamId: getLoserTeamId(away.match),
             },
           });
           updated.push(rankingMatch.id);
@@ -335,46 +320,6 @@ export class BracketsService {
         matchId,
       });
     }
-  }
-
-  private getWinnerTeamId(match: MatchOutcomeInput): string | null {
-    if (match.status === 'FORFEITED') {
-      if (match.forfeitedTeamId === match.homeTeamId) {
-        return match.awayTeamId;
-      }
-      if (match.forfeitedTeamId === match.awayTeamId) {
-        return match.homeTeamId;
-      }
-      return null;
-    }
-    if (!match.score || !match.score.isValidated) {
-      return null;
-    }
-    const { homeScore, awayScore, homePenaltyScore, awayPenaltyScore } =
-      match.score;
-    if (homeScore !== awayScore) {
-      return homeScore > awayScore ? match.homeTeamId : match.awayTeamId;
-    }
-    if (
-      homePenaltyScore !== null &&
-      awayPenaltyScore !== null &&
-      homePenaltyScore !== awayPenaltyScore
-    ) {
-      return homePenaltyScore > awayPenaltyScore
-        ? match.homeTeamId
-        : match.awayTeamId;
-    }
-    return null;
-  }
-
-  private getLoserTeamId(match: MatchOutcomeInput): string | null {
-    const winnerTeamId = this.getWinnerTeamId(match);
-    if (!winnerTeamId) {
-      return null;
-    }
-    return winnerTeamId === match.homeTeamId
-      ? match.awayTeamId
-      : match.homeTeamId;
   }
 
   private async collectQualifiedTeams(

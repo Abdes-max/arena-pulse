@@ -1,3 +1,4 @@
+import { DecimalPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -14,7 +15,7 @@ import { PublicTeamDetail } from 'shared-models';
 
 @Component({
   selector: 'app-team-detail-page',
-  imports: [MatchCard],
+  imports: [DecimalPipe, MatchCard],
   templateUrl: './team-detail.page.html',
   styleUrl: './team-detail.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

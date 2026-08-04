@@ -1,11 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { DEFAULT_RATING, DEFAULT_RATING_DEVIATION } from './glicko2.util';
 import { GroupsService } from './groups.service';
+import { RatingsService } from './ratings.service';
 import { computeStandings, StandingRow } from './standings.util';
 import { TournamentsService } from './tournaments.service';
 
+const PROVISIONAL_RATING_DEVIATION_THRESHOLD = 100;
+
+export interface StandingRowWithRating extends StandingRow {
+  rating: number;
+  ratingDeviation: number;
+  isProvisional: boolean;
+}
+
 export interface StandingsResult {
-  rows: StandingRow[];
+  rows: StandingRowWithRating[];
   isComplete: boolean;
 }
 
@@ -24,6 +34,7 @@ export class StandingsService {
     private readonly prisma: PrismaService,
     private readonly tournamentsService: TournamentsService,
     private readonly groupsService: GroupsService,
+    private readonly ratingsService: RatingsService,
   ) {}
 
   async getStandings(
@@ -91,7 +102,24 @@ export class StandingsService {
     const isComplete =
       matches.length > 0 &&
       matches.every((match) => match.score?.isValidated === true);
-    return { rows, isComplete };
+
+    const ratingsByTeamName = await this.ratingsService.getRatingsForTeamNames(
+      organizationId,
+      teams.map((team) => team.name),
+    );
+    const rowsWithRating = rows.map((row) => {
+      const rating = ratingsByTeamName.get(row.teamName);
+      return {
+        ...row,
+        rating: rating?.rating ?? DEFAULT_RATING,
+        ratingDeviation: rating?.ratingDeviation ?? DEFAULT_RATING_DEVIATION,
+        isProvisional:
+          (rating?.ratingDeviation ?? DEFAULT_RATING_DEVIATION) >
+          PROVISIONAL_RATING_DEVIATION_THRESHOLD,
+      };
+    });
+
+    return { rows: rowsWithRating, isComplete };
   }
 
   async getQualifications(

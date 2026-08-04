@@ -48,7 +48,8 @@
                 <h2>{{ row.position }}. {{ row.teamName }}</h2>
                 <p>
                   {{ row.played }} joués · {{ row.won }}V {{ row.drawn }}N {{ row.lost }}D ·
-                  {{ row.goalsFor }}-{{ row.goalsAgainst }}
+                  {{ row.goalsFor }}-{{ row.goalsAgainst }} · Rating
+                  {{ row.rating | number: '1.0-0' }}{{ row.isProvisional ? ' (provisoire)' : '' }}
                 </p>
               </ion-label>
               @if (isQualified(group, row.teamId)) {

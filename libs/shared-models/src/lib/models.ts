@@ -130,6 +130,12 @@ export interface StandingRow {
   goalDifference: number;
   points: number;
   position: number;
+  // Persistent Glicko-2 rating for this team within the organization (not
+  // reset per tournament, unlike the columns above) -- a complement to the
+  // points classement, not a replacement.
+  rating: number;
+  ratingDeviation: number;
+  isProvisional: boolean;
 }
 
 export interface Standings {

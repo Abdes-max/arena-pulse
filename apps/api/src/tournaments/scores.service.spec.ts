@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { BracketsService } from './brackets.service';
+import { RatingsService } from './ratings.service';
 import { RealtimeService } from './realtime.service';
 import { ScoresService } from './scores.service';
 import { TournamentsService } from './tournaments.service';
@@ -71,6 +72,7 @@ describe('ScoresService', () => {
   let prisma: PrismaMock;
   let tournamentsService: { assertTournamentIsEditable: jest.Mock };
   let bracketsService: { tryAdvanceRound: jest.Mock };
+  let ratingsService: { recordMatchResult: jest.Mock };
   let realtimeService: { emit: jest.Mock };
   let service: ScoresService;
 
@@ -82,11 +84,13 @@ describe('ScoresService', () => {
         .mockResolvedValue({ id: TOURNAMENT_ID }),
     };
     bracketsService = { tryAdvanceRound: jest.fn() };
+    ratingsService = { recordMatchResult: jest.fn() };
     realtimeService = { emit: jest.fn() };
     service = new ScoresService(
       prisma as unknown as PrismaService,
       tournamentsService as unknown as TournamentsService,
       bracketsService as unknown as BracketsService,
+      ratingsService as unknown as RatingsService,
       realtimeService as unknown as RealtimeService,
     );
   });
@@ -334,6 +338,32 @@ describe('ScoresService', () => {
         expect.objectContaining({ data: { status: 'COMPLETED' } }),
       );
     });
+
+    it('records the match result for ratings after validating', async () => {
+      const completed = baseMatch({
+        status: 'COMPLETED',
+        homeTeam: { id: 'team-home', name: 'Home' },
+        awayTeam: { id: 'team-away', name: 'Away' },
+      });
+      prisma.match.findUnique.mockResolvedValue(
+        baseMatch({
+          score: {
+            homeScore: 2,
+            awayScore: 1,
+            homePenaltyScore: null,
+            awayPenaltyScore: null,
+          },
+        }),
+      );
+      prisma.match.update.mockResolvedValue(completed);
+
+      await service.validateScore('org-1', TOURNAMENT_ID, 'match-1', USER_ID);
+
+      expect(ratingsService.recordMatchResult).toHaveBeenCalledWith(
+        'org-1',
+        completed,
+      );
+    });
   });
 
   describe('clearScore', () => {
@@ -420,6 +450,26 @@ describe('ScoresService', () => {
       expect(bracketsService.tryAdvanceRound).toHaveBeenCalledWith(
         'bracket-1',
         2,
+      );
+    });
+
+    it('records the match result for ratings after a forfeit', async () => {
+      const forfeited = baseMatch({
+        status: 'FORFEITED',
+        forfeitedTeamId: 'team-away',
+        homeTeam: { id: 'team-home', name: 'Home' },
+        awayTeam: { id: 'team-away', name: 'Away' },
+      });
+      prisma.match.findUnique.mockResolvedValue(baseMatch());
+      prisma.match.findUniqueOrThrow.mockResolvedValue(forfeited);
+
+      await service.declareForfeit('org-1', TOURNAMENT_ID, 'match-1', {
+        teamId: 'team-away',
+      });
+
+      expect(ratingsService.recordMatchResult).toHaveBeenCalledWith(
+        'org-1',
+        forfeited,
       );
     });
   });

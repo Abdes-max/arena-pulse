@@ -1,3 +1,4 @@
+import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Select, SelectOption } from 'design-system';
@@ -17,7 +18,7 @@ interface GroupStandings {
 
 @Component({
   selector: 'app-standings-page',
-  imports: [Select, TournamentSubmenu],
+  imports: [DecimalPipe, Select, TournamentSubmenu],
   templateUrl: './standings.page.html',
   styleUrl: './standings.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

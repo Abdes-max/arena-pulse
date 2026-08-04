@@ -1,3 +1,4 @@
+import { DecimalPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -24,7 +25,16 @@ import { TournamentContextService } from '../../core/tournament-context.service'
 
 @Component({
   selector: 'app-team-detail-page',
-  imports: [IonContent, IonList, IonListHeader, IonItem, IonLabel, IonBadge, IonButton],
+  imports: [
+    DecimalPipe,
+    IonContent,
+    IonList,
+    IonListHeader,
+    IonItem,
+    IonLabel,
+    IonBadge,
+    IonButton,
+  ],
   templateUrl: './team-detail.page.html',
   styleUrl: './team-detail.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,3 +1,4 @@
+import { DecimalPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -35,7 +36,7 @@ const BRACKET_ROW_HEIGHT = 96;
 
 @Component({
   selector: 'app-standings-page',
-  imports: [Badge, BracketMatch, Select],
+  imports: [Badge, BracketMatch, DecimalPipe, Select],
   templateUrl: './standings.page.html',
   styleUrl: './standings.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

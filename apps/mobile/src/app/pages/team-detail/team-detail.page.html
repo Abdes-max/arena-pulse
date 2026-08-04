@@ -39,7 +39,9 @@
             <h2>Poule</h2>
             <p>
               Position {{ standing.position }} · {{ standing.played }} joués · {{ standing.won }}V
-              {{ standing.drawn }}N {{ standing.lost }}D · {{ standing.points }} pts
+              {{ standing.drawn }}N {{ standing.lost }}D · {{ standing.points }} pts · Rating
+              {{ standing.rating | number: '1.0-0'
+              }}{{ standing.isProvisional ? ' (provisoire)' : '' }}
             </p>
           </ion-label>
         </ion-item>
