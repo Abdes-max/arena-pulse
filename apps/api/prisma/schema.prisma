@@ -51,6 +51,7 @@ model Organization {
   members     OrganizationMember[]
   invitations Invitation[]
   tournaments Tournament[]
+  teamRatings TeamRating[]
 }
 
 model OrganizationMember {
@@ -227,6 +228,28 @@ model Team {
   @@index([categoryId])
   @@index([groupId])
   @@index([divisionId])
+}
+
+// Persistent Glicko-2 rating per (organization, exact team name), carried
+// across tournaments within the same organization -- unlike `Team` above,
+// which is a fresh row per tournament with no cross-tournament identity.
+// Matched by exact name, not a real team identity: renaming a team between
+// tournaments starts a fresh rating (see docs/product/assumptions-and-open-questions.md).
+model TeamRating {
+  id              String   @id @default(uuid())
+  organizationId  String
+  teamName        String
+  rating          Float    @default(1500)
+  ratingDeviation Float    @default(350)
+  volatility      Float    @default(0.06)
+  matchesPlayed   Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, teamName])
+  @@index([organizationId])
 }
 
 model Player {

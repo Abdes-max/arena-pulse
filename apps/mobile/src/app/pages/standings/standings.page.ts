@@ -1,3 +1,4 @@
+import { DecimalPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -32,6 +33,7 @@ interface GroupStandings {
 @Component({
   selector: 'app-standings-page',
   imports: [
+    DecimalPipe,
     IonContent,
     IonSelect,
     IonSelectOption,

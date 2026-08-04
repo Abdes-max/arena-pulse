@@ -1,5 +1,6 @@
 import { GroupsService } from './groups.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { RatingsService } from './ratings.service';
 import { StandingsService } from './standings.service';
 import { TournamentsService } from './tournaments.service';
 
@@ -23,6 +24,7 @@ describe('StandingsService', () => {
   let prisma: PrismaMock;
   let tournamentsService: { assertTournamentExists: jest.Mock };
   let groupsService: { assertGroupExists: jest.Mock };
+  let ratingsService: { getRatingsForTeamNames: jest.Mock };
   let service: StandingsService;
 
   beforeEach(() => {
@@ -35,10 +37,14 @@ describe('StandingsService', () => {
     groupsService = {
       assertGroupExists: jest.fn().mockResolvedValue({ id: 'group-1' }),
     };
+    ratingsService = {
+      getRatingsForTeamNames: jest.fn().mockResolvedValue(new Map()),
+    };
     service = new StandingsService(
       prisma as unknown as PrismaService,
       tournamentsService as unknown as TournamentsService,
       groupsService as unknown as GroupsService,
+      ratingsService as unknown as RatingsService,
     );
   });
 
@@ -111,6 +117,45 @@ describe('StandingsService', () => {
         position: 2,
       });
       expect(result.isComplete).toBe(true);
+    });
+
+    it("attaches each team's rating by name, marking a high-deviation team as provisional", async () => {
+      prisma.team.findMany.mockResolvedValue([
+        { id: 'a', name: 'Alpha' },
+        { id: 'b', name: 'Beta' },
+      ]);
+      prisma.match.findMany.mockResolvedValue([]);
+      ratingsService.getRatingsForTeamNames.mockResolvedValue(
+        new Map([
+          ['Alpha', { rating: 1620, ratingDeviation: 80, matchesPlayed: 12 }],
+          ['Beta', { rating: 1500, ratingDeviation: 350, matchesPlayed: 0 }],
+        ]),
+      );
+
+      const result = await service.getStandings(
+        'org-1',
+        'tournament-1',
+        'group-1',
+      );
+
+      expect(ratingsService.getRatingsForTeamNames).toHaveBeenCalledWith(
+        'org-1',
+        ['Alpha', 'Beta'],
+      );
+      expect(result.rows).toEqual([
+        expect.objectContaining({
+          teamId: 'a',
+          rating: 1620,
+          ratingDeviation: 80,
+          isProvisional: false,
+        }),
+        expect.objectContaining({
+          teamId: 'b',
+          rating: 1500,
+          ratingDeviation: 350,
+          isProvisional: true,
+        }),
+      ]);
     });
 
     it('reports incomplete when there are no matches at all', async () => {
