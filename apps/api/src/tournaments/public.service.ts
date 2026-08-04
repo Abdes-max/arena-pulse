@@ -150,19 +150,29 @@ export class PublicService {
 
   async listPhaseMatches(slug: string, phaseId: string) {
     const tournament = await this.resolveTournament(slug);
-    return this.scheduleGenerationService.list(
+    const matches = await this.scheduleGenerationService.list(
       tournament.organizationId,
       tournament.tournamentId,
       phaseId,
+    );
+    // A knockout phase's later rounds exist as soon as the bracket is
+    // generated, but with no opponents yet -- meaningless to a visitor, so
+    // hidden here (the admin Calendrier page shows them; see
+    // ScheduleGenerationService.list, used unfiltered there).
+    return matches.filter(
+      (match) => match.homeTeam !== null && match.awayTeam !== null,
     );
   }
 
   async listBracketMatches(slug: string, bracketId: string) {
     const tournament = await this.resolveTournament(slug);
-    return this.bracketsService.listMatches(
+    const matches = await this.bracketsService.listMatches(
       tournament.organizationId,
       tournament.tournamentId,
       bracketId,
+    );
+    return matches.filter(
+      (match) => match.homeTeam !== null && match.awayTeam !== null,
     );
   }
 
@@ -171,6 +181,11 @@ export class PublicService {
     const matches = await this.prisma.match.findMany({
       where: {
         status: 'SCHEDULED',
+        // Excludes a knockout round's not-yet-determined placeholder
+        // matches (see BracketsService.generateMatches) from the public
+        // "upcoming matches" list -- "? vs ?" isn't a useful preview.
+        homeTeamId: { not: null },
+        awayTeamId: { not: null },
         timeSlot: { startTime: { gte: new Date() } },
         OR: [
           {

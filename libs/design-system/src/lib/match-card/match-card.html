@@ -35,4 +35,10 @@
       }
     </div>
   }
+
+  @if (hasScore() && variant() !== 'live') {
+    <div class="ap-match-card__footer">
+      <ap-badge status="finished" />
+    </div>
+  }
 </article>

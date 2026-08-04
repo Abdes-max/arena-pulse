@@ -46,10 +46,85 @@
     opacity: var(--ap-opacity-disabled);
     cursor: not-allowed;
   }
+
+  // Native number-input spin buttons eat a chunk of an already-narrow field
+  // (e.g. score entry, jersey number) and can visually obscure the digit(s)
+  // just typed -- looks like the input silently rejected the value. Removed
+  // everywhere rather than per-page since any ap-text-field type="number"
+  // can be narrow depending on its layout.
+  &[type='number'] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+    // Tighter than the default text-field padding -- these fields are
+    // deliberately narrow (score, jersey number...) and now share their
+    // width with the stepper column beside them (see
+    // .ap-text-field__number-wrapper below), so the generous default
+    // padding left too little room for the digit(s) themselves.
+    padding: var(--ap-space-2);
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  }
 }
 
 :host([data-invalid]) .ap-text-field__input {
   border-color: var(--ap-color-error);
+}
+
+.ap-text-field__number-wrapper {
+  display: flex;
+  align-items: stretch;
+
+  .ap-text-field__input {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-right: none;
+  }
+}
+
+// Replaces the native spin buttons (hidden above) -- a narrow column beside
+// the input instead of overlapping its value.
+.ap-text-field__stepper {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-top-right-radius: var(--ap-radius-md);
+  border-bottom-right-radius: var(--ap-radius-md);
+  overflow: hidden;
+
+  button {
+    flex: 1 1 0;
+    width: 1.4rem;
+    padding: 0;
+    border: none;
+    background: var(--ap-color-surface);
+    color: var(--ap-color-fg);
+    font-size: 0.6rem;
+    line-height: 1;
+    cursor: pointer;
+
+    &:not(:last-child) {
+      border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+    }
+
+    &:hover:not(:disabled) {
+      background: var(--ap-color-border);
+    }
+
+    &:disabled {
+      opacity: var(--ap-opacity-disabled);
+      cursor: not-allowed;
+    }
+
+    &:focus-visible {
+      outline: var(--ap-border-width-strong) solid var(--ap-color-focus);
+      outline-offset: -2px;
+    }
+  }
 }
 
 .ap-text-field__error {

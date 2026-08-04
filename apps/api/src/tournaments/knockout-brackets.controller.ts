@@ -17,6 +17,7 @@ import { OrganizationRoleGuard } from '../organizations/guards/organization-role
 import { BracketsService } from './brackets.service';
 import { RequireTournamentPermission } from './decorators/require-tournament-permission.decorator';
 import { CreateKnockoutBracketDto } from './dto/create-knockout-bracket.dto';
+import { GenerateBracketMatchesDto } from './dto/generate-bracket-matches.dto';
 import { UpdateKnockoutBracketDto } from './dto/update-knockout-bracket.dto';
 import { TournamentPermissionGuard } from './guards/tournament-permission.guard';
 import { KnockoutBracketsService } from './knockout-brackets.service';
@@ -87,11 +88,13 @@ export class KnockoutBracketsController {
     @Param('organizationId') organizationId: string,
     @Param('tournamentId') tournamentId: string,
     @Param('bracketId') bracketId: string,
+    @Body() dto: GenerateBracketMatchesDto,
   ) {
     return this.bracketsService.generateMatches(
       organizationId,
       tournamentId,
       bracketId,
+      dto,
     );
   }
 

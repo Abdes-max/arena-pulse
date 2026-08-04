@@ -62,7 +62,9 @@
 }
 
 .scores-page__score-input {
-  width: 3rem;
+  // Wide enough for 2 digits plus the stepper column beside them
+  // (ap-text-field type="number" -- see text-field.scss).
+  width: 4.25rem;
   text-align: center;
 }
 

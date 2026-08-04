@@ -8,7 +8,13 @@ import { AppModule } from './app.module';
 import { JsonLogger } from './common/logger/json-logger.service';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { logger: new JsonLogger() });
+  const app = await NestFactory.create(AppModule, {
+    logger: new JsonLogger(),
+    // Needed for Stripe webhook signature verification (payments/webhook
+    // uses req.rawBody) -- Nest still populates the parsed req.body for
+    // every other route as usual.
+    rawBody: true,
+  });
   const configService = app.get(ConfigService);
 
   app.setGlobalPrefix('api/v1');

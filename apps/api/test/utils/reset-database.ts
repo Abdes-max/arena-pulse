@@ -11,6 +11,8 @@ export async function resetDatabase(prisma: PrismaService): Promise<void> {
   await prisma.matchOfficial.deleteMany();
   await prisma.match.deleteMany();
   await prisma.player.deleteMany();
+  await prisma.registrationPlayer.deleteMany();
+  await prisma.registration.deleteMany();
   await prisma.qualificationRule.deleteMany();
   await prisma.standingRule.deleteMany();
   await prisma.knockoutBracket.deleteMany();
@@ -29,4 +31,6 @@ export async function resetDatabase(prisma: PrismaService): Promise<void> {
   await prisma.organizationMember.deleteMany();
   await prisma.organization.deleteMany();
   await prisma.user.deleteMany();
+  await prisma.playerRefreshToken.deleteMany();
+  await prisma.playerAccount.deleteMany();
 }

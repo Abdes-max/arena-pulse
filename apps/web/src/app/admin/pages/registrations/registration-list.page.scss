@@ -1,0 +1,39 @@
+.registration-list-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-4);
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: var(--ap-space-6);
+
+  h1 {
+    font-family: var(--ap-font-body);
+    color: var(--ap-color-fg);
+    margin: 0;
+  }
+}
+
+.registration-list-page__error {
+  color: var(--ap-color-error);
+}
+
+.registration-list-page__table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    text-align: left;
+    padding: var(--ap-space-3);
+    border-bottom: 1px solid var(--ap-color-border);
+    color: var(--ap-color-fg);
+  }
+
+  th {
+    font-weight: 600;
+  }
+
+  a {
+    color: var(--ap-color-primary);
+  }
+}

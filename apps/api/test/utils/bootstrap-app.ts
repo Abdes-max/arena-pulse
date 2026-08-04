@@ -20,7 +20,9 @@ export async function createTestApp(
   }
   const moduleFixture = await builder.compile();
 
-  const app = moduleFixture.createNestApplication<INestApplication<App>>();
+  const app = moduleFixture.createNestApplication<INestApplication<App>>({
+    rawBody: true,
+  });
   app.setGlobalPrefix('api/v1');
   app.use(cookieParser());
   app.useGlobalPipes(

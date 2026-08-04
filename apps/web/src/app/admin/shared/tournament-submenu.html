@@ -1,0 +1,20 @@
+<nav class="tournament-submenu">
+  <ap-button variant="secondary" [routerLink]="['/admin/tournaments', tournamentId(), 'teams']">
+    Équipes
+  </ap-button>
+  <ap-button variant="secondary" [routerLink]="['/admin/tournaments', tournamentId(), 'referees']">
+    Arbitres
+  </ap-button>
+  <ap-button variant="secondary" [routerLink]="['/admin/tournaments', tournamentId(), 'structure']">
+    Structure
+  </ap-button>
+  <ap-button variant="secondary" [routerLink]="['/admin/tournaments', tournamentId(), 'schedule']">
+    Calendrier
+  </ap-button>
+  <ap-button variant="secondary" [routerLink]="['/admin/tournaments', tournamentId(), 'scores']">
+    Scores
+  </ap-button>
+  <ap-button variant="secondary" [routerLink]="['/admin/tournaments', tournamentId(), 'standings']">
+    Classement
+  </ap-button>
+</nav>

@@ -1,4 +1,11 @@
-import { IsInt, IsOptional, IsString, Min, MinLength } from 'class-validator';
+import {
+  IsBoolean,
+  IsInt,
+  IsOptional,
+  IsString,
+  Min,
+  MinLength,
+} from 'class-validator';
 
 export class UpdatePhaseDto {
   @IsOptional()
@@ -25,4 +32,9 @@ export class UpdatePhaseDto {
   @IsInt()
   @Min(1)
   refereesPerMatch?: number;
+
+  // GROUP_STAGE only -- ignored for KNOCKOUT. See CompetitionPhase.doubleRoundRobin.
+  @IsOptional()
+  @IsBoolean()
+  doubleRoundRobin?: boolean;
 }

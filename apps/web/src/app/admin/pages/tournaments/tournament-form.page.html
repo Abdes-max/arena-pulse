@@ -23,44 +23,7 @@
         }
         <ap-button type="button" variant="ghost" (click)="duplicate()">Dupliquer</ap-button>
       </div>
-      <nav class="tournament-form-page__submenu">
-        <ap-button
-          variant="secondary"
-          [routerLink]="['/admin/tournaments', tournamentId(), 'teams']"
-        >
-          Équipes
-        </ap-button>
-        <ap-button
-          variant="secondary"
-          [routerLink]="['/admin/tournaments', tournamentId(), 'referees']"
-        >
-          Arbitres
-        </ap-button>
-        <ap-button
-          variant="secondary"
-          [routerLink]="['/admin/tournaments', tournamentId(), 'structure']"
-        >
-          Structure
-        </ap-button>
-        <ap-button
-          variant="secondary"
-          [routerLink]="['/admin/tournaments', tournamentId(), 'schedule']"
-        >
-          Calendrier
-        </ap-button>
-        <ap-button
-          variant="secondary"
-          [routerLink]="['/admin/tournaments', tournamentId(), 'scores']"
-        >
-          Scores
-        </ap-button>
-        <ap-button
-          variant="secondary"
-          [routerLink]="['/admin/tournaments', tournamentId(), 'standings']"
-        >
-          Classement
-        </ap-button>
-      </nav>
+      <app-tournament-submenu [tournamentId]="tournamentId()!" />
     }
 
     <form class="tournament-form-page__form" [formGroup]="form" (ngSubmit)="submit()">
@@ -86,6 +49,19 @@
               <ap-button type="button" variant="ghost" (click)="removeCategory(category)">
                 Supprimer
               </ap-button>
+            </div>
+            <div class="tournament-form-page__inline-form">
+              <ap-text-field
+                label="Tarif d'inscription (centimes, vide = gratuit)"
+                [hideLabel]="true"
+                type="number"
+                placeholder="Tarif d'inscription (centimes, vide = gratuit)"
+                [value]="categoryFeeDraftFor(category.id)"
+                (valueChange)="onCategoryFeeDraftChange(category.id, $event)"
+              />
+              <ap-button type="button" variant="ghost" (click)="saveCategoryFee(category)"
+                >Enregistrer le tarif</ap-button
+              >
             </div>
             <ul class="tournament-form-page__division-list">
               @for (division of category.divisions; track division.id) {
@@ -122,6 +98,14 @@
             placeholder="Nouvelle catégorie (ex. U10)"
             [value]="newCategoryName()"
             (valueChange)="onNewCategoryNameChange($event)"
+          />
+          <ap-text-field
+            label="Tarif (centimes, optionnel)"
+            [hideLabel]="true"
+            type="number"
+            placeholder="Tarif (centimes, optionnel)"
+            [value]="newCategoryFeeCents()"
+            (valueChange)="onNewCategoryFeeCentsChange($event)"
           />
           <ap-button type="button" variant="ghost" (click)="addCategory()"
             >Ajouter une catégorie</ap-button

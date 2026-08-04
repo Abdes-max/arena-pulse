@@ -94,6 +94,10 @@ import { VenuesService } from './venues.service';
     PublicService,
     RealtimeService,
   ],
-  exports: [TournamentPermissionGuard],
+  // TournamentsService/CategoriesService additionally exported for
+  // RegistrationsModule (feat/036), which resolves a public tournament by
+  // slug and validates a categoryId the same way PublicService already does
+  // from inside this module.
+  exports: [TournamentPermissionGuard, TournamentsService, CategoriesService],
 })
 export class TournamentsModule {}

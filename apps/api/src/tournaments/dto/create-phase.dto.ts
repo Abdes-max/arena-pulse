@@ -1,4 +1,5 @@
 import {
+  IsBoolean,
   IsEnum,
   IsInt,
   IsOptional,
@@ -35,4 +36,9 @@ export class CreatePhaseDto {
   @IsInt()
   @Min(1)
   refereesPerMatch?: number;
+
+  // GROUP_STAGE only -- ignored for KNOCKOUT. See CompetitionPhase.doubleRoundRobin.
+  @IsOptional()
+  @IsBoolean()
+  doubleRoundRobin?: boolean;
 }

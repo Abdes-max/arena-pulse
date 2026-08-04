@@ -111,6 +111,7 @@ describe('Schedule generation (e2e)', () => {
     auth: (req: request.Test) => request.Test,
     base: string,
     tournamentId: string,
+    options: { doubleRoundRobin?: boolean } = {},
   ) {
     const categoryRes = await auth(
       request(app.getHttpServer()).post(`${base}/${tournamentId}/categories`),
@@ -124,7 +125,11 @@ describe('Schedule generation (e2e)', () => {
         `${base}/${tournamentId}/categories/${categoryId}/phases`,
       ),
     )
-      .send({ name: 'Phase de poules', type: 'GROUP_STAGE' })
+      .send({
+        name: 'Phase de poules',
+        type: 'GROUP_STAGE',
+        doubleRoundRobin: options.doubleRoundRobin,
+      })
       .expect(201);
     const phaseId = (phaseRes.body as { id: string }).id;
 
@@ -228,6 +233,202 @@ describe('Schedule generation (e2e)', () => {
       ),
     ).expect(200);
     expect(afterResetRes.body as MatchResponseBody[]).toHaveLength(0);
+  });
+
+  it('rejects a second generation while matches already exist, without resetting first', async () => {
+    const { accessToken, organizationId } = await registerOrganizer(app);
+    const sportId = await firstSportId(app, accessToken);
+    const auth = (req: request.Test) =>
+      req.set('Authorization', `Bearer ${accessToken}`);
+    const base = `/api/v1/organizations/${organizationId}/tournaments`;
+
+    const tournamentRes = await auth(request(app.getHttpServer()).post(base))
+      .send({ name: 'Coupe', sportId })
+      .expect(201);
+    const tournamentId = (tournamentRes.body as { id: string }).id;
+    const { phaseId, fieldIds } = await setUpGroupOfFour(
+      app,
+      auth,
+      base,
+      tournamentId,
+    );
+
+    await auth(
+      request(app.getHttpServer()).post(
+        `${base}/${tournamentId}/phases/${phaseId}/generate-schedule`,
+      ),
+    )
+      .send({ fieldIds, startDateTime: '2026-08-01T09:00:00.000Z' })
+      .expect(201);
+
+    // A second click without resetting must not silently double every match.
+    await auth(
+      request(app.getHttpServer()).post(
+        `${base}/${tournamentId}/phases/${phaseId}/generate-schedule`,
+      ),
+    )
+      .send({ fieldIds, startDateTime: '2026-08-01T09:00:00.000Z' })
+      .expect(409);
+
+    const listRes = await auth(
+      request(app.getHttpServer()).get(
+        `${base}/${tournamentId}/phases/${phaseId}/matches`,
+      ),
+    ).expect(200);
+    expect(listRes.body as MatchResponseBody[]).toHaveLength(6);
+  });
+
+  it('doubles the fixtures with home/away swapped when the phase has doubleRoundRobin enabled', async () => {
+    const { accessToken, organizationId } = await registerOrganizer(app);
+    const sportId = await firstSportId(app, accessToken);
+    const auth = (req: request.Test) =>
+      req.set('Authorization', `Bearer ${accessToken}`);
+    const base = `/api/v1/organizations/${organizationId}/tournaments`;
+
+    const tournamentRes = await auth(request(app.getHttpServer()).post(base))
+      .send({ name: 'Coupe', sportId })
+      .expect(201);
+    const tournamentId = (tournamentRes.body as { id: string }).id;
+    const { phaseId, fieldIds } = await setUpGroupOfFour(
+      app,
+      auth,
+      base,
+      tournamentId,
+      { doubleRoundRobin: true },
+    );
+
+    const generateRes = await auth(
+      request(app.getHttpServer()).post(
+        `${base}/${tournamentId}/phases/${phaseId}/generate-schedule`,
+      ),
+    )
+      .send({ fieldIds, startDateTime: '2026-08-01T09:00:00.000Z' })
+      .expect(201);
+    const matches = generateRes.body as MatchResponseBody[];
+    // 4 teams, single leg = 6 matches (3 rounds) -- doubled = 12 (6 rounds).
+    expect(matches).toHaveLength(12);
+    expect(new Set(matches.map((m) => m.round))).toEqual(
+      new Set([1, 2, 3, 4, 5, 6]),
+    );
+
+    const pairKey = (homeId: string, awayId: string) =>
+      [homeId, awayId].sort().join('-');
+    const byPair = new Map<string, MatchResponseBody[]>();
+    for (const match of matches) {
+      const key = pairKey(match.homeTeam!.id, match.awayTeam!.id);
+      byPair.set(key, [...(byPair.get(key) ?? []), match]);
+    }
+    // Every pair meets exactly twice, with home/away reversed the second time.
+    for (const pair of byPair.values()) {
+      expect(pair).toHaveLength(2);
+      expect(pair[0].homeTeam!.id).toBe(pair[1].awayTeam!.id);
+      expect(pair[0].awayTeam!.id).toBe(pair[1].homeTeam!.id);
+    }
+  });
+
+  it("lists a KNOCKOUT phase's bracket matches via the phase-matches endpoint (not just via the bracket-matches endpoint)", async () => {
+    const { accessToken, organizationId } = await registerOrganizer(app);
+    const sportId = await firstSportId(app, accessToken);
+    const auth = (req: request.Test) =>
+      req.set('Authorization', `Bearer ${accessToken}`);
+    const base = `/api/v1/organizations/${organizationId}/tournaments`;
+
+    const tournamentRes = await auth(request(app.getHttpServer()).post(base))
+      .send({ name: 'Coupe', sportId })
+      .expect(201);
+    const tournamentId = (tournamentRes.body as { id: string }).id;
+
+    const categoryRes = await auth(
+      request(app.getHttpServer()).post(`${base}/${tournamentId}/categories`),
+    )
+      .send({ name: 'U10' })
+      .expect(201);
+    const categoryId = (categoryRes.body as { id: string }).id;
+
+    // A "seeding" group-stage phase, same pattern as a pure-knockout
+    // category: standings default to alphabetical order with no matches
+    // played, which is enough to seed the bracket.
+    const seedPhaseRes = await auth(
+      request(app.getHttpServer()).post(
+        `${base}/${tournamentId}/categories/${categoryId}/phases`,
+      ),
+    )
+      .send({ name: 'Engagés', type: 'GROUP_STAGE' })
+      .expect(201);
+    const seedPhaseId = (seedPhaseRes.body as { id: string }).id;
+
+    const seedGroupRes = await auth(
+      request(app.getHttpServer()).post(
+        `${base}/${tournamentId}/phases/${seedPhaseId}/groups`,
+      ),
+    )
+      .send({ name: 'Engagés' })
+      .expect(201);
+    const seedGroupId = (seedGroupRes.body as { id: string }).id;
+
+    for (const name of ['Alpha', 'Beta', 'Gamma', 'Delta']) {
+      const teamRes = await auth(
+        request(app.getHttpServer()).post(`${base}/${tournamentId}/teams`),
+      )
+        .send({ name, categoryId })
+        .expect(201);
+      const teamId = (teamRes.body as { id: string }).id;
+      await auth(
+        request(app.getHttpServer()).patch(
+          `${base}/${tournamentId}/teams/${teamId}/group`,
+        ),
+      )
+        .send({ groupId: seedGroupId })
+        .expect(200);
+    }
+
+    const knockoutPhaseRes = await auth(
+      request(app.getHttpServer()).post(
+        `${base}/${tournamentId}/categories/${categoryId}/phases`,
+      ),
+    )
+      .send({ name: 'Tableau', type: 'KNOCKOUT' })
+      .expect(201);
+    const knockoutPhaseId = (knockoutPhaseRes.body as { id: string }).id;
+
+    await auth(
+      request(app.getHttpServer()).post(
+        `${base}/${tournamentId}/groups/${seedGroupId}/qualification-rules`,
+      ),
+    )
+      .send({ fromPosition: 1, toPosition: 4, targetPhaseId: knockoutPhaseId })
+      .expect(201);
+
+    const bracketRes = await auth(
+      request(app.getHttpServer()).post(
+        `${base}/${tournamentId}/phases/${knockoutPhaseId}/knockout-bracket`,
+      ),
+    )
+      .send({ name: 'Tableau principal', size: 4 })
+      .expect(201);
+    const bracketId = (bracketRes.body as { id: string }).id;
+
+    await auth(
+      request(app.getHttpServer()).post(
+        `${base}/${tournamentId}/knockout-brackets/${bracketId}/generate-matches`,
+      ),
+    ).expect(201);
+
+    // Before this fix, this returned [] for any KNOCKOUT phase -- matches
+    // there live on a knockoutBracket, never on a group, and the query only
+    // ever looked at `group: { phaseId }`.
+    const listRes = await auth(
+      request(app.getHttpServer()).get(
+        `${base}/${tournamentId}/phases/${knockoutPhaseId}/matches`,
+      ),
+    ).expect(200);
+    // A size-4 bracket generates all rounds upfront: 2 round-1 matches with
+    // real teams plus the round-2 (final) match as a null-team placeholder.
+    const matches = listRes.body as MatchResponseBody[];
+    expect(matches).toHaveLength(3);
+    expect(matches.filter((match) => match.round === 2)).toEqual([
+      expect.objectContaining({ homeTeam: null, awayTeam: null }),
+    ]);
   });
 
   it('rejects generation for a phase belonging to another tournament', async () => {

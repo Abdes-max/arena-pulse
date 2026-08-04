@@ -55,6 +55,9 @@ export class PhasesService {
         ...(dto.refereesPerMatch !== undefined && {
           refereesPerMatch: dto.refereesPerMatch,
         }),
+        ...(dto.doubleRoundRobin !== undefined && {
+          doubleRoundRobin: dto.doubleRoundRobin,
+        }),
       },
     });
     return this.toSummary({ ...phase, groups: [], knockoutBracket: null });
@@ -72,7 +75,10 @@ export class PhasesService {
         groups: { orderBy: { position: 'asc' } },
         knockoutBracket: true,
       },
-      orderBy: { position: 'asc' },
+      // GROUP_STAGE always before KNOCKOUT (enum declaration order), then
+      // creation order within each -- organizers expect to see pools before
+      // the bracket they feed into, regardless of the order they were added in.
+      orderBy: [{ type: 'asc' }, { position: 'asc' }],
     });
     return phases.map((phase) => this.toSummary(phase));
   }
@@ -100,6 +106,7 @@ export class PhasesService {
         matchDurationMinutes: dto.matchDurationMinutes,
         breakDurationMinutes: dto.breakDurationMinutes,
         refereesPerMatch: dto.refereesPerMatch,
+        doubleRoundRobin: dto.doubleRoundRobin,
       },
       include: {
         groups: { orderBy: { position: 'asc' } },
@@ -176,6 +183,7 @@ export class PhasesService {
       matchDurationMinutes: phase.matchDurationMinutes,
       breakDurationMinutes: phase.breakDurationMinutes,
       refereesPerMatch: phase.refereesPerMatch,
+      doubleRoundRobin: phase.doubleRoundRobin,
       groups: phase.groups.map((group) => ({
         id: group.id,
         name: group.name,

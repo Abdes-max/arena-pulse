@@ -1,5 +1,5 @@
 .structure-page {
-  max-width: 900px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: var(--ap-space-6);
   color: var(--ap-color-fg);
@@ -42,6 +42,18 @@
   font-weight: 400;
   font-size: 0.85rem;
   color: var(--ap-color-muted);
+}
+
+.structure-page__phase-rules {
+  margin-top: var(--ap-space-4);
+  padding: var(--ap-space-3) var(--ap-space-4);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+
+  h3:first-child {
+    margin-top: 0;
+  }
 }
 
 .structure-page__group {

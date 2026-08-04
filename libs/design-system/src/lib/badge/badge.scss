@@ -25,10 +25,15 @@
   flex: none;
 }
 
-// Statuts "à venir" / "terminé" : neutres, pas d'alerte visuelle.
-:host([data-status='upcoming']) .ap-badge,
-:host([data-status='finished']) .ap-badge {
+// "À venir" : neutre, pas d'alerte visuelle.
+:host([data-status='upcoming']) .ap-badge {
   color: var(--ap-color-muted);
+}
+
+// "Terminé" : même vert que "qualifié" -- un résultat acté, positif par défaut.
+:host([data-status='finished']) .ap-badge {
+  color: var(--ap-color-win);
+  border-color: var(--ap-color-win);
 }
 
 // En direct : couleur signal de la direction, avec pulsation.

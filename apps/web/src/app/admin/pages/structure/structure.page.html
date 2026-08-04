@@ -1,5 +1,6 @@
 <main class="structure-page">
   <h1>Structure de compétition</h1>
+  <app-tournament-submenu [tournamentId]="tournamentId" />
 
   @if (loading()) {
     <p>Chargement…</p>
@@ -36,6 +37,16 @@
             [value]="newPhaseType()"
             (valueChange)="onNewPhaseTypeChange($event)"
           />
+          @if (newPhaseType() === 'GROUP_STAGE') {
+            <label class="structure-page__checkbox-label">
+              <input
+                type="checkbox"
+                [checked]="newPhaseDoubleRoundRobin()"
+                (change)="onNewPhaseDoubleRoundRobinChange($event)"
+              />
+              Matchs aller-retour
+            </label>
+          }
           <ap-button type="button" (click)="addPhase()">Ajouter la phase</ap-button>
         </div>
       </section>
@@ -55,6 +66,114 @@
           </div>
 
           @if (phase.type === 'GROUP_STAGE') {
+            <label class="structure-page__checkbox-label">
+              <input
+                type="checkbox"
+                [checked]="phase.doubleRoundRobin"
+                (change)="toggleDoubleRoundRobin(phase, $event)"
+              />
+              Matchs aller-retour
+            </label>
+
+            @if (standingRuleFor(phase.id); as rule) {
+              <div class="structure-page__phase-rules">
+                <h3>Barème de points</h3>
+                <p class="structure-page__hint">S'applique à toutes les poules de cette phase.</p>
+                <div class="structure-page__standing-rule">
+                  <ap-text-field
+                    label="Victoire"
+                    type="number"
+                    [value]="rule.winPoints.toString()"
+                    (valueChange)="updateStandingRuleField(phase.id, 'winPoints', $event)"
+                  />
+                  <ap-text-field
+                    label="Nul"
+                    type="number"
+                    [value]="rule.drawPoints.toString()"
+                    (valueChange)="updateStandingRuleField(phase.id, 'drawPoints', $event)"
+                  />
+                  <ap-text-field
+                    label="Défaite"
+                    type="number"
+                    [value]="rule.lossPoints.toString()"
+                    (valueChange)="updateStandingRuleField(phase.id, 'lossPoints', $event)"
+                  />
+                  <label class="structure-page__checkbox-label">
+                    <input
+                      type="checkbox"
+                      [checked]="rule.supplementaryStandingEnabled"
+                      (change)="
+                        toggleStandingRuleFlag(phase.id, 'supplementaryStandingEnabled', $event)
+                      "
+                    />
+                    Classement additionnel (fair-play)
+                  </label>
+                  <label class="structure-page__checkbox-label">
+                    <input
+                      type="checkbox"
+                      [checked]="rule.penaltyShootoutEnabled"
+                      (change)="toggleStandingRuleFlag(phase.id, 'penaltyShootoutEnabled', $event)"
+                    />
+                    Tirs au but en cas d'égalité
+                  </label>
+                  <p class="structure-page__hint">
+                    Critères de départage : {{ rule.tieBreakOrder.join(' → ') }}
+                  </p>
+                  <ap-button type="button" (click)="saveStandingRule(phase)">
+                    Enregistrer
+                  </ap-button>
+                </div>
+
+                <h3>Règles de qualification</h3>
+                <p class="structure-page__hint">S'applique à toutes les poules de cette phase.</p>
+                <ul class="structure-page__qualification-list">
+                  @for (ruleGroup of qualificationRuleGroupsFor(phase.id); track ruleGroup.key) {
+                    <li>
+                      Positions {{ ruleGroup.fromPosition }}–{{ ruleGroup.toPosition }} →
+                      {{ ruleGroup.targetPhaseName }}
+                      <ap-button
+                        type="button"
+                        variant="ghost"
+                        (click)="removeQualificationRule(phase, ruleGroup)"
+                      >
+                        Supprimer
+                      </ap-button>
+                    </li>
+                  }
+                </ul>
+                <div class="structure-page__inline-form">
+                  <ap-text-field
+                    label="De"
+                    [hideLabel]="true"
+                    type="number"
+                    [min]="1"
+                    placeholder="De"
+                    [value]="qualificationRuleFormFor(phase.id).fromPosition"
+                    (valueChange)="updateQualificationRuleField(phase.id, 'fromPosition', $event)"
+                  />
+                  <ap-text-field
+                    label="À"
+                    [hideLabel]="true"
+                    type="number"
+                    [min]="1"
+                    placeholder="À"
+                    [value]="qualificationRuleFormFor(phase.id).toPosition"
+                    (valueChange)="updateQualificationRuleField(phase.id, 'toPosition', $event)"
+                  />
+                  <ap-select
+                    label="Phase cible"
+                    [hideLabel]="true"
+                    [options]="targetPhaseOptions(phase.id)"
+                    [value]="qualificationRuleFormFor(phase.id).targetPhaseId"
+                    (valueChange)="onTargetPhaseChange(phase.id, $event)"
+                  />
+                  <ap-button type="button" variant="ghost" (click)="addQualificationRule(phase)">
+                    Ajouter la règle
+                  </ap-button>
+                </div>
+              </div>
+            }
+
             @for (group of phase.groups; track group.id) {
               <div class="structure-page__group">
                 <div class="structure-page__group-header">
@@ -96,101 +215,6 @@
                         (click)="assignTeamToExpandedGroup()"
                       >
                         Ajouter l'équipe à la poule
-                      </ap-button>
-                    </div>
-
-                    @if (groupStandingRule(); as rule) {
-                      <h3>Barème de points</h3>
-                      <div class="structure-page__standing-rule">
-                        <ap-text-field
-                          label="Victoire"
-                          type="number"
-                          [value]="rule.winPoints.toString()"
-                          (valueChange)="updateStandingRuleField('winPoints', $event)"
-                        />
-                        <ap-text-field
-                          label="Nul"
-                          type="number"
-                          [value]="rule.drawPoints.toString()"
-                          (valueChange)="updateStandingRuleField('drawPoints', $event)"
-                        />
-                        <ap-text-field
-                          label="Défaite"
-                          type="number"
-                          [value]="rule.lossPoints.toString()"
-                          (valueChange)="updateStandingRuleField('lossPoints', $event)"
-                        />
-                        <label class="structure-page__checkbox-label">
-                          <input
-                            type="checkbox"
-                            [checked]="rule.supplementaryStandingEnabled"
-                            (change)="
-                              toggleStandingRuleFlag('supplementaryStandingEnabled', $event)
-                            "
-                          />
-                          Classement additionnel (fair-play)
-                        </label>
-                        <label class="structure-page__checkbox-label">
-                          <input
-                            type="checkbox"
-                            [checked]="rule.penaltyShootoutEnabled"
-                            (change)="toggleStandingRuleFlag('penaltyShootoutEnabled', $event)"
-                          />
-                          Tirs au but en cas d'égalité
-                        </label>
-                        <p class="structure-page__hint">
-                          Critères de départage : {{ rule.tieBreakOrder.join(' → ') }}
-                        </p>
-                        <ap-button type="button" (click)="saveStandingRule()"
-                          >Enregistrer</ap-button
-                        >
-                      </div>
-                    }
-
-                    <h3>Règles de qualification</h3>
-                    <ul class="structure-page__qualification-list">
-                      @for (rule of groupQualificationRules(); track rule.id) {
-                        <li>
-                          Positions {{ rule.fromPosition }}–{{ rule.toPosition }} →
-                          {{ rule.targetPhaseName }}
-                          <ap-button
-                            type="button"
-                            variant="ghost"
-                            (click)="removeQualificationRule(rule)"
-                          >
-                            Supprimer
-                          </ap-button>
-                        </li>
-                      }
-                    </ul>
-                    <div class="structure-page__inline-form">
-                      <ap-text-field
-                        label="De"
-                        [hideLabel]="true"
-                        type="number"
-                        [min]="1"
-                        placeholder="De"
-                        [value]="newQualificationRuleForm().fromPosition"
-                        (valueChange)="updateQualificationRuleField('fromPosition', $event)"
-                      />
-                      <ap-text-field
-                        label="À"
-                        [hideLabel]="true"
-                        type="number"
-                        [min]="1"
-                        placeholder="À"
-                        [value]="newQualificationRuleForm().toPosition"
-                        (valueChange)="updateQualificationRuleField('toPosition', $event)"
-                      />
-                      <ap-select
-                        label="Phase cible"
-                        [hideLabel]="true"
-                        [options]="targetPhaseOptions(phase.id)"
-                        [value]="newQualificationRuleForm().targetPhaseId"
-                        (valueChange)="onTargetPhaseChange($event)"
-                      />
-                      <ap-button type="button" variant="ghost" (click)="addQualificationRule()">
-                        Ajouter la règle
                       </ap-button>
                     </div>
                   </div>

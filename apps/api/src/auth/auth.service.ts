@@ -152,6 +152,7 @@ export class AuthService {
       accessToken: this.tokenService.signAccessToken({
         sub: user.id,
         email: user.email,
+        type: 'organizer',
       }),
       expiresIn: this.tokenService.accessTokenExpiresInSeconds,
       refreshToken: issued.token,
@@ -197,7 +198,11 @@ export class AuthService {
       },
     });
     return {
-      accessToken: this.tokenService.signAccessToken({ sub: userId, email }),
+      accessToken: this.tokenService.signAccessToken({
+        sub: userId,
+        email,
+        type: 'organizer',
+      }),
       expiresIn: this.tokenService.accessTokenExpiresInSeconds,
       refreshToken: issued.token,
       refreshTokenExpiresAt: issued.expiresAt,

@@ -47,6 +47,27 @@ describe('MatchCard', () => {
     expect(teams[1].classList.contains('ap-match-card__team--winner')).toBe(false);
   });
 
+  it('shows a green "Terminé" badge for a completed match', () => {
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.componentInstance.variant = 'result';
+    fixture.componentInstance.homeScore = 2;
+    fixture.componentInstance.awayScore = 1;
+    fixture.detectChanges();
+
+    const badge = fixture.nativeElement.querySelector('ap-badge[status="finished"]');
+    expect(badge).not.toBeNull();
+  });
+
+  it('does not show the "Terminé" badge for a live match, even with a score entered', () => {
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.componentInstance.variant = 'live';
+    fixture.componentInstance.homeScore = 2;
+    fixture.componentInstance.awayScore = 1;
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('ap-badge[status="finished"]')).toBeNull();
+  });
+
   it('declares no winner on a draw', () => {
     const fixture = TestBed.createComponent(HostComponent);
     fixture.componentInstance.homeScore = 2;

@@ -5,20 +5,59 @@
 >
   {{ label() }}
 </label>
-<input
-  [id]="inputId"
-  class="ap-text-field__input"
-  [type]="type()"
-  [value]="displayValue()"
-  [disabled]="disabled()"
-  [attr.placeholder]="placeholder()"
-  [attr.autocomplete]="autocomplete()"
-  [attr.min]="min()"
-  [attr.aria-invalid]="errorMessage() ? true : null"
-  [attr.aria-describedby]="errorMessage() ? errorId : null"
-  (input)="handleInput($event)"
-  (blur)="handleBlur()"
-/>
+@if (type() === 'number') {
+  <div class="ap-text-field__number-wrapper">
+    <input
+      [id]="inputId"
+      class="ap-text-field__input"
+      type="number"
+      [value]="displayValue()"
+      [disabled]="disabled()"
+      [attr.placeholder]="placeholder()"
+      [attr.autocomplete]="autocomplete()"
+      [attr.min]="min()"
+      [attr.aria-invalid]="errorMessage() ? true : null"
+      [attr.aria-describedby]="errorMessage() ? errorId : null"
+      (input)="handleInput($event)"
+      (blur)="handleBlur()"
+    />
+    <span class="ap-text-field__stepper">
+      <button
+        type="button"
+        tabindex="-1"
+        aria-label="Augmenter"
+        [disabled]="disabled()"
+        (click)="increment()"
+      >
+        ▲
+      </button>
+      <button
+        type="button"
+        tabindex="-1"
+        aria-label="Diminuer"
+        [disabled]="disabled()"
+        (click)="decrement()"
+      >
+        ▼
+      </button>
+    </span>
+  </div>
+} @else {
+  <input
+    [id]="inputId"
+    class="ap-text-field__input"
+    [type]="type()"
+    [value]="displayValue()"
+    [disabled]="disabled()"
+    [attr.placeholder]="placeholder()"
+    [attr.autocomplete]="autocomplete()"
+    [attr.min]="min()"
+    [attr.aria-invalid]="errorMessage() ? true : null"
+    [attr.aria-describedby]="errorMessage() ? errorId : null"
+    (input)="handleInput($event)"
+    (blur)="handleBlur()"
+  />
+}
 @if (errorMessage(); as message) {
   <p [id]="errorId" class="ap-text-field__error" role="alert">{{ message }}</p>
 }

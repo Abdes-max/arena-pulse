@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Button, Select, SelectOption, TextField } from 'design-system';
+import { TournamentSubmenu } from '../../shared/tournament-submenu';
 import { AuthService } from '../../core/auth.service';
 import { CompetitionFormatsService } from '../../core/competition-formats.service';
 import { Category, CompetitionPhase, Match, StandingRule } from '../../core/models';
@@ -20,7 +21,7 @@ const EMPTY_DRAFT: ScoreDraft = { home: '', away: '', homePenalty: '', awayPenal
 
 @Component({
   selector: 'app-scores-page',
-  imports: [Button, Select, TextField],
+  imports: [Button, Select, TextField, TournamentSubmenu],
   templateUrl: './scores.page.html',
   styleUrl: './scores.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -154,9 +155,16 @@ export class ScoresPage {
       return;
     }
     try {
-      this.matches.set(
-        await this.scheduleService.listMatches(organizationId, this.tournamentId, phaseId),
+      const matches = await this.scheduleService.listMatches(
+        organizationId,
+        this.tournamentId,
+        phaseId,
       );
+      // A knockout phase's later rounds exist as soon as the bracket is
+      // generated, but with no opponents decided yet -- nothing to score
+      // until tryAdvanceRound fills them in (the Calendrier page is where
+      // those still show up, so the organizer can see/plan them meanwhile).
+      this.matches.set(matches.filter((match) => match.homeTeam && match.awayTeam));
     } catch {
       this.errorMessage.set('Impossible de charger les matchs.');
     }
@@ -234,8 +242,14 @@ export class ScoresPage {
 
   protected async saveScore(match: Match): Promise<void> {
     const organizationId = this.organization()?.id;
+    if (!organizationId) {
+      return;
+    }
     const draft = this.draftFor(match);
-    if (!organizationId || draft.home === '' || draft.away === '') {
+    if (draft.home === '' || draft.away === '') {
+      this.errorMessage.set(
+        'Renseignez les deux scores (domicile et extérieur) avant d’enregistrer.',
+      );
       return;
     }
     const hasPenalty = draft.homePenalty !== '' || draft.awayPenalty !== '';
@@ -270,12 +284,14 @@ export class ScoresPage {
     }
     this.errorMessage.set(null);
     try {
-      const updated = await this.scoresService.validateScore(
-        organizationId,
-        this.tournamentId,
-        match.id,
-      );
-      this.replaceMatch(updated);
+      await this.scoresService.validateScore(organizationId, this.tournamentId, match.id);
+      // Not just replaceMatch(updated): validating the last match of a
+      // knockout round can fill in the next round's final/3rd-place (or any
+      // deeper round) server-side -- those matches were filtered out of
+      // this.matches entirely while undetermined (see loadMatches), so a
+      // full reload is the only way this page notices they now have real
+      // opponents, whatever the bracket's size (round of 32, 16, quarters...).
+      await this.loadMatches();
     } catch (error) {
       this.errorMessage.set(
         error instanceof HttpErrorResponse && error.status === 400
@@ -312,13 +328,10 @@ export class ScoresPage {
     }
     this.errorMessage.set(null);
     try {
-      const updated = await this.scoresService.declareForfeit(
-        organizationId,
-        this.tournamentId,
-        match.id,
-        teamId,
-      );
-      this.replaceMatch(updated);
+      await this.scoresService.declareForfeit(organizationId, this.tournamentId, match.id, teamId);
+      // Same reasoning as validateScore -- a forfeit can also advance a
+      // knockout round, filling in matches this page hadn't loaded yet.
+      await this.loadMatches();
       this.clearDraft(match.id);
     } catch {
       this.errorMessage.set('Impossible de déclarer ce forfait.');

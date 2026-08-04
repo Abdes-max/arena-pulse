@@ -35,6 +35,10 @@ export interface Category {
   id: string;
   name: string;
   position: number;
+  // Null = free to join (no online registration/payment step required).
+  // Smallest currency unit (cents), matching Stripe's own convention.
+  registrationFeeCents: number | null;
+  registrationFeeCurrency: string | null;
 }
 
 export type CompetitionPhaseType = 'GROUP_STAGE' | 'KNOCKOUT';
@@ -145,4 +149,65 @@ export interface Qualification {
 export interface PublicTeamDetail extends PublicTeam {
   matches: Match[];
   standing: StandingRow | null;
+}
+
+// --- Player accounts + online registration + payments (feat/036) ---
+
+export interface PlayerAccount {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+}
+
+export interface RegistrationPlayerInput {
+  firstName: string;
+  lastName: string;
+  jerseyNumber?: number;
+}
+
+export interface CreateRegistrationPayload {
+  teamName: string;
+  managerEmail: string;
+  managerPhone?: string;
+  players: RegistrationPlayerInput[];
+}
+
+export type RegistrationStatus = 'PENDING_PAYMENT' | 'PAID' | 'CANCELLED';
+
+export interface CreateRegistrationResult {
+  registrationId: string;
+  status: RegistrationStatus;
+  checkoutUrl: string | null;
+}
+
+/** A player's own registration, as returned by GET /public/registrations/me. */
+export interface PlayerRegistration {
+  id: string;
+  teamName: string;
+  status: RegistrationStatus;
+  amountCents: number;
+  currency: string;
+  createdAt: string;
+  paidAt: string | null;
+  tournament: { slug: string; name: string };
+  category: { id: string; name: string };
+}
+
+/** A registration as seen by the organizer, as returned by GET .../registrations. */
+export interface OrganizerRegistration {
+  id: string;
+  teamName: string;
+  categoryId: string;
+  categoryName: string;
+  managerEmail: string;
+  managerPhone: string | null;
+  status: RegistrationStatus;
+  amountCents: number;
+  currency: string;
+  teamId: string | null;
+  createdAt: string;
+  paidAt: string | null;
+  registrant: { firstName: string; lastName: string; email: string };
+  players: RegistrationPlayerInput[];
 }

@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './admin/core/auth.guard';
 import { resetThemeGuard } from './admin/core/reset-theme.guard';
+import { playerAuthGuard } from './core/player-auth.guard';
 
 export const routes: Routes = [
   {
@@ -22,6 +23,16 @@ export const routes: Routes = [
       import('./admin/pages/accept-invitation/accept-invitation.page').then(
         (m) => m.AcceptInvitationPage,
       ),
+  },
+  {
+    path: 'player/login',
+    loadComponent: () =>
+      import('./pages/player-auth/login/player-login.page').then((m) => m.PlayerLoginPage),
+  },
+  {
+    path: 'player/register',
+    loadComponent: () =>
+      import('./pages/player-auth/register/player-register.page').then((m) => m.PlayerRegisterPage),
   },
   {
     path: 'admin',
@@ -80,6 +91,13 @@ export const routes: Routes = [
           import('./admin/pages/standings/standings.page').then((m) => m.StandingsPage),
       },
       {
+        path: 'tournaments/:tournamentId/registrations',
+        loadComponent: () =>
+          import('./admin/pages/registrations/registration-list.page').then(
+            (m) => m.RegistrationListPage,
+          ),
+      },
+      {
         path: 'collaborators',
         loadComponent: () =>
           import('./admin/pages/collaborators/collaborators.page').then((m) => m.CollaboratorsPage),
@@ -112,6 +130,19 @@ export const routes: Routes = [
       {
         path: 'schedule',
         loadComponent: () => import('./pages/schedule/schedule.page').then((m) => m.SchedulePage),
+      },
+      {
+        path: 'register',
+        canActivate: [playerAuthGuard],
+        loadComponent: () => import('./pages/register/register.page').then((m) => m.RegisterPage),
+      },
+      {
+        path: 'register/success',
+        canActivate: [playerAuthGuard],
+        loadComponent: () =>
+          import('./pages/register-success/register-success.page').then(
+            (m) => m.RegisterSuccessPage,
+          ),
       },
     ],
   },
