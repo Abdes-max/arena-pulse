@@ -5,7 +5,7 @@ import { DEFAULT_MODE, DEFAULT_THEME, ThemeMode, ThemeName } from './theme.types
  * Applies a ThemeName/ThemeMode pair to a DOM element via `data-theme` /
  * `data-mode` attributes, which the SCSS tokens in styles/*.scss key off.
  *
- * The Arena Pulse product shell (apps/web's /admin section, and its own
+ * The TournArena product shell (apps/web's /admin section, and its own
  * marketing/landing chrome) defaults to `ink-signal` but the organizer can
  * pick any of the three themes for their own dashboard (see `adminTheme`
  * below) — independent of a tournament's public theme, which is read from

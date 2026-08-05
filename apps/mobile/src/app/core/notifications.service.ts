@@ -72,7 +72,7 @@ export class NotificationsService {
   private async notify(body: string): Promise<void> {
     try {
       await LocalNotifications.schedule({
-        notifications: [{ id: this.nextNotificationId++, title: 'Arena Pulse', body }],
+        notifications: [{ id: this.nextNotificationId++, title: 'TournArena', body }],
       });
     } catch {
       // Permission not granted, or unsupported platform -- no-op.

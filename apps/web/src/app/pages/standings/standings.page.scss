@@ -63,6 +63,51 @@
   }
 }
 
+// table-layout: fixed + explicit widths on every column but Équipe (which
+// takes whatever's left) -- otherwise each pool's own table sizes its
+// columns from its own content, so J/G/N/.../Rating land at a different x
+// position per pool whenever team names are different lengths across them.
+.standings-page__group-table {
+  table-layout: fixed;
+
+  th:nth-child(1),
+  td:nth-child(1) {
+    width: 32px;
+  }
+
+  th:nth-child(3),
+  td:nth-child(3),
+  th:nth-child(4),
+  td:nth-child(4),
+  th:nth-child(5),
+  td:nth-child(5),
+  th:nth-child(6),
+  td:nth-child(6),
+  th:nth-child(7),
+  td:nth-child(7),
+  th:nth-child(8),
+  td:nth-child(8),
+  th:nth-child(9),
+  td:nth-child(9) {
+    width: 36px;
+  }
+
+  th:nth-child(10),
+  td:nth-child(10) {
+    width: 48px;
+  }
+
+  th:nth-child(11),
+  td:nth-child(11) {
+    width: 92px;
+  }
+
+  th:nth-child(12),
+  td:nth-child(12) {
+    width: 48px;
+  }
+}
+
 .standings-page__row--qualified {
   background: var(--ap-color-signal-soft);
 }

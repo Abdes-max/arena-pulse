@@ -40,8 +40,13 @@
   color: var(--ap-color-fg);
 }
 
+// table-layout: fixed + explicit widths on every column but Équipe (which
+// takes whatever's left) -- otherwise each pool's own table sizes its
+// columns from its own content, so J/Pts/+/- land at a different x position
+// per pool whenever team names are different lengths across them.
 .standings-page__table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
   font-size: 0.85rem;
 
@@ -50,6 +55,15 @@
     padding: var(--ap-space-2) var(--ap-space-1);
     text-align: center;
     border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+  }
+
+  th:nth-child(3),
+  td:nth-child(3),
+  th:nth-child(4),
+  td:nth-child(4),
+  th:nth-child(5),
+  td:nth-child(5) {
+    width: 44px;
   }
 
   th {
@@ -71,7 +85,7 @@
 
   th.standings-page__table-qualified,
   td.standings-page__table-qualified {
-    width: 1%;
+    width: 92px;
     padding-inline: 0;
   }
 }

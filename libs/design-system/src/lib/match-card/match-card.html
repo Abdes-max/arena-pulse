@@ -1,16 +1,13 @@
 <article class="ap-match-card">
-  <ap-badge class="ap-match-card__status" [status]="statusBadge()" />
-
-  @if (showMeta()) {
-    <div class="ap-match-card__meta">
-      @if (competitionLabel(); as label) {
-        <span class="ap-match-card__competition">{{ label }}</span>
-      }
-      @if (venue(); as v) {
-        <span class="ap-match-card__venue">{{ v }}</span>
-      }
-    </div>
-  }
+  <div class="ap-match-card__meta">
+    @if (competitionLabel(); as label) {
+      <span class="ap-match-card__competition">{{ label }}</span>
+    }
+    @if (venue(); as v) {
+      <span class="ap-match-card__venue">{{ v }}</span>
+    }
+    <ap-badge class="ap-match-card__status" [status]="statusBadge()" />
+  </div>
 
   <div class="ap-match-card__teams">
     <div class="ap-match-card__team" [class.ap-match-card__team--winner]="homeIsWinner()">

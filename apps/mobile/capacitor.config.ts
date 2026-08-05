@@ -2,7 +2,7 @@ import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.arenapulse.mobile',
-  appName: 'Arena Pulse',
+  appName: 'TournArena',
   webDir: '../../dist/mobile/browser',
 };
 

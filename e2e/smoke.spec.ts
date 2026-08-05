@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('web', () => {
   test('landing page loads', async ({ page }) => {
     await page.goto('http://localhost:4200');
-    await expect(page).toHaveTitle(/Arena Pulse/i);
+    await expect(page).toHaveTitle(/TournArena/i);
   });
 
   test('unauthenticated access to /admin redirects to /login', async ({ page }) => {

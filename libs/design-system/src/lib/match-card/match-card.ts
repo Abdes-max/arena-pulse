@@ -40,11 +40,10 @@ export class MatchCard {
     () => this.homeScore() !== undefined && this.awayScore() !== undefined,
   );
 
-  protected readonly showMeta = computed(() => !!this.competitionLabel() || !!this.venue());
-
-  // One status badge, always shown, pinned to the card's top-right corner --
-  // not folded into the meta row or footer, so it reads the same regardless
-  // of whether a competitionLabel/venue/kickoff happens to be set.
+  // One status badge, always shown, at the end of the meta row (pushed to
+  // its right edge via margin-left: auto -- normal flow, not
+  // position:absolute, so it can never overlap the score below it
+  // regardless of how tall the badge actually renders).
   protected readonly statusBadge = computed<BadgeStatus>(() => {
     if (this.variant() === 'live') {
       return 'live';

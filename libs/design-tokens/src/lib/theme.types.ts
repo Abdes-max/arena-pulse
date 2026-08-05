@@ -1,7 +1,7 @@
 /**
  * The three art directions from docs/design/visual-language.md.
  *
- * `ink-signal` is also the fixed Arena Pulse product identity (admin +
+ * `ink-signal` is also the fixed TournArena product identity (admin +
  * marketing); all three remain selectable as a tournament's public site /
  * slideshow theme (docs/architecture/data-model.md: PublicPageConfiguration.theme).
  */
