@@ -71,7 +71,7 @@
                 [value]="breakDurationMinutes()"
                 (valueChange)="onBreakDurationChange($event)"
               />
-              @if (phase.type === 'GROUP_STAGE') {
+              @if (phase.type === 'GROUP_STAGE' && hasReferees()) {
                 <ap-text-field
                   label="Arbitres par match"
                   type="number"
@@ -118,6 +118,69 @@
               planifiés » pour le retirer du calendrier.
             </p>
 
+            <ng-template
+              #matchCard
+              let-match="match"
+              let-time="time"
+              let-showOfficials="showOfficials"
+            >
+              <div
+                class="schedule-page__match-card"
+                draggable="true"
+                (dragstart)="onMatchDragStart(match.id, $event)"
+              >
+                <div class="schedule-page__match-card-header">
+                  <span>Tour {{ match.round }}</span>
+                  @if (time) {
+                    <span class="schedule-page__match-card-time">{{ time }}</span>
+                  }
+                </div>
+                <div class="schedule-page__match-card-teams">
+                  <span class="schedule-page__match-card-team">{{
+                    match.homeTeam?.name ?? '?'
+                  }}</span>
+                  <span class="schedule-page__match-card-team">{{
+                    match.awayTeam?.name ?? '?'
+                  }}</span>
+                </div>
+
+                @if (showOfficials) {
+                  <div class="schedule-page__officials">
+                    @for (official of match.officials; track official.id) {
+                      <span class="schedule-page__official-chip">
+                        {{ officialLabel(official) }}
+                        <button
+                          type="button"
+                          aria-label="Retirer cet officiel"
+                          (click)="onRemoveOfficial(official.id, match.id)"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    }
+                    @if (hasReferees()) {
+                      <ap-select
+                        label="Ajouter un arbitre"
+                        [hideLabel]="true"
+                        [options]="refereeOptions(match)"
+                        [resetAfterSelect]="true"
+                        (valueChange)="onAddReferee(match.id, $event)"
+                      />
+                    }
+                    @if (teamsCanReferee()) {
+                      <ap-select
+                        label="Ajouter une équipe arbitre"
+                        [hideLabel]="true"
+                        [options]="refereeingTeamOptions(match)"
+                        [resetAfterSelect]="true"
+                        (valueChange)="onAddRefereeingTeam(match.id, $event)"
+                      />
+                    }
+                  </div>
+                }
+              </div>
+            </ng-template>
+
             <div class="schedule-page__editor">
               <div
                 class="schedule-page__unscheduled"
@@ -128,15 +191,13 @@
                 @if (unscheduledMatches().length === 0) {
                   <p class="schedule-page__empty">Aucun match en attente.</p>
                 }
-                @for (match of unscheduledMatches(); track match.id) {
-                  <div
-                    class="schedule-page__match-chip"
-                    draggable="true"
-                    (dragstart)="onMatchDragStart(match.id, $event)"
-                  >
-                    <span class="schedule-page__match-round">R{{ match.round }}</span>
-                    {{ match.homeTeam?.name ?? '?' }} vs {{ match.awayTeam?.name ?? '?' }}
-                  </div>
+                @for (group of unscheduledMatchesByRound(); track group.round) {
+                  <h4 class="schedule-page__round-label">Tour {{ group.round }}</h4>
+                  @for (match of group.matches; track match.id) {
+                    <ng-container
+                      *ngTemplateOutlet="matchCard; context: { match: match, showOfficials: false }"
+                    />
+                  }
                 }
               </div>
 
@@ -152,54 +213,19 @@
                         (dragover)="onSlotDragOver($event)"
                         (drop)="onSlotDrop(slot.id, $event)"
                       >
-                        <span class="schedule-page__slot-time">
-                          {{ formatSlotTime(slot.startTime) }}
-                          @if (slot.label) {
-                            — {{ slot.label }}
-                          }
-                        </span>
-
                         @if (matchBySlotId().get(slot.id); as match) {
-                          <div
-                            class="schedule-page__match-chip"
-                            draggable="true"
-                            (dragstart)="onMatchDragStart(match.id, $event)"
-                          >
-                            <span class="schedule-page__match-round">R{{ match.round }}</span>
-                            {{ match.homeTeam?.name ?? '?' }} vs {{ match.awayTeam?.name ?? '?' }}
-
-                            <div class="schedule-page__officials">
-                              @for (official of match.officials; track official.id) {
-                                <span class="schedule-page__official-chip">
-                                  {{ officialLabel(official) }}
-                                  <button
-                                    type="button"
-                                    aria-label="Retirer cet officiel"
-                                    (click)="onRemoveOfficial(official.id, match.id)"
-                                  >
-                                    ×
-                                  </button>
-                                </span>
+                          <ng-container
+                            *ngTemplateOutlet="
+                              matchCard;
+                              context: {
+                                match: match,
+                                time: slotTimeLabel(slot),
+                                showOfficials: true,
                               }
-                              <ap-select
-                                label="Ajouter un arbitre"
-                                [hideLabel]="true"
-                                [options]="refereeOptions(match)"
-                                [resetAfterSelect]="true"
-                                (valueChange)="onAddReferee(match.id, $event)"
-                              />
-                              @if (teamsCanReferee()) {
-                                <ap-select
-                                  label="Ajouter une équipe arbitre"
-                                  [hideLabel]="true"
-                                  [options]="refereeingTeamOptions(match)"
-                                  [resetAfterSelect]="true"
-                                  (valueChange)="onAddRefereeingTeam(match.id, $event)"
-                                />
-                              }
-                            </div>
-                          </div>
+                            "
+                          />
                         } @else {
+                          <span class="schedule-page__slot-time">{{ slotTimeLabel(slot) }}</span>
                           <button
                             type="button"
                             class="schedule-page__delete-slot"
