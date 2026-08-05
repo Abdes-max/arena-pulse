@@ -1,9 +1,42 @@
+// No ion-header on this screen (the very first one, before any tournament
+// is loaded) -- a toolbar with nothing but a brand mark in it wasted a row;
+// the logo now leads a proper centered hero instead, same lockup as the
+// admin login/register pages (docs/design/logo.md).
 .tournament-entry-page {
-  --padding-start: 16px;
-  --padding-end: 16px;
-  --padding-top: 16px;
+  --padding-start: var(--ap-space-6);
+  --padding-end: var(--ap-space-6);
+  --padding-top: var(--ap-space-16);
+
+  ap-text-field {
+    display: block;
+    margin-top: var(--ap-space-2);
+  }
 
   ion-button {
-    margin-top: 16px;
+    margin-top: var(--ap-space-4);
   }
+}
+
+.tournament-entry-page__hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--ap-space-2);
+  margin-bottom: var(--ap-space-8);
+}
+
+.tournament-entry-page__title {
+  font-family: var(--ap-font-heading);
+  font-size: 1.4rem;
+  letter-spacing: var(--ap-tracking-tight);
+  text-transform: var(--ap-title-case);
+  color: var(--ap-color-fg);
+  margin: var(--ap-space-2) 0 0;
+}
+
+.tournament-entry-page__hint {
+  color: var(--ap-color-muted);
+  font-size: 0.9rem;
+  margin: 0;
 }

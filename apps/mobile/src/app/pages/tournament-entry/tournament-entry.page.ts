@@ -1,18 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import {
-  IonButton,
-  IonContent,
-  IonHeader,
-  IonInput,
-  IonTitle,
-  IonToolbar,
-} from '@ionic/angular/standalone';
-import { Logo } from 'design-system';
+import { IonButton, IonContent } from '@ionic/angular/standalone';
+import { Logo, TextField } from 'design-system';
 
 @Component({
   selector: 'app-tournament-entry-page',
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonInput, IonButton, Logo],
+  imports: [IonContent, IonButton, Logo, TextField],
   templateUrl: './tournament-entry.page.html',
   styleUrl: './tournament-entry.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -22,8 +15,8 @@ export class TournamentEntryPage {
 
   protected readonly slug = signal('');
 
-  protected onSlugChange(value: string | number | null | undefined): void {
-    this.slug.set(String(value ?? ''));
+  protected onSlugChange(value: string): void {
+    this.slug.set(value);
   }
 
   protected go(): void {
