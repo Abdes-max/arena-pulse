@@ -72,8 +72,9 @@ docker compose -f infra/deployment/docker-compose.prod.yml --env-file infra/depl
   up -d --build
 ```
 
-Le service `migrate` s'exécute avant `api` à chaque `up` et applique les migrations Prisma en
-attente ; `api` ne démarre que si `migrate` s'est terminé avec succès.
+Le service `migrate` s'exécute avant `api` à chaque `up`, applique les migrations Prisma en
+attente puis peuple/rafraîchit les données de référence (sports, permissions — idempotent, sans
+effet si déjà à jour) ; `api` ne démarre que si `migrate` s'est terminé avec succès.
 
 ## Déployer en continu (GitHub Actions)
 

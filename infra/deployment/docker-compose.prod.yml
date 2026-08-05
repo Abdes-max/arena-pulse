@@ -33,10 +33,13 @@ services:
       timeout: 5s
       retries: 10
 
-  # One-shot: applies pending Prisma migrations, then exits. Uses the
-  # `build` stage of api.Dockerfile (full source + Prisma CLI), not the
-  # pruned `runtime` stage the `api` service below runs -- `runtime` has no
-  # devDependencies, so no `prisma` CLI to run `migrate deploy` with.
+  # One-shot: applies pending Prisma migrations, then seeds reference data
+  # (sports, permissions -- apps/api/prisma/seed.ts, all upserts, so safe to
+  # rerun on every deploy), then exits. Uses the `build` stage of
+  # api.Dockerfile (full source + Prisma CLI), not the pruned `runtime`
+  # stage the `api` service below runs -- `runtime` has no devDependencies,
+  # so neither the Prisma CLI nor `nest build` (which the seed runner needs)
+  # would be available there.
   migrate:
     build:
       context: ../../apps/api
@@ -44,7 +47,7 @@ services:
       target: build
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-arena_pulse}:${POSTGRES_PASSWORD:?}@postgres:5432/${POSTGRES_DB:-arena_pulse}?schema=public
-    command: ['npx', 'prisma', 'migrate', 'deploy']
+    command: ['sh', '-c', 'npx prisma migrate deploy && npx prisma db seed']
     depends_on:
       postgres:
         condition: service_healthy
