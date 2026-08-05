@@ -9,14 +9,22 @@ import {
   RouterOutlet,
 } from '@angular/router';
 import { filter, map, startWith } from 'rxjs';
-import { Button, ThemeModeToggle } from 'design-system';
+import { Button, Logo, ThemeModeToggle } from 'design-system';
 import { ThemeMode, ThemeService } from 'design-tokens';
 import { AuthService } from '../core/auth.service';
 import { TournamentSubmenu } from '../shared/tournament-submenu';
 
 @Component({
   selector: 'app-shell',
-  imports: [RouterLink, RouterLinkActive, RouterOutlet, Button, ThemeModeToggle, TournamentSubmenu],
+  imports: [
+    RouterLink,
+    RouterLinkActive,
+    RouterOutlet,
+    Button,
+    Logo,
+    ThemeModeToggle,
+    TournamentSubmenu,
+  ],
   templateUrl: './app-shell.html',
   styleUrl: './app-shell.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

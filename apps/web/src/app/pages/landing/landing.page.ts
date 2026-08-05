@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ThemeModeToggle } from 'design-system';
+import { Logo, ThemeModeToggle } from 'design-system';
 import { ThemeMode, ThemeService } from 'design-tokens';
 
 interface Feature {
@@ -10,7 +10,7 @@ interface Feature {
 
 @Component({
   selector: 'app-landing-page',
-  imports: [RouterLink, ThemeModeToggle],
+  imports: [RouterLink, Logo, ThemeModeToggle],
   templateUrl: './landing.page.html',
   styleUrl: './landing.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

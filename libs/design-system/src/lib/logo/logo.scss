@@ -1,0 +1,94 @@
+// Fixed brand colors/font, not the --ap-* theme tokens -- see logo.ts.
+:host {
+  display: inline-flex;
+}
+
+.ap-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+}
+
+.ap-logo__mark {
+  width: 28px;
+  height: 28px;
+  flex: none;
+}
+
+.ap-logo__frame {
+  fill: #1e293b;
+}
+
+.ap-logo__chevron {
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ap-logo__glow {
+  fill: #0ea5c9;
+  opacity: 0.22;
+}
+
+.ap-logo__dot {
+  fill: #0ea5c9;
+}
+
+// Same mark, inverted for placement on a dark surface.
+:host([data-variant='on-dark']) .ap-logo__frame {
+  fill: none;
+  stroke: rgba(231, 236, 245, 0.28);
+  stroke-width: 2;
+}
+
+:host([data-variant='on-dark']) .ap-logo__chevron {
+  stroke: #e7ecf5;
+}
+
+:host([data-variant='on-dark']) .ap-logo__glow,
+:host([data-variant='on-dark']) .ap-logo__dot {
+  fill: #38bdf8;
+}
+
+.ap-logo__wordmark {
+  font-family:
+    'Space Grotesk',
+    -apple-system,
+    'Segoe UI',
+    sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-size: 1.15rem;
+  white-space: nowrap;
+}
+
+.ap-logo__wordmark-a {
+  color: #1e293b;
+}
+
+.ap-logo__wordmark-b {
+  color: #0a738d;
+}
+
+:host([data-variant='on-dark']) .ap-logo__wordmark-a {
+  color: #e7ecf5;
+}
+
+:host([data-variant='on-dark']) .ap-logo__wordmark-b {
+  color: #38bdf8;
+}
+
+// Same visually-hidden technique as ap-text-field's [hideLabel].
+.ap-logo__sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

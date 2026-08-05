@@ -27,13 +27,6 @@
   gap: var(--ap-space-6);
 }
 
-.app-shell__brand {
-  font-family: var(--ap-font-heading);
-  font-weight: 700;
-  letter-spacing: var(--ap-tracking-tight);
-  color: #1b1b18;
-}
-
 .app-shell__nav {
   display: flex;
   gap: var(--ap-space-6);
