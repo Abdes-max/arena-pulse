@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Select, TextField } from 'design-system';
+import { Tabs, TextField } from 'design-system';
 import { PublicApiService } from 'api-client';
 import { TournamentContextService } from '../../core/tournament-context.service';
 import { Category, PublicTeam } from 'shared-models';
 
 @Component({
   selector: 'app-team-search-page',
-  imports: [RouterLink, Select, TextField],
+  imports: [RouterLink, Tabs, TextField],
   templateUrl: './team-search.page.html',
   styleUrl: './team-search.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

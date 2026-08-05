@@ -12,6 +12,7 @@ import { ApiTags } from '@nestjs/swagger';
 import type { Request } from 'express';
 import { Public } from '../auth/decorators/public.decorator';
 import { StripeService } from '../payments/stripe.service';
+import { TournamentsService } from '../tournaments/tournaments.service';
 import { RegistrationsService } from './registrations.service';
 
 @ApiTags('payments')
@@ -20,6 +21,7 @@ export class PaymentsWebhookController {
   constructor(
     private readonly stripeService: StripeService,
     private readonly registrationsService: RegistrationsService,
+    private readonly tournamentsService: TournamentsService,
   ) {}
 
   @Public()
@@ -41,7 +43,12 @@ export class PaymentsWebhookController {
       }
     })();
 
+    // Two independent, idempotent handlers rather than a metadata-based
+    // dispatcher: each looks up its own row by stripeCheckoutSessionId and
+    // no-ops if it doesn't own this session (see
+    // docs/architecture/adr/0006-paid-tournament-publication.md).
     await this.registrationsService.handleStripeEvent(event);
+    await this.tournamentsService.handlePublicationStripeEvent(event);
     return { received: true };
   }
 }

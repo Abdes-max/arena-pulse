@@ -101,6 +101,9 @@ export class TournamentFormPage {
       this.tournamentId();
       void this.load();
     });
+    if (this.route.snapshot.queryParamMap.get('publishCancelled')) {
+      this.errorMessage.set("Paiement annulé : le tournoi n'a pas été publié.");
+    }
   }
 
   private async load(): Promise<void> {
@@ -194,10 +197,27 @@ export class TournamentFormPage {
     }
   }
 
-  protected publish(): Promise<void> {
-    return this.runLifecycleAction((organizationId, tournamentId) =>
-      this.tournamentsService.publish(organizationId, tournamentId),
-    );
+  protected async publish(): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const tournamentId = this.tournamentId();
+    if (!organizationId || !tournamentId) {
+      return;
+    }
+    this.errorMessage.set(null);
+    try {
+      const result = await this.tournamentsService.publish(organizationId, tournamentId);
+      if (result.status === 'PENDING_PAYMENT') {
+        window.location.href = result.checkoutUrl;
+        return;
+      }
+      this.tournament.set(result);
+    } catch (error) {
+      this.errorMessage.set(
+        error instanceof HttpErrorResponse && error.status === 409
+          ? "Cette action n'est pas possible dans l'état actuel du tournoi."
+          : 'Une erreur est survenue, réessayez.',
+      );
+    }
   }
 
   protected unpublish(): Promise<void> {

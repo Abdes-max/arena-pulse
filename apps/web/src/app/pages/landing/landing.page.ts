@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Button } from 'design-system';
-import { ThemeService } from 'design-tokens';
+import { ThemeModeToggle } from 'design-system';
+import { ThemeMode, ThemeService } from 'design-tokens';
 
 interface Feature {
   title: string;
@@ -10,7 +10,7 @@ interface Feature {
 
 @Component({
   selector: 'app-landing-page',
-  imports: [RouterLink, Button],
+  imports: [RouterLink, ThemeModeToggle],
   templateUrl: './landing.page.html',
   styleUrl: './landing.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -20,8 +20,7 @@ export class LandingPage {
 
   protected readonly mode = this.themeService.mode;
 
-  protected toggleMode(): void {
-    const next = this.mode() === 'dark' ? 'light' : 'dark';
+  protected onModeChange(next: ThemeMode): void {
     this.themeService.setMode(document.documentElement, next);
   }
 

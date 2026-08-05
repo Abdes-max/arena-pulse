@@ -46,7 +46,7 @@ function buildTeamDetail(matches: Match[]): PublicTeamDetail {
     groupId: null,
     groupName: null,
     position: 1,
-    matches,
+    matches: matches.map((match) => ({ ...match, knockoutTotalRounds: null })),
     standing: null,
   };
 }

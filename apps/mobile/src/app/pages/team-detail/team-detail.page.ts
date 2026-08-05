@@ -9,32 +9,16 @@ import {
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { PublicApiService } from 'api-client';
-import {
-  IonBadge,
-  IonButton,
-  IonContent,
-  IonItem,
-  IonLabel,
-  IonList,
-  IonListHeader,
-} from '@ionic/angular/standalone';
-import { PublicTeamDetail } from 'shared-models';
+import { IonButton, IonContent } from '@ionic/angular/standalone';
+import { MatchCard, MatchCardVariant } from 'design-system';
+import { PublicTeamDetail, roundLabel } from 'shared-models';
 import { FavoritesService } from '../../core/favorites.service';
 import { OfflineCacheService } from '../../core/offline-cache.service';
 import { TournamentContextService } from '../../core/tournament-context.service';
 
 @Component({
   selector: 'app-team-detail-page',
-  imports: [
-    DecimalPipe,
-    IonContent,
-    IonList,
-    IonListHeader,
-    IonItem,
-    IonLabel,
-    IonBadge,
-    IonButton,
-  ],
+  imports: [DecimalPipe, IonContent, MatchCard, IonButton],
   templateUrl: './team-detail.page.html',
   styleUrl: './team-detail.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -110,8 +94,11 @@ export class TeamDetailPage {
     }
   }
 
-  protected statusLabel(match: PublicTeamDetail['matches'][number]): string {
-    return match.status === 'LIVE' ? 'EN DIRECT' : 'TERMINÉ';
+  // Mirrors web's team-detail.page.ts variantFor exactly -- used for the
+  // "Joués" list only; "À venir" always shows variant="upcoming" regardless
+  // of status, same as web's hardcoded value there.
+  protected variantFor(match: PublicTeamDetail['matches'][number]): MatchCardVariant {
+    return match.status === 'LIVE' ? 'live' : 'result';
   }
 
   protected formatKickoff(startTime: string): string {
@@ -122,8 +109,8 @@ export class TeamDetailPage {
     if (match.isThirdPlaceMatch) {
       return 'Match pour la 3e place';
     }
-    if (match.knockoutBracketId) {
-      return 'Phase finale';
+    if (match.knockoutBracketId && match.knockoutTotalRounds !== null) {
+      return roundLabel(match.knockoutTotalRounds - match.round);
     }
     return `Poule — round ${match.round}`;
   }

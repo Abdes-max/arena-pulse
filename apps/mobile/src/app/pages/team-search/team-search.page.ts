@@ -4,12 +4,10 @@ import { PublicApiService } from 'api-client';
 import {
   IonButton,
   IonContent,
-  IonItem,
   IonLabel,
-  IonList,
   IonSearchbar,
-  IonSelect,
-  IonSelectOption,
+  IonSegment,
+  IonSegmentButton,
 } from '@ionic/angular/standalone';
 import { Category, PublicTeam } from 'shared-models';
 import { FavoritesService } from '../../core/favorites.service';
@@ -17,16 +15,7 @@ import { TournamentContextService } from '../../core/tournament-context.service'
 
 @Component({
   selector: 'app-team-search-page',
-  imports: [
-    IonContent,
-    IonSelect,
-    IonSelectOption,
-    IonSearchbar,
-    IonList,
-    IonItem,
-    IonLabel,
-    IonButton,
-  ],
+  imports: [IonContent, IonSegment, IonSegmentButton, IonSearchbar, IonLabel, IonButton],
   templateUrl: './team-search.page.html',
   styleUrl: './team-search.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -72,6 +61,12 @@ export class TeamSearchPage {
   protected async onCategoryChange(categoryId: string): Promise<void> {
     this.selectedCategoryId.set(categoryId);
     await this.loadTeams();
+  }
+
+  // ion-segment's ionChange event types its value as SegmentValue (string |
+  // number) | undefined, even though every value bound here is a string id.
+  protected asString(value: string | number | undefined): string {
+    return String(value ?? '');
   }
 
   protected onQueryChange(query: string | null | undefined): void {

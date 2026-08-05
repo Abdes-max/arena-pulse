@@ -11,7 +11,40 @@
   padding: 16px;
 }
 
-.schedule-page__score {
+.schedule-page__filters {
+  padding: var(--ap-space-2) var(--ap-space-4);
+}
+
+// ap-text-field, the shared design-system search box web already uses here
+// -- not ion-searchbar, so both platforms render the same control.
+.schedule-page__search {
+  display: block;
+  padding: 0 var(--ap-space-4) var(--ap-space-4);
+}
+
+.schedule-page__forfeit {
+  color: var(--ap-color-error);
+  font-size: 0.9rem;
+  padding: 0 var(--ap-space-4);
+}
+
+.schedule-page__day {
+  margin: 0 0 var(--ap-space-6);
+  padding: 0 var(--ap-space-4);
+}
+
+.schedule-page__day-label {
+  margin: 0 0 var(--ap-space-3);
+  font-size: 0.85rem;
   font-weight: 700;
-  margin-inline-end: 8px;
+  text-transform: capitalize;
+  color: var(--ap-color-muted);
+  padding-bottom: var(--ap-space-2);
+  border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+}
+
+.schedule-page__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ap-space-3);
 }

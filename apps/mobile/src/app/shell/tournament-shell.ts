@@ -5,19 +5,21 @@ import {
   computed,
   effect,
   inject,
+  signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { DEFAULT_THEME, ThemeName, ThemeService } from 'design-tokens';
+import { DEFAULT_THEME, ThemeMode, ThemeName, ThemeService } from 'design-tokens';
 import {
   IonButton,
+  IonButtons,
   IonContent,
   IonHeader,
   IonTabBar,
   IonTabButton,
-  IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
+import { ThemeModeToggle } from 'design-system';
 import { PublicTheme } from 'shared-models';
 import { FavoritesService } from '../core/favorites.service';
 import { NotificationsService } from '../core/notifications.service';
@@ -39,11 +41,12 @@ const THEME_MAP: Record<PublicTheme, ThemeName> = {
     RouterLinkActive,
     IonHeader,
     IonToolbar,
-    IonTitle,
+    IonButtons,
     IonContent,
     IonTabBar,
     IonTabButton,
     IonButton,
+    ThemeModeToggle,
   ],
   providers: [TournamentContextService],
   templateUrl: './tournament-shell.html',
@@ -63,6 +66,12 @@ export class TournamentShell {
   protected readonly loading = this.context.loading;
   protected readonly errorMessage = this.context.errorMessage;
   protected readonly cachedAt = this.context.cachedAt;
+  protected readonly mode = this.themeService.mode;
+
+  // Tracks whether the visitor has used the toggle -- once true, the theme
+  // effect below stops overwriting mode from prefers-color-scheme on every
+  // re-run (e.g. a realtime tournament refresh), so a manual choice sticks.
+  private readonly modeManuallySet = signal(false);
 
   protected readonly formattedDates = computed(() => {
     const tournament = this.tournament();
@@ -87,17 +96,18 @@ export class TournamentShell {
     // The tournament's own theme (organizer choice) governs the mobile view
     // only — applied to <html> here, and reset back to the fixed product
     // identity on the way out, same pattern as apps/web's TournamentShell.
+    // Mode (light/dark) defaults to the system preference but only until the
+    // visitor overrides it with the toggle -- see modeManuallySet.
     effect(() => {
       const tournament = this.tournament();
       if (!tournament) {
         return;
       }
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      this.themeService.apply(
-        document.documentElement,
-        THEME_MAP[tournament.theme],
-        prefersDark ? 'dark' : 'light',
-      );
+      this.themeService.setTheme(document.documentElement, THEME_MAP[tournament.theme]);
+      if (!this.modeManuallySet()) {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        this.themeService.setMode(document.documentElement, prefersDark ? 'dark' : 'light');
+      }
     });
 
     this.destroyRef.onDestroy(() => {
@@ -121,5 +131,10 @@ export class TournamentShell {
 
   protected retry(): void {
     void this.context.load(this.context.slug());
+  }
+
+  protected onModeChange(next: ThemeMode): void {
+    this.modeManuallySet.set(true);
+    this.themeService.setMode(document.documentElement, next);
   }
 }

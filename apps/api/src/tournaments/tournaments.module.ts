@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { OrganizationsModule } from '../organizations/organizations.module';
+import { PaymentsModule } from '../payments/payments.module';
 import { PermissionsModule } from '../permissions/permissions.module';
 import { BracketsService } from './brackets.service';
 import { CategoriesController } from './categories.controller';
@@ -47,7 +48,7 @@ import { VenuesController } from './venues.controller';
 import { VenuesService } from './venues.service';
 
 @Module({
-  imports: [OrganizationsModule, PermissionsModule],
+  imports: [OrganizationsModule, PermissionsModule, PaymentsModule],
   controllers: [
     TournamentsController,
     CategoriesController,

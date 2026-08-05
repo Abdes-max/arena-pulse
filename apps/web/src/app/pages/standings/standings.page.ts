@@ -7,11 +7,19 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { Badge, BracketMatch, Select } from 'design-system';
+import { Badge, BracketMatch, Tabs } from 'design-system';
 import { PublicApiService } from 'api-client';
 import { TournamentContextService } from '../../core/tournament-context.service';
-import { Category, CompetitionPhase, Match, Qualification, Standings } from 'shared-models';
-import { computeFinalRanking, FinalRankingRow } from './final-ranking.util';
+import {
+  BracketView,
+  Category,
+  CompetitionPhase,
+  FinalRankingRow,
+  Qualification,
+  Standings,
+  buildBracketView,
+  computeFinalRanking,
+} from 'shared-models';
 
 interface GroupStandings {
   groupId: string;
@@ -20,23 +28,12 @@ interface GroupStandings {
   qualifications: Qualification[];
 }
 
-interface BracketRound {
-  round: number;
-  label: string;
-  matches: Match[];
-}
-
-interface BracketView {
-  rounds: BracketRound[];
-  thirdPlaceMatch: Match | null;
-}
-
 /** Row height (px) used to size the bracket tree so every round column shares the same total height. */
 const BRACKET_ROW_HEIGHT = 96;
 
 @Component({
   selector: 'app-standings-page',
-  imports: [Badge, BracketMatch, DecimalPipe, Select],
+  imports: [Badge, BracketMatch, DecimalPipe, Tabs],
   templateUrl: './standings.page.html',
   styleUrl: './standings.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -63,9 +60,9 @@ export class StandingsPage {
   );
 
   protected readonly tabs = computed(() => [
-    ...this.groupStagePhases().map((phase) => ({ id: phase.id, label: phase.name })),
-    ...this.knockoutPhases().map((phase) => ({ id: phase.id, label: phase.name })),
-    ...(this.knockoutPhases().length > 0 ? [{ id: 'final', label: 'Classement final' }] : []),
+    ...this.groupStagePhases().map((phase) => ({ value: phase.id, label: phase.name })),
+    ...this.knockoutPhases().map((phase) => ({ value: phase.id, label: phase.name })),
+    ...(this.knockoutPhases().length > 0 ? [{ value: 'final', label: 'Classement final' }] : []),
   ]);
 
   constructor() {
@@ -126,7 +123,7 @@ export class StandingsPage {
     for (const phase of knockoutPhases) {
       const matches = await this.api.listBracketMatches(slug, phase.knockoutBracket!.id);
       const totalRounds = Math.log2(phase.knockoutBracket!.size);
-      bracketByPhase.set(phase.id, this.buildBracketView(matches, totalRounds));
+      bracketByPhase.set(phase.id, buildBracketView(matches, totalRounds));
     }
     this.bracketByPhase.set(bracketByPhase);
 
@@ -143,28 +140,7 @@ export class StandingsPage {
     }
 
     const tabs = this.tabs();
-    this.selectedTab.set(tabs[0]?.id ?? '');
-  }
-
-  private buildBracketView(matches: Match[], totalRounds: number): BracketView {
-    const thirdPlaceMatch = matches.find((match) => match.isThirdPlaceMatch) ?? null;
-    const byRound = new Map<number, Match[]>();
-    for (const match of matches) {
-      if (match.isThirdPlaceMatch) {
-        continue;
-      }
-      const list = byRound.get(match.round) ?? [];
-      list.push(match);
-      byRound.set(match.round, list);
-    }
-    const rounds = [...byRound.entries()]
-      .sort(([a], [b]) => a - b)
-      .map(([round, roundMatches]) => ({
-        round,
-        label: this.roundLabel(round, totalRounds),
-        matches: roundMatches.sort((a, b) => (a.bracketSlot ?? 0) - (b.bracketSlot ?? 0)),
-      }));
-    return { rounds, thirdPlaceMatch };
+    this.selectedTab.set(tabs[0]?.value ?? '');
   }
 
   protected selectTab(tabId: string): void {
@@ -195,18 +171,4 @@ export class StandingsPage {
     const ranking = this.finalRanking();
     return this.podium() ? ranking.slice(3) : ranking;
   });
-
-  private roundLabel(round: number, totalRounds: number): string {
-    const fromEnd = totalRounds - round;
-    if (fromEnd === 0) {
-      return 'Finale';
-    }
-    if (fromEnd === 1) {
-      return 'Demi-finales';
-    }
-    if (fromEnd === 2) {
-      return 'Quarts de finale';
-    }
-    return `Tour ${round}`;
-  }
 }

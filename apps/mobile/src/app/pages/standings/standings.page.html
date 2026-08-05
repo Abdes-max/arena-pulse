@@ -19,46 +19,187 @@
         <ion-button size="small" fill="clear" (click)="retry()">Réessayer</ion-button>
       </div>
     }
-    <ion-list>
-      <ion-item>
-        <ion-select
-          label="Catégorie"
-          [value]="selectedCategoryId()"
-          (ionChange)="onCategoryChange($event.detail.value)"
-        >
-          @for (category of categories(); track category.id) {
-            <ion-select-option [value]="category.id">{{ category.name }}</ion-select-option>
-          }
-        </ion-select>
-      </ion-item>
-    </ion-list>
 
-    @if (!hasGroupStagePhase()) {
-      <p class="standings-page__empty">
-        Pas encore de classement pour cette catégorie, ou tableau à élimination uniquement (non
-        affiché ici — consultez le site public complet).
-      </p>
-    } @else {
-      @for (group of groupStandings(); track group.groupId) {
-        <ion-list>
-          <ion-list-header>{{ group.groupName }}</ion-list-header>
-          @for (row of group.standings.rows; track row.teamId) {
-            <ion-item>
-              <ion-label>
-                <h2>{{ row.position }}. {{ row.teamName }}</h2>
-                <p>
-                  {{ row.played }} joués · {{ row.won }}V {{ row.drawn }}N {{ row.lost }}D ·
-                  {{ row.goalsFor }}-{{ row.goalsAgainst }} · Rating
-                  {{ row.rating | number: '1.0-0' }}{{ row.isProvisional ? ' (provisoire)' : '' }}
-                </p>
-              </ion-label>
-              @if (isQualified(group, row.teamId)) {
-                <ion-badge slot="end" color="success">Qualifié</ion-badge>
-              }
-              <ion-label slot="end" class="standings-page__points">{{ row.points }} pts</ion-label>
-            </ion-item>
+    <ion-segment
+      class="standings-page__filters"
+      [value]="selectedCategoryId()"
+      (ionChange)="onCategoryChange(asString($event.detail.value))"
+      scrollable
+    >
+      @for (category of categories(); track category.id) {
+        <ion-segment-button [value]="category.id">
+          <ion-label>{{ category.name }}</ion-label>
+        </ion-segment-button>
+      }
+    </ion-segment>
+
+    <ion-segment
+      class="standings-page__filters"
+      [value]="activeTab()"
+      (ionChange)="onTabChange($event.detail.value)"
+      scrollable
+    >
+      <ion-segment-button value="pools">
+        <ion-label>Phase de poules</ion-label>
+      </ion-segment-button>
+      @if (hasFinalPhase()) {
+        <ion-segment-button value="final">
+          <ion-label>Phase finale</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="ranking">
+          <ion-label>Classement</ion-label>
+        </ion-segment-button>
+      }
+    </ion-segment>
+
+    @if (activeTab() === 'pools') {
+      @if (!hasGroupStagePhase()) {
+        <p class="standings-page__empty">
+          Pas encore de classement pour cette catégorie, ou tableau à élimination uniquement (non
+          affiché ici — consultez le site public complet).
+        </p>
+      } @else {
+        @for (group of groupStandings(); track group.groupId) {
+          <section class="standings-page__group">
+            <h2 class="standings-page__group-title">{{ group.groupName }}</h2>
+            <table class="standings-page__table">
+              <thead>
+                <tr>
+                  <th class="standings-page__table-team">Équipe</th>
+                  <th class="standings-page__table-qualified"></th>
+                  <th>J</th>
+                  <th>Pts</th>
+                  <th>+/-</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of group.standings.rows; track row.teamId) {
+                  <tr [class.standings-page__row--qualified]="isQualified(group, row.teamId)">
+                    <td class="standings-page__table-team">
+                      {{ row.position }}. {{ row.teamName }}
+                    </td>
+                    <td class="standings-page__table-qualified">
+                      @if (isQualified(group, row.teamId)) {
+                        <ap-badge status="qualified" />
+                      }
+                    </td>
+                    <td>{{ row.played }}</td>
+                    <td class="standings-page__points">{{ row.points }}</td>
+                    <td>{{ row.goalDifference }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </section>
+        }
+      }
+    }
+
+    @if (activeTab() === 'final') {
+      @if (!hasFinalPhase()) {
+        <p class="standings-page__empty">Pas encore de phase finale pour cette catégorie.</p>
+      } @else {
+        @if (bracketPhaseOptions().length > 1) {
+          <ion-segment
+            class="standings-page__filters"
+            [value]="selectedBracketPhaseId()"
+            (ionChange)="onBracketPhaseChange(asString($event.detail.value))"
+            scrollable
+          >
+            @for (option of bracketPhaseOptions(); track option.value) {
+              <ion-segment-button [value]="option.value">
+                <ion-label>{{ option.label }}</ion-label>
+              </ion-segment-button>
+            }
+          </ion-segment>
+        }
+
+        @if (selectedBracket(); as bracket) {
+          @if (bracket.rounds.length === 0) {
+            <p class="standings-page__empty">
+              Le tableau n'a pas encore été généré pour cette phase.
+            </p>
+          } @else {
+            @for (round of bracket.rounds; track round.round) {
+              <section class="standings-page__round">
+                <h3 class="standings-page__round-label">{{ round.label }}</h3>
+                <div class="standings-page__grid">
+                  @for (match of round.matches; track match.id) {
+                    @if (match.status === 'FORFEITED') {
+                      <p class="standings-page__forfeit">
+                        {{ match.homeTeam?.name }} vs {{ match.awayTeam?.name }} — forfait :
+                        {{ match.forfeitedTeam?.name }}
+                      </p>
+                    } @else {
+                      <ap-match-card
+                        [variant]="variantFor(match)"
+                        [homeTeam]="match.homeTeam ?? { name: '?' }"
+                        [awayTeam]="match.awayTeam ?? { name: '?' }"
+                        [homeScore]="match.score?.homeScore"
+                        [awayScore]="match.score?.awayScore"
+                      />
+                    }
+                  }
+                </div>
+              </section>
+            }
+            @if (bracket.thirdPlaceMatch; as match) {
+              <section class="standings-page__round">
+                <h3 class="standings-page__round-label">Match pour la 3e place</h3>
+                <div class="standings-page__grid">
+                  <ap-match-card
+                    [variant]="variantFor(match)"
+                    [homeTeam]="match.homeTeam ?? { name: '?' }"
+                    [awayTeam]="match.awayTeam ?? { name: '?' }"
+                    [homeScore]="match.score?.homeScore"
+                    [awayScore]="match.score?.awayScore"
+                  />
+                </div>
+              </section>
+            }
           }
-        </ion-list>
+        }
+      }
+    }
+
+    @if (activeTab() === 'ranking') {
+      @if (finalRanking().length === 0) {
+        <p class="standings-page__empty">
+          Le classement final sera disponible une fois les tableaux de phase finale complétés.
+        </p>
+      } @else {
+        @if (podium(); as p) {
+          <div class="standings-page__podium">
+            <div class="standings-page__podium-step standings-page__podium-step--2">
+              <span class="standings-page__podium-rank">2</span>
+              <span class="standings-page__podium-name">{{ p.second.teamName }}</span>
+              <span class="standings-page__podium-stage">{{ p.second.stageLabel }}</span>
+            </div>
+            <div class="standings-page__podium-step standings-page__podium-step--1">
+              <span class="standings-page__podium-rank">1</span>
+              <span class="standings-page__podium-name">{{ p.first.teamName }}</span>
+              <span class="standings-page__podium-stage">{{ p.first.stageLabel }}</span>
+            </div>
+            <div class="standings-page__podium-step standings-page__podium-step--3">
+              <span class="standings-page__podium-rank">3</span>
+              <span class="standings-page__podium-name">{{ p.third.teamName }}</span>
+              <span class="standings-page__podium-stage">{{ p.third.stageLabel }}</span>
+            </div>
+          </div>
+        }
+
+        @if (finalRankingRest().length > 0) {
+          <ion-list>
+            @for (row of finalRankingRest(); track row.teamId + row.phaseId) {
+              <ion-item>
+                <ion-label>
+                  <h2>{{ row.position }}. {{ row.teamName }}</h2>
+                  <p>{{ row.phaseName }} · {{ row.stageLabel }}</p>
+                </ion-label>
+              </ion-item>
+            }
+          </ion-list>
+        }
       }
     }
   </ion-content>

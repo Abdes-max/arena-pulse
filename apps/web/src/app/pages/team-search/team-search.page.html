@@ -1,16 +1,17 @@
 @if (loading()) {
   <p>Chargement…</p>
 } @else {
-  <div class="team-search-page__controls">
-    @if (categories().length > 1) {
-      <ap-select
-        label="Catégorie"
-        [value]="selectedCategoryId()"
-        [options]="categoryOptions()"
-        (valueChange)="onCategoryChange($event)"
-      />
-    }
+  @if (categories().length > 1) {
+    <ap-tabs
+      class="team-search-page__filters"
+      label="Catégorie"
+      [value]="selectedCategoryId()"
+      [options]="categoryOptions()"
+      (valueChange)="onCategoryChange($event)"
+    />
+  }
 
+  <div class="team-search-page__controls">
     <ap-text-field
       class="team-search-page__search"
       type="search"

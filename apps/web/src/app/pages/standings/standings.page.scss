@@ -1,30 +1,9 @@
-.standings-page__category-select {
-  display: block;
-  max-width: 260px;
+.standings-page__category-tabs {
   margin-bottom: var(--ap-space-4);
 }
 
-.standings-page__tabs {
-  display: flex;
-  gap: var(--ap-space-2);
-  border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+.standings-page__phase-tabs {
   margin-bottom: var(--ap-space-6);
-}
-
-.standings-page__tab {
-  padding: var(--ap-space-2) var(--ap-space-4);
-  border: none;
-  background: none;
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: var(--ap-color-muted);
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-}
-
-.standings-page__tab--active {
-  color: var(--ap-color-fg);
-  border-bottom-color: var(--ap-color-primary);
 }
 
 .standings-page__group {
@@ -41,8 +20,18 @@
   color: var(--ap-color-muted);
 }
 
+// Explicit horizontal scroll container for a dense table that can't
+// meaningfully reflow to a narrow screen (docs/design/responsive-guidelines.md:
+// "no unintentional horizontal scroll" -- this one is intentional and
+// contained, rather than the whole page overflowing sideways).
+.standings-page__table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .standings-page__table {
   width: 100%;
+  min-width: 480px;
   border-collapse: collapse;
   font-size: 0.85rem;
   margin-top: var(--ap-space-2);
@@ -210,21 +199,35 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  gap: var(--ap-space-3);
+  gap: var(--ap-space-2);
   margin: var(--ap-space-4) 0 var(--ap-space-8);
 }
 
+// Fluid width (flex + max-width) rather than a fixed 160px per step -- three
+// fixed-width steps never fit a phone viewport (3×160px alone exceeds a
+// 375px screen before gaps/padding). Shrinking to fit and truncating long
+// team names keeps all three steps visible without any horizontal scroll.
 .standings-page__podium-step {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--ap-space-1);
-  width: 160px;
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 160px;
   padding: var(--ap-space-4) var(--ap-space-2);
   background: var(--ap-color-surface);
   border: var(--ap-border-width) solid var(--ap-color-border);
   border-radius: var(--ap-radius-lg) var(--ap-radius-lg) 0 0;
   text-align: center;
+}
+
+.standings-page__podium-name,
+.standings-page__podium-stage {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .standings-page__podium-rank {

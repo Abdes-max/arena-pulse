@@ -1,0 +1,55 @@
+:host {
+  display: block;
+}
+
+// Underline style, matching the phase-switcher tab bar already shipped on
+// the public standings page (previously hand-rolled per page) — one shared
+// component now backs every value-driven tab row instead of each page
+// reinventing its own markup/CSS for the same pattern.
+.ap-tabs {
+  display: flex;
+  gap: var(--ap-space-2);
+  overflow-x: auto;
+  border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.ap-tabs__tab {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--ap-font-body);
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  min-height: var(--ap-touch-target-min);
+  padding: var(--ap-space-2) var(--ap-space-4);
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--ap-color-muted);
+  cursor: pointer;
+  transition:
+    color var(--ap-motion-fast) var(--ap-easing-standard),
+    border-color var(--ap-motion-fast) var(--ap-easing-standard);
+
+  &:hover {
+    color: var(--ap-color-fg);
+  }
+
+  &:focus-visible {
+    outline: var(--ap-border-width-strong) solid var(--ap-color-focus);
+    outline-offset: 2px;
+  }
+}
+
+.ap-tabs__tab--active {
+  color: var(--ap-color-fg);
+  border-bottom-color: var(--ap-color-primary);
+}

@@ -1,4 +1,5 @@
-import { CompetitionPhase, Match } from 'shared-models';
+import { CompetitionPhase, Match } from './models';
+import { eliminatedAtLabel } from './round-label.util';
 
 export interface FinalRankingRow {
   position: number;
@@ -95,23 +96,10 @@ function rankBracket(matches: Match[], totalRounds: number): StageEntry[] {
     }
     const fromEnd = totalRounds - match.round;
     const stageRank = 4 + (fromEnd - 1) * 2;
-    entries.push(teamEntry(match, loserId, stageRank, eliminationLabel(fromEnd)));
+    entries.push(teamEntry(match, loserId, stageRank, eliminatedAtLabel(fromEnd)));
   }
 
   return entries;
-}
-
-function eliminationLabel(fromEnd: number): string {
-  if (fromEnd === 1) {
-    return 'Demi-finaliste éliminé';
-  }
-  if (fromEnd === 2) {
-    return 'Quart de finaliste éliminé';
-  }
-  if (fromEnd === 3) {
-    return 'Huitième de finaliste éliminé';
-  }
-  return `Éliminé (${fromEnd} tours avant la finale)`;
 }
 
 function teamEntry(

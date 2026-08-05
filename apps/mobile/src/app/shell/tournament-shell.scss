@@ -7,11 +7,82 @@
   --padding-end: 16px;
 }
 
+// A fixed white masthead, independent of the light/dark toggle -- same
+// spirit as the admin dashboard staying on a fixed identity regardless of
+// per-tournament theme (docs/design/visual-language.md). --padding-start
+// matches .tournament-shell__hero's own left padding below, so the sport
+// name (slotted into the toolbar) lines up with the title's left edge
+// instead of sitting flush against the toolbar's own default inset.
+ion-toolbar {
+  --background: #ffffff;
+  --color: #1b1b18;
+  --padding-start: var(--ap-space-4);
+  --padding-end: var(--ap-space-4);
+}
+
+.tournament-shell__hero {
+  padding: var(--ap-space-2) var(--ap-space-4) var(--ap-space-4);
+  background: #ffffff;
+}
+
+// Slotted into ion-toolbar (slot="start"), alongside the mode toggle
+// (slot="end") -- same row, saves the height of a separate bar.
+.tournament-shell__sport {
+  margin: 0;
+  color: var(--ap-color-signal-text);
+  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.tournament-shell__title {
+  margin: var(--ap-space-1) 0 0;
+  font-family: var(--ap-font-heading);
+  font-size: 1.4rem;
+  letter-spacing: var(--ap-tracking-tight);
+  text-transform: var(--ap-title-case);
+  // Fixed dark, not var(--ap-color-fg) -- that flips light under dark mode,
+  // which would vanish against this masthead's fixed white background.
+  color: #1b1b18;
+}
+
 .tournament-shell__dates {
   display: block;
+  margin: var(--ap-space-1) 0 0;
   font-size: 0.75rem;
   font-weight: 400;
-  opacity: 0.8;
+  color: #6b6558;
+}
+
+// Mirrors apps/web's .tournament-shell__nav treatment: muted by default,
+// current tab reads as a filled pill rather than relying on icon/text color
+// alone -- ion-tab-button exposes --background/--color as theming hooks
+// into its shadow DOM, same mechanism as ion-item's --background elsewhere
+// in this app.
+ion-tab-bar {
+  --background: var(--ap-color-surface);
+  border-top: var(--ap-border-width) solid var(--ap-color-border);
+}
+
+ion-tab-button {
+  --color: var(--ap-color-muted);
+  --color-selected: var(--ap-color-fg);
+  font-family: var(--ap-font-body);
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: none;
+
+  &:focus-visible {
+    outline: var(--ap-border-width-strong) solid var(--ap-color-focus);
+    outline-offset: -2px;
+  }
+}
+
+ion-tab-button.tab-selected {
+  --background: var(--ap-color-signal-soft);
+  margin: var(--ap-space-1);
+  border-radius: var(--ap-radius-md);
 }
 
 .tournament-shell__offline-banner {

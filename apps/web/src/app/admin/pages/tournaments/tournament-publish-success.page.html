@@ -1,0 +1,22 @@
+<main class="tournament-publish-success-page">
+  @if (loading()) {
+    <p>Vérification du paiement…</p>
+  } @else if (tournament(); as t) {
+    @if (t.status === 'PUBLISHED') {
+      <h1>Tournoi publié</h1>
+      <p>
+        <strong>{{ t.name }}</strong> est désormais visible sur son site public.
+      </p>
+    } @else {
+      <h1>Paiement en cours de confirmation</h1>
+      <p>
+        La publication de <strong>{{ t.name }}</strong> sera confirmée dès que le paiement sera
+        validé. Vous pouvez recharger cette page dans quelques instants.
+      </p>
+    }
+    <a [routerLink]="['/admin/tournaments', tournamentId()]">Retour au tournoi</a>
+  } @else {
+    <h1>Tournoi introuvable</h1>
+    <a [routerLink]="['/admin/tournaments']">Retour aux tournois</a>
+  }
+</main>

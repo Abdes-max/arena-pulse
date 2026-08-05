@@ -8,8 +8,8 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { Button } from 'design-system';
-import { DEFAULT_THEME, ThemeName, ThemeService } from 'design-tokens';
+import { ThemeModeToggle } from 'design-system';
+import { DEFAULT_THEME, ThemeMode, ThemeName, ThemeService } from 'design-tokens';
 import { TournamentContextService } from '../core/tournament-context.service';
 import { PublicTheme } from 'shared-models';
 
@@ -22,7 +22,7 @@ const THEME_MAP: Record<PublicTheme, ThemeName> = {
 
 @Component({
   selector: 'app-tournament-shell',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, Button],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, ThemeModeToggle],
   providers: [TournamentContextService],
   templateUrl: './tournament-shell.html',
   styleUrl: './tournament-shell.scss',
@@ -39,8 +39,7 @@ export class TournamentShell {
   protected readonly errorMessage = this.context.errorMessage;
   protected readonly mode = this.themeService.mode;
 
-  protected toggleMode(): void {
-    const next = this.mode() === 'dark' ? 'light' : 'dark';
+  protected onModeChange(next: ThemeMode): void {
     this.themeService.setMode(document.documentElement, next);
   }
 

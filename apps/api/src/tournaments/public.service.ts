@@ -109,7 +109,10 @@ export class PublicService {
     );
     const matches = await this.prisma.match.findMany({
       where: { OR: [{ homeTeamId: teamId }, { awayTeamId: teamId }] },
-      include: MATCH_INCLUDE,
+      include: {
+        ...MATCH_INCLUDE,
+        knockoutBracket: { select: { size: true } },
+      },
       orderBy: [{ timeSlot: { startTime: 'asc' } }],
     });
 
@@ -125,7 +128,18 @@ export class PublicService {
 
     return {
       ...toPublicTeam(team),
-      matches: matches.map((match) => toMatchSummary(match)),
+      matches: matches.map((match) => ({
+        ...toMatchSummary(match),
+        // A team's matches can span several different knockout brackets (e.g.
+        // Champions/Europa/Conference League, business-rules.md), each with
+        // its own size -- so unlike schedule.page.ts (which only ever shows
+        // one phase's matches at a time and derives this from `phases`),
+        // this endpoint computes it per match instead of requiring the
+        // frontend to fetch every phase just to resolve one team's history.
+        knockoutTotalRounds: match.knockoutBracket
+          ? Math.log2(match.knockoutBracket.size)
+          : null,
+      })),
       standing,
     };
   }
