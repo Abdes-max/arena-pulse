@@ -67,10 +67,10 @@ externe sans que le porteur de projet ne le décide et ne le crée lui-même.
 - **`apps/mobile` n'est pas concerné** par cette PR — c'est une app Ionic/Capacitor distribuée via
   les stores (Google Play/App Store), pas un service web à conteneuriser. Question hors périmètre
   ici, pas oubliée.
-- **`MailModule` ne supporte pas l'authentification SMTP** (`SMTP_HOST`/`SMTP_PORT` seulement,
-  vérifié dans `apps/api/src/mail/mail.service.ts`) — une vraie mise en production nécessite soit
-  un relais SMTP sans authentification autorisé depuis l'IP de l'hôte, soit un ajout côté code
-  (hors périmètre de cette PR, qui est infrastructure et non fonctionnel).
+- ~~**`MailModule` ne supporte pas l'authentification SMTP**~~ — résolu dans
+  `feat/051-smtp-auth` : `SMTP_USER`/`SMTP_PASSWORD`/`SMTP_FROM` optionnels ajoutés à
+  `apps/api/src/mail/mail.service.ts`, pour des fournisseurs transactionnels authentifiés
+  (Brevo par défaut, cf. `.env.example`).
 - Avant tout déploiement réel : générer un `JWT_SECRET` fort, définir `WEB_PUBLIC_ORIGIN` sur le
   domaine réel, et mettre un reverse-proxy terminant TLS devant `docker-compose.prod.yml` (qui ne
   sert que du HTTP en clair sur `WEB_HOST_PORT`) — `auth.controller.ts` positionne déjà le cookie

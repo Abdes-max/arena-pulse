@@ -27,7 +27,8 @@ services:
     volumes:
       - arena-pulse-postgres-prod:/var/lib/postgresql/data
     healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-arena_pulse} -d ${POSTGRES_DB:-arena_pulse}']
+      test:
+        ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-arena_pulse} -d ${POSTGRES_DB:-arena_pulse}']
       interval: 5s
       timeout: 5s
       retries: 10
@@ -67,13 +68,22 @@ services:
       # client calls the API directly rather than through the nginx proxy.
       CORS_ORIGIN: ${WEB_PUBLIC_ORIGIN:?WEB_PUBLIC_ORIGIN must be set, e.g. https://tournois.example.com}
       ADMIN_WEB_URL: ${WEB_PUBLIC_ORIGIN:?}
-      SMTP_HOST: ${SMTP_HOST:?SMTP_HOST must be set -- MailModule has no auth support yet, see the ADR}
+      SMTP_HOST: ${SMTP_HOST:?SMTP_HOST must be set -- e.g. smtp-relay.brevo.com}
       SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_FROM: ${SMTP_FROM:-TournArena <no-reply@tournarena.com>}
     depends_on:
       migrate:
         condition: service_completed_successfully
     healthcheck:
-      test: ['CMD', 'node', '-e', "fetch('http://127.0.0.1:3000/api/v1/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:3000/api/v1/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
       interval: 15s
       timeout: 5s
       retries: 5
