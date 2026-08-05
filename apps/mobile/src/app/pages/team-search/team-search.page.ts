@@ -32,9 +32,19 @@ export class TeamSearchPage {
   protected readonly teams = signal<PublicTeam[]>([]);
   protected readonly query = signal('');
 
+  // Favorites first (alphabetical among themselves), then the rest
+  // (alphabetical) -- isFavorite() reads the favorites signal, so this
+  // recomputes whenever a favorite is toggled.
   protected readonly filteredTeams = computed(() => {
     const query = this.query().trim().toLowerCase();
-    const teams = [...this.teams()].sort((a, b) => a.name.localeCompare(b.name));
+    const teams = [...this.teams()].sort((a, b) => {
+      const aFavorite = this.isFavorite(a);
+      const bFavorite = this.isFavorite(b);
+      if (aFavorite !== bFavorite) {
+        return aFavorite ? -1 : 1;
+      }
+      return a.name.localeCompare(b.name);
+    });
     return query ? teams.filter((team) => team.name.toLowerCase().includes(query)) : teams;
   });
 

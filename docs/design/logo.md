@@ -27,6 +27,7 @@ Contrairement à un accent d'UI (ex. la pastille de l'onglet actif dans l'admin,
 | `libs/design-system/src/lib/logo/`                              | Composant `ap-logo` (Angular) — source de vérité pour toute intégration dans le produit |
 | `apps/web/public/favicon.svg`, `apps/mobile/public/favicon.svg` | Favicon vectoriel                                                                       |
 | `apps/web/public/favicon.ico`, `apps/mobile/public/favicon.ico` | Favicon multi-résolution (16/32/48) pour les navigateurs sans support SVG               |
+| `apps/mobile/android/app/src/main/res/mipmap-*`                 | Icône native Android (écran d'accueil) — legacy + adaptative                            |
 | `docs/design/brand/mark-on-light.svg`                           | Symbole seul, fond clair                                                                |
 | `docs/design/brand/mark-on-dark.svg`                            | Symbole seul, variante inversée pour fond sombre                                        |
 | `docs/design/brand/preview.html`                                | Aperçu autonome (voir plus haut)                                                        |
@@ -54,10 +55,17 @@ Aucun usage actuel de `variant="on-dark"` dans le produit (tous ces emplacements
 
 Laisser au moins la largeur du point signal libre autour du symbole — pas de texte ni de bord de carte collé dessus (voir `preview.html`).
 
-## `favicon.ico` : comment il a été généré
+## Icônes rastérisées : comment elles ont été générées
 
-Aucun outil de rastérisation dédié (ImageMagick, Inkscape, sharp…) n'était disponible dans cet environnement. `favicon.ico` a été produit en réutilisant Playwright (déjà présent pour les tests e2e) pour capturer `mark-on-light.svg` en PNG à 16/32/48 px dans un Chromium headless, puis en assemblant ces PNG dans un conteneur `.ico` multi-résolution écrit à la main (le format ICO autorise des entrées PNG brutes, pas seulement du bitmap). Script non conservé dans le repo (ponctuel) — à refaire de la même façon si le symbole change.
+Aucun outil de rastérisation dédié (ImageMagick, Inkscape, sharp…) n'était disponible dans cet environnement. `favicon.ico` et l'icône native Android ont été produits en réutilisant Playwright (déjà présent pour les tests e2e) pour capturer le symbole en PNG dans un Chromium headless, à chaque taille requise :
 
-## Limite connue : icône native Android
+- `favicon.ico` (web + mobile) : 16/32/48 px, symbole complet (fond + chevron + point), assemblés à la main dans un conteneur `.ico` multi-résolution (le format ICO autorise des entrées PNG brutes, pas seulement du bitmap).
+- Icône native Android (`apps/mobile/android/app/src/main/res/mipmap-*`) : `ic_launcher.png`/`ic_launcher_round.png` (symbole complet, 48/72/96/144/192 px selon la densité) pour les appareils pré-Android 8 ; `ic_launcher_foreground.png` (chevron + point seuls, fond transparent, 108/162/216/324/432 px) pour l'icône adaptative (Android 8+, `mipmap-anydpi-v26/ic_launcher.xml`) — le fond de cette dernière est la couleur unie `#1e293b` (`values/ic_launcher_background.xml`), pas une image.
 
-`apps/mobile/android/app/src/main/res/mipmap-*` (icône d'app native, écran d'accueil) n'a pas été régénérée — ça demande un jeu d'icônes par densité (+ icône adaptative Android 8+), hors scope de ce qu'un simple favicon nécessite. À régénérer depuis `mark-on-light.svg` avec `npx @capacitor/assets generate` à partir d'un PNG source.
+Scripts non conservés dans le repo (ponctuels) — à refaire de la même façon si le symbole change.
+
+**Icône native : un rebuild de l'app est nécessaire pour la voir.** Contrairement au favicon (servi dynamiquement, un rechargement de page suffit), l'icône de l'écran d'accueil est compilée dans l'APK — recompiler et réinstaller (`npx cap sync android` puis lancer depuis Android Studio ou `npx cap run android`) pour qu'elle apparaisse sur le téléphone.
+
+**`apps/mobile/android/` est dans `.gitignore`** (convention Capacitor standard — le projet natif est régénéré, pas versionné). Cette mise à jour de l'icône n'est donc appliquée que sur la machine où elle a été faite ; elle ne sera pas dans un commit/PR et ne survivra pas à une régénération du dossier (`npx cap add android` depuis zéro). Si le dossier existe déjà sur une autre machine (ou en CI), il faut relancer la même génération (ou copier `mipmap-*` et `values/ic_launcher_background.xml` depuis cette machine) après tout `npx cap add android` frais.
+
+L'écran de démarrage (`apps/mobile/android/app/src/main/res/drawable*/splash.png`) n'a pas été touché — hors scope de cette demande, mais même limite d'outillage si besoin de le refaire un jour.

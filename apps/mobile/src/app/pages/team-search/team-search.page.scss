@@ -48,6 +48,14 @@
   }
 }
 
+// Same signal-colored border as ap-match-card's "live" variant -- the
+// theme's accent, not a fixed color, so it still reads correctly whichever
+// of the 3 tournament themes is active.
+.team-search-page__team--favorite {
+  border-color: var(--ap-color-signal-text);
+  box-shadow: var(--ap-shadow-sm);
+}
+
 // A real <button>, not the favorite ion-button's ancestor -- they're
 // siblings inside .team-search-page__team instead, so the star's click
 // can't also trigger navigation (the old ion-item wrapping needed

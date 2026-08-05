@@ -106,6 +106,30 @@
   td:nth-child(12) {
     width: 48px;
   }
+
+  // Phone browser (not the native app, which already only ever showed
+  // Équipe/Qualifié/J/Pts/+/-): same simplification here instead of forcing
+  // a horizontal scroll to see 12 columns on a ~360px viewport.
+  @media (max-width: 600px) {
+    min-width: 0;
+
+    th:nth-child(1),
+    td:nth-child(1),
+    th:nth-child(4),
+    td:nth-child(4),
+    th:nth-child(5),
+    td:nth-child(5),
+    th:nth-child(6),
+    td:nth-child(6),
+    th:nth-child(7),
+    td:nth-child(7),
+    th:nth-child(8),
+    td:nth-child(8),
+    th:nth-child(11),
+    td:nth-child(11) {
+      display: none;
+    }
+  }
 }
 
 .standings-page__row--qualified {

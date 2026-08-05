@@ -1,6 +1,14 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { Badge, BadgeStatus, Button } from 'design-system';
+import { DEFAULT_THEME, ThemeService } from 'design-tokens';
 import { AuthService } from '../../core/auth.service';
 import { Tournament, TournamentStatus } from '../../core/models';
 import { TeamsService } from '../../core/teams.service';
@@ -28,6 +36,8 @@ export class TournamentListPage {
   private readonly teamsService = inject(TeamsService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly themeService = inject(ThemeService);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly organization = computed(() => this.authService.organizations()[0] ?? null);
   protected readonly statusBadge = STATUS_TO_BADGE;
@@ -80,6 +90,15 @@ export class TournamentListPage {
 
   constructor() {
     void this.load();
+
+    // Not tied to any one tournament, so it stays on the fixed product
+    // identity regardless of the last tournament theme picked in the edit
+    // form -- restored to that picked theme (ThemeService.adminTheme) on
+    // the way out (same pattern as CollaboratorsPage).
+    this.themeService.setTheme(document.documentElement, DEFAULT_THEME);
+    this.destroyRef.onDestroy(() => {
+      this.themeService.setTheme(document.documentElement, this.themeService.adminTheme());
+    });
   }
 
   private async load(): Promise<void> {
