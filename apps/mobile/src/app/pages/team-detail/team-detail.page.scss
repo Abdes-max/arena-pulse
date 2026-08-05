@@ -5,18 +5,97 @@
   text-align: center;
 }
 
+.team-detail-page__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-2);
+  padding: var(--ap-space-4);
+}
+
+// Plain <h2>, no special heading font -- same as apps/web's team-detail.page
+// (its "typo" is just the browser's default h2 weight/size on the body
+// font; there's no --ap-font-heading override there either).
+.team-detail-page__name {
+  margin: 0;
+  font-family: var(--ap-font-body);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--ap-color-fg);
+}
+
 .team-detail-page__meta {
-  font-weight: 400;
-  opacity: 0.8;
+  margin: var(--ap-space-1) 0 0;
+  font-size: 0.85rem;
+  color: var(--ap-color-muted);
 }
 
 .team-detail-page__favorite {
-  margin-inline-start: auto;
+  flex: none;
 }
 
-.team-detail-page__score {
+.team-detail-page__section {
+  margin: var(--ap-space-4) var(--ap-space-4) var(--ap-space-6);
+}
+
+.team-detail-page__section-title {
+  margin: 0 0 var(--ap-space-3);
+  font-family: var(--ap-font-heading);
+  font-size: 1rem;
+  color: var(--ap-color-fg);
+}
+
+.team-detail-page__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ap-space-3);
+}
+
+// Mirrors apps/web's team-detail.page.scss stat grid exactly -- one
+// bordered/background "square" per stat, points called out in a
+// signal-soft (pink, depending on theme) highlight square.
+.team-detail-page__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: var(--ap-space-2);
+}
+
+.team-detail-page__stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-1);
+  padding: var(--ap-space-3);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+}
+
+.team-detail-page__stat--highlight {
+  background: var(--ap-color-signal-soft);
+  border-color: transparent;
+
+  .team-detail-page__stat-value {
+    color: var(--ap-color-signal-text);
+  }
+}
+
+.team-detail-page__stat-value {
+  font-family: var(--ap-font-heading);
+  font-size: 1.15rem;
   font-weight: 700;
-  margin-inline-end: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.team-detail-page__stat-label {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ap-color-muted);
+}
+
+.team-detail-page__forfeit {
+  color: var(--ap-color-error);
+  font-size: 0.9rem;
 }
 
 .team-detail-page__empty {

@@ -1,0 +1,59 @@
+@if (tournament(); as t) {
+  <ion-content class="home-page">
+    @if (upcomingMatches().length > 0) {
+      <section class="home-page__section">
+        <h3 class="home-page__section-title">Prochains matchs</h3>
+        <div class="home-page__upcoming">
+          @for (match of upcomingMatches(); track match.id; let first = $first) {
+            <ap-match-card
+              [variant]="first ? 'featured' : 'compact'"
+              [homeTeam]="match.homeTeam ?? { name: '?' }"
+              [awayTeam]="match.awayTeam ?? { name: '?' }"
+              [kickoff]="match.timeSlot ? formatKickoff(match.timeSlot.startTime) : undefined"
+              [venue]="match.timeSlot?.field?.name"
+              [competitionLabel]="competitionLabel(match)"
+            />
+          }
+        </div>
+      </section>
+    }
+
+    @if (categories().length > 0) {
+      <section class="home-page__section">
+        <h3 class="home-page__section-title">Catégories</h3>
+        <ul class="home-page__categories">
+          @for (category of categories(); track category.id) {
+            <li>{{ category.name }}</li>
+          }
+        </ul>
+      </section>
+    }
+
+    @if (t.venues.length > 0) {
+      <section class="home-page__section">
+        <h3 class="home-page__section-title">Infos pratiques</h3>
+        <div class="home-page__venues">
+          @for (venue of t.venues; track venue.id) {
+            <article class="home-page__venue">
+              <h4 class="home-page__venue-name">{{ venue.name }}</h4>
+              @if (venue.address) {
+                <p class="home-page__address">{{ venue.address }}</p>
+              }
+              @if (venue.fields.length > 0) {
+                <ul class="home-page__fields">
+                  @for (field of venue.fields; track field.id) {
+                    <li>{{ field.name }}</li>
+                  }
+                </ul>
+              }
+            </article>
+          }
+        </div>
+      </section>
+    }
+  </ion-content>
+} @else {
+  <ion-content class="home-page__status">
+    <p>Chargement…</p>
+  </ion-content>
+}

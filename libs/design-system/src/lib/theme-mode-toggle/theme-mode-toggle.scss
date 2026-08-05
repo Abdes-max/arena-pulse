@@ -1,0 +1,53 @@
+:host {
+  display: inline-block;
+}
+
+.ap-theme-mode-toggle {
+  display: inline-flex;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: 999px;
+
+  &:focus-visible {
+    outline: var(--ap-border-width-strong) solid var(--ap-color-focus);
+    outline-offset: 2px;
+  }
+}
+
+.ap-theme-mode-toggle__track {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 44px;
+  height: 24px;
+  padding: 2px;
+  border-radius: 999px;
+  background: var(--ap-color-border);
+  transition: background-color var(--ap-motion-fast) var(--ap-easing-standard);
+}
+
+// Host attribute set from the `mode` input (see theme-mode-toggle.ts) --
+// same pattern as ap-button's [data-variant].
+:host([data-mode='dark']) .ap-theme-mode-toggle__track {
+  background: var(--ap-color-primary);
+}
+
+.ap-theme-mode-toggle__thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--ap-color-surface);
+  color: var(--ap-color-signal-text);
+  box-shadow: var(--ap-shadow-sm);
+  transform: translateX(0);
+  transition: transform var(--ap-motion-fast) var(--ap-easing-standard);
+}
+
+:host([data-mode='dark']) .ap-theme-mode-toggle__thumb {
+  transform: translateX(20px);
+}

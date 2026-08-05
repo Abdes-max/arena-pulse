@@ -7,31 +7,14 @@ import {
   signal,
 } from '@angular/core';
 import { PublicApiService } from 'api-client';
-import {
-  IonBadge,
-  IonContent,
-  IonItem,
-  IonLabel,
-  IonList,
-  IonListHeader,
-  IonSelect,
-  IonSelectOption,
-} from '@ionic/angular/standalone';
-import { Category, CompetitionPhase, Match } from 'shared-models';
+import { IonContent, IonLabel, IonSegment, IonSegmentButton } from '@ionic/angular/standalone';
+import { MatchCard, MatchCardVariant, TextField } from 'design-system';
+import { Category, CompetitionPhase, Match, roundLabel } from 'shared-models';
 import { TournamentContextService } from '../../core/tournament-context.service';
 
 @Component({
   selector: 'app-schedule-page',
-  imports: [
-    IonContent,
-    IonSelect,
-    IonSelectOption,
-    IonList,
-    IonListHeader,
-    IonItem,
-    IonLabel,
-    IonBadge,
-  ],
+  imports: [IonContent, IonSegment, IonSegmentButton, IonLabel, MatchCard, TextField],
   templateUrl: './schedule.page.html',
   styleUrl: './schedule.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -46,15 +29,36 @@ export class SchedulePage {
   protected readonly phases = signal<CompetitionPhase[]>([]);
   protected readonly selectedPhaseId = signal('');
   protected readonly matches = signal<Match[]>([]);
+  protected readonly query = signal('');
 
-  protected readonly matchesByDay = computed(() => {
-    const days = new Map<string, { label: string; matches: Match[] }>();
+  protected readonly filteredMatches = computed(() => {
+    const query = this.query().trim().toLowerCase();
     const sorted = [...this.matches()].sort((a, b) => {
       const aTime = a.timeSlot?.startTime ?? '';
       const bTime = b.timeSlot?.startTime ?? '';
       return aTime.localeCompare(bTime);
     });
-    for (const match of sorted) {
+    if (!query) {
+      return sorted;
+    }
+    return sorted.filter(
+      (match) =>
+        match.homeTeam?.name.toLowerCase().includes(query) ||
+        match.awayTeam?.name.toLowerCase().includes(query) ||
+        match.officials.some((official) =>
+          (official.referee
+            ? `${official.referee.firstName} ${official.referee.lastName}`
+            : (official.refereeingTeam?.name ?? '')
+          )
+            .toLowerCase()
+            .includes(query),
+        ),
+    );
+  });
+
+  protected readonly matchesByDay = computed(() => {
+    const days = new Map<string, { label: string; matches: Match[] }>();
+    for (const match of this.filteredMatches()) {
       if (!match.timeSlot) {
         continue;
       }
@@ -120,6 +124,24 @@ export class SchedulePage {
     await this.loadMatches();
   }
 
+  // matches() only ever holds one phase's matches at a time (the currently
+  // selected category+phase tabs), so a single bracket size covers all of
+  // them -- see competitionLabel below.
+  private readonly selectedPhaseTotalRounds = computed(() => {
+    const phase = this.phases().find((p) => p.id === this.selectedPhaseId());
+    return phase?.knockoutBracket ? Math.log2(phase.knockoutBracket.size) : null;
+  });
+
+  // ion-segment's ionChange event types its value as SegmentValue (string |
+  // number) | undefined, even though every value bound here is a string id.
+  protected asString(value: string | number | undefined): string {
+    return String(value ?? '');
+  }
+
+  protected onQueryChange(query: string): void {
+    this.query.set(query);
+  }
+
   private async loadMatches(): Promise<void> {
     const slug = this.context.slug();
     const phase = this.phases().find((p) => p.id === this.selectedPhaseId());
@@ -133,14 +155,14 @@ export class SchedulePage {
     );
   }
 
-  protected statusLabel(match: Match): string {
+  // ap-match-card is the shared design-system component web already uses
+  // here (card box, background, badge) -- not a mobile-specific ion-item
+  // row, so both platforms render matches identically.
+  protected variantFor(match: Match): MatchCardVariant {
     if (match.status === 'LIVE') {
-      return 'EN DIRECT';
+      return 'live';
     }
-    if (match.status === 'FORFEITED') {
-      return 'FORFAIT';
-    }
-    return match.score ? 'TERMINÉ' : 'À VENIR';
+    return match.score ? 'result' : 'upcoming';
   }
 
   protected formatKickoff(startTime: string): string {
@@ -151,8 +173,9 @@ export class SchedulePage {
     if (match.isThirdPlaceMatch) {
       return 'Match pour la 3e place';
     }
-    if (match.knockoutBracketId) {
-      return 'Phase finale';
+    const totalRounds = this.selectedPhaseTotalRounds();
+    if (match.knockoutBracketId && totalRounds !== null) {
+      return roundLabel(totalRounds - match.round);
     }
     return `Round ${match.round}`;
   }

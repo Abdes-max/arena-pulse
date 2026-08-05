@@ -6,14 +6,14 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { MatchCard, MatchCardVariant, Select, TextField } from 'design-system';
+import { MatchCard, MatchCardVariant, Tabs, TextField } from 'design-system';
 import { PublicApiService } from 'api-client';
 import { TournamentContextService } from '../../core/tournament-context.service';
-import { Category, CompetitionPhase, Match } from 'shared-models';
+import { Category, CompetitionPhase, Match, roundLabel } from 'shared-models';
 
 @Component({
   selector: 'app-schedule-page',
-  imports: [MatchCard, Select, TextField],
+  imports: [MatchCard, Tabs, TextField],
   templateUrl: './schedule.page.html',
   styleUrl: './schedule.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -122,6 +122,14 @@ export class SchedulePage {
     this.phases().map((phase) => ({ value: phase.id, label: phase.name })),
   );
 
+  // matches() only ever holds one phase's matches at a time (the currently
+  // selected category+phase tabs), so a single bracket size covers all of
+  // them -- see competitionLabel below.
+  private readonly selectedPhaseTotalRounds = computed(() => {
+    const phase = this.phases().find((p) => p.id === this.selectedPhaseId());
+    return phase?.knockoutBracket ? Math.log2(phase.knockoutBracket.size) : null;
+  });
+
   protected async onCategoryChange(categoryId: string): Promise<void> {
     this.selectedCategoryId.set(categoryId);
     await this.loadPhases();
@@ -178,8 +186,9 @@ export class SchedulePage {
     if (match.isThirdPlaceMatch) {
       return 'Match pour la 3e place';
     }
-    if (match.knockoutBracketId) {
-      return 'Phase finale';
+    const totalRounds = this.selectedPhaseTotalRounds();
+    if (match.knockoutBracketId && totalRounds !== null) {
+      return roundLabel(totalRounds - match.round);
     }
     return `Round ${match.round}`;
   }

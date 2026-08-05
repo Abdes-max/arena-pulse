@@ -1,4 +1,3 @@
-import { DecimalPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -9,17 +8,26 @@ import {
 } from '@angular/core';
 import { PublicApiService } from 'api-client';
 import {
-  IonBadge,
   IonButton,
   IonContent,
   IonItem,
   IonLabel,
   IonList,
-  IonListHeader,
-  IonSelect,
-  IonSelectOption,
+  IonSegment,
+  IonSegmentButton,
 } from '@ionic/angular/standalone';
-import { Category, CompetitionPhase, Qualification, Standings } from 'shared-models';
+import { Badge, MatchCard, MatchCardVariant } from 'design-system';
+import {
+  BracketView,
+  Category,
+  CompetitionPhase,
+  FinalRankingRow,
+  Match,
+  Qualification,
+  Standings,
+  buildBracketView,
+  computeFinalRanking,
+} from 'shared-models';
 import { OfflineCacheService } from '../../core/offline-cache.service';
 import { TournamentContextService } from '../../core/tournament-context.service';
 
@@ -30,18 +38,29 @@ interface GroupStandings {
   qualifications: Qualification[];
 }
 
+type StandingsTab = 'pools' | 'final' | 'ranking';
+
+// localStorage (OfflineCacheService) round-trips through JSON.stringify --
+// a Map wouldn't survive that, so the cached snapshot keeps bracketByPhase
+// as plain [phaseId, BracketView][] entries instead.
+interface CachedStandingsSnapshot {
+  phases: CompetitionPhase[];
+  groupStandings: GroupStandings[];
+  bracketByPhaseEntries: [string, BracketView][];
+  finalRanking: FinalRankingRow[];
+}
+
 @Component({
   selector: 'app-standings-page',
   imports: [
-    DecimalPipe,
     IonContent,
-    IonSelect,
-    IonSelectOption,
+    IonSegment,
+    IonSegmentButton,
     IonList,
-    IonListHeader,
     IonItem,
     IonLabel,
-    IonBadge,
+    Badge,
+    MatchCard,
     IonButton,
   ],
   templateUrl: './standings.page.html',
@@ -57,10 +76,41 @@ export class StandingsPage {
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly categories = signal<Category[]>([]);
   protected readonly selectedCategoryId = signal('');
-  protected readonly groupStandings = signal<GroupStandings[]>([]);
   protected readonly cachedAt = signal<number | null>(null);
 
+  protected readonly activeTab = signal<StandingsTab>('pools');
+
+  protected readonly phases = signal<CompetitionPhase[]>([]);
+  protected readonly groupStandings = signal<GroupStandings[]>([]);
+  protected readonly bracketByPhase = signal<Map<string, BracketView>>(new Map());
+  protected readonly selectedBracketPhaseId = signal('');
+  protected readonly finalRanking = signal<FinalRankingRow[]>([]);
+
   protected readonly hasGroupStagePhase = computed(() => this.groupStandings().length > 0);
+
+  protected readonly knockoutPhases = computed(() =>
+    this.phases().filter((phase) => phase.type === 'KNOCKOUT' && phase.knockoutBracket),
+  );
+  protected readonly hasFinalPhase = computed(() => this.knockoutPhases().length > 0);
+  protected readonly bracketPhaseOptions = computed(() =>
+    this.knockoutPhases().map((phase) => ({ value: phase.id, label: phase.name })),
+  );
+  protected readonly selectedBracket = computed(() =>
+    this.bracketByPhase().get(this.selectedBracketPhaseId()),
+  );
+
+  protected readonly podium = computed(() => {
+    const ranking = this.finalRanking();
+    if (ranking.length < 3) {
+      return null;
+    }
+    const [first, second, third] = ranking;
+    return { first, second, third };
+  });
+  protected readonly finalRankingRest = computed(() => {
+    const ranking = this.finalRanking();
+    return this.podium() ? ranking.slice(3) : ranking;
+  });
 
   constructor() {
     void this.loadCategories();
@@ -104,7 +154,22 @@ export class StandingsPage {
 
   protected async onCategoryChange(categoryId: string): Promise<void> {
     this.selectedCategoryId.set(categoryId);
+    this.activeTab.set('pools');
     await this.loadStandings();
+  }
+
+  protected onBracketPhaseChange(phaseId: string): void {
+    this.selectedBracketPhaseId.set(phaseId);
+  }
+
+  // ion-segment's ionChange event types its value as SegmentValue (string |
+  // number) | undefined, even though every value bound here is a string id.
+  protected asString(value: string | number | undefined): string {
+    return String(value ?? '');
+  }
+
+  protected onTabChange(value: string | number | undefined): void {
+    this.activeTab.set(value === 'final' || value === 'ranking' ? value : 'pools');
   }
 
   protected retry(): void {
@@ -117,8 +182,9 @@ export class StandingsPage {
     const cacheKey = `standings:${slug}:${categoryId}`;
     try {
       const phases = await this.api.listPhases(slug, categoryId);
-      const groupPhases = phases.filter((p: CompetitionPhase) => p.type === 'GROUP_STAGE');
-      const perGroup = await Promise.all(
+
+      const groupPhases = phases.filter((p) => p.type === 'GROUP_STAGE');
+      const groupStandings = await Promise.all(
         groupPhases.flatMap((phase) =>
           phase.groups.map(async (group) => ({
             groupId: group.id,
@@ -128,13 +194,46 @@ export class StandingsPage {
           })),
         ),
       );
-      this.groupStandings.set(perGroup);
-      this.cache.set(cacheKey, perGroup);
+
+      const knockoutPhases = phases.filter((p) => p.type === 'KNOCKOUT' && p.knockoutBracket);
+      const bracketByPhase = new Map<string, BracketView>();
+      for (const phase of knockoutPhases) {
+        const matches = await this.api.listBracketMatches(slug, phase.knockoutBracket!.id);
+        const totalRounds = Math.log2(phase.knockoutBracket!.size);
+        bracketByPhase.set(phase.id, buildBracketView(matches, totalRounds));
+      }
+
+      let finalRanking: FinalRankingRow[] = [];
+      if (knockoutPhases.length > 0) {
+        const allBracketMatches = await Promise.all(
+          knockoutPhases.map(async (phase) => ({
+            phase,
+            matches: await this.api.listBracketMatches(slug, phase.knockoutBracket!.id),
+          })),
+        );
+        finalRanking = computeFinalRanking(allBracketMatches);
+      }
+
+      this.phases.set(phases);
+      this.groupStandings.set(groupStandings);
+      this.bracketByPhase.set(bracketByPhase);
+      this.selectedBracketPhaseId.set(knockoutPhases[0]?.id ?? '');
+      this.finalRanking.set(finalRanking);
       this.cachedAt.set(null);
+      this.cache.set(cacheKey, {
+        phases,
+        groupStandings,
+        bracketByPhaseEntries: [...bracketByPhase.entries()],
+        finalRanking,
+      } satisfies CachedStandingsSnapshot);
     } catch (error) {
-      const cached = this.cache.get<GroupStandings[]>(cacheKey);
+      const cached = this.cache.get<CachedStandingsSnapshot>(cacheKey);
       if (this.cache.isNetworkFailure(error) && cached) {
-        this.groupStandings.set(cached.data);
+        this.phases.set(cached.data.phases);
+        this.groupStandings.set(cached.data.groupStandings);
+        this.bracketByPhase.set(new Map(cached.data.bracketByPhaseEntries));
+        this.selectedBracketPhaseId.set(cached.data.bracketByPhaseEntries[0]?.[0] ?? '');
+        this.finalRanking.set(cached.data.finalRanking);
         this.cachedAt.set(cached.cachedAt);
       } else if (!cached) {
         this.errorMessage.set('Impossible de charger les classements pour cette catégorie.');
@@ -146,5 +245,15 @@ export class StandingsPage {
     return group.qualifications.some((qualification) =>
       qualification.qualifiedTeams.some((team) => team.id === teamId),
     );
+  }
+
+  // ap-match-card is the shared design-system component web already uses
+  // for a match's box/background/badge -- keeps the "Phase finale" round
+  // list visually identical to schedule.page's cards.
+  protected variantFor(match: Match): MatchCardVariant {
+    if (match.status === 'LIVE') {
+      return 'live';
+    }
+    return match.score ? 'result' : 'upcoming';
   }
 }

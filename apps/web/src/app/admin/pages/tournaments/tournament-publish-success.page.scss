@@ -1,0 +1,20 @@
+.tournament-publish-success-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--ap-space-4);
+  max-width: 480px;
+  margin: 0 auto;
+  padding: var(--ap-space-6) var(--ap-space-4);
+  font-family: var(--ap-font-body);
+
+  h1 {
+    color: var(--ap-color-fg);
+    margin: 0;
+  }
+
+  a {
+    color: var(--ap-color-primary);
+  }
+}

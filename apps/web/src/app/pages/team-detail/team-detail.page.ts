@@ -11,7 +11,7 @@ import { ActivatedRoute } from '@angular/router';
 import { MatchCard, MatchCardVariant } from 'design-system';
 import { PublicApiService } from 'api-client';
 import { TournamentContextService } from '../../core/tournament-context.service';
-import { PublicTeamDetail } from 'shared-models';
+import { PublicTeamDetail, roundLabel } from 'shared-models';
 
 @Component({
   selector: 'app-team-detail-page',
@@ -73,8 +73,8 @@ export class TeamDetailPage {
     if (match.isThirdPlaceMatch) {
       return 'Match pour la 3e place';
     }
-    if (match.knockoutBracketId) {
-      return 'Phase finale';
+    if (match.knockoutBracketId && match.knockoutTotalRounds !== null) {
+      return roundLabel(match.knockoutTotalRounds - match.round);
     }
     return `Poule — round ${match.round}`;
   }

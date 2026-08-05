@@ -16,7 +16,7 @@
 .tournament-shell__hero-inner {
   max-width: 1100px;
   margin: 0 auto;
-  padding: var(--ap-space-8) var(--ap-space-6) 0;
+  padding: var(--ap-space-4) var(--ap-space-6) 0;
 
   h1 {
     margin: var(--ap-space-1) 0 0;
@@ -25,6 +25,15 @@
     letter-spacing: var(--ap-tracking-tight);
     text-transform: var(--ap-title-case);
   }
+}
+
+// Sport name and the mode toggle share one row instead of the toggle
+// getting its own bar above -- saves a row of vertical space.
+.tournament-shell__sport-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-3);
 }
 
 .tournament-shell__sport {
@@ -47,7 +56,7 @@
 
 .tournament-shell__nav {
   display: flex;
-  gap: var(--ap-space-6);
+  gap: var(--ap-space-2);
   max-width: 1100px;
   margin: var(--ap-space-6) auto 0;
   padding: 0 var(--ap-space-6);
@@ -62,17 +71,25 @@
     position: relative;
     display: inline-block;
     flex: none;
-    padding: var(--ap-space-2) 0;
+    padding: var(--ap-space-2) var(--ap-space-3);
+    border-radius: var(--ap-radius-md);
     color: var(--ap-color-muted);
     text-decoration: none;
     font-weight: 600;
     white-space: nowrap;
+    transition:
+      color var(--ap-motion-fast) var(--ap-easing-standard),
+      background-color var(--ap-motion-fast) var(--ap-easing-standard);
+
+    &:hover {
+      color: var(--ap-color-fg);
+    }
 
     &::after {
       content: '';
       position: absolute;
-      left: 0;
-      right: 0;
+      left: var(--ap-space-3);
+      right: var(--ap-space-3);
       bottom: 0;
       height: 2px;
       background: var(--ap-color-primary);
@@ -82,8 +99,11 @@
   }
 }
 
+// A background pill, not just a thin underline, so the current tab reads
+// unambiguously as "you are here" rather than needing a close look.
 .tournament-shell__nav-link--active {
   color: var(--ap-color-fg);
+  background: var(--ap-color-signal-soft);
 
   &::after {
     transform: scaleX(1);

@@ -14,7 +14,11 @@ export const routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: 'schedule',
+        redirectTo: 'home',
+      },
+      {
+        path: 'home',
+        loadComponent: () => import('./pages/home/home.page').then((m) => m.HomePage),
       },
       {
         path: 'schedule',

@@ -153,7 +153,12 @@ export interface Qualification {
 }
 
 export interface PublicTeamDetail extends PublicTeam {
-  matches: Match[];
+  // knockoutTotalRounds is only populated here (not on other match-list
+  // endpoints, which already know their bracket's size from the currently
+  // selected phase) -- lets a team's page compute a round label (see
+  // round-label.util.ts) without a second phases fetch, since a team's own
+  // match history can span several different-sized brackets.
+  matches: (Match & { knockoutTotalRounds: number | null })[];
   standing: StandingRow | null;
 }
 

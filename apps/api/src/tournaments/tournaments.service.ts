@@ -4,12 +4,16 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import type Stripe from 'stripe';
 import {
   Sport,
   Tournament,
+  TournamentPublicationOrderStatus,
   TournamentStatus,
 } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { StripeService } from '../payments/stripe.service';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { DuplicateTournamentDto } from './dto/duplicate-tournament.dto';
 import { UpdateTournamentDto } from './dto/update-tournament.dto';
@@ -19,7 +23,11 @@ type TournamentWithSport = Tournament & { sport: Sport };
 
 @Injectable()
 export class TournamentsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly stripeService: StripeService,
+    private readonly configService: ConfigService,
+  ) {}
 
   async create(organizationId: string, dto: CreateTournamentDto) {
     await this.assertSportExists(dto.sportId);
@@ -91,13 +99,127 @@ export class TournamentsService {
     return this.toDetail(updated);
   }
 
+  /**
+   * Publishing is gated behind a one-time Stripe payment computed from the
+   * tournament's current category/team counts (feat/039, see
+   * docs/architecture/adr/0006-paid-tournament-publication.md) -- unless a
+   * TournamentPublicationOrder for this tournament already reached PAID, in
+   * which case a later publish (e.g. after an unpublish) is free: the
+   * payment unlocks PUBLISHED for the tournament's lifetime, it isn't billed
+   * again as categories/teams grow.
+   */
   async publish(organizationId: string, tournamentId: string) {
     const tournament = await this.getOrThrow(organizationId, tournamentId);
     this.assertEditable(tournament);
     if (tournament.status === TournamentStatus.PUBLISHED) {
       throw new ConflictException('Ce tournoi est déjà publié.');
     }
-    return this.setStatus(tournamentId, TournamentStatus.PUBLISHED);
+
+    const alreadyPaid = await this.prisma.tournamentPublicationOrder.findFirst({
+      where: {
+        tournamentId,
+        status: TournamentPublicationOrderStatus.PAID,
+      },
+    });
+    if (alreadyPaid) {
+      return this.setStatus(tournamentId, TournamentStatus.PUBLISHED);
+    }
+
+    const [categoriesCount, teamsCount] = await Promise.all([
+      this.prisma.category.count({ where: { tournamentId } }),
+      this.prisma.team.count({ where: { tournamentId } }),
+    ]);
+    const amountCents = this.computePublicationFeeCents(
+      categoriesCount,
+      teamsCount,
+    );
+    const currency = 'eur';
+
+    if (amountCents <= 0) {
+      await this.prisma.tournamentPublicationOrder.create({
+        data: {
+          tournamentId,
+          status: TournamentPublicationOrderStatus.PAID,
+          categoriesCount,
+          teamsCount,
+          amountCents,
+          currency,
+          paidAt: new Date(),
+        },
+      });
+      return this.setStatus(tournamentId, TournamentStatus.PUBLISHED);
+    }
+
+    const order = await this.prisma.tournamentPublicationOrder.create({
+      data: {
+        tournamentId,
+        categoriesCount,
+        teamsCount,
+        amountCents,
+        currency,
+      },
+    });
+
+    const webUrl = this.configService.get<string>(
+      'ADMIN_WEB_URL',
+      'http://localhost:4200',
+    );
+    const session = await this.stripeService.createCheckoutSession({
+      amountCents,
+      currency,
+      productName: `Publication du tournoi — ${tournament.name}`,
+      successUrl: `${webUrl}/admin/tournaments/${tournamentId}/publish/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancelUrl: `${webUrl}/admin/tournaments/${tournamentId}?publishCancelled=1`,
+      metadata: { tournamentPublicationOrderId: order.id },
+    });
+
+    await this.prisma.tournamentPublicationOrder.update({
+      where: { id: order.id },
+      data: { stripeCheckoutSessionId: session.id },
+    });
+
+    return { status: 'PENDING_PAYMENT', checkoutUrl: session.url! };
+  }
+
+  /** Called by PaymentsWebhookController after Stripe signature verification. */
+  async handlePublicationStripeEvent(event: Stripe.Event): Promise<void> {
+    if (event.type !== 'checkout.session.completed') {
+      return;
+    }
+    const session = event.data.object;
+    const order = await this.prisma.tournamentPublicationOrder.findUnique({
+      where: { stripeCheckoutSessionId: session.id },
+    });
+    // Idempotent: a retried webhook delivery, or an event for a session this
+    // service didn't create (e.g. a player registration's), is a silent
+    // no-op rather than an error -- same guarantee as
+    // RegistrationsService.handleStripeEvent.
+    if (
+      !order ||
+      order.status !== TournamentPublicationOrderStatus.PENDING_PAYMENT
+    ) {
+      return;
+    }
+
+    const paymentIntentId =
+      typeof session.payment_intent === 'string'
+        ? session.payment_intent
+        : (session.payment_intent?.id ?? null);
+
+    await this.prisma.$transaction([
+      this.prisma.tournamentPublicationOrder.update({
+        where: { id: order.id },
+        data: {
+          status: TournamentPublicationOrderStatus.PAID,
+          paidAt: new Date(),
+          stripePaymentIntentId: paymentIntentId,
+        },
+      }),
+      this.prisma.tournament.update({
+        where: { id: order.tournamentId },
+        data: { status: TournamentStatus.PUBLISHED },
+      }),
+    ]);
   }
 
   async unpublish(organizationId: string, tournamentId: string) {
@@ -296,6 +418,31 @@ export class TournamentsService {
       throw new BadRequestException(`Statut invalide : ${statusFilter}`);
     }
     return statusFilter as TournamentStatus;
+  }
+
+  /**
+   * No base fee -- see docs/architecture/adr/0006-paid-tournament-publication.md.
+   * Both rates default to 0 (unset in .env) so publishing stays free until
+   * the project owner explicitly sets a price, same posture already taken
+   * for STRIPE_SECRET_KEY.
+   */
+  private computePublicationFeeCents(
+    categoriesCount: number,
+    teamsCount: number,
+  ): number {
+    const perCategoryCents = Number(
+      this.configService.get<string>(
+        'TOURNAMENT_PUBLICATION_FEE_PER_CATEGORY_CENTS',
+        '0',
+      ),
+    );
+    const perTeamCents = Number(
+      this.configService.get<string>(
+        'TOURNAMENT_PUBLICATION_FEE_PER_TEAM_CENTS',
+        '0',
+      ),
+    );
+    return categoriesCount * perCategoryCents + teamsCount * perTeamCents;
   }
 
   private async setStatus(tournamentId: string, status: TournamentStatus) {

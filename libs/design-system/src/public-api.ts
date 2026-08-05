@@ -7,4 +7,6 @@ export * from './lib/badge/badge';
 export * from './lib/bracket-match/bracket-match';
 export * from './lib/match-card/match-card';
 export * from './lib/select/select';
+export * from './lib/tabs/tabs';
 export * from './lib/text-field/text-field';
+export * from './lib/theme-mode-toggle/theme-mode-toggle';

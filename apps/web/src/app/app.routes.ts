@@ -98,6 +98,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'tournaments/:tournamentId/publish/success',
+        loadComponent: () =>
+          import('./admin/pages/tournaments/tournament-publish-success.page').then(
+            (m) => m.TournamentPublishSuccessPage,
+          ),
+      },
+      {
         path: 'collaborators',
         loadComponent: () =>
           import('./admin/pages/collaborators/collaborators.page').then((m) => m.CollaboratorsPage),

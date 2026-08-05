@@ -146,14 +146,15 @@ model Tournament {
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
 
-  organization   Organization              @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  sport          Sport                     @relation(fields: [sportId], references: [id], onDelete: Restrict)
-  categories     Category[]
-  administrators TournamentAdministrator[]
-  teams          Team[]
-  venues         Venue[]
-  referees       Referee[]
-  registrations  Registration[]
+  organization      Organization                 @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  sport             Sport                        @relation(fields: [sportId], references: [id], onDelete: Restrict)
+  categories        Category[]
+  administrators    TournamentAdministrator[]
+  teams             Team[]
+  venues            Venue[]
+  referees          Referee[]
+  registrations     Registration[]
+  publicationOrders TournamentPublicationOrder[]
 
   @@index([organizationId])
   @@index([sportId])
@@ -613,7 +614,7 @@ model Registration {
 // The roster submitted at registration time -- copied into real Player rows
 // (linked to the materialized Team) once the registration reaches PAID.
 model RegistrationPlayer {
-  id             String  @id @default(uuid())
+  id             String @id @default(uuid())
   registrationId String
   firstName      String
   lastName       String
@@ -622,4 +623,35 @@ model RegistrationPlayer {
   registration Registration @relation(fields: [registrationId], references: [id], onDelete: Cascade)
 
   @@index([registrationId])
+}
+
+// --- Paid tournament publication (feat/039-paid-tournament-publication, see
+// docs/architecture/adr/0006-paid-tournament-publication.md) ---
+
+enum TournamentPublicationOrderStatus {
+  PENDING_PAYMENT
+  PAID
+}
+
+// Gates the DRAFT -> PUBLISHED transition behind a one-time Stripe payment.
+// Unlike Registration, this never materializes anything new once PAID -- the
+// Tournament row already exists -- it only unlocks TournamentsService.publish.
+// One row per publish attempt; once one row for a tournament reaches PAID,
+// later publish() calls skip payment entirely (no re-billing on republish).
+model TournamentPublicationOrder {
+  id                      String                           @id @default(uuid())
+  tournamentId            String
+  status                  TournamentPublicationOrderStatus @default(PENDING_PAYMENT)
+  categoriesCount         Int
+  teamsCount              Int
+  amountCents             Int
+  currency                String
+  stripeCheckoutSessionId String?                          @unique
+  stripePaymentIntentId   String?
+  createdAt               DateTime                         @default(now())
+  paidAt                  DateTime?
+
+  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+
+  @@index([tournamentId])
 }

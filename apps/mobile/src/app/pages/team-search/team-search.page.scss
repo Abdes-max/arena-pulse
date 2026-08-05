@@ -11,12 +11,69 @@
   padding: 16px;
 }
 
-// No `button`/`routerLink` on ion-item (see team-search.page.ts's goToTeam) --
-// nesting the favorite ion-button inside Ionic's native <a>/<button> item
-// wrapper causes both the star's click AND the item's navigation to fire from
-// a single click, since stopPropagation() can't stop a native anchor's own
-// default action. A plain clickable row avoids that invalid nested-interactive
-// markup entirely.
-.team-search-page__row {
+.team-search-page__filters {
+  padding: var(--ap-space-2) var(--ap-space-4);
+}
+
+// Bordered/background card, mirroring apps/web's .team-search-page__team --
+// not an ion-item row.
+.team-search-page__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--ap-space-3);
+  padding: 0 var(--ap-space-4) var(--ap-space-4);
+}
+
+.team-search-page__team {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-2);
+  padding: var(--ap-space-4);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-lg);
+  transition: border-color var(--ap-motion-fast) var(--ap-easing-standard);
+
+  &:has(.team-search-page__team-link:focus-visible) {
+    border-color: var(--ap-color-primary);
+  }
+}
+
+// A real <button>, not the favorite ion-button's ancestor -- they're
+// siblings inside .team-search-page__team instead, so the star's click
+// can't also trigger navigation (the old ion-item wrapping needed
+// stopPropagation() plus a plain non-interactive row specifically to avoid
+// that; a sibling button/ion-button pair avoids the problem structurally).
+.team-search-page__team-link {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-1);
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: none;
+  padding: 0;
+  text-align: left;
+  font: inherit;
+  color: inherit;
   cursor: pointer;
+
+  &:focus-visible {
+    outline: var(--ap-border-width-strong) solid var(--ap-color-focus);
+    outline-offset: 2px;
+  }
+}
+
+.team-search-page__team-name {
+  font-weight: 700;
+  color: var(--ap-color-fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.team-search-page__team-meta {
+  font-size: 0.8rem;
+  color: var(--ap-color-muted);
 }

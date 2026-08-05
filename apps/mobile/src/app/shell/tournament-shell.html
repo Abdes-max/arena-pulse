@@ -9,13 +9,17 @@
 } @else if (tournament(); as t) {
   <ion-header>
     <ion-toolbar>
-      <ion-title>
-        {{ t.name }}
-        @if (formattedDates(); as dates) {
-          <span class="tournament-shell__dates">{{ dates }}</span>
-        }
-      </ion-title>
+      <p class="tournament-shell__sport" slot="start">{{ t.sportName }}</p>
+      <ion-buttons slot="end">
+        <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
+      </ion-buttons>
     </ion-toolbar>
+    <div class="tournament-shell__hero">
+      <h1 class="tournament-shell__title">{{ t.name }}</h1>
+      @if (formattedDates(); as dates) {
+        <p class="tournament-shell__dates">{{ dates }}</p>
+      }
+    </div>
     @if (cachedAt(); as cachedAt) {
       <div class="tournament-shell__offline-banner" role="status">
         <span>Dernières données du {{ cache.formatTimestamp(cachedAt) }}</span>
@@ -29,15 +33,13 @@
   </ion-content>
 
   <ion-tab-bar>
-    <ion-tab-button routerLink="schedule" routerLinkActive="tab-selected">
-      Calendrier
-    </ion-tab-button>
+    <ion-tab-button routerLink="home" routerLinkActive="tab-selected"> Tournoi </ion-tab-button>
+    <ion-tab-button routerLink="team" routerLinkActive="tab-selected"> Équipes </ion-tab-button>
     <ion-tab-button routerLink="standings" routerLinkActive="tab-selected">
       Classements
     </ion-tab-button>
-    <ion-tab-button routerLink="team" routerLinkActive="tab-selected"> Équipes </ion-tab-button>
-    <ion-tab-button routerLink="favorites" routerLinkActive="tab-selected">
-      Favoris
+    <ion-tab-button routerLink="schedule" routerLinkActive="tab-selected">
+      Calendrier
     </ion-tab-button>
   </ion-tab-bar>
 }

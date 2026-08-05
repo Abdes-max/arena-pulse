@@ -11,48 +11,52 @@
     />
 
     @if (categories().length > 0) {
-      <ion-list>
-        <ion-item>
-          <ion-select
-            label="Catégorie"
-            [value]="selectedCategoryId()"
-            (ionChange)="onCategoryChange($event.detail.value)"
-          >
-            <ion-select-option value="">Toutes</ion-select-option>
-            @for (category of categories(); track category.id) {
-              <ion-select-option [value]="category.id">{{ category.name }}</ion-select-option>
-            }
-          </ion-select>
-        </ion-item>
-      </ion-list>
+      <ion-segment
+        class="team-search-page__filters"
+        [value]="selectedCategoryId()"
+        (ionChange)="onCategoryChange(asString($event.detail.value))"
+        scrollable
+      >
+        <ion-segment-button value="">
+          <ion-label>Toutes</ion-label>
+        </ion-segment-button>
+        @for (category of categories(); track category.id) {
+          <ion-segment-button [value]="category.id">
+            <ion-label>{{ category.name }}</ion-label>
+          </ion-segment-button>
+        }
+      </ion-segment>
     }
 
     @if (filteredTeams().length === 0) {
       <p class="team-search-page__empty">Aucune équipe trouvée.</p>
     } @else {
-      <ion-list>
+      <div class="team-search-page__grid">
         @for (team of filteredTeams(); track team.id) {
-          <ion-item (click)="goToTeam(team)" class="team-search-page__row">
-            <ion-label>
-              <h2>{{ team.name }}</h2>
-              <p>
+          <div class="team-search-page__team">
+            <button
+              type="button"
+              class="team-search-page__team-link"
+              (click)="goToTeam(team)"
+            >
+              <span class="team-search-page__team-name">{{ team.name }}</span>
+              <span class="team-search-page__team-meta">
                 {{ team.categoryName }}
                 @if (team.groupName) {
                   — {{ team.groupName }}
                 }
-              </p>
-            </ion-label>
+              </span>
+            </button>
             <ion-button
-              slot="end"
               fill="clear"
               [attr.aria-label]="isFavorite(team) ? 'Retirer des favoris' : 'Ajouter aux favoris'"
               (click)="toggleFavorite($event, team)"
             >
               {{ isFavorite(team) ? '★' : '☆' }}
             </ion-button>
-          </ion-item>
+          </div>
         }
-      </ion-list>
+      </div>
     }
   </ion-content>
 }

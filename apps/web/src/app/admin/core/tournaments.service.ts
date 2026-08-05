@@ -33,6 +33,17 @@ export interface UpdateTournamentPayload {
   theme?: PublicTheme;
 }
 
+// Publishing may require a Stripe payment first (feat/039, tarif calculé sur
+// le nombre de catégories/équipes) -- see
+// docs/architecture/adr/0006-paid-tournament-publication.md. The tournament
+// only actually reaches PUBLISHED once the webhook confirms the payment.
+export interface PublishPendingPayment {
+  status: 'PENDING_PAYMENT';
+  checkoutUrl: string;
+}
+
+export type PublishTournamentResult = TournamentDetail | PublishPendingPayment;
+
 @Injectable({ providedIn: 'root' })
 export class TournamentsService {
   private readonly http = inject(HttpClient);
@@ -71,9 +82,12 @@ export class TournamentsService {
     );
   }
 
-  publish(organizationId: string, tournamentId: string): Promise<TournamentDetail> {
+  publish(organizationId: string, tournamentId: string): Promise<PublishTournamentResult> {
     return firstValueFrom(
-      this.http.post<TournamentDetail>(`${this.base(organizationId)}/${tournamentId}/publish`, {}),
+      this.http.post<PublishTournamentResult>(
+        `${this.base(organizationId)}/${tournamentId}/publish`,
+        {},
+      ),
     );
   }
 

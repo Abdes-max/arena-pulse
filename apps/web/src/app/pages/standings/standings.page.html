@@ -3,8 +3,8 @@
 } @else if (categories().length === 0) {
   <p>Aucune catégorie pour ce tournoi.</p>
 } @else {
-  <ap-select
-    class="standings-page__category-select"
+  <ap-tabs
+    class="standings-page__category-tabs"
     label="Catégorie"
     [value]="selectedCategoryId()"
     [options]="categoryOptions()"
@@ -14,18 +14,13 @@
   @if (tabs().length === 0) {
     <p>Aucune phase pour cette catégorie.</p>
   } @else {
-    <nav class="standings-page__tabs">
-      @for (tab of tabs(); track tab.id) {
-        <button
-          type="button"
-          class="standings-page__tab"
-          [class.standings-page__tab--active]="selectedTab() === tab.id"
-          (click)="selectTab(tab.id)"
-        >
-          {{ tab.label }}
-        </button>
-      }
-    </nav>
+    <ap-tabs
+      class="standings-page__phase-tabs"
+      label="Phase"
+      [value]="selectedTab()"
+      [options]="tabs()"
+      (valueChange)="selectTab($event)"
+    />
 
     @if (groupStandingsByPhase().get(selectedTab()); as groups) {
       @for (group of groups; track group.groupId) {
@@ -36,51 +31,53 @@
               <span class="standings-page__provisional">(provisoire)</span>
             }
           </h2>
-          <table class="standings-page__table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Équipe</th>
-                <th>J</th>
-                <th>G</th>
-                <th>N</th>
-                <th>P</th>
-                <th>BP</th>
-                <th>BC</th>
-                <th>+/-</th>
-                <th>Pts</th>
-                <th>Rating</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (row of group.standings.rows; track row.teamId) {
-                <tr [class.standings-page__row--qualified]="isQualified(group, row.teamId)">
-                  <td>{{ row.position }}</td>
-                  <td>{{ row.teamName }}</td>
-                  <td>{{ row.played }}</td>
-                  <td>{{ row.won }}</td>
-                  <td>{{ row.drawn }}</td>
-                  <td>{{ row.lost }}</td>
-                  <td>{{ row.goalsFor }}</td>
-                  <td>{{ row.goalsAgainst }}</td>
-                  <td>{{ row.goalDifference }}</td>
-                  <td class="standings-page__points">{{ row.points }}</td>
-                  <td>
-                    {{ row.rating | number: '1.0-0' }}
-                    @if (row.isProvisional) {
-                      <span class="standings-page__provisional">(provisoire)</span>
-                    }
-                  </td>
-                  <td>
-                    @if (isQualified(group, row.teamId)) {
-                      <ap-badge status="qualified" />
-                    }
-                  </td>
+          <div class="standings-page__table-scroll">
+            <table class="standings-page__table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Équipe</th>
+                  <th>J</th>
+                  <th>G</th>
+                  <th>N</th>
+                  <th>P</th>
+                  <th>BP</th>
+                  <th>BC</th>
+                  <th>+/-</th>
+                  <th>Pts</th>
+                  <th>Rating</th>
+                  <th></th>
                 </tr>
-              }
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                @for (row of group.standings.rows; track row.teamId) {
+                  <tr [class.standings-page__row--qualified]="isQualified(group, row.teamId)">
+                    <td>{{ row.position }}</td>
+                    <td>{{ row.teamName }}</td>
+                    <td>{{ row.played }}</td>
+                    <td>{{ row.won }}</td>
+                    <td>{{ row.drawn }}</td>
+                    <td>{{ row.lost }}</td>
+                    <td>{{ row.goalsFor }}</td>
+                    <td>{{ row.goalsAgainst }}</td>
+                    <td>{{ row.goalDifference }}</td>
+                    <td class="standings-page__points">{{ row.points }}</td>
+                    <td>
+                      {{ row.rating | number: '1.0-0' }}
+                      @if (row.isProvisional) {
+                        <span class="standings-page__provisional">(provisoire)</span>
+                      }
+                    </td>
+                    <td>
+                      @if (isQualified(group, row.teamId)) {
+                        <ap-badge status="qualified" />
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
 
           @if (group.qualifications.length > 0) {
             <ul class="standings-page__qualifications">
@@ -179,26 +176,28 @@
         }
 
         @if (finalRankingRest().length > 0) {
-          <table class="standings-page__table standings-page__final-table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Équipe</th>
-                <th>Tableau</th>
-                <th>Résultat</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (row of finalRankingRest(); track row.teamId + row.phaseId) {
+          <div class="standings-page__table-scroll">
+            <table class="standings-page__table standings-page__final-table">
+              <thead>
                 <tr>
-                  <td>{{ row.position }}</td>
-                  <td>{{ row.teamName }}</td>
-                  <td>{{ row.phaseName }}</td>
-                  <td>{{ row.stageLabel }}</td>
+                  <th>#</th>
+                  <th>Équipe</th>
+                  <th>Tableau</th>
+                  <th>Résultat</th>
                 </tr>
-              }
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                @for (row of finalRankingRest(); track row.teamId + row.phaseId) {
+                  <tr>
+                    <td>{{ row.position }}</td>
+                    <td>{{ row.teamName }}</td>
+                    <td>{{ row.phaseName }}</td>
+                    <td>{{ row.stageLabel }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
         }
       }
     }

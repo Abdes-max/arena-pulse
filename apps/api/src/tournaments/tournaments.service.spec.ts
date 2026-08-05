@@ -3,8 +3,13 @@ import {
   ConflictException,
   NotFoundException,
 } from '@nestjs/common';
-import { TournamentStatus } from '../../generated/prisma/client';
+import { ConfigService } from '@nestjs/config';
+import {
+  TournamentPublicationOrderStatus,
+  TournamentStatus,
+} from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { StripeService } from '../payments/stripe.service';
 import { TournamentsService } from './tournaments.service';
 
 type PrismaMock = {
@@ -15,10 +20,16 @@ type PrismaMock = {
     findUnique: jest.Mock;
     update: jest.Mock;
   };
-  category: { findMany: jest.Mock; create: jest.Mock };
+  category: { findMany: jest.Mock; create: jest.Mock; count: jest.Mock };
+  team: { count: jest.Mock };
   division: { create: jest.Mock };
   tournamentAdministrator: { findMany: jest.Mock; create: jest.Mock };
   tournamentAdministratorPermission: { create: jest.Mock };
+  tournamentPublicationOrder: {
+    findFirst: jest.Mock;
+    create: jest.Mock;
+    update: jest.Mock;
+  };
   $transaction: jest.Mock;
 };
 
@@ -31,10 +42,16 @@ function createPrismaMock(): PrismaMock {
       findUnique: jest.fn(),
       update: jest.fn(),
     },
-    category: { findMany: jest.fn(), create: jest.fn() },
+    category: { findMany: jest.fn(), create: jest.fn(), count: jest.fn() },
+    team: { count: jest.fn() },
     division: { create: jest.fn() },
     tournamentAdministrator: { findMany: jest.fn(), create: jest.fn() },
     tournamentAdministratorPermission: { create: jest.fn() },
+    tournamentPublicationOrder: {
+      findFirst: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+    },
     $transaction: jest.fn(async (arg: unknown) => {
       if (typeof arg === 'function') {
         return (arg as (tx: PrismaMock) => unknown)(prisma);
@@ -43,6 +60,31 @@ function createPrismaMock(): PrismaMock {
     }),
   };
   return prisma;
+}
+
+function createConfigServiceMock(
+  overrides: Record<string, string> = {},
+): ConfigService {
+  return {
+    get: jest.fn((key: string, defaultValue?: string) =>
+      Object.prototype.hasOwnProperty.call(overrides, key)
+        ? overrides[key]
+        : defaultValue,
+    ),
+  } as unknown as ConfigService;
+}
+
+// Deliberately untyped (not `: StripeService`) so its jest.fn() members stay
+// plain mocks rather than class methods -- matches PrismaMock above, and
+// avoids eslint's unbound-method rule firing on `expect(stripeService.x)...`.
+function createStripeServiceMock() {
+  return {
+    createCheckoutSession: jest.fn().mockResolvedValue({
+      id: 'cs_test_publish_123',
+      url: 'https://checkout.stripe.example/cs_test_publish_123',
+    }),
+    constructWebhookEvent: jest.fn(),
+  };
 }
 
 const SPORT = { id: 'sport-1', name: 'Football' };
@@ -67,11 +109,19 @@ function tournamentFixture(overrides: Partial<Record<string, unknown>> = {}) {
 
 describe('TournamentsService', () => {
   let prisma: PrismaMock;
+  let stripeService: ReturnType<typeof createStripeServiceMock>;
   let service: TournamentsService;
 
   beforeEach(() => {
     prisma = createPrismaMock();
-    service = new TournamentsService(prisma as unknown as PrismaService);
+    stripeService = createStripeServiceMock();
+    // Zero-cents defaults, matching production until the project owner sets
+    // real fees -- individual publish-pricing tests below override this.
+    service = new TournamentsService(
+      prisma as unknown as PrismaService,
+      stripeService as unknown as StripeService,
+      createConfigServiceMock(),
+    );
   });
 
   describe('create', () => {
@@ -134,6 +184,75 @@ describe('TournamentsService', () => {
       await expect(
         service.publish('org-1', 'tournament-1'),
       ).rejects.toBeInstanceOf(ConflictException);
+    });
+
+    it('publishes for free and records a PAID order when the computed fee is 0', async () => {
+      prisma.tournament.findUnique.mockResolvedValue(tournamentFixture());
+      prisma.tournamentPublicationOrder.findFirst.mockResolvedValue(null);
+      prisma.category.count.mockResolvedValue(0);
+      prisma.team.count.mockResolvedValue(0);
+      prisma.tournament.update.mockResolvedValue(
+        tournamentFixture({ status: TournamentStatus.PUBLISHED }),
+      );
+
+      const result = await service.publish('org-1', 'tournament-1');
+
+      expect(result).toMatchObject({ status: TournamentStatus.PUBLISHED });
+      const [[createCall]] = prisma.tournamentPublicationOrder.create.mock
+        .calls as [[{ data: { status: string; amountCents: number } }]];
+      expect(createCall.data.status).toBe(
+        TournamentPublicationOrderStatus.PAID,
+      );
+      expect(createCall.data.amountCents).toBe(0);
+      expect(stripeService.createCheckoutSession).not.toHaveBeenCalled();
+    });
+
+    it('creates a Stripe checkout session and does not publish yet when the computed fee is positive', async () => {
+      const paidService = new TournamentsService(
+        prisma as unknown as PrismaService,
+        stripeService as unknown as StripeService,
+        createConfigServiceMock({
+          TOURNAMENT_PUBLICATION_FEE_PER_CATEGORY_CENTS: '1000',
+          TOURNAMENT_PUBLICATION_FEE_PER_TEAM_CENTS: '500',
+        }),
+      );
+      prisma.tournament.findUnique.mockResolvedValue(tournamentFixture());
+      prisma.tournamentPublicationOrder.findFirst.mockResolvedValue(null);
+      prisma.category.count.mockResolvedValue(2);
+      prisma.team.count.mockResolvedValue(3);
+      prisma.tournamentPublicationOrder.create.mockResolvedValue({
+        id: 'order-1',
+      });
+
+      const result = await paidService.publish('org-1', 'tournament-1');
+
+      // 2 categories x 1000 + 3 teams x 500 = 3500.
+      expect(stripeService.createCheckoutSession).toHaveBeenCalledWith(
+        expect.objectContaining({ amountCents: 3500, currency: 'eur' }),
+      );
+      expect(result).toEqual({
+        status: 'PENDING_PAYMENT',
+        checkoutUrl: 'https://checkout.stripe.example/cs_test_publish_123',
+      });
+      expect(prisma.tournament.update).not.toHaveBeenCalled();
+    });
+
+    it('skips payment and publishes directly when a PAID order already exists (republish)', async () => {
+      prisma.tournament.findUnique.mockResolvedValue(tournamentFixture());
+      prisma.tournamentPublicationOrder.findFirst.mockResolvedValue({
+        id: 'order-1',
+        status: TournamentPublicationOrderStatus.PAID,
+      });
+      prisma.tournament.update.mockResolvedValue(
+        tournamentFixture({ status: TournamentStatus.PUBLISHED }),
+      );
+
+      const result = await service.publish('org-1', 'tournament-1');
+
+      expect(result).toMatchObject({ status: TournamentStatus.PUBLISHED });
+      expect(prisma.category.count).not.toHaveBeenCalled();
+      expect(prisma.tournamentPublicationOrder.create).not.toHaveBeenCalled();
+      expect(stripeService.createCheckoutSession).not.toHaveBeenCalled();
     });
 
     it('rejects unpublishing a tournament that is not published', async () => {

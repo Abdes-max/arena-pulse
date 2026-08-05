@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
-import { Button, Select, SelectOption } from 'design-system';
-import { THEMES, ThemeName, ThemeService } from 'design-tokens';
+import { Button, Select, SelectOption, ThemeModeToggle } from 'design-system';
+import { THEMES, ThemeMode, ThemeName, ThemeService } from 'design-tokens';
 import { AuthService } from '../core/auth.service';
 
 const THEME_OPTIONS: SelectOption[] = THEMES.map((theme) => ({
@@ -11,7 +11,7 @@ const THEME_OPTIONS: SelectOption[] = THEMES.map((theme) => ({
 
 @Component({
   selector: 'app-shell',
-  imports: [RouterLink, RouterLinkActive, RouterOutlet, Button, Select],
+  imports: [RouterLink, RouterLinkActive, RouterOutlet, Button, Select, ThemeModeToggle],
   templateUrl: './app-shell.html',
   styleUrl: './app-shell.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,8 +25,7 @@ export class AppShell {
   protected readonly theme = this.themeService.adminTheme;
   protected readonly themeOptions = THEME_OPTIONS;
 
-  protected toggleMode(): void {
-    const next = this.mode() === 'dark' ? 'light' : 'dark';
+  protected onModeChange(next: ThemeMode): void {
     this.themeService.setMode(document.documentElement, next);
   }
 

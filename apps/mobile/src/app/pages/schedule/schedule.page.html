@@ -8,62 +8,71 @@
   </ion-content>
 } @else {
   <ion-content class="schedule-page">
-    <ion-list>
-      <ion-item>
-        <ion-select
-          label="Catégorie"
-          [value]="selectedCategoryId()"
-          (ionChange)="onCategoryChange($event.detail.value)"
-        >
-          @for (category of categories(); track category.id) {
-            <ion-select-option [value]="category.id">{{ category.name }}</ion-select-option>
-          }
-        </ion-select>
-      </ion-item>
-      @if (phases().length > 0) {
-        <ion-item>
-          <ion-select
-            label="Phase"
-            [value]="selectedPhaseId()"
-            (ionChange)="onPhaseChange($event.detail.value)"
-          >
-            @for (phase of phases(); track phase.id) {
-              <ion-select-option [value]="phase.id">{{ phase.name }}</ion-select-option>
-            }
-          </ion-select>
-        </ion-item>
+    <ion-segment
+      class="schedule-page__filters"
+      [value]="selectedCategoryId()"
+      (ionChange)="onCategoryChange(asString($event.detail.value))"
+      scrollable
+    >
+      @for (category of categories(); track category.id) {
+        <ion-segment-button [value]="category.id">
+          <ion-label>{{ category.name }}</ion-label>
+        </ion-segment-button>
       }
-    </ion-list>
+    </ion-segment>
+    @if (phases().length > 0) {
+      <ion-segment
+        class="schedule-page__filters"
+        [value]="selectedPhaseId()"
+        (ionChange)="onPhaseChange(asString($event.detail.value))"
+        scrollable
+      >
+        @for (phase of phases(); track phase.id) {
+          <ion-segment-button [value]="phase.id">
+            <ion-label>{{ phase.name }}</ion-label>
+          </ion-segment-button>
+        }
+      </ion-segment>
+    }
+
+    <ap-text-field
+      class="schedule-page__search"
+      type="search"
+      label="Rechercher une équipe ou un arbitre"
+      placeholder="Rechercher une équipe ou un arbitre…"
+      [hideLabel]="true"
+      [value]="query()"
+      (valueChange)="onQueryChange($event)"
+    />
 
     @if (matchesByDay().length === 0) {
       <p class="schedule-page__empty">Aucun match pour cette phase.</p>
     } @else {
       @for (day of matchesByDay(); track day.label) {
-        <ion-list>
-          <ion-list-header>{{ day.label }}</ion-list-header>
-          @for (match of day.matches; track match.id) {
-            <ion-item>
-              <ion-label>
-                <h2>{{ match.homeTeam?.name ?? '?' }} — {{ match.awayTeam?.name ?? '?' }}</h2>
-                <p>
-                  {{ competitionLabel(match) }}
-                  @if (match.timeSlot) {
-                    · {{ formatKickoff(match.timeSlot.startTime) }} ·
-                    {{ match.timeSlot.field.name }}
-                  }
+        <section class="schedule-page__day">
+          <h3 class="schedule-page__day-label">{{ day.label }}</h3>
+          <div class="schedule-page__grid">
+            @for (match of day.matches; track match.id) {
+              @if (match.status === 'FORFEITED') {
+                <p class="schedule-page__forfeit">
+                  {{ match.homeTeam?.name }} vs {{ match.awayTeam?.name }} — forfait :
+                  {{ match.forfeitedTeam?.name }}
                 </p>
-              </ion-label>
-              @if (match.score) {
-                <ion-label slot="end" class="schedule-page__score">
-                  {{ match.score.homeScore }} - {{ match.score.awayScore }}
-                </ion-label>
+              } @else {
+                <ap-match-card
+                  [variant]="variantFor(match)"
+                  [homeTeam]="match.homeTeam ?? { name: '?' }"
+                  [awayTeam]="match.awayTeam ?? { name: '?' }"
+                  [homeScore]="match.score?.homeScore"
+                  [awayScore]="match.score?.awayScore"
+                  [kickoff]="match.timeSlot ? formatKickoff(match.timeSlot.startTime) : undefined"
+                  [venue]="match.timeSlot?.field?.name"
+                  [competitionLabel]="competitionLabel(match)"
+                />
               }
-              <ion-badge slot="end" [color]="match.status === 'LIVE' ? 'danger' : 'medium'">
-                {{ statusLabel(match) }}
-              </ion-badge>
-            </ion-item>
-          }
-        </ion-list>
+            }
+          </div>
+        </section>
       }
     }
   </ion-content>

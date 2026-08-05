@@ -3,23 +3,25 @@
 } @else if (categories().length === 0) {
   <p>Aucune catégorie pour ce tournoi.</p>
 } @else {
-  <div class="schedule-page__controls">
-    <ap-select
-      label="Catégorie"
-      [value]="selectedCategoryId()"
-      [options]="categoryOptions()"
-      (valueChange)="onCategoryChange($event)"
+  <ap-tabs
+    class="schedule-page__filters"
+    label="Catégorie"
+    [value]="selectedCategoryId()"
+    [options]="categoryOptions()"
+    (valueChange)="onCategoryChange($event)"
+  />
+
+  @if (phases().length > 0) {
+    <ap-tabs
+      class="schedule-page__filters"
+      label="Phase"
+      [value]="selectedPhaseId()"
+      [options]="phaseOptions()"
+      (valueChange)="onPhaseChange($event)"
     />
+  }
 
-    @if (phases().length > 0) {
-      <ap-select
-        label="Phase"
-        [value]="selectedPhaseId()"
-        [options]="phaseOptions()"
-        (valueChange)="onPhaseChange($event)"
-      />
-    }
-
+  <div class="schedule-page__controls">
     <ap-text-field
       class="schedule-page__search"
       type="search"
