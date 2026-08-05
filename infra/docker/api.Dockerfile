@@ -32,8 +32,32 @@ RUN npm ci --omit=dev
 # `require('../../generated/prisma/client')` resolves correctly without
 # copying anything from outside dist/.
 COPY --from=build /app/dist ./dist
+
+# Shared libs Chrome Headless Shell needs to run (see
+# https://www.remotion.dev/docs/miscellaneous/linux-dependencies), for the
+# apps/src/recap match-recap video renderer. Unpinned on purpose -- per
+# Remotion's own Docker guidance, pinned versions eventually vanish from
+# Debian's rotating repos and break the build; libasound2 was renamed
+# libasound2t64 on newer bases, so try both.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  libnss3 libdbus-1-3 libatk1.0-0 libxrandr2 libxkbcommon-dev \
+  libxfixes3 libxcomposite1 libxdamage1 libgbm-dev libcups2 \
+  libcairo2 libpango-1.0-0 libatk-bridge2.0-0 \
+  && (apt-get install -y --no-install-recommends libasound2t64 \
+  || apt-get install -y --no-install-recommends libasound2) \
+  && rm -rf /var/lib/apt/lists/*
+# Pre-download Chrome Headless Shell into node_modules/.remotion at build
+# time (official guidance: https://www.remotion.dev/docs/docker), so the
+# first render doesn't pay for it and doesn't need outbound network access
+# at runtime. Uses @remotion/renderer's ensureBrowser() directly rather than
+# the `remotion` CLI (`npx remotion browser ensure`) -- same underlying
+# download, without needing @remotion/cli as a production dependency.
+RUN node -e "require('@remotion/renderer').ensureBrowser().then(()=>process.exit(0)).catch((e)=>{console.error(e);process.exit(1)})"
+
 RUN groupadd --gid 1001 nodejs \
   && useradd --uid 1001 --gid nodejs --no-create-home nestjs
+# node_modules/.remotion was downloaded as root above; nestjs only needs
+# read+execute, which the default umask already grants.
 USER nestjs
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \

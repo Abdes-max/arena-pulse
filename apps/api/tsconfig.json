@@ -11,6 +11,10 @@
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "target": "ES2023",
+    "lib": ["ES2023", "DOM"],
+    // Needed for the .tsx Remotion composition under src/recap/composition —
+    // the rest of the API is plain Nest/TS and doesn't otherwise use JSX.
+    "jsx": "react-jsx",
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",

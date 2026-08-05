@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { OrganizationsModule } from '../organizations/organizations.module';
 import { PaymentsModule } from '../payments/payments.module';
 import { PermissionsModule } from '../permissions/permissions.module';
+import { RecapRenderService } from '../recap/recap-render.service';
 import { BracketsService } from './brackets.service';
 import { CategoriesController } from './categories.controller';
 import { CategoriesService } from './categories.service';
@@ -90,6 +91,7 @@ import { VenuesService } from './venues.service';
     QualificationRulesService,
     ScheduleGenerationService,
     MatchesService,
+    RecapRenderService,
     ScoresService,
     StandingsService,
     BracketsService,

@@ -2,11 +2,14 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
+  Header,
   HttpCode,
   HttpStatus,
   Param,
   Patch,
   Post,
+  StreamableFile,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -57,6 +60,28 @@ export class MatchesController {
       matchId,
       dto,
     );
+  }
+
+  @RequireOrgRole(OrganizationRole.ORG_MEMBER)
+  @RequireTournamentPermission('MANAGE_SCORES')
+  @Header('Content-Type', 'video/mp4')
+  @Header('Content-Disposition', 'attachment; filename="recap.mp4"')
+  @Get('matches/:matchId/recap')
+  async renderRecap(
+    @Param('organizationId') organizationId: string,
+    @Param('tournamentId') tournamentId: string,
+    @Param('matchId') matchId: string,
+  ): Promise<StreamableFile> {
+    // A plain Buffer returned from a Nest handler gets JSON.stringify'd
+    // (Buffer's toJSON() -> {type:"Buffer",data:[...]}) instead of sent as
+    // raw binary -- StreamableFile is Nest's actual mechanism for a binary
+    // response body.
+    const buffer = await this.matchesService.renderRecap(
+      organizationId,
+      tournamentId,
+      matchId,
+    );
+    return new StreamableFile(buffer);
   }
 
   @RequireOrgRole(OrganizationRole.ORG_MEMBER)
