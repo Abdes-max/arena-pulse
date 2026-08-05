@@ -54,7 +54,7 @@ describe('MatchCard', () => {
     fixture.componentInstance.awayScore = 1;
     fixture.detectChanges();
 
-    const badge = fixture.nativeElement.querySelector('ap-badge[status="finished"]');
+    const badge = fixture.nativeElement.querySelector('ap-badge[data-status="finished"]');
     expect(badge).not.toBeNull();
   });
 
@@ -65,7 +65,7 @@ describe('MatchCard', () => {
     fixture.componentInstance.awayScore = 1;
     fixture.detectChanges();
 
-    expect(fixture.nativeElement.querySelector('ap-badge[status="finished"]')).toBeNull();
+    expect(fixture.nativeElement.querySelector('ap-badge[data-status="finished"]')).toBeNull();
   });
 
   it('declares no winner on a draw', () => {

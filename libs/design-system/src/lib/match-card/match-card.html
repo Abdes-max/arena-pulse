@@ -1,13 +1,10 @@
 <article class="ap-match-card">
+  <ap-badge class="ap-match-card__status" [status]="statusBadge()" />
+
   @if (showMeta()) {
     <div class="ap-match-card__meta">
       @if (competitionLabel(); as label) {
         <span class="ap-match-card__competition">{{ label }}</span>
-      }
-      @if (variant() === 'live') {
-        <ap-badge status="live" />
-      } @else if (hasScore()) {
-        <ap-badge status="finished" />
       }
       @if (venue(); as v) {
         <span class="ap-match-card__venue">{{ v }}</span>
@@ -32,7 +29,6 @@
 
   @if (!hasScore() && kickoff(); as time) {
     <div class="ap-match-card__footer">
-      <ap-badge status="upcoming" />
       <span class="ap-match-card__time">{{ time }}</span>
       @if (venue(); as v) {
         <span class="ap-match-card__venue">{{ v }}</span>
