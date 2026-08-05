@@ -50,8 +50,8 @@ async function bootstrap() {
   );
 
   const config = new DocumentBuilder()
-    .setTitle('Arena Pulse API')
-    .setDescription('API REST du backend Arena Pulse')
+    .setTitle('TournArena API')
+    .setDescription('API REST du backend TournArena')
     .setVersion('0.1.0')
     .addBearerAuth()
     .build();

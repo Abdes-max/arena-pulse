@@ -5,7 +5,7 @@ import nodemailer, { Transporter } from 'nodemailer';
 @Injectable()
 export class MailService {
   private readonly transporter: Transporter;
-  private readonly from = 'Arena Pulse <no-reply@arena-pulse.local>';
+  private readonly from = 'TournArena <no-reply@arena-pulse.local>';
 
   constructor(configService: ConfigService) {
     this.transporter = nodemailer.createTransport({
@@ -27,9 +27,9 @@ export class MailService {
     await this.transporter.sendMail({
       from: this.from,
       to,
-      subject: `Invitation à rejoindre ${organizationName} sur Arena Pulse`,
+      subject: `Invitation à rejoindre ${organizationName} sur TournArena`,
       html: `
-        <p>Vous avez été invité·e à rejoindre <strong>${organizationName}</strong> sur Arena Pulse.</p>
+        <p>Vous avez été invité·e à rejoindre <strong>${organizationName}</strong> sur TournArena.</p>
         <p><a href="${inviteUrl}">Accepter l'invitation</a></p>
         <p>Ce lien expire dans 7 jours.</p>
       `,
