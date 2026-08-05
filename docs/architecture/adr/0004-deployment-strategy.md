@@ -27,7 +27,8 @@ externe sans que le porteur de projet ne le décide et ne le crée lui-même.
 2. **`infra/deployment/docker-compose.prod.yml`** : la baseline générique auto-hébergeable —
    fonctionne sur n'importe quel hôte Docker (VPS compris), sans dépendance à un PaaS particulier.
    Un service `migrate` à usage unique (cible `build`, qui garde le CLI Prisma contrairement à
-   `runtime`) exécute `prisma migrate deploy` avant que `api` ne démarre
+   `runtime`) exécute `prisma migrate deploy` puis `prisma db seed` (données de référence
+   sports/permissions, idempotent) avant que `api` ne démarre
    (`depends_on: condition: service_completed_successfully`).
 3. **nginx sert l'app ET fait reverse-proxy vers l'API sur la même origine** : élimine tout besoin
    de CORS en usage normal, et corrige au passage un bug préexistant —
