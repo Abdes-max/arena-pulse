@@ -2,7 +2,6 @@ import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Select, SelectOption } from 'design-system';
-import { TournamentSubmenu } from '../../shared/tournament-submenu';
 import { AuthService } from '../../core/auth.service';
 import { CompetitionFormatsService } from '../../core/competition-formats.service';
 import { Category, CompetitionPhase, Qualification, Standings } from '../../core/models';
@@ -18,7 +17,7 @@ interface GroupStandings {
 
 @Component({
   selector: 'app-standings-page',
-  imports: [DecimalPipe, Select, TournamentSubmenu],
+  imports: [DecimalPipe, Select],
   templateUrl: './standings.page.html',
   styleUrl: './standings.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

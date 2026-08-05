@@ -1,10 +1,68 @@
+// Same compact underline/pill tab treatment as the public site's own
+// tournament nav (apps/web/src/app/shell/tournament-shell.scss) -- plain
+// links in a single row take far less space than a row of bordered buttons.
+// Lives inside AppShell's header, which is fixed white regardless of
+// theme/dark-mode (see app-shell.scss) -- colors below are fixed to match
+// rather than the --ap-*-mode tokens, which would otherwise lose contrast
+// (or clash) against a background that no longer follows them.
+// max-width/margin/padding match the page containers below (e.g.
+// tournament-form-page, team-list-page) so the first tab lines up directly
+// above that page's own <h1>, and no bottom padding so the row sits flush
+// against the header's border-bottom instead of floating above it.
 .tournament-submenu {
   display: flex;
-  flex-wrap: wrap;
   gap: var(--ap-space-2);
-  padding: var(--ap-space-3);
-  margin-bottom: var(--ap-space-6);
-  background: var(--ap-color-surface);
-  border: var(--ap-border-width) solid var(--ap-color-border);
-  border-radius: var(--ap-radius-md);
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 var(--ap-space-6);
+  overflow-x: auto;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  a {
+    position: relative;
+    display: inline-block;
+    flex: none;
+    padding: var(--ap-space-2) var(--ap-space-3);
+    border-radius: var(--ap-radius-md);
+    color: #6b6558;
+    text-decoration: none;
+    font-weight: 600;
+    white-space: nowrap;
+    transition:
+      color var(--ap-motion-fast) var(--ap-easing-standard),
+      background-color var(--ap-motion-fast) var(--ap-easing-standard);
+
+    &:hover {
+      color: #1b1b18;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      left: var(--ap-space-3);
+      right: var(--ap-space-3);
+      bottom: 0;
+      height: 2px;
+      background: #1e293b;
+      transform: scaleX(0);
+      transition: transform var(--ap-motion-fast) var(--ap-easing-standard);
+    }
+  }
+}
+
+// The active pill follows the live theme (same --ap-color-fg /
+// --ap-color-signal-soft pairing as the public site's own nav), unlike the
+// rest of this row -- so it shows the organizer's chosen tournament theme
+// (e.g. Neon Court's pink) on top of the header's otherwise-fixed white/ink.
+.tournament-submenu__link--active {
+  color: var(--ap-color-fg);
+  background: var(--ap-color-signal-soft);
+
+  &::after {
+    transform: scaleX(1);
+  }
 }

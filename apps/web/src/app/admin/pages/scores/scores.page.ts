@@ -2,7 +2,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Button, Select, SelectOption, TextField } from 'design-system';
-import { TournamentSubmenu } from '../../shared/tournament-submenu';
 import { AuthService } from '../../core/auth.service';
 import { CompetitionFormatsService } from '../../core/competition-formats.service';
 import { Category, CompetitionPhase, Match, StandingRule } from '../../core/models';
@@ -21,7 +20,7 @@ const EMPTY_DRAFT: ScoreDraft = { home: '', away: '', homePenalty: '', awayPenal
 
 @Component({
   selector: 'app-scores-page',
-  imports: [Button, Select, TextField, TournamentSubmenu],
+  imports: [Button, Select, TextField],
   templateUrl: './scores.page.html',
   styleUrl: './scores.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

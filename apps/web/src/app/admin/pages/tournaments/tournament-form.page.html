@@ -6,7 +6,7 @@
       <p class="tournament-form-page__error" role="alert">{{ message }}</p>
     }
 
-    <h1>{{ isEditMode() ? 'Modifier le tournoi' : 'Créer un tournoi' }}</h1>
+    <h1>{{ isEditMode() ? 'Général' : 'Créer un tournoi' }}</h1>
 
     @if (isEditMode() && tournament(); as t) {
       <div class="tournament-form-page__lifecycle">
@@ -23,7 +23,6 @@
         }
         <ap-button type="button" variant="ghost" (click)="duplicate()">Dupliquer</ap-button>
       </div>
-      <app-tournament-submenu [tournamentId]="tournamentId()!" />
     }
 
     <form class="tournament-form-page__form" [formGroup]="form" (ngSubmit)="submit()">

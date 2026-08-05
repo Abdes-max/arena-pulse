@@ -109,9 +109,22 @@
       @if (bracket.rounds.length === 0) {
         <p class="standings-page__empty">Le tableau n'a pas encore été généré pour cette phase.</p>
       } @else {
+        @if (roundOptions().length > 1) {
+          <ap-tabs
+            class="standings-page__round-tabs"
+            label="Tour"
+            [value]="selectedRoundView()"
+            [options]="roundOptions()"
+            (valueChange)="onRoundJump($event)"
+          />
+        }
+
         <div class="standings-page__bracket" [style.height.px]="bracketHeight(bracket)">
           @for (round of bracket.rounds; track round.round) {
-            <div class="standings-page__bracket-round">
+            <div
+              class="standings-page__bracket-round"
+              [id]="'bracket-round-' + selectedTab() + '-' + round.round"
+            >
               <h3>{{ round.label }}</h3>
               <div class="standings-page__bracket-round-matches">
                 @for (match of round.matches; track match.id) {
@@ -133,7 +146,10 @@
         </div>
 
         @if (bracket.thirdPlaceMatch; as match) {
-          <div class="standings-page__third-place">
+          <div
+            class="standings-page__third-place"
+            [id]="'bracket-round-' + selectedTab() + '-third'"
+          >
             <h3>Match pour la 3e place</h3>
             <ap-bracket-match
               [homeTeam]="match.homeTeam ?? { name: '—' }"

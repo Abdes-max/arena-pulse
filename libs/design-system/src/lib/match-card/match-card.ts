@@ -40,6 +40,14 @@ export class MatchCard {
     () => this.homeScore() !== undefined && this.awayScore() !== undefined,
   );
 
+  // The meta row also carries the live/finished badge now, so it must render
+  // whenever either of those applies -- not just when a competitionLabel or
+  // venue happens to be set (e.g. bracket matches pass neither).
+  protected readonly showMeta = computed(
+    () =>
+      !!this.competitionLabel() || this.variant() === 'live' || this.hasScore() || !!this.venue(),
+  );
+
   protected readonly homeIsWinner = computed(() => {
     const home = this.homeScore();
     const away = this.awayScore();

@@ -5,17 +5,17 @@ import {
   IonButton,
   IonContent,
   IonLabel,
-  IonSearchbar,
   IonSegment,
   IonSegmentButton,
 } from '@ionic/angular/standalone';
+import { TextField } from 'design-system';
 import { Category, PublicTeam } from 'shared-models';
 import { FavoritesService } from '../../core/favorites.service';
 import { TournamentContextService } from '../../core/tournament-context.service';
 
 @Component({
   selector: 'app-team-search-page',
-  imports: [IonContent, IonSegment, IonSegmentButton, IonSearchbar, IonLabel, IonButton],
+  imports: [IonContent, IonSegment, IonSegmentButton, IonLabel, IonButton, TextField],
   templateUrl: './team-search.page.html',
   styleUrl: './team-search.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -69,8 +69,8 @@ export class TeamSearchPage {
     return String(value ?? '');
   }
 
-  protected onQueryChange(query: string | null | undefined): void {
-    this.query.set(query ?? '');
+  protected onQueryChange(query: string): void {
+    this.query.set(query);
   }
 
   protected goToTeam(team: PublicTeam): void {

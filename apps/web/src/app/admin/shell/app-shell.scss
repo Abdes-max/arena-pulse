@@ -4,12 +4,34 @@
   flex-direction: column;
 }
 
+// Fixed white, independent of theme/dark-mode (like the public site's own
+// masthead) -- the organizer's chosen tournament theme colors the page body,
+// not this shared chrome above it. Text colors below are fixed to match
+// (not the --ap-color-fg token, which flips light/dark and would lose
+// contrast against a background that no longer follows it).
 .app-shell__header {
+  background: #ffffff;
+  border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+}
+
+.app-shell__topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: var(--ap-space-4) var(--ap-space-6);
-  border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+}
+
+.app-shell__topbar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-6);
+}
+
+.app-shell__brand {
+  font-family: var(--ap-font-heading);
+  font-weight: 700;
+  letter-spacing: var(--ap-tracking-tight);
+  color: #1b1b18;
 }
 
 .app-shell__nav {
@@ -19,7 +41,7 @@
   a {
     font-family: var(--ap-font-body);
     font-weight: 600;
-    color: var(--ap-color-fg);
+    color: #1b1b18;
     text-decoration: none;
 
     &.app-shell__link--active {
@@ -32,10 +54,6 @@
   display: flex;
   align-items: center;
   gap: var(--ap-space-3);
-}
-
-.app-shell__theme-select {
-  width: 160px;
 }
 
 .app-shell__content {

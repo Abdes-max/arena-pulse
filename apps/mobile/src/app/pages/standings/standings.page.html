@@ -120,43 +120,39 @@
               Le tableau n'a pas encore été généré pour cette phase.
             </p>
           } @else {
-            @for (round of bracket.rounds; track round.round) {
-              <section class="standings-page__round">
-                <h3 class="standings-page__round-label">{{ round.label }}</h3>
-                <div class="standings-page__grid">
-                  @for (match of round.matches; track match.id) {
-                    @if (match.status === 'FORFEITED') {
-                      <p class="standings-page__forfeit">
-                        {{ match.homeTeam?.name }} vs {{ match.awayTeam?.name }} — forfait :
-                        {{ match.forfeitedTeam?.name }}
-                      </p>
-                    } @else {
-                      <ap-match-card
-                        [variant]="variantFor(match)"
-                        [homeTeam]="match.homeTeam ?? { name: '?' }"
-                        [awayTeam]="match.awayTeam ?? { name: '?' }"
-                        [homeScore]="match.score?.homeScore"
-                        [awayScore]="match.score?.awayScore"
-                      />
-                    }
+            <ion-segment
+              class="standings-page__filters"
+              [value]="selectedRoundValue()"
+              (ionChange)="onRoundChange(asString($event.detail.value))"
+              scrollable
+            >
+              @for (option of roundOptions(); track option.value) {
+                <ion-segment-button [value]="option.value">
+                  <ion-label>{{ option.label }}</ion-label>
+                </ion-segment-button>
+              }
+            </ion-segment>
+
+            <section class="standings-page__round">
+              <div class="standings-page__grid">
+                @for (match of selectedRoundMatches(); track match.id) {
+                  @if (match.status === 'FORFEITED') {
+                    <p class="standings-page__forfeit">
+                      {{ match.homeTeam?.name }} vs {{ match.awayTeam?.name }} — forfait :
+                      {{ match.forfeitedTeam?.name }}
+                    </p>
+                  } @else {
+                    <ap-match-card
+                      [variant]="variantFor(match)"
+                      [homeTeam]="match.homeTeam ?? { name: '?' }"
+                      [awayTeam]="match.awayTeam ?? { name: '?' }"
+                      [homeScore]="match.score?.homeScore"
+                      [awayScore]="match.score?.awayScore"
+                    />
                   }
-                </div>
-              </section>
-            }
-            @if (bracket.thirdPlaceMatch; as match) {
-              <section class="standings-page__round">
-                <h3 class="standings-page__round-label">Match pour la 3e place</h3>
-                <div class="standings-page__grid">
-                  <ap-match-card
-                    [variant]="variantFor(match)"
-                    [homeTeam]="match.homeTeam ?? { name: '?' }"
-                    [awayTeam]="match.awayTeam ?? { name: '?' }"
-                    [homeScore]="match.score?.homeScore"
-                    [awayScore]="match.score?.awayScore"
-                  />
-                </div>
-              </section>
-            }
+                }
+              </div>
+            </section>
           }
         }
       }

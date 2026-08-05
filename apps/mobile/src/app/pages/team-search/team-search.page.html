@@ -4,12 +4,6 @@
   </ion-content>
 } @else {
   <ion-content class="team-search-page">
-    <ion-searchbar
-      placeholder="Rechercher une équipe…"
-      [value]="query()"
-      (ionInput)="onQueryChange($event.detail.value)"
-    />
-
     @if (categories().length > 0) {
       <ion-segment
         class="team-search-page__filters"
@@ -27,6 +21,16 @@
         }
       </ion-segment>
     }
+
+    <ap-text-field
+      class="team-search-page__search"
+      type="search"
+      label="Rechercher une équipe"
+      placeholder="Rechercher une équipe…"
+      [hideLabel]="true"
+      [value]="query()"
+      (valueChange)="onQueryChange($event)"
+    />
 
     @if (filteredTeams().length === 0) {
       <p class="team-search-page__empty">Aucune équipe trouvée.</p>
