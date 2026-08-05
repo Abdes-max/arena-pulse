@@ -1,0 +1,15 @@
+<span class="ap-logo">
+  <svg class="ap-logo__mark" viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+    <rect x="2" y="2" width="60" height="60" rx="14" class="ap-logo__frame" />
+    <path d="M22 16 L42 32 L22 48" class="ap-logo__chevron" />
+    <circle cx="45" cy="32" r="10" class="ap-logo__glow" />
+    <circle cx="45" cy="32" r="5.5" class="ap-logo__dot" />
+  </svg>
+  @if (wordmark()) {
+    <span class="ap-logo__wordmark">
+      <span class="ap-logo__wordmark-a">Tourn</span><span class="ap-logo__wordmark-b">Arena</span>
+    </span>
+  } @else {
+    <span class="ap-logo__sr-only">TournArena</span>
+  }
+</span>

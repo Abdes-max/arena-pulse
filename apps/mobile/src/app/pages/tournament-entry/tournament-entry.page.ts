@@ -8,10 +8,11 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone';
+import { Logo } from 'design-system';
 
 @Component({
   selector: 'app-tournament-entry-page',
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonInput, IonButton],
+  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonInput, IonButton, Logo],
   templateUrl: './tournament-entry.page.html',
   styleUrl: './tournament-entry.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
