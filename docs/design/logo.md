@@ -22,23 +22,28 @@ Contrairement à un accent d'UI (ex. la pastille de l'onglet actif dans l'admin,
 
 ## Assets
 
-| Fichier | Rôle |
-| --- | --- |
-| `libs/design-system/src/lib/logo/` | Composant `ap-logo` (Angular) — source de vérité pour toute intégration dans le produit |
-| `apps/web/public/favicon.svg`, `apps/mobile/public/favicon.svg` | Favicon vectoriel |
-| `docs/design/brand/mark-on-light.svg` | Symbole seul, fond clair |
-| `docs/design/brand/mark-on-dark.svg` | Symbole seul, variante inversée pour fond sombre |
-| `docs/design/brand/preview.html` | Aperçu autonome (voir plus haut) |
+| Fichier                                                         | Rôle                                                                                    |
+| --------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `libs/design-system/src/lib/logo/`                              | Composant `ap-logo` (Angular) — source de vérité pour toute intégration dans le produit |
+| `apps/web/public/favicon.svg`, `apps/mobile/public/favicon.svg` | Favicon vectoriel                                                                       |
+| `apps/web/public/favicon.ico`, `apps/mobile/public/favicon.ico` | Favicon multi-résolution (16/32/48) pour les navigateurs sans support SVG               |
+| `docs/design/brand/mark-on-light.svg`                           | Symbole seul, fond clair                                                                |
+| `docs/design/brand/mark-on-dark.svg`                            | Symbole seul, variante inversée pour fond sombre                                        |
+| `docs/design/brand/preview.html`                                | Aperçu autonome (voir plus haut)                                                        |
 
 ## Utiliser `ap-logo`
 
 ```html
-<ap-logo />                              <!-- icône + wordmark, fond clair (par défaut) -->
-<ap-logo [wordmark]="false" />           <!-- icône seule (garde un nom accessible caché) -->
-<ap-logo variant="on-dark" />            <!-- variante inversée, pour un fond sombre -->
+<ap-logo />
+<!-- icône + wordmark, fond clair (par défaut) -->
+<ap-logo [wordmark]="false" />
+<!-- icône seule (garde un nom accessible caché) -->
+<ap-logo variant="on-dark" />
+<!-- variante inversée, pour un fond sombre -->
 ```
 
 Intégré dans :
+
 - `apps/web/src/app/admin/shell/app-shell.html` — en-tête admin, en haut à gauche
 - `apps/web/src/app/pages/landing/landing.page.html` — nav de la vitrine publique
 - `apps/mobile/src/app/pages/tournament-entry/tournament-entry.page.html` — écran de saisie du code tournoi
@@ -49,6 +54,10 @@ Aucun usage actuel de `variant="on-dark"` dans le produit (tous ces emplacements
 
 Laisser au moins la largeur du point signal libre autour du symbole — pas de texte ni de bord de carte collé dessus (voir `preview.html`).
 
-## Limite connue : icône native mobile et `.ico` multi-résolution
+## `favicon.ico` : comment il a été généré
 
-`favicon.svg` couvre les navigateurs modernes (Chrome, Firefox, Edge, Safari 16+) via `<link rel="icon" type="image/svg+xml">`, avec `favicon.ico` existant gardé en `rel="alternate icon"` pour les anciens navigateurs qui ne savent pas lire un favicon SVG — ce `.ico` n'a **pas** été régénéré avec le nouveau symbole : aucun outil de rastérisation (ImageMagick, Inkscape, sharp…) n'était disponible dans cet environnement pour produire un `.ico` multi-résolution ou les jeux d'icônes natifs Android (`apps/mobile/android/app/src/main/res/mipmap-*`) à partir du SVG. Pour les mettre à jour : régénérer depuis `mark-on-light.svg` avec un outil externe (ex. realfavicongenerator.net pour le favicon, `npx @capacitor/assets generate` pour l'icône Android à partir d'un PNG source).
+Aucun outil de rastérisation dédié (ImageMagick, Inkscape, sharp…) n'était disponible dans cet environnement. `favicon.ico` a été produit en réutilisant Playwright (déjà présent pour les tests e2e) pour capturer `mark-on-light.svg` en PNG à 16/32/48 px dans un Chromium headless, puis en assemblant ces PNG dans un conteneur `.ico` multi-résolution écrit à la main (le format ICO autorise des entrées PNG brutes, pas seulement du bitmap). Script non conservé dans le repo (ponctuel) — à refaire de la même façon si le symbole change.
+
+## Limite connue : icône native Android
+
+`apps/mobile/android/app/src/main/res/mipmap-*` (icône d'app native, écran d'accueil) n'a pas été régénérée — ça demande un jeu d'icônes par densité (+ icône adaptative Android 8+), hors scope de ce qu'un simple favicon nécessite. À régénérer depuis `mark-on-light.svg` avec `npx @capacitor/assets generate` à partir d'un PNG source.

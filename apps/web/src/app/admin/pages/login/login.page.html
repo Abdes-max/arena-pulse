@@ -1,6 +1,7 @@
 <main class="login-page">
   <form class="login-page__card" [formGroup]="form" (ngSubmit)="submit()">
-    <h1>Connexion</h1>
+    <ap-logo class="login-page__brand" />
+    <h1>Connectez-vous</h1>
     <ap-text-field label="Email" type="email" formControlName="email" autocomplete="email" />
     <ap-text-field
       label="Mot de passe"

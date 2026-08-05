@@ -17,7 +17,13 @@
     font-family: var(--ap-font-body);
     color: var(--ap-color-fg);
     margin: 0 0 var(--ap-space-2);
+    text-align: center;
   }
+}
+
+.login-page__brand {
+  align-self: center;
+  margin-bottom: var(--ap-space-2);
 }
 
 .login-page__error {

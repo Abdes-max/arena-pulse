@@ -1,6 +1,7 @@
 <main class="register-page">
   <form class="register-page__card" [formGroup]="form" (ngSubmit)="submit()">
-    <h1>Créer votre organisation</h1>
+    <ap-logo class="register-page__brand" />
+    <h1>Inscrivez-vous</h1>
     <ap-text-field
       label="Nom de l'organisation"
       formControlName="organizationName"
