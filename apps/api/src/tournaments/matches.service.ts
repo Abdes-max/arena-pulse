@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { Match, MatchOfficial, TimeSlot } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { RecapRenderService } from '../recap/recap-render.service';
 import { AddMatchOfficialDto } from './dto/add-match-official.dto';
 import { AssignMatchTimeslotDto } from './dto/assign-match-timeslot.dto';
 import {
@@ -18,6 +19,18 @@ import { RefereesService } from './referees.service';
 import { TeamsService } from './teams.service';
 import { timeRangesOverlap } from './time-overlap.util';
 import { TournamentsService } from './tournaments.service';
+
+const MATCH_RECAP_INCLUDE = {
+  ...MATCH_TOURNAMENT_INCLUDE,
+  homeTeam: { select: { id: true, name: true } },
+  awayTeam: { select: { id: true, name: true } },
+  score: {
+    select: { homeScore: true, awayScore: true, isValidated: true },
+  },
+  timeSlot: {
+    include: { field: { include: { venue: { select: { name: true } } } } },
+  },
+} as const;
 
 type MatchWithConflictData = Match &
   MatchWithTournamentOwner & {
@@ -37,6 +50,7 @@ export class MatchesService {
     private readonly tournamentsService: TournamentsService,
     private readonly teamsService: TeamsService,
     private readonly refereesService: RefereesService,
+    private readonly recapRenderService: RecapRenderService,
   ) {}
 
   async moveMatch(
@@ -178,6 +192,50 @@ export class MatchesService {
       throw new NotFoundException('Officiel introuvable.');
     }
     await this.prisma.matchOfficial.delete({ where: { id: officialId } });
+  }
+
+  /**
+   * Renders a short shareable video clip for a completed match, e.g. for the
+   * organizer/teams to post on social media. Synchronous, in-process (see
+   * RecapRenderService) -- no storage/caching, a fresh render every call.
+   */
+  async renderRecap(
+    organizationId: string,
+    tournamentId: string,
+    matchId: string,
+  ): Promise<Buffer> {
+    const tournament = await this.tournamentsService.assertTournamentExists(
+      organizationId,
+      tournamentId,
+    );
+
+    const match = await this.prisma.match.findUnique({
+      where: { id: matchId },
+      include: MATCH_RECAP_INCLUDE,
+    });
+    if (!match || !matchBelongsToTournament(match, tournamentId)) {
+      throw new NotFoundException('Match introuvable.');
+    }
+    if (match.status !== 'COMPLETED' || !match.score?.isValidated) {
+      throw new BadRequestException(
+        "Le récapitulatif vidéo n'est disponible que pour un match terminé au score validé.",
+      );
+    }
+    if (!match.homeTeam || !match.awayTeam) {
+      throw new BadRequestException(
+        'Le récapitulatif vidéo nécessite deux équipes assignées.',
+      );
+    }
+
+    return this.recapRenderService.renderMatchRecap({
+      tournamentName: tournament.name,
+      venueName: match.timeSlot?.field.venue.name ?? null,
+      theme: tournament.theme,
+      homeTeamName: match.homeTeam.name,
+      awayTeamName: match.awayTeam.name,
+      homeScore: match.score.homeScore,
+      awayScore: match.score.awayScore,
+    });
   }
 
   private async getOrThrowForTournament(

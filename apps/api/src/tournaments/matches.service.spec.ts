@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { MatchesService } from './matches.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { RecapRenderService } from '../recap/recap-render.service';
 import { RefereesService } from './referees.service';
 import { TeamsService } from './teams.service';
 import { TournamentsService } from './tournaments.service';
@@ -67,9 +68,13 @@ function baseMatch(overrides: Partial<Record<string, unknown>> = {}) {
 
 describe('MatchesService', () => {
   let prisma: PrismaMock;
-  let tournamentsService: { assertTournamentIsEditable: jest.Mock };
+  let tournamentsService: {
+    assertTournamentIsEditable: jest.Mock;
+    assertTournamentExists: jest.Mock;
+  };
   let teamsService: { assertTeamExists: jest.Mock };
   let refereesService: { assertRefereeExists: jest.Mock };
+  let recapRenderService: { renderMatchRecap: jest.Mock };
   let service: MatchesService;
 
   beforeEach(() => {
@@ -78,14 +83,23 @@ describe('MatchesService', () => {
       assertTournamentIsEditable: jest
         .fn()
         .mockResolvedValue({ id: TOURNAMENT_ID }),
+      assertTournamentExists: jest.fn().mockResolvedValue({
+        id: TOURNAMENT_ID,
+        name: 'Tournoi Été 2026',
+        theme: 'INK_SIGNAL',
+      }),
     };
     teamsService = { assertTeamExists: jest.fn() };
     refereesService = { assertRefereeExists: jest.fn() };
+    recapRenderService = {
+      renderMatchRecap: jest.fn().mockResolvedValue(Buffer.from('mp4')),
+    };
     service = new MatchesService(
       prisma as unknown as PrismaService,
       tournamentsService as unknown as TournamentsService,
       teamsService as unknown as TeamsService,
       refereesService as unknown as RefereesService,
+      recapRenderService as unknown as RecapRenderService,
     );
   });
 
@@ -348,6 +362,90 @@ describe('MatchesService', () => {
       expect(prisma.matchOfficial.delete).toHaveBeenCalledWith({
         where: { id: 'official-1' },
       });
+    });
+  });
+
+  describe('renderRecap', () => {
+    function completedMatch(overrides: Partial<Record<string, unknown>> = {}) {
+      return baseMatch({
+        status: 'COMPLETED',
+        homeTeam: { id: 'team-home', name: 'FC Lumière' },
+        awayTeam: { id: 'team-away', name: 'AS Tonnerre' },
+        score: { homeScore: 3, awayScore: 1, isValidated: true },
+        timeSlot: {
+          ...baseMatch().timeSlot,
+          field: { venue: { name: 'Complexe Sportif Nord' } },
+        },
+        ...overrides,
+      });
+    }
+
+    it('rejects a match belonging to another tournament', async () => {
+      prisma.match.findUnique.mockResolvedValue(
+        completedMatch({
+          group: { phase: { category: { tournamentId: 'other' } } },
+        }),
+      );
+
+      await expect(
+        service.renderRecap('org-1', TOURNAMENT_ID, 'match-1'),
+      ).rejects.toBeInstanceOf(NotFoundException);
+    });
+
+    it('rejects a match that is not completed', async () => {
+      prisma.match.findUnique.mockResolvedValue(
+        completedMatch({ status: 'SCHEDULED' }),
+      );
+
+      await expect(
+        service.renderRecap('org-1', TOURNAMENT_ID, 'match-1'),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(recapRenderService.renderMatchRecap).not.toHaveBeenCalled();
+    });
+
+    it('rejects a completed match with an unvalidated score', async () => {
+      prisma.match.findUnique.mockResolvedValue(
+        completedMatch({
+          score: { homeScore: 3, awayScore: 1, isValidated: false },
+        }),
+      );
+
+      await expect(
+        service.renderRecap('org-1', TOURNAMENT_ID, 'match-1'),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(recapRenderService.renderMatchRecap).not.toHaveBeenCalled();
+    });
+
+    it('rejects a match missing an assigned team', async () => {
+      prisma.match.findUnique.mockResolvedValue(
+        completedMatch({ awayTeam: null }),
+      );
+
+      await expect(
+        service.renderRecap('org-1', TOURNAMENT_ID, 'match-1'),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(recapRenderService.renderMatchRecap).not.toHaveBeenCalled();
+    });
+
+    it('renders a recap for a completed match with a validated score', async () => {
+      prisma.match.findUnique.mockResolvedValue(completedMatch());
+
+      const result = await service.renderRecap(
+        'org-1',
+        TOURNAMENT_ID,
+        'match-1',
+      );
+
+      expect(recapRenderService.renderMatchRecap).toHaveBeenCalledWith({
+        tournamentName: 'Tournoi Été 2026',
+        venueName: 'Complexe Sportif Nord',
+        theme: 'INK_SIGNAL',
+        homeTeamName: 'FC Lumière',
+        awayTeamName: 'AS Tonnerre',
+        homeScore: 3,
+        awayScore: 1,
+      });
+      expect(result).toEqual(Buffer.from('mp4'));
     });
   });
 });
