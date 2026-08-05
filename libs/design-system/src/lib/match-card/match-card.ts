@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
-import { Badge } from '../badge/badge';
+import { Badge, BadgeStatus } from '../badge/badge';
 
 export type MatchCardVariant = 'featured' | 'live' | 'upcoming' | 'result' | 'compact';
 
@@ -40,13 +40,17 @@ export class MatchCard {
     () => this.homeScore() !== undefined && this.awayScore() !== undefined,
   );
 
-  // The meta row also carries the live/finished badge now, so it must render
-  // whenever either of those applies -- not just when a competitionLabel or
-  // venue happens to be set (e.g. bracket matches pass neither).
-  protected readonly showMeta = computed(
-    () =>
-      !!this.competitionLabel() || this.variant() === 'live' || this.hasScore() || !!this.venue(),
-  );
+  protected readonly showMeta = computed(() => !!this.competitionLabel() || !!this.venue());
+
+  // One status badge, always shown, pinned to the card's top-right corner --
+  // not folded into the meta row or footer, so it reads the same regardless
+  // of whether a competitionLabel/venue/kickoff happens to be set.
+  protected readonly statusBadge = computed<BadgeStatus>(() => {
+    if (this.variant() === 'live') {
+      return 'live';
+    }
+    return this.hasScore() ? 'finished' : 'upcoming';
+  });
 
   protected readonly homeIsWinner = computed(() => {
     const home = this.homeScore();

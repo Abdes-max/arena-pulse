@@ -4,6 +4,7 @@
 }
 
 .ap-match-card {
+  position: relative;
   background: var(--ap-color-surface);
   border: var(--ap-border-width) solid var(--ap-color-border);
   border-radius: var(--ap-radius-lg);
@@ -13,10 +14,23 @@
   gap: var(--ap-space-2);
 }
 
+// Pinned to the card's corner, not folded into the meta row -- reads the
+// same status regardless of whether a competitionLabel/venue is set.
+.ap-match-card__status {
+  position: absolute;
+  top: var(--ap-space-3);
+  right: var(--ap-space-3);
+}
+
 .ap-match-card__meta {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: var(--ap-space-2);
+  // Leaves room for the absolutely-positioned status badge so a long
+  // competition label (e.g. "Trente-deuxième de finale") wraps instead of
+  // running underneath it.
+  padding-right: 110px;
   font-size: 0.72rem;
   color: var(--ap-color-muted);
   text-transform: uppercase;
@@ -90,6 +104,16 @@
 
 :host([data-variant='compact']) .ap-match-card__score {
   font-size: 0.85rem;
+}
+
+// The card itself is a row here, not a tall column -- an absolutely
+// positioned corner badge would sit on top of the away team's name/score,
+// so it rejoins the row's normal flow instead, pushed to the end (still the
+// row's own "right side").
+:host([data-variant='compact']) .ap-match-card__status {
+  position: static;
+  order: 1;
+  flex: none;
 }
 
 // --- live: la couleur signal de la direction marque le direct ---
