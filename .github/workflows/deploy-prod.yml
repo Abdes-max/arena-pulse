@@ -1,0 +1,32 @@
+# Manual, one-click production deploy: SSHes into the VPS and re-runs the
+# exact same commands documented in infra/deployment/README.md's "Mettre à
+# jour" section (git pull + docker compose up -d --build). Deliberately
+# does not push/pull pre-built GHCR images here -- the `migrate` service
+# needs the `build` Dockerfile stage (has the Prisma CLI), which the
+# docker-publish job in ci.yml never pushes to GHCR (only the pruned
+# `runtime` stage is published) -- see docs/architecture/adr/0004-deployment-strategy.md.
+name: Deploy to production
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    name: Deploy to Hostinger VPS
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Pull latest master and restart the stack
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          script_stop: true
+          script: |
+            cd ${{ secrets.DEPLOY_PATH }}
+            git fetch origin master
+            git reset --hard origin/master
+            docker compose -f infra/deployment/docker-compose.prod.yml --env-file infra/deployment/.env up -d --build
+            docker image prune -f

@@ -74,6 +74,34 @@ docker compose -f infra/deployment/docker-compose.prod.yml --env-file infra/depl
 Le service `migrate` s'exécute avant `api` à chaque `up` et applique les migrations Prisma en
 attente ; `api` ne démarre que si `migrate` s'est terminé avec succès.
 
+## Déployer en continu (GitHub Actions)
+
+Le workflow `.github/workflows/deploy-prod.yml` reproduit la section
+"Mettre à jour" ci-dessus par SSH, déclenché manuellement ("Run workflow"
+depuis l'onglet Actions du dépôt — un clic).
+
+Prérequis, à faire une seule fois :
+
+1. **Sur le VPS**, cloner le dépôt et le configurer comme dans "Déployer"
+   ci-dessus (`git clone`, `.env` rempli). Le clone doit être dédié au
+   déploiement : le workflow fait `git reset --hard origin/master`, donc
+   toute modification locale sur ce clone serait écrasée au prochain
+   déploiement.
+2. Créer une paire de clés SSH dédiée
+   (`ssh-keygen -t ed25519 -C "deploy@arena-pulse" -f deploy_key -N ""`) et
+   ajouter la **clé publique** à `~/.ssh/authorized_keys` de l'utilisateur
+   SSH sur le VPS.
+3. Dans les settings GitHub du dépôt (Settings → Secrets and variables →
+   Actions), ajouter :
+   - `DEPLOY_HOST` — IP ou nom d'hôte du VPS
+   - `DEPLOY_USER` — utilisateur SSH (éviter `root` si possible)
+   - `DEPLOY_SSH_KEY` — la **clé privée** générée à l'étape 2
+   - `DEPLOY_PATH` — chemin absolu du clone sur le VPS (ex. `/opt/arena-pulse`)
+   - `DEPLOY_PORT` — optionnel, si le SSH du VPS n'écoute pas sur 22
+4. Optionnel mais recommandé : créer un environment GitHub `production`
+   (Settings → Environments) avec des "required reviewers", pour qu'un
+   déploiement demande une validation humaine avant de s'exécuter.
+
 ## Sauvegarder
 
 Les données PostgreSQL vivent dans le volume nommé `arena-pulse-postgres-prod` (déclaré dans
