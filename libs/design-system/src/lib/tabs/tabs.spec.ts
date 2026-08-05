@@ -5,7 +5,12 @@ import { Tabs, TabOption } from './tabs';
 @Component({
   imports: [Tabs],
   template: `
-    <ap-tabs label="Catégorie" [value]="value" [options]="options" (valueChange)="onValueChange($event)" />
+    <ap-tabs
+      label="Catégorie"
+      [value]="value"
+      [options]="options"
+      (valueChange)="onValueChange($event)"
+    />
   `,
 })
 class HostComponent {

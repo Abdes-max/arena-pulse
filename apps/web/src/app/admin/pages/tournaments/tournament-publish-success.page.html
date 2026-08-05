@@ -4,7 +4,9 @@
   } @else if (tournament(); as t) {
     @if (t.status === 'PUBLISHED') {
       <h1>Tournoi publié</h1>
-      <p><strong>{{ t.name }}</strong> est désormais visible sur son site public.</p>
+      <p>
+        <strong>{{ t.name }}</strong> est désormais visible sur son site public.
+      </p>
     } @else {
       <h1>Paiement en cours de confirmation</h1>
       <p>

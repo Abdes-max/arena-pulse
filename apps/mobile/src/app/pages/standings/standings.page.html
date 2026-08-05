@@ -75,7 +75,9 @@
               <tbody>
                 @for (row of group.standings.rows; track row.teamId) {
                   <tr [class.standings-page__row--qualified]="isQualified(group, row.teamId)">
-                    <td class="standings-page__table-team">{{ row.position }}. {{ row.teamName }}</td>
+                    <td class="standings-page__table-team">
+                      {{ row.position }}. {{ row.teamName }}
+                    </td>
                     <td class="standings-page__table-qualified">
                       @if (isQualified(group, row.teamId)) {
                         <ap-badge status="qualified" />

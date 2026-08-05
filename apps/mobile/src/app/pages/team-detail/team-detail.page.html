@@ -63,7 +63,9 @@
             <span class="team-detail-page__stat-label">Points</span>
           </div>
           <div class="team-detail-page__stat">
-            <span class="team-detail-page__stat-value">{{ standing.rating | number: '1.0-0' }}</span>
+            <span class="team-detail-page__stat-value">{{
+              standing.rating | number: '1.0-0'
+            }}</span>
             <span class="team-detail-page__stat-label"
               >Rating{{ standing.isProvisional ? ' (provisoire)' : '' }}</span
             >

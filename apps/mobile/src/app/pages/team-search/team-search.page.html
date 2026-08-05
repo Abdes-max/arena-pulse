@@ -34,11 +34,7 @@
       <div class="team-search-page__grid">
         @for (team of filteredTeams(); track team.id) {
           <div class="team-search-page__team">
-            <button
-              type="button"
-              class="team-search-page__team-link"
-              (click)="goToTeam(team)"
-            >
+            <button type="button" class="team-search-page__team-link" (click)="goToTeam(team)">
               <span class="team-search-page__team-name">{{ team.name }}</span>
               <span class="team-search-page__team-meta">
                 {{ team.categoryName }}
