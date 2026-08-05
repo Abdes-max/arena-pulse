@@ -1,3 +1,4 @@
+import { NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
@@ -30,7 +31,7 @@ const EMPTY_DRAFT: TimeSlotDraft = { start: '', end: '', label: '' };
 
 @Component({
   selector: 'app-schedule-page',
-  imports: [Button, Select, TextField],
+  imports: [Button, Select, TextField, NgTemplateOutlet],
   templateUrl: './schedule.page.html',
   styleUrl: './schedule.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -104,6 +105,27 @@ export class SchedulePage {
   protected readonly unscheduledMatches = computed(() =>
     this.matches().filter((match) => !match.timeSlot),
   );
+
+  // Grouped by round ("tour") -- a flat list mixing every round together
+  // reads as noise once a phase has more than a handful of matches; phase
+  // itself is already the page's own selector above, so round is the one
+  // grouping level left to add here.
+  protected readonly unscheduledMatchesByRound = computed(() => {
+    const groups = new Map<number, Match[]>();
+    for (const match of this.unscheduledMatches()) {
+      const list = groups.get(match.round) ?? [];
+      list.push(match);
+      groups.set(match.round, list);
+    }
+    return [...groups.entries()]
+      .sort(([a], [b]) => a - b)
+      .map(([round, roundMatches]) => ({ round, matches: roundMatches }));
+  });
+
+  // No referee ever assigned to the tournament -- showing an always-empty
+  // "+ Arbitre…" picker on every match is just noise, and there's nothing
+  // meaningful "Arbitres par match" could generate either.
+  protected readonly hasReferees = computed(() => this.referees().length > 0);
 
   constructor() {
     void this.loadCategories();
@@ -213,7 +235,7 @@ export class SchedulePage {
     if (phase) {
       this.matchDurationMinutes.set(String(phase.matchDurationMinutes));
       this.breakDurationMinutes.set(String(phase.breakDurationMinutes));
-      this.refereesPerMatch.set(String(phase.refereesPerMatch));
+      this.refereesPerMatch.set(this.hasReferees() ? String(phase.refereesPerMatch) : '0');
     }
     await this.loadMatches();
   }
@@ -388,6 +410,12 @@ export class SchedulePage {
       dateStyle: 'short',
       timeStyle: 'short',
     });
+  }
+
+  protected slotTimeLabel(slot: TimeSlot): string {
+    return slot.label
+      ? `${this.formatSlotTime(slot.startTime)} — ${slot.label}`
+      : this.formatSlotTime(slot.startTime);
   }
 
   protected officialLabel(official: MatchOfficial): string {

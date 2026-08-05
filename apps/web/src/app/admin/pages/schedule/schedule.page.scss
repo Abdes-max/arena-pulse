@@ -117,24 +117,79 @@
 
 .schedule-page__slot-time {
   display: block;
-  font-size: 0.8rem;
+  padding: var(--ap-space-1) 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
   color: var(--ap-color-muted);
 }
 
-.schedule-page__match-chip {
-  margin-top: var(--ap-space-1);
-  padding: var(--ap-space-2);
+.schedule-page__round-label {
+  margin: var(--ap-space-3) 0 var(--ap-space-1);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ap-color-muted);
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
+// Mirrors ap-match-card's public-facing look (colored header, teams
+// stacked on their own lines, readable time) -- restyled here rather than
+// reusing that component directly, since this card also needs drag
+// handling and the officials-assignment controls below the teams, which
+// ap-match-card has no slot for.
+.schedule-page__match-card {
+  margin-top: var(--ap-space-2);
   background: var(--ap-color-surface);
   border: var(--ap-border-width) solid var(--ap-color-border);
-  border-radius: var(--ap-radius-sm);
+  border-radius: var(--ap-radius-md);
+  overflow: hidden;
   cursor: grab;
   font-size: 0.85rem;
 }
 
-.schedule-page__match-round {
+.schedule-page__match-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-2);
+  padding: var(--ap-space-1) var(--ap-space-2);
+  background: var(--ap-color-primary);
+  color: var(--ap-color-on-primary);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.schedule-page__match-card-time {
+  font-variant-numeric: tabular-nums;
+  text-transform: none;
+  letter-spacing: normal;
+}
+
+.schedule-page__match-card-teams {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-1);
+  padding: var(--ap-space-2);
+}
+
+.schedule-page__match-card-team {
   font-weight: 600;
-  color: var(--ap-color-muted);
-  margin-right: var(--ap-space-1);
+  color: var(--ap-color-fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.schedule-page__match-card .schedule-page__officials {
+  padding: 0 var(--ap-space-2) var(--ap-space-2);
+  margin-top: 0;
 }
 
 .schedule-page__delete-slot {
