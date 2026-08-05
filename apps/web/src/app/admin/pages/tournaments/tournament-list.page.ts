@@ -52,14 +52,23 @@ export class TournamentListPage {
 
   protected readonly onboardingSteps = computed<OnboardingStep[]>(() => {
     const tournaments = this.tournaments();
+    const createStep: OnboardingStep = {
+      key: 'create-tournament',
+      title: 'Créer votre premier tournoi',
+      description: 'Nom, sport et dates de votre compétition.',
+      done: tournaments.length > 0,
+      actionLabel: 'Créer',
+    };
+
+    // The remaining steps all refer to "your most recent tournament" -- with
+    // no tournament at all yet, they'd have nothing to point to and would
+    // just read as confusing filler, so only the create step shows.
+    if (tournaments.length === 0) {
+      return [createStep];
+    }
+
     return [
-      {
-        key: 'create-tournament',
-        title: 'Créer votre premier tournoi',
-        description: 'Nom, sport et dates de votre compétition.',
-        done: tournaments.length > 0,
-        actionLabel: 'Créer',
-      },
+      createStep,
       {
         key: 'add-team',
         title: 'Ajouter au moins une équipe',
