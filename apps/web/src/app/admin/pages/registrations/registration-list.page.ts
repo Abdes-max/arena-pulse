@@ -3,7 +3,6 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { ActivatedRoute } from '@angular/router';
 import { Badge, BadgeStatus } from 'design-system';
 import { OrganizerRegistration, RegistrationStatus } from 'shared-models';
-import { TournamentSubmenu } from '../../shared/tournament-submenu';
 import { AuthService } from '../../core/auth.service';
 import { RegistrationsService } from '../../core/registrations.service';
 
@@ -21,7 +20,7 @@ const STATUS_LABEL: Record<RegistrationStatus, string> = {
 
 @Component({
   selector: 'app-registration-list-page',
-  imports: [Badge, DatePipe, TournamentSubmenu],
+  imports: [Badge, DatePipe],
   templateUrl: './registration-list.page.html',
   styleUrl: './registration-list.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

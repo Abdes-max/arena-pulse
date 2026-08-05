@@ -11,7 +11,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Badge, BadgeStatus, Button, Select, SelectOption, TextField } from 'design-system';
-import { TournamentSubmenu } from '../../shared/tournament-submenu';
+import { ThemeName, ThemeService } from 'design-tokens';
 import { AuthService } from '../../core/auth.service';
 import {
   Category,
@@ -34,9 +34,16 @@ const STATUS_TO_BADGE: Record<TournamentStatus, BadgeStatus> = {
   ARCHIVED: 'archived',
 };
 
+/** Maps the backend's PublicTheme enum to design-tokens' ThemeName (data-theme values). */
+const THEME_MAP: Record<PublicTheme, ThemeName> = {
+  INK_SIGNAL: 'ink-signal',
+  PULSE_EMBER: 'pulse-ember',
+  NEON_COURT: 'neon-court',
+};
+
 @Component({
   selector: 'app-tournament-form-page',
-  imports: [ReactiveFormsModule, Button, TextField, Select, Badge, TournamentSubmenu],
+  imports: [ReactiveFormsModule, Button, TextField, Select, Badge],
   templateUrl: './tournament-form.page.html',
   styleUrl: './tournament-form.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -49,6 +56,7 @@ export class TournamentFormPage {
   private readonly sportsService = inject(SportsService);
   private readonly permissionsService = inject(PermissionsService);
   private readonly authService = inject(AuthService);
+  private readonly themeService = inject(ThemeService);
 
   protected readonly organization = computed(() => this.authService.organizations()[0] ?? null);
   private readonly paramMap = toSignal(this.route.paramMap, {
@@ -104,6 +112,20 @@ export class TournamentFormPage {
     if (this.route.snapshot.queryParamMap.get('publishCancelled')) {
       this.errorMessage.set("Paiement annulé : le tournoi n'a pas été publié.");
     }
+
+    // Applies the selected public theme across the whole admin app as soon
+    // as it's picked, not just this page -- setAdminTheme persists it
+    // (ThemeService.adminTheme), so it survives navigating to this
+    // tournament's other sub-pages (Équipes, Arbitres, Structure,
+    // Calendrier, Scores, Classement) as well as Tournois/Collaborateurs,
+    // and resetThemeGuard restores it (instead of the fixed product
+    // identity) the next time /admin is entered from outside.
+    const selectedTheme = toSignal(this.form.controls.theme.valueChanges, {
+      initialValue: this.form.controls.theme.value,
+    });
+    effect(() => {
+      this.themeService.setAdminTheme(document.documentElement, THEME_MAP[selectedTheme()]);
+    });
   }
 
   private async load(): Promise<void> {

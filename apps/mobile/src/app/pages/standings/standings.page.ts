@@ -99,6 +99,36 @@ export class StandingsPage {
     this.bracketByPhase().get(this.selectedBracketPhaseId()),
   );
 
+  // Rounds render one at a time (segment tabs) instead of all stacked
+  // vertically -- reaching the final used to mean scrolling past every
+  // earlier round's matches first.
+  protected readonly selectedRoundValue = signal('');
+  protected readonly roundOptions = computed(() => {
+    const bracket = this.selectedBracket();
+    if (!bracket) {
+      return [];
+    }
+    const options = bracket.rounds.map((round) => ({
+      value: String(round.round),
+      label: round.label,
+    }));
+    if (bracket.thirdPlaceMatch) {
+      options.push({ value: 'third', label: 'Match pour la 3e place' });
+    }
+    return options;
+  });
+  protected readonly selectedRoundMatches = computed(() => {
+    const bracket = this.selectedBracket();
+    if (!bracket) {
+      return [];
+    }
+    if (this.selectedRoundValue() === 'third') {
+      return bracket.thirdPlaceMatch ? [bracket.thirdPlaceMatch] : [];
+    }
+    const round = bracket.rounds.find((r) => String(r.round) === this.selectedRoundValue());
+    return round?.matches ?? [];
+  });
+
   protected readonly podium = computed(() => {
     const ranking = this.finalRanking();
     if (ranking.length < 3) {
@@ -117,6 +147,17 @@ export class StandingsPage {
     effect(() => {
       if (this.context.lastMatchEvent()) {
         void this.loadStandings();
+      }
+    });
+    // Keeps the round selection valid whenever the bracket (phase, category,
+    // reload…) changes underneath it, defaulting back to the first round.
+    effect(() => {
+      const options = this.roundOptions();
+      if (
+        options.length > 0 &&
+        !options.some((option) => option.value === this.selectedRoundValue())
+      ) {
+        this.selectedRoundValue.set(options[0].value);
       }
     });
   }
@@ -160,6 +201,10 @@ export class StandingsPage {
 
   protected onBracketPhaseChange(phaseId: string): void {
     this.selectedBracketPhaseId.set(phaseId);
+  }
+
+  protected onRoundChange(value: string): void {
+    this.selectedRoundValue.set(value);
   }
 
   // ion-segment's ionChange event types its value as SegmentValue (string |

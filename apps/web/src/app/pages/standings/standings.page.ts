@@ -65,11 +65,41 @@ export class StandingsPage {
     ...(this.knockoutPhases().length > 0 ? [{ value: 'final', label: 'Classement final' }] : []),
   ]);
 
+  // Quick-jump row above the connected bracket tree: clicking a round
+  // scrolls it into view instead of making the visitor drag the horizontal
+  // scroll all the way there themselves.
+  protected readonly selectedRoundView = signal('');
+  protected readonly roundOptions = computed(() => {
+    const bracket = this.bracketByPhase().get(this.selectedTab());
+    if (!bracket) {
+      return [];
+    }
+    const options = bracket.rounds.map((round) => ({
+      value: String(round.round),
+      label: round.label,
+    }));
+    if (bracket.thirdPlaceMatch) {
+      options.push({ value: 'third', label: 'Match pour la 3e place' });
+    }
+    return options;
+  });
+
   constructor() {
     void this.loadCategories();
     effect(() => {
       if (this.context.lastMatchEvent()) {
         void this.loadPhases();
+      }
+    });
+    // Keeps the round quick-jump's active option valid whenever the bracket
+    // (phase, category, reload…) changes underneath it.
+    effect(() => {
+      const options = this.roundOptions();
+      if (
+        options.length > 0 &&
+        !options.some((option) => option.value === this.selectedRoundView())
+      ) {
+        this.selectedRoundView.set(options[0].value);
       }
     });
   }
@@ -145,6 +175,13 @@ export class StandingsPage {
 
   protected selectTab(tabId: string): void {
     this.selectedTab.set(tabId);
+  }
+
+  protected onRoundJump(value: string): void {
+    this.selectedRoundView.set(value);
+    document
+      .getElementById(`bracket-round-${this.selectedTab()}-${value}`)
+      ?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
   }
 
   protected isQualified(group: GroupStandings, teamId: string): boolean {

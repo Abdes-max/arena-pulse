@@ -1,20 +1,45 @@
 <nav class="tournament-submenu">
-  <ap-button variant="secondary" [routerLink]="['/admin/tournaments', tournamentId(), 'teams']">
+  <a
+    [routerLink]="['/admin/tournaments', tournamentId()]"
+    [routerLinkActiveOptions]="{ exact: true }"
+    routerLinkActive="tournament-submenu__link--active"
+  >
+    Général
+  </a>
+  <a
+    [routerLink]="['/admin/tournaments', tournamentId(), 'teams']"
+    routerLinkActive="tournament-submenu__link--active"
+  >
     Équipes
-  </ap-button>
-  <ap-button variant="secondary" [routerLink]="['/admin/tournaments', tournamentId(), 'referees']">
+  </a>
+  <a
+    [routerLink]="['/admin/tournaments', tournamentId(), 'referees']"
+    routerLinkActive="tournament-submenu__link--active"
+  >
     Arbitres
-  </ap-button>
-  <ap-button variant="secondary" [routerLink]="['/admin/tournaments', tournamentId(), 'structure']">
+  </a>
+  <a
+    [routerLink]="['/admin/tournaments', tournamentId(), 'structure']"
+    routerLinkActive="tournament-submenu__link--active"
+  >
     Structure
-  </ap-button>
-  <ap-button variant="secondary" [routerLink]="['/admin/tournaments', tournamentId(), 'schedule']">
+  </a>
+  <a
+    [routerLink]="['/admin/tournaments', tournamentId(), 'schedule']"
+    routerLinkActive="tournament-submenu__link--active"
+  >
     Calendrier
-  </ap-button>
-  <ap-button variant="secondary" [routerLink]="['/admin/tournaments', tournamentId(), 'scores']">
+  </a>
+  <a
+    [routerLink]="['/admin/tournaments', tournamentId(), 'scores']"
+    routerLinkActive="tournament-submenu__link--active"
+  >
     Scores
-  </ap-button>
-  <ap-button variant="secondary" [routerLink]="['/admin/tournaments', tournamentId(), 'standings']">
+  </a>
+  <a
+    [routerLink]="['/admin/tournaments', tournamentId(), 'standings']"
+    routerLinkActive="tournament-submenu__link--active"
+  >
     Classement
-  </ap-button>
+  </a>
 </nav>

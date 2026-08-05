@@ -39,10 +39,19 @@ body {
   margin: 0;
 }
 
-// Every ion-segment in the app (category/phase/tab filters) -- Ionic's
-// default segment-button label size reads a bit large as a row of filter
-// tabs; ion-label is light-DOM content projected into ion-segment-button,
-// so font-size set here cascades into it normally.
+// Every ion-segment in the app (category/phase/tab filters). Ionic's default
+// unselected --color is `rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.6)` --
+// we never bridge --ion-text-color-rgb (only --ion-text-color), so it always
+// fell back to black-at-60%, unreadable on a dark theme's background. Setting
+// --color/--color-checked directly sidesteps that broken rgb-var lookup.
+ion-segment-button {
+  --color: var(--ap-color-muted);
+  --color-checked: var(--ap-color-fg);
+}
+
+// Ionic's default segment-button label size reads a bit large as a row of
+// filter tabs; ion-label is light-DOM content projected into
+// ion-segment-button, so font-size set here cascades into it normally.
 ion-segment-button ion-label {
   font-size: 0.8rem;
 }

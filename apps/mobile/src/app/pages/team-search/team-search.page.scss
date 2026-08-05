@@ -15,6 +15,14 @@
   padding: var(--ap-space-2) var(--ap-space-4);
 }
 
+// ap-text-field, the shared design-system search box -- same component and
+// positioning (just below the category tabs) as the Calendrier tab, so both
+// searches render identically.
+.team-search-page__search {
+  display: block;
+  padding: 0 var(--ap-space-4) var(--ap-space-4);
+}
+
 // Bordered/background card, mirroring apps/web's .team-search-page__team --
 // not an ion-item row.
 .team-search-page__grid {

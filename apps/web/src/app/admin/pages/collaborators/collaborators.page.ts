@@ -1,7 +1,15 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Button, Select, SelectOption, TextField } from 'design-system';
+import { DEFAULT_THEME, ThemeService } from 'design-tokens';
 import { AuthService } from '../../core/auth.service';
 import { OrganizationMember, OrganizationRole, PendingInvitation } from '../../core/models';
 import { OrganizationsService } from '../../core/organizations.service';
@@ -21,6 +29,8 @@ const ROLE_OPTIONS: SelectOption[] = [
 export class CollaboratorsPage {
   private readonly formBuilder = inject(FormBuilder);
   private readonly organizationsService = inject(OrganizationsService);
+  private readonly themeService = inject(ThemeService);
+  private readonly destroyRef = inject(DestroyRef);
   protected readonly authService = inject(AuthService);
 
   protected readonly organization = computed(() => this.authService.organizations()[0] ?? null);
@@ -40,6 +50,16 @@ export class CollaboratorsPage {
 
   constructor() {
     void this.load();
+
+    // Collaborators isn't tied to any one tournament, so it stays on the
+    // fixed product identity regardless of the last tournament theme picked
+    // in the edit form -- restored to that picked theme (ThemeService.
+    // adminTheme) on the way out, same apply-then-reset pattern used to
+    // scope a tournament's public theme to just its own pages.
+    this.themeService.setTheme(document.documentElement, DEFAULT_THEME);
+    this.destroyRef.onDestroy(() => {
+      this.themeService.setTheme(document.documentElement, this.themeService.adminTheme());
+    });
   }
 
   private async load(): Promise<void> {

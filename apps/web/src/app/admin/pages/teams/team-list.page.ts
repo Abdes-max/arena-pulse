@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Button, Select, SelectOption, TextField } from 'design-system';
-import { TournamentSubmenu } from '../../shared/tournament-submenu';
 import { AuthService } from '../../core/auth.service';
 import { Category, Player, Team, TeamImportResult } from '../../core/models';
 import { TeamsService } from '../../core/teams.service';
@@ -9,7 +8,7 @@ import { TournamentsService } from '../../core/tournaments.service';
 
 @Component({
   selector: 'app-team-list-page',
-  imports: [Button, Select, TextField, TournamentSubmenu],
+  imports: [Button, Select, TextField],
   templateUrl: './team-list.page.html',
   styleUrl: './team-list.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

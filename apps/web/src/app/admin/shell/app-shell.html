@@ -4,24 +4,24 @@
   >
 
   <header class="app-shell__header">
-    <nav class="app-shell__nav">
-      <a routerLink="/admin/tournaments" routerLinkActive="app-shell__link--active">Tournois</a>
-      <a routerLink="/admin/collaborators" routerLinkActive="app-shell__link--active"
-        >Collaborateurs</a
-      >
-    </nav>
-    <div class="app-shell__controls">
-      <ap-select
-        class="app-shell__theme-select"
-        label="Thème"
-        [hideLabel]="true"
-        [options]="themeOptions"
-        [value]="theme()"
-        (valueChange)="onThemeChange($event)"
-      />
-      <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
-      <ap-button type="button" variant="ghost" (click)="logout()">Se déconnecter</ap-button>
+    <div class="app-shell__topbar">
+      <div class="app-shell__topbar-left">
+        <span class="app-shell__brand">Arena Pulse</span>
+        <nav class="app-shell__nav">
+          <a routerLink="/admin/tournaments" routerLinkActive="app-shell__link--active">Tournois</a>
+          <a routerLink="/admin/collaborators" routerLinkActive="app-shell__link--active"
+            >Collaborateurs</a
+          >
+        </nav>
+      </div>
+      <div class="app-shell__controls">
+        <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
+        <ap-button type="button" variant="ghost" (click)="logout()">Se déconnecter</ap-button>
+      </div>
     </div>
+    @if (tournamentId(); as id) {
+      <app-tournament-submenu [tournamentId]="id" />
+    }
   </header>
   <main class="app-shell__content" id="main-content" tabindex="-1">
     <router-outlet />

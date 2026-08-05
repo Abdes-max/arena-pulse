@@ -95,17 +95,6 @@
   padding: 0 var(--ap-space-4);
 }
 
-.standings-page__round-label {
-  margin: 0 0 var(--ap-space-3);
-  font-size: 0.85rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--ap-color-muted);
-  padding-bottom: var(--ap-space-2);
-  border-bottom: var(--ap-border-width) solid var(--ap-color-border);
-}
-
 .standings-page__grid {
   display: grid;
   grid-template-columns: 1fr;
