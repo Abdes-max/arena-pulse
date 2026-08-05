@@ -18,8 +18,9 @@ hôte Docker (VPS, offre "Docker Compose" d'un PaaS, etc.).
   un template "Docker" nu à la place.
 - Ports **80 et 443 ouverts** vers l'extérieur (pare-feu / groupe de sécurité) — 80 sert au défi
   ACME HTTP-01 de Let's Encrypt, pas seulement à rediriger vers 443.
-- Un relais SMTP joignable sans authentification depuis cette IP (voir la limitation notée dans
-  l'ADR 0004) ou un contournement applicatif.
+- Un fournisseur SMTP transactionnel (Brevo par défaut : `smtp-relay.brevo.com`, port 587
+  STARTTLS — créer une clé SMTP dédiée dans Brevo, et vérifier le domaine `DOMAIN` côté Brevo
+  pour le SPF/DKIM) — voir `SMTP_*` dans `.env.example`.
 
 ## Déployer
 
@@ -28,7 +29,7 @@ hôte Docker (VPS, offre "Docker Compose" d'un PaaS, etc.).
 git clone <ce dépôt> && cd arena-pulse
 cp infra/deployment/.env.example infra/deployment/.env
 # Éditer infra/deployment/.env : POSTGRES_PASSWORD, JWT_SECRET (openssl rand -base64 48),
-# DOMAIN, WEB_PUBLIC_ORIGIN, SMTP_HOST/PORT au minimum.
+# DOMAIN, WEB_PUBLIC_ORIGIN, SMTP_HOST/PORT/USER/PASSWORD/FROM au minimum.
 
 docker compose -f infra/deployment/docker-compose.prod.yml --env-file infra/deployment/.env \
   up -d --build
