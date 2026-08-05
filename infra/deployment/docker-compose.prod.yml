@@ -1,16 +1,18 @@
-# Self-hostable production stack: postgres + api + web (nginx), on a single
-# Docker host. No external managed service is assumed -- this is the
-# generic baseline (see docs/architecture/adr/0004-deployment-strategy.md
-# for why a specific PaaS/cloud target was deliberately left undecided).
+# Self-hostable production stack: postgres + api + web (nginx) + Caddy
+# (TLS-terminating reverse proxy), on a single Docker host. No external
+# managed service is assumed -- this is the generic baseline (see
+# docs/architecture/adr/0004-deployment-strategy.md for why a specific
+# PaaS/cloud target was deliberately left undecided).
 #
 # Usage: from the repo root,
 #   cp infra/deployment/.env.example infra/deployment/.env   # then edit it
 #   docker compose -f infra/deployment/docker-compose.prod.yml --env-file infra/deployment/.env up -d --build
 #
-# This stack terminates plain HTTP on ${WEB_HOST_PORT:-8080}. Put a real
-# TLS-terminating reverse proxy (Caddy, Traefik, nginx-on-the-host...) in
-# front of it for anything public -- provisioning a domain/certificate is
-# outside what this compose file can decide for you.
+# Caddy handles ports 80/443 and auto-provisions a Let's Encrypt certificate
+# for DOMAIN the first time it starts -- point DOMAIN's DNS at this host
+# *before* starting the stack, and make sure 80/443 are reachable from the
+# internet (see infra/deployment/Caddyfile). web itself is only published on
+# 127.0.0.1 (see below), for host-local smoke-testing, not public traffic.
 
 name: arena-pulse-prod
 
@@ -82,11 +84,35 @@ services:
       context: ../..
       dockerfile: infra/docker/web.Dockerfile
     restart: unless-stopped
+    # Bound to the host loopback only -- reachable via `curl localhost:8080`
+    # for smoke-testing from the host itself (e.g. before DNS/Caddy are
+    # ready), but not from the public internet, since that would bypass
+    # Caddy's TLS termination entirely (plain HTTP, no cert).
     ports:
-      - '${WEB_HOST_PORT:-8080}:8080'
+      - '127.0.0.1:${WEB_HOST_PORT:-8080}:8080'
     depends_on:
       api:
         condition: service_healthy
 
+  # TLS-terminating reverse proxy -- see infra/deployment/Caddyfile and
+  # docs/architecture/adr/0004-deployment-strategy.md, "Conséquences".
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      DOMAIN: ${DOMAIN:?DOMAIN must be set -- e.g. tournarena.com, with DNS already pointed at this host}
+    ports:
+      - '80:80'
+      - '443:443'
+      - '443:443/udp'
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data-prod:/data
+      - caddy-config-prod:/config
+    depends_on:
+      - web
+
 volumes:
   arena-pulse-postgres-prod:
+  caddy-data-prod:
+  caddy-config-prod:

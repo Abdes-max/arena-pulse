@@ -1,0 +1,25 @@
+# TLS-terminating reverse proxy for the prod stack (see docker-compose.prod.yml
+# and docs/architecture/adr/0004-deployment-strategy.md, "Conséquences": this
+# stack only ever served plain HTTP on WEB_HOST_PORT before Caddy was added --
+# auth doesn't work correctly without real HTTPS in front of it, since the
+# refresh cookie is set Secure). Caddy auto-provisions and renews a Let's
+# Encrypt certificate for {$DOMAIN} the first time it starts, as long as DNS
+# already points at this host and ports 80/443 are reachable from the
+# internet (80 is needed for the ACME HTTP-01 challenge, not just redirects).
+
+{$DOMAIN} {
+	encode gzip
+
+	# web's own nginx (infra/docker/web.nginx.conf) already serves the SPA
+	# and reverse-proxies /api/ to the api service on a single origin --
+	# Caddy only needs to front that one service, not know about /api/ itself.
+	reverse_proxy web:8080
+}
+
+# Canonicalize on the bare domain rather than serving both as live origins --
+# WEB_PUBLIC_ORIGIN/CORS_ORIGIN is exactly one value, and cookies/CORS are
+# origin-exact-match, so a visitor landing on www. would otherwise silently
+# fail to authenticate.
+www.{$DOMAIN} {
+	redir https://{$DOMAIN}{uri} permanent
+}
