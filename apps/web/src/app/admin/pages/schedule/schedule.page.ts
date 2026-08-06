@@ -28,7 +28,7 @@ import { ScheduleService } from '../../core/schedule.service';
 import { TeamsService } from '../../core/teams.service';
 import { TimeSlotsService } from '../../core/timeslots.service';
 import { TournamentsService } from '../../core/tournaments.service';
-import { matchRoundLabel } from 'shared-models';
+import { groupMatchesByPhaseSection } from 'shared-models';
 
 interface TimeSlotDraft {
   start: string;
@@ -129,20 +129,14 @@ export class SchedulePage {
     this.matches().filter((match) => !match.timeSlot),
   );
 
-  // Grouped by round ("tour") -- a flat list mixing every round together
-  // reads as noise once a phase has more than a handful of matches; phase
-  // itself is already the page's own selector above, so round is the one
-  // grouping level left to add here.
-  protected readonly unscheduledMatchesByRound = computed(() => {
-    const groups = new Map<number, Match[]>();
-    for (const match of this.unscheduledMatches()) {
-      const list = groups.get(match.round) ?? [];
-      list.push(match);
-      groups.set(match.round, list);
-    }
-    return [...groups.entries()]
-      .sort(([a], [b]) => a - b)
-      .map(([round, roundMatches]) => ({ round, matches: roundMatches }));
+  // Grouped by phase/round -- see groupMatchesByPhaseSection. A flat list
+  // mixing every round together reads as noise once a phase has more than a
+  // handful of matches; phase itself is already the page's own selector
+  // above, so this heading is shown once per section rather than repeated
+  // on every match.
+  protected readonly unscheduledSections = computed(() => {
+    const phase = this.selectedPhase();
+    return phase ? groupMatchesByPhaseSection(phase, this.unscheduledMatches()) : [];
   });
 
   // No referee ever assigned to the tournament -- showing an always-empty
@@ -439,14 +433,6 @@ export class SchedulePage {
     return slot.label
       ? `${this.formatSlotTime(slot.startTime)} — ${slot.label}`
       : this.formatSlotTime(slot.startTime);
-  }
-
-  // "1/8"/"1/4"/"1/2"/"Finale" for knockout phases, "Tour N" for group
-  // stages -- compact on purpose, this sits in a card header alongside the
-  // phase name and the time.
-  protected roundDisplay(match: Match): string {
-    const phase = this.selectedPhase();
-    return phase ? matchRoundLabel(phase, match, 'compact') : `Tour ${match.round}`;
   }
 
   protected officialLabel(official: MatchOfficial): string {

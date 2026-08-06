@@ -209,31 +209,21 @@
   font-size: 0.85rem;
 }
 
+// Only ever shows the time now -- phase/round moved to a section heading
+// above the cards (grouped once, not repeated per card -- see
+// unscheduledSections/matchRoundLabel).
 .schedule-page__match-card-header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--ap-space-2);
+  justify-content: flex-end;
   padding: var(--ap-space-1) var(--ap-space-2);
   background: var(--ap-color-primary);
   color: var(--ap-color-on-primary);
   font-size: 0.7rem;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.schedule-page__match-card-phase {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .schedule-page__match-card-time {
-  flex-shrink: 0;
   font-variant-numeric: tabular-nums;
-  text-transform: none;
-  letter-spacing: normal;
 }
 
 .schedule-page__match-card-teams {

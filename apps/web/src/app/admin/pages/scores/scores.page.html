@@ -37,19 +37,16 @@
             {{ progress().entered }}/{{ progress().total }} scores saisis
           </p>
 
-          @for (slot of matchesByTimeSlot().slots; track slot.startTime + slot.fieldName) {
+          @for (section of matchesByRoundSection(); track section.label) {
             <section class="scores-page__slot">
-              <h2>{{ formatSlotTime(slot.startTime) }}</h2>
+              <h2>{{ section.label }}</h2>
               <ul class="scores-page__match-list">
-                @for (match of slot.matches; track match.id) {
+                @for (match of section.matches; track match.id) {
                   <li class="scores-page__match">
-                    <span class="scores-page__round-badge">
-                      @if (selectedPhase(); as phase) {
-                        {{ phase.name }} —
-                      }
-                      {{ roundDisplay(match) }}
-                    </span>
-                    <span class="scores-page__field-name">{{ match.timeSlot!.field.name }}</span>
+                    <span class="scores-page__time-badge">{{ matchTimeLabel(match) }}</span>
+                    @if (match.timeSlot; as timeSlot) {
+                      <span class="scores-page__field-name">{{ timeSlot.field.name }}</span>
+                    }
 
                     @if (match.status === 'FORFEITED') {
                       <span class="scores-page__forfeit-badge">
@@ -139,48 +136,6 @@
                         }
                       </span>
                     }
-                  </li>
-                }
-              </ul>
-            </section>
-          }
-
-          @if (matchesByTimeSlot().unscheduled.length > 0) {
-            <section class="scores-page__slot">
-              <h2>Sans créneau</h2>
-              <ul class="scores-page__match-list">
-                @for (match of matchesByTimeSlot().unscheduled; track match.id) {
-                  <li class="scores-page__match">
-                    <span class="scores-page__round-badge">
-                      @if (selectedPhase(); as phase) {
-                        {{ phase.name }} —
-                      }
-                      {{ roundDisplay(match) }}
-                    </span>
-                    <span class="scores-page__team">{{ match.homeTeam?.name ?? '?' }}</span>
-                    <ap-text-field
-                      class="scores-page__score-input"
-                      label="Score à domicile"
-                      [hideLabel]="true"
-                      type="number"
-                      [min]="0"
-                      [value]="draftFor(match).home"
-                      (valueChange)="onDraftChange(match, 'home', $event)"
-                    />
-                    <span>-</span>
-                    <ap-text-field
-                      class="scores-page__score-input"
-                      label="Score à l'extérieur"
-                      [hideLabel]="true"
-                      type="number"
-                      [min]="0"
-                      [value]="draftFor(match).away"
-                      (valueChange)="onDraftChange(match, 'away', $event)"
-                    />
-                    <span class="scores-page__team">{{ match.awayTeam?.name ?? '?' }}</span>
-                    <ap-button type="button" variant="ghost" (click)="saveScore(match)">
-                      Enregistrer
-                    </ap-button>
                   </li>
                 }
               </ul>

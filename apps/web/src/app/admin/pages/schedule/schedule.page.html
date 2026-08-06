@@ -136,17 +136,11 @@
                 draggable="true"
                 (dragstart)="onMatchDragStart(match.id, $event)"
               >
-                <div class="schedule-page__match-card-header">
-                  <span class="schedule-page__match-card-phase">
-                    @if (selectedPhase(); as phase) {
-                      {{ phase.name }} —
-                    }
-                    {{ roundDisplay(match) }}
-                  </span>
-                  @if (time) {
+                @if (time) {
+                  <div class="schedule-page__match-card-header">
                     <span class="schedule-page__match-card-time">{{ time }}</span>
-                  }
-                </div>
+                  </div>
+                }
                 <div class="schedule-page__match-card-teams">
                   <span class="schedule-page__match-card-team">{{
                     match.homeTeam?.name ?? '?'
@@ -203,9 +197,9 @@
                 @if (unscheduledMatches().length === 0) {
                   <p class="schedule-page__empty">Aucun match en attente.</p>
                 }
-                @for (group of unscheduledMatchesByRound(); track group.round) {
-                  <h4 class="schedule-page__round-label">{{ roundDisplay(group.matches[0]) }}</h4>
-                  @for (match of group.matches; track match.id) {
+                @for (section of unscheduledSections(); track section.label) {
+                  <h4 class="schedule-page__round-label">{{ section.label }}</h4>
+                  @for (match of section.matches; track match.id) {
                     <ng-container
                       *ngTemplateOutlet="matchCard; context: { match: match, showOfficials: false }"
                     />
