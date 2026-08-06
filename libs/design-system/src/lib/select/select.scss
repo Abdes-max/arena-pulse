@@ -64,3 +64,15 @@
     cursor: not-allowed;
   }
 }
+
+// Opts out of the default touch-target minimum on purpose -- for dense
+// data-entry rows (e.g. Scores) on desktop-oriented admin screens, not a
+// general-purpose replacement for the default size.
+:host([data-size='sm']) .ap-select__control {
+  min-height: 1.75rem;
+  font-size: 0.8rem;
+  padding: var(--ap-space-1) var(--ap-space-6) var(--ap-space-1) var(--ap-space-2);
+  background-position:
+    calc(100% - 16px) center,
+    calc(100% - 12px) center;
+}

@@ -30,12 +30,17 @@ function noop(): void {
  * ControlValueAccessor (formControlName) for pages built on reactive forms
  * -- same dual contract as ap-text-field.
  */
+export type SelectSize = 'md' | 'sm';
+
 @Component({
   selector: 'ap-select',
   imports: [],
   templateUrl: './select.html',
   styleUrl: './select.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '[attr.data-size]': 'size()',
+  },
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -48,6 +53,8 @@ export class Select implements ControlValueAccessor {
   readonly label = input.required<string>();
   readonly hideLabel = input(false);
   readonly options = input.required<SelectOption[]>();
+  /** 'sm' for dense contexts (e.g. a data-entry table row) -- 'md' (default) elsewhere. */
+  readonly size = input<SelectSize>('md');
 
   /**
    * Controlled-component inputs, for pages that render from plain signals

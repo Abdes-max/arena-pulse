@@ -5,10 +5,13 @@ import { Button } from './button';
 
 @Component({
   imports: [Button],
-  template: `<ap-button [variant]="variant" [disabled]="disabled">Valider</ap-button>`,
+  template: `<ap-button [variant]="variant" [size]="size" [disabled]="disabled"
+    >Valider</ap-button
+  >`,
 })
 class HostComponent {
   variant: 'primary' | 'secondary' | 'ghost' = 'primary';
+  size: 'md' | 'sm' = 'md';
   disabled = false;
 }
 
@@ -43,6 +46,15 @@ describe('Button', () => {
 
     const host = fixture.nativeElement.querySelector('ap-button');
     expect(host.getAttribute('data-variant')).toBe('secondary');
+  });
+
+  it('reflects the size as a host attribute for styling', () => {
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.componentInstance.size = 'sm';
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement.querySelector('ap-button');
+    expect(host.getAttribute('data-size')).toBe('sm');
   });
 
   it('disables the native button when disabled is true', () => {
