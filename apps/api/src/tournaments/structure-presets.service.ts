@@ -9,7 +9,6 @@ import { isPowerOfTwo } from './bracket-seeding.util';
 import { CategoriesService } from './categories.service';
 import { CreateStructurePresetDto } from './dto/create-structure-preset.dto';
 import { DEFAULT_TIE_BREAK_ORDER } from './standing-rule.constants';
-import { ScheduleGenerationService } from './schedule-generation.service';
 import { TournamentsService } from './tournaments.service';
 
 const MAX_POOL_COUNT = 26; // A..Z -- far beyond any realistic pool count already.
@@ -20,7 +19,6 @@ export class StructurePresetsService {
     private readonly prisma: PrismaService,
     private readonly tournamentsService: TournamentsService,
     private readonly categoriesService: CategoriesService,
-    private readonly scheduleGenerationService: ScheduleGenerationService,
   ) {}
 
   async create(
@@ -55,11 +53,6 @@ export class StructurePresetsService {
         `${unassignedTeams.length} équipe(s) non assignée(s) trouvée(s) dans cette catégorie, ${dto.teamCount} attendue(s) -- ajustez le nombre d'équipes ou complétez la liste des équipes avant de générer la structure.`,
       );
     }
-    await this.assertFieldsBelongToTournament(tournamentId, [
-      ...dto.fieldIds,
-      ...dto.knockoutFieldIds,
-    ]);
-
     const { groupPhaseId, tiers } = await this.prisma.$transaction(
       async (tx) => {
         const groupPhase = await tx.competitionPhase.create({
@@ -125,12 +118,6 @@ export class StructurePresetsService {
               name: tier.name,
               type: CompetitionPhaseType.KNOCKOUT,
               position: index + 1,
-              ...(dto.knockoutMatchDurationMinutes !== undefined && {
-                matchDurationMinutes: dto.knockoutMatchDurationMinutes,
-              }),
-              ...(dto.knockoutBreakDurationMinutes !== undefined && {
-                breakDurationMinutes: dto.knockoutBreakDurationMinutes,
-              }),
             },
           });
 
@@ -145,8 +132,6 @@ export class StructurePresetsService {
               phaseId: tierPhase.id,
               name: tier.name,
               size: bracketSize,
-              plannedFieldIds: dto.knockoutFieldIds,
-              plannedStartDateTime: new Date(dto.knockoutStartDateTime),
             },
           });
 
@@ -176,22 +161,6 @@ export class StructurePresetsService {
         }
 
         return { groupPhaseId: groupPhase.id, tiers };
-      },
-    );
-
-    // Outside the transaction and via the existing, already-tested service --
-    // it manages its own transaction internally and there's no reason to
-    // duplicate round-robin fixture generation here.
-    await this.scheduleGenerationService.generate(
-      organizationId,
-      tournamentId,
-      groupPhaseId,
-      {
-        fieldIds: dto.fieldIds,
-        startDateTime: dto.startDateTime,
-        matchDurationMinutes: dto.matchDurationMinutes,
-        breakDurationMinutes: dto.breakDurationMinutes,
-        refereesPerMatch: dto.refereesPerMatch,
       },
     );
 
@@ -251,20 +220,5 @@ export class StructurePresetsService {
         );
       }
     });
-  }
-
-  private async assertFieldsBelongToTournament(
-    tournamentId: string,
-    fieldIds: string[],
-  ): Promise<void> {
-    const uniqueIds = [...new Set(fieldIds)];
-    const fields = await this.prisma.field.findMany({
-      where: { id: { in: uniqueIds }, venue: { tournamentId } },
-    });
-    if (fields.length !== uniqueIds.length) {
-      throw new BadRequestException(
-        "Un ou plusieurs terrains n'appartiennent pas à ce tournoi.",
-      );
-    }
   }
 }

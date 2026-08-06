@@ -61,6 +61,8 @@ export function toMatchSummary(match: MatchWithRelations) {
     status: match.status,
     homeTeam: match.homeTeam,
     awayTeam: match.awayTeam,
+    homeSourceLabel: match.homeTeam ? null : match.homeSourceLabel,
+    awaySourceLabel: match.awayTeam ? null : match.awaySourceLabel,
     forfeitedTeam: match.forfeitedTeam,
     timeSlot: match.timeSlot
       ? {
