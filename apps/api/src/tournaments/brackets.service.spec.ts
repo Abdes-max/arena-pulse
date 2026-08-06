@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { BracketsService } from './brackets.service';
+import { CrossGroupQualificationRulesService } from './cross-group-qualification-rules.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { RealtimeService } from './realtime.service';
 import { StandingsService } from './standings.service';
@@ -93,6 +94,7 @@ describe('BracketsService', () => {
     assertTournamentExists: jest.Mock;
   };
   let standingsService: { getStandings: jest.Mock };
+  let crossGroupQualificationRulesService: { collectQualifiedTeams: jest.Mock };
   let service: BracketsService;
 
   beforeEach(() => {
@@ -106,11 +108,15 @@ describe('BracketsService', () => {
         .mockResolvedValue({ id: TOURNAMENT_ID }),
     };
     standingsService = { getStandings: jest.fn() };
+    crossGroupQualificationRulesService = {
+      collectQualifiedTeams: jest.fn().mockResolvedValue([]),
+    };
     service = new BracketsService(
       prisma as unknown as PrismaService,
       tournamentsService as unknown as TournamentsService,
       standingsService as unknown as StandingsService,
       { emit: jest.fn() } as unknown as RealtimeService,
+      crossGroupQualificationRulesService as unknown as CrossGroupQualificationRulesService,
     );
   });
 
@@ -234,6 +240,59 @@ describe('BracketsService', () => {
         include: expect.anything() as unknown,
       });
       expect(prisma.match.create).toHaveBeenCalledTimes(3);
+    });
+
+    it('appends cross-group (best-of-position) qualifiers after the direct per-group qualifiers', async () => {
+      prisma.knockoutBracket.findUnique.mockResolvedValue(
+        bracketFixture({ size: 4 }),
+      );
+      prisma.qualificationRule.findMany.mockResolvedValue([
+        {
+          groupId: 'group-a',
+          fromPosition: 1,
+          toPosition: 1,
+          group: { name: 'Poule A' },
+        },
+      ]);
+      standingsService.getStandings.mockResolvedValue(standingsFixture(['a1']));
+      crossGroupQualificationRulesService.collectQualifiedTeams.mockResolvedValue(
+        [
+          { teamId: 'x1', position: 1, groupName: 'Poule B (3e)' },
+          { teamId: 'x2', position: 2, groupName: 'Poule C (3e)' },
+          { teamId: 'x3', position: 3, groupName: 'Poule D (3e)' },
+        ],
+      );
+
+      await service.generateMatches('org-1', TOURNAMENT_ID, 'bracket-1');
+
+      expect(
+        crossGroupQualificationRulesService.collectQualifiedTeams,
+      ).toHaveBeenCalledWith('org-1', TOURNAMENT_ID, 'phase-1');
+      // Direct qualifier a1 comes first, then the 3 cross-group qualifiers in
+      // their own rank order -- seed order [1,4,2,3] pairs slot0 = (a1, x3)
+      // and slot1 = (x1, x2).
+      expect(prisma.match.create).toHaveBeenCalledWith({
+        data: {
+          knockoutBracketId: 'bracket-1',
+          round: 1,
+          bracketSlot: 0,
+          isThirdPlaceMatch: false,
+          homeTeamId: 'a1',
+          awayTeamId: 'x3',
+        },
+        include: expect.anything() as unknown,
+      });
+      expect(prisma.match.create).toHaveBeenCalledWith({
+        data: {
+          knockoutBracketId: 'bracket-1',
+          round: 1,
+          bracketSlot: 1,
+          isThirdPlaceMatch: false,
+          homeTeamId: 'x1',
+          awayTeamId: 'x2',
+        },
+        include: expect.anything() as unknown,
+      });
     });
   });
 

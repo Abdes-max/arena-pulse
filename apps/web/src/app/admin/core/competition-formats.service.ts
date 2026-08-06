@@ -6,6 +6,7 @@ import {
   CompetitionGroup,
   CompetitionPhase,
   CompetitionPhaseType,
+  CrossGroupQualificationRule,
   KnockoutBracket,
   Match,
   QualificationRule,
@@ -58,10 +59,27 @@ export interface CreateQualificationRulePayload {
   targetPhaseId: string;
 }
 
+export interface CreateCrossGroupQualificationRulePayload {
+  position: number;
+  bestCount: number;
+  targetPhaseId: string;
+}
+
+export interface StructurePresetTierPayload {
+  name: string;
+  qualifiersPerPool: number;
+}
+
+export interface StructurePresetBestOfPositionPayload {
+  position: number;
+  bestCount: number;
+}
+
 export interface CreateStructurePresetPayload {
   teamCount: number;
   poolCount: number;
-  qualifiersPerPool: number;
+  tiers: StructurePresetTierPayload[];
+  bestOfPosition?: StructurePresetBestOfPositionPayload;
   fieldIds: string[];
   startDateTime: string;
   matchDurationMinutes?: number;
@@ -76,8 +94,7 @@ export interface CreateStructurePresetPayload {
 
 export interface StructurePresetResult {
   groupPhaseId: string;
-  knockoutPhaseId: string;
-  bracketSize: number;
+  tiers: { phaseId: string; name: string; bracketSize: number }[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -254,6 +271,44 @@ export class CompetitionFormatsService {
     return firstValueFrom(
       this.http.delete<void>(
         `${this.base(organizationId, tournamentId)}/qualification-rules/${ruleId}`,
+      ),
+    );
+  }
+
+  listCrossGroupQualificationRules(
+    organizationId: string,
+    tournamentId: string,
+    phaseId: string,
+  ): Promise<CrossGroupQualificationRule[]> {
+    return firstValueFrom(
+      this.http.get<CrossGroupQualificationRule[]>(
+        `${this.base(organizationId, tournamentId)}/phases/${phaseId}/cross-group-qualification-rules`,
+      ),
+    );
+  }
+
+  createCrossGroupQualificationRule(
+    organizationId: string,
+    tournamentId: string,
+    phaseId: string,
+    payload: CreateCrossGroupQualificationRulePayload,
+  ): Promise<CrossGroupQualificationRule> {
+    return firstValueFrom(
+      this.http.post<CrossGroupQualificationRule>(
+        `${this.base(organizationId, tournamentId)}/phases/${phaseId}/cross-group-qualification-rules`,
+        payload,
+      ),
+    );
+  }
+
+  deleteCrossGroupQualificationRule(
+    organizationId: string,
+    tournamentId: string,
+    ruleId: string,
+  ): Promise<void> {
+    return firstValueFrom(
+      this.http.delete<void>(
+        `${this.base(organizationId, tournamentId)}/cross-group-qualification-rules/${ruleId}`,
       ),
     );
   }

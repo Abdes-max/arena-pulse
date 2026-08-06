@@ -190,3 +190,15 @@ export interface QualificationRule {
   targetPhaseId: string;
   targetPhaseName: string;
 }
+
+// Compares the team at `position` across every pool of `phaseId` (e.g. every
+// 3rd place) and qualifies the `bestCount` best of them -- distinct from
+// QualificationRule, which only ranges over one pool's own positions.
+export interface CrossGroupQualificationRule {
+  id: string;
+  phaseId: string;
+  position: number;
+  bestCount: number;
+  targetPhaseId: string;
+  targetPhaseName: string;
+}

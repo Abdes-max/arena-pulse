@@ -60,9 +60,7 @@ export class StructurePresetsService {
       ...dto.knockoutFieldIds,
     ]);
 
-    const bracketSize = dto.poolCount * dto.qualifiersPerPool;
-
-    const { groupPhaseId, knockoutPhaseId } = await this.prisma.$transaction(
+    const { groupPhaseId, tiers } = await this.prisma.$transaction(
       async (tx) => {
         const groupPhase = await tx.competitionPhase.create({
           data: {
@@ -111,45 +109,73 @@ export class StructurePresetsService {
           });
         }
 
-        const knockoutPhase = await tx.competitionPhase.create({
-          data: {
-            categoryId,
-            name: 'Élimination directe',
-            type: CompetitionPhaseType.KNOCKOUT,
-            position: 1,
-            ...(dto.knockoutMatchDurationMinutes !== undefined && {
-              matchDurationMinutes: dto.knockoutMatchDurationMinutes,
-            }),
-            ...(dto.knockoutBreakDurationMinutes !== undefined && {
-              breakDurationMinutes: dto.knockoutBreakDurationMinutes,
-            }),
-          },
-        });
-        await tx.knockoutBracket.create({
-          data: {
-            phaseId: knockoutPhase.id,
-            name: 'Tableau final',
-            size: bracketSize,
-            plannedFieldIds: dto.knockoutFieldIds,
-            plannedStartDateTime: new Date(dto.knockoutStartDateTime),
-          },
-        });
-
-        for (const group of groups) {
-          await tx.qualificationRule.create({
+        // Each tier gets its own KNOCKOUT phase + bracket, fed by a
+        // QualificationRule per pool over a slice of standing positions --
+        // tier 1 covers positions 1..q1, tier 2 covers q1+1..q1+q2, etc, so
+        // the same pool phase can feed several different competitions (e.g.
+        // Champions League / Europa League / Conference League) from one
+        // set of standings.
+        const tiers: { phaseId: string; name: string; bracketSize: number }[] =
+          [];
+        let cursor = 0;
+        for (const [index, tier] of dto.tiers.entries()) {
+          const tierPhase = await tx.competitionPhase.create({
             data: {
-              groupId: group.id,
-              fromPosition: 1,
-              toPosition: dto.qualifiersPerPool,
-              targetPhaseId: knockoutPhase.id,
+              categoryId,
+              name: tier.name,
+              type: CompetitionPhaseType.KNOCKOUT,
+              position: index + 1,
+              ...(dto.knockoutMatchDurationMinutes !== undefined && {
+                matchDurationMinutes: dto.knockoutMatchDurationMinutes,
+              }),
+              ...(dto.knockoutBreakDurationMinutes !== undefined && {
+                breakDurationMinutes: dto.knockoutBreakDurationMinutes,
+              }),
             },
           });
+
+          // Best-of-position candidates (if any) join the FIRST tier's
+          // bracket alongside its direct per-pool qualifiers.
+          const bestCount =
+            index === 0 ? (dto.bestOfPosition?.bestCount ?? 0) : 0;
+          const bracketSize =
+            dto.poolCount * tier.qualifiersPerPool + bestCount;
+          await tx.knockoutBracket.create({
+            data: {
+              phaseId: tierPhase.id,
+              name: tier.name,
+              size: bracketSize,
+              plannedFieldIds: dto.knockoutFieldIds,
+              plannedStartDateTime: new Date(dto.knockoutStartDateTime),
+            },
+          });
+
+          for (const group of groups) {
+            await tx.qualificationRule.create({
+              data: {
+                groupId: group.id,
+                fromPosition: cursor + 1,
+                toPosition: cursor + tier.qualifiersPerPool,
+                targetPhaseId: tierPhase.id,
+              },
+            });
+          }
+          if (index === 0 && dto.bestOfPosition) {
+            await tx.crossGroupQualificationRule.create({
+              data: {
+                phaseId: groupPhase.id,
+                position: dto.bestOfPosition.position,
+                bestCount: dto.bestOfPosition.bestCount,
+                targetPhaseId: tierPhase.id,
+              },
+            });
+          }
+
+          cursor += tier.qualifiersPerPool;
+          tiers.push({ phaseId: tierPhase.id, name: tier.name, bracketSize });
         }
 
-        return {
-          groupPhaseId: groupPhase.id,
-          knockoutPhaseId: knockoutPhase.id,
-        };
+        return { groupPhaseId: groupPhase.id, tiers };
       },
     );
 
@@ -169,11 +195,11 @@ export class StructurePresetsService {
       },
     );
 
-    return { groupPhaseId, knockoutPhaseId, bracketSize };
+    return { groupPhaseId, tiers };
   }
 
   private assertCombinationIsPossible(dto: CreateStructurePresetDto): void {
-    const { teamCount, poolCount, qualifiersPerPool } = dto;
+    const { teamCount, poolCount, tiers, bestOfPosition } = dto;
     if (poolCount > MAX_POOL_COUNT) {
       throw new BadRequestException(
         `Maximum ${MAX_POOL_COUNT} poules pour ce générateur.`,
@@ -185,17 +211,46 @@ export class StructurePresetsService {
       );
     }
     const smallestPoolSize = Math.floor(teamCount / poolCount);
-    if (qualifiersPerPool > smallestPoolSize) {
+    const totalDirectQualifiersPerPool = tiers.reduce(
+      (sum, tier) => sum + tier.qualifiersPerPool,
+      0,
+    );
+    if (totalDirectQualifiersPerPool > smallestPoolSize) {
       throw new BadRequestException(
-        `Avec ${teamCount} équipes réparties en ${poolCount} poules, la plus petite poule ne compte que ${smallestPoolSize} équipe(s) -- impossible d'en qualifier ${qualifiersPerPool}.`,
+        `Avec ${teamCount} équipes réparties en ${poolCount} poules, la plus petite poule ne compte que ${smallestPoolSize} équipe(s) -- impossible d'en qualifier ${totalDirectQualifiersPerPool} au total en cumulant les paliers.`,
       );
     }
-    const bracketSize = poolCount * qualifiersPerPool;
-    if (!isPowerOfTwo(bracketSize)) {
-      throw new BadRequestException(
-        `${poolCount} poule(s) × ${qualifiersPerPool} qualifié(s) = ${bracketSize} équipe(s) qualifiée(s) -- ce nombre doit être une puissance de 2 (2, 4, 8, 16…) pour former un tableau à élimination directe.`,
-      );
+
+    if (bestOfPosition) {
+      if (bestOfPosition.bestCount > poolCount) {
+        throw new BadRequestException(
+          `Impossible de qualifier ${bestOfPosition.bestCount} meilleur(s) classé(s) à la position ${bestOfPosition.position} : il n'y a que ${poolCount} poule(s).`,
+        );
+      }
+      if (bestOfPosition.position <= totalDirectQualifiersPerPool) {
+        throw new BadRequestException(
+          `La position ${bestOfPosition.position} des meilleurs classés chevauche les qualifiés directs (positions 1 à ${totalDirectQualifiersPerPool}) -- choisissez une position strictement supérieure.`,
+        );
+      }
+      if (bestOfPosition.position > smallestPoolSize) {
+        throw new BadRequestException(
+          `La position ${bestOfPosition.position} n'existe pas dans toutes les poules -- la plus petite poule ne compte que ${smallestPoolSize} équipe(s).`,
+        );
+      }
     }
+
+    tiers.forEach((tier, index) => {
+      const bestCount = index === 0 ? (bestOfPosition?.bestCount ?? 0) : 0;
+      const bracketSize = poolCount * tier.qualifiersPerPool + bestCount;
+      if (!isPowerOfTwo(bracketSize)) {
+        const detail = bestCount
+          ? `${poolCount} poule(s) × ${tier.qualifiersPerPool} qualifié(s) + ${bestCount} meilleur(s) classé(s)`
+          : `${poolCount} poule(s) × ${tier.qualifiersPerPool} qualifié(s)`;
+        throw new BadRequestException(
+          `Palier "${tier.name}" : ${detail} = ${bracketSize} équipe(s) qualifiée(s) -- ce nombre doit être une puissance de 2 (2, 4, 8, 16…) pour former un tableau à élimination directe.`,
+        );
+      }
+    });
   }
 
   private async assertFieldsBelongToTournament(

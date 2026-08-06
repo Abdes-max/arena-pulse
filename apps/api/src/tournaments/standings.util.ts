@@ -87,6 +87,38 @@ export function computeStandings(
   return ordered.map((row, index) => ({ ...row, position: index + 1 }));
 }
 
+export interface CrossGroupCandidate extends StandingRow {
+  groupId: string;
+  groupName: string;
+}
+
+/**
+ * Ranks the row at `position` from each pool's own standings against each
+ * other (e.g. every pool's 3rd place, to pick the best N across all of
+ * them) -- reuses the same tie-break engine as computeStandings, with an
+ * empty match list. HEAD_TO_HEAD naturally becomes a no-op that way (these
+ * teams never played each other, so it can never discriminate between
+ * them), falling through to the next criterion untouched rather than
+ * needing the caller to filter it out of tieBreakOrder first.
+ */
+export function rankCrossGroupCandidates(
+  pools: { groupId: string; groupName: string; rows: StandingRow[] }[],
+  position: number,
+  tieBreakOrder: string[],
+): CrossGroupCandidate[] {
+  const candidates = pools.flatMap(({ groupId, groupName, rows }) => {
+    const row = rows.find((r) => r.position === position);
+    return row ? [{ ...row, groupId, groupName }] : [];
+  });
+
+  const ordered = resolveOrder(candidates, [], tieBreakOrder, {
+    winPoints: 0,
+    drawPoints: 0,
+    lossPoints: 0,
+  });
+  return ordered.map((row, index) => ({ ...row, position: index + 1 }));
+}
+
 function applyResult(
   statsByTeam: Map<string, Stats>,
   teamId: string,
@@ -114,12 +146,12 @@ function applyResult(
   }
 }
 
-function resolveOrder(
-  teams: Stats[],
+function resolveOrder<T extends Stats>(
+  teams: T[],
   matches: ValidatedMatchInput[],
   criteria: string[],
   scheme: PointsScheme,
-): Stats[] {
+): T[] {
   if (teams.length <= 1) {
     return teams;
   }
@@ -134,15 +166,15 @@ function resolveOrder(
   );
 }
 
-function groupByCriterion(
-  teams: Stats[],
+function groupByCriterion<T extends Stats>(
+  teams: T[],
   matches: ValidatedMatchInput[],
   criterion: string,
   scheme: PointsScheme,
-): Stats[][] {
+): T[][] {
   const valueOf = criterionValueGetter(teams, matches, criterion, scheme);
   const sorted = [...teams].sort((a, b) => valueOf(b) - valueOf(a));
-  const groups: Stats[][] = [];
+  const groups: T[][] = [];
   for (const team of sorted) {
     const last = groups[groups.length - 1];
     if (last && valueOf(last[0]) === valueOf(team)) {
