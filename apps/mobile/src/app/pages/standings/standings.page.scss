@@ -116,21 +116,102 @@
   font-weight: 700;
 }
 
-.standings-page__forfeit {
-  color: var(--ap-color-error);
-  font-size: 0.9rem;
-  padding: 0 var(--ap-space-4);
+// --- Tableau à élimination : arbre connecté ---
+// Repose sur la propriété de `justify-content: space-around` : dans une
+// colonne de M créneaux répartis sur une hauteur H, le centre du créneau i
+// est exactement le milieu des deux créneaux "parents" (2i et 2i+1) du tour
+// précédent, dès lors que toutes les colonnes partagent la même hauteur H
+// (fixée depuis le composant via [style.height.px]). Les connecteurs n'ont
+// donc besoin d'aucune valeur calculée par créneau, seulement de CSS. Mirrors
+// apps/web's public standings.page.scss bracket treatment.
+.standings-page__bracket {
+  --bracket-gap: 32px;
+  display: flex;
+  align-items: stretch;
+  overflow-x: auto;
+  padding: 0 var(--ap-space-4) var(--ap-space-3);
 }
 
-.standings-page__round {
-  margin: 0 0 var(--ap-space-6);
-  padding: 0 var(--ap-space-4);
+.standings-page__bracket-round {
+  display: flex;
+  flex-direction: column;
+  flex: none;
+  width: 180px;
+
+  & + & {
+    margin-left: var(--bracket-gap);
+  }
+
+  h3 {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ap-color-muted);
+    margin: 0 0 var(--ap-space-3);
+  }
 }
 
-.standings-page__grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--ap-space-3);
+.standings-page__bracket-round-matches {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.standings-page__bracket-slot {
+  position: relative;
+}
+
+// Connecteur sortant : du bord droit de la carte vers le point de fusion
+// avec son partenaire de paire — un demi-coin par créneau (haut pour le
+// premier de la paire, bas pour le second), qui se rejoignent exactement
+// au milieu grâce à la symétrie de `space-around`.
+.standings-page__bracket-round:not(:last-child) .standings-page__bracket-slot::after {
+  content: '';
+  position: absolute;
+  right: calc(var(--bracket-gap) / -2);
+  width: calc(var(--bracket-gap) / 2);
+  height: 50%;
+  border-right: var(--ap-border-width) solid var(--ap-color-border);
+}
+
+.standings-page__bracket-round:not(:last-child)
+  .standings-page__bracket-slot:nth-child(odd)::after {
+  top: 50%;
+  border-top: var(--ap-border-width) solid var(--ap-color-border);
+}
+
+.standings-page__bracket-round:not(:last-child)
+  .standings-page__bracket-slot:nth-child(even)::after {
+  top: 0;
+  border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+}
+
+// Connecteur entrant : du point de fusion (déjà tracé côté sortant) jusqu'au
+// bord gauche de la carte du tour suivant.
+.standings-page__bracket-round:not(:first-child) .standings-page__bracket-slot::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: calc(var(--bracket-gap) / -2);
+  width: calc(var(--bracket-gap) / 2);
+  border-top: var(--ap-border-width) solid var(--ap-color-border);
+}
+
+// Positionné sous la finale (dernière colonne, donc déjà la plus à droite
+// de l'arbre) plutôt qu'en pleine largeur -- juste décalé vers le bas, sans
+// cadre autour du titre.
+.standings-page__third-place {
+  width: 180px;
+  margin: var(--ap-space-3) var(--ap-space-4) 0 auto;
+
+  h3 {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ap-color-muted);
+    margin: 0 0 var(--ap-space-2);
+  }
 }
 
 // Fluid width (flex + max-width), not a fixed px per step -- three

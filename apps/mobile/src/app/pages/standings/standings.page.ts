@@ -16,13 +16,12 @@ import {
   IonSegment,
   IonSegmentButton,
 } from '@ionic/angular/standalone';
-import { Badge, MatchCard, MatchCardVariant } from 'design-system';
+import { Badge, BracketMatch } from 'design-system';
 import {
   BracketView,
   Category,
   CompetitionPhase,
   FinalRankingRow,
-  Match,
   Qualification,
   QualificationTierColor,
   Standings,
@@ -58,6 +57,9 @@ interface CachedStandingsSnapshot {
   finalRanking: FinalRankingRow[];
 }
 
+/** Row height (px) used to size the bracket tree so every round column shares the same total height. */
+const BRACKET_ROW_HEIGHT = 96;
+
 @Component({
   selector: 'app-standings-page',
   imports: [
@@ -68,7 +70,7 @@ interface CachedStandingsSnapshot {
     IonItem,
     IonLabel,
     Badge,
-    MatchCard,
+    BracketMatch,
     IonButton,
   ],
   templateUrl: './standings.page.html',
@@ -128,9 +130,9 @@ export class StandingsPage {
     this.bracketByPhase().get(this.selectedBracketPhaseId()),
   );
 
-  // Rounds render one at a time (segment tabs) instead of all stacked
-  // vertically -- reaching the final used to mean scrolling past every
-  // earlier round's matches first.
+  // Quick-jump row above the connected bracket tree: tapping a round scrolls
+  // it into view instead of making the visitor drag the horizontal scroll
+  // all the way there themselves -- mirrors apps/web's public standings page.
   protected readonly selectedRoundValue = signal('');
   protected readonly roundOptions = computed(() => {
     const bracket = this.selectedBracket();
@@ -142,20 +144,9 @@ export class StandingsPage {
       label: round.label,
     }));
     if (bracket.thirdPlaceMatch) {
-      options.push({ value: 'third', label: 'Match pour la 3e place' });
+      options.push({ value: 'third', label: 'Pour la 3e place' });
     }
     return options;
-  });
-  protected readonly selectedRoundMatches = computed(() => {
-    const bracket = this.selectedBracket();
-    if (!bracket) {
-      return [];
-    }
-    if (this.selectedRoundValue() === 'third') {
-      return bracket.thirdPlaceMatch ? [bracket.thirdPlaceMatch] : [];
-    }
-    const round = bracket.rounds.find((r) => String(r.round) === this.selectedRoundValue());
-    return round?.matches ?? [];
   });
 
   protected readonly podium = computed(() => {
@@ -234,6 +225,14 @@ export class StandingsPage {
 
   protected onRoundChange(value: string): void {
     this.selectedRoundValue.set(value);
+    document
+      .getElementById(`bracket-round-${this.selectedBracketPhaseId()}-${value}`)
+      ?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+  }
+
+  protected bracketHeight(bracket: BracketView): number {
+    const firstRoundCount = bracket.rounds[0]?.matches.length ?? 1;
+    return firstRoundCount * BRACKET_ROW_HEIGHT;
   }
 
   // ion-segment's ionChange event types its value as SegmentValue (string |
@@ -336,15 +335,5 @@ export class StandingsPage {
     }
     const tierColor = this.tierColorByPhaseId().get(qualification.targetPhaseId);
     return tierColor ? { label: qualification.targetPhaseName, ...tierColor } : null;
-  }
-
-  // ap-match-card is the shared design-system component web already uses
-  // for a match's box/background/badge -- keeps the "Phase finale" round
-  // list visually identical to schedule.page's cards.
-  protected variantFor(match: Match): MatchCardVariant {
-    if (match.status === 'LIVE') {
-      return 'live';
-    }
-    return match.score ? 'result' : 'upcoming';
   }
 }
