@@ -1,10 +1,15 @@
-import { ExecutionContext, ForbiddenException } from '@nestjs/common';
+import {
+  ExecutionContext,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { OrganizationRole } from '../../../generated/prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { TournamentPermissionGuard } from './tournament-permission.guard';
 
 type PrismaMock = {
+  tournament: { findUnique: jest.Mock };
   organizationMember: { findUnique: jest.Mock };
   tournamentAdministrator: { findUnique: jest.Mock };
 };
@@ -27,6 +32,11 @@ describe('TournamentPermissionGuard', () => {
 
   beforeEach(() => {
     prisma = {
+      // Defaults to "belongs to org-1" -- tests exercising the org-mismatch
+      // path override this explicitly.
+      tournament: {
+        findUnique: jest.fn().mockResolvedValue({ organizationId: 'org-1' }),
+      },
       organizationMember: { findUnique: jest.fn() },
       tournamentAdministrator: { findUnique: jest.fn() },
     };
@@ -48,6 +58,29 @@ describe('TournamentPermissionGuard', () => {
   it('allows the route through when no permission is required', async () => {
     const guard = createGuard(undefined);
     await expect(guard.canActivate(createContext({}))).resolves.toBe(true);
+  });
+
+  it("rejects when the tournament belongs to a different organization, even for that org's ORG_ADMIN", async () => {
+    prisma.tournament.findUnique.mockResolvedValue({
+      organizationId: 'org-2',
+    });
+    const guard = createGuard('MANAGE_PARTICIPANTS');
+
+    await expect(
+      guard.canActivate(createContext(params, user)),
+    ).rejects.toBeInstanceOf(NotFoundException);
+    // Never even checks membership for the wrong-org tournament -- the
+    // mismatch is caught before role/permission matter at all.
+    expect(prisma.organizationMember.findUnique).not.toHaveBeenCalled();
+  });
+
+  it('rejects when the tournament does not exist', async () => {
+    prisma.tournament.findUnique.mockResolvedValue(null);
+    const guard = createGuard('MANAGE_PARTICIPANTS');
+
+    await expect(
+      guard.canActivate(createContext(params, user)),
+    ).rejects.toBeInstanceOf(NotFoundException);
   });
 
   it('rejects when the caller has no membership in the organization', async () => {
