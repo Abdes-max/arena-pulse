@@ -1,4 +1,8 @@
-import { computeStandings, rankCrossGroupCandidates } from './standings.util';
+import {
+  computeStandings,
+  findUnresolvedTies,
+  rankCrossGroupCandidates,
+} from './standings.util';
 
 const SCHEME = { winPoints: 3, drawPoints: 1, lossPoints: 0 };
 const TIE_BREAK_ORDER = [
@@ -270,5 +274,129 @@ describe('rankCrossGroupCandidates', () => {
     );
 
     expect(ranked.map((row) => row.teamId)).toEqual(['b1', 'a1']);
+  });
+
+  it('respects a manual tie-break order over the alphabetical fallback', () => {
+    const poolA = computeStandings(
+      [{ id: 'a1', name: 'Alpha' }],
+      [],
+      SCHEME,
+      TIE_BREAK_ORDER,
+    );
+    const poolB = computeStandings(
+      [{ id: 'b1', name: 'Zeta' }],
+      [],
+      SCHEME,
+      TIE_BREAK_ORDER,
+    );
+
+    // Alphabetically Alpha (a1) would rank first, but the organizer picked
+    // Zeta (b1).
+    const ranked = rankCrossGroupCandidates(
+      [
+        { groupId: 'group-a', groupName: 'Poule A', rows: poolA },
+        { groupId: 'group-b', groupName: 'Poule B', rows: poolB },
+      ],
+      1,
+      TIE_BREAK_ORDER,
+      ['b1'],
+    );
+
+    expect(ranked.map((row) => row.teamId)).toEqual(['b1', 'a1']);
+  });
+});
+
+describe('manual tie-break order (computeStandings)', () => {
+  const level = (id: string, name: string) => ({ id, name });
+
+  it('keeps the alphabetical order when no manual pick has been made', () => {
+    const rows = computeStandings(
+      [level('z', 'Zeta'), level('a', 'Alpha')],
+      [],
+      SCHEME,
+      TIE_BREAK_ORDER,
+    );
+
+    expect(rows.map((row) => row.teamId)).toEqual(['a', 'z']);
+  });
+
+  it('lets an organizer pick override the alphabetical fallback', () => {
+    const rows = computeStandings(
+      [level('z', 'Zeta'), level('a', 'Alpha')],
+      [],
+      SCHEME,
+      TIE_BREAK_ORDER,
+      ['z'],
+    );
+
+    expect(rows.map((row) => row.teamId)).toEqual(['z', 'a']);
+  });
+});
+
+describe('findUnresolvedTies', () => {
+  const level = (id: string, name: string) => ({ id, name });
+
+  it('flags a group of teams left tied through every criterion', () => {
+    const teams = [level('z', 'Zeta'), level('a', 'Alpha'), level('m', 'Mu')];
+    // No matches at all -- every criterion is a wash for all three.
+    const statsRows = computeStandings(teams, [], SCHEME, TIE_BREAK_ORDER);
+
+    const ties = findUnresolvedTies(statsRows, [], TIE_BREAK_ORDER, SCHEME, []);
+
+    expect(ties).toEqual([['a', 'm', 'z']]);
+  });
+
+  it('shrinks the tied group as the organizer resolves it one pick at a time', () => {
+    const teams = [level('z', 'Zeta'), level('a', 'Alpha'), level('m', 'Mu')];
+    const statsRows = computeStandings(teams, [], SCHEME, TIE_BREAK_ORDER, [
+      'm',
+    ]);
+
+    const ties = findUnresolvedTies(statsRows, [], TIE_BREAK_ORDER, SCHEME, [
+      'm',
+    ]);
+
+    // m is now individually ranked (picked first) -- only a/z remain tied.
+    expect(ties).toEqual([['a', 'z']]);
+  });
+
+  it('returns no ties once every team has been manually ordered', () => {
+    const teams = [level('z', 'Zeta'), level('a', 'Alpha'), level('m', 'Mu')];
+    const manualOrder = ['m', 'z', 'a'];
+    const statsRows = computeStandings(
+      teams,
+      [],
+      SCHEME,
+      TIE_BREAK_ORDER,
+      manualOrder,
+    );
+
+    const ties = findUnresolvedTies(
+      statsRows,
+      [],
+      TIE_BREAK_ORDER,
+      SCHEME,
+      manualOrder,
+    );
+
+    expect(ties).toEqual([]);
+  });
+
+  it('does not flag teams already separated by a real criterion', () => {
+    const teams = [level('a', 'Alpha'), level('b', 'Beta')];
+    const matches = [
+      { homeTeamId: 'a', awayTeamId: 'b', homeScore: 2, awayScore: 0 },
+    ];
+    const statsRows = computeStandings(teams, matches, SCHEME, TIE_BREAK_ORDER);
+
+    const ties = findUnresolvedTies(
+      statsRows,
+      matches,
+      TIE_BREAK_ORDER,
+      SCHEME,
+      [],
+    );
+
+    expect(ties).toEqual([]);
   });
 });
