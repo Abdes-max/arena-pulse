@@ -10,6 +10,8 @@ function match(overrides: Partial<Match> & { id: string; round: number }): Match
     status: 'SCHEDULED',
     homeTeam: null,
     awayTeam: null,
+    homeSourceLabel: null,
+    awaySourceLabel: null,
     forfeitedTeam: null,
     timeSlot: null,
     officials: [],

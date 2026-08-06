@@ -68,7 +68,7 @@ export function matchRoundLabel(
     return `Tour ${match.round}`;
   }
   if (match.isThirdPlaceMatch) {
-    return 'Match pour la 3e place';
+    return 'Pour la 3e place';
   }
   const totalRounds = Math.log2(phase.knockoutBracket.size);
   const fromEnd = totalRounds - match.round;
@@ -116,7 +116,7 @@ export function groupMatchesByPhaseSection(
     }));
 
   if (thirdPlace.length > 0) {
-    sections.push({ label: 'Match pour la 3e place', matches: thirdPlace });
+    sections.push({ label: 'Pour la 3e place', matches: thirdPlace });
   }
   return sections;
 }
