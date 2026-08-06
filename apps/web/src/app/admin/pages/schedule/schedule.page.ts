@@ -1,6 +1,14 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  computed,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Button, Select, SelectOption, TextField } from 'design-system';
 import { AuthService } from '../../core/auth.service';
@@ -20,6 +28,7 @@ import { ScheduleService } from '../../core/schedule.service';
 import { TeamsService } from '../../core/teams.service';
 import { TimeSlotsService } from '../../core/timeslots.service';
 import { TournamentsService } from '../../core/tournaments.service';
+import { matchRoundLabel } from 'shared-models';
 
 interface TimeSlotDraft {
   start: string;
@@ -91,6 +100,20 @@ export class SchedulePage {
       venue.fields.map((field) => ({ ...field, venueName: venue.name })),
     ),
   );
+
+  // Explicit left/right controls above the grid, not just the browser's own
+  // scrollbar -- with many terrains, the horizontal overflow isn't always
+  // obvious at a glance.
+  private readonly gridScroller = viewChild<ElementRef<HTMLDivElement>>('gridScroller');
+
+  protected scrollGrid(direction: 'left' | 'right'): void {
+    const element = this.gridScroller()?.nativeElement;
+    if (!element) {
+      return;
+    }
+    const amount = element.clientWidth * 0.8 * (direction === 'left' ? -1 : 1);
+    element.scrollBy({ left: amount, behavior: 'smooth' });
+  }
 
   protected readonly matchBySlotId = computed(() => {
     const map = new Map<string, Match>();
@@ -416,6 +439,14 @@ export class SchedulePage {
     return slot.label
       ? `${this.formatSlotTime(slot.startTime)} — ${slot.label}`
       : this.formatSlotTime(slot.startTime);
+  }
+
+  // "1/8"/"1/4"/"1/2"/"Finale" for knockout phases, "Tour N" for group
+  // stages -- compact on purpose, this sits in a card header alongside the
+  // phase name and the time.
+  protected roundDisplay(match: Match): string {
+    const phase = this.selectedPhase();
+    return phase ? matchRoundLabel(phase, match, 'compact') : `Tour ${match.round}`;
   }
 
   protected officialLabel(official: MatchOfficial): string {

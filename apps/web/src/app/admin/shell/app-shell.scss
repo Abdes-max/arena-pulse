@@ -10,6 +10,9 @@
 // (not the --ap-color-fg token, which flips light/dark and would lose
 // contrast against a background that no longer follows it).
 .app-shell__header {
+  position: sticky;
+  top: 0;
+  z-index: var(--ap-z-sticky);
   background: #ffffff;
   border-bottom: var(--ap-border-width) solid var(--ap-color-border);
 }

@@ -43,6 +43,12 @@
               <ul class="scores-page__match-list">
                 @for (match of slot.matches; track match.id) {
                   <li class="scores-page__match">
+                    <span class="scores-page__round-badge">
+                      @if (selectedPhase(); as phase) {
+                        {{ phase.name }} —
+                      }
+                      {{ roundDisplay(match) }}
+                    </span>
                     <span class="scores-page__field-name">{{ match.timeSlot!.field.name }}</span>
 
                     @if (match.status === 'FORFEITED') {
@@ -145,6 +151,12 @@
               <ul class="scores-page__match-list">
                 @for (match of matchesByTimeSlot().unscheduled; track match.id) {
                   <li class="scores-page__match">
+                    <span class="scores-page__round-badge">
+                      @if (selectedPhase(); as phase) {
+                        {{ phase.name }} —
+                      }
+                      {{ roundDisplay(match) }}
+                    </span>
                     <span class="scores-page__team">{{ match.homeTeam?.name ?? '?' }}</span>
                     <ap-text-field
                       class="scores-page__score-input"

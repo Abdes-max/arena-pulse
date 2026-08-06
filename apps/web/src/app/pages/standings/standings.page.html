@@ -62,12 +62,7 @@
                     <td>{{ row.goalsAgainst }}</td>
                     <td>{{ row.goalDifference }}</td>
                     <td class="standings-page__points">{{ row.points }}</td>
-                    <td>
-                      {{ row.rating | number: '1.0-0' }}
-                      @if (row.isProvisional) {
-                        <span class="standings-page__provisional">(provisoire)</span>
-                      }
-                    </td>
+                    <td>{{ row.rating | number: '1.1-1' }}</td>
                     <td>
                       @if (isQualified(group, row.teamId)) {
                         <ap-badge status="qualified" />

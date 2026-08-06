@@ -8,6 +8,7 @@ import { Category, CompetitionPhase, Match, StandingRule } from '../../core/mode
 import { ScheduleService } from '../../core/schedule.service';
 import { ScoresService } from '../../core/scores.service';
 import { TournamentsService } from '../../core/tournaments.service';
+import { matchRoundLabel } from 'shared-models';
 
 interface ScoreDraft {
   home: string;
@@ -52,6 +53,9 @@ export class ScoresPage {
   );
   protected readonly phaseOptions = computed<SelectOption[]>(() =>
     this.phases().map((phase) => ({ value: phase.id, label: phase.name })),
+  );
+  protected readonly selectedPhase = computed(
+    () => this.phases().find((phase) => phase.id === this.selectedPhaseId()) ?? null,
   );
 
   protected readonly progress = computed(() => {
@@ -206,6 +210,13 @@ export class ScoresPage {
 
   protected formatSlotTime(startTime: string): string {
     return new Date(startTime).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' });
+  }
+
+  // "1/8"/"1/4"/"1/2"/"Finale" for knockout phases, "Tour N" for group
+  // stages -- same compact style as the Calendrier page's match cards.
+  protected roundDisplay(match: Match): string {
+    const phase = this.selectedPhase();
+    return phase ? matchRoundLabel(phase, match, 'compact') : `Tour ${match.round}`;
   }
 
   protected draftFor(match: Match): ScoreDraft {

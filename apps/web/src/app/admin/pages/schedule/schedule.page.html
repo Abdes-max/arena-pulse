@@ -11,25 +11,28 @@
     @if (categories().length === 0) {
       <p>Ajoutez d'abord une catégorie sur la page du tournoi.</p>
     } @else {
-      <ap-select
-        class="schedule-page__select"
-        label="Catégorie"
-        [options]="categoryOptions()"
-        [value]="selectedCategoryId()"
-        (valueChange)="onCategoryChange($event)"
-      />
+      <div class="schedule-page__selects-row">
+        <ap-select
+          class="schedule-page__select"
+          label="Catégorie"
+          [options]="categoryOptions()"
+          [value]="selectedCategoryId()"
+          (valueChange)="onCategoryChange($event)"
+        />
+        @if (phases().length > 0) {
+          <ap-select
+            class="schedule-page__select"
+            label="Phase"
+            [options]="phaseOptions()"
+            [value]="selectedPhaseId()"
+            (valueChange)="onPhaseChange($event)"
+          />
+        }
+      </div>
 
       @if (phases().length === 0) {
         <p>Ajoutez d'abord une phase sur la page Structure de cette catégorie.</p>
       } @else {
-        <ap-select
-          class="schedule-page__select"
-          label="Phase"
-          [options]="phaseOptions()"
-          [value]="selectedPhaseId()"
-          (valueChange)="onPhaseChange($event)"
-        />
-
         <section class="schedule-page__section">
           <h2>Générer le calendrier</h2>
           @if (venues().length === 0) {
@@ -82,29 +85,33 @@
               }
             </div>
 
-            @if (phase.type === 'GROUP_STAGE') {
-              <ap-button type="button" [disabled]="generating()" (click)="generateSchedule()">
-                Générer le calendrier
+            <div class="schedule-page__actions">
+              @if (phase.type === 'GROUP_STAGE') {
+                <ap-button type="button" [disabled]="generating()" (click)="generateSchedule()">
+                  Générer le calendrier
+                </ap-button>
+              } @else if (phase.knockoutBracket) {
+                <ap-button
+                  type="button"
+                  [disabled]="generating()"
+                  (click)="generateKnockoutMatches()"
+                >
+                  Générer les matchs du tableau
+                </ap-button>
+              } @else {
+                <p>Créez d'abord un tableau sur la page Structure pour cette phase.</p>
+              }
+              <ap-button type="button" variant="ghost" (click)="resetSchedule()">
+                Vider le calendrier
               </ap-button>
-            } @else if (phase.knockoutBracket) {
-              <ap-button
-                type="button"
-                [disabled]="generating()"
-                (click)="generateKnockoutMatches()"
-              >
-                Générer les matchs du tableau
-              </ap-button>
+            </div>
+            @if (phase.type === 'KNOCKOUT' && phase.knockoutBracket) {
               <p class="schedule-page__hint">
                 Réserve un créneau sur ces terrains pour tous les tours (quarts, demis, finale…).
                 Seul le 1er tour a des adversaires connus dès maintenant ; les tours suivants s'y
                 placeront automatiquement dès que les scores précédents seront validés.
               </p>
-            } @else {
-              <p>Créez d'abord un tableau sur la page Structure pour cette phase.</p>
             }
-            <ap-button type="button" variant="ghost" (click)="resetSchedule()">
-              Vider le calendrier
-            </ap-button>
           }
         </section>
 
@@ -130,7 +137,12 @@
                 (dragstart)="onMatchDragStart(match.id, $event)"
               >
                 <div class="schedule-page__match-card-header">
-                  <span>Tour {{ match.round }}</span>
+                  <span class="schedule-page__match-card-phase">
+                    @if (selectedPhase(); as phase) {
+                      {{ phase.name }} —
+                    }
+                    {{ roundDisplay(match) }}
+                  </span>
                   @if (time) {
                     <span class="schedule-page__match-card-time">{{ time }}</span>
                   }
@@ -192,7 +204,7 @@
                   <p class="schedule-page__empty">Aucun match en attente.</p>
                 }
                 @for (group of unscheduledMatchesByRound(); track group.round) {
-                  <h4 class="schedule-page__round-label">Tour {{ group.round }}</h4>
+                  <h4 class="schedule-page__round-label">{{ roundDisplay(group.matches[0]) }}</h4>
                   @for (match of group.matches; track match.id) {
                     <ng-container
                       *ngTemplateOutlet="matchCard; context: { match: match, showOfficials: false }"
@@ -201,66 +213,87 @@
                 }
               </div>
 
-              <div class="schedule-page__grid">
-                @for (field of fields(); track field.id) {
-                  <div class="schedule-page__field-column">
-                    <h3>{{ field.venueName }} — {{ field.name }}</h3>
-
-                    @for (slot of timeSlotsByField().get(field.id) ?? []; track slot.id) {
-                      <div
-                        class="schedule-page__slot"
-                        [class.schedule-page__slot--occupied]="matchBySlotId().has(slot.id)"
-                        (dragover)="onSlotDragOver($event)"
-                        (drop)="onSlotDrop(slot.id, $event)"
-                      >
-                        @if (matchBySlotId().get(slot.id); as match) {
-                          <ng-container
-                            *ngTemplateOutlet="
-                              matchCard;
-                              context: {
-                                match: match,
-                                time: slotTimeLabel(slot),
-                                showOfficials: true,
-                              }
-                            "
-                          />
-                        } @else {
-                          <span class="schedule-page__slot-time">{{ slotTimeLabel(slot) }}</span>
-                          <button
-                            type="button"
-                            class="schedule-page__delete-slot"
-                            (click)="deleteTimeSlot(field.id, slot.id)"
-                          >
-                            Supprimer le créneau
-                          </button>
-                        }
-                      </div>
-                    }
-
-                    <div class="schedule-page__inline-form">
-                      <ap-text-field
-                        label="Début"
-                        type="datetime-local"
-                        [value]="draftFor(field.id).start"
-                        (valueChange)="onSlotDraftChange(field.id, 'start', $event)"
-                      />
-                      <ap-text-field
-                        label="Fin"
-                        type="datetime-local"
-                        [value]="draftFor(field.id).end"
-                        (valueChange)="onSlotDraftChange(field.id, 'end', $event)"
-                      />
-                      <ap-text-field
-                        label="Libellé"
-                        [value]="draftFor(field.id).label"
-                        (valueChange)="onSlotDraftChange(field.id, 'label', $event)"
-                      />
-                      <ap-button type="button" variant="ghost" (click)="addTimeSlot(field.id)">
-                        + Créneau
-                      </ap-button>
-                    </div>
+              <div class="schedule-page__grid-block">
+                <div class="schedule-page__grid-nav">
+                  <span>Terrains</span>
+                  <div class="schedule-page__grid-nav-buttons">
+                    <button
+                      type="button"
+                      aria-label="Terrains précédents"
+                      (click)="scrollGrid('left')"
+                    >
+                      ‹
+                    </button>
+                    <button
+                      type="button"
+                      aria-label="Terrains suivants"
+                      (click)="scrollGrid('right')"
+                    >
+                      ›
+                    </button>
                   </div>
-                }
+                </div>
+                <div class="schedule-page__grid" #gridScroller>
+                  @for (field of fields(); track field.id) {
+                    <div class="schedule-page__field-column">
+                      <h3>{{ field.venueName }} — {{ field.name }}</h3>
+
+                      @for (slot of timeSlotsByField().get(field.id) ?? []; track slot.id) {
+                        <div
+                          class="schedule-page__slot"
+                          [class.schedule-page__slot--occupied]="matchBySlotId().has(slot.id)"
+                          (dragover)="onSlotDragOver($event)"
+                          (drop)="onSlotDrop(slot.id, $event)"
+                        >
+                          @if (matchBySlotId().get(slot.id); as match) {
+                            <ng-container
+                              *ngTemplateOutlet="
+                                matchCard;
+                                context: {
+                                  match: match,
+                                  time: slotTimeLabel(slot),
+                                  showOfficials: true,
+                                }
+                              "
+                            />
+                          } @else {
+                            <span class="schedule-page__slot-time">{{ slotTimeLabel(slot) }}</span>
+                            <button
+                              type="button"
+                              class="schedule-page__delete-slot"
+                              (click)="deleteTimeSlot(field.id, slot.id)"
+                            >
+                              Supprimer le créneau
+                            </button>
+                          }
+                        </div>
+                      }
+
+                      <div class="schedule-page__inline-form">
+                        <ap-text-field
+                          label="Début"
+                          type="datetime-local"
+                          [value]="draftFor(field.id).start"
+                          (valueChange)="onSlotDraftChange(field.id, 'start', $event)"
+                        />
+                        <ap-text-field
+                          label="Fin"
+                          type="datetime-local"
+                          [value]="draftFor(field.id).end"
+                          (valueChange)="onSlotDraftChange(field.id, 'end', $event)"
+                        />
+                        <ap-text-field
+                          label="Libellé"
+                          [value]="draftFor(field.id).label"
+                          (valueChange)="onSlotDraftChange(field.id, 'label', $event)"
+                        />
+                        <ap-button type="button" variant="ghost" (click)="addTimeSlot(field.id)">
+                          + Créneau
+                        </ap-button>
+                      </div>
+                    </div>
+                  }
+                </div>
               </div>
             </div>
           }
