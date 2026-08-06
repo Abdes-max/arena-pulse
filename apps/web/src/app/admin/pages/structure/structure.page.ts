@@ -11,6 +11,7 @@ import {
   CompetitionPhaseType,
   StandingRule,
   Team,
+  Venue,
 } from '../../core/models';
 import { TeamsService } from '../../core/teams.service';
 import { TournamentsService } from '../../core/tournaments.service';
@@ -85,6 +86,66 @@ export class StructurePage {
     this.teams().filter((team) => team.groupId === null),
   );
 
+  // "Mode Tournoi" -- one-click structure + pool calendar generator, only
+  // offered while the category has no phases yet (see structure-presets.service.ts).
+  protected readonly venues = signal<Venue[]>([]);
+
+  protected readonly presetTeamCount = signal('');
+  protected readonly presetPoolCount = signal('');
+  protected readonly presetQualifiersPerPool = signal('');
+  protected readonly presetFieldIds = signal<string[]>([]);
+  protected readonly presetStartDateTime = signal('');
+  protected readonly presetKnockoutFieldIds = signal<string[]>([]);
+  protected readonly presetKnockoutStartDateTime = signal('');
+  protected readonly presetSubmitting = signal(false);
+  protected readonly presetError = signal<string | null>(null);
+  protected readonly presetSuccessMessage = signal<string | null>(null);
+
+  protected readonly presetBracketSize = computed(() => {
+    const pools = Number(this.presetPoolCount());
+    const qualifiers = Number(this.presetQualifiersPerPool());
+    return pools > 0 && qualifiers > 0 ? pools * qualifiers : null;
+  });
+
+  // Client-side mirror of structure-presets.service.ts's validation -- lets
+  // the organizer fix an impossible combination before submitting, instead
+  // of round-tripping to the API to find out.
+  protected readonly presetValidationError = computed<string | null>(() => {
+    const teamCount = Number(this.presetTeamCount());
+    const poolCount = Number(this.presetPoolCount());
+    const qualifiersPerPool = Number(this.presetQualifiersPerPool());
+    if (!teamCount || !poolCount || !qualifiersPerPool) {
+      return null;
+    }
+    if (poolCount > teamCount) {
+      return 'Le nombre de poules ne peut pas dépasser le nombre d’équipes.';
+    }
+    const smallestPoolSize = Math.floor(teamCount / poolCount);
+    if (qualifiersPerPool > smallestPoolSize) {
+      return `Avec ${teamCount} équipes réparties en ${poolCount} poules, la plus petite poule ne compte que ${smallestPoolSize} équipe(s) — impossible d'en qualifier ${qualifiersPerPool}.`;
+    }
+    const bracketSize = poolCount * qualifiersPerPool;
+    if (!(bracketSize >= 2 && (bracketSize & (bracketSize - 1)) === 0)) {
+      return `${poolCount} poule(s) × ${qualifiersPerPool} qualifié(s) = ${bracketSize} équipe(s) qualifiée(s) — ce nombre doit être une puissance de 2 (2, 4, 8, 16…) pour former un tableau à élimination directe.`;
+    }
+    if (this.unassignedTeams().length !== teamCount) {
+      return `${this.unassignedTeams().length} équipe(s) non assignée(s) trouvée(s) dans cette catégorie, ${teamCount} attendue(s).`;
+    }
+    return null;
+  });
+
+  protected readonly presetCanSubmit = computed(
+    () =>
+      Number(this.presetTeamCount()) > 0 &&
+      Number(this.presetPoolCount()) > 0 &&
+      Number(this.presetQualifiersPerPool()) > 0 &&
+      this.presetFieldIds().length > 0 &&
+      this.presetStartDateTime() !== '' &&
+      this.presetKnockoutFieldIds().length > 0 &&
+      this.presetKnockoutStartDateTime() !== '' &&
+      this.presetValidationError() === null,
+  );
+
   protected readonly categoryOptions = computed<SelectOption[]>(() =>
     this.categories().map((category) => ({ value: category.id, label: category.name })),
   );
@@ -118,6 +179,7 @@ export class StructurePage {
         this.tournamentId,
       );
       this.categories.set(categories);
+      this.venues.set(await this.tournamentsService.listVenues(organizationId, this.tournamentId));
       if (categories.length > 0) {
         this.selectedCategoryId.set(categories[0].id);
         await this.loadCategoryData();
@@ -132,7 +194,20 @@ export class StructurePage {
   protected async onCategoryChange(categoryId: string): Promise<void> {
     this.selectedCategoryId.set(categoryId);
     this.newTeamIdToAssignByGroup.set({});
+    this.resetPresetForm();
     await this.loadCategoryData();
+  }
+
+  private resetPresetForm(): void {
+    this.presetTeamCount.set('');
+    this.presetPoolCount.set('');
+    this.presetQualifiersPerPool.set('');
+    this.presetFieldIds.set([]);
+    this.presetStartDateTime.set('');
+    this.presetKnockoutFieldIds.set([]);
+    this.presetKnockoutStartDateTime.set('');
+    this.presetError.set(null);
+    this.presetSuccessMessage.set(null);
   }
 
   private async loadCategoryData(): Promise<void> {
@@ -729,6 +804,82 @@ export class StructurePage {
       );
     } finally {
       this.generatingBracketId.set(null);
+    }
+  }
+
+  protected onPresetTeamCountChange(value: string): void {
+    this.presetTeamCount.set(value);
+  }
+
+  protected onPresetPoolCountChange(value: string): void {
+    this.presetPoolCount.set(value);
+  }
+
+  protected onPresetQualifiersPerPoolChange(value: string): void {
+    this.presetQualifiersPerPool.set(value);
+  }
+
+  protected onPresetStartDateTimeChange(value: string): void {
+    this.presetStartDateTime.set(value);
+  }
+
+  protected onPresetKnockoutStartDateTimeChange(value: string): void {
+    this.presetKnockoutStartDateTime.set(value);
+  }
+
+  protected onPresetFieldToggle(fieldId: string, event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.presetFieldIds.update((ids) =>
+      checked ? [...ids, fieldId] : ids.filter((id) => id !== fieldId),
+    );
+  }
+
+  protected onPresetKnockoutFieldToggle(fieldId: string, event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.presetKnockoutFieldIds.update((ids) =>
+      checked ? [...ids, fieldId] : ids.filter((id) => id !== fieldId),
+    );
+  }
+
+  protected async generateStructurePreset(): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const categoryId = this.selectedCategoryId();
+    if (!organizationId || !categoryId || !this.presetCanSubmit() || this.presetSubmitting()) {
+      return;
+    }
+    this.presetSubmitting.set(true);
+    this.presetError.set(null);
+    this.presetSuccessMessage.set(null);
+    const poolCount = this.presetPoolCount();
+    try {
+      const result = await this.competitionFormatsService.createStructurePreset(
+        organizationId,
+        this.tournamentId,
+        categoryId,
+        {
+          teamCount: Number(this.presetTeamCount()),
+          poolCount: Number(poolCount),
+          qualifiersPerPool: Number(this.presetQualifiersPerPool()),
+          fieldIds: this.presetFieldIds(),
+          startDateTime: new Date(this.presetStartDateTime()).toISOString(),
+          knockoutFieldIds: this.presetKnockoutFieldIds(),
+          knockoutStartDateTime: new Date(this.presetKnockoutStartDateTime()).toISOString(),
+        },
+      );
+      this.resetPresetForm();
+      this.presetSuccessMessage.set(
+        `Structure générée : ${poolCount} poules et un tableau de ${result.bracketSize} équipes. Le calendrier des poules est prêt sur la page Calendrier.`,
+      );
+      await this.loadCategoryData();
+    } catch (error) {
+      this.presetError.set(
+        error instanceof HttpErrorResponse &&
+          typeof (error.error as { message?: unknown })?.message === 'string'
+          ? (error.error as { message: string }).message
+          : 'Impossible de générer la structure.',
+      );
+    } finally {
+      this.presetSubmitting.set(false);
     }
   }
 }

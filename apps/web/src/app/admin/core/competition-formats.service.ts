@@ -58,6 +58,28 @@ export interface CreateQualificationRulePayload {
   targetPhaseId: string;
 }
 
+export interface CreateStructurePresetPayload {
+  teamCount: number;
+  poolCount: number;
+  qualifiersPerPool: number;
+  fieldIds: string[];
+  startDateTime: string;
+  matchDurationMinutes?: number;
+  breakDurationMinutes?: number;
+  refereesPerMatch?: number;
+  doubleRoundRobin?: boolean;
+  knockoutFieldIds: string[];
+  knockoutStartDateTime: string;
+  knockoutMatchDurationMinutes?: number;
+  knockoutBreakDurationMinutes?: number;
+}
+
+export interface StructurePresetResult {
+  groupPhaseId: string;
+  knockoutPhaseId: string;
+  bracketSize: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class CompetitionFormatsService {
   private readonly http = inject(HttpClient);
@@ -232,6 +254,20 @@ export class CompetitionFormatsService {
     return firstValueFrom(
       this.http.delete<void>(
         `${this.base(organizationId, tournamentId)}/qualification-rules/${ruleId}`,
+      ),
+    );
+  }
+
+  createStructurePreset(
+    organizationId: string,
+    tournamentId: string,
+    categoryId: string,
+    payload: CreateStructurePresetPayload,
+  ): Promise<StructurePresetResult> {
+    return firstValueFrom(
+      this.http.post<StructurePresetResult>(
+        `${this.base(organizationId, tournamentId)}/categories/${categoryId}/structure-presets`,
+        payload,
       ),
     );
   }
