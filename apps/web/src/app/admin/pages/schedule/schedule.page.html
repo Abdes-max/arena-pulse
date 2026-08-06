@@ -136,11 +136,12 @@
                 draggable="true"
                 (dragstart)="onMatchDragStart(match.id, $event)"
               >
-                @if (time) {
-                  <div class="schedule-page__match-card-header">
+                <div class="schedule-page__match-card-header">
+                  <span class="schedule-page__match-card-round">{{ roundDisplay(match) }}</span>
+                  @if (time) {
                     <span class="schedule-page__match-card-time">{{ time }}</span>
-                  </div>
-                }
+                  }
+                </div>
                 <div class="schedule-page__match-card-teams">
                   <span class="schedule-page__match-card-team">{{
                     match.homeTeam?.name ?? '?'

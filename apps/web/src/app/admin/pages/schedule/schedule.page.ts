@@ -28,7 +28,7 @@ import { ScheduleService } from '../../core/schedule.service';
 import { TeamsService } from '../../core/teams.service';
 import { TimeSlotsService } from '../../core/timeslots.service';
 import { TournamentsService } from '../../core/tournaments.service';
-import { groupMatchesByPhaseSection } from 'shared-models';
+import { groupMatchesByPhaseSection, matchRoundLabel } from 'shared-models';
 
 interface TimeSlotDraft {
   start: string;
@@ -433,6 +433,14 @@ export class SchedulePage {
     return slot.label
       ? `${this.formatSlotTime(slot.startTime)} — ${slot.label}`
       : this.formatSlotTime(slot.startTime);
+  }
+
+  // Compact ("1/8"/"1/4"/"1/2"/"Finale") -- the section heading above
+  // already carries the full name ("Huitième de finale"), this is just a
+  // quick per-card scan aid, not a repeat of it.
+  protected roundDisplay(match: Match): string {
+    const phase = this.selectedPhase();
+    return phase ? matchRoundLabel(phase, match, 'compact') : `Tour ${match.round}`;
   }
 
   protected officialLabel(official: MatchOfficial): string {

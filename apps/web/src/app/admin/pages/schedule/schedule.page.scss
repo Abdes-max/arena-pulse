@@ -209,17 +209,24 @@
   font-size: 0.85rem;
 }
 
-// Only ever shows the time now -- phase/round moved to a section heading
-// above the cards (grouped once, not repeated per card -- see
-// unscheduledSections/matchRoundLabel).
+// Round (compact "1/8"/"1/4"/"Finale") on the left, time on the right --
+// the full phase/round name is the section heading above the cards
+// (grouped once, not repeated per card -- see unscheduledSections).
 .schedule-page__match-card-header {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-2);
   padding: var(--ap-space-1) var(--ap-space-2);
   background: var(--ap-color-primary);
   color: var(--ap-color-on-primary);
   font-size: 0.7rem;
   font-weight: 700;
+}
+
+.schedule-page__match-card-round {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .schedule-page__match-card-time {

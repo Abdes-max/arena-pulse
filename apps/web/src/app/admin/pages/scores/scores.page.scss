@@ -13,7 +13,17 @@
 
 .scores-page__select {
   max-width: 300px;
+}
+
+.scores-page__selects-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ap-space-4);
   margin-top: var(--ap-space-4);
+
+  .scores-page__select {
+    flex: 1 1 220px;
+  }
 }
 
 .scores-page__progress {
@@ -51,23 +61,32 @@
   font-size: 0.9rem;
 }
 
+// Fixed (not min-) widths on every column before the score inputs, so the
+// inputs themselves start at the same x position on every row regardless
+// of how long a given team/field name happens to be.
 .scores-page__time-badge {
-  flex: 0 0 auto;
+  flex: 0 0 5.5rem;
   font-size: 0.75rem;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   color: var(--ap-color-muted);
-  min-width: 5rem;
 }
 
 .scores-page__field-name {
+  flex: 0 0 4.5rem;
   font-size: 0.75rem;
   color: var(--ap-color-muted);
-  min-width: 5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .scores-page__team {
+  flex: 0 0 9rem;
   font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .scores-page__score-input {
@@ -103,20 +122,8 @@
   text-decoration: underline;
 }
 
-.scores-page__forfeit-actions {
+.scores-page__forfeit-select {
   margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: var(--ap-space-1);
-  font-size: 0.75rem;
-  color: var(--ap-color-muted);
-
-  button {
-    font-size: 0.75rem;
-    background: none;
-    border: var(--ap-border-width) solid var(--ap-color-border);
-    border-radius: var(--ap-radius-sm);
-    cursor: pointer;
-    padding: 0.1rem 0.4rem;
-  }
+  flex: 0 0 auto;
+  width: 10rem;
 }

@@ -11,25 +11,28 @@
     @if (categories().length === 0) {
       <p>Ajoutez d'abord une catégorie sur la page du tournoi.</p>
     } @else {
-      <ap-select
-        class="scores-page__select"
-        label="Catégorie"
-        [options]="categoryOptions()"
-        [value]="selectedCategoryId()"
-        (valueChange)="onCategoryChange($event)"
-      />
+      <div class="scores-page__selects-row">
+        <ap-select
+          class="scores-page__select"
+          label="Catégorie"
+          [options]="categoryOptions()"
+          [value]="selectedCategoryId()"
+          (valueChange)="onCategoryChange($event)"
+        />
+        @if (phases().length > 0) {
+          <ap-select
+            class="scores-page__select"
+            label="Phase"
+            [options]="phaseOptions()"
+            [value]="selectedPhaseId()"
+            (valueChange)="onPhaseChange($event)"
+          />
+        }
+      </div>
 
       @if (phases().length === 0) {
         <p>Ajoutez d'abord une phase sur la page Structure de cette catégorie.</p>
       } @else {
-        <ap-select
-          class="scores-page__select"
-          label="Phase"
-          [options]="phaseOptions()"
-          [value]="selectedPhaseId()"
-          (valueChange)="onPhaseChange($event)"
-        />
-
         @if (matches().length === 0) {
           <p>Aucun match dans cette phase.</p>
         } @else {
@@ -122,19 +125,14 @@
                         </button>
                       }
 
-                      <span class="scores-page__forfeit-actions">
-                        Forfait :
-                        @if (match.homeTeam) {
-                          <button type="button" (click)="declareForfeit(match, match.homeTeam.id)">
-                            {{ match.homeTeam.name }}
-                          </button>
-                        }
-                        @if (match.awayTeam) {
-                          <button type="button" (click)="declareForfeit(match, match.awayTeam.id)">
-                            {{ match.awayTeam.name }}
-                          </button>
-                        }
-                      </span>
+                      <ap-select
+                        class="scores-page__forfeit-select"
+                        label="Déclarer forfait"
+                        [hideLabel]="true"
+                        [options]="forfeitOptions(match)"
+                        [resetAfterSelect]="true"
+                        (valueChange)="onDeclareForfeit(match, $event)"
+                      />
                     }
                   </li>
                 }

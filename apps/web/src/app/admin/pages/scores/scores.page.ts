@@ -336,6 +336,23 @@ export class ScoresPage {
     }
   }
 
+  protected forfeitOptions(match: Match): SelectOption[] {
+    const options: SelectOption[] = [{ value: '', label: 'Forfait…', disabled: true }];
+    if (match.homeTeam) {
+      options.push({ value: match.homeTeam.id, label: match.homeTeam.name });
+    }
+    if (match.awayTeam) {
+      options.push({ value: match.awayTeam.id, label: match.awayTeam.name });
+    }
+    return options;
+  }
+
+  protected onDeclareForfeit(match: Match, teamId: string): void {
+    if (teamId) {
+      void this.declareForfeit(match, teamId);
+    }
+  }
+
   protected async declareForfeit(match: Match, teamId: string): Promise<void> {
     const organizationId = this.organization()?.id;
     if (!organizationId) {
