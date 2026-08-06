@@ -23,6 +23,11 @@ jobs:
           username: ${{ secrets.DEPLOY_USER }}
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           port: ${{ secrets.DEPLOY_PORT || 22 }}
+          # Default (30s) has intermittently timed out dialing this host from
+          # GitHub-hosted runners even when the VPS itself was confirmed
+          # reachable seconds later -- generous headroom rather than chasing
+          # the exact network cause.
+          timeout: 90s
           script: |
             set -euo pipefail
             cd "${{ secrets.DEPLOY_PATH }}"
