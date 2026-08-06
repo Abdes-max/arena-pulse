@@ -74,13 +74,25 @@
               </thead>
               <tbody>
                 @for (row of group.standings.rows; track row.teamId) {
-                  <tr [class.standings-page__row--qualified]="isQualified(group, row.teamId)">
+                  @let tier = qualificationTier(group, row.teamId);
+                  <tr
+                    [class.standings-page__row--qualified]="
+                      qualificationTierPhases().length < 2 && isQualified(group, row.teamId)
+                    "
+                    [style.background]="tier?.soft ?? null"
+                  >
                     <td class="standings-page__table-team">
                       {{ row.position }}. {{ row.teamName }}
                     </td>
                     <td class="standings-page__table-qualified">
-                      @if (isQualified(group, row.teamId)) {
-                        <ap-badge status="qualified" />
+                      @if (qualificationTierPhases().length < 2) {
+                        @if (isQualified(group, row.teamId)) {
+                          <ap-badge status="qualified" />
+                        }
+                      } @else if (tier) {
+                        <span class="standings-page__tier-badge" [style.color]="tier.color">{{
+                          tier.label
+                        }}</span>
                       }
                     </td>
                     <td>{{ row.played }}</td>
@@ -144,8 +156,8 @@
                   } @else {
                     <ap-match-card
                       [variant]="variantFor(match)"
-                      [homeTeam]="match.homeTeam ?? { name: '?' }"
-                      [awayTeam]="match.awayTeam ?? { name: '?' }"
+                      [homeTeam]="match.homeTeam ?? { name: match.homeSourceLabel ?? '?' }"
+                      [awayTeam]="match.awayTeam ?? { name: match.awaySourceLabel ?? '?' }"
                       [homeScore]="match.score?.homeScore"
                       [awayScore]="match.score?.awayScore"
                     />

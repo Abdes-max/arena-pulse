@@ -24,9 +24,11 @@ import {
   FinalRankingRow,
   Match,
   Qualification,
+  QualificationTierColor,
   Standings,
   buildBracketView,
   computeFinalRanking,
+  qualificationTierColor,
 } from 'shared-models';
 import { OfflineCacheService } from '../../core/offline-cache.service';
 import { TournamentContextService } from '../../core/tournament-context.service';
@@ -36,6 +38,12 @@ interface GroupStandings {
   groupName: string;
   standings: Standings;
   qualifications: Qualification[];
+}
+
+interface QualificationTier {
+  label: string;
+  color: string;
+  soft: string;
 }
 
 type StandingsTab = 'pools' | 'final' | 'ranking';
@@ -95,6 +103,27 @@ export class StandingsPage {
   protected readonly bracketPhaseOptions = computed(() =>
     this.knockoutPhases().map((phase) => ({ value: phase.id, label: phase.name })),
   );
+
+  // Every KNOCKOUT phase in this category, in tournament order -- used to
+  // color-code and label the "Qualifié" badge once a pool's teams can be
+  // routed to more than one tier (e.g. 1-2 -> LDC, 3-4 -> EP, 5 -> CF).
+  // Unlike knockoutPhases above (which feeds the bracket tabs), this doesn't
+  // require the bracket to already be generated -- a QualificationRule can
+  // target a phase before its bracket exists.
+  protected readonly qualificationTierPhases = computed(() =>
+    this.phases()
+      .filter((phase) => phase.type === 'KNOCKOUT')
+      .sort((a, b) => a.position - b.position),
+  );
+
+  private readonly tierColorByPhaseId = computed(() => {
+    const tiers = this.qualificationTierPhases();
+    const map = new Map<string, QualificationTierColor>();
+    tiers.forEach((phase, index) => {
+      map.set(phase.id, qualificationTierColor(index, tiers.length));
+    });
+    return map;
+  });
   protected readonly selectedBracket = computed(() =>
     this.bracketByPhase().get(this.selectedBracketPhaseId()),
   );
@@ -290,6 +319,23 @@ export class StandingsPage {
     return group.qualifications.some((qualification) =>
       qualification.qualifiedTeams.some((team) => team.id === teamId),
     );
+  }
+
+  // Only meaningful once there's more than one knockout tier -- with just
+  // one, the generic "Qualifié" badge (isQualified above) already says all
+  // there is to say, no need to name it.
+  protected qualificationTier(group: GroupStandings, teamId: string): QualificationTier | null {
+    if (this.qualificationTierPhases().length < 2) {
+      return null;
+    }
+    const qualification = group.qualifications.find((qual) =>
+      qual.qualifiedTeams.some((team) => team.id === teamId),
+    );
+    if (!qualification) {
+      return null;
+    }
+    const tierColor = this.tierColorByPhaseId().get(qualification.targetPhaseId);
+    return tierColor ? { label: qualification.targetPhaseName, ...tierColor } : null;
   }
 
   // ap-match-card is the shared design-system component web already uses

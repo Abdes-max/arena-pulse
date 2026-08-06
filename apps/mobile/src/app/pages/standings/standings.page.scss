@@ -94,6 +94,24 @@
   background: var(--ap-color-signal-soft);
 }
 
+// Same pill look as ap-badge's own "qualified" status, but with a dynamic
+// per-tier color (see qualificationTierColor) instead of a fixed status --
+// ap-badge's color comes from its own encapsulated stylesheet keyed off a
+// fixed status value, so it can't take an arbitrary color from here. Mirrors
+// apps/web's standings.page.scss tier-badge treatment.
+.standings-page__tier-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--ap-font-body);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: var(--ap-space-1) var(--ap-space-2);
+  border-radius: var(--ap-radius-sm);
+  border: var(--ap-border-width) solid;
+}
+
 .standings-page__points {
   font-weight: 700;
 }
