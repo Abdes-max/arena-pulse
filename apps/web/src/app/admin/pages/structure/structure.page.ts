@@ -226,6 +226,16 @@ export class StructurePage {
       this.teams.set(
         await this.teamsService.listTeams(organizationId, this.tournamentId, categoryId),
       );
+      // Default "Mode Tournoi" to however many teams are actually sitting
+      // unassigned right now -- typing a number and getting "0 équipe(s)
+      // trouvée(s)" back is a confusing way to discover this generator
+      // distributes existing teams rather than creating new ones.
+      if (!this.presetTeamCount()) {
+        const unassignedCount = this.unassignedTeams().length;
+        if (unassignedCount > 0) {
+          this.presetTeamCount.set(String(unassignedCount));
+        }
+      }
       await this.loadPhaseRules(phases);
     } catch {
       this.errorMessage.set('Impossible de charger la structure de cette catégorie.');
