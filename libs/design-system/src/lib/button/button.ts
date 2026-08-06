@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'ghost';
+export type ButtonSize = 'md' | 'sm';
 
 @Component({
   selector: 'ap-button',
@@ -12,11 +13,14 @@ export type ButtonVariant = 'primary' | 'secondary' | 'ghost';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[attr.data-variant]': 'variant()',
+    '[attr.data-size]': 'size()',
     '[attr.data-disabled]': 'disabled() || null',
   },
 })
 export class Button {
   readonly variant = input<ButtonVariant>('primary');
+  /** 'sm' for dense contexts (e.g. a data-entry table row) -- 'md' (default) elsewhere. */
+  readonly size = input<ButtonSize>('md');
   readonly type = input<'button' | 'submit'>('button');
   readonly disabled = input(false);
   /** When set, renders an <a> instead of a <button> — same look, but for navigation rather than an action. */

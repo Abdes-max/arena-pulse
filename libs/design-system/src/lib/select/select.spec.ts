@@ -9,6 +9,7 @@ import { Select, SelectOption } from './select';
     <ap-select
       label="Catégorie"
       [hideLabel]="hideLabel"
+      [size]="size"
       [value]="value"
       [options]="options"
       (valueChange)="onValueChange($event)"
@@ -17,6 +18,7 @@ import { Select, SelectOption } from './select';
 })
 class HostComponent {
   hideLabel = false;
+  size: 'md' | 'sm' = 'md';
   value = 'a';
   options: SelectOption[] = [
     { value: 'a', label: 'Poule A' },
@@ -108,6 +110,15 @@ describe('Select', () => {
     const label = fixture.nativeElement.querySelector('label');
     expect(label.classList.contains('ap-select__label--hidden')).toBe(true);
     expect(label.textContent.trim()).toBe('Catégorie');
+  });
+
+  it('reflects the size as a host attribute for styling', () => {
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.componentInstance.size = 'sm';
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement.querySelector('ap-select');
+    expect(host.getAttribute('data-size')).toBe('sm');
   });
 
   it('keeps following the value input in controlled mode after a change event, instead of latching onto the emitted value forever', () => {

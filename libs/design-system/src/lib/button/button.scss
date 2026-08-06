@@ -33,6 +33,15 @@
   }
 }
 
+// Opts out of the default touch-target minimum on purpose -- for dense
+// data-entry rows (e.g. Scores) on desktop-oriented admin screens, not a
+// general-purpose replacement for the default size.
+:host([data-size='sm']) .ap-button {
+  padding: var(--ap-space-1) var(--ap-space-3);
+  font-size: 0.8rem;
+  min-height: 1.75rem;
+}
+
 :host([data-variant='primary']) .ap-button {
   background: var(--ap-color-primary);
   color: var(--ap-color-on-primary);

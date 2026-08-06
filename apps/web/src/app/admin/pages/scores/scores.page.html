@@ -104,7 +104,7 @@
                         />
                       }
 
-                      <ap-button type="button" variant="ghost" (click)="saveScore(match)">
+                      <ap-button type="button" variant="ghost" size="sm" (click)="saveScore(match)">
                         Enregistrer
                       </ap-button>
 
@@ -112,7 +112,7 @@
                         @if (match.score.isValidated) {
                           <span class="scores-page__validated-badge">Validé</span>
                         } @else {
-                          <ap-button type="button" (click)="validateScore(match)"
+                          <ap-button type="button" size="sm" (click)="validateScore(match)"
                             >Valider</ap-button
                           >
                         }
@@ -129,6 +129,7 @@
                         class="scores-page__forfeit-select"
                         label="Déclarer forfait"
                         [hideLabel]="true"
+                        size="sm"
                         [options]="forfeitOptions(match)"
                         [resetAfterSelect]="true"
                         (valueChange)="onDeclareForfeit(match, $event)"
