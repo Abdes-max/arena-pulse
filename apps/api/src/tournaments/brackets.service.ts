@@ -11,6 +11,7 @@ import {
 } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { isPowerOfTwo, seedOrder } from './bracket-seeding.util';
+import { CrossGroupQualificationRulesService } from './cross-group-qualification-rules.service';
 import { GenerateBracketMatchesDto } from './dto/generate-bracket-matches.dto';
 import { getLoserTeamId, getWinnerTeamId } from './match-outcome.util';
 import { MATCH_INCLUDE, toMatchSummary } from './match-summary.util';
@@ -35,6 +36,7 @@ export class BracketsService {
     private readonly tournamentsService: TournamentsService,
     private readonly standingsService: StandingsService,
     private readonly realtimeService: RealtimeService,
+    private readonly crossGroupQualificationRulesService: CrossGroupQualificationRulesService,
   ) {}
 
   async generateMatches(
@@ -369,6 +371,19 @@ export class BracketsService {
       (a, b) =>
         a.position - b.position || a.groupName.localeCompare(b.groupName),
     );
+
+    // Best-of-position cross-group qualifiers (e.g. "8 best 3rd places") join
+    // after every direct per-group qualifier, in their own inter-pool rank
+    // order -- they're a distinct tier on top of, not interleaved with, the
+    // regular position-range qualifiers above.
+    const crossGroupEntries =
+      await this.crossGroupQualificationRulesService.collectQualifiedTeams(
+        organizationId,
+        tournamentId,
+        targetPhaseId,
+      );
+    entries.push(...crossGroupEntries);
+
     return entries;
   }
 

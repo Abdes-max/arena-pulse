@@ -291,10 +291,12 @@ model CompetitionPhase {
   createdAt            DateTime             @default(now())
   updatedAt            DateTime             @updatedAt
 
-  category        Category            @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  groups          Group[]
-  knockoutBracket KnockoutBracket?
-  incomingRules   QualificationRule[] @relation("QualificationTargetPhase")
+  category                Category                      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  groups                  Group[]
+  knockoutBracket         KnockoutBracket?
+  incomingRules           QualificationRule[]           @relation("QualificationTargetPhase")
+  crossGroupRulesAsSource CrossGroupQualificationRule[] @relation("CrossGroupQualificationSourcePhase")
+  crossGroupRulesAsTarget CrossGroupQualificationRule[] @relation("CrossGroupQualificationTargetPhase")
 
   @@unique([categoryId, name])
 }
@@ -364,6 +366,28 @@ model QualificationRule {
   targetPhase CompetitionPhase @relation("QualificationTargetPhase", fields: [targetPhaseId], references: [id], onDelete: Cascade)
 
   @@index([groupId])
+  @@index([targetPhaseId])
+}
+
+// Compares teams that finish at the same `position` across every pool of
+// `phase` (e.g. every 3rd place) against each other -- rather than one
+// pool's own position range like QualificationRule -- and qualifies the
+// `bestCount` best of them. A separate model rather than a nullable-groupId
+// QualificationRule: that would make fromPosition/toPosition/groupId
+// nullable on an already-live table with no clean way to express "required
+// unless this is a cross-group rule" in the schema itself.
+model CrossGroupQualificationRule {
+  id            String   @id @default(uuid())
+  phaseId       String
+  position      Int
+  bestCount     Int
+  targetPhaseId String
+  createdAt     DateTime @default(now())
+
+  phase       CompetitionPhase @relation("CrossGroupQualificationSourcePhase", fields: [phaseId], references: [id], onDelete: Cascade)
+  targetPhase CompetitionPhase @relation("CrossGroupQualificationTargetPhase", fields: [targetPhaseId], references: [id], onDelete: Cascade)
+
+  @@index([phaseId])
   @@index([targetPhaseId])
 }
 

@@ -1,4 +1,4 @@
-import { computeStandings } from './standings.util';
+import { computeStandings, rankCrossGroupCandidates } from './standings.util';
 
 const SCHEME = { winPoints: 3, drawPoints: 1, lossPoints: 0 };
 const TIE_BREAK_ORDER = [
@@ -171,5 +171,104 @@ describe('computeStandings', () => {
 
     expect(rows[0].points).toBe(2);
     expect(rows[1].points).toBe(2);
+  });
+});
+
+describe('rankCrossGroupCandidates', () => {
+  it('ranks the row at a given position from each pool against each other', () => {
+    const poolA = computeStandings(
+      [
+        { id: 'a1', name: 'A1' },
+        { id: 'a2', name: 'A2' },
+        { id: 'a3', name: 'A3' },
+      ],
+      [
+        { homeTeamId: 'a1', awayTeamId: 'a2', homeScore: 3, awayScore: 0 },
+        { homeTeamId: 'a2', awayTeamId: 'a3', homeScore: 2, awayScore: 1 },
+        { homeTeamId: 'a3', awayTeamId: 'a1', homeScore: 0, awayScore: 2 },
+      ],
+      SCHEME,
+      TIE_BREAK_ORDER,
+    );
+    const poolB = computeStandings(
+      [
+        { id: 'b1', name: 'B1' },
+        { id: 'b2', name: 'B2' },
+        { id: 'b3', name: 'B3' },
+      ],
+      [
+        { homeTeamId: 'b1', awayTeamId: 'b2', homeScore: 1, awayScore: 1 },
+        { homeTeamId: 'b2', awayTeamId: 'b3', homeScore: 1, awayScore: 1 },
+        { homeTeamId: 'b3', awayTeamId: 'b1', homeScore: 1, awayScore: 1 },
+      ],
+      SCHEME,
+      TIE_BREAK_ORDER,
+    );
+
+    // Pool A's 3rd place (a3: 2 losses, 0 points) is worse than Pool B's
+    // 3rd place (b3: 2 draws, 2 points) -- b3 should rank first.
+    const ranked = rankCrossGroupCandidates(
+      [
+        { groupId: 'group-a', groupName: 'Poule A', rows: poolA },
+        { groupId: 'group-b', groupName: 'Poule B', rows: poolB },
+      ],
+      3,
+      TIE_BREAK_ORDER,
+    );
+
+    expect(
+      ranked.map((row) => [row.teamId, row.groupName, row.position]),
+    ).toEqual([
+      ['b3', 'Poule B', 1],
+      ['a3', 'Poule A', 2],
+    ]);
+  });
+
+  it('skips pools with no row at that position (e.g. a smaller pool)', () => {
+    const smallPool = computeStandings(
+      [
+        { id: 'x1', name: 'X1' },
+        { id: 'x2', name: 'X2' },
+      ],
+      [],
+      SCHEME,
+      TIE_BREAK_ORDER,
+    );
+
+    const ranked = rankCrossGroupCandidates(
+      [{ groupId: 'group-x', groupName: 'Poule X', rows: smallPool }],
+      3,
+      TIE_BREAK_ORDER,
+    );
+
+    expect(ranked).toEqual([]);
+  });
+
+  it('never lets HEAD_TO_HEAD discriminate between pools (these teams never played each other)', () => {
+    // Two candidates level on every real criterion -- HEAD_TO_HEAD first in
+    // the tie-break order must be a no-op, falling through to team name.
+    const poolA = computeStandings(
+      [{ id: 'a1', name: 'Zeta' }],
+      [],
+      SCHEME,
+      TIE_BREAK_ORDER,
+    );
+    const poolB = computeStandings(
+      [{ id: 'b1', name: 'Alpha' }],
+      [],
+      SCHEME,
+      TIE_BREAK_ORDER,
+    );
+
+    const ranked = rankCrossGroupCandidates(
+      [
+        { groupId: 'group-a', groupName: 'Poule A', rows: poolA },
+        { groupId: 'group-b', groupName: 'Poule B', rows: poolB },
+      ],
+      1,
+      ['HEAD_TO_HEAD', 'POINTS'],
+    );
+
+    expect(ranked.map((row) => row.teamId)).toEqual(['b1', 'a1']);
   });
 });

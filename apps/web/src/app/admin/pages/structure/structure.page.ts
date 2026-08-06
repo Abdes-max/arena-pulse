@@ -9,6 +9,7 @@ import {
   CompetitionGroup,
   CompetitionPhase,
   CompetitionPhaseType,
+  CrossGroupQualificationRule,
   StandingRule,
   Team,
   Venue,
@@ -83,6 +84,16 @@ export class StructurePage {
     Record<string, { fromPosition: string; toPosition: string; targetPhaseId: string }>
   >({});
 
+  // Keyed by phaseId -- unlike QualificationRule, these are phase-scoped
+  // directly server-side (not duplicated per pool), so there's no
+  // per-group dedup/fan-out needed here.
+  protected readonly phaseCrossGroupRules = signal<Map<string, CrossGroupQualificationRule[]>>(
+    new Map(),
+  );
+  protected readonly newCrossGroupRuleFormByPhase = signal<
+    Record<string, { position: string; bestCount: string; targetPhaseId: string }>
+  >({});
+
   protected readonly unassignedTeams = computed(() =>
     this.teams().filter((team) => team.groupId === null),
   );
@@ -98,7 +109,6 @@ export class StructurePage {
 
   protected readonly presetTeamCount = signal('');
   protected readonly presetPoolCount = signal('');
-  protected readonly presetQualifiersPerPool = signal('');
   protected readonly presetFieldIds = signal<string[]>([]);
   protected readonly presetStartDateTime = signal('');
   protected readonly presetKnockoutFieldIds = signal<string[]>([]);
@@ -107,10 +117,37 @@ export class StructurePage {
   protected readonly presetError = signal<string | null>(null);
   protected readonly presetSuccessMessage = signal<string | null>(null);
 
-  protected readonly presetBracketSize = computed(() => {
-    const pools = Number(this.presetPoolCount());
-    const qualifiers = Number(this.presetQualifiersPerPool());
-    return pools > 0 && qualifiers > 0 ? pools * qualifiers : null;
+  // "Qualifier vers plusieurs compétitions" -- off by default, the pool
+  // phase feeds a single knockout tier (today's behaviour). On, the
+  // organizer edits a named list of tiers, each claiming the next slice of
+  // standing positions (tier 1: 1..q1, tier 2: q1+1..q1+q2, ...).
+  protected readonly presetMultiTierEnabled = signal(false);
+  protected readonly presetTiers = signal<{ name: string; qualifiersPerPool: string }[]>([
+    { name: 'Tableau final', qualifiersPerPool: '' },
+  ]);
+
+  // "Inclure les meilleurs classés à une position" -- best-of-position
+  // candidates join the first tier's bracket alongside its direct qualifiers.
+  protected readonly presetBestOfPositionEnabled = signal(false);
+  protected readonly presetBestOfPositionPosition = signal('');
+  protected readonly presetBestOfPositionBestCount = signal('');
+
+  protected readonly presetTiersTotalQualifiersPerPool = computed(() =>
+    this.presetTiers().reduce((sum, tier) => sum + (Number(tier.qualifiersPerPool) || 0), 0),
+  );
+
+  protected readonly presetTierBracketSizes = computed(() => {
+    const poolCount = Number(this.presetPoolCount());
+    if (!poolCount) {
+      return [];
+    }
+    const bestCount = this.presetBestOfPositionEnabled()
+      ? Number(this.presetBestOfPositionBestCount()) || 0
+      : 0;
+    return this.presetTiers().map((tier, index) => ({
+      name: tier.name.trim() || `Palier ${index + 1}`,
+      size: poolCount * (Number(tier.qualifiersPerPool) || 0) + (index === 0 ? bestCount : 0),
+    }));
   });
 
   // Client-side mirror of structure-presets.service.ts's validation -- lets
@@ -119,21 +156,46 @@ export class StructurePage {
   protected readonly presetValidationError = computed<string | null>(() => {
     const teamCount = Number(this.presetTeamCount());
     const poolCount = Number(this.presetPoolCount());
-    const qualifiersPerPool = Number(this.presetQualifiersPerPool());
-    if (!teamCount || !poolCount || !qualifiersPerPool) {
+    const tiers = this.presetTiers();
+    if (!teamCount || !poolCount || tiers.some((tier) => !Number(tier.qualifiersPerPool))) {
       return null;
     }
     if (poolCount > teamCount) {
       return 'Le nombre de poules ne peut pas dépasser le nombre d’équipes.';
     }
     const smallestPoolSize = Math.floor(teamCount / poolCount);
-    if (qualifiersPerPool > smallestPoolSize) {
-      return `Avec ${teamCount} équipes réparties en ${poolCount} poules, la plus petite poule ne compte que ${smallestPoolSize} équipe(s) — impossible d'en qualifier ${qualifiersPerPool}.`;
+    const totalDirectQualifiersPerPool = this.presetTiersTotalQualifiersPerPool();
+    if (totalDirectQualifiersPerPool > smallestPoolSize) {
+      return `Avec ${teamCount} équipes réparties en ${poolCount} poules, la plus petite poule ne compte que ${smallestPoolSize} équipe(s) — impossible d'en qualifier ${totalDirectQualifiersPerPool} au total en cumulant les paliers.`;
     }
-    const bracketSize = poolCount * qualifiersPerPool;
-    if (!(bracketSize >= 2 && (bracketSize & (bracketSize - 1)) === 0)) {
-      return `${poolCount} poule(s) × ${qualifiersPerPool} qualifié(s) = ${bracketSize} équipe(s) qualifiée(s) — ce nombre doit être une puissance de 2 (2, 4, 8, 16…) pour former un tableau à élimination directe.`;
+
+    const bestOfPositionEnabled = this.presetBestOfPositionEnabled();
+    const bestPosition = Number(this.presetBestOfPositionPosition());
+    const bestCount = Number(this.presetBestOfPositionBestCount());
+    if (bestOfPositionEnabled && bestPosition && bestCount) {
+      if (bestCount > poolCount) {
+        return `Impossible de qualifier ${bestCount} meilleur(s) classé(s) à la position ${bestPosition} : il n'y a que ${poolCount} poule(s).`;
+      }
+      if (bestPosition <= totalDirectQualifiersPerPool) {
+        return `La position ${bestPosition} des meilleurs classés chevauche les qualifiés directs (positions 1 à ${totalDirectQualifiersPerPool}) — choisissez une position strictement supérieure.`;
+      }
+      if (bestPosition > smallestPoolSize) {
+        return `La position ${bestPosition} n'existe pas dans toutes les poules — la plus petite poule ne compte que ${smallestPoolSize} équipe(s).`;
+      }
     }
+
+    for (const [index, tier] of tiers.entries()) {
+      const qualifiers = Number(tier.qualifiersPerPool);
+      const bracketBestCount = index === 0 && bestOfPositionEnabled ? bestCount || 0 : 0;
+      const bracketSize = poolCount * qualifiers + bracketBestCount;
+      if (!(bracketSize >= 2 && (bracketSize & (bracketSize - 1)) === 0)) {
+        const detail = bracketBestCount
+          ? `${poolCount} poule(s) × ${qualifiers} qualifié(s) + ${bracketBestCount} meilleur(s) classé(s)`
+          : `${poolCount} poule(s) × ${qualifiers} qualifié(s)`;
+        return `Palier "${tier.name.trim() || `Palier ${index + 1}`}" : ${detail} = ${bracketSize} équipe(s) qualifiée(s) — ce nombre doit être une puissance de 2 (2, 4, 8, 16…) pour former un tableau à élimination directe.`;
+      }
+    }
+
     if (this.unassignedTeams().length !== teamCount) {
       return `${this.unassignedTeams().length} équipe(s) non assignée(s) trouvée(s) dans cette catégorie, ${teamCount} attendue(s).`;
     }
@@ -144,7 +206,12 @@ export class StructurePage {
     () =>
       Number(this.presetTeamCount()) > 0 &&
       Number(this.presetPoolCount()) > 0 &&
-      Number(this.presetQualifiersPerPool()) > 0 &&
+      this.presetTiers().every(
+        (tier) => tier.name.trim() !== '' && Number(tier.qualifiersPerPool) > 0,
+      ) &&
+      (!this.presetBestOfPositionEnabled() ||
+        (Number(this.presetBestOfPositionPosition()) > 0 &&
+          Number(this.presetBestOfPositionBestCount()) > 0)) &&
       this.presetFieldIds().length > 0 &&
       this.presetStartDateTime() !== '' &&
       this.presetKnockoutFieldIds().length > 0 &&
@@ -207,7 +274,11 @@ export class StructurePage {
   private resetPresetForm(): void {
     this.presetTeamCount.set('');
     this.presetPoolCount.set('');
-    this.presetQualifiersPerPool.set('');
+    this.presetMultiTierEnabled.set(false);
+    this.presetTiers.set([{ name: 'Tableau final', qualifiersPerPool: '' }]);
+    this.presetBestOfPositionEnabled.set(false);
+    this.presetBestOfPositionPosition.set('');
+    this.presetBestOfPositionBestCount.set('');
     this.presetFieldIds.set([]);
     this.presetStartDateTime.set('');
     this.presetKnockoutFieldIds.set([]);
@@ -311,6 +382,21 @@ export class StructurePage {
       }),
     );
     this.phaseQualificationRuleGroups.set(new Map(qualificationEntries));
+
+    const crossGroupEntries = await Promise.all(
+      groupStagePhases.map(
+        async (phase) =>
+          [
+            phase.id,
+            await this.competitionFormatsService.listCrossGroupQualificationRules(
+              organizationId,
+              this.tournamentId,
+              phase.id,
+            ),
+          ] as const,
+      ),
+    );
+    this.phaseCrossGroupRules.set(new Map(crossGroupEntries));
   }
 
   protected onNewPhaseNameChange(value: string): void {
@@ -716,6 +802,96 @@ export class StructurePage {
     }
   }
 
+  protected crossGroupRulesFor(phaseId: string): CrossGroupQualificationRule[] {
+    return this.phaseCrossGroupRules().get(phaseId) ?? [];
+  }
+
+  protected crossGroupRuleFormFor(phaseId: string) {
+    return (
+      this.newCrossGroupRuleFormByPhase()[phaseId] ?? {
+        position: '',
+        bestCount: '',
+        targetPhaseId: '',
+      }
+    );
+  }
+
+  protected updateCrossGroupRuleField(
+    phaseId: string,
+    field: 'position' | 'bestCount',
+    value: string,
+  ): void {
+    const current = this.crossGroupRuleFormFor(phaseId);
+    this.newCrossGroupRuleFormByPhase.update((forms) => ({
+      ...forms,
+      [phaseId]: { ...current, [field]: value },
+    }));
+  }
+
+  protected onCrossGroupTargetPhaseChange(phaseId: string, targetPhaseId: string): void {
+    const current = this.crossGroupRuleFormFor(phaseId);
+    this.newCrossGroupRuleFormByPhase.update((forms) => ({
+      ...forms,
+      [phaseId]: { ...current, targetPhaseId },
+    }));
+  }
+
+  protected async addCrossGroupRule(phase: CompetitionPhase): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const form = this.crossGroupRuleFormFor(phase.id);
+    const position = Number(form.position);
+    const bestCount = Number(form.bestCount);
+    if (!organizationId || !form.targetPhaseId || !position || !bestCount) {
+      return;
+    }
+    try {
+      const created = await this.competitionFormatsService.createCrossGroupQualificationRule(
+        organizationId,
+        this.tournamentId,
+        phase.id,
+        { position, bestCount, targetPhaseId: form.targetPhaseId },
+      );
+      this.phaseCrossGroupRules.update((map) => {
+        const next = new Map(map);
+        next.set(phase.id, [...(next.get(phase.id) ?? []), created]);
+        return next;
+      });
+      this.newCrossGroupRuleFormByPhase.update((forms) => ({
+        ...forms,
+        [phase.id]: { position: '', bestCount: '', targetPhaseId: '' },
+      }));
+    } catch {
+      this.errorMessage.set("Impossible d'ajouter cette règle de meilleurs classés.");
+    }
+  }
+
+  protected async removeCrossGroupRule(
+    phase: CompetitionPhase,
+    rule: CrossGroupQualificationRule,
+  ): Promise<void> {
+    const organizationId = this.organization()?.id;
+    if (!organizationId) {
+      return;
+    }
+    try {
+      await this.competitionFormatsService.deleteCrossGroupQualificationRule(
+        organizationId,
+        this.tournamentId,
+        rule.id,
+      );
+      this.phaseCrossGroupRules.update((map) => {
+        const next = new Map(map);
+        next.set(
+          phase.id,
+          (next.get(phase.id) ?? []).filter((r) => r.id !== rule.id),
+        );
+        return next;
+      });
+    } catch {
+      this.errorMessage.set('Impossible de supprimer cette règle.');
+    }
+  }
+
   protected otherPhases(currentPhaseId: string): CompetitionPhase[] {
     return this.phases().filter((phase) => phase.id !== currentPhaseId);
   }
@@ -831,8 +1007,59 @@ export class StructurePage {
     this.presetPoolCount.set(value);
   }
 
-  protected onPresetQualifiersPerPoolChange(value: string): void {
-    this.presetQualifiersPerPool.set(value);
+  protected onPresetMultiTierToggle(event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.presetMultiTierEnabled.set(checked);
+    if (checked) {
+      if (this.presetTiers().length < 2) {
+        this.presetTiers.update((tiers) => [...tiers, { name: '', qualifiersPerPool: '' }]);
+      }
+    } else {
+      // Collapse back to a single tier -- keep its qualifiersPerPool value
+      // (that's the field still shown), but restore the default name.
+      this.presetTiers.update((tiers) => [{ ...tiers[0], name: 'Tableau final' }]);
+    }
+  }
+
+  protected onPresetTierNameChange(index: number, value: string): void {
+    this.presetTiers.update((tiers) =>
+      tiers.map((tier, i) => (i === index ? { ...tier, name: value } : tier)),
+    );
+  }
+
+  protected onPresetTierQualifiersChange(index: number, value: string): void {
+    this.presetTiers.update((tiers) =>
+      tiers.map((tier, i) => (i === index ? { ...tier, qualifiersPerPool: value } : tier)),
+    );
+  }
+
+  protected addPresetTier(): void {
+    this.presetTiers.update((tiers) => [...tiers, { name: '', qualifiersPerPool: '' }]);
+  }
+
+  protected removePresetTier(index: number): void {
+    this.presetTiers.update((tiers) =>
+      tiers.length > 1 ? tiers.filter((_, i) => i !== index) : tiers,
+    );
+  }
+
+  protected onPresetBestOfPositionToggle(event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.presetBestOfPositionEnabled.set(checked);
+    // Pre-fill with the next free standing position -- the first one not
+    // already claimed by a direct qualifier -- so the organizer usually
+    // only has to fill in the count.
+    if (checked && !this.presetBestOfPositionPosition()) {
+      this.presetBestOfPositionPosition.set(String(this.presetTiersTotalQualifiersPerPool() + 1));
+    }
+  }
+
+  protected onPresetBestOfPositionPositionChange(value: string): void {
+    this.presetBestOfPositionPosition.set(value);
+  }
+
+  protected onPresetBestOfPositionBestCountChange(value: string): void {
+    this.presetBestOfPositionBestCount.set(value);
   }
 
   protected onPresetStartDateTimeChange(value: string): void {
@@ -861,7 +1088,16 @@ export class StructurePage {
         {
           teamCount: Number(this.presetTeamCount()),
           poolCount: Number(poolCount),
-          qualifiersPerPool: Number(this.presetQualifiersPerPool()),
+          tiers: this.presetTiers().map((tier) => ({
+            name: tier.name.trim(),
+            qualifiersPerPool: Number(tier.qualifiersPerPool),
+          })),
+          ...(this.presetBestOfPositionEnabled() && {
+            bestOfPosition: {
+              position: Number(this.presetBestOfPositionPosition()),
+              bestCount: Number(this.presetBestOfPositionBestCount()),
+            },
+          }),
           fieldIds: this.presetFieldIds(),
           startDateTime: new Date(this.presetStartDateTime()).toISOString(),
           knockoutFieldIds: this.presetKnockoutFieldIds(),
@@ -869,8 +1105,11 @@ export class StructurePage {
         },
       );
       this.resetPresetForm();
+      const tiersSummary = result.tiers
+        .map((tier) => `${tier.name} (${tier.bracketSize} équipes)`)
+        .join(', ');
       this.presetSuccessMessage.set(
-        `Structure générée : ${poolCount} poules et un tableau de ${result.bracketSize} équipes. Le calendrier des poules est prêt sur la page Calendrier.`,
+        `Structure générée : ${poolCount} poules, ${tiersSummary}. Le calendrier des poules est prêt sur la page Calendrier.`,
       );
       await this.loadCategoryData();
     } catch (error) {

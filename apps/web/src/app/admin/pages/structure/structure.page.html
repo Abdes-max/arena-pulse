@@ -54,16 +54,92 @@
               [value]="presetPoolCount()"
               (valueChange)="onPresetPoolCountChange($event)"
             />
+          </div>
+
+          <div class="structure-page__checkbox-row">
+            <label class="structure-page__checkbox-label">
+              <input
+                type="checkbox"
+                [checked]="presetMultiTierEnabled()"
+                (change)="onPresetMultiTierToggle($event)"
+              />
+              Qualifier vers plusieurs compétitions
+            </label>
+            <label class="structure-page__checkbox-label">
+              <input
+                type="checkbox"
+                [checked]="presetBestOfPositionEnabled()"
+                (change)="onPresetBestOfPositionToggle($event)"
+              />
+              Inclure les meilleurs classés à une position
+            </label>
+          </div>
+
+          @if (!presetMultiTierEnabled()) {
             <ap-text-field
               label="Qualifiés par poule"
               type="number"
               [min]="1"
-              [value]="presetQualifiersPerPool()"
-              (valueChange)="onPresetQualifiersPerPoolChange($event)"
+              [value]="presetTiers()[0].qualifiersPerPool"
+              (valueChange)="onPresetTierQualifiersChange(0, $event)"
             />
-          </div>
-          @if (presetBracketSize(); as size) {
-            <p class="structure-page__hint">Tableau final : {{ size }} équipes.</p>
+          } @else {
+            @for (tier of presetTiers(); track $index) {
+              <div class="structure-page__inline-form">
+                <ap-text-field
+                  label="Nom du palier"
+                  [hideLabel]="true"
+                  placeholder="Nom du palier (ex. Ligue des Champions)"
+                  [value]="tier.name"
+                  (valueChange)="onPresetTierNameChange($index, $event)"
+                />
+                <ap-text-field
+                  label="Qualifiés par poule"
+                  [hideLabel]="true"
+                  type="number"
+                  [min]="1"
+                  placeholder="Qualifiés par poule"
+                  [value]="tier.qualifiersPerPool"
+                  (valueChange)="onPresetTierQualifiersChange($index, $event)"
+                />
+                @if (presetTiers().length > 1) {
+                  <ap-button type="button" variant="ghost" (click)="removePresetTier($index)">
+                    Retirer
+                  </ap-button>
+                }
+              </div>
+            }
+            <ap-button type="button" variant="ghost" (click)="addPresetTier()">
+              Ajouter un palier
+            </ap-button>
+          }
+
+          @if (presetBestOfPositionEnabled()) {
+            <div class="structure-page__inline-form">
+              <ap-text-field
+                label="Position"
+                type="number"
+                [min]="1"
+                [value]="presetBestOfPositionPosition()"
+                (valueChange)="onPresetBestOfPositionPositionChange($event)"
+              />
+              <ap-text-field
+                label="Nombre de meilleurs classés"
+                type="number"
+                [min]="1"
+                [value]="presetBestOfPositionBestCount()"
+                (valueChange)="onPresetBestOfPositionBestCountChange($event)"
+              />
+            </div>
+            <p class="structure-page__hint">
+              Les {{ presetBestOfPositionBestCount() || 'N' }} meilleures équipes classées
+              {{ presetBestOfPositionPosition() || 'X' }}ᵉ de leur poule, comparées entre elles,
+              rejoignent le tableau du premier palier.
+            </p>
+          }
+
+          @for (tier of presetTierBracketSizes(); track $index) {
+            <p class="structure-page__hint">{{ tier.name }} : {{ tier.size }} équipes.</p>
           }
           @if (presetValidationError(); as message) {
             <p class="structure-page__error" role="alert">{{ message }}</p>
@@ -262,6 +338,57 @@
                     (valueChange)="onTargetPhaseChange(phase.id, $event)"
                   />
                   <ap-button type="button" variant="ghost" (click)="addQualificationRule(phase)">
+                    Ajouter la règle
+                  </ap-button>
+                </div>
+
+                <h3>Meilleurs classés inter-poules</h3>
+                <p class="structure-page__hint">
+                  Compare les équipes à une même position entre toutes les poules de cette phase
+                  (ex. les 8 meilleurs 3èmes) et qualifie les meilleures vers une phase cible.
+                </p>
+                <ul class="structure-page__qualification-list">
+                  @for (rule of crossGroupRulesFor(phase.id); track rule.id) {
+                    <li>
+                      {{ rule.bestCount }} meilleur(s) {{ rule.position }}ᵉ →
+                      {{ rule.targetPhaseName }}
+                      <ap-button
+                        type="button"
+                        variant="ghost"
+                        (click)="removeCrossGroupRule(phase, rule)"
+                      >
+                        Supprimer
+                      </ap-button>
+                    </li>
+                  }
+                </ul>
+                <div class="structure-page__inline-form">
+                  <ap-text-field
+                    label="Position"
+                    [hideLabel]="true"
+                    type="number"
+                    [min]="1"
+                    placeholder="Position (ex. 3)"
+                    [value]="crossGroupRuleFormFor(phase.id).position"
+                    (valueChange)="updateCrossGroupRuleField(phase.id, 'position', $event)"
+                  />
+                  <ap-text-field
+                    label="Nombre de meilleurs"
+                    [hideLabel]="true"
+                    type="number"
+                    [min]="1"
+                    placeholder="Nombre de meilleurs"
+                    [value]="crossGroupRuleFormFor(phase.id).bestCount"
+                    (valueChange)="updateCrossGroupRuleField(phase.id, 'bestCount', $event)"
+                  />
+                  <ap-select
+                    label="Phase cible"
+                    [hideLabel]="true"
+                    [options]="targetPhaseOptions(phase.id)"
+                    [value]="crossGroupRuleFormFor(phase.id).targetPhaseId"
+                    (valueChange)="onCrossGroupTargetPhaseChange(phase.id, $event)"
+                  />
+                  <ap-button type="button" variant="ghost" (click)="addCrossGroupRule(phase)">
                     Ajouter la règle
                   </ap-button>
                 </div>

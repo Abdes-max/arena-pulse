@@ -6,6 +6,8 @@ import { RecapRenderService } from '../recap/recap-render.service';
 import { BracketsService } from './brackets.service';
 import { CategoriesController } from './categories.controller';
 import { CategoriesService } from './categories.service';
+import { CrossGroupQualificationRulesController } from './cross-group-qualification-rules.controller';
+import { CrossGroupQualificationRulesService } from './cross-group-qualification-rules.service';
 import { DivisionsController } from './divisions.controller';
 import { DivisionsService } from './divisions.service';
 import { TournamentPermissionGuard } from './guards/tournament-permission.guard';
@@ -68,6 +70,7 @@ import { VenuesService } from './venues.service';
     StandingRulesController,
     KnockoutBracketsController,
     QualificationRulesController,
+    CrossGroupQualificationRulesController,
     StructurePresetsController,
     ScheduleController,
     MatchesController,
@@ -92,6 +95,7 @@ import { VenuesService } from './venues.service';
     StandingRulesService,
     KnockoutBracketsService,
     QualificationRulesService,
+    CrossGroupQualificationRulesService,
     StructurePresetsService,
     ScheduleGenerationService,
     MatchesService,
