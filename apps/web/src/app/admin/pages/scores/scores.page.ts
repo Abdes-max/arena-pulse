@@ -4,11 +4,17 @@ import { ActivatedRoute } from '@angular/router';
 import { Button, Select, SelectOption, TextField } from 'design-system';
 import { AuthService } from '../../core/auth.service';
 import { CompetitionFormatsService } from '../../core/competition-formats.service';
-import { Category, CompetitionPhase, Match, StandingRule } from '../../core/models';
+import {
+  Category,
+  CompetitionPhase,
+  CompetitionPhaseType,
+  Match,
+  StandingRule,
+} from '../../core/models';
 import { ScheduleService } from '../../core/schedule.service';
 import { ScoresService } from '../../core/scores.service';
 import { TournamentsService } from '../../core/tournaments.service';
-import { groupMatchesByPhaseSection } from 'shared-models';
+import { groupMatchesByPhaseSection, roundLabel } from 'shared-models';
 
 interface ScoreDraft {
   home: string;
@@ -18,6 +24,18 @@ interface ScoreDraft {
 }
 
 const EMPTY_DRAFT: ScoreDraft = { home: '', away: '', homePenalty: '', awayPenalty: '' };
+
+interface ScoreSubgroup {
+  // The tier's own name (e.g. "LDC") when more than one knockout bracket
+  // contributes to this round -- null when there's nothing to disambiguate.
+  label: string | null;
+  matches: Match[];
+}
+
+interface ScoreSection {
+  label: string;
+  subgroups: ScoreSubgroup[];
+}
 
 @Component({
   selector: 'app-scores-page',
@@ -43,7 +61,11 @@ export class ScoresPage {
   protected readonly categories = signal<Category[]>([]);
   protected readonly selectedCategoryId = signal('');
   protected readonly phases = signal<CompetitionPhase[]>([]);
-  protected readonly selectedPhaseId = signal('');
+  // Tous, Poules, or Éliminations directes -- never an individual named
+  // phase, since with several knockout tiers (LDC, EP, CF...) listing each
+  // one by name doesn't group naturally; matches from every contributing
+  // phase are merged and sectioned by round (see matchesByRoundSection).
+  protected readonly selectedPhaseType = signal<CompetitionPhaseType | 'ALL'>('GROUP_STAGE');
   protected readonly matches = signal<Match[]>([]);
   protected readonly standingRulesByGroup = signal<Map<string, StandingRule>>(new Map());
   protected readonly scoreDrafts = signal<Map<string, ScoreDraft>>(new Map());
@@ -51,12 +73,50 @@ export class ScoresPage {
   protected readonly categoryOptions = computed<SelectOption[]>(() =>
     this.categories().map((category) => ({ value: category.id, label: category.name })),
   );
-  protected readonly phaseOptions = computed<SelectOption[]>(() =>
-    this.phases().map((phase) => ({ value: phase.id, label: phase.name })),
+  protected readonly groupStagePhase = computed(
+    () => this.phases().find((phase) => phase.type === 'GROUP_STAGE') ?? null,
   );
-  protected readonly selectedPhase = computed(
-    () => this.phases().find((phase) => phase.id === this.selectedPhaseId()) ?? null,
+  protected readonly knockoutPhases = computed(() =>
+    this.phases()
+      .filter((phase) => phase.type === 'KNOCKOUT')
+      .sort((a, b) => a.position - b.position),
   );
+  protected readonly phaseTypeOptions = computed<SelectOption[]>(() => {
+    const options: SelectOption[] = [];
+    if (this.groupStagePhase() || this.knockoutPhases().length > 0) {
+      options.push({ value: 'ALL', label: 'Tous' });
+    }
+    if (this.groupStagePhase()) {
+      options.push({ value: 'GROUP_STAGE', label: 'Poules' });
+    }
+    if (this.knockoutPhases().length > 0) {
+      options.push({ value: 'KNOCKOUT', label: 'Éliminations directes' });
+    }
+    return options;
+  });
+  // Phases contributing matches to the current filter -- both for GROUP_STAGE/KNOCKOUT and 'ALL'.
+  private activePhases(): CompetitionPhase[] {
+    const type = this.selectedPhaseType();
+    const groupPhase = this.groupStagePhase();
+    if (type === 'GROUP_STAGE') {
+      return groupPhase ? [groupPhase] : [];
+    }
+    if (type === 'KNOCKOUT') {
+      return this.knockoutPhases();
+    }
+    return [...(groupPhase ? [groupPhase] : []), ...this.knockoutPhases()];
+  }
+  // Resolved from the match itself (not the current filter) -- needed as-is
+  // for 'ALL'/'KNOCKOUT' with several tiers, where matches from more than
+  // one phase are shown together.
+  private phaseForMatch(match: Match): CompetitionPhase | undefined {
+    if (match.knockoutBracketId) {
+      return this.knockoutPhases().find(
+        (phase) => phase.knockoutBracket?.id === match.knockoutBracketId,
+      );
+    }
+    return this.groupStagePhase() ?? undefined;
+  }
 
   protected readonly progress = computed(() => {
     const matches = this.matches();
@@ -64,24 +124,93 @@ export class ScoresPage {
     return { entered, total: matches.length };
   });
 
-  // Sections grouped by phase/round instead of by exact time slot -- see
-  // groupMatchesByPhaseSection. Each match row shows its own date/time,
-  // since a round/section can span several different slots.
-  protected readonly matchesByRoundSection = computed(() => {
-    const phase = this.selectedPhase();
-    if (!phase) {
-      return [];
+  // Sections grouped by round instead of by exact time slot -- each match
+  // row shows its own date/time, since a round/section can span several
+  // different slots. Knockout sections are ordered by distance-from-final
+  // (1/8, 1/4, 1/2, Finale) across every contributing tier together --
+  // same order Calendrier generates them in (BracketsService.
+  // generateAllMatches) -- rather than one tier's whole bracket before the
+  // next; with more than one tier, each round splits into one subgroup per
+  // tier (its own name as a sub-heading) so "Quart de finale" from LDC and
+  // EP don't collapse into one ambiguous list.
+  protected readonly matchesByRoundSection = computed<ScoreSection[]>(() => {
+    const phases = this.activePhases();
+    const matches = this.matches();
+    const groupPhase = phases.find((phase) => phase.type === 'GROUP_STAGE') ?? null;
+    const knockoutTiers = phases.filter((phase) => phase.type === 'KNOCKOUT' && phase.knockoutBracket);
+    const sections: ScoreSection[] = [];
+
+    if (groupPhase) {
+      const poolMatches = matches.filter((match) => this.phaseForMatch(match)?.id === groupPhase.id);
+      for (const section of groupMatchesByPhaseSection(groupPhase, poolMatches)) {
+        sections.push({
+          label: section.label,
+          subgroups: [{ label: null, matches: this.sortByTime(section.matches) }],
+        });
+      }
     }
-    return groupMatchesByPhaseSection(phase, this.matches()).map((section) => ({
-      ...section,
-      matches: this.sortByTime(section.matches),
-    }));
+
+    if (knockoutTiers.length > 0) {
+      const multipleTiers = knockoutTiers.length > 1;
+      const maxTotalRounds = Math.max(
+        ...knockoutTiers.map((phase) => Math.log2(phase.knockoutBracket!.size)),
+      );
+
+      for (let fromEnd = maxTotalRounds - 1; fromEnd >= 0; fromEnd--) {
+        const subgroups: ScoreSubgroup[] = [];
+        for (const phase of knockoutTiers) {
+          const totalRounds = Math.log2(phase.knockoutBracket!.size);
+          const round = totalRounds - fromEnd;
+          if (round < 1 || round > totalRounds) {
+            continue;
+          }
+          const roundMatches = matches.filter(
+            (match) =>
+              !match.isThirdPlaceMatch &&
+              match.round === round &&
+              this.phaseForMatch(match)?.id === phase.id,
+          );
+          if (roundMatches.length > 0) {
+            subgroups.push({
+              label: multipleTiers ? phase.name : null,
+              matches: this.sortByTime(roundMatches),
+            });
+          }
+        }
+        if (subgroups.length > 0) {
+          sections.push({ label: roundLabel(fromEnd), subgroups });
+        }
+      }
+
+      const thirdPlaceSubgroups = knockoutTiers
+        .map((phase) => ({
+          label: multipleTiers ? phase.name : null,
+          matches: this.sortByTime(
+            matches.filter(
+              (match) => match.isThirdPlaceMatch && this.phaseForMatch(match)?.id === phase.id,
+            ),
+          ),
+        }))
+        .filter((subgroup) => subgroup.matches.length > 0);
+      if (thirdPlaceSubgroups.length > 0) {
+        sections.push({ label: 'Pour la 3e place', subgroups: thirdPlaceSubgroups });
+      }
+    }
+
+    return sections;
   });
 
+  // Fully deterministic (never just startTime) -- validateScore reloads every
+  // match from the API (see its comment below), and without a tiebreaker two
+  // matches kicking off at the same time on different fields could swap
+  // places on every such reload (nothing guarantees a stable row order back
+  // from the API), which is exactly the "matches keep moving around" bug
+  // this was reported against. match.id as the final tiebreaker guarantees
+  // the same order every time, even for two still-unscheduled matches.
   private sortByTime(matches: Match[]): Match[] {
     return [...matches].sort((a, b) => {
       if (!a.timeSlot && !b.timeSlot) {
-        return 0;
+        return a.id.localeCompare(b.id);
       }
       if (!a.timeSlot) {
         return 1;
@@ -89,7 +218,12 @@ export class ScoresPage {
       if (!b.timeSlot) {
         return -1;
       }
-      return a.timeSlot.startTime.localeCompare(b.timeSlot.startTime);
+      const byTime = a.timeSlot.startTime.localeCompare(b.timeSlot.startTime);
+      if (byTime !== 0) {
+        return byTime;
+      }
+      const byField = a.timeSlot.field.name.localeCompare(b.timeSlot.field.name);
+      return byField !== 0 ? byField : a.id.localeCompare(b.id);
     });
   }
 
@@ -132,7 +266,6 @@ export class ScoresPage {
     if (!organizationId || !categoryId) {
       return;
     }
-    this.selectedPhaseId.set('');
     this.matches.set([]);
     try {
       const phases = await this.competitionFormatsService.listPhases(
@@ -142,7 +275,7 @@ export class ScoresPage {
       );
       this.phases.set(phases);
       if (phases.length > 0) {
-        this.selectedPhaseId.set(phases[0].id);
+        this.selectedPhaseType.set(this.groupStagePhase() ? 'GROUP_STAGE' : 'KNOCKOUT');
         await this.onPhaseSelected();
       }
     } catch {
@@ -150,8 +283,8 @@ export class ScoresPage {
     }
   }
 
-  protected async onPhaseChange(phaseId: string): Promise<void> {
-    this.selectedPhaseId.set(phaseId);
+  protected async onPhaseTypeChange(type: string): Promise<void> {
+    this.selectedPhaseType.set(type as CompetitionPhaseType | 'ALL');
     await this.onPhaseSelected();
   }
 
@@ -161,21 +294,19 @@ export class ScoresPage {
 
   private async loadMatches(): Promise<void> {
     const organizationId = this.organization()?.id;
-    const phaseId = this.selectedPhaseId();
-    if (!organizationId || !phaseId) {
+    const phases = this.activePhases();
+    if (!organizationId || phases.length === 0) {
+      this.matches.set([]);
       return;
     }
     try {
-      const matches = await this.scheduleService.listMatches(
-        organizationId,
-        this.tournamentId,
-        phaseId,
+      const results = await Promise.all(
+        phases.map((phase) => this.scheduleService.listMatches(organizationId, this.tournamentId, phase.id)),
       );
-      // A knockout phase's later rounds exist as soon as the bracket is
-      // generated, but with no opponents decided yet -- nothing to score
-      // until tryAdvanceRound fills them in (the Calendrier page is where
-      // those still show up, so the organizer can see/plan them meanwhile).
-      this.matches.set(matches.filter((match) => match.homeTeam && match.awayTeam));
+      // Matches with undecided opponents are shown too (placeholder labels,
+      // same as Calendrier) so the organizer can see what's coming -- just
+      // not scoreable yet, see the template's pendingOpponents() guard.
+      this.matches.set(results.flat());
     } catch {
       this.errorMessage.set('Impossible de charger les matchs.');
     }
@@ -183,8 +314,9 @@ export class ScoresPage {
 
   private async loadStandingRules(): Promise<void> {
     const organizationId = this.organization()?.id;
-    const phase = this.phases().find((p) => p.id === this.selectedPhaseId());
+    const phase = this.groupStagePhase();
     if (!organizationId || !phase) {
+      this.standingRulesByGroup.set(new Map());
       return;
     }
     const groupIds = phase.groups.map((group) => group.id);
@@ -240,6 +372,10 @@ export class ScoresPage {
       };
     }
     return EMPTY_DRAFT;
+  }
+
+  protected pendingOpponents(match: Match): boolean {
+    return !match.homeTeam || !match.awayTeam;
   }
 
   protected isDraw(match: Match): boolean {
@@ -301,11 +437,11 @@ export class ScoresPage {
     try {
       await this.scoresService.validateScore(organizationId, this.tournamentId, match.id);
       // Not just replaceMatch(updated): validating the last match of a
-      // knockout round can fill in the next round's final/3rd-place (or any
-      // deeper round) server-side -- those matches were filtered out of
-      // this.matches entirely while undetermined (see loadMatches), so a
-      // full reload is the only way this page notices they now have real
-      // opponents, whatever the bracket's size (round of 32, 16, quarters...).
+      // knockout round resolves the next round's real opponents (or
+      // 3rd-place match) server-side -- those matches are already in
+      // this.matches (shown with placeholder labels while undetermined),
+      // but only a full reload picks up their new homeTeam/awayTeam,
+      // whatever the bracket's size (round of 32, 16, quarters...).
       await this.loadMatches();
     } catch (error) {
       this.errorMessage.set(
@@ -333,40 +469,6 @@ export class ScoresPage {
       this.clearDraft(match.id);
     } catch {
       this.errorMessage.set('Impossible d’effacer ce score.');
-    }
-  }
-
-  protected forfeitOptions(match: Match): SelectOption[] {
-    const options: SelectOption[] = [{ value: '', label: 'Forfait…', disabled: true }];
-    if (match.homeTeam) {
-      options.push({ value: match.homeTeam.id, label: match.homeTeam.name });
-    }
-    if (match.awayTeam) {
-      options.push({ value: match.awayTeam.id, label: match.awayTeam.name });
-    }
-    return options;
-  }
-
-  protected onDeclareForfeit(match: Match, teamId: string): void {
-    if (teamId) {
-      void this.declareForfeit(match, teamId);
-    }
-  }
-
-  protected async declareForfeit(match: Match, teamId: string): Promise<void> {
-    const organizationId = this.organization()?.id;
-    if (!organizationId) {
-      return;
-    }
-    this.errorMessage.set(null);
-    try {
-      await this.scoresService.declareForfeit(organizationId, this.tournamentId, match.id, teamId);
-      // Same reasoning as validateScore -- a forfeit can also advance a
-      // knockout round, filling in matches this page hadn't loaded yet.
-      await this.loadMatches();
-      this.clearDraft(match.id);
-    } catch {
-      this.errorMessage.set('Impossible de déclarer ce forfait.');
     }
   }
 

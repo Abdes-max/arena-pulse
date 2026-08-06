@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
   ActivatedRoute,
@@ -13,6 +13,8 @@ import { Button, Logo, ThemeModeToggle } from 'design-system';
 import { ThemeMode, ThemeService } from 'design-tokens';
 import { AuthService } from '../core/auth.service';
 import { TournamentSubmenu } from '../shared/tournament-submenu';
+import { THEME_MAP } from '../core/theme-map';
+import { TournamentsService } from '../core/tournaments.service';
 
 @Component({
   selector: 'app-shell',
@@ -34,8 +36,19 @@ export class AppShell {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly themeService = inject(ThemeService);
+  private readonly tournamentsService = inject(TournamentsService);
 
   protected readonly mode = this.themeService.mode;
+  private readonly organizationId = computed(
+    () => this.authService.organizations()[0]?.id ?? null,
+  );
+  // Public slug for the "Lien public" link next to the submenu tabs --
+  // fetched alongside the theme below (null hides the button, e.g. while
+  // on 'tournaments/new' or a non-tournament-scoped page).
+  protected readonly tournamentSlug = signal<string | null>(null);
+  // The link only makes sense once there's something public to visit --
+  // an unpublished tournament's site 404s for a visitor.
+  protected readonly tournamentPublished = signal(false);
 
   // tournamentId lives on whichever leaf route is currently active (teams,
   // referees, schedule…), not on AppShell's own route -- re-read from the
@@ -67,6 +80,37 @@ export class AppShell {
   protected readonly showBrandMark = computed(
     () => this.tournamentId() === null && !this.isCreatingTournament(),
   );
+
+  constructor() {
+    // Applies the current tournament's own public theme to the whole admin
+    // shell regardless of which of its sub-pages (Équipes, Arbitres,
+    // Structure, Calendrier, Scores, Classement...) is active or freshly
+    // reloaded -- previously only TournamentFormPage (Général) did this on
+    // load, so refreshing any other tab showed the default theme until the
+    // organizer navigated back to Général.
+    effect(() => {
+      const organizationId = this.organizationId();
+      const tournamentId = this.tournamentId();
+      if (!organizationId || !tournamentId) {
+        this.tournamentSlug.set(null);
+        this.tournamentPublished.set(false);
+        return;
+      }
+      void this.applyTournamentTheme(organizationId, tournamentId);
+    });
+  }
+
+  private async applyTournamentTheme(organizationId: string, tournamentId: string): Promise<void> {
+    try {
+      const tournament = await this.tournamentsService.getTournament(organizationId, tournamentId);
+      this.tournamentSlug.set(tournament.slug);
+      this.tournamentPublished.set(tournament.status === 'PUBLISHED');
+      this.themeService.setAdminTheme(document.documentElement, THEME_MAP[tournament.theme]);
+    } catch {
+      this.tournamentSlug.set(null);
+      this.tournamentPublished.set(false);
+    }
+  }
 
   protected onModeChange(next: ThemeMode): void {
     this.themeService.setMode(document.documentElement, next);

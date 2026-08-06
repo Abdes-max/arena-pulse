@@ -31,7 +31,10 @@
   flex-wrap: wrap;
   align-items: center;
   gap: var(--ap-space-3);
-  margin-top: var(--ap-space-5);
+  // Was --ap-space-5/-7, neither of which exists as a design token (only
+  // 1/2/3/4/6/8/12/16/24 are defined) -- var() with an unknown custom
+  // property makes margin-top invalid, so it silently computed to 0.
+  margin-top: var(--ap-space-6);
 }
 
 .schedule-page__section {
@@ -44,6 +47,13 @@
   gap: var(--ap-space-3);
   align-items: center;
   margin-top: var(--ap-space-3);
+
+  // Combined selector, not a standalone class -- same specificity as the
+  // base rule above would otherwise let source order decide, and the base
+  // rule comes later in some usages.
+  &.schedule-page__inline-form--spaced {
+    margin-top: var(--ap-space-6);
+  }
 
   label {
     display: flex;
@@ -68,23 +78,6 @@
   gap: var(--ap-space-4);
   margin-top: var(--ap-space-3);
   align-items: flex-start;
-}
-
-.schedule-page__unscheduled {
-  flex: 0 0 220px;
-  padding: var(--ap-space-3);
-  border: var(--ap-border-width) dashed var(--ap-color-border);
-  border-radius: var(--ap-radius-md);
-  min-height: 4rem;
-
-  h3 {
-    margin-top: 0;
-  }
-}
-
-.schedule-page__empty {
-  font-size: 0.85rem;
-  color: var(--ap-color-muted);
 }
 
 .schedule-page__grid-block {
@@ -164,19 +157,6 @@
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   color: var(--ap-color-muted);
-}
-
-.schedule-page__round-label {
-  margin: var(--ap-space-3) 0 var(--ap-space-1);
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--ap-color-muted);
-
-  &:first-child {
-    margin-top: 0;
-  }
 }
 
 // Mirrors ap-match-card's public-facing look (colored header, teams

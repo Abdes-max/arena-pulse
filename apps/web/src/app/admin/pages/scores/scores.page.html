@@ -19,18 +19,18 @@
           [value]="selectedCategoryId()"
           (valueChange)="onCategoryChange($event)"
         />
-        @if (phases().length > 0) {
+        @if (phaseTypeOptions().length > 0) {
           <ap-select
             class="scores-page__select"
             label="Phase"
-            [options]="phaseOptions()"
-            [value]="selectedPhaseId()"
-            (valueChange)="onPhaseChange($event)"
+            [options]="phaseTypeOptions()"
+            [value]="selectedPhaseType()"
+            (valueChange)="onPhaseTypeChange($event)"
           />
         }
       </div>
 
-      @if (phases().length === 0) {
+      @if (phaseTypeOptions().length === 0) {
         <p>Ajoutez d'abord une phase sur la page Structure de cette catégorie.</p>
       } @else {
         @if (matches().length === 0) {
@@ -40,104 +40,118 @@
             {{ progress().entered }}/{{ progress().total }} scores saisis
           </p>
 
-          @for (section of matchesByRoundSection(); track section.label) {
+          @for (section of matchesByRoundSection(); track section) {
             <section class="scores-page__slot">
               <h2>{{ section.label }}</h2>
-              <ul class="scores-page__match-list">
-                @for (match of section.matches; track match.id) {
-                  <li class="scores-page__match">
-                    <span class="scores-page__time-badge">{{ matchTimeLabel(match) }}</span>
-                    @if (match.timeSlot; as timeSlot) {
-                      <span class="scores-page__field-name">{{ timeSlot.field.name }}</span>
-                    }
+              @for (subgroup of section.subgroups; track subgroup) {
+                @if (subgroup.label; as subgroupLabel) {
+                  <h3 class="scores-page__subgroup-label">{{ subgroupLabel }}</h3>
+                }
+                <ul class="scores-page__match-list">
+                  @for (match of subgroup.matches; track match.id) {
+                    <li class="scores-page__match">
+                      <span class="scores-page__time-badge">{{ matchTimeLabel(match) }}</span>
+                      @if (match.timeSlot; as timeSlot) {
+                        <span class="scores-page__field-name">{{ timeSlot.field.name }}</span>
+                      }
 
-                    @if (match.status === 'FORFEITED') {
-                      <span class="scores-page__forfeit-badge">
-                        Forfait : {{ match.forfeitedTeam?.name }}
-                      </span>
-                      <ap-button type="button" variant="ghost" (click)="undoForfeit(match)">
-                        Annuler le forfait
-                      </ap-button>
-                    } @else {
-                      <span class="scores-page__team">{{ match.homeTeam?.name ?? '?' }}</span>
-                      <ap-text-field
-                        class="scores-page__score-input"
-                        label="Score à domicile"
-                        [hideLabel]="true"
-                        type="number"
-                        [min]="0"
-                        [value]="draftFor(match).home"
-                        (valueChange)="onDraftChange(match, 'home', $event)"
-                      />
-                      <span>-</span>
-                      <ap-text-field
-                        class="scores-page__score-input"
-                        label="Score à l'extérieur"
-                        [hideLabel]="true"
-                        type="number"
-                        [min]="0"
-                        [value]="draftFor(match).away"
-                        (valueChange)="onDraftChange(match, 'away', $event)"
-                      />
-                      <span class="scores-page__team">{{ match.awayTeam?.name ?? '?' }}</span>
-
-                      @if (isDraw(match) && penaltyShootoutEnabled(match)) {
-                        <span class="scores-page__penalty-label">Tirs au but</span>
+                      @if (match.status === 'FORFEITED') {
+                        <span class="scores-page__forfeit-badge">
+                          Forfait : {{ match.forfeitedTeam?.name }}
+                        </span>
+                        <ap-button type="button" variant="ghost" (click)="undoForfeit(match)">
+                          Annuler le forfait
+                        </ap-button>
+                      } @else if (pendingOpponents(match)) {
+                        <span class="scores-page__team scores-page__team--home">{{
+                          match.homeTeam?.name ?? match.homeSourceLabel ?? '?'
+                        }}</span>
+                        <span>-</span>
+                        <span class="scores-page__team scores-page__team--away">{{
+                          match.awayTeam?.name ?? match.awaySourceLabel ?? '?'
+                        }}</span>
+                        <span class="scores-page__pending-badge">En attente des équipes</span>
+                      } @else {
+                        <span class="scores-page__team scores-page__team--home">{{
+                          match.homeTeam?.name ?? '?'
+                        }}</span>
                         <ap-text-field
                           class="scores-page__score-input"
-                          label="Tirs au but à domicile"
+                          label="Score à domicile"
                           [hideLabel]="true"
                           type="number"
                           [min]="0"
-                          [value]="draftFor(match).homePenalty"
-                          (valueChange)="onDraftChange(match, 'homePenalty', $event)"
+                          [value]="draftFor(match).home"
+                          (valueChange)="onDraftChange(match, 'home', $event)"
                         />
                         <span>-</span>
                         <ap-text-field
                           class="scores-page__score-input"
-                          label="Tirs au but à l'extérieur"
+                          label="Score à l'extérieur"
                           [hideLabel]="true"
                           type="number"
                           [min]="0"
-                          [value]="draftFor(match).awayPenalty"
-                          (valueChange)="onDraftChange(match, 'awayPenalty', $event)"
+                          [value]="draftFor(match).away"
+                          (valueChange)="onDraftChange(match, 'away', $event)"
                         />
-                      }
+                        <span class="scores-page__team scores-page__team--away">{{
+                          match.awayTeam?.name ?? '?'
+                        }}</span>
 
-                      <ap-button type="button" variant="ghost" size="sm" (click)="saveScore(match)">
-                        Enregistrer
-                      </ap-button>
-
-                      @if (match.score) {
-                        @if (match.score.isValidated) {
-                          <span class="scores-page__validated-badge">Validé</span>
-                        } @else {
-                          <ap-button type="button" size="sm" (click)="validateScore(match)"
-                            >Valider</ap-button
-                          >
+                        @if (isDraw(match) && penaltyShootoutEnabled(match)) {
+                          <span class="scores-page__penalty-label">Tirs au but</span>
+                          <ap-text-field
+                            class="scores-page__score-input"
+                            label="Tirs au but à domicile"
+                            [hideLabel]="true"
+                            type="number"
+                            [min]="0"
+                            [value]="draftFor(match).homePenalty"
+                            (valueChange)="onDraftChange(match, 'homePenalty', $event)"
+                          />
+                          <span>-</span>
+                          <ap-text-field
+                            class="scores-page__score-input"
+                            label="Tirs au but à l'extérieur"
+                            [hideLabel]="true"
+                            type="number"
+                            [min]="0"
+                            [value]="draftFor(match).awayPenalty"
+                            (valueChange)="onDraftChange(match, 'awayPenalty', $event)"
+                          />
                         }
-                        <button
-                          type="button"
-                          class="scores-page__clear"
-                          (click)="clearScore(match)"
-                        >
-                          Effacer
-                        </button>
-                      }
 
-                      <ap-select
-                        class="scores-page__forfeit-select"
-                        label="Déclarer forfait"
-                        [hideLabel]="true"
-                        size="sm"
-                        [options]="forfeitOptions(match)"
-                        [resetAfterSelect]="true"
-                        (valueChange)="onDeclareForfeit(match, $event)"
-                      />
-                    }
-                  </li>
-                }
-              </ul>
+                        <ap-button
+                          class="scores-page__save-button"
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          (click)="saveScore(match)"
+                        >
+                          Enregistrer
+                        </ap-button>
+
+                        @if (match.score) {
+                          @if (match.score.isValidated) {
+                            <span class="scores-page__validated-badge">Validé</span>
+                          } @else {
+                            <ap-button type="button" size="sm" (click)="validateScore(match)"
+                              >Valider</ap-button
+                            >
+                          }
+                          <button
+                            type="button"
+                            class="scores-page__clear"
+                            (click)="clearScore(match)"
+                          >
+                            Effacer
+                          </button>
+                        }
+                      }
+                    </li>
+                  }
+                </ul>
+              }
             </section>
           }
         }

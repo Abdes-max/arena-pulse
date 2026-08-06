@@ -4,16 +4,16 @@
   flex-direction: column;
 }
 
-// Fixed white, independent of theme/dark-mode (like the public site's own
-// masthead) -- the organizer's chosen tournament theme colors the page body,
-// not this shared chrome above it. Text colors below are fixed to match
-// (not the --ap-color-fg token, which flips light/dark and would lose
-// contrast against a background that no longer follows it).
+// Same theme/dark-mode-aware surface as the public site's own masthead
+// (apps/web/src/app/shell/tournament-shell.scss) -- follows the current
+// tournament's theme and the organizer's light/dark mode choice, instead of
+// staying a fixed white that looked out of place once the rest of the admin
+// app started following dark mode too.
 .app-shell__header {
   position: sticky;
   top: 0;
   z-index: var(--ap-z-sticky);
-  background: #ffffff;
+  background: var(--ap-color-surface);
   border-bottom: var(--ap-border-width) solid var(--ap-color-border);
 }
 
@@ -37,7 +37,7 @@
   a {
     font-family: var(--ap-font-body);
     font-weight: 600;
-    color: #1b1b18;
+    color: var(--ap-color-fg);
     text-decoration: none;
 
     &.app-shell__link--active {

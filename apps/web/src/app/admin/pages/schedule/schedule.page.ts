@@ -16,6 +16,7 @@ import { CompetitionFormatsService } from '../../core/competition-formats.servic
 import {
   Category,
   CompetitionPhase,
+  CompetitionPhaseType,
   Match,
   MatchOfficial,
   Referee,
@@ -29,7 +30,7 @@ import { TeamsService } from '../../core/teams.service';
 import { TimeSlotsService } from '../../core/timeslots.service';
 import { TournamentsService } from '../../core/tournaments.service';
 import { FieldSelector } from '../../shared/field-selector';
-import { groupMatchesByPhaseSection, matchRoundLabel } from 'shared-models';
+import { matchRoundLabel } from 'shared-models';
 
 interface TimeSlotDraft {
   start: string;
@@ -66,7 +67,13 @@ export class SchedulePage {
   protected readonly categories = signal<Category[]>([]);
   protected readonly selectedCategoryId = signal('');
   protected readonly phases = signal<CompetitionPhase[]>([]);
-  protected readonly selectedPhaseId = signal('');
+  // Poules, Élimination directe, or Tous (both together, view-only -- the
+  // generation form always targets one specific type, never "Tous"). Never
+  // an individual named phase -- with several knockout tiers (see
+  // qualification multi-compétitions), they must all be generated together,
+  // so there's nothing to gain from picking one tier at a time here the way
+  // the manual Structure page still does.
+  protected readonly selectedPhaseType = signal<CompetitionPhaseType | 'ALL'>('GROUP_STAGE');
   protected readonly venues = signal<Venue[]>([]);
   protected readonly matches = signal<Match[]>([]);
   protected readonly referees = signal<Referee[]>([]);
@@ -78,23 +85,38 @@ export class SchedulePage {
 
   protected readonly selectedFieldIds = signal<string[]>([]);
   protected readonly startDateTime = signal('');
+  // Knockout stage only -- its start isn't entered by hand, it's the pool
+  // phase's last scheduled match plus this pause (see generateAllBracketMatches).
+  protected readonly breakAfterPoolsMinutes = signal('');
   protected readonly matchDurationMinutes = signal('');
   protected readonly breakDurationMinutes = signal('');
   protected readonly refereesPerMatch = signal('');
 
-  protected readonly selectedPhase = computed(
-    () => this.phases().find((phase) => phase.id === this.selectedPhaseId()) ?? null,
+  protected readonly groupStagePhase = computed(
+    () => this.phases().find((phase) => phase.type === 'GROUP_STAGE') ?? null,
+  );
+  protected readonly knockoutPhases = computed(() =>
+    this.phases()
+      .filter((phase) => phase.type === 'KNOCKOUT')
+      .sort((a, b) => a.position - b.position),
   );
 
   protected readonly categoryOptions = computed<SelectOption[]>(() =>
     this.categories().map((category) => ({ value: category.id, label: category.name })),
   );
-  protected readonly phaseOptions = computed<SelectOption[]>(() =>
-    this.phases().map((phase) => ({
-      value: phase.id,
-      label: `${phase.name} (${phase.type === 'GROUP_STAGE' ? 'Poules' : 'Élimination directe'})`,
-    })),
-  );
+  protected readonly phaseTypeOptions = computed<SelectOption[]>(() => {
+    const options: SelectOption[] = [];
+    if (this.groupStagePhase() || this.knockoutPhases().length > 0) {
+      options.push({ value: 'ALL', label: 'Tous' });
+    }
+    if (this.groupStagePhase()) {
+      options.push({ value: 'GROUP_STAGE', label: 'Poules' });
+    }
+    if (this.knockoutPhases().length > 0) {
+      options.push({ value: 'KNOCKOUT', label: 'Élimination directe' });
+    }
+    return options;
+  });
 
   protected readonly fields = computed(() =>
     this.venues().flatMap((venue) =>
@@ -124,20 +146,6 @@ export class SchedulePage {
       }
     }
     return map;
-  });
-
-  protected readonly unscheduledMatches = computed(() =>
-    this.matches().filter((match) => !match.timeSlot),
-  );
-
-  // Grouped by phase/round -- see groupMatchesByPhaseSection. A flat list
-  // mixing every round together reads as noise once a phase has more than a
-  // handful of matches; phase itself is already the page's own selector
-  // above, so this heading is shown once per section rather than repeated
-  // on every match.
-  protected readonly unscheduledSections = computed(() => {
-    const phase = this.selectedPhase();
-    return phase ? groupMatchesByPhaseSection(phase, this.unscheduledMatches()) : [];
   });
 
   // No referee ever assigned to the tournament -- showing an always-empty
@@ -224,7 +232,6 @@ export class SchedulePage {
     if (!organizationId || !categoryId) {
       return;
     }
-    this.selectedPhaseId.set('');
     this.matches.set([]);
     try {
       const phases = await this.competitionFormatsService.listPhases(
@@ -233,65 +240,71 @@ export class SchedulePage {
         categoryId,
       );
       this.phases.set(phases);
-      const defaultPhase = phases.find((phase) => phase.type === 'GROUP_STAGE') ?? phases[0];
-      if (defaultPhase) {
-        this.selectedPhaseId.set(defaultPhase.id);
-        await this.onPhaseSelected();
-      }
+      this.selectedPhaseType.set(this.groupStagePhase() ? 'GROUP_STAGE' : 'KNOCKOUT');
+      await this.onPhaseTypeSelected();
     } catch {
       this.errorMessage.set('Impossible de charger les phases.');
     }
   }
 
-  protected async onPhaseChange(phaseId: string): Promise<void> {
-    this.selectedPhaseId.set(phaseId);
-    await this.onPhaseSelected();
+  protected async onPhaseTypeChange(type: string): Promise<void> {
+    this.selectedPhaseType.set(type as CompetitionPhaseType | 'ALL');
+    await this.onPhaseTypeSelected();
   }
 
-  private async onPhaseSelected(): Promise<void> {
-    const phase = this.phases().find((p) => p.id === this.selectedPhaseId());
-    if (phase) {
-      this.matchDurationMinutes.set(String(phase.matchDurationMinutes));
-      this.breakDurationMinutes.set(String(phase.breakDurationMinutes));
-      this.refereesPerMatch.set(this.hasReferees() ? String(phase.refereesPerMatch) : '0');
-
-      // "Mode Tournoi" may have already captured fields/date intended for
-      // this bracket (before pool standings decided who qualifies) --
-      // pre-fill from them so the organizer doesn't have to re-enter the
-      // same choices once pool play concludes and it's time to generate
-      // the bracket for real.
-      if (phase.knockoutBracket?.plannedFieldIds.length) {
-        this.selectedFieldIds.set(phase.knockoutBracket.plannedFieldIds);
+  private async onPhaseTypeSelected(): Promise<void> {
+    if (this.selectedPhaseType() === 'GROUP_STAGE') {
+      const phase = this.groupStagePhase();
+      if (phase) {
+        this.matchDurationMinutes.set(String(phase.matchDurationMinutes));
+        this.breakDurationMinutes.set(String(phase.breakDurationMinutes));
+        // Empty (not '0') when there's no referee -- the field itself is
+        // hidden in that case, and generateSchedule() treats an empty
+        // string as "omit", whereas '0' would be sent as-is and rejected by
+        // the backend's @Min(1) validation.
+        this.refereesPerMatch.set(this.hasReferees() ? String(phase.refereesPerMatch) : '');
       }
-      if (phase.knockoutBracket?.plannedStartDateTime) {
-        this.startDateTime.set(
-          this.toDateTimeLocalValue(phase.knockoutBracket.plannedStartDateTime),
-        );
+    } else if (this.selectedPhaseType() === 'KNOCKOUT') {
+      // Tier 1 leads -- same convention as the qualification-tiers feature
+      // (best-of-position joins tier 1's bracket), the organizer can still
+      // override before generating.
+      const tier1 = this.knockoutPhases()[0];
+      if (tier1) {
+        this.matchDurationMinutes.set(String(tier1.matchDurationMinutes));
+        this.breakDurationMinutes.set(String(tier1.breakDurationMinutes));
       }
     }
     await this.loadMatches();
   }
 
-  /** ISO string -> "YYYY-MM-DDTHH:mm" (local time, no seconds), the format a datetime-local input expects. */
-  private toDateTimeLocalValue(iso: string): string {
-    const date = new Date(iso);
-    const pad = (n: number) => String(n).padStart(2, '0');
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-  }
-
   private async loadMatches(): Promise<void> {
     const organizationId = this.organization()?.id;
-    const phaseId = this.selectedPhaseId();
-    if (!organizationId || !phaseId) {
+    if (!organizationId) {
       return;
     }
     try {
-      this.matches.set(
-        await this.scheduleService.listMatches(organizationId, this.tournamentId, phaseId),
+      const results = await Promise.all(
+        this.activePhases().map((phase) =>
+          this.scheduleService.listMatches(organizationId, this.tournamentId, phase.id),
+        ),
       );
+      this.matches.set(results.flat());
     } catch {
       this.errorMessage.set('Impossible de charger le calendrier.');
     }
+  }
+
+  // Phases contributing matches to the current filter -- both for GROUP_STAGE/KNOCKOUT and 'ALL'.
+  private activePhases(): CompetitionPhase[] {
+    const type = this.selectedPhaseType();
+    const groupPhase = this.groupStagePhase();
+    if (type === 'GROUP_STAGE') {
+      return groupPhase ? [groupPhase] : [];
+    }
+    if (type === 'KNOCKOUT') {
+      return this.knockoutPhases();
+    }
+    return [...(groupPhase ? [groupPhase] : []), ...this.knockoutPhases()];
   }
 
   protected onStartDateTimeChange(value: string): void {
@@ -310,9 +323,13 @@ export class SchedulePage {
     this.refereesPerMatch.set(value);
   }
 
+  protected onBreakAfterPoolsMinutesChange(value: string): void {
+    this.breakAfterPoolsMinutes.set(value);
+  }
+
   protected async generateSchedule(): Promise<void> {
     const organizationId = this.organization()?.id;
-    const phaseId = this.selectedPhaseId();
+    const phaseId = this.groupStagePhase()?.id;
     const fieldIds = this.selectedFieldIds();
     const startDateTime = this.startDateTime();
     if (!organizationId || !phaseId) {
@@ -367,33 +384,42 @@ export class SchedulePage {
     }
   }
 
-  /** Reserves a slot on these fields for every round of the bracket (round 1 immediately gets real opponents; later rounds claim their reservation automatically once known, as their own scores validate). */
-  protected async generateKnockoutMatches(): Promise<void> {
+  /**
+   * Generates every knockout tier's matches together (see
+   * BracketsService.generateAllMatches) -- with several tiers, they share
+   * fields in one continuous rotation, so they can't be generated one at a
+   * time the way a single bracket's matches are. Reserves a slot for every
+   * round of every tier up front (round 1 immediately gets real opponents;
+   * later rounds claim their reservation automatically once known, as their
+   * own scores validate). The start time isn't entered by hand -- it's the
+   * pool phase's last scheduled match plus the configured pause.
+   */
+  protected async generateAllKnockoutMatches(): Promise<void> {
     const organizationId = this.organization()?.id;
-    const bracketId = this.selectedPhase()?.knockoutBracket?.id;
+    const categoryId = this.selectedCategoryId();
     const fieldIds = this.selectedFieldIds();
-    const startDateTime = this.startDateTime();
-    if (!organizationId || !bracketId) {
+    const breakAfterPoolsMinutes = this.breakAfterPoolsMinutes();
+    if (!organizationId || !categoryId) {
       return;
     }
     if (fieldIds.length === 0) {
-      this.errorMessage.set('Sélectionnez au moins un terrain avant de générer le tableau.');
+      this.errorMessage.set('Sélectionnez au moins un terrain avant de générer les tableaux.');
       return;
     }
-    if (!startDateTime) {
-      this.errorMessage.set('Renseignez une date de début avant de générer le tableau.');
+    if (breakAfterPoolsMinutes === '') {
+      this.errorMessage.set('Renseignez le temps de pause après les poules.');
       return;
     }
     this.errorMessage.set(null);
     this.generating.set(true);
     try {
-      const generated = await this.competitionFormatsService.generateBracketMatches(
+      const generated = await this.competitionFormatsService.generateAllBracketMatches(
         organizationId,
         this.tournamentId,
-        bracketId,
+        categoryId,
         {
           fieldIds,
-          startDateTime: new Date(startDateTime).toISOString(),
+          breakAfterPoolsMinutes: Number(breakAfterPoolsMinutes),
           matchDurationMinutes: this.matchDurationMinutes()
             ? Number(this.matchDurationMinutes())
             : undefined,
@@ -405,18 +431,12 @@ export class SchedulePage {
       this.matches.set(generated);
       await this.loadTimeSlots();
     } catch (error) {
-      if (error instanceof HttpErrorResponse && error.status === 409) {
-        this.errorMessage.set(
-          'Les matchs de ce tableau ont déjà été générés. Videz le calendrier avant d’en générer de nouveaux.',
-        );
-      } else if (error instanceof HttpErrorResponse && error.status === 400) {
-        this.errorMessage.set(
-          (error.error as { message?: string })?.message ??
-            'Impossible de générer les matchs du tableau.',
-        );
-      } else {
-        this.errorMessage.set('Impossible de générer les matchs du tableau.');
-      }
+      this.errorMessage.set(
+        error instanceof HttpErrorResponse &&
+          typeof (error.error as { message?: unknown })?.message === 'string'
+          ? (error.error as { message: string }).message
+          : 'Impossible de générer les matchs des tableaux.',
+      );
     } finally {
       this.generating.set(false);
     }
@@ -424,12 +444,15 @@ export class SchedulePage {
 
   protected async resetSchedule(): Promise<void> {
     const organizationId = this.organization()?.id;
-    const phaseId = this.selectedPhaseId();
-    if (!organizationId || !phaseId) {
+    if (!organizationId) {
       return;
     }
     try {
-      await this.scheduleService.resetSchedule(organizationId, this.tournamentId, phaseId);
+      await Promise.all(
+        this.activePhases().map((phase) =>
+          this.scheduleService.resetSchedule(organizationId, this.tournamentId, phase.id),
+        ),
+      );
       this.matches.set([]);
       await this.loadTimeSlots();
     } catch {
@@ -450,12 +473,28 @@ export class SchedulePage {
       : this.formatSlotTime(slot.startTime);
   }
 
-  // Compact ("1/8"/"1/4"/"1/2"/"Finale") -- the section heading above
-  // already carries the full name ("Huitième de finale"), this is just a
-  // quick per-card scan aid, not a repeat of it.
+  // "Poules · 1/4" / "LDC · 1/4" -- the grid groups cards by field/time, not
+  // by phase or round, so with several knockout tiers shown together (or
+  // even just poules vs. élimination directe) the card itself needs to say
+  // which phase it belongs to, not just which round.
   protected roundDisplay(match: Match): string {
-    const phase = this.selectedPhase();
-    return phase ? matchRoundLabel(phase, match, 'compact') : `Tour ${match.round}`;
+    const phase = this.phaseForMatch(match);
+    if (!phase) {
+      return `Tour ${match.round}`;
+    }
+    const phaseLabel = phase.type === 'GROUP_STAGE' ? 'Poules' : phase.name;
+    return `${phaseLabel} · ${matchRoundLabel(phase, match, 'compact')}`;
+  }
+
+  // Resolved from the match itself (not the current filter) -- needed as-is
+  // for 'ALL', where matches from several phases are shown together.
+  private phaseForMatch(match: Match): CompetitionPhase | undefined {
+    if (match.knockoutBracketId) {
+      return this.knockoutPhases().find(
+        (phase) => phase.knockoutBracket?.id === match.knockoutBracketId,
+      );
+    }
+    return this.groupStagePhase() ?? undefined;
   }
 
   protected officialLabel(official: MatchOfficial): string {
@@ -516,16 +555,6 @@ export class SchedulePage {
       return;
     }
     await this.moveMatchToSlot(matchId, timeSlotId);
-  }
-
-  protected async onUnscheduledDrop(event: DragEvent): Promise<void> {
-    event.preventDefault();
-    const matchId = this.draggedMatchId();
-    this.draggedMatchId.set(null);
-    if (!matchId) {
-      return;
-    }
-    await this.moveMatchToSlot(matchId, null);
   }
 
   private async moveMatchToSlot(matchId: string, timeSlotId: string | null): Promise<void> {

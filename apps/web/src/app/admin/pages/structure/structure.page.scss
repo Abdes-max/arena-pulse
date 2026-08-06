@@ -115,15 +115,30 @@
 }
 
 .structure-page__checkbox-label {
+  display: flex;
   flex-direction: row !important;
   align-items: center;
   gap: var(--ap-space-2) !important;
+  margin-bottom: var(--ap-space-3);
 }
 
 .structure-page__checkbox-row {
   display: flex;
   flex-wrap: wrap;
   gap: var(--ap-space-4);
+}
+
+.structure-page__checkbox-row--spaced {
+  margin-top: var(--ap-space-4);
+}
+
+// Standalone field/button that isn't already inside a
+// .structure-page__inline-form (which handles its own top margin) --
+// keeps it from sitting flush against whatever precedes it. Not `display:
+// block` -- ap-button defaults to inline-block and must keep its natural
+// (not full-bleed) width.
+.structure-page__spaced-field {
+  margin-top: var(--ap-space-4);
 }
 
 .structure-page__hint {
