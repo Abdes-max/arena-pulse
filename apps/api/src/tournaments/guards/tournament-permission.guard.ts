@@ -3,6 +3,7 @@ import {
   ExecutionContext,
   ForbiddenException,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import type { AuthenticatedUser } from '../../auth/strategies/jwt.strategy';
@@ -46,6 +47,19 @@ export class TournamentPermissionGuard implements CanActivate {
       throw new ForbiddenException('Accès à ce tournoi refusé.');
     }
     const userId = request.user.id;
+
+    // Enforced here, not left to each service to remember: a tournamentId
+    // belonging to another organization must never grant access through
+    // this guard, whatever the URL happens to contain. NotFoundException
+    // (not Forbidden) so a wrong-org tournament reads identically to a
+    // nonexistent one -- same reasoning as TournamentsService.getOrThrow.
+    const tournament = await this.prisma.tournament.findUnique({
+      where: { id: tournamentId },
+      select: { organizationId: true },
+    });
+    if (!tournament || tournament.organizationId !== organizationId) {
+      throw new NotFoundException('Tournoi introuvable.');
+    }
 
     const membership = await this.prisma.organizationMember.findUnique({
       where: { organizationId_userId: { organizationId, userId } },
