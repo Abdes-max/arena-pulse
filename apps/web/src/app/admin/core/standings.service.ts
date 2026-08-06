@@ -31,4 +31,30 @@ export class StandingsService {
       ),
     );
   }
+
+  setTieBreakChoice(
+    organizationId: string,
+    tournamentId: string,
+    groupId: string,
+    teamId: string,
+  ): Promise<Standings> {
+    return firstValueFrom(
+      this.http.post<Standings>(
+        `${this.base(organizationId, tournamentId)}/groups/${groupId}/tie-break-choice`,
+        { teamId },
+      ),
+    );
+  }
+
+  clearTieBreakChoice(
+    organizationId: string,
+    tournamentId: string,
+    groupId: string,
+  ): Promise<Standings> {
+    return firstValueFrom(
+      this.http.delete<Standings>(
+        `${this.base(organizationId, tournamentId)}/groups/${groupId}/tie-break-choice`,
+      ),
+    );
+  }
 }

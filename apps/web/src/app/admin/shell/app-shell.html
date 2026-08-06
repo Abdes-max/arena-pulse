@@ -22,7 +22,11 @@
       </div>
     </div>
     @if (tournamentId(); as id) {
-      <app-tournament-submenu [tournamentId]="id" />
+      <app-tournament-submenu
+        [tournamentId]="id"
+        [slug]="tournamentSlug()"
+        [published]="tournamentPublished()"
+      />
     }
   </header>
   <main class="app-shell__content" id="main-content" tabindex="-1">

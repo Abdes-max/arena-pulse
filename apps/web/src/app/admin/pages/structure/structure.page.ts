@@ -12,11 +12,9 @@ import {
   CrossGroupQualificationRule,
   StandingRule,
   Team,
-  Venue,
 } from '../../core/models';
 import { TeamsService } from '../../core/teams.service';
 import { TournamentsService } from '../../core/tournaments.service';
-import { FieldSelector } from '../../shared/field-selector';
 
 /**
  * The barème/qualification rules are stored per-group in the API (each
@@ -38,7 +36,7 @@ interface QualificationRuleGroup {
 
 @Component({
   selector: 'app-structure-page',
-  imports: [Button, Select, TextField, FieldSelector],
+  imports: [Button, Select, TextField],
   templateUrl: './structure.page.html',
   styleUrl: './structure.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -98,21 +96,12 @@ export class StructurePage {
     this.teams().filter((team) => team.groupId === null),
   );
 
-  // "Mode Tournoi" -- one-click structure + pool calendar generator, only
-  // offered while the category has no phases yet (see structure-presets.service.ts).
-  protected readonly venues = signal<Venue[]>([]);
-  protected readonly fields = computed(() =>
-    this.venues().flatMap((venue) =>
-      venue.fields.map((field) => ({ ...field, venueName: venue.name })),
-    ),
-  );
-
+  // "Mode Tournoi" -- one-click structure generator, only offered while the
+  // category has no phases yet (see structure-presets.service.ts). Sets up
+  // phases/pools/brackets/qualification rules only -- no calendar; that's
+  // generated separately on the Calendrier page once the organizer is ready.
   protected readonly presetTeamCount = signal('');
   protected readonly presetPoolCount = signal('');
-  protected readonly presetFieldIds = signal<string[]>([]);
-  protected readonly presetStartDateTime = signal('');
-  protected readonly presetKnockoutFieldIds = signal<string[]>([]);
-  protected readonly presetKnockoutStartDateTime = signal('');
   protected readonly presetSubmitting = signal(false);
   protected readonly presetError = signal<string | null>(null);
   protected readonly presetSuccessMessage = signal<string | null>(null);
@@ -212,10 +201,6 @@ export class StructurePage {
       (!this.presetBestOfPositionEnabled() ||
         (Number(this.presetBestOfPositionPosition()) > 0 &&
           Number(this.presetBestOfPositionBestCount()) > 0)) &&
-      this.presetFieldIds().length > 0 &&
-      this.presetStartDateTime() !== '' &&
-      this.presetKnockoutFieldIds().length > 0 &&
-      this.presetKnockoutStartDateTime() !== '' &&
       this.presetValidationError() === null,
   );
 
@@ -252,7 +237,6 @@ export class StructurePage {
         this.tournamentId,
       );
       this.categories.set(categories);
-      this.venues.set(await this.tournamentsService.listVenues(organizationId, this.tournamentId));
       if (categories.length > 0) {
         this.selectedCategoryId.set(categories[0].id);
         await this.loadCategoryData();
@@ -279,10 +263,6 @@ export class StructurePage {
     this.presetBestOfPositionEnabled.set(false);
     this.presetBestOfPositionPosition.set('');
     this.presetBestOfPositionBestCount.set('');
-    this.presetFieldIds.set([]);
-    this.presetStartDateTime.set('');
-    this.presetKnockoutFieldIds.set([]);
-    this.presetKnockoutStartDateTime.set('');
     this.presetError.set(null);
     this.presetSuccessMessage.set(null);
   }
@@ -968,6 +948,38 @@ export class StructurePage {
     }
   }
 
+  /**
+   * Toggling this has no effect on matches already generated for this
+   * bracket -- hasRankingMatch is only read when matches are (re)generated,
+   * so it's safe to flip any time before then, including for brackets
+   * "Mode Tournoi" already created (which never exposes this choice itself,
+   * one per tier).
+   */
+  protected async toggleBracketRankingMatch(
+    phase: CompetitionPhase,
+    event: Event,
+  ): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const bracketId = phase.knockoutBracket?.id;
+    const hasRankingMatch = (event.target as HTMLInputElement).checked;
+    if (!organizationId || !bracketId) {
+      return;
+    }
+    try {
+      const updated = await this.competitionFormatsService.updateKnockoutBracket(
+        organizationId,
+        this.tournamentId,
+        bracketId,
+        { hasRankingMatch },
+      );
+      this.phases.update((phases) =>
+        phases.map((p) => (p.id === phase.id ? { ...p, knockoutBracket: updated } : p)),
+      );
+    } catch {
+      this.errorMessage.set('Impossible de modifier ce réglage.');
+    }
+  }
+
   protected readonly generatingBracketId = signal<string | null>(null);
   protected readonly bracketGeneratedMessage = signal<string | null>(null);
 
@@ -1062,14 +1074,6 @@ export class StructurePage {
     this.presetBestOfPositionBestCount.set(value);
   }
 
-  protected onPresetStartDateTimeChange(value: string): void {
-    this.presetStartDateTime.set(value);
-  }
-
-  protected onPresetKnockoutStartDateTimeChange(value: string): void {
-    this.presetKnockoutStartDateTime.set(value);
-  }
-
   protected async generateStructurePreset(): Promise<void> {
     const organizationId = this.organization()?.id;
     const categoryId = this.selectedCategoryId();
@@ -1098,10 +1102,6 @@ export class StructurePage {
               bestCount: Number(this.presetBestOfPositionBestCount()),
             },
           }),
-          fieldIds: this.presetFieldIds(),
-          startDateTime: new Date(this.presetStartDateTime()).toISOString(),
-          knockoutFieldIds: this.presetKnockoutFieldIds(),
-          knockoutStartDateTime: new Date(this.presetKnockoutStartDateTime()).toISOString(),
         },
       );
       this.resetPresetForm();
@@ -1109,7 +1109,7 @@ export class StructurePage {
         .map((tier) => `${tier.name} (${tier.bracketSize} équipes)`)
         .join(', ');
       this.presetSuccessMessage.set(
-        `Structure générée : ${poolCount} poules, ${tiersSummary}. Le calendrier des poules est prêt sur la page Calendrier.`,
+        `Structure générée : ${poolCount} poules, ${tiersSummary}. Rendez-vous sur la page Calendrier pour planifier les matchs des poules et de l'élimination directe.`,
       );
       await this.loadCategoryData();
     } catch (error) {

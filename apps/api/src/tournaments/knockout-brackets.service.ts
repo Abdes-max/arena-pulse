@@ -116,8 +116,6 @@ export class KnockoutBracketsService {
       name: bracket.name,
       size: bracket.size,
       hasRankingMatch: bracket.hasRankingMatch,
-      plannedFieldIds: bracket.plannedFieldIds,
-      plannedStartDateTime: bracket.plannedStartDateTime?.toISOString() ?? null,
     };
   }
 }

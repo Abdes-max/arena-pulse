@@ -35,7 +35,7 @@
 
 .standings-page__table {
   width: 100%;
-  min-width: 480px;
+  min-width: 540px;
   border-collapse: collapse;
   font-size: 0.85rem;
   margin-top: var(--ap-space-2);
@@ -75,36 +75,28 @@
     width: 32px;
   }
 
+  // Qualifié badge -- right after Équipe, closest to J. Wide enough for the
+  // "QUALIFIÉ" pill itself (padding + uppercase/bold/letter-spacing text) --
+  // narrower and it visually overlaps the J column next to it instead of
+  // just wrapping (badges don't shrink their own text).
   th:nth-child(3),
-  td:nth-child(3),
-  th:nth-child(4),
-  td:nth-child(4),
-  th:nth-child(5),
-  td:nth-child(5),
-  th:nth-child(6),
-  td:nth-child(6),
-  th:nth-child(7),
-  td:nth-child(7),
-  th:nth-child(8),
-  td:nth-child(8),
-  th:nth-child(9),
-  td:nth-child(9) {
-    width: 36px;
+  td:nth-child(3) {
+    width: 110px;
   }
 
-  th:nth-child(10),
-  td:nth-child(10) {
-    width: 48px;
+  th:nth-child(n + 4):nth-child(-n + 10),
+  td:nth-child(n + 4):nth-child(-n + 10) {
+    width: 36px;
   }
 
   th:nth-child(11),
   td:nth-child(11) {
-    width: 92px;
+    width: 48px;
   }
 
   th:nth-child(12),
   td:nth-child(12) {
-    width: 48px;
+    width: 92px;
   }
 
   // Phone browser (not the native app, which already only ever showed
@@ -115,8 +107,6 @@
 
     th:nth-child(1),
     td:nth-child(1),
-    th:nth-child(4),
-    td:nth-child(4),
     th:nth-child(5),
     td:nth-child(5),
     th:nth-child(6),
@@ -125,8 +115,10 @@
     td:nth-child(7),
     th:nth-child(8),
     td:nth-child(8),
-    th:nth-child(11),
-    td:nth-child(11) {
+    th:nth-child(9),
+    td:nth-child(9),
+    th:nth-child(12),
+    td:nth-child(12) {
       display: none;
     }
   }
@@ -145,29 +137,25 @@
   }
 }
 
+// Same pill look as ap-badge's own "qualified" status, but with a dynamic
+// per-tier color (see qualificationTierColor) instead of a fixed status --
+// ap-badge's color comes from its own encapsulated stylesheet keyed off a
+// fixed status value, so it can't take an arbitrary color from here.
+.standings-page__tier-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--ap-font-body);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: var(--ap-space-1) var(--ap-space-2);
+  border-radius: var(--ap-radius-sm);
+  border: var(--ap-border-width) solid;
+}
+
 .standings-page__points {
   font-weight: 700;
-}
-
-.standings-page__qualifications {
-  list-style: none;
-  margin: var(--ap-space-2) 0 0;
-  padding: 0;
-  font-size: 0.85rem;
-  color: var(--ap-color-muted);
-
-  li {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: var(--ap-space-1) var(--ap-space-2);
-    margin-top: var(--ap-space-2);
-  }
-}
-
-.standings-page__qualification-rule {
-  font-weight: 600;
-  color: var(--ap-color-fg);
 }
 
 .standings-page__empty {

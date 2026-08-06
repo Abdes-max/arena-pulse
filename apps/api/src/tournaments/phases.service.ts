@@ -195,9 +195,6 @@ export class PhasesService {
             name: phase.knockoutBracket.name,
             size: phase.knockoutBracket.size,
             hasRankingMatch: phase.knockoutBracket.hasRankingMatch,
-            plannedFieldIds: phase.knockoutBracket.plannedFieldIds,
-            plannedStartDateTime:
-              phase.knockoutBracket.plannedStartDateTime?.toISOString() ?? null,
           }
         : null,
     };

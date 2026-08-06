@@ -1,45 +1,80 @@
-<nav class="tournament-submenu">
-  <a
-    [routerLink]="['/admin/tournaments', tournamentId()]"
-    [routerLinkActiveOptions]="{ exact: true }"
-    routerLinkActive="tournament-submenu__link--active"
-  >
-    Général
-  </a>
-  <a
-    [routerLink]="['/admin/tournaments', tournamentId(), 'teams']"
-    routerLinkActive="tournament-submenu__link--active"
-  >
-    Équipes
-  </a>
-  <a
-    [routerLink]="['/admin/tournaments', tournamentId(), 'referees']"
-    routerLinkActive="tournament-submenu__link--active"
-  >
-    Arbitres
-  </a>
-  <a
-    [routerLink]="['/admin/tournaments', tournamentId(), 'structure']"
-    routerLinkActive="tournament-submenu__link--active"
-  >
-    Structure
-  </a>
-  <a
-    [routerLink]="['/admin/tournaments', tournamentId(), 'schedule']"
-    routerLinkActive="tournament-submenu__link--active"
-  >
-    Calendrier
-  </a>
-  <a
-    [routerLink]="['/admin/tournaments', tournamentId(), 'scores']"
-    routerLinkActive="tournament-submenu__link--active"
-  >
-    Scores
-  </a>
-  <a
-    [routerLink]="['/admin/tournaments', tournamentId(), 'standings']"
-    routerLinkActive="tournament-submenu__link--active"
-  >
-    Classement
-  </a>
-</nav>
+<div class="tournament-submenu-row">
+  <nav class="tournament-submenu">
+    <a
+      [routerLink]="['/admin/tournaments', tournamentId()]"
+      [routerLinkActiveOptions]="{ exact: true }"
+      routerLinkActive="tournament-submenu__link--active"
+    >
+      Général
+    </a>
+    <a
+      [routerLink]="['/admin/tournaments', tournamentId(), 'teams']"
+      routerLinkActive="tournament-submenu__link--active"
+    >
+      Équipes
+    </a>
+    <a
+      [routerLink]="['/admin/tournaments', tournamentId(), 'referees']"
+      routerLinkActive="tournament-submenu__link--active"
+    >
+      Arbitres
+    </a>
+    <a
+      [routerLink]="['/admin/tournaments', tournamentId(), 'structure']"
+      routerLinkActive="tournament-submenu__link--active"
+    >
+      Structure
+    </a>
+    <a
+      [routerLink]="['/admin/tournaments', tournamentId(), 'schedule']"
+      routerLinkActive="tournament-submenu__link--active"
+    >
+      Calendrier
+    </a>
+    <a
+      [routerLink]="['/admin/tournaments', tournamentId(), 'scores']"
+      routerLinkActive="tournament-submenu__link--active"
+    >
+      Scores
+    </a>
+    <a
+      [routerLink]="['/admin/tournaments', tournamentId(), 'standings']"
+      routerLinkActive="tournament-submenu__link--active"
+    >
+      Classement
+    </a>
+  </nav>
+
+  @if (publicUrl(); as url) {
+    <ap-button
+      class="tournament-submenu__public-link"
+      variant="ghost"
+      size="sm"
+      [href]="url"
+      target="_blank"
+    >
+      <svg
+        class="tournament-submenu__public-link-icon"
+        viewBox="0 0 16 16"
+        fill="none"
+        aria-hidden="true"
+      >
+        <path
+          d="M6.5 3H3.5C3.22386 3 3 3.22386 3 3.5V12.5C3 12.7761 3.22386 13 3.5 13H12.5C12.7761 13 13 12.7761 13 12.5V9.5"
+          stroke="currentColor"
+          stroke-width="1.3"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <path
+          d="M9.5 3H13V6.5M13 3L7.5 8.5"
+          stroke="currentColor"
+          stroke-width="1.3"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+      Lien public
+    </ap-button>
+  }
+</div>

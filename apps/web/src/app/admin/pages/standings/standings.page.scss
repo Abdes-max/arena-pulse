@@ -13,7 +13,17 @@
 
 .standings-page__select {
   max-width: 300px;
+}
+
+.standings-page__selects-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ap-space-4);
   margin-top: var(--ap-space-4);
+
+  .standings-page__select {
+    flex: 1 1 220px;
+  }
 }
 
 .standings-page__group {
@@ -30,8 +40,17 @@
   color: var(--ap-color-muted);
 }
 
+// Same table treatment as the public site's own classement (apps/web/src/app/pages/standings/standings.page.scss) --
+// explicit horizontal scroll container for a dense table that can't
+// meaningfully reflow to a narrow screen.
+.standings-page__table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .standings-page__table {
   width: 100%;
+  min-width: 540px;
   border-collapse: collapse;
   font-size: 0.85rem;
   margin-top: var(--ap-space-2);
@@ -43,24 +62,132 @@
     border-bottom: var(--ap-border-width) solid var(--ap-color-border);
   }
 
+  th {
+    position: sticky;
+    top: 0;
+    background: var(--ap-color-bg);
+    color: var(--ap-color-muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
   th:nth-child(2),
   td:nth-child(2) {
     text-align: left;
   }
 }
 
-.standings-page__points {
-  font-weight: 700;
+// table-layout: fixed + explicit widths on every column but Équipe (which
+// takes whatever's left) -- otherwise each pool's own table sizes its
+// columns from its own content, so J/G/N/.../Rating land at a different x
+// position per pool whenever team names are different lengths across them.
+.standings-page__group-table {
+  table-layout: fixed;
+
+  th:nth-child(1),
+  td:nth-child(1) {
+    width: 32px;
+  }
+
+  // Qualifié badge -- right after Équipe, closest to J. Wide enough for the
+  // "QUALIFIÉ" pill itself (padding + uppercase/bold/letter-spacing text) --
+  // narrower and it visually overlaps the J column next to it instead of
+  // just wrapping (badges don't shrink their own text).
+  th:nth-child(3),
+  td:nth-child(3) {
+    width: 110px;
+  }
+
+  th:nth-child(n + 4):nth-child(-n + 10),
+  td:nth-child(n + 4):nth-child(-n + 10) {
+    width: 36px;
+  }
+
+  th:nth-child(11),
+  td:nth-child(11) {
+    width: 48px;
+  }
+
+  th:nth-child(12),
+  td:nth-child(12) {
+    width: 92px;
+  }
+
+  @media (max-width: 600px) {
+    min-width: 0;
+
+    th:nth-child(1),
+    td:nth-child(1),
+    th:nth-child(5),
+    td:nth-child(5),
+    th:nth-child(6),
+    td:nth-child(6),
+    th:nth-child(7),
+    td:nth-child(7),
+    th:nth-child(8),
+    td:nth-child(8),
+    th:nth-child(9),
+    td:nth-child(9),
+    th:nth-child(12),
+    td:nth-child(12) {
+      display: none;
+    }
+  }
 }
 
-.standings-page__qualifications {
-  list-style: none;
-  margin: var(--ap-space-2) 0 0;
-  padding: 0;
-  font-size: 0.85rem;
-  color: var(--ap-color-muted);
+.standings-page__row--qualified {
+  background: var(--ap-color-signal-soft);
+}
 
-  li {
-    margin-top: var(--ap-space-1);
-  }
+// Same pill look as ap-badge's own "qualified" status, but with a dynamic
+// per-tier color (see qualificationTierColor) instead of a fixed status --
+// ap-badge's color comes from its own encapsulated stylesheet keyed off a
+// fixed status value, so it can't take an arbitrary color from here.
+.standings-page__tier-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--ap-font-body);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: var(--ap-space-1) var(--ap-space-2);
+  border-radius: var(--ap-radius-sm);
+  border: var(--ap-border-width) solid;
+}
+
+.standings-page__ties {
+  margin-top: var(--ap-space-3);
+  padding: var(--ap-space-3);
+  background: var(--ap-color-signal-soft);
+  border-radius: var(--ap-radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+  align-items: flex-start;
+}
+
+.standings-page__tie {
+  margin: 0;
+  font-size: 0.85rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ap-space-2);
+}
+
+.standings-page__tie-context {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ap-color-muted);
+}
+
+.standings-page__tie-select {
+  min-width: 180px;
+}
+
+.standings-page__points {
+  font-weight: 700;
 }

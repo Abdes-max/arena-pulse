@@ -49,11 +49,6 @@ export interface KnockoutBracket {
   name: string;
   size: number;
   hasRankingMatch: boolean;
-  // Fields/date already picked for this bracket's eventual match generation
-  // (e.g. via the structure-preset generator), before pool standings decide
-  // who actually qualifies -- see "Générer les matchs du tableau" pre-fill.
-  plannedFieldIds: string[];
-  plannedStartDateTime: string | null;
 }
 
 export interface CompetitionGroup {
@@ -112,6 +107,11 @@ export interface Match {
   status: MatchStatus;
   homeTeam: { id: string; name: string } | null;
   awayTeam: { id: string; name: string } | null;
+  // Display-only placeholder shown while the real team above is still
+  // unknown (e.g. "1er Poule A", "Vainqueur Quart de finale 1") -- always
+  // null once the corresponding team is known.
+  homeSourceLabel: string | null;
+  awaySourceLabel: string | null;
   forfeitedTeam: { id: string; name: string } | null;
   timeSlot: {
     id: string;
@@ -143,9 +143,17 @@ export interface StandingRow {
   isProvisional: boolean;
 }
 
+// A group of 2+ teams still genuinely tied (every scoring criterion, and any
+// earlier organizer pick, exhausted) -- currently ordered alphabetically
+// among themselves within `rows` above, pending a manual pick.
+export interface UnresolvedTie {
+  teams: { id: string; name: string }[];
+}
+
 export interface Standings {
   rows: StandingRow[];
   isComplete: boolean;
+  unresolvedTies: UnresolvedTie[];
 }
 
 export interface Qualification {

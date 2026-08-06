@@ -71,7 +71,7 @@ export class TeamDetailPage {
 
   protected competitionLabel(match: PublicTeamDetail['matches'][number]): string {
     if (match.isThirdPlaceMatch) {
-      return 'Match pour la 3e place';
+      return 'Pour la 3e place';
     }
     if (match.knockoutBracketId && match.knockoutTotalRounds !== null) {
       return roundLabel(match.knockoutTotalRounds - match.round);

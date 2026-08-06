@@ -1,13 +1,10 @@
 import { Type } from 'class-transformer';
 import {
   ArrayMinSize,
-  IsArray,
   IsBoolean,
-  IsISO8601,
   IsInt,
   IsOptional,
   IsString,
-  IsUUID,
   Min,
   MinLength,
   ValidateNested,
@@ -58,16 +55,11 @@ export class CreateStructurePresetDto {
   @Type(() => StructurePresetBestOfPositionDto)
   bestOfPosition?: StructurePresetBestOfPositionDto;
 
-  // Pool-stage calendar, generated immediately -- round-robin fixtures only
-  // need teams assigned to their pool, not any match result.
-  @IsArray()
-  @ArrayMinSize(1)
-  @IsUUID(undefined, { each: true })
-  fieldIds!: string[];
-
-  @IsISO8601()
-  startDateTime!: string;
-
+  // Structural pool-phase defaults only -- this generator sets up the
+  // structure (phases, pools, team assignment, brackets, qualification
+  // rules), it never schedules any matches. Calendar generation for both
+  // the pool phase and the knockout tier(s) happens separately on the
+  // Calendrier page, once the organizer is ready.
   @IsOptional()
   @IsInt()
   @Min(1)
@@ -86,29 +78,4 @@ export class CreateStructurePresetDto {
   @IsOptional()
   @IsBoolean()
   doubleRoundRobin?: boolean;
-
-  // Knockout-stage calendar can't be generated yet (its matchups depend on
-  // pool standings, which don't exist until pool play concludes) -- these
-  // are captured now anyway and stored on each tier's bracket, so "Générer
-  // les matchs du tableau" on the Calendrier page can pre-fill from them
-  // later instead of asking the organizer to re-enter the same choices.
-  // Shared across every tier's bracket -- the organizer adjusts per-bracket
-  // timing later, when actually generating that bracket's matches.
-  @IsArray()
-  @ArrayMinSize(1)
-  @IsUUID(undefined, { each: true })
-  knockoutFieldIds!: string[];
-
-  @IsISO8601()
-  knockoutStartDateTime!: string;
-
-  @IsOptional()
-  @IsInt()
-  @Min(1)
-  knockoutMatchDurationMinutes?: number;
-
-  @IsOptional()
-  @IsInt()
-  @Min(0)
-  knockoutBreakDurationMinutes?: number;
 }

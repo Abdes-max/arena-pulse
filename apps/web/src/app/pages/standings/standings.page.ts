@@ -16,9 +16,11 @@ import {
   CompetitionPhase,
   FinalRankingRow,
   Qualification,
+  QualificationTierColor,
   Standings,
   buildBracketView,
   computeFinalRanking,
+  qualificationTierColor,
 } from 'shared-models';
 
 interface GroupStandings {
@@ -26,6 +28,12 @@ interface GroupStandings {
   groupName: string;
   standings: Standings;
   qualifications: Qualification[];
+}
+
+interface QualificationTier {
+  label: string;
+  color: string;
+  soft: string;
 }
 
 /** Row height (px) used to size the bracket tree so every round column shares the same total height. */
@@ -59,6 +67,27 @@ export class StandingsPage {
     this.phases().filter((phase) => phase.type === 'KNOCKOUT' && phase.knockoutBracket),
   );
 
+  // Every KNOCKOUT phase in this category, in tournament order -- used to
+  // color-code and label the "Qualifié" badge once a pool's teams can be
+  // routed to more than one tier (e.g. 1-2 -> LDC, 3-4 -> EP, 5 -> CF).
+  // Unlike knockoutPhases above (which feeds the bracket tabs), this doesn't
+  // require the bracket to already be generated -- a QualificationRule can
+  // target a phase before its bracket exists.
+  protected readonly qualificationTierPhases = computed(() =>
+    this.phases()
+      .filter((phase) => phase.type === 'KNOCKOUT')
+      .sort((a, b) => a.position - b.position),
+  );
+
+  private readonly tierColorByPhaseId = computed(() => {
+    const tiers = this.qualificationTierPhases();
+    const map = new Map<string, QualificationTierColor>();
+    tiers.forEach((phase, index) => {
+      map.set(phase.id, qualificationTierColor(index, tiers.length));
+    });
+    return map;
+  });
+
   protected readonly tabs = computed(() => [
     ...this.groupStagePhases().map((phase) => ({ value: phase.id, label: phase.name })),
     ...this.knockoutPhases().map((phase) => ({ value: phase.id, label: phase.name })),
@@ -79,7 +108,7 @@ export class StandingsPage {
       label: round.label,
     }));
     if (bracket.thirdPlaceMatch) {
-      options.push({ value: 'third', label: 'Match pour la 3e place' });
+      options.push({ value: 'third', label: 'Pour la 3e place' });
     }
     return options;
   });
@@ -188,6 +217,23 @@ export class StandingsPage {
     return group.qualifications.some((qualification) =>
       qualification.qualifiedTeams.some((team) => team.id === teamId),
     );
+  }
+
+  // Only meaningful once there's more than one knockout tier -- with just
+  // one, the generic "Qualifié" badge (isQualified above) already says all
+  // there is to say, no need to name it.
+  protected qualificationTier(group: GroupStandings, teamId: string): QualificationTier | null {
+    if (this.qualificationTierPhases().length < 2) {
+      return null;
+    }
+    const qualification = group.qualifications.find((qual) =>
+      qual.qualifiedTeams.some((team) => team.id === teamId),
+    );
+    if (!qualification) {
+      return null;
+    }
+    const tierColor = this.tierColorByPhaseId().get(qualification.targetPhaseId);
+    return tierColor ? { label: qualification.targetPhaseName, ...tierColor } : null;
   }
 
   protected bracketHeight(bracket: BracketView): number {

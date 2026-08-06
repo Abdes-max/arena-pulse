@@ -49,8 +49,8 @@
             } @else {
               <ap-match-card
                 [variant]="variantFor(match)"
-                [homeTeam]="match.homeTeam ?? { name: '?' }"
-                [awayTeam]="match.awayTeam ?? { name: '?' }"
+                [homeTeam]="match.homeTeam ?? { name: match.homeSourceLabel ?? '?' }"
+                [awayTeam]="match.awayTeam ?? { name: match.awaySourceLabel ?? '?' }"
                 [homeScore]="match.score?.homeScore"
                 [awayScore]="match.score?.awayScore"
                 [kickoff]="match.timeSlot ? formatKickoff(match.timeSlot.startTime) : undefined"
@@ -76,8 +76,8 @@
             } @else {
               <ap-match-card
                 variant="upcoming"
-                [homeTeam]="match.homeTeam ?? { name: '?' }"
-                [awayTeam]="match.awayTeam ?? { name: '?' }"
+                [homeTeam]="match.homeTeam ?? { name: match.homeSourceLabel ?? '?' }"
+                [awayTeam]="match.awayTeam ?? { name: match.awaySourceLabel ?? '?' }"
                 [competitionLabel]="competitionLabel(match)"
               />
             }

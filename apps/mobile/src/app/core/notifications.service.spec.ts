@@ -27,6 +27,8 @@ function buildMatch(overrides: Partial<Match>): Match {
     status: 'SCHEDULED',
     homeTeam: { id: 't1', name: 'Les Aigles' },
     awayTeam: { id: 't2', name: 'Les Loups' },
+    homeSourceLabel: null,
+    awaySourceLabel: null,
     forfeitedTeam: null,
     timeSlot: null,
     officials: [],

@@ -7,7 +7,7 @@ import { TournamentsService } from './tournaments.service';
 type PrismaMock = {
   team: { findMany: jest.Mock };
   match: { findMany: jest.Mock };
-  standingRule: { findUnique: jest.Mock };
+  standingRule: { findUnique: jest.Mock; update: jest.Mock };
   qualificationRule: { findMany: jest.Mock };
 };
 
@@ -15,14 +15,20 @@ function createPrismaMock(): PrismaMock {
   return {
     team: { findMany: jest.fn().mockResolvedValue([]) },
     match: { findMany: jest.fn().mockResolvedValue([]) },
-    standingRule: { findUnique: jest.fn().mockResolvedValue(null) },
+    standingRule: {
+      findUnique: jest.fn().mockResolvedValue(null),
+      update: jest.fn(),
+    },
     qualificationRule: { findMany: jest.fn().mockResolvedValue([]) },
   };
 }
 
 describe('StandingsService', () => {
   let prisma: PrismaMock;
-  let tournamentsService: { assertTournamentExists: jest.Mock };
+  let tournamentsService: {
+    assertTournamentExists: jest.Mock;
+    assertTournamentIsEditable: jest.Mock;
+  };
   let groupsService: { assertGroupExists: jest.Mock };
   let ratingsService: { getRatingsForTeamNames: jest.Mock };
   let service: StandingsService;
@@ -31,6 +37,9 @@ describe('StandingsService', () => {
     prisma = createPrismaMock();
     tournamentsService = {
       assertTournamentExists: jest
+        .fn()
+        .mockResolvedValue({ id: 'tournament-1' }),
+      assertTournamentIsEditable: jest
         .fn()
         .mockResolvedValue({ id: 'tournament-1' }),
     };
@@ -169,6 +178,104 @@ describe('StandingsService', () => {
       );
 
       expect(result.isComplete).toBe(false);
+    });
+
+    it('flags two teams left totally tied (no matches, no manual pick) as an unresolved tie', async () => {
+      prisma.team.findMany.mockResolvedValue([
+        { id: 'z', name: 'Zeta' },
+        { id: 'a', name: 'Alpha' },
+      ]);
+
+      const result = await service.getStandings(
+        'org-1',
+        'tournament-1',
+        'group-1',
+      );
+
+      expect(result.unresolvedTies).toEqual([
+        {
+          teams: [
+            { id: 'a', name: 'Alpha' },
+            { id: 'z', name: 'Zeta' },
+          ],
+        },
+      ]);
+    });
+
+    it('clears the unresolved tie once an organizer pick is stored', async () => {
+      prisma.team.findMany.mockResolvedValue([
+        { id: 'z', name: 'Zeta' },
+        { id: 'a', name: 'Alpha' },
+      ]);
+      prisma.standingRule.findUnique.mockResolvedValue({
+        winPoints: 3,
+        drawPoints: 1,
+        lossPoints: 0,
+        tieBreakOrder: ['POINTS', 'GOAL_DIFFERENCE', 'GOALS_SCORED'],
+        manualTieBreakOrder: ['z'],
+      });
+
+      const result = await service.getStandings(
+        'org-1',
+        'tournament-1',
+        'group-1',
+      );
+
+      expect(result.unresolvedTies).toEqual([]);
+      expect(result.rows.map((row) => row.teamId)).toEqual(['z', 'a']);
+    });
+  });
+
+  describe('setManualTieBreakChoice', () => {
+    it('appends the picked team to the stored manual order', async () => {
+      prisma.standingRule.findUnique.mockResolvedValue({
+        manualTieBreakOrder: ['z'],
+      });
+
+      await service.setManualTieBreakChoice(
+        'org-1',
+        'tournament-1',
+        'group-1',
+        'a',
+      );
+
+      expect(
+        tournamentsService.assertTournamentIsEditable,
+      ).toHaveBeenCalledWith('org-1', 'tournament-1');
+      expect(prisma.standingRule.update).toHaveBeenCalledWith({
+        where: { groupId: 'group-1' },
+        data: { manualTieBreakOrder: ['z', 'a'] },
+      });
+    });
+
+    it('does not duplicate a team already picked', async () => {
+      prisma.standingRule.findUnique.mockResolvedValue({
+        manualTieBreakOrder: ['a'],
+      });
+
+      await service.setManualTieBreakChoice(
+        'org-1',
+        'tournament-1',
+        'group-1',
+        'a',
+      );
+
+      expect(prisma.standingRule.update).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('clearManualTieBreakOrder', () => {
+    it('resets the stored manual order back to empty', async () => {
+      await service.clearManualTieBreakOrder(
+        'org-1',
+        'tournament-1',
+        'group-1',
+      );
+
+      expect(prisma.standingRule.update).toHaveBeenCalledWith({
+        where: { groupId: 'group-1' },
+        data: { manualTieBreakOrder: [] },
+      });
     });
   });
 

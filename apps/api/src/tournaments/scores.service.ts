@@ -138,6 +138,13 @@ export class ScoresService {
         match.round,
       );
     }
+    if (match.groupId) {
+      await this.bracketsService.tryResolveFirstRound(
+        organizationId,
+        tournamentId,
+        match.groupId,
+      );
+    }
     await this.ratingsService.recordMatchResult(organizationId, updated);
     this.realtimeService.emit({ tournamentId, type: 'match-updated', matchId });
     return toMatchSummary(updated);
@@ -199,6 +206,13 @@ export class ScoresService {
       await this.bracketsService.tryAdvanceRound(
         match.knockoutBracketId,
         match.round,
+      );
+    }
+    if (match.groupId) {
+      await this.bracketsService.tryResolveFirstRound(
+        organizationId,
+        tournamentId,
+        match.groupId,
       );
     }
     await this.ratingsService.recordMatchResult(organizationId, updated);

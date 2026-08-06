@@ -11,25 +11,28 @@
     @if (categories().length === 0) {
       <p>Ajoutez d'abord une catégorie sur la page du tournoi.</p>
     } @else {
-      <ap-select
-        class="standings-page__select"
-        label="Catégorie"
-        [options]="categoryOptions()"
-        [value]="selectedCategoryId()"
-        (valueChange)="onCategoryChange($event)"
-      />
+      <div class="standings-page__selects-row">
+        <ap-select
+          class="standings-page__select"
+          label="Catégorie"
+          [options]="categoryOptions()"
+          [value]="selectedCategoryId()"
+          (valueChange)="onCategoryChange($event)"
+        />
+        @if (groupStagePhases().length > 0) {
+          <ap-select
+            class="standings-page__select"
+            label="Phase"
+            [options]="phaseOptions()"
+            [value]="selectedPhaseId()"
+            (valueChange)="onPhaseChange($event)"
+          />
+        }
+      </div>
 
       @if (groupStagePhases().length === 0) {
         <p>Ajoutez d'abord une phase de poules sur la page Structure de cette catégorie.</p>
       } @else {
-        <ap-select
-          class="standings-page__select"
-          label="Phase"
-          [options]="phaseOptions()"
-          [value]="selectedPhaseId()"
-          (valueChange)="onPhaseChange($event)"
-        />
-
         @if (groupStandings().length === 0) {
           <p>Ajoutez d'abord une poule à cette phase.</p>
         } @else {
@@ -42,65 +45,125 @@
                 }
               </h2>
 
-              <table class="standings-page__table">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Équipe</th>
-                    <th>J</th>
-                    <th>G</th>
-                    <th>N</th>
-                    <th>P</th>
-                    <th>BP</th>
-                    <th>BC</th>
-                    <th>+/-</th>
-                    <th>Pts</th>
-                    <th>Rating</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @for (row of group.standings.rows; track row.teamId) {
+              <div class="standings-page__table-scroll">
+                <table class="standings-page__table standings-page__group-table">
+                  <thead>
                     <tr>
-                      <td>{{ row.position }}</td>
-                      <td>{{ row.teamName }}</td>
-                      <td>{{ row.played }}</td>
-                      <td>{{ row.won }}</td>
-                      <td>{{ row.drawn }}</td>
-                      <td>{{ row.lost }}</td>
-                      <td>{{ row.goalsFor }}</td>
-                      <td>{{ row.goalsAgainst }}</td>
-                      <td>{{ row.goalDifference }}</td>
-                      <td class="standings-page__points">{{ row.points }}</td>
-                      <td>
-                        {{ row.rating | number: '1.0-0' }}
-                        @if (row.isProvisional) {
-                          <span class="standings-page__provisional">(provisoire)</span>
-                        }
-                      </td>
+                      <th>#</th>
+                      <th>Équipe</th>
+                      <th></th>
+                      <th>J</th>
+                      <th>G</th>
+                      <th>N</th>
+                      <th>P</th>
+                      <th>BP</th>
+                      <th>BC</th>
+                      <th>+/-</th>
+                      <th>Pts</th>
+                      <th>Rating</th>
                     </tr>
-                  }
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    @for (row of group.standings.rows; track row.teamId) {
+                      @let tier = qualificationTier(group, row.teamId);
+                      <tr
+                        [class.standings-page__row--qualified]="
+                          qualificationTierPhases().length < 2 && isQualified(group, row.teamId)
+                        "
+                        [style.background]="tier?.soft ?? null"
+                      >
+                        <td>{{ row.position }}</td>
+                        <td>{{ row.teamName }}</td>
+                        <td>
+                          @if (qualificationTierPhases().length < 2) {
+                            @if (isQualified(group, row.teamId)) {
+                              <ap-badge status="qualified" />
+                            }
+                          } @else if (tier) {
+                            <span class="standings-page__tier-badge" [style.color]="tier.color">{{
+                              tier.label
+                            }}</span>
+                          }
+                        </td>
+                        <td>{{ row.played }}</td>
+                        <td>{{ row.won }}</td>
+                        <td>{{ row.drawn }}</td>
+                        <td>{{ row.lost }}</td>
+                        <td>{{ row.goalsFor }}</td>
+                        <td>{{ row.goalsAgainst }}</td>
+                        <td>{{ row.goalDifference }}</td>
+                        <td class="standings-page__points">{{ row.points }}</td>
+                        <td>{{ row.rating | number: '1.1-1' }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
 
-              @if (group.qualifications.length > 0) {
-                <ul class="standings-page__qualifications">
-                  @for (qualification of group.qualifications; track qualification.ruleId) {
-                    <li>
-                      {{ qualification.fromPosition }}
-                      @if (qualification.toPosition !== qualification.fromPosition) {
-                        – {{ qualification.toPosition }}
-                      }
-                      → {{ qualification.targetPhaseName }} :
-                      @if (qualification.qualifiedTeams.length === 0) {
-                        <span class="standings-page__provisional"
-                          >aucune équipe pour l'instant</span
-                        >
-                      } @else {
-                        {{ qualification.qualifiedTeams.map((t) => t.name).join(', ') }}
-                      }
-                    </li>
+              @if (group.standings.unresolvedTies.length > 0) {
+                <div class="standings-page__ties">
+                  @for (tie of group.standings.unresolvedTies; track tie) {
+                    <p class="standings-page__tie">
+                      Égalité totale entre
+                      <strong>{{ tie.teams.map(t => t.name).join(', ') }}</strong>
+                      — qui doit être classé devant les autres ?
+                      <ap-select
+                        class="standings-page__tie-select"
+                        label="Choisir l'équipe à classer devant"
+                        [hideLabel]="true"
+                        [options]="tieOptions(tie)"
+                        [resetAfterSelect]="true"
+                        (valueChange)="onPoolTieBreakChoice(group, $event)"
+                      />
+                    </p>
                   }
-                </ul>
+                  <ap-button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    (click)="onPoolTieBreakClear(group)"
+                  >
+                    Revenir à l'ordre alphabétique
+                  </ap-button>
+                </div>
+              }
+            </section>
+          }
+
+          @if (crossGroupTies().length > 0) {
+            <section class="standings-page__group">
+              <h2>Égalités inter-poules à départager</h2>
+              @for (rule of crossGroupTies(); track rule.ruleId) {
+                <div class="standings-page__ties">
+                  <p class="standings-page__tie-context">
+                    Vers {{ rule.targetPhaseName }} ({{ rule.position }}e place de poule)
+                  </p>
+                  @for (tie of rule.ties; track tie) {
+                    <p class="standings-page__tie">
+                      Égalité totale entre
+                      <strong>{{
+                        tie.teams.map(t => t.name + ' (' + t.groupName + ')').join(', ')
+                      }}</strong>
+                      — qui doit être classé devant les autres ?
+                      <ap-select
+                        class="standings-page__tie-select"
+                        label="Choisir l'équipe à classer devant"
+                        [hideLabel]="true"
+                        [options]="tieOptions(tie)"
+                        [resetAfterSelect]="true"
+                        (valueChange)="onCrossGroupTieBreakChoice(rule.ruleId, $event)"
+                      />
+                    </p>
+                  }
+                  <ap-button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    (click)="onCrossGroupTieBreakClear(rule.ruleId)"
+                  >
+                    Revenir à l'ordre alphabétique
+                  </ap-button>
+                </div>
               }
             </section>
           }

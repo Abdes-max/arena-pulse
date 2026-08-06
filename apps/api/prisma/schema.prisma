@@ -327,6 +327,12 @@ model StandingRule {
   tieBreakOrder                String[]
   supplementaryStandingEnabled Boolean  @default(false)
   penaltyShootoutEnabled       Boolean  @default(false)
+  // Team IDs the organizer has manually ranked ahead of each other, in
+  // order, once every configured tieBreakOrder criterion left them still
+  // tied -- consulted as the final tiebreaker instead of alphabetical
+  // (StandingsService/standings.util's resolveOrder). Appended to one pick
+  // at a time as each successive tied subgroup gets resolved.
+  manualTieBreakOrder          String[] @default([])
   createdAt                    DateTime @default(now())
   updatedAt                    DateTime @updatedAt
 
@@ -334,21 +340,13 @@ model StandingRule {
 }
 
 model KnockoutBracket {
-  id                   String    @id @default(uuid())
-  phaseId              String    @unique
-  name                 String
-  size                 Int
-  hasRankingMatch      Boolean   @default(false)
-  // Fields/date the organizer already picked for this bracket's eventual
-  // match generation (e.g. via the structure-preset generator), captured
-  // up front even though the pool phase it depends on isn't finished yet --
-  // real matches still can't be created until standings decide who
-  // qualifies, but "Générer les matchs du tableau" can pre-fill from these
-  // instead of asking the organizer to re-enter them later.
-  plannedFieldIds      String[]  @default([])
-  plannedStartDateTime DateTime?
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
+  id              String   @id @default(uuid())
+  phaseId         String   @unique
+  name            String
+  size            Int
+  hasRankingMatch Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
   phase   CompetitionPhase @relation(fields: [phaseId], references: [id], onDelete: Cascade)
   matches Match[]
@@ -377,12 +375,16 @@ model QualificationRule {
 // nullable on an already-live table with no clean way to express "required
 // unless this is a cross-group rule" in the schema itself.
 model CrossGroupQualificationRule {
-  id            String   @id @default(uuid())
-  phaseId       String
-  position      Int
-  bestCount     Int
-  targetPhaseId String
-  createdAt     DateTime @default(now())
+  id                  String   @id @default(uuid())
+  phaseId             String
+  position            Int
+  bestCount           Int
+  targetPhaseId       String
+  // Same manual tiebreaker mechanism as StandingRule.manualTieBreakOrder,
+  // scoped to this rule's own cross-group candidate pool instead of a
+  // single group's.
+  manualTieBreakOrder String[] @default([])
+  createdAt           DateTime @default(now())
 
   phase       CompetitionPhase @relation("CrossGroupQualificationSourcePhase", fields: [phaseId], references: [id], onDelete: Cascade)
   targetPhase CompetitionPhase @relation("CrossGroupQualificationTargetPhase", fields: [targetPhaseId], references: [id], onDelete: Cascade)
@@ -453,6 +455,12 @@ model Match {
   isThirdPlaceMatch Boolean     @default(false)
   homeTeamId        String?
   awayTeamId        String?
+  // Display-only placeholder shown while the real team above is still
+  // unknown (e.g. "1er Poule A" for round 1 before pools finish, "Vainqueur
+  // Quart de finale 1" for a later round) -- never parsed back, cleared once
+  // the real team is resolved (tryAdvanceRound / tryResolveFirstRound).
+  homeSourceLabel   String?
+  awaySourceLabel   String?
   timeSlotId        String?     @unique
   forfeitedTeamId   String?
   round             Int

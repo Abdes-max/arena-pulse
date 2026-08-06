@@ -1,7 +1,6 @@
 import { BadRequestException, ConflictException } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { ScheduleGenerationService } from './schedule-generation.service';
 import { StructurePresetsService } from './structure-presets.service';
 import { TournamentsService } from './tournaments.service';
 
@@ -13,7 +12,6 @@ type PrismaMock = {
   knockoutBracket: { create: jest.Mock };
   qualificationRule: { create: jest.Mock };
   crossGroupQualificationRule: { create: jest.Mock };
-  field: { findMany: jest.Mock };
   $transaction: jest.Mock;
 };
 
@@ -33,7 +31,6 @@ function createPrismaMock(): PrismaMock {
     knockoutBracket: { create: jest.fn() },
     qualificationRule: { create: jest.fn() },
     crossGroupQualificationRule: { create: jest.fn() },
-    field: { findMany: jest.fn() },
     $transaction: jest.fn(),
   };
   mock.$transaction.mockImplementation(
@@ -56,17 +53,12 @@ const BASE_DTO = {
   teamCount: 8,
   poolCount: 2,
   tiers: [{ name: 'Tableau final', qualifiersPerPool: 2 }],
-  fieldIds: ['field-1'],
-  startDateTime: '2026-09-01T09:00:00.000Z',
-  knockoutFieldIds: ['field-1'],
-  knockoutStartDateTime: '2026-09-02T09:00:00.000Z',
 };
 
 describe('StructurePresetsService', () => {
   let prisma: PrismaMock;
   let tournamentsService: { assertTournamentIsEditable: jest.Mock };
   let categoriesService: { assertCategoryExists: jest.Mock };
-  let scheduleGenerationService: { generate: jest.Mock };
   let service: StructurePresetsService;
 
   beforeEach(() => {
@@ -79,14 +71,11 @@ describe('StructurePresetsService', () => {
     categoriesService = {
       assertCategoryExists: jest.fn().mockResolvedValue({ id: 'category-1' }),
     };
-    scheduleGenerationService = { generate: jest.fn().mockResolvedValue([]) };
     service = new StructurePresetsService(
       prisma as unknown as PrismaService,
       tournamentsService as unknown as TournamentsService,
       categoriesService as unknown as CategoriesService,
-      scheduleGenerationService as unknown as ScheduleGenerationService,
     );
-    prisma.field.findMany.mockResolvedValue([{ id: 'field-1' }]);
     prisma.team.findMany.mockResolvedValue(
       Array.from({ length: 8 }, (_, i) => team(`team-${i + 1}`, i)),
     );
@@ -153,15 +142,6 @@ describe('StructurePresetsService', () => {
       team('team-1', 0),
       team('team-2', 1),
     ]);
-
-    await expect(
-      service.create('org-1', 'tournament-1', 'category-1', BASE_DTO),
-    ).rejects.toBeInstanceOf(BadRequestException);
-    expect(prisma.$transaction).not.toHaveBeenCalled();
-  });
-
-  it('rejects when a field does not belong to the tournament', async () => {
-    prisma.field.findMany.mockResolvedValue([]);
 
     await expect(
       service.create('org-1', 'tournament-1', 'category-1', BASE_DTO),
@@ -238,7 +218,7 @@ describe('StructurePresetsService', () => {
     });
   });
 
-  it('creates the pool phase, balanced pools, one knockout tier per palier, qualification rules, and generates the pool calendar', async () => {
+  it('creates the pool phase, balanced pools, one knockout tier per palier, and its qualification rules -- without scheduling any matches', async () => {
     const result = await service.create(
       'org-1',
       'tournament-1',
@@ -268,13 +248,7 @@ describe('StructurePresetsService', () => {
     });
 
     expect(prisma.knockoutBracket.create).toHaveBeenCalledWith({
-      data: {
-        phaseId: 'phase-2',
-        name: 'Tableau final',
-        size: 4,
-        plannedFieldIds: ['field-1'],
-        plannedStartDateTime: new Date('2026-09-02T09:00:00.000Z'),
-      },
+      data: { phaseId: 'phase-2', name: 'Tableau final', size: 4 },
     });
     expect(prisma.qualificationRule.create).toHaveBeenCalledTimes(2);
     expect(prisma.qualificationRule.create).toHaveBeenCalledWith({
@@ -286,19 +260,6 @@ describe('StructurePresetsService', () => {
       },
     });
     expect(prisma.crossGroupQualificationRule.create).not.toHaveBeenCalled();
-
-    expect(scheduleGenerationService.generate).toHaveBeenCalledWith(
-      'org-1',
-      'tournament-1',
-      'phase-1',
-      {
-        fieldIds: ['field-1'],
-        startDateTime: '2026-09-01T09:00:00.000Z',
-        matchDurationMinutes: undefined,
-        breakDurationMinutes: undefined,
-        refereesPerMatch: undefined,
-      },
-    );
 
     expect(result).toEqual({
       groupPhaseId: 'phase-1',
@@ -320,22 +281,10 @@ describe('StructurePresetsService', () => {
     expect(prisma.competitionPhase.create).toHaveBeenCalledTimes(3);
     expect(prisma.knockoutBracket.create).toHaveBeenCalledTimes(2);
     expect(prisma.knockoutBracket.create).toHaveBeenNthCalledWith(1, {
-      data: {
-        phaseId: 'phase-2',
-        name: 'Ligue des Champions',
-        size: 2,
-        plannedFieldIds: ['field-1'],
-        plannedStartDateTime: new Date('2026-09-02T09:00:00.000Z'),
-      },
+      data: { phaseId: 'phase-2', name: 'Ligue des Champions', size: 2 },
     });
     expect(prisma.knockoutBracket.create).toHaveBeenNthCalledWith(2, {
-      data: {
-        phaseId: 'phase-3',
-        name: 'Europa League',
-        size: 2,
-        plannedFieldIds: ['field-1'],
-        plannedStartDateTime: new Date('2026-09-02T09:00:00.000Z'),
-      },
+      data: { phaseId: 'phase-3', name: 'Europa League', size: 2 },
     });
 
     // Tier 1 (Champions League) claims position 1 in every pool, tier 2

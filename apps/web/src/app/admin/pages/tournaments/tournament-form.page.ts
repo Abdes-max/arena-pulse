@@ -11,7 +11,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Badge, BadgeStatus, Button, Select, SelectOption, TextField } from 'design-system';
-import { ThemeName, ThemeService } from 'design-tokens';
+import { ThemeService } from 'design-tokens';
 import { AuthService } from '../../core/auth.service';
 import {
   Category,
@@ -25,6 +25,7 @@ import {
 } from '../../core/models';
 import { PermissionsService } from '../../core/permissions.service';
 import { SportsService } from '../../core/sports.service';
+import { THEME_MAP } from '../../core/theme-map';
 import { TournamentsService } from '../../core/tournaments.service';
 
 const STATUS_TO_BADGE: Record<TournamentStatus, BadgeStatus> = {
@@ -32,13 +33,6 @@ const STATUS_TO_BADGE: Record<TournamentStatus, BadgeStatus> = {
   PUBLISHED: 'published',
   UNPUBLISHED: 'unpublished',
   ARCHIVED: 'archived',
-};
-
-/** Maps the backend's PublicTheme enum to design-tokens' ThemeName (data-theme values). */
-const THEME_MAP: Record<PublicTheme, ThemeName> = {
-  INK_SIGNAL: 'ink-signal',
-  PULSE_EMBER: 'pulse-ember',
-  NEON_COURT: 'neon-court',
 };
 
 @Component({

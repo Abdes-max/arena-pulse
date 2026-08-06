@@ -42,6 +42,7 @@ export function computeStandings(
   matches: ValidatedMatchInput[],
   scheme: PointsScheme,
   tieBreakOrder: string[],
+  manualTieBreakOrder: string[] = [],
 ): StandingRow[] {
   const statsByTeam = new Map<string, Stats>(
     teams.map((team) => [
@@ -83,6 +84,7 @@ export function computeStandings(
     matches,
     tieBreakOrder,
     scheme,
+    manualTieBreakOrder,
   );
   return ordered.map((row, index) => ({ ...row, position: index + 1 }));
 }
@@ -105,17 +107,20 @@ export function rankCrossGroupCandidates(
   pools: { groupId: string; groupName: string; rows: StandingRow[] }[],
   position: number,
   tieBreakOrder: string[],
+  manualTieBreakOrder: string[] = [],
 ): CrossGroupCandidate[] {
   const candidates = pools.flatMap(({ groupId, groupName, rows }) => {
     const row = rows.find((r) => r.position === position);
     return row ? [{ ...row, groupId, groupName }] : [];
   });
 
-  const ordered = resolveOrder(candidates, [], tieBreakOrder, {
-    winPoints: 0,
-    drawPoints: 0,
-    lossPoints: 0,
-  });
+  const ordered = resolveOrder(
+    candidates,
+    [],
+    tieBreakOrder,
+    { winPoints: 0, drawPoints: 0, lossPoints: 0 },
+    manualTieBreakOrder,
+  );
   return ordered.map((row, index) => ({ ...row, position: index + 1 }));
 }
 
@@ -151,19 +156,106 @@ function resolveOrder<T extends Stats>(
   matches: ValidatedMatchInput[],
   criteria: string[],
   scheme: PointsScheme,
+  manualOrder: string[] = [],
 ): T[] {
   if (teams.length <= 1) {
     return teams;
   }
   const [criterion, ...rest] = criteria;
   if (!criterion) {
-    return [...teams].sort((a, b) => a.teamName.localeCompare(b.teamName));
+    return [...teams].sort((a, b) => {
+      const manualDiff =
+        manualRank(a.teamId, manualOrder) - manualRank(b.teamId, manualOrder);
+      return manualDiff !== 0
+        ? manualDiff
+        : a.teamName.localeCompare(b.teamName);
+    });
   }
 
   const groups = groupByCriterion(teams, matches, criterion, scheme);
   return groups.flatMap((group) =>
-    group.length > 1 ? resolveOrder(group, matches, rest, scheme) : group,
+    group.length > 1
+      ? resolveOrder(group, matches, rest, scheme, manualOrder)
+      : group,
   );
+}
+
+// Explicit organizer pick (StandingRule/CrossGroupQualificationRule's
+// manualTieBreakOrder) wins over the plain alphabetical fallback once every
+// scoring criterion is exhausted -- teams not yet picked share the same
+// (maximum) rank, so they stay grouped as a still-unresolved tie rather than
+// silently reordered.
+function manualRank(teamId: string, manualOrder: string[]): number {
+  const index = manualOrder.indexOf(teamId);
+  return index === -1 ? Number.MAX_SAFE_INTEGER : index;
+}
+
+/**
+ * Every group of 2+ teams that reach the alphabetical fallback with no
+ * organizer pick between them -- i.e. every configured tieBreakOrder
+ * criterion (and manualOrder) left them genuinely indistinguishable. Used to
+ * surface a "tie to resolve manually" prompt (Classement page) instead of
+ * silently ordering them alphabetically, and to withhold a qualification
+ * slot's real team (BracketsService.resolveQualificationSlots) while the tie
+ * could still affect who qualifies.
+ */
+export function findUnresolvedTies<T extends Stats>(
+  teams: T[],
+  matches: ValidatedMatchInput[],
+  criteria: string[],
+  scheme: PointsScheme,
+  manualOrder: string[] = [],
+): string[][] {
+  const ties: string[][] = [];
+  collectUnresolvedTies(teams, matches, criteria, scheme, manualOrder, ties);
+  return ties;
+}
+
+function collectUnresolvedTies<T extends Stats>(
+  teams: T[],
+  matches: ValidatedMatchInput[],
+  criteria: string[],
+  scheme: PointsScheme,
+  manualOrder: string[],
+  ties: string[][],
+): void {
+  if (teams.length <= 1) {
+    return;
+  }
+  const [criterion, ...rest] = criteria;
+  if (!criterion) {
+    for (const group of groupByManualRank(teams, manualOrder)) {
+      if (group.length > 1) {
+        ties.push(group.map((team) => team.teamId));
+      }
+    }
+    return;
+  }
+
+  const groups = groupByCriterion(teams, matches, criterion, scheme);
+  for (const group of groups) {
+    if (group.length > 1) {
+      collectUnresolvedTies(group, matches, rest, scheme, manualOrder, ties);
+    }
+  }
+}
+
+function groupByManualRank<T extends Stats>(
+  teams: T[],
+  manualOrder: string[],
+): T[][] {
+  const rankOf = (team: T) => manualRank(team.teamId, manualOrder);
+  const sorted = [...teams].sort((a, b) => rankOf(a) - rankOf(b));
+  const groups: T[][] = [];
+  for (const team of sorted) {
+    const last = groups[groups.length - 1];
+    if (last && rankOf(last[0]) === rankOf(team)) {
+      last.push(team);
+    } else {
+      groups.push([team]);
+    }
+  }
+  return groups;
 }
 
 function groupByCriterion<T extends Stats>(

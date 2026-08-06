@@ -23,8 +23,9 @@
         <section class="structure-page__section">
           <h2>Mode Tournoi</h2>
           <p class="structure-page__hint">
-            Génère d'un coup les poules, le tableau à élimination directe et le calendrier des
-            poules, à partir des équipes déjà créées dans cette catégorie.
+            Met en place d'un coup les poules et le tableau à élimination directe, à partir des
+            équipes déjà créées dans cette catégorie. Le calendrier se génère séparément sur la page
+            Calendrier.
             @if (unassignedTeams().length > 0) {
               {{ unassignedTeams().length }} équipe(s) non assignée(s) disponible(s) ici.
             } @else {
@@ -56,7 +57,7 @@
             />
           </div>
 
-          <div class="structure-page__checkbox-row">
+          <div class="structure-page__checkbox-row structure-page__checkbox-row--spaced">
             <label class="structure-page__checkbox-label">
               <input
                 type="checkbox"
@@ -77,6 +78,7 @@
 
           @if (!presetMultiTierEnabled()) {
             <ap-text-field
+              class="structure-page__spaced-field"
               label="Qualifiés par poule"
               type="number"
               [min]="1"
@@ -145,38 +147,8 @@
             <p class="structure-page__error" role="alert">{{ message }}</p>
           }
 
-          <h3>Calendrier des poules</h3>
-          <app-field-selector
-            [fields]="fields()"
-            [selectedIds]="presetFieldIds()"
-            (selectedIdsChange)="presetFieldIds.set($event)"
-          />
-          <ap-text-field
-            label="Début"
-            type="datetime-local"
-            [value]="presetStartDateTime()"
-            (valueChange)="onPresetStartDateTimeChange($event)"
-          />
-
-          <h3>Tableau final</h3>
-          <p class="structure-page__hint">
-            Ne peut pas être généré maintenant (les qualifiés ne sont connus qu'une fois les poules
-            jouées) -- ces choix sont juste enregistrés pour pré-remplir "Générer les matchs du
-            tableau" sur la page Calendrier le moment venu.
-          </p>
-          <app-field-selector
-            [fields]="fields()"
-            [selectedIds]="presetKnockoutFieldIds()"
-            (selectedIdsChange)="presetKnockoutFieldIds.set($event)"
-          />
-          <ap-text-field
-            label="Début"
-            type="datetime-local"
-            [value]="presetKnockoutStartDateTime()"
-            (valueChange)="onPresetKnockoutStartDateTimeChange($event)"
-          />
-
           <ap-button
+            class="structure-page__spaced-field"
             type="button"
             [disabled]="!presetCanSubmit() || presetSubmitting()"
             (click)="generateStructurePreset()"
@@ -449,10 +421,15 @@
             @if (phase.knockoutBracket; as bracket) {
               <p>
                 <strong>{{ bracket.name }}</strong> — {{ bracket.size }} équipes
-                @if (bracket.hasRankingMatch) {
-                  · petite finale
-                }
               </p>
+              <label class="structure-page__checkbox-label">
+                <input
+                  type="checkbox"
+                  [checked]="bracket.hasRankingMatch"
+                  (change)="toggleBracketRankingMatch(phase, $event)"
+                />
+                Petite finale
+              </label>
               <ap-button
                 type="button"
                 [disabled]="generatingBracketId() === bracket.id"

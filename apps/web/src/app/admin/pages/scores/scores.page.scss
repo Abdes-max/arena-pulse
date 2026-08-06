@@ -41,6 +41,15 @@
   }
 }
 
+// One per knockout tier sharing a round (e.g. LDC / EP both at "Quart de
+// finale") -- smaller and muted relative to the round's own h2 above it.
+.scores-page__subgroup-label {
+  margin: var(--ap-space-3) 0 var(--ap-space-1);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ap-color-muted);
+}
+
 .scores-page__match-list {
   list-style: none;
   margin: 0;
@@ -73,7 +82,7 @@
 }
 
 .scores-page__field-name {
-  flex: 0 0 4.5rem;
+  flex: 0 0 3rem;
   font-size: 0.75rem;
   color: var(--ap-color-muted);
   overflow: hidden;
@@ -82,11 +91,22 @@
 }
 
 .scores-page__team {
-  flex: 0 0 9rem;
+  flex: 0 0 11rem;
   font-weight: 600;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+// Home right-aligned, away left-aligned -- both names converge on the score
+// (or the "-" separator, while opponents are still undecided) in the middle
+// instead of reading as two independently left-flush columns.
+.scores-page__team--home {
+  text-align: right;
+}
+
+.scores-page__team--away {
+  text-align: left;
 }
 
 .scores-page__score-input {
@@ -94,6 +114,14 @@
   // (ap-text-field type="number" -- see text-field.scss).
   width: 4.25rem;
   text-align: center;
+}
+
+// Pushes Enregistrer -- and, right after it in source order with the row's
+// own gap, Valider/Validé/Effacer -- as far right as the row allows, instead
+// of sitting wherever the score inputs happen to end (short team names left
+// a lot of dead space before them).
+.scores-page__save-button {
+  margin-left: auto;
 }
 
 .scores-page__penalty-label {
@@ -111,6 +139,13 @@
 .scores-page__forfeit-badge {
   color: var(--ap-color-error);
   font-weight: 600;
+}
+
+.scores-page__pending-badge {
+  margin-left: auto;
+  color: var(--ap-color-muted);
+  font-size: 0.8rem;
+  font-style: italic;
 }
 
 .scores-page__clear {

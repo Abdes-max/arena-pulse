@@ -3,10 +3,20 @@ import { PrismaService } from '../prisma/prisma.service';
 import { DEFAULT_RATING, DEFAULT_RATING_DEVIATION } from './glicko2.util';
 import { GroupsService } from './groups.service';
 import { RatingsService } from './ratings.service';
-import { computeStandings, StandingRow } from './standings.util';
+import {
+  computeStandings,
+  findUnresolvedTies,
+  StandingRow,
+} from './standings.util';
 import { TournamentsService } from './tournaments.service';
 
 const PROVISIONAL_RATING_DEVIATION_THRESHOLD = 100;
+const DEFAULT_TIE_BREAK_ORDER = [
+  'POINTS',
+  'GOAL_DIFFERENCE',
+  'GOALS_SCORED',
+  'HEAD_TO_HEAD',
+];
 
 export interface StandingRowWithRating extends StandingRow {
   rating: number;
@@ -14,9 +24,18 @@ export interface StandingRowWithRating extends StandingRow {
   isProvisional: boolean;
 }
 
+export interface UnresolvedTie {
+  teams: { id: string; name: string }[];
+}
+
 export interface StandingsResult {
   rows: StandingRowWithRating[];
   isComplete: boolean;
+  // Groups of 2+ teams still genuinely indistinguishable once every scoring
+  // criterion (and any earlier organizer pick) is exhausted -- see
+  // findUnresolvedTies. Currently ordered alphabetically among themselves
+  // (rows above), pending a manual pick via setManualTieBreakChoice.
+  unresolvedTies: UnresolvedTie[];
 }
 
 export interface QualificationResult {
@@ -83,21 +102,34 @@ export class StandingsService {
         awayScore: match.score!.awayScore,
       }));
 
+    const scheme = {
+      winPoints: standingRule?.winPoints ?? 3,
+      drawPoints: standingRule?.drawPoints ?? 1,
+      lossPoints: standingRule?.lossPoints ?? 0,
+    };
+    const tieBreakOrder =
+      standingRule?.tieBreakOrder ?? DEFAULT_TIE_BREAK_ORDER;
+    const manualTieBreakOrder = standingRule?.manualTieBreakOrder ?? [];
     const rows = computeStandings(
       teams,
       validatedMatches,
-      {
-        winPoints: standingRule?.winPoints ?? 3,
-        drawPoints: standingRule?.drawPoints ?? 1,
-        lossPoints: standingRule?.lossPoints ?? 0,
-      },
-      standingRule?.tieBreakOrder ?? [
-        'POINTS',
-        'GOAL_DIFFERENCE',
-        'GOALS_SCORED',
-        'HEAD_TO_HEAD',
-      ],
+      scheme,
+      tieBreakOrder,
+      manualTieBreakOrder,
     );
+    const teamNameById = new Map(rows.map((row) => [row.teamId, row.teamName]));
+    const unresolvedTies: UnresolvedTie[] = findUnresolvedTies(
+      rows,
+      validatedMatches,
+      tieBreakOrder,
+      scheme,
+      manualTieBreakOrder,
+    ).map((teamIds) => ({
+      teams: teamIds.map((teamId) => ({
+        id: teamId,
+        name: teamNameById.get(teamId) ?? teamId,
+      })),
+    }));
 
     const isComplete =
       matches.length > 0 &&
@@ -119,7 +151,56 @@ export class StandingsService {
       };
     });
 
-    return { rows: rowsWithRating, isComplete };
+    return { rows: rowsWithRating, isComplete, unresolvedTies };
+  }
+
+  /**
+   * Records the organizer's pick for the next still-tied subgroup (see
+   * StandingsResult.unresolvedTies) -- appended, not replacing the whole
+   * order, since resolving a 3+-way tie takes one pick per remaining
+   * subgroup (see standings.util.findUnresolvedTies' own doc comment).
+   * No-ops if this team was already picked.
+   */
+  async setManualTieBreakChoice(
+    organizationId: string,
+    tournamentId: string,
+    groupId: string,
+    teamId: string,
+  ): Promise<StandingsResult> {
+    await this.tournamentsService.assertTournamentIsEditable(
+      organizationId,
+      tournamentId,
+    );
+    await this.groupsService.assertGroupExists(tournamentId, groupId);
+    const rule = await this.prisma.standingRule.findUnique({
+      where: { groupId },
+    });
+    const current = rule?.manualTieBreakOrder ?? [];
+    if (!current.includes(teamId)) {
+      await this.prisma.standingRule.update({
+        where: { groupId },
+        data: { manualTieBreakOrder: [...current, teamId] },
+      });
+    }
+    return this.getStandings(organizationId, tournamentId, groupId);
+  }
+
+  /** Reverts to the plain alphabetical fallback for this group's ties. */
+  async clearManualTieBreakOrder(
+    organizationId: string,
+    tournamentId: string,
+    groupId: string,
+  ): Promise<StandingsResult> {
+    await this.tournamentsService.assertTournamentIsEditable(
+      organizationId,
+      tournamentId,
+    );
+    await this.groupsService.assertGroupExists(tournamentId, groupId);
+    await this.prisma.standingRule.update({
+      where: { groupId },
+      data: { manualTieBreakOrder: [] },
+    });
+    return this.getStandings(organizationId, tournamentId, groupId);
   }
 
   async getQualifications(

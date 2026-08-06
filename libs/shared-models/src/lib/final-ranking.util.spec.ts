@@ -14,6 +14,8 @@ function match(overrides: Partial<Match> & { id: string; round: number }): Match
     status: 'COMPLETED',
     homeTeam: null,
     awayTeam: null,
+    homeSourceLabel: null,
+    awaySourceLabel: null,
     forfeitedTeam: null,
     timeSlot: null,
     officials: [],
@@ -35,8 +37,6 @@ function phase(id: string, name: string, size = 4): CompetitionPhase {
       name,
       size,
       hasRankingMatch: true,
-      plannedFieldIds: [],
-      plannedStartDateTime: null,
     },
   };
 }

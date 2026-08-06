@@ -71,7 +71,10 @@ function baseMatch(overrides: Partial<Record<string, unknown>> = {}) {
 describe('ScoresService', () => {
   let prisma: PrismaMock;
   let tournamentsService: { assertTournamentIsEditable: jest.Mock };
-  let bracketsService: { tryAdvanceRound: jest.Mock };
+  let bracketsService: {
+    tryAdvanceRound: jest.Mock;
+    tryResolveFirstRound: jest.Mock;
+  };
   let ratingsService: { recordMatchResult: jest.Mock };
   let realtimeService: { emit: jest.Mock };
   let service: ScoresService;
@@ -83,7 +86,10 @@ describe('ScoresService', () => {
         .fn()
         .mockResolvedValue({ id: TOURNAMENT_ID }),
     };
-    bracketsService = { tryAdvanceRound: jest.fn() };
+    bracketsService = {
+      tryAdvanceRound: jest.fn(),
+      tryResolveFirstRound: jest.fn(),
+    };
     ratingsService = { recordMatchResult: jest.fn() };
     realtimeService = { emit: jest.fn() };
     service = new ScoresService(

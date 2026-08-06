@@ -45,7 +45,7 @@ export class HomePage {
 
   protected competitionLabel(match: Match): string {
     if (match.isThirdPlaceMatch) {
-      return 'Match pour la 3e place';
+      return 'Pour la 3e place';
     }
     if (match.knockoutBracketId) {
       return 'Phase finale';

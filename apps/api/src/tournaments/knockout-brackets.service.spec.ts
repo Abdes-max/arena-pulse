@@ -125,8 +125,6 @@ describe('KnockoutBracketsService', () => {
       name: 'Champions League',
       size: 8,
       hasRankingMatch: true,
-      plannedFieldIds: undefined,
-      plannedStartDateTime: null,
     });
   });
 

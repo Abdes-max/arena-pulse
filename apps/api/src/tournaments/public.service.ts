@@ -3,6 +3,7 @@ import { Observable, from, map, switchMap } from 'rxjs';
 import { PrismaService } from '../prisma/prisma.service';
 import { BracketsService } from './brackets.service';
 import { CategoriesService } from './categories.service';
+import { CrossGroupQualificationRulesService } from './cross-group-qualification-rules.service';
 import { MATCH_INCLUDE, toMatchSummary } from './match-summary.util';
 import { PhasesService } from './phases.service';
 import { RealtimeService } from './realtime.service';
@@ -51,6 +52,7 @@ export class PublicService {
     private readonly scheduleGenerationService: ScheduleGenerationService,
     private readonly bracketsService: BracketsService,
     private readonly realtimeService: RealtimeService,
+    private readonly crossGroupQualificationRulesService: CrossGroupQualificationRulesService,
   ) {}
 
   async getTournament(slug: string) {
@@ -155,38 +157,43 @@ export class PublicService {
 
   async getQualifications(slug: string, groupId: string) {
     const tournament = await this.resolveTournament(slug);
-    return this.standingsService.getQualifications(
-      tournament.organizationId,
-      tournament.tournamentId,
-      groupId,
-    );
+    // Direct per-pool rules and cross-group rules (N best 3rd place across
+    // every pool) merged into one flat list -- see StandingsController's
+    // own getQualifications for why.
+    const [direct, crossGroup] = await Promise.all([
+      this.standingsService.getQualifications(
+        tournament.organizationId,
+        tournament.tournamentId,
+        groupId,
+      ),
+      this.crossGroupQualificationRulesService.getGroupQualifications(
+        tournament.organizationId,
+        tournament.tournamentId,
+        groupId,
+      ),
+    ]);
+    return [...direct, ...crossGroup];
   }
 
   async listPhaseMatches(slug: string, phaseId: string) {
     const tournament = await this.resolveTournament(slug);
-    const matches = await this.scheduleGenerationService.list(
+    // A knockout phase's later rounds exist as soon as the bracket is
+    // generated, but with no opponents yet -- shown as-is (homeSourceLabel/
+    // awaySourceLabel carry the placeholder, e.g. "Vainqueur Quart de finale
+    // 1"), same as the admin Calendrier page.
+    return this.scheduleGenerationService.list(
       tournament.organizationId,
       tournament.tournamentId,
       phaseId,
-    );
-    // A knockout phase's later rounds exist as soon as the bracket is
-    // generated, but with no opponents yet -- meaningless to a visitor, so
-    // hidden here (the admin Calendrier page shows them; see
-    // ScheduleGenerationService.list, used unfiltered there).
-    return matches.filter(
-      (match) => match.homeTeam !== null && match.awayTeam !== null,
     );
   }
 
   async listBracketMatches(slug: string, bracketId: string) {
     const tournament = await this.resolveTournament(slug);
-    const matches = await this.bracketsService.listMatches(
+    return this.bracketsService.listMatches(
       tournament.organizationId,
       tournament.tournamentId,
       bracketId,
-    );
-    return matches.filter(
-      (match) => match.homeTeam !== null && match.awayTeam !== null,
     );
   }
 

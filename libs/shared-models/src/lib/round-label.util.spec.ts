@@ -15,6 +15,8 @@ function match(overrides: Partial<Match> & { id: string; round: number }): Match
     status: 'SCHEDULED',
     homeTeam: null,
     awayTeam: null,
+    homeSourceLabel: null,
+    awaySourceLabel: null,
     forfeitedTeam: null,
     timeSlot: null,
     officials: [],
@@ -89,8 +91,6 @@ describe('round-label.util', () => {
           name: 'Tableau',
           size: 4,
           hasRankingMatch: false,
-          plannedFieldIds: [],
-          plannedStartDateTime: null,
         },
       };
       const matches = [
@@ -116,8 +116,6 @@ describe('round-label.util', () => {
           name: 'Tableau',
           size: 4,
           hasRankingMatch: true,
-          plannedFieldIds: [],
-          plannedStartDateTime: null,
         },
       };
       const matches = [
@@ -126,7 +124,7 @@ describe('round-label.util', () => {
       ];
 
       const sections = groupMatchesByPhaseSection(phase, matches);
-      expect(sections.map((s) => s.label)).toEqual(['Finale', 'Match pour la 3e place']);
+      expect(sections.map((s) => s.label)).toEqual(['Finale', 'Pour la 3e place']);
       expect(sections[1].matches.map((m) => m.id)).toEqual(['third']);
     });
   });
