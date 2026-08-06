@@ -25,6 +25,11 @@
           <p class="structure-page__hint">
             Génère d'un coup les poules, le tableau à élimination directe et le calendrier des
             poules, à partir des équipes déjà créées dans cette catégorie.
+            @if (unassignedTeams().length > 0) {
+              {{ unassignedTeams().length }} équipe(s) non assignée(s) disponible(s) ici.
+            } @else {
+              Aucune équipe non assignée pour l'instant — ajoutez-en d'abord sur la page Équipes.
+            }
           </p>
           @if (presetSuccessMessage(); as message) {
             <p class="structure-page__success">{{ message }}</p>
