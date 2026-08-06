@@ -8,7 +8,7 @@ import { Category, CompetitionPhase, Match, StandingRule } from '../../core/mode
 import { ScheduleService } from '../../core/schedule.service';
 import { ScoresService } from '../../core/scores.service';
 import { TournamentsService } from '../../core/tournaments.service';
-import { matchRoundLabel } from 'shared-models';
+import { groupMatchesByPhaseSection } from 'shared-models';
 
 interface ScoreDraft {
   home: string;
@@ -64,26 +64,34 @@ export class ScoresPage {
     return { entered, total: matches.length };
   });
 
-  protected readonly matchesByTimeSlot = computed(() => {
-    const groups = new Map<string, { startTime: string; fieldName: string; matches: Match[] }>();
-    const unscheduled: Match[] = [];
-    for (const match of this.matches()) {
-      if (!match.timeSlot) {
-        unscheduled.push(match);
-        continue;
-      }
-      const key = match.timeSlot.id;
-      const entry = groups.get(key) ?? {
-        startTime: match.timeSlot.startTime,
-        fieldName: match.timeSlot.field.name,
-        matches: [],
-      };
-      entry.matches.push(match);
-      groups.set(key, entry);
+  // Sections grouped by phase/round instead of by exact time slot -- see
+  // groupMatchesByPhaseSection. Each match row shows its own date/time,
+  // since a round/section can span several different slots.
+  protected readonly matchesByRoundSection = computed(() => {
+    const phase = this.selectedPhase();
+    if (!phase) {
+      return [];
     }
-    const slots = [...groups.values()].sort((a, b) => a.startTime.localeCompare(b.startTime));
-    return { slots, unscheduled };
+    return groupMatchesByPhaseSection(phase, this.matches()).map((section) => ({
+      ...section,
+      matches: this.sortByTime(section.matches),
+    }));
   });
+
+  private sortByTime(matches: Match[]): Match[] {
+    return [...matches].sort((a, b) => {
+      if (!a.timeSlot && !b.timeSlot) {
+        return 0;
+      }
+      if (!a.timeSlot) {
+        return 1;
+      }
+      if (!b.timeSlot) {
+        return -1;
+      }
+      return a.timeSlot.startTime.localeCompare(b.timeSlot.startTime);
+    });
+  }
 
   constructor() {
     void this.loadCategories();
@@ -212,11 +220,8 @@ export class ScoresPage {
     return new Date(startTime).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' });
   }
 
-  // "1/8"/"1/4"/"1/2"/"Finale" for knockout phases, "Tour N" for group
-  // stages -- same compact style as the Calendrier page's match cards.
-  protected roundDisplay(match: Match): string {
-    const phase = this.selectedPhase();
-    return phase ? matchRoundLabel(phase, match, 'compact') : `Tour ${match.round}`;
+  protected matchTimeLabel(match: Match): string {
+    return match.timeSlot ? this.formatSlotTime(match.timeSlot.startTime) : 'Sans créneau';
   }
 
   protected draftFor(match: Match): ScoreDraft {
@@ -328,6 +333,23 @@ export class ScoresPage {
       this.clearDraft(match.id);
     } catch {
       this.errorMessage.set('Impossible d’effacer ce score.');
+    }
+  }
+
+  protected forfeitOptions(match: Match): SelectOption[] {
+    const options: SelectOption[] = [{ value: '', label: 'Forfait…', disabled: true }];
+    if (match.homeTeam) {
+      options.push({ value: match.homeTeam.id, label: match.homeTeam.name });
+    }
+    if (match.awayTeam) {
+      options.push({ value: match.awayTeam.id, label: match.awayTeam.name });
+    }
+    return options;
+  }
+
+  protected onDeclareForfeit(match: Match, teamId: string): void {
+    if (teamId) {
+      void this.declareForfeit(match, teamId);
     }
   }
 

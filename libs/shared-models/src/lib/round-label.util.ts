@@ -74,3 +74,49 @@ export function matchRoundLabel(
   const fromEnd = totalRounds - match.round;
   return style === 'compact' ? roundLabelCompact(fromEnd) : roundLabel(fromEnd);
 }
+
+export interface PhaseMatchSection {
+  label: string;
+  matches: Match[];
+}
+
+/**
+ * Groups a phase's matches into labeled sections for organizer-facing UIs
+ * (Calendrier's "Non planifiés" list, Scores) -- one heading per section,
+ * shown once, rather than repeating the phase/round on every match. A
+ * group-stage phase is a single "Phase de poules" section (pool matches
+ * don't have a meaningfully distinct named round); a knockout phase gets
+ * one section per round in full French wording ("Huitième de finale",
+ * "Quart de finale"...), with the 3rd-place match split into its own
+ * trailing section since it shares its round number with the final but
+ * isn't the same thing.
+ */
+export function groupMatchesByPhaseSection(
+  phase: Pick<CompetitionPhase, 'type' | 'knockoutBracket'>,
+  matches: Match[],
+): PhaseMatchSection[] {
+  if (phase.type === 'GROUP_STAGE' || !phase.knockoutBracket) {
+    return matches.length > 0 ? [{ label: 'Phase de poules', matches }] : [];
+  }
+
+  const thirdPlace = matches.filter((match) => match.isThirdPlaceMatch);
+  const regular = matches.filter((match) => !match.isThirdPlaceMatch);
+
+  const groups = new Map<number, Match[]>();
+  for (const match of regular) {
+    const list = groups.get(match.round) ?? [];
+    list.push(match);
+    groups.set(match.round, list);
+  }
+  const sections = [...groups.entries()]
+    .sort(([a], [b]) => a - b)
+    .map(([, roundMatches]) => ({
+      label: matchRoundLabel(phase, roundMatches[0], 'full'),
+      matches: roundMatches,
+    }));
+
+  if (thirdPlace.length > 0) {
+    sections.push({ label: 'Match pour la 3e place', matches: thirdPlace });
+  }
+  return sections;
+}

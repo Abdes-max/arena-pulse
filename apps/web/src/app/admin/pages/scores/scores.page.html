@@ -11,25 +11,28 @@
     @if (categories().length === 0) {
       <p>Ajoutez d'abord une catégorie sur la page du tournoi.</p>
     } @else {
-      <ap-select
-        class="scores-page__select"
-        label="Catégorie"
-        [options]="categoryOptions()"
-        [value]="selectedCategoryId()"
-        (valueChange)="onCategoryChange($event)"
-      />
+      <div class="scores-page__selects-row">
+        <ap-select
+          class="scores-page__select"
+          label="Catégorie"
+          [options]="categoryOptions()"
+          [value]="selectedCategoryId()"
+          (valueChange)="onCategoryChange($event)"
+        />
+        @if (phases().length > 0) {
+          <ap-select
+            class="scores-page__select"
+            label="Phase"
+            [options]="phaseOptions()"
+            [value]="selectedPhaseId()"
+            (valueChange)="onPhaseChange($event)"
+          />
+        }
+      </div>
 
       @if (phases().length === 0) {
         <p>Ajoutez d'abord une phase sur la page Structure de cette catégorie.</p>
       } @else {
-        <ap-select
-          class="scores-page__select"
-          label="Phase"
-          [options]="phaseOptions()"
-          [value]="selectedPhaseId()"
-          (valueChange)="onPhaseChange($event)"
-        />
-
         @if (matches().length === 0) {
           <p>Aucun match dans cette phase.</p>
         } @else {
@@ -37,19 +40,16 @@
             {{ progress().entered }}/{{ progress().total }} scores saisis
           </p>
 
-          @for (slot of matchesByTimeSlot().slots; track slot.startTime + slot.fieldName) {
+          @for (section of matchesByRoundSection(); track section.label) {
             <section class="scores-page__slot">
-              <h2>{{ formatSlotTime(slot.startTime) }}</h2>
+              <h2>{{ section.label }}</h2>
               <ul class="scores-page__match-list">
-                @for (match of slot.matches; track match.id) {
+                @for (match of section.matches; track match.id) {
                   <li class="scores-page__match">
-                    <span class="scores-page__round-badge">
-                      @if (selectedPhase(); as phase) {
-                        {{ phase.name }} —
-                      }
-                      {{ roundDisplay(match) }}
-                    </span>
-                    <span class="scores-page__field-name">{{ match.timeSlot!.field.name }}</span>
+                    <span class="scores-page__time-badge">{{ matchTimeLabel(match) }}</span>
+                    @if (match.timeSlot; as timeSlot) {
+                      <span class="scores-page__field-name">{{ timeSlot.field.name }}</span>
+                    }
 
                     @if (match.status === 'FORFEITED') {
                       <span class="scores-page__forfeit-badge">
@@ -125,62 +125,15 @@
                         </button>
                       }
 
-                      <span class="scores-page__forfeit-actions">
-                        Forfait :
-                        @if (match.homeTeam) {
-                          <button type="button" (click)="declareForfeit(match, match.homeTeam.id)">
-                            {{ match.homeTeam.name }}
-                          </button>
-                        }
-                        @if (match.awayTeam) {
-                          <button type="button" (click)="declareForfeit(match, match.awayTeam.id)">
-                            {{ match.awayTeam.name }}
-                          </button>
-                        }
-                      </span>
+                      <ap-select
+                        class="scores-page__forfeit-select"
+                        label="Déclarer forfait"
+                        [hideLabel]="true"
+                        [options]="forfeitOptions(match)"
+                        [resetAfterSelect]="true"
+                        (valueChange)="onDeclareForfeit(match, $event)"
+                      />
                     }
-                  </li>
-                }
-              </ul>
-            </section>
-          }
-
-          @if (matchesByTimeSlot().unscheduled.length > 0) {
-            <section class="scores-page__slot">
-              <h2>Sans créneau</h2>
-              <ul class="scores-page__match-list">
-                @for (match of matchesByTimeSlot().unscheduled; track match.id) {
-                  <li class="scores-page__match">
-                    <span class="scores-page__round-badge">
-                      @if (selectedPhase(); as phase) {
-                        {{ phase.name }} —
-                      }
-                      {{ roundDisplay(match) }}
-                    </span>
-                    <span class="scores-page__team">{{ match.homeTeam?.name ?? '?' }}</span>
-                    <ap-text-field
-                      class="scores-page__score-input"
-                      label="Score à domicile"
-                      [hideLabel]="true"
-                      type="number"
-                      [min]="0"
-                      [value]="draftFor(match).home"
-                      (valueChange)="onDraftChange(match, 'home', $event)"
-                    />
-                    <span>-</span>
-                    <ap-text-field
-                      class="scores-page__score-input"
-                      label="Score à l'extérieur"
-                      [hideLabel]="true"
-                      type="number"
-                      [min]="0"
-                      [value]="draftFor(match).away"
-                      (valueChange)="onDraftChange(match, 'away', $event)"
-                    />
-                    <span class="scores-page__team">{{ match.awayTeam?.name ?? '?' }}</span>
-                    <ap-button type="button" variant="ghost" (click)="saveScore(match)">
-                      Enregistrer
-                    </ap-button>
                   </li>
                 }
               </ul>

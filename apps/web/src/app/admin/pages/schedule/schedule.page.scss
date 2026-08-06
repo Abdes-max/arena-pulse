@@ -209,6 +209,9 @@
   font-size: 0.85rem;
 }
 
+// Round (compact "1/8"/"1/4"/"Finale") on the left, time on the right --
+// the full phase/round name is the section heading above the cards
+// (grouped once, not repeated per card -- see unscheduledSections).
 .schedule-page__match-card-header {
   display: flex;
   align-items: center;
@@ -219,21 +222,15 @@
   color: var(--ap-color-on-primary);
   font-size: 0.7rem;
   font-weight: 700;
+}
+
+.schedule-page__match-card-round {
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
-.schedule-page__match-card-phase {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 .schedule-page__match-card-time {
-  flex-shrink: 0;
   font-variant-numeric: tabular-nums;
-  text-transform: none;
-  letter-spacing: normal;
 }
 
 .schedule-page__match-card-teams {
