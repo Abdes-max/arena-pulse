@@ -22,6 +22,17 @@
   font-size: 0.9rem;
 }
 
+.tournament-list-page__select {
+  max-width: 220px;
+}
+
+.tournament-list-page__selects-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ap-space-4);
+  margin-bottom: var(--ap-space-4);
+}
+
 .tournament-list-page__table {
   width: 100%;
   border-collapse: collapse;
@@ -36,5 +47,13 @@
 
 .tournament-list-page__actions {
   display: flex;
+  align-items: center;
   gap: var(--ap-space-2);
+}
+
+.tournament-list-page__public-link-icon {
+  width: 14px;
+  height: 14px;
+  margin-right: var(--ap-space-1);
+  vertical-align: -2px;
 }

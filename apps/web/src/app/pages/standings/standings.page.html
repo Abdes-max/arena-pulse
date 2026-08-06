@@ -37,6 +37,7 @@
                 <tr>
                   <th>#</th>
                   <th>Équipe</th>
+                  <th></th>
                   <th>J</th>
                   <th>G</th>
                   <th>N</th>
@@ -46,14 +47,30 @@
                   <th>+/-</th>
                   <th>Pts</th>
                   <th>Rating</th>
-                  <th></th>
                 </tr>
               </thead>
               <tbody>
                 @for (row of group.standings.rows; track row.teamId) {
-                  <tr [class.standings-page__row--qualified]="isQualified(group, row.teamId)">
+                  @let tier = qualificationTier(group, row.teamId);
+                  <tr
+                    [class.standings-page__row--qualified]="
+                      qualificationTierPhases().length < 2 && isQualified(group, row.teamId)
+                    "
+                    [style.background]="tier?.soft ?? null"
+                  >
                     <td>{{ row.position }}</td>
                     <td>{{ row.teamName }}</td>
+                    <td>
+                      @if (qualificationTierPhases().length < 2) {
+                        @if (isQualified(group, row.teamId)) {
+                          <ap-badge status="qualified" />
+                        }
+                      } @else if (tier) {
+                        <span class="standings-page__tier-badge" [style.color]="tier.color">{{
+                          tier.label
+                        }}</span>
+                      }
+                    </td>
                     <td>{{ row.played }}</td>
                     <td>{{ row.won }}</td>
                     <td>{{ row.drawn }}</td>
@@ -63,39 +80,11 @@
                     <td>{{ row.goalDifference }}</td>
                     <td class="standings-page__points">{{ row.points }}</td>
                     <td>{{ row.rating | number: '1.1-1' }}</td>
-                    <td>
-                      @if (isQualified(group, row.teamId)) {
-                        <ap-badge status="qualified" />
-                      }
-                    </td>
                   </tr>
                 }
               </tbody>
             </table>
           </div>
-
-          @if (group.qualifications.length > 0) {
-            <ul class="standings-page__qualifications">
-              @for (qualification of group.qualifications; track qualification.ruleId) {
-                <li>
-                  <span class="standings-page__qualification-rule">
-                    {{ qualification.fromPosition }}
-                    @if (qualification.toPosition !== qualification.fromPosition) {
-                      – {{ qualification.toPosition }}
-                    }
-                    → {{ qualification.targetPhaseName }} :
-                  </span>
-                  @if (qualification.qualifiedTeams.length === 0) {
-                    <span class="standings-page__provisional">à déterminer</span>
-                  } @else {
-                    @for (team of qualification.qualifiedTeams; track team.id) {
-                      <ap-badge status="qualified" [label]="team.name" />
-                    }
-                  }
-                </li>
-              }
-            </ul>
-          }
         </section>
       }
     }
@@ -125,8 +114,8 @@
                 @for (match of round.matches; track match.id) {
                   <div class="standings-page__bracket-slot">
                     <ap-bracket-match
-                      [homeTeam]="match.homeTeam ?? { name: '—' }"
-                      [awayTeam]="match.awayTeam ?? { name: '—' }"
+                      [homeTeam]="match.homeTeam ?? { name: match.homeSourceLabel ?? '—' }"
+                      [awayTeam]="match.awayTeam ?? { name: match.awaySourceLabel ?? '—' }"
                       [homeScore]="match.score?.homeScore"
                       [awayScore]="match.score?.awayScore"
                       [forfeitedTeamName]="
@@ -145,10 +134,10 @@
             class="standings-page__third-place"
             [id]="'bracket-round-' + selectedTab() + '-third'"
           >
-            <h3>Match pour la 3e place</h3>
+            <h3>Pour la 3e place</h3>
             <ap-bracket-match
-              [homeTeam]="match.homeTeam ?? { name: '—' }"
-              [awayTeam]="match.awayTeam ?? { name: '—' }"
+              [homeTeam]="match.homeTeam ?? { name: match.homeSourceLabel ?? '—' }"
+              [awayTeam]="match.awayTeam ?? { name: match.awaySourceLabel ?? '—' }"
               [homeScore]="match.score?.homeScore"
               [awayScore]="match.score?.awayScore"
               [forfeitedTeamName]="

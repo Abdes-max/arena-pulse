@@ -7,7 +7,7 @@ import {
   signal,
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { Badge, BadgeStatus, Button } from 'design-system';
+import { Badge, BadgeStatus, Button, Select, SelectOption } from 'design-system';
 import { DEFAULT_THEME, ThemeService } from 'design-tokens';
 import { AuthService } from '../../core/auth.service';
 import { Tournament, TournamentStatus } from '../../core/models';
@@ -22,11 +22,22 @@ const STATUS_TO_BADGE: Record<TournamentStatus, BadgeStatus> = {
   ARCHIVED: 'archived',
 };
 
+// Same French wording as ap-badge's own default labels for these statuses
+// (libs/design-system/src/lib/badge/badge.ts) -- kept in sync by hand since
+// this is a filter's option list, not a per-row badge render.
+const STATUS_OPTIONS: SelectOption[] = [
+  { value: 'ALL', label: 'Tous' },
+  { value: 'DRAFT', label: 'Brouillon' },
+  { value: 'PUBLISHED', label: 'Publié' },
+  { value: 'UNPUBLISHED', label: 'Dépublié' },
+  { value: 'ARCHIVED', label: 'Archivé' },
+];
+
 const DISMISSED_STORAGE_PREFIX = 'arena-pulse:onboarding-dismissed:';
 
 @Component({
   selector: 'app-tournament-list-page',
-  imports: [Badge, Button, OnboardingChecklist],
+  imports: [Badge, Button, OnboardingChecklist, Select],
   templateUrl: './tournament-list.page.html',
   styleUrl: './tournament-list.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -45,6 +56,15 @@ export class TournamentListPage {
   protected readonly tournaments = signal<Tournament[]>([]);
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal<string | null>(null);
+
+  protected readonly statusOptions = STATUS_OPTIONS;
+  protected readonly selectedStatus = signal<TournamentStatus | 'ALL'>('ALL');
+  protected readonly filteredTournaments = computed(() => {
+    const status = this.selectedStatus();
+    return status === 'ALL'
+      ? this.tournaments()
+      : this.tournaments().filter((tournament) => tournament.status === status);
+  });
 
   private readonly hasTeam = signal(false);
   private readonly hasStructure = signal(false);
@@ -181,6 +201,10 @@ export class TournamentListPage {
         }
         break;
     }
+  }
+
+  protected onStatusFilterChange(value: string): void {
+    this.selectedStatus.set(value as TournamentStatus | 'ALL');
   }
 
   protected goToCreate(): void {

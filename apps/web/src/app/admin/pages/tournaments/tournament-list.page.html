@@ -22,39 +22,95 @@
     @if (tournaments().length === 0) {
       <p>Aucun tournoi pour l'instant.</p>
     } @else {
-      <table class="tournament-list-page__table">
-        <thead>
-          <tr>
-            <th scope="col">Nom</th>
-            <th scope="col">Sport</th>
-            <th scope="col">Statut</th>
-            <th scope="col">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (tournament of tournaments(); track tournament.id) {
+      <div class="tournament-list-page__selects-row">
+        <ap-select
+          class="tournament-list-page__select"
+          label="Statut"
+          [options]="statusOptions"
+          [value]="selectedStatus()"
+          (valueChange)="onStatusFilterChange($event)"
+        />
+      </div>
+
+      @if (filteredTournaments().length === 0) {
+        <p>Aucun tournoi avec ce statut.</p>
+      } @else {
+        <table class="tournament-list-page__table">
+          <thead>
             <tr>
-              <td>{{ tournament.name }}</td>
-              <td>{{ tournament.sportName }}</td>
-              <td><ap-badge [status]="statusBadge[tournament.status]" /></td>
-              <td class="tournament-list-page__actions">
-                <ap-button type="button" variant="ghost" (click)="editTournament(tournament)">
-                  Modifier
-                </ap-button>
-                <ap-button type="button" variant="ghost" (click)="duplicate(tournament)"
-                  >Dupliquer</ap-button
-                >
-                <ap-button variant="ghost" [href]="publicUrl(tournament)" target="_blank">
-                  Lien public
-                </ap-button>
-                <ap-button type="button" variant="ghost" (click)="toggleArchive(tournament)">
-                  {{ tournament.status === 'ARCHIVED' ? 'Désarchiver' : 'Archiver' }}
-                </ap-button>
-              </td>
+              <th scope="col">Nom</th>
+              <th scope="col">Sport</th>
+              <th scope="col">Statut</th>
+              <th scope="col">Actions</th>
             </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            @for (tournament of filteredTournaments(); track tournament.id) {
+              <tr>
+                <td>{{ tournament.name }}</td>
+                <td>{{ tournament.sportName }}</td>
+                <td><ap-badge [status]="statusBadge[tournament.status]" /></td>
+                <td class="tournament-list-page__actions">
+                  <ap-button
+                    type="button"
+                    variant="primary"
+                    size="sm"
+                    (click)="editTournament(tournament)"
+                  >
+                    Modifier
+                  </ap-button>
+                  <ap-button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    (click)="duplicate(tournament)"
+                  >
+                    Dupliquer
+                  </ap-button>
+                  <ap-button
+                    variant="ghost"
+                    size="sm"
+                    [href]="tournament.status === 'PUBLISHED' ? publicUrl(tournament) : undefined"
+                    [disabled]="tournament.status !== 'PUBLISHED'"
+                    target="_blank"
+                  >
+                    <svg
+                      class="tournament-list-page__public-link-icon"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M6.5 3H3.5C3.22386 3 3 3.22386 3 3.5V12.5C3 12.7761 3.22386 13 3.5 13H12.5C12.7761 13 13 12.7761 13 12.5V9.5"
+                        stroke="currentColor"
+                        stroke-width="1.3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                      <path
+                        d="M9.5 3H13V6.5M13 3L7.5 8.5"
+                        stroke="currentColor"
+                        stroke-width="1.3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                    Lien public
+                  </ap-button>
+                  <ap-button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    (click)="toggleArchive(tournament)"
+                  >
+                    {{ tournament.status === 'ARCHIVED' ? 'Désarchiver' : 'Archiver' }}
+                  </ap-button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
     }
   }
 </main>
