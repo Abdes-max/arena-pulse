@@ -146,8 +146,7 @@ export class StructurePage {
       : 0;
     return this.presetTiers().map((tier, index) => ({
       name: tier.name.trim() || `Palier ${index + 1}`,
-      size:
-        poolCount * (Number(tier.qualifiersPerPool) || 0) + (index === 0 ? bestCount : 0),
+      size: poolCount * (Number(tier.qualifiersPerPool) || 0) + (index === 0 ? bestCount : 0),
     }));
   });
 
