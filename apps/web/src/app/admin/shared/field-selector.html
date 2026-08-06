@@ -1,0 +1,23 @@
+<div class="field-selector">
+  <div class="field-selector__header">
+    <span class="field-selector__count">
+      {{ selectedIds().length }}/{{ fields().length }} terrain(s)
+    </span>
+    <button type="button" class="field-selector__select-all" (click)="toggleAll()">
+      {{ allSelected() ? 'Tout désélectionner' : 'Tout sélectionner' }}
+    </button>
+  </div>
+  <div class="field-selector__chips">
+    @for (field of fields(); track field.id) {
+      <button
+        type="button"
+        class="field-selector__chip"
+        [class.field-selector__chip--selected]="isSelected(field.id)"
+        [attr.aria-pressed]="isSelected(field.id)"
+        (click)="toggle(field.id)"
+      >
+        {{ field.venueName }} — {{ field.name }}
+      </button>
+    }
+  </div>
+</div>

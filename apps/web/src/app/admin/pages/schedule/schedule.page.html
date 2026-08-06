@@ -38,20 +38,11 @@
           @if (venues().length === 0) {
             <p>Ajoutez d'abord un site et des terrains sur la page du tournoi.</p>
           } @else if (selectedPhase(); as phase) {
-            <div class="schedule-page__fields">
-              @for (venue of venues(); track venue.id) {
-                @for (field of venue.fields; track field.id) {
-                  <label class="schedule-page__checkbox-label">
-                    <input
-                      type="checkbox"
-                      [checked]="selectedFieldIds().includes(field.id)"
-                      (change)="onFieldToggle(field.id, $event)"
-                    />
-                    {{ venue.name }} — {{ field.name }}
-                  </label>
-                }
-              }
-            </div>
+            <app-field-selector
+              [fields]="fields()"
+              [selectedIds]="selectedFieldIds()"
+              (selectedIdsChange)="selectedFieldIds.set($event)"
+            />
 
             <div class="schedule-page__inline-form">
               <ap-text-field

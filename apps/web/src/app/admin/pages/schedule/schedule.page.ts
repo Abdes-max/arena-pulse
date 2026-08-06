@@ -28,6 +28,7 @@ import { ScheduleService } from '../../core/schedule.service';
 import { TeamsService } from '../../core/teams.service';
 import { TimeSlotsService } from '../../core/timeslots.service';
 import { TournamentsService } from '../../core/tournaments.service';
+import { FieldSelector } from '../../shared/field-selector';
 import { groupMatchesByPhaseSection, matchRoundLabel } from 'shared-models';
 
 interface TimeSlotDraft {
@@ -40,7 +41,7 @@ const EMPTY_DRAFT: TimeSlotDraft = { start: '', end: '', label: '' };
 
 @Component({
   selector: 'app-schedule-page',
-  imports: [Button, Select, TextField, NgTemplateOutlet],
+  imports: [Button, Select, TextField, NgTemplateOutlet, FieldSelector],
   templateUrl: './schedule.page.html',
   styleUrl: './schedule.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -291,13 +292,6 @@ export class SchedulePage {
     } catch {
       this.errorMessage.set('Impossible de charger le calendrier.');
     }
-  }
-
-  protected onFieldToggle(fieldId: string, event: Event): void {
-    const checked = (event.target as HTMLInputElement).checked;
-    this.selectedFieldIds.update((ids) =>
-      checked ? [...ids, fieldId] : ids.filter((id) => id !== fieldId),
-    );
   }
 
   protected onStartDateTimeChange(value: string): void {

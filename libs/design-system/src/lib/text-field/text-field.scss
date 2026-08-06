@@ -68,6 +68,13 @@
       margin: 0;
     }
   }
+
+  // The native picker's own segments (date + time + calendar icon) only
+  // need so much room -- stretching to 100% in a flex row left a lot of
+  // empty padding and read as oversized/unstyled.
+  &[type='datetime-local'] {
+    max-width: 16rem;
+  }
 }
 
 :host([data-invalid]) .ap-text-field__input {
