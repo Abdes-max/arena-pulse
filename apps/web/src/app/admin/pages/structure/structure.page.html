@@ -97,24 +97,28 @@
                     [value]="rule.lossPoints.toString()"
                     (valueChange)="updateStandingRuleField(phase.id, 'lossPoints', $event)"
                   />
-                  <label class="structure-page__checkbox-label">
-                    <input
-                      type="checkbox"
-                      [checked]="rule.supplementaryStandingEnabled"
-                      (change)="
-                        toggleStandingRuleFlag(phase.id, 'supplementaryStandingEnabled', $event)
-                      "
-                    />
-                    Classement additionnel (fair-play)
-                  </label>
-                  <label class="structure-page__checkbox-label">
-                    <input
-                      type="checkbox"
-                      [checked]="rule.penaltyShootoutEnabled"
-                      (change)="toggleStandingRuleFlag(phase.id, 'penaltyShootoutEnabled', $event)"
-                    />
-                    Tirs au but en cas d'égalité
-                  </label>
+                  <div class="structure-page__checkbox-row">
+                    <label class="structure-page__checkbox-label">
+                      <input
+                        type="checkbox"
+                        [checked]="rule.supplementaryStandingEnabled"
+                        (change)="
+                          toggleStandingRuleFlag(phase.id, 'supplementaryStandingEnabled', $event)
+                        "
+                      />
+                      Classement additionnel (fair-play)
+                    </label>
+                    <label class="structure-page__checkbox-label">
+                      <input
+                        type="checkbox"
+                        [checked]="rule.penaltyShootoutEnabled"
+                        (change)="
+                          toggleStandingRuleFlag(phase.id, 'penaltyShootoutEnabled', $event)
+                        "
+                      />
+                      Tirs au but en cas d'égalité
+                    </label>
+                  </div>
                   <p class="structure-page__hint">
                     Critères de départage : {{ rule.tieBreakOrder.join(' → ') }}
                   </p>
@@ -178,9 +182,6 @@
                 <div class="structure-page__group-header">
                   <strong>{{ group.name }}</strong>
                   <div class="structure-page__group-actions">
-                    <ap-button type="button" variant="ghost" (click)="toggleGroupDetails(group)">
-                      {{ expandedGroupId() === group.id ? 'Masquer' : 'Détails' }}
-                    </ap-button>
                     <ap-button type="button" variant="ghost" (click)="removeGroup(phase, group)">
                       Supprimer
                     </ap-button>
@@ -198,26 +199,20 @@
                   }
                 </ul>
 
-                @if (expandedGroupId() === group.id) {
-                  <div class="structure-page__group-details">
-                    <div class="structure-page__inline-form">
-                      <ap-select
-                        label="Choisir une équipe"
-                        [hideLabel]="true"
-                        [options]="unassignedTeamOptions()"
-                        [value]="newTeamIdToAssign()"
-                        (valueChange)="onNewTeamIdToAssignChange($event)"
-                      />
-                      <ap-button
-                        type="button"
-                        variant="ghost"
-                        (click)="assignTeamToExpandedGroup()"
-                      >
-                        Ajouter l'équipe à la poule
-                      </ap-button>
-                    </div>
+                <div class="structure-page__group-details">
+                  <div class="structure-page__inline-form">
+                    <ap-select
+                      label="Choisir une équipe"
+                      [hideLabel]="true"
+                      [options]="unassignedTeamOptions()"
+                      [value]="teamIdToAssignFor(group.id)"
+                      (valueChange)="onNewTeamIdToAssignChange(group.id, $event)"
+                    />
+                    <ap-button type="button" variant="ghost" (click)="assignTeamToGroup(group.id)">
+                      Ajouter l'équipe à la poule
+                    </ap-button>
                   </div>
-                }
+                </div>
               </div>
             }
             <div class="structure-page__inline-form">

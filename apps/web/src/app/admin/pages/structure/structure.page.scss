@@ -120,6 +120,12 @@
   gap: var(--ap-space-2) !important;
 }
 
+.structure-page__checkbox-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ap-space-4);
+}
+
 .structure-page__hint {
   flex-basis: 100%;
   font-size: 0.85rem;

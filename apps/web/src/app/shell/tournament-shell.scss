@@ -9,6 +9,9 @@
 }
 
 .tournament-shell__hero {
+  position: sticky;
+  top: 0;
+  z-index: var(--ap-z-sticky);
   background: var(--ap-color-surface);
   border-bottom: var(--ap-border-width) solid var(--ap-color-border);
 }

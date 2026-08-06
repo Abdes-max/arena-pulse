@@ -1,3 +1,5 @@
+import type { CompetitionPhase, Match } from './models';
+
 // French knockout-round naming, by distance from the final (fromEnd = 0 is
 // the final itself, 1 = semifinals, 2 = quarterfinals, 3 = round of 16...).
 // The "Xièmes de finale" naming counts *matches* in that round, not teams --
@@ -43,4 +45,32 @@ export function eliminatedAtLabel(fromEnd: number): string {
     return 'Demi-finaliste éliminé';
   }
   return `${ordinalWord(fromEnd)} de finaliste éliminé`;
+}
+
+/** Compact fraction label for tight spaces (match card headers): "1/8", "1/4", "1/2", "Finale". */
+export function roundLabelCompact(fromEnd: number): string {
+  return fromEnd <= 0 ? 'Finale' : `1/${2 ** fromEnd}`;
+}
+
+/**
+ * A match's round, formatted for display: "Tour N" for group-stage matches
+ * (round there just counts matchdays, no bracket to name rounds after), the
+ * knockout round name/fraction otherwise -- style 'compact' picks the
+ * "1/8"/"1/4" fraction notation, 'full' the French word ("Huitième de
+ * finale") used elsewhere (bracket columns, final ranking).
+ */
+export function matchRoundLabel(
+  phase: Pick<CompetitionPhase, 'type' | 'knockoutBracket'>,
+  match: Pick<Match, 'round' | 'isThirdPlaceMatch'>,
+  style: 'compact' | 'full' = 'full',
+): string {
+  if (phase.type === 'GROUP_STAGE' || !phase.knockoutBracket) {
+    return `Tour ${match.round}`;
+  }
+  if (match.isThirdPlaceMatch) {
+    return 'Match pour la 3e place';
+  }
+  const totalRounds = Math.log2(phase.knockoutBracket.size);
+  const fromEnd = totalRounds - match.round;
+  return style === 'compact' ? roundLabelCompact(fromEnd) : roundLabel(fromEnd);
 }

@@ -66,8 +66,10 @@ export class StructurePage {
     Record<string, { name: string; size: string; hasRankingMatch: boolean }>
   >({});
 
-  protected readonly expandedGroupId = signal<string | null>(null);
-  protected readonly newTeamIdToAssign = signal('');
+  // Add-team form is shown for every pool at once now (not just one
+  // "expanded" pool at a time), so the pending team selection is kept per
+  // pool -- same Map-per-entity pattern as newGroupNameByPhase above.
+  protected readonly newTeamIdToAssignByGroup = signal<Record<string, string>>({});
 
   // Keyed by phaseId -- one barème / one set of qualification rules per
   // group-stage phase, applied under the hood to every pool it contains.
@@ -129,7 +131,7 @@ export class StructurePage {
 
   protected async onCategoryChange(categoryId: string): Promise<void> {
     this.selectedCategoryId.set(categoryId);
-    this.expandedGroupId.set(null);
+    this.newTeamIdToAssignByGroup.set({});
     await this.loadCategoryData();
   }
 
@@ -376,9 +378,9 @@ export class StructurePage {
           p.id === phase.id ? { ...p, groups: p.groups.filter((g) => g.id !== group.id) } : p,
         ),
       );
-      if (this.expandedGroupId() === group.id) {
-        this.expandedGroupId.set(null);
-      }
+      this.newTeamIdToAssignByGroup.update((drafts) =>
+        Object.fromEntries(Object.entries(drafts).filter(([id]) => id !== group.id)),
+      );
       // Deleting the pool cascades its StandingRule/QualificationRule rows server-side --
       // drop the now-stale group id from the phase-level bookkeeping too.
       this.phaseQualificationRuleGroups.update((map) => {
@@ -394,11 +396,6 @@ export class StructurePage {
     } catch {
       this.errorMessage.set('Impossible de supprimer cette poule.');
     }
-  }
-
-  protected toggleGroupDetails(group: CompetitionGroup): void {
-    this.expandedGroupId.set(this.expandedGroupId() === group.id ? null : group.id);
-    this.newTeamIdToAssign.set('');
   }
 
   protected standingRuleFor(phaseId: string): StandingRule | undefined {
@@ -463,15 +460,18 @@ export class StructurePage {
     }
   }
 
-  protected onNewTeamIdToAssignChange(teamId: string): void {
-    this.newTeamIdToAssign.set(teamId);
+  protected teamIdToAssignFor(groupId: string): string {
+    return this.newTeamIdToAssignByGroup()[groupId] ?? '';
   }
 
-  protected async assignTeamToExpandedGroup(): Promise<void> {
+  protected onNewTeamIdToAssignChange(groupId: string, teamId: string): void {
+    this.newTeamIdToAssignByGroup.update((drafts) => ({ ...drafts, [groupId]: teamId }));
+  }
+
+  protected async assignTeamToGroup(groupId: string): Promise<void> {
     const organizationId = this.organization()?.id;
-    const groupId = this.expandedGroupId();
-    const teamId = this.newTeamIdToAssign();
-    if (!organizationId || !groupId || !teamId) {
+    const teamId = this.teamIdToAssignFor(groupId);
+    if (!organizationId || !teamId) {
       return;
     }
     try {
@@ -482,7 +482,7 @@ export class StructurePage {
         groupId,
       );
       this.teams.update((teams) => teams.map((t) => (t.id === updated.id ? updated : t)));
-      this.newTeamIdToAssign.set('');
+      this.onNewTeamIdToAssignChange(groupId, '');
     } catch {
       this.errorMessage.set("Impossible d'affecter cette équipe à la poule.");
     }

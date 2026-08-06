@@ -51,6 +51,18 @@
   font-size: 0.9rem;
 }
 
+.scores-page__round-badge {
+  flex: 0 0 auto;
+  padding: 0.15rem var(--ap-space-2);
+  background: var(--ap-color-primary);
+  color: var(--ap-color-on-primary);
+  border-radius: var(--ap-radius-sm);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
 .scores-page__field-name {
   font-size: 0.75rem;
   color: var(--ap-color-muted);
