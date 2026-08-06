@@ -16,17 +16,18 @@ import {
   IonSegment,
   IonSegmentButton,
 } from '@ionic/angular/standalone';
-import { Badge, MatchCard, MatchCardVariant } from 'design-system';
+import { Badge, BracketMatch } from 'design-system';
 import {
   BracketView,
   Category,
   CompetitionPhase,
   FinalRankingRow,
-  Match,
   Qualification,
+  QualificationTierColor,
   Standings,
   buildBracketView,
   computeFinalRanking,
+  qualificationTierColor,
 } from 'shared-models';
 import { OfflineCacheService } from '../../core/offline-cache.service';
 import { TournamentContextService } from '../../core/tournament-context.service';
@@ -36,6 +37,12 @@ interface GroupStandings {
   groupName: string;
   standings: Standings;
   qualifications: Qualification[];
+}
+
+interface QualificationTier {
+  label: string;
+  color: string;
+  soft: string;
 }
 
 type StandingsTab = 'pools' | 'final' | 'ranking';
@@ -50,6 +57,9 @@ interface CachedStandingsSnapshot {
   finalRanking: FinalRankingRow[];
 }
 
+/** Row height (px) used to size the bracket tree so every round column shares the same total height. */
+const BRACKET_ROW_HEIGHT = 96;
+
 @Component({
   selector: 'app-standings-page',
   imports: [
@@ -60,7 +70,7 @@ interface CachedStandingsSnapshot {
     IonItem,
     IonLabel,
     Badge,
-    MatchCard,
+    BracketMatch,
     IonButton,
   ],
   templateUrl: './standings.page.html',
@@ -95,13 +105,34 @@ export class StandingsPage {
   protected readonly bracketPhaseOptions = computed(() =>
     this.knockoutPhases().map((phase) => ({ value: phase.id, label: phase.name })),
   );
+
+  // Every KNOCKOUT phase in this category, in tournament order -- used to
+  // color-code and label the "Qualifié" badge once a pool's teams can be
+  // routed to more than one tier (e.g. 1-2 -> LDC, 3-4 -> EP, 5 -> CF).
+  // Unlike knockoutPhases above (which feeds the bracket tabs), this doesn't
+  // require the bracket to already be generated -- a QualificationRule can
+  // target a phase before its bracket exists.
+  protected readonly qualificationTierPhases = computed(() =>
+    this.phases()
+      .filter((phase) => phase.type === 'KNOCKOUT')
+      .sort((a, b) => a.position - b.position),
+  );
+
+  private readonly tierColorByPhaseId = computed(() => {
+    const tiers = this.qualificationTierPhases();
+    const map = new Map<string, QualificationTierColor>();
+    tiers.forEach((phase, index) => {
+      map.set(phase.id, qualificationTierColor(index, tiers.length));
+    });
+    return map;
+  });
   protected readonly selectedBracket = computed(() =>
     this.bracketByPhase().get(this.selectedBracketPhaseId()),
   );
 
-  // Rounds render one at a time (segment tabs) instead of all stacked
-  // vertically -- reaching the final used to mean scrolling past every
-  // earlier round's matches first.
+  // Quick-jump row above the connected bracket tree: tapping a round scrolls
+  // it into view instead of making the visitor drag the horizontal scroll
+  // all the way there themselves -- mirrors apps/web's public standings page.
   protected readonly selectedRoundValue = signal('');
   protected readonly roundOptions = computed(() => {
     const bracket = this.selectedBracket();
@@ -113,20 +144,9 @@ export class StandingsPage {
       label: round.label,
     }));
     if (bracket.thirdPlaceMatch) {
-      options.push({ value: 'third', label: 'Match pour la 3e place' });
+      options.push({ value: 'third', label: 'Pour la 3e place' });
     }
     return options;
-  });
-  protected readonly selectedRoundMatches = computed(() => {
-    const bracket = this.selectedBracket();
-    if (!bracket) {
-      return [];
-    }
-    if (this.selectedRoundValue() === 'third') {
-      return bracket.thirdPlaceMatch ? [bracket.thirdPlaceMatch] : [];
-    }
-    const round = bracket.rounds.find((r) => String(r.round) === this.selectedRoundValue());
-    return round?.matches ?? [];
   });
 
   protected readonly podium = computed(() => {
@@ -205,6 +225,14 @@ export class StandingsPage {
 
   protected onRoundChange(value: string): void {
     this.selectedRoundValue.set(value);
+    document
+      .getElementById(`bracket-round-${this.selectedBracketPhaseId()}-${value}`)
+      ?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+  }
+
+  protected bracketHeight(bracket: BracketView): number {
+    const firstRoundCount = bracket.rounds[0]?.matches.length ?? 1;
+    return firstRoundCount * BRACKET_ROW_HEIGHT;
   }
 
   // ion-segment's ionChange event types its value as SegmentValue (string |
@@ -292,13 +320,20 @@ export class StandingsPage {
     );
   }
 
-  // ap-match-card is the shared design-system component web already uses
-  // for a match's box/background/badge -- keeps the "Phase finale" round
-  // list visually identical to schedule.page's cards.
-  protected variantFor(match: Match): MatchCardVariant {
-    if (match.status === 'LIVE') {
-      return 'live';
+  // Only meaningful once there's more than one knockout tier -- with just
+  // one, the generic "Qualifié" badge (isQualified above) already says all
+  // there is to say, no need to name it.
+  protected qualificationTier(group: GroupStandings, teamId: string): QualificationTier | null {
+    if (this.qualificationTierPhases().length < 2) {
+      return null;
     }
-    return match.score ? 'result' : 'upcoming';
+    const qualification = group.qualifications.find((qual) =>
+      qual.qualifiedTeams.some((team) => team.id === teamId),
+    );
+    if (!qualification) {
+      return null;
+    }
+    const tierColor = this.tierColorByPhaseId().get(qualification.targetPhaseId);
+    return tierColor ? { label: qualification.targetPhaseName, ...tierColor } : null;
   }
 }
