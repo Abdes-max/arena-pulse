@@ -19,6 +19,110 @@
         (valueChange)="onCategoryChange($event)"
       />
 
+      @if (phases().length === 0) {
+        <section class="structure-page__section">
+          <h2>Mode Tournoi</h2>
+          <p class="structure-page__hint">
+            Génère d'un coup les poules, le tableau à élimination directe et le calendrier des
+            poules, à partir des équipes déjà créées dans cette catégorie.
+          </p>
+          @if (presetSuccessMessage(); as message) {
+            <p class="structure-page__success">{{ message }}</p>
+          }
+          @if (presetError(); as message) {
+            <p class="structure-page__error" role="alert">{{ message }}</p>
+          }
+
+          <h3>Poules</h3>
+          <div class="structure-page__inline-form">
+            <ap-text-field
+              label="Nombre d'équipes"
+              type="number"
+              [min]="1"
+              [value]="presetTeamCount()"
+              (valueChange)="onPresetTeamCountChange($event)"
+            />
+            <ap-text-field
+              label="Nombre de poules"
+              type="number"
+              [min]="1"
+              [value]="presetPoolCount()"
+              (valueChange)="onPresetPoolCountChange($event)"
+            />
+            <ap-text-field
+              label="Qualifiés par poule"
+              type="number"
+              [min]="1"
+              [value]="presetQualifiersPerPool()"
+              (valueChange)="onPresetQualifiersPerPoolChange($event)"
+            />
+          </div>
+          @if (presetBracketSize(); as size) {
+            <p class="structure-page__hint">Tableau final : {{ size }} équipes.</p>
+          }
+          @if (presetValidationError(); as message) {
+            <p class="structure-page__error" role="alert">{{ message }}</p>
+          }
+
+          <h3>Calendrier des poules</h3>
+          <div class="structure-page__fields">
+            @for (venue of venues(); track venue.id) {
+              @for (field of venue.fields; track field.id) {
+                <label class="structure-page__checkbox-label">
+                  <input
+                    type="checkbox"
+                    [checked]="presetFieldIds().includes(field.id)"
+                    (change)="onPresetFieldToggle(field.id, $event)"
+                  />
+                  {{ venue.name }} — {{ field.name }}
+                </label>
+              }
+            }
+          </div>
+          <ap-text-field
+            label="Début"
+            type="datetime-local"
+            [value]="presetStartDateTime()"
+            (valueChange)="onPresetStartDateTimeChange($event)"
+          />
+
+          <h3>Tableau final</h3>
+          <p class="structure-page__hint">
+            Ne peut pas être généré maintenant (les qualifiés ne sont connus qu'une fois les poules
+            jouées) -- ces choix sont juste enregistrés pour pré-remplir "Générer les matchs du
+            tableau" sur la page Calendrier le moment venu.
+          </p>
+          <div class="structure-page__fields">
+            @for (venue of venues(); track venue.id) {
+              @for (field of venue.fields; track field.id) {
+                <label class="structure-page__checkbox-label">
+                  <input
+                    type="checkbox"
+                    [checked]="presetKnockoutFieldIds().includes(field.id)"
+                    (change)="onPresetKnockoutFieldToggle(field.id, $event)"
+                  />
+                  {{ venue.name }} — {{ field.name }}
+                </label>
+              }
+            }
+          </div>
+          <ap-text-field
+            label="Début"
+            type="datetime-local"
+            [value]="presetKnockoutStartDateTime()"
+            (valueChange)="onPresetKnockoutStartDateTimeChange($event)"
+          />
+
+          <ap-button
+            type="button"
+            [disabled]="!presetCanSubmit() || presetSubmitting()"
+            (click)="generateStructurePreset()"
+          >
+            Générer la structure
+          </ap-button>
+        </section>
+      }
+
       <section class="structure-page__section">
         <h2>Ajouter une phase</h2>
         <div class="structure-page__inline-form">

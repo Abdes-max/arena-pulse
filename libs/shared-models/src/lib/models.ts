@@ -49,6 +49,11 @@ export interface KnockoutBracket {
   name: string;
   size: number;
   hasRankingMatch: boolean;
+  // Fields/date already picked for this bracket's eventual match generation
+  // (e.g. via the structure-preset generator), before pool standings decide
+  // who actually qualifies -- see "Générer les matchs du tableau" pre-fill.
+  plannedFieldIds: string[];
+  plannedStartDateTime: string | null;
 }
 
 export interface CompetitionGroup {

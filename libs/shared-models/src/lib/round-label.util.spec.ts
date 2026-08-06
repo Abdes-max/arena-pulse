@@ -89,6 +89,8 @@ describe('round-label.util', () => {
           name: 'Tableau',
           size: 4,
           hasRankingMatch: false,
+          plannedFieldIds: [],
+          plannedStartDateTime: null,
         },
       };
       const matches = [
@@ -114,6 +116,8 @@ describe('round-label.util', () => {
           name: 'Tableau',
           size: 4,
           hasRankingMatch: true,
+          plannedFieldIds: [],
+          plannedStartDateTime: null,
         },
       };
       const matches = [

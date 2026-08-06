@@ -29,7 +29,15 @@ function phase(id: string, name: string, size = 4): CompetitionPhase {
     type: 'KNOCKOUT',
     position: 0,
     groups: [],
-    knockoutBracket: { id: 'bracket-1', phaseId: id, name, size, hasRankingMatch: true },
+    knockoutBracket: {
+      id: 'bracket-1',
+      phaseId: id,
+      name,
+      size,
+      hasRankingMatch: true,
+      plannedFieldIds: [],
+      plannedStartDateTime: null,
+    },
   };
 }
 

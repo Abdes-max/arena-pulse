@@ -39,6 +39,8 @@ import { StandingRulesController } from './standing-rules.controller';
 import { StandingRulesService } from './standing-rules.service';
 import { StandingsController } from './standings.controller';
 import { StandingsService } from './standings.service';
+import { StructurePresetsController } from './structure-presets.controller';
+import { StructurePresetsService } from './structure-presets.service';
 import { TeamsController } from './teams.controller';
 import { TeamsService } from './teams.service';
 import { TimeSlotsController } from './timeslots.controller';
@@ -66,6 +68,7 @@ import { VenuesService } from './venues.service';
     StandingRulesController,
     KnockoutBracketsController,
     QualificationRulesController,
+    StructurePresetsController,
     ScheduleController,
     MatchesController,
     ScoresController,
@@ -89,6 +92,7 @@ import { VenuesService } from './venues.service';
     StandingRulesService,
     KnockoutBracketsService,
     QualificationRulesService,
+    StructurePresetsService,
     ScheduleGenerationService,
     MatchesService,
     RecapRenderService,

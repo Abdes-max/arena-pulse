@@ -253,8 +253,29 @@ export class SchedulePage {
       this.matchDurationMinutes.set(String(phase.matchDurationMinutes));
       this.breakDurationMinutes.set(String(phase.breakDurationMinutes));
       this.refereesPerMatch.set(this.hasReferees() ? String(phase.refereesPerMatch) : '0');
+
+      // "Mode Tournoi" may have already captured fields/date intended for
+      // this bracket (before pool standings decided who qualifies) --
+      // pre-fill from them so the organizer doesn't have to re-enter the
+      // same choices once pool play concludes and it's time to generate
+      // the bracket for real.
+      if (phase.knockoutBracket?.plannedFieldIds.length) {
+        this.selectedFieldIds.set(phase.knockoutBracket.plannedFieldIds);
+      }
+      if (phase.knockoutBracket?.plannedStartDateTime) {
+        this.startDateTime.set(
+          this.toDateTimeLocalValue(phase.knockoutBracket.plannedStartDateTime),
+        );
+      }
     }
     await this.loadMatches();
+  }
+
+  /** ISO string -> "YYYY-MM-DDTHH:mm" (local time, no seconds), the format a datetime-local input expects. */
+  private toDateTimeLocalValue(iso: string): string {
+    const date = new Date(iso);
+    const pad = (n: number) => String(n).padStart(2, '0');
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
   }
 
   private async loadMatches(): Promise<void> {
