@@ -65,11 +65,14 @@ services:
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set -- e.g. openssl rand -base64 48}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-3600s}
       JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-30d}
-      # Same-origin in this deployment shape (web's nginx proxies /api/ to
-      # this service) -- still required (main.ts refuses to boot in
-      # production without it) and worth setting correctly for the case a
-      # client calls the API directly rather than through the nginx proxy.
-      CORS_ORIGIN: ${WEB_PUBLIC_ORIGIN:?WEB_PUBLIC_ORIGIN must be set, e.g. https://tournois.example.com}
+      # Same-origin for the web app in this deployment shape (its nginx
+      # proxies /api/ to this service), but the mobile app is not served
+      # from WEB_PUBLIC_ORIGIN at all -- it calls this API directly from its
+      # own Capacitor origin, which is fixed by Capacitor itself (not
+      # deployment-specific), hence hardcoded here rather than sourced from
+      # .env: capacitor://localhost on iOS, https://localhost on Android.
+      # main.ts (CORS_ORIGIN parsing) splits on comma.
+      CORS_ORIGIN: ${WEB_PUBLIC_ORIGIN:?WEB_PUBLIC_ORIGIN must be set, e.g. https://tournois.example.com},capacitor://localhost,https://localhost
       ADMIN_WEB_URL: ${WEB_PUBLIC_ORIGIN:?}
       SMTP_HOST: ${SMTP_HOST:?SMTP_HOST must be set -- e.g. smtp-relay.brevo.com}
       SMTP_PORT: ${SMTP_PORT:-587}
