@@ -70,20 +70,11 @@
           }
 
           <h3>Calendrier des poules</h3>
-          <div class="structure-page__fields">
-            @for (venue of venues(); track venue.id) {
-              @for (field of venue.fields; track field.id) {
-                <label class="structure-page__checkbox-label">
-                  <input
-                    type="checkbox"
-                    [checked]="presetFieldIds().includes(field.id)"
-                    (change)="onPresetFieldToggle(field.id, $event)"
-                  />
-                  {{ venue.name }} — {{ field.name }}
-                </label>
-              }
-            }
-          </div>
+          <app-field-selector
+            [fields]="fields()"
+            [selectedIds]="presetFieldIds()"
+            (selectedIdsChange)="presetFieldIds.set($event)"
+          />
           <ap-text-field
             label="Début"
             type="datetime-local"
@@ -97,20 +88,11 @@
             jouées) -- ces choix sont juste enregistrés pour pré-remplir "Générer les matchs du
             tableau" sur la page Calendrier le moment venu.
           </p>
-          <div class="structure-page__fields">
-            @for (venue of venues(); track venue.id) {
-              @for (field of venue.fields; track field.id) {
-                <label class="structure-page__checkbox-label">
-                  <input
-                    type="checkbox"
-                    [checked]="presetKnockoutFieldIds().includes(field.id)"
-                    (change)="onPresetKnockoutFieldToggle(field.id, $event)"
-                  />
-                  {{ venue.name }} — {{ field.name }}
-                </label>
-              }
-            }
-          </div>
+          <app-field-selector
+            [fields]="fields()"
+            [selectedIds]="presetKnockoutFieldIds()"
+            (selectedIdsChange)="presetKnockoutFieldIds.set($event)"
+          />
           <ap-text-field
             label="Début"
             type="datetime-local"

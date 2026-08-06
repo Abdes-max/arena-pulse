@@ -38,21 +38,6 @@
   margin-top: var(--ap-space-6);
 }
 
-.schedule-page__fields {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--ap-space-3);
-  margin-top: var(--ap-space-2);
-}
-
-.schedule-page__checkbox-label {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: var(--ap-space-2);
-  font-size: 0.85rem;
-}
-
 .schedule-page__inline-form {
   display: flex;
   flex-wrap: wrap;

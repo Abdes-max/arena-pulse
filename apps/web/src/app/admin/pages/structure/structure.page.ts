@@ -15,6 +15,7 @@ import {
 } from '../../core/models';
 import { TeamsService } from '../../core/teams.service';
 import { TournamentsService } from '../../core/tournaments.service';
+import { FieldSelector } from '../../shared/field-selector';
 
 /**
  * The barème/qualification rules are stored per-group in the API (each
@@ -36,7 +37,7 @@ interface QualificationRuleGroup {
 
 @Component({
   selector: 'app-structure-page',
-  imports: [Button, Select, TextField],
+  imports: [Button, Select, TextField, FieldSelector],
   templateUrl: './structure.page.html',
   styleUrl: './structure.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -89,6 +90,11 @@ export class StructurePage {
   // "Mode Tournoi" -- one-click structure + pool calendar generator, only
   // offered while the category has no phases yet (see structure-presets.service.ts).
   protected readonly venues = signal<Venue[]>([]);
+  protected readonly fields = computed(() =>
+    this.venues().flatMap((venue) =>
+      venue.fields.map((field) => ({ ...field, venueName: venue.name })),
+    ),
+  );
 
   protected readonly presetTeamCount = signal('');
   protected readonly presetPoolCount = signal('');
@@ -835,20 +841,6 @@ export class StructurePage {
 
   protected onPresetKnockoutStartDateTimeChange(value: string): void {
     this.presetKnockoutStartDateTime.set(value);
-  }
-
-  protected onPresetFieldToggle(fieldId: string, event: Event): void {
-    const checked = (event.target as HTMLInputElement).checked;
-    this.presetFieldIds.update((ids) =>
-      checked ? [...ids, fieldId] : ids.filter((id) => id !== fieldId),
-    );
-  }
-
-  protected onPresetKnockoutFieldToggle(fieldId: string, event: Event): void {
-    const checked = (event.target as HTMLInputElement).checked;
-    this.presetKnockoutFieldIds.update((ids) =>
-      checked ? [...ids, fieldId] : ids.filter((id) => id !== fieldId),
-    );
   }
 
   protected async generateStructurePreset(): Promise<void> {
