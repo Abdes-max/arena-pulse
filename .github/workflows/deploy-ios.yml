@@ -1,0 +1,164 @@
+# Manual, one-click iOS release: builds apps/mobile, generates the iOS
+# native project fresh (ios/ is gitignored -- see apps/mobile's .gitignore,
+# same convention as android/ -- nothing native is committed, it's
+# regenerated from capacitor.config.ts + the web build on every run),
+# archives and signs it, then uploads straight to TestFlight via
+# xcodebuild's built-in "destination: upload" export (Xcode 13+ -- no
+# Fastlane/altool dependency needed).
+#
+# Cannot run successfully until the one-time Apple Developer Program +
+# App Store Connect setup is done and its secrets are added to this repo --
+# see docs/architecture/adr/0008-ios-distribution.md for the full checklist.
+# Required secrets, all under Settings -> Secrets and variables -> Actions:
+#   IOS_DIST_CERTIFICATE_P12_BASE64  -- `base64 -i Distribution.p12`
+#   IOS_DIST_CERTIFICATE_PASSWORD    -- password the .p12 was exported with
+#   IOS_PROVISIONING_PROFILE_BASE64  -- `base64 -i TournArena_AppStore.mobileprovision`
+#   IOS_KEYCHAIN_PASSWORD            -- any password; only used for this run's throwaway keychain
+#   APPLE_TEAM_ID                    -- Apple Developer "Team ID" (Membership page)
+#   APP_STORE_CONNECT_KEY_ID         -- App Store Connect API key ID
+#   APP_STORE_CONNECT_ISSUER_ID      -- App Store Connect API issuer ID
+#   APP_STORE_CONNECT_API_KEY_BASE64 -- `base64 -i AuthKey_<KEY_ID>.p8`
+name: Deploy iOS to TestFlight
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_number:
+        description: >-
+          CFBundleVersion for this upload -- must be strictly higher than the
+          last build TestFlight has for the current marketing version.
+          Defaults to the GitHub Actions run number.
+        required: false
+
+jobs:
+  ios:
+    name: Archive and upload to TestFlight
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build:libs
+      - run: npm run build:mobile
+
+      - name: Add/sync the iOS native project
+        working-directory: apps/mobile
+        run: |
+          set -euo pipefail
+          npx cap add ios
+          npx cap sync ios
+
+      - name: Import signing certificate and provisioning profile
+        env:
+          CERTIFICATE_BASE64: ${{ secrets.IOS_DIST_CERTIFICATE_P12_BASE64 }}
+          CERTIFICATE_PASSWORD: ${{ secrets.IOS_DIST_CERTIFICATE_PASSWORD }}
+          PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+          KEYCHAIN_PASSWORD: ${{ secrets.IOS_KEYCHAIN_PASSWORD }}
+        run: |
+          set -euo pipefail
+          CERT_PATH="$RUNNER_TEMP/dist_cert.p12"
+          PROFILE_PATH="$RUNNER_TEMP/profile.mobileprovision"
+          KEYCHAIN_PATH="$RUNNER_TEMP/ci-signing.keychain-db"
+
+          echo -n "$CERTIFICATE_BASE64" | base64 --decode -o "$CERT_PATH"
+          echo -n "$PROFILE_BASE64" | base64 --decode -o "$PROFILE_PATH"
+
+          # Fresh, CI-only keychain -- never touches the runner's default
+          # login keychain, and the whole VM (keychain included) is discarded
+          # when the job ends regardless of the cleanup step below.
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security import "$CERT_PATH" -P "$CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          security set-key-partition-list -S apple-tool:,apple: -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security list-keychain -d user -s "$KEYCHAIN_PATH" "$(security list-keychains -d user | sed 's/"//g')"
+
+          mkdir -p ~/Library/MobileDevice/"Provisioning Profiles"
+          cp "$PROFILE_PATH" ~/Library/MobileDevice/"Provisioning Profiles"/
+
+          echo "KEYCHAIN_PATH=$KEYCHAIN_PATH" >> "$GITHUB_ENV"
+          echo "PROFILE_PATH=$PROFILE_PATH" >> "$GITHUB_ENV"
+
+      - name: Read provisioning profile name
+        id: profile
+        run: |
+          set -euo pipefail
+          NAME=$(security cms -D -i "$PROFILE_PATH" | plutil -extract Name raw -)
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Set build number
+        working-directory: apps/mobile/ios/App
+        run: agvtool new-version -all "${{ inputs.build_number || github.run_number }}"
+
+      - name: Archive
+        working-directory: apps/mobile/ios/App
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          PROFILE_NAME: ${{ steps.profile.outputs.name }}
+        run: |
+          set -euo pipefail
+          xcodebuild -workspace App.xcworkspace -scheme App -configuration Release \
+            -archivePath "$RUNNER_TEMP/App.xcarchive" \
+            -destination 'generic/platform=iOS' \
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="Apple Distribution" \
+            DEVELOPMENT_TEAM="$APPLE_TEAM_ID" \
+            PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME" \
+            archive
+
+      - name: Write ExportOptions.plist
+        env:
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          PROFILE_NAME: ${{ steps.profile.outputs.name }}
+        run: |
+          set -euo pipefail
+          cat > "$RUNNER_TEMP/ExportOptions.plist" <<PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store</string>
+            <key>teamID</key>
+            <string>$APPLE_TEAM_ID</string>
+            <key>destination</key>
+            <string>upload</string>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>com.arenapulse.mobile</key>
+              <string>$PROFILE_NAME</string>
+            </dict>
+          </dict>
+          </plist>
+          PLIST
+
+      # xcodebuild's own "destination: upload" export (Xcode 13+) ships the
+      # archive straight to App Store Connect/TestFlight -- no separate
+      # altool/notarytool/Transporter step needed.
+      - name: Export & upload to TestFlight
+        env:
+          API_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
+          API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+        run: |
+          set -euo pipefail
+          mkdir -p ~/private_keys
+          echo -n "$API_KEY_BASE64" | base64 --decode -o ~/private_keys/AuthKey_"$API_KEY_ID".p8
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/App.xcarchive" \
+            -exportPath "$RUNNER_TEMP/export" \
+            -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
+            -authenticationKeyPath ~/private_keys/AuthKey_"$API_KEY_ID".p8 \
+            -authenticationKeyID "$API_KEY_ID" \
+            -authenticationKeyIssuerID "$API_ISSUER_ID"
+
+      - name: Clean up keychain
+        if: always()
+        run: security delete-keychain "$KEYCHAIN_PATH" || true

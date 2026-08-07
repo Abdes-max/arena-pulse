@@ -127,10 +127,19 @@ export class AuthController {
     token: string,
     expiresAt: Date,
   ): void {
+    const isProduction = process.env.NODE_ENV === 'production';
     const options: CookieOptions = {
       httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
+      // 'none' in production: the mobile app (Capacitor, origin
+      // capacitor://localhost / https://localhost) calls this API
+      // cross-origin -- 'lax' never sends the cookie on that fetch, which
+      // would silently break refresh for every native client. Requires
+      // `secure: true` (already the case in production, see below) --
+      // browsers/webviews reject SameSite=None without it. Left as 'lax' in
+      // non-production: local dev has no HTTPS, so 'none' would just get the
+      // cookie dropped instead.
+      sameSite: isProduction ? 'none' : 'lax',
+      secure: isProduction,
       path: REFRESH_TOKEN_PATH,
       expires: expiresAt,
     };

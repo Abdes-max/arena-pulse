@@ -132,10 +132,13 @@ export class PlayerAuthController {
     token: string,
     expiresAt: Date,
   ): void {
+    const isProduction = process.env.NODE_ENV === 'production';
     const options: CookieOptions = {
       httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
+      // See the identical comment in auth/auth.controller.ts's
+      // setRefreshCookie -- same cross-origin-from-native-app reasoning.
+      sameSite: isProduction ? 'none' : 'lax',
+      secure: isProduction,
       path: PLAYER_REFRESH_TOKEN_PATH,
       expires: expiresAt,
     };
