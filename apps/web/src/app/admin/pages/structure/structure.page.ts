@@ -955,10 +955,7 @@ export class StructurePage {
    * "Mode Tournoi" already created (which never exposes this choice itself,
    * one per tier).
    */
-  protected async toggleBracketRankingMatch(
-    phase: CompetitionPhase,
-    event: Event,
-  ): Promise<void> {
+  protected async toggleBracketRankingMatch(phase: CompetitionPhase, event: Event): Promise<void> {
     const organizationId = this.organization()?.id;
     const bracketId = phase.knockoutBracket?.id;
     const hasRankingMatch = (event.target as HTMLInputElement).checked;

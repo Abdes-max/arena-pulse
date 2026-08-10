@@ -137,11 +137,15 @@ export class ScoresPage {
     const phases = this.activePhases();
     const matches = this.matches();
     const groupPhase = phases.find((phase) => phase.type === 'GROUP_STAGE') ?? null;
-    const knockoutTiers = phases.filter((phase) => phase.type === 'KNOCKOUT' && phase.knockoutBracket);
+    const knockoutTiers = phases.filter(
+      (phase) => phase.type === 'KNOCKOUT' && phase.knockoutBracket,
+    );
     const sections: ScoreSection[] = [];
 
     if (groupPhase) {
-      const poolMatches = matches.filter((match) => this.phaseForMatch(match)?.id === groupPhase.id);
+      const poolMatches = matches.filter(
+        (match) => this.phaseForMatch(match)?.id === groupPhase.id,
+      );
       for (const section of groupMatchesByPhaseSection(groupPhase, poolMatches)) {
         sections.push({
           label: section.label,
@@ -301,7 +305,9 @@ export class ScoresPage {
     }
     try {
       const results = await Promise.all(
-        phases.map((phase) => this.scheduleService.listMatches(organizationId, this.tournamentId, phase.id)),
+        phases.map((phase) =>
+          this.scheduleService.listMatches(organizationId, this.tournamentId, phase.id),
+        ),
       );
       // Matches with undecided opponents are shown too (placeholder labels,
       // same as Calendrier) so the organizer can see what's coming -- just
