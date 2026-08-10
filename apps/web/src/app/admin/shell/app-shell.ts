@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
   ActivatedRoute,
@@ -39,9 +46,7 @@ export class AppShell {
   private readonly tournamentsService = inject(TournamentsService);
 
   protected readonly mode = this.themeService.mode;
-  private readonly organizationId = computed(
-    () => this.authService.organizations()[0]?.id ?? null,
-  );
+  private readonly organizationId = computed(() => this.authService.organizations()[0]?.id ?? null);
   // Public slug for the "Lien public" link next to the submenu tabs --
   // fetched alongside the theme below (null hides the button, e.g. while
   // on 'tournaments/new' or a non-tournament-scoped page).

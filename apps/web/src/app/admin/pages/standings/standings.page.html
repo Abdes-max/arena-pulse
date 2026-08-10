@@ -105,7 +105,7 @@
                   @for (tie of group.standings.unresolvedTies; track tie) {
                     <p class="standings-page__tie">
                       Égalité totale entre
-                      <strong>{{ tie.teams.map(t => t.name).join(', ') }}</strong>
+                      <strong>{{ tie.teams.map((t) => t.name).join(', ') }}</strong>
                       — qui doit être classé devant les autres ?
                       <ap-select
                         class="standings-page__tie-select"
@@ -142,7 +142,7 @@
                     <p class="standings-page__tie">
                       Égalité totale entre
                       <strong>{{
-                        tie.teams.map(t => t.name + ' (' + t.groupName + ')').join(', ')
+                        tie.teams.map((t) => t.name + ' (' + t.groupName + ')').join(', ')
                       }}</strong>
                       — qui doit être classé devant les autres ?
                       <ap-select

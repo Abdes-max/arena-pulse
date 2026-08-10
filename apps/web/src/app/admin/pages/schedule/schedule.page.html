@@ -34,88 +34,88 @@
         <p>Ajoutez d'abord une phase sur la page Structure de cette catégorie.</p>
       } @else {
         @if (selectedPhaseType() !== 'ALL') {
-        <section class="schedule-page__section">
-          <h2>Générer le calendrier</h2>
-          @if (venues().length === 0) {
-            <p>Ajoutez d'abord un site et des terrains sur la page du tournoi.</p>
-          } @else {
-            <app-field-selector
-              [fields]="fields()"
-              [selectedIds]="selectedFieldIds()"
-              (selectedIdsChange)="selectedFieldIds.set($event)"
-            />
+          <section class="schedule-page__section">
+            <h2>Générer le calendrier</h2>
+            @if (venues().length === 0) {
+              <p>Ajoutez d'abord un site et des terrains sur la page du tournoi.</p>
+            } @else {
+              <app-field-selector
+                [fields]="fields()"
+                [selectedIds]="selectedFieldIds()"
+                (selectedIdsChange)="selectedFieldIds.set($event)"
+              />
 
-            <div class="schedule-page__inline-form schedule-page__inline-form--spaced">
-              @if (selectedPhaseType() === 'GROUP_STAGE') {
+              <div class="schedule-page__inline-form schedule-page__inline-form--spaced">
+                @if (selectedPhaseType() === 'GROUP_STAGE') {
+                  <ap-text-field
+                    label="Début"
+                    type="datetime-local"
+                    [value]="startDateTime()"
+                    (valueChange)="onStartDateTimeChange($event)"
+                  />
+                } @else {
+                  <ap-text-field
+                    label="Pause après les poules (min)"
+                    type="number"
+                    [min]="0"
+                    [value]="breakAfterPoolsMinutes()"
+                    (valueChange)="onBreakAfterPoolsMinutesChange($event)"
+                  />
+                }
                 <ap-text-field
-                  label="Début"
-                  type="datetime-local"
-                  [value]="startDateTime()"
-                  (valueChange)="onStartDateTimeChange($event)"
-                />
-              } @else {
-                <ap-text-field
-                  label="Pause après les poules (min)"
-                  type="number"
-                  [min]="0"
-                  [value]="breakAfterPoolsMinutes()"
-                  (valueChange)="onBreakAfterPoolsMinutesChange($event)"
-                />
-              }
-              <ap-text-field
-                label="Durée de match (min)"
-                type="number"
-                [min]="1"
-                [value]="matchDurationMinutes()"
-                (valueChange)="onMatchDurationChange($event)"
-              />
-              <ap-text-field
-                label="Pause entre les matchs (min)"
-                type="number"
-                [min]="0"
-                [value]="breakDurationMinutes()"
-                (valueChange)="onBreakDurationChange($event)"
-              />
-              @if (selectedPhaseType() === 'GROUP_STAGE' && hasReferees()) {
-                <ap-text-field
-                  label="Arbitres par match"
+                  label="Durée de match (min)"
                   type="number"
                   [min]="1"
-                  [value]="refereesPerMatch()"
-                  (valueChange)="onRefereesPerMatchChange($event)"
+                  [value]="matchDurationMinutes()"
+                  (valueChange)="onMatchDurationChange($event)"
                 />
-              }
-            </div>
+                <ap-text-field
+                  label="Pause entre les matchs (min)"
+                  type="number"
+                  [min]="0"
+                  [value]="breakDurationMinutes()"
+                  (valueChange)="onBreakDurationChange($event)"
+                />
+                @if (selectedPhaseType() === 'GROUP_STAGE' && hasReferees()) {
+                  <ap-text-field
+                    label="Arbitres par match"
+                    type="number"
+                    [min]="1"
+                    [value]="refereesPerMatch()"
+                    (valueChange)="onRefereesPerMatchChange($event)"
+                  />
+                }
+              </div>
 
-            <div class="schedule-page__actions">
-              @if (selectedPhaseType() === 'GROUP_STAGE') {
-                <ap-button type="button" [disabled]="generating()" (click)="generateSchedule()">
-                  Générer le calendrier
+              <div class="schedule-page__actions">
+                @if (selectedPhaseType() === 'GROUP_STAGE') {
+                  <ap-button type="button" [disabled]="generating()" (click)="generateSchedule()">
+                    Générer le calendrier
+                  </ap-button>
+                } @else {
+                  <ap-button
+                    type="button"
+                    [disabled]="generating()"
+                    (click)="generateAllKnockoutMatches()"
+                  >
+                    Générer tous les tableaux à élimination directe
+                  </ap-button>
+                }
+                <ap-button type="button" variant="ghost" (click)="resetSchedule()">
+                  Vider le calendrier
                 </ap-button>
-              } @else {
-                <ap-button
-                  type="button"
-                  [disabled]="generating()"
-                  (click)="generateAllKnockoutMatches()"
-                >
-                  Générer tous les tableaux à élimination directe
-                </ap-button>
+              </div>
+              @if (selectedPhaseType() === 'KNOCKOUT') {
+                <p class="schedule-page__hint">
+                  Génère d'un coup tous les tableaux à élimination directe (s'il y en a plusieurs,
+                  ils partagent les mêmes terrains à la suite) et réserve un créneau pour tous les
+                  tours (quarts, demis, finale…). Seul le 1er tour de chaque tableau a des
+                  adversaires connus dès maintenant ; les tours suivants s'y placeront
+                  automatiquement dès que les scores précédents seront validés.
+                </p>
               }
-              <ap-button type="button" variant="ghost" (click)="resetSchedule()">
-                Vider le calendrier
-              </ap-button>
-            </div>
-            @if (selectedPhaseType() === 'KNOCKOUT') {
-              <p class="schedule-page__hint">
-                Génère d'un coup tous les tableaux à élimination directe (s'il y en a plusieurs, ils
-                partagent les mêmes terrains à la suite) et réserve un créneau pour tous les tours
-                (quarts, demis, finale…). Seul le 1er tour de chaque tableau a des adversaires
-                connus dès maintenant ; les tours suivants s'y placeront automatiquement dès que les
-                scores précédents seront validés.
-              </p>
             }
-          }
-        </section>
+          </section>
         }
 
         <section class="schedule-page__section">
