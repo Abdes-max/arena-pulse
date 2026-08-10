@@ -129,7 +129,7 @@ jobs:
         # uppercase (the actual repo is Abdes-max/arena-pulse).
         run: echo "namespace=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
       - name: Build and push API image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: apps/api
           file: infra/docker/api.Dockerfile
@@ -139,7 +139,7 @@ jobs:
             ghcr.io/${{ steps.vars.outputs.namespace }}-api:latest
             ghcr.io/${{ steps.vars.outputs.namespace }}-api:${{ github.sha }}
       - name: Build and push web image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: infra/docker/web.Dockerfile
