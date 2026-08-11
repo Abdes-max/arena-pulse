@@ -1,0 +1,137 @@
+# Manual, one-click Android release: builds apps/mobile, generates the
+# Android native project fresh (android/ is gitignored -- see
+# apps/mobile's .gitignore, same convention as ios/ -- nothing native is
+# committed, it's regenerated from capacitor.config.ts + the web build on
+# every run), signs a release App Bundle, then uploads to the Play
+# Console's internal testing track (Play Console's equivalent of
+# TestFlight) via the Play Developer Publishing API.
+#
+# Cannot run successfully until the one-time Google Play Console setup is
+# done and its secrets are added to this repo -- see
+# docs/architecture/adr/0009-android-distribution.md for the full checklist.
+# Required secrets, all under Settings -> Secrets and variables -> Actions:
+#   ANDROID_KEYSTORE_BASE64        -- `base64 -i tournarena-upload.keystore`
+#   ANDROID_KEYSTORE_PASSWORD      -- the keystore's password
+#   ANDROID_KEY_ALIAS              -- tournarena-upload
+#   ANDROID_KEY_PASSWORD           -- same value as ANDROID_KEYSTORE_PASSWORD
+#                                      (PKCS12 keystores don't support a
+#                                      separate key password -- keytool
+#                                      silently ignores -keypass and reuses
+#                                      -storepass for both)
+#   GOOGLE_PLAY_SERVICE_ACCOUNT_JSON -- full content of the service account
+#                                        JSON key (Play Console -> Setup ->
+#                                        API access), not base64-encoded
+name: Deploy Android to Play Console (internal track)
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_code:
+        description: >-
+          versionCode for this upload -- must be strictly higher than the
+          last one Play Console has. Defaults to the GitHub Actions run
+          number.
+        required: false
+
+jobs:
+  android:
+    name: Build, sign and upload to the internal track
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build:libs
+      - run: npm run build:mobile
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Add/sync the Android native project
+        working-directory: apps/mobile
+        run: |
+          set -euo pipefail
+          npx cap add android
+          npx cap sync android
+
+      # Capacitor's template always starts a freshly-generated build.gradle
+      # at versionCode 1 / versionName "1.0" -- there is no committed file
+      # to bump between runs (android/ is gitignored, see header comment),
+      # so this patches it in place before building. Fragile if Capacitor
+      # ever changes those literal defaults in its template -- if this step
+      # silently stops matching, the build will fail at upload with
+      # "versionCode already used" instead, which is at least loud.
+      - name: Set version code
+        working-directory: apps/mobile/android
+        env:
+          VERSION_CODE: ${{ inputs.version_code || github.run_number }}
+        run: |
+          set -euo pipefail
+          sed -i "s/versionCode 1/versionCode ${VERSION_CODE}/" app/build.gradle
+          sed -i "s/versionName \"1.0\"/versionName \"1.0.${VERSION_CODE}\"/" app/build.gradle
+
+      - name: Decode the upload keystore
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+        run: echo -n "$KEYSTORE_BASE64" | base64 --decode -o "$RUNNER_TEMP/tournarena-upload.keystore"
+
+      # Injects a release signingConfig via a Gradle init script rather than
+      # editing android/app/build.gradle directly -- keeps the keystore
+      # path/passwords out of any file that gets logged or diffed, and
+      # doesn't depend on the generated build.gradle's exact structure.
+      - name: Write signing init script
+        run: |
+          cat > "$RUNNER_TEMP/signing.init.gradle" <<'GRADLE'
+          allprojects {
+            plugins.withId('com.android.application') {
+              android {
+                signingConfigs {
+                  release {
+                    storeFile file(System.getenv('KEYSTORE_PATH'))
+                    storePassword System.getenv('KEYSTORE_PASSWORD')
+                    keyAlias System.getenv('KEY_ALIAS')
+                    keyPassword System.getenv('KEY_PASSWORD')
+                  }
+                }
+                buildTypes {
+                  release {
+                    signingConfig signingConfigs.release
+                  }
+                }
+              }
+            }
+          }
+          GRADLE
+
+      - name: Build signed release App Bundle
+        working-directory: apps/mobile/android
+        env:
+          KEYSTORE_PATH: ${{ runner.temp }}/tournarena-upload.keystore
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          chmod +x ./gradlew
+          ./gradlew bundleRelease --init-script "$RUNNER_TEMP/signing.init.gradle"
+
+      # r0adkll/upload-google-play wraps the Play Developer Publishing API
+      # (OAuth2-signed REST calls) -- writing that by hand would just be a
+      # bespoke reimplementation of this, same category of well-established
+      # third-party action as docker/build-push-action already used in
+      # ci.yml.
+      - name: Upload to Play Console (internal track)
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: com.arenapulse.mobile
+          releaseFiles: apps/mobile/android/app/build/outputs/bundle/release/app-release.aab
+          track: internal
+          status: draft
