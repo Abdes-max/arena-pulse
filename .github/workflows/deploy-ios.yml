@@ -102,7 +102,12 @@ jobs:
           PROFILE_NAME: ${{ steps.profile.outputs.name }}
         run: |
           set -euo pipefail
-          xcodebuild -workspace App.xcworkspace -scheme App -configuration Release \
+          # -project, not -workspace: @capacitor/ios's default template (8.x+)
+          # uses Swift Package Manager, not CocoaPods -- no top-level
+          # App.xcworkspace exists to build from (only App.xcodeproj, plus
+          # its own internal project.xcworkspace, which is an Xcode
+          # implementation detail, not something you pass to -workspace).
+          xcodebuild -project App.xcodeproj -scheme App -configuration Release \
             -archivePath "$RUNNER_TEMP/App.xcarchive" \
             -destination 'generic/platform=iOS' \
             CODE_SIGN_STYLE=Manual \
