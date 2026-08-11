@@ -16,24 +16,37 @@
   @if (tournaments().length > 0) {
     <section class="tournament-entry-page__published">
       <h2 class="tournament-entry-page__published-title">Tournois publiés</h2>
-      <div class="tournament-entry-page__published-list">
-        @for (t of tournaments(); track t.id) {
-          <button
-            type="button"
-            class="tournament-entry-page__published-item"
-            (click)="goToTournament(t)"
-          >
-            <ap-tournament-card
-              [name]="t.name"
-              [sportName]="t.sportName"
-              [startDate]="t.startDate"
-              [endDate]="t.endDate"
-              [isOnline]="t.isOnline"
-              [location]="t.location"
-            />
-          </button>
-        }
-      </div>
+      <ap-text-field
+        class="tournament-entry-page__published-search"
+        type="search"
+        label="Rechercher un tournoi"
+        [hideLabel]="true"
+        placeholder="Rechercher un tournoi…"
+        [value]="query()"
+        (valueChange)="onQueryChange($event)"
+      />
+      @if (filteredTournaments().length === 0) {
+        <p class="tournament-entry-page__published-empty">Aucun tournoi trouvé.</p>
+      } @else {
+        <div class="tournament-entry-page__published-list">
+          @for (t of filteredTournaments(); track t.id) {
+            <button
+              type="button"
+              class="tournament-entry-page__published-item"
+              (click)="goToTournament(t)"
+            >
+              <ap-tournament-card
+                [name]="t.name"
+                [sportName]="t.sportName"
+                [startDate]="t.startDate"
+                [endDate]="t.endDate"
+                [isOnline]="t.isOnline"
+                [location]="t.location"
+              />
+            </button>
+          }
+        </div>
+      }
     </section>
   }
 </ion-content>

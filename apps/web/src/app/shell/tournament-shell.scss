@@ -39,6 +39,30 @@
   gap: var(--ap-space-3);
 }
 
+.tournament-shell__sport-group {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-3);
+}
+
+// Leaves the tournament's own site (routerLink="/") back to the directory --
+// visitors arriving from a shared link have no other way back to browse
+// other tournaments otherwise.
+.tournament-shell__back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ap-space-1);
+  color: var(--ap-color-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color var(--ap-motion-fast) var(--ap-easing-standard);
+
+  &:hover {
+    color: var(--ap-color-fg);
+  }
+}
+
 .tournament-shell__sport {
   margin: 0;
   color: var(--ap-color-signal-text);

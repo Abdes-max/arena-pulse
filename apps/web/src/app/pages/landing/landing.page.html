@@ -17,20 +17,33 @@
 @if (tournaments().length > 0) {
   <section class="landing-page__tournaments">
     <h2>Tournois en cours</h2>
-    <div class="landing-page__tournaments-grid">
-      @for (t of tournaments(); track t.id) {
-        <a class="landing-page__tournament-link" [routerLink]="['/', t.slug]">
-          <ap-tournament-card
-            [name]="t.name"
-            [sportName]="t.sportName"
-            [startDate]="t.startDate"
-            [endDate]="t.endDate"
-            [isOnline]="t.isOnline"
-            [location]="t.location"
-          />
-        </a>
-      }
-    </div>
+    <ap-text-field
+      class="landing-page__tournaments-search"
+      type="search"
+      label="Rechercher un tournoi"
+      [hideLabel]="true"
+      placeholder="Rechercher un tournoi…"
+      [value]="query()"
+      (valueChange)="onQueryChange($event)"
+    />
+    @if (filteredTournaments().length === 0) {
+      <p class="landing-page__tournaments-empty">Aucun tournoi trouvé.</p>
+    } @else {
+      <div class="landing-page__tournaments-grid">
+        @for (t of filteredTournaments(); track t.id) {
+          <a class="landing-page__tournament-link" [routerLink]="['/', t.slug]">
+            <ap-tournament-card
+              [name]="t.name"
+              [sportName]="t.sportName"
+              [startDate]="t.startDate"
+              [endDate]="t.endDate"
+              [isOnline]="t.isOnline"
+              [location]="t.location"
+            />
+          </a>
+        }
+      </div>
+    }
   </section>
 }
 

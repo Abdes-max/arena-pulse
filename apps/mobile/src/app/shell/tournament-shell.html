@@ -9,7 +9,14 @@
 } @else if (tournament(); as t) {
   <ion-header>
     <ion-toolbar>
-      <p class="tournament-shell__sport" slot="start">{{ t.sportName }}</p>
+      <div class="tournament-shell__start" slot="start">
+        <a class="tournament-shell__back" routerLink="/" aria-label="Rechercher un autre tournoi">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+            <path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+          </svg>
+        </a>
+        <p class="tournament-shell__sport">{{ t.sportName }}</p>
+      </div>
       <ion-buttons slot="end">
         <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
       </ion-buttons>

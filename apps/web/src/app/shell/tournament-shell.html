@@ -12,7 +12,15 @@
   <header class="tournament-shell__hero">
     <div class="tournament-shell__hero-inner">
       <div class="tournament-shell__sport-row">
-        <p class="tournament-shell__sport">{{ t.sportName }}</p>
+        <div class="tournament-shell__sport-group">
+          <a class="tournament-shell__back" routerLink="/" aria-label="Rechercher un autre tournoi">
+            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+              <path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+            </svg>
+            <span>Autres tournois</span>
+          </a>
+          <p class="tournament-shell__sport">{{ t.sportName }}</p>
+        </div>
         <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
       </div>
       <h1>{{ t.name }}</h1>
