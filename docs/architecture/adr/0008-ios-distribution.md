@@ -2,10 +2,12 @@
 
 ## Statut
 
-Accepté pour la partie code (correctifs + workflow CI) — implémentée hors branche `feat/0NN-*`
-dédiée pour l'instant, à committer sur une branche avant fusion. **Le compte Apple Developer
-Program n'est pas encore créé** : le workflow `deploy-ios.yml` ne peut pas tourner tant que les
-secrets qu'il attend n'existent pas — voir "Reste à faire (porteur de projet)" ci-dessous.
+Accepté et **opérationnel de bout en bout** (PR #67, puis correctif #74) : compte Apple Developer
+Program créé (Apple ID dédié), App ID/certificat/profil de provisioning générés, les 8 secrets
+GitHub renseignés, premier build archivé/signé/uploadé avec succès par `deploy-ios.yml`, installé
+et fonctionnel via TestFlight sur un appareil réel. Voir "Notes pratiques" ci-dessous pour les
+écueils réels rencontrés (absents du plan initial) et "Reste à faire" pour ce qui suit
+(App Store public).
 
 ## Contexte
 
@@ -50,29 +52,53 @@ cette PR :
    (Xcode 13+) authentifié par une clé API App Store Connect, qui envoie directement le build sur
    TestFlight — pas de dépendance Fastlane/altool.
 
+## Notes pratiques (vécues sur le premier run réel, absentes du plan initial)
+
+- **`@capacitor/ios` 8.x génère un projet Swift Package Manager par défaut, pas CocoaPods** — pas
+  de `App.xcworkspace` à la racine, seulement `App.xcodeproj` (le `project.xcworkspace` visible
+  dedans est un détail interne d'Xcode). `deploy-ios.yml` archive donc avec `-project
+  App.xcodeproj`, pas `-workspace`. Si un jour le template Capacitor repasse à CocoaPods (ou que le
+  projet a un `Podfile`), il faudra inverser ce choix.
+- **Le Team ID n'est pas nécessaire à chercher séparément** : il apparaît directement dans le sujet
+  du certificat de distribution (`openssl x509 -inform DER -in distribution.cer -noout -subject`,
+  champ `UID=`/`OU=`) — pas besoin de la page Membership si on a déjà le `.cer`.
+- **Champ UGS (SKU) à la création de l'app dans App Store Connect** : purement interne, jamais
+  visible publiquement, aucune contrainte de format particulière (utilisé `com.arenapulse.mobile`).
+- **Question de conformité au chiffrement** : réponse "Aucun des algorithmes mentionnés ci-dessus"
+  — l'app ne fait que du HTTPS standard via les mécanismes réseau natifs d'iOS (Capacitor
+  WebView + Stripe côté client), aucune bibliothèque de chiffrement propre embarquée.
+- **TestFlight, piste interne — deux pièges à la première utilisation** :
+  1. Un groupe de test interne n'existe pas par défaut, il faut le créer explicitement
+     (**TestFlight → Internal Testing → +**) avant de pouvoir y assigner un build.
+  2. Les testeurs internes doivent être des **Users** déjà déclarés dans **Users and Access** de
+     l'équipe App Store Connect — impossible d'inviter un email au vol comme pour les testeurs
+     externes. Si l'Apple ID du téléphone de test diffère de l'Apple ID développeur dédié
+     (cas courant), il faut d'abord l'ajouter comme User (rôle "Developer" suffit), attendre
+     l'acceptation de l'invitation, puis seulement l'ajouter au groupe.
+  3. La page "Test Information" (description bêta, "what to test") refuse parfois
+     d'enregistrer ("Impossible d'enregistrer vos modifications") tant que les informations de
+     contact "Beta App Review" (nom/email/téléphone) ne sont pas remplies, même si on ne touche
+     que la description.
+
 ## Reste à faire (porteur de projet — pas automatisable)
 
-1. **S'inscrire à l'Apple Developer Program** (99 $/an, developer.apple.com) — individuel ou
-   organisation ; la vérification peut prendre 24-48h.
-2. Dans **Certificates, Identifiers & Profiles** :
-   - App ID avec Bundle ID **`com.arenapulse.mobile`** (doit correspondre exactement à
-     `capacitor.config.ts`).
-   - Certificat de distribution ("Apple Distribution") — génère une CSR (Keychain Access sur un
-     Mac), exporter en `.p12` avec mot de passe.
-   - Profil de provisioning **App Store** liant cet App ID et ce certificat.
-3. Dans **App Store Connect** :
-   - Créer l'app (même Bundle ID, nom "TournArena").
-   - Users and Access → Integrations → App Store Connect API → créer une clé (rôle "App Manager"
-     suffit pour TestFlight), noter Key ID + Issuer ID, télécharger le `.p8` (une seule fois).
-4. Récupérer le **Team ID** (developer.apple.com → Membership).
-5. Encoder en base64 (`base64 -i fichier`) et ajouter en secrets GitHub du repo — liste exacte en
-   en-tête de `deploy-ios.yml`.
-6. Lancer manuellement le workflow (onglet Actions → "Deploy iOS to TestFlight" → Run workflow).
-7. Une fois le build visible dans App Store Connect/TestFlight : ajouter des testeurs internes,
-   et remplir le questionnaire **App Privacy** (obligatoire même pour TestFlight externe) — doit
-   refléter les comptes joueurs et les paiements Stripe (`docs/architecture/adr/0005-player-registration-and-payments.md`).
-8. Avant toute release publique (au-delà de TestFlight) : captures d'écran par taille d'appareil,
-   description, catégorie, URL de politique de confidentialité, classification d'âge.
+1. ~~S'inscrire à l'Apple Developer Program~~ — fait (Apple ID dédié, individuel).
+2. ~~App ID, certificat de distribution, profil de provisioning~~ — faits (CSR générée en local
+   avec `openssl`, sans Mac, cf. ADR ; `.cer`/`.mobileprovision` téléchargés depuis Certificates,
+   Identifiers & Profiles).
+3. ~~App créée dans App Store Connect + clé API~~ — faites (rôle "App Manager").
+4. ~~Team ID~~ — récupéré directement depuis le certificat (cf. "Notes pratiques").
+5. ~~Secrets GitHub~~ — les 8 attendus par `deploy-ios.yml` sont renseignés.
+6. ~~Premier run du workflow~~ — réussi après le correctif SPM (#74) ; build 1.0 (2) archivé,
+   signé et uploadé.
+7. ~~Groupe de test interne + questionnaire de conformité au chiffrement~~ — faits ; build
+   installé et fonctionnel sur un appareil réel via TestFlight.
+8. **Reste à faire** avant toute release publique (au-delà de TestFlight) : questionnaire **App
+   Privacy** complet (doit refléter les comptes joueurs et les paiements Stripe,
+   `docs/architecture/adr/0005-player-registration-and-payments.md`), captures d'écran par taille
+   d'appareil, description longue, catégorie, URL de politique de confidentialité, classification
+   d'âge. Icônes/splash toujours les placeholders par défaut de Capacitor — à personnaliser avant
+   toute sortie publique, idéalement en même temps pour les deux plateformes (cf. ADR 0009).
 
 ## Justification
 
