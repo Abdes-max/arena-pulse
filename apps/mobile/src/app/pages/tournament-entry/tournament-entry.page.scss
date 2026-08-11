@@ -40,3 +40,34 @@
   font-size: 0.9rem;
   margin: 0;
 }
+
+.tournament-entry-page__published {
+  margin-top: var(--ap-space-8);
+}
+
+.tournament-entry-page__published-title {
+  font-family: var(--ap-font-heading);
+  font-size: 1rem;
+  color: var(--ap-color-fg);
+  margin: 0 0 var(--ap-space-3);
+}
+
+.tournament-entry-page__published-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-3);
+}
+
+// Resets the <button> wrapper (tap target for ap-tournament-card, same
+// separation of concerns as team-search-page__team-link) back to looking
+// like plain block content -- the card itself already supplies the visuals.
+.tournament-entry-page__published-item {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}

@@ -12,4 +12,28 @@
     (valueChange)="onSlugChange($event)"
   />
   <ion-button expand="block" (click)="go()">Voir le tournoi</ion-button>
+
+  @if (tournaments().length > 0) {
+    <section class="tournament-entry-page__published">
+      <h2 class="tournament-entry-page__published-title">Tournois publiés</h2>
+      <div class="tournament-entry-page__published-list">
+        @for (t of tournaments(); track t.id) {
+          <button
+            type="button"
+            class="tournament-entry-page__published-item"
+            (click)="goToTournament(t)"
+          >
+            <ap-tournament-card
+              [name]="t.name"
+              [sportName]="t.sportName"
+              [startDate]="t.startDate"
+              [endDate]="t.endDate"
+              [isOnline]="t.isOnline"
+              [location]="t.location"
+            />
+          </button>
+        }
+      </div>
+    </section>
+  }
 </ion-content>

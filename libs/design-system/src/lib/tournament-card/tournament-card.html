@@ -1,0 +1,14 @@
+<article class="ap-tournament-card">
+  <div class="ap-tournament-card__meta">
+    <span class="ap-tournament-card__sport">{{ sportName() }}</span>
+    @if (locationLabel(); as location) {
+      <span class="ap-tournament-card__location">{{ location }}</span>
+    }
+  </div>
+
+  <h3 class="ap-tournament-card__name">{{ name() }}</h3>
+
+  @if (dateRangeLabel(); as dates) {
+    <span class="ap-tournament-card__dates">{{ dates }}</span>
+  }
+</article>

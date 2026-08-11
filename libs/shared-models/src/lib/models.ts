@@ -18,6 +18,20 @@ export interface Venue {
   fields: Field[];
 }
 
+/** One row of the public tournament directory (home page card lists) — see PublicTournament for a single tournament's full detail. */
+export interface PublicTournamentSummary {
+  id: string;
+  name: string;
+  slug: string;
+  sportName: string;
+  startDate: string | null;
+  endDate: string | null;
+  isOnline: boolean;
+  // Null for an online tournament, or a physical one with no venue address
+  // recorded yet -- the card simply omits the location line in that case.
+  location: string | null;
+}
+
 export interface PublicTournament {
   id: string;
   name: string;

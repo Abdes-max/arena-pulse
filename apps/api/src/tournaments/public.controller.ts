@@ -22,6 +22,13 @@ import { PublicService } from './public.service';
 export class PublicController {
   constructor(private readonly publicService: PublicService) {}
 
+  @Get()
+  listTournaments(@Query('limit') limit?: string) {
+    return this.publicService.listTournaments(
+      limit ? Number(limit) : undefined,
+    );
+  }
+
   @Get(':slug')
   getTournament(@Param('slug') slug: string) {
     return this.publicService.getTournament(slug);

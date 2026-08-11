@@ -1,0 +1,51 @@
+:host {
+  display: block;
+  font-family: var(--ap-font-body);
+}
+
+.ap-tournament-card {
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-lg);
+  padding: var(--ap-space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+  height: 100%;
+}
+
+.ap-tournament-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-2);
+  font-size: 0.72rem;
+  color: var(--ap-color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ap-tournament-card__sport {
+  font-weight: 700;
+}
+
+.ap-tournament-card__location {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ap-tournament-card__name {
+  margin: 0;
+  font-family: var(--ap-font-heading);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--ap-color-fg);
+}
+
+.ap-tournament-card__dates {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ap-color-muted);
+  font-variant-numeric: tabular-nums;
+}

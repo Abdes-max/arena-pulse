@@ -20,6 +20,9 @@ import { UpdateTournamentDto } from './dto/update-tournament.dto';
 import { generateSlug } from './slug.util';
 
 type TournamentWithSport = Tournament & { sport: Sport };
+type TournamentWithSportAndVenue = TournamentWithSport & {
+  venues: { name: string; address: string | null }[];
+};
 
 @Injectable()
 export class TournamentsService {
@@ -353,6 +356,29 @@ export class TournamentsService {
   }
 
   /**
+   * Public directory: every PUBLISHED tournament across every organization
+   * (there is no per-organizer opt-out today — publishing already makes the
+   * tournament's own site reachable by anyone with the slug, this just makes
+   * it discoverable without one). Most recent first, capped well below
+   * "everything" so a homepage card list stays a list, not a dump.
+   */
+  async listPublished(limit = 20) {
+    const tournaments = await this.prisma.tournament.findMany({
+      where: { status: TournamentStatus.PUBLISHED },
+      include: {
+        sport: true,
+        // Cards show one location line, not a venue-by-venue breakdown --
+        // first by display position is as good a pick as any when a
+        // tournament spans several.
+        venues: { orderBy: { position: 'asc' }, take: 1 },
+      },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+    });
+    return tournaments.map((tournament) => this.toPublicListItem(tournament));
+  }
+
+  /**
    * Public-site lookup: no organizationId (visitors don't know it), and only
    * a PUBLISHED tournament is findable — everything else (draft, unpublished,
    * archived, or no such slug) reads identically as "not found" so the public
@@ -467,6 +493,23 @@ export class TournamentsService {
       isOnline: tournament.isOnline,
       theme: tournament.theme,
       createdAt: tournament.createdAt,
+    };
+  }
+
+  private toPublicListItem(tournament: TournamentWithSportAndVenue) {
+    const venue = tournament.venues[0] as
+      { name: string; address: string | null } | undefined;
+    return {
+      id: tournament.id,
+      name: tournament.name,
+      slug: tournament.slug,
+      sportName: tournament.sport.name,
+      startDate: tournament.startDate,
+      endDate: tournament.endDate,
+      isOnline: tournament.isOnline,
+      location: tournament.isOnline
+        ? null
+        : (venue?.address ?? venue?.name ?? null),
     };
   }
 

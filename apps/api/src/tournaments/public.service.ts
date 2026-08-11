@@ -55,6 +55,10 @@ export class PublicService {
     private readonly crossGroupQualificationRulesService: CrossGroupQualificationRulesService,
   ) {}
 
+  listTournaments(limit?: number) {
+    return this.tournamentsService.listPublished(limit);
+  }
+
   async getTournament(slug: string) {
     const tournament = await this.resolveTournament(slug);
     const venues = await this.venuesService.list(
