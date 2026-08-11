@@ -4,7 +4,16 @@
     <meta charset="utf-8" />
     <title>TournArena</title>
     <base href="/" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!--
+      viewport-fit=cover is required for iOS's env(safe-area-inset-*) to be
+      exposed at all -- without it, Ionic's ion-header/ion-tab-bar (both used
+      in shell/tournament-shell.html) fall back to zero safe-area insets even
+      though the OS still reserves that space, so their touch targets end up
+      squeezed under the notch (header) and the home indicator gesture area
+      (tab bar) on any iPhone X-and-later, including the 11 -- reported after
+      the first TestFlight install.
+    -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <link rel="icon" type="image/svg+xml" href="favicon.svg?v=2" />
     <link rel="alternate icon" href="favicon.ico" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
