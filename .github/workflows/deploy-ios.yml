@@ -95,6 +95,21 @@ jobs:
         working-directory: apps/mobile/ios/App
         run: agvtool new-version -all "${{ inputs.build_number || github.run_number }}"
 
+      # Without this, every single build sits in App Store Connect with
+      # usesNonExemptEncryption unset ("Missing Compliance") until someone
+      # manually re-answers the export compliance question for that exact
+      # build -- TestFlight testers see nothing until then, even though the
+      # build itself finished processing. The app only uses standard HTTPS
+      # (Capacitor WebView + Stripe client-side), so the answer is always
+      # "no" -- declaring it here means it never needs answering by hand
+      # again. See docs/architecture/adr/0008-ios-distribution.md.
+      - name: Declare export compliance (standard HTTPS only, no custom crypto)
+        working-directory: apps/mobile/ios/App
+        run: |
+          set -euo pipefail
+          /usr/libexec/PlistBuddy -c "Add :ITSAppUsesNonExemptEncryption bool false" App/Info.plist ||
+            /usr/libexec/PlistBuddy -c "Set :ITSAppUsesNonExemptEncryption false" App/Info.plist
+
       - name: Archive
         working-directory: apps/mobile/ios/App
         env:

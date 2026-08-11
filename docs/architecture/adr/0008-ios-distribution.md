@@ -66,7 +66,14 @@ cette PR :
   visible publiquement, aucune contrainte de format particulière (utilisé `com.arenapulse.mobile`).
 - **Question de conformité au chiffrement** : réponse "Aucun des algorithmes mentionnés ci-dessus"
   — l'app ne fait que du HTTPS standard via les mécanismes réseau natifs d'iOS (Capacitor
-  WebView + Stripe côté client), aucune bibliothèque de chiffrement propre embarquée.
+  WebView + Stripe côté client), aucune bibliothèque de chiffrement propre embarquée. **Piège
+  découvert au 3e build réel** : cette réponse n'est pas mémorisée d'un build à l'autre — chaque
+  nouvel upload arrive dans App Store Connect avec `usesNonExemptEncryption` à `null` ("Missing
+  Compliance"), et reste invisible pour tout testeur TestFlight tant que quelqu'un ne la
+  re-confirme pas manuellement pour *ce build précis*, même si le traitement Apple est terminé
+  (`processingState: VALID`). `deploy-ios.yml` déclare maintenant `ITSAppUsesNonExemptEncryption =
+  false` directement dans `Info.plist` à chaque run (étape "Declare export compliance") — plus
+  besoin d'y repenser pour les prochains builds.
 - **TestFlight, piste interne — deux pièges à la première utilisation** :
   1. Un groupe de test interne n'existe pas par défaut, il faut le créer explicitement
      (**TestFlight → Internal Testing → +**) avant de pouvoir y assigner un build.
