@@ -85,6 +85,17 @@
   }
 }
 
+.landing-page__tournaments-search {
+  display: block;
+  max-width: 360px;
+  margin: 0 auto var(--ap-space-6);
+}
+
+.landing-page__tournaments-empty {
+  text-align: center;
+  color: var(--ap-color-muted);
+}
+
 .landing-page__tournaments-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));

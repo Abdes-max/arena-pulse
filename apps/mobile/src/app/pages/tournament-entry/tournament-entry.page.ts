@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonButton, IonContent } from '@ionic/angular/standalone';
 import { PublicApiService } from 'api-client';
@@ -18,13 +18,30 @@ export class TournamentEntryPage {
 
   protected readonly slug = signal('');
   protected readonly tournaments = signal<PublicTournamentSummary[]>([]);
+  protected readonly query = signal('');
+
+  // Same pattern as apps/web's LandingPage (and team-search.page's
+  // filteredTeams) -- client-side filter over a wider-than-displayed fetch.
+  protected readonly filteredTournaments = computed(() => {
+    const q = this.query().trim().toLowerCase();
+    if (!q) {
+      return this.tournaments();
+    }
+    return this.tournaments().filter(
+      (t) => t.name.toLowerCase().includes(q) || t.sportName.toLowerCase().includes(q),
+    );
+  });
 
   constructor() {
-    void this.api.listTournaments(8).then((tournaments) => this.tournaments.set(tournaments));
+    void this.api.listTournaments(50).then((tournaments) => this.tournaments.set(tournaments));
   }
 
   protected onSlugChange(value: string): void {
     this.slug.set(value);
+  }
+
+  protected onQueryChange(value: string): void {
+    this.query.set(value);
   }
 
   protected go(): void {

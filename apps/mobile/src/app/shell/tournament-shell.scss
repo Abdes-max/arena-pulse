@@ -7,26 +7,47 @@
   --padding-end: 16px;
 }
 
-// A fixed white masthead, independent of the light/dark toggle -- same
-// spirit as the admin dashboard staying on a fixed identity regardless of
-// per-tournament theme (docs/design/visual-language.md). --padding-start
-// matches .tournament-shell__hero's own left padding below, so the sport
-// name (slotted into the toolbar) lines up with the title's left edge
-// instead of sitting flush against the toolbar's own default inset.
+// Follows --ap-color-surface/--ap-color-fg like apps/web's equivalent hero
+// (tournament-shell.scss there) -- this used to be a fixed white masthead
+// regardless of light/dark mode, which read as a bug on mobile once web's
+// dark mode made the mismatch obvious (masthead stayed white while
+// everything else went dark). --padding-start matches .tournament-shell__hero's
+// own left padding below, so the sport name (slotted into the toolbar) lines
+// up with the title's left edge instead of sitting flush against the
+// toolbar's own default inset.
 ion-toolbar {
-  --background: #ffffff;
-  --color: #1b1b18;
+  --background: var(--ap-color-surface);
+  --color: var(--ap-color-fg);
   --padding-start: var(--ap-space-4);
   --padding-end: var(--ap-space-4);
 }
 
 .tournament-shell__hero {
   padding: var(--ap-space-2) var(--ap-space-4) var(--ap-space-4);
-  background: #ffffff;
+  background: var(--ap-color-surface);
 }
 
 // Slotted into ion-toolbar (slot="start"), alongside the mode toggle
 // (slot="end") -- same row, saves the height of a separate bar.
+.tournament-shell__start {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+}
+
+// Leaves the tournament's own site (routerLink="/") back to the directory --
+// icon-only (unlike apps/web's equivalent, which also shows a text label):
+// less horizontal room here, and the toolbar already carries the sport name
+// and the mode toggle alongside it.
+.tournament-shell__back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ap-space-2);
+  margin-left: calc(var(--ap-space-2) * -1);
+  color: var(--ap-color-muted);
+}
+
 .tournament-shell__sport {
   margin: 0;
   color: var(--ap-color-signal-text);
@@ -42,9 +63,7 @@ ion-toolbar {
   font-size: 1.4rem;
   letter-spacing: var(--ap-tracking-tight);
   text-transform: var(--ap-title-case);
-  // Fixed dark, not var(--ap-color-fg) -- that flips light under dark mode,
-  // which would vanish against this masthead's fixed white background.
-  color: #1b1b18;
+  color: var(--ap-color-fg);
 }
 
 .tournament-shell__dates {
@@ -52,7 +71,7 @@ ion-toolbar {
   margin: var(--ap-space-1) 0 0;
   font-size: 0.75rem;
   font-weight: 400;
-  color: #6b6558;
+  color: var(--ap-color-muted);
 }
 
 // Mirrors apps/web's .tournament-shell__nav treatment: muted by default,

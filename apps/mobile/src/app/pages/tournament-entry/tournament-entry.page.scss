@@ -52,6 +52,16 @@
   margin: 0 0 var(--ap-space-3);
 }
 
+.tournament-entry-page__published-search {
+  display: block;
+  margin-bottom: var(--ap-space-3);
+}
+
+.tournament-entry-page__published-empty {
+  color: var(--ap-color-muted);
+  font-size: 0.9rem;
+}
+
 .tournament-entry-page__published-list {
   display: flex;
   flex-direction: column;
