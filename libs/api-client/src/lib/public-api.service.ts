@@ -11,6 +11,7 @@ import {
   PublicTeam,
   PublicTeamDetail,
   PublicTournament,
+  PublicTournamentSummary,
   Qualification,
   Standings,
 } from 'shared-models';
@@ -23,6 +24,14 @@ export class PublicApiService {
 
   private base(slug: string): string {
     return `${this.config.apiUrl}/public/tournaments/${slug}`;
+  }
+
+  listTournaments(limit?: number): Promise<PublicTournamentSummary[]> {
+    return firstValueFrom(
+      this.http.get<PublicTournamentSummary[]>(`${this.config.apiUrl}/public/tournaments`, {
+        params: limit !== undefined ? new HttpParams().set('limit', limit) : undefined,
+      }),
+    );
   }
 
   getTournament(slug: string): Promise<PublicTournament> {

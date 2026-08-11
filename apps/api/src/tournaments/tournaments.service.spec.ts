@@ -402,4 +402,68 @@ describe('TournamentsService', () => {
       expect(createCall.data.name).toBe('Édition 2026');
     });
   });
+
+  describe('listPublished', () => {
+    it('filters on PUBLISHED status and returns a card-ready shape', async () => {
+      prisma.tournament.findMany.mockResolvedValue([
+        tournamentFixture({
+          status: TournamentStatus.PUBLISHED,
+          slug: 'coupe-de-printemps',
+          venues: [{ name: 'Gymnase municipal', address: '1 rue du Stade' }],
+        }),
+      ]);
+
+      const result = await service.listPublished();
+
+      expect(prisma.tournament.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { status: TournamentStatus.PUBLISHED },
+        }),
+      );
+      expect(result).toEqual([
+        expect.objectContaining({
+          slug: 'coupe-de-printemps',
+          sportName: SPORT.name,
+          location: '1 rue du Stade',
+        }),
+      ]);
+    });
+
+    it('falls back to the venue name when it has no address', async () => {
+      prisma.tournament.findMany.mockResolvedValue([
+        tournamentFixture({
+          status: TournamentStatus.PUBLISHED,
+          venues: [{ name: 'Gymnase municipal', address: null }],
+        }),
+      ]);
+
+      const [result] = await service.listPublished();
+
+      expect(result.location).toBe('Gymnase municipal');
+    });
+
+    it('omits the location entirely for an online tournament, even with a venue', async () => {
+      prisma.tournament.findMany.mockResolvedValue([
+        tournamentFixture({
+          status: TournamentStatus.PUBLISHED,
+          isOnline: true,
+          venues: [{ name: 'Gymnase municipal', address: '1 rue du Stade' }],
+        }),
+      ]);
+
+      const [result] = await service.listPublished();
+
+      expect(result.location).toBeNull();
+    });
+
+    it('returns null location when there is no venue at all', async () => {
+      prisma.tournament.findMany.mockResolvedValue([
+        tournamentFixture({ status: TournamentStatus.PUBLISHED, venues: [] }),
+      ]);
+
+      const [result] = await service.listPublished();
+
+      expect(result.location).toBeNull();
+    });
+  });
 });

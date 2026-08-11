@@ -1,7 +1,9 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Logo, ThemeModeToggle } from 'design-system';
+import { PublicApiService } from 'api-client';
+import { Logo, ThemeModeToggle, TournamentCard } from 'design-system';
 import { ThemeMode, ThemeService } from 'design-tokens';
+import { PublicTournamentSummary } from 'shared-models';
 
 interface Feature {
   title: string;
@@ -10,15 +12,21 @@ interface Feature {
 
 @Component({
   selector: 'app-landing-page',
-  imports: [RouterLink, Logo, ThemeModeToggle],
+  imports: [RouterLink, Logo, ThemeModeToggle, TournamentCard],
   templateUrl: './landing.page.html',
   styleUrl: './landing.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LandingPage {
   private readonly themeService = inject(ThemeService);
+  private readonly api = inject(PublicApiService);
 
   protected readonly mode = this.themeService.mode;
+  protected readonly tournaments = signal<PublicTournamentSummary[]>([]);
+
+  constructor() {
+    void this.api.listTournaments(8).then((tournaments) => this.tournaments.set(tournaments));
+  }
 
   protected onModeChange(next: ThemeMode): void {
     this.themeService.setMode(document.documentElement, next);
