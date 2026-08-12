@@ -45,6 +45,15 @@
   --ap-color-error: #dc2626;
   --ap-color-on-error: #ffffff;
 
+  // Secondary marketing accent (landing hero/marquee/features only) --
+  // pairs with --ap-color-signal for a cool/warm duo on marketing surfaces.
+  // Deliberately a separate token from --ap-color-warning even though the
+  // hue lands close, so reusing the "needs attention" status color for pure
+  // brand decoration never happens -- see docs/design/colors.md's
+  // functional/decorative separation principle.
+  --ap-color-ember: #b45309;
+  --ap-color-ember-soft: #fdf1de;
+
   &[data-mode='dark'] {
     --ap-color-bg: #0b1220;
     --ap-color-surface: #141b2e;
@@ -69,5 +78,8 @@
     --ap-color-info: #38bdf8;
     --ap-color-warning: #f59e0b;
     --ap-color-error: #ef4444;
+
+    --ap-color-ember: #f5b942;
+    --ap-color-ember-soft: #241d10;
   }
 }

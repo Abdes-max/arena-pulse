@@ -1,6 +1,7 @@
 :host {
   display: block;
   font-family: var(--ap-font-body);
+  transition: transform var(--ap-motion-fast) var(--ap-easing-standard);
 }
 
 .ap-tournament-card {
@@ -12,6 +13,37 @@
   flex-direction: column;
   gap: var(--ap-space-2);
   height: 100%;
+  transition:
+    border-color var(--ap-motion-fast) var(--ap-easing-standard),
+    box-shadow var(--ap-motion-fast) var(--ap-easing-standard);
+}
+
+// :host(:hover) rather than a hover rule on the wrapping <a>/<button> each
+// consuming page provides -- the card lights up consistently wherever it's
+// used (web grid, mobile list, tournament-marquee) without repeating the
+// effect per page. Hover state applies to :host whenever the pointer is
+// anywhere over its box, including its wrapping link -- no extra wiring
+// needed. :focus-within covers keyboard navigation the same way.
+:host(:hover) .ap-tournament-card,
+:host(:focus-within) .ap-tournament-card {
+  border-color: var(--ap-color-signal);
+  box-shadow: var(--ap-shadow-md);
+}
+
+:host(:hover),
+:host(:focus-within) {
+  transform: translateY(-3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host {
+    transition: none;
+  }
+
+  :host(:hover),
+  :host(:focus-within) {
+    transform: none;
+  }
 }
 
 .ap-tournament-card__meta {

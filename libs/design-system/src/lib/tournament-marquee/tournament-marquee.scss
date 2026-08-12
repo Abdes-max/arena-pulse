@@ -1,0 +1,97 @@
+:host {
+  display: block;
+  font-family: var(--ap-font-body);
+}
+
+.ap-tournament-marquee {
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, black 6%, black 94%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, black 6%, black 94%, transparent);
+}
+
+.ap-tournament-marquee__track {
+  display: flex;
+  gap: var(--ap-space-3);
+  width: max-content;
+  animation: ap-tournament-marquee-scroll 34s linear infinite;
+}
+
+.ap-tournament-marquee:hover .ap-tournament-marquee__track,
+.ap-tournament-marquee:focus-within .ap-tournament-marquee__track {
+  animation-play-state: paused;
+}
+
+@keyframes ap-tournament-marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ap-tournament-marquee__track {
+    animation: none;
+  }
+  .ap-tournament-marquee {
+    overflow-x: auto;
+  }
+}
+
+.ap-tournament-marquee__card {
+  flex: 0 0 auto;
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-1);
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-top: 2px solid var(--ap-color-signal);
+  border-radius: var(--ap-radius-lg);
+  padding: var(--ap-space-3);
+
+  &[data-accent='ember'] {
+    border-top-color: var(--ap-color-ember);
+  }
+}
+
+.ap-tournament-marquee__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-2);
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ap-tournament-marquee__sport {
+  color: var(--ap-color-signal);
+}
+
+.ap-tournament-marquee__card[data-accent='ember'] .ap-tournament-marquee__sport {
+  color: var(--ap-color-ember);
+}
+
+.ap-tournament-marquee__dates {
+  color: var(--ap-color-muted);
+  font-weight: 600;
+}
+
+.ap-tournament-marquee__name {
+  font-family: var(--ap-font-heading);
+  font-size: 0.92rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.ap-tournament-marquee__loc {
+  font-size: 0.72rem;
+  color: var(--ap-color-muted);
+}

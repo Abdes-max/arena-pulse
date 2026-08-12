@@ -1,32 +1,61 @@
-<ion-content class="tournament-entry-page">
-  <div class="tournament-entry-page__hero">
-    <ap-logo />
-    <h1 class="tournament-entry-page__title">Suivre un tournoi</h1>
+<!--
+  ion-header (not a plain div) so the dark hero gets the same safe-area
+  handling as shell/tournament-shell.html's own ion-header (viewport-fit=cover
+  fix) for free, and stays fixed while the section below scrolls.
+  data-theme/data-mode="dark" scopes the whole Ink & Signal dark palette to
+  this subtree regardless of <html> -- same technique as apps/web's
+  landing.page.html, a deliberate always-dark brand moment.
+-->
+<ion-header class="tournament-entry-page__hero" data-theme="ink-signal" data-mode="dark">
+  <!-- ion-toolbar first, same as shell/tournament-shell.html -- reuses the
+       exact mechanism the viewport-fit=cover safe-area fix already covers,
+       rather than relying on ion-header's own top padding untested here. -->
+  <ion-toolbar>
+    <ap-logo slot="start" />
+  </ion-toolbar>
+
+  <div class="tournament-entry-page__hero-body">
+    <h1 class="tournament-entry-page__title">Suivre une compétition</h1>
     <p class="tournament-entry-page__hint">Entrez l'identifiant fourni par l'organisateur.</p>
+
+    <ap-text-field
+      label="Identifiant du tournoi"
+      placeholder="ex. coupe-de-printemps-2026"
+      [value]="slug()"
+      (valueChange)="onSlugChange($event)"
+    />
+    <ion-button expand="block" class="tournament-entry-page__cta" (click)="go()">
+      Voir le tournoi
+    </ion-button>
+
+    @if (tournaments().length > 0) {
+      <p class="tournament-entry-page__marquee-label">
+        <span class="tournament-entry-page__marquee-pulse" aria-hidden="true"></span>
+        En ce moment
+      </p>
+      <ap-tournament-marquee
+        [tournaments]="tournaments()"
+        (tournamentClick)="goToTournament($event)"
+      />
+    }
   </div>
+</ion-header>
 
-  <ap-text-field
-    label="Identifiant du tournoi"
-    placeholder="ex. coupe-de-printemps-2026"
-    [value]="slug()"
-    (valueChange)="onSlugChange($event)"
-  />
-  <ion-button expand="block" (click)="go()">Voir le tournoi</ion-button>
-
+<ion-content class="tournament-entry-page">
   @if (tournaments().length > 0) {
     <section class="tournament-entry-page__published">
-      <h2 class="tournament-entry-page__published-title">Tournois publiés</h2>
+      <h2 class="tournament-entry-page__published-title">Événements publiés</h2>
       <ap-text-field
         class="tournament-entry-page__published-search"
         type="search"
-        label="Rechercher un tournoi"
+        label="Rechercher un événement"
         [hideLabel]="true"
-        placeholder="Rechercher un tournoi…"
+        placeholder="Rechercher un événement…"
         [value]="query()"
         (valueChange)="onQueryChange($event)"
       />
       @if (filteredTournaments().length === 0) {
-        <p class="tournament-entry-page__published-empty">Aucun tournoi trouvé.</p>
+        <p class="tournament-entry-page__published-empty">Aucun événement trouvé.</p>
       } @else {
         <div class="tournament-entry-page__published-list">
           @for (t of filteredTournaments(); track t.id) {

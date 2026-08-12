@@ -1,13 +1,22 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonButton, IonContent } from '@ionic/angular/standalone';
+import { IonButton, IonContent, IonHeader, IonToolbar } from '@ionic/angular/standalone';
 import { PublicApiService } from 'api-client';
-import { Logo, TextField, TournamentCard } from 'design-system';
+import { Logo, TextField, TournamentCard, TournamentMarquee } from 'design-system';
 import { PublicTournamentSummary } from 'shared-models';
 
 @Component({
   selector: 'app-tournament-entry-page',
-  imports: [IonContent, IonButton, Logo, TextField, TournamentCard],
+  imports: [
+    IonContent,
+    IonHeader,
+    IonToolbar,
+    IonButton,
+    Logo,
+    TextField,
+    TournamentCard,
+    TournamentMarquee,
+  ],
   templateUrl: './tournament-entry.page.html',
   styleUrl: './tournament-entry.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

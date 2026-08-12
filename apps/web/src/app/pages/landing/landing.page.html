@@ -1,17 +1,97 @@
-<nav class="landing-page__nav">
-  <ap-logo />
-  <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
-  <a class="landing-page__nav-login" routerLink="/login">Se connecter</a>
-</nav>
+<!--
+  data-theme/data-mode="dark" here scopes the whole Ink & Signal dark
+  palette (libs/design-tokens/src/styles/_ink-signal.scss) to just this
+  header's subtree, regardless of what <html> carries -- a deliberate,
+  always-dark brand moment, independent of the light/dark toggle that
+  still governs every section below it (the toggle itself keeps working
+  normally, it just updates document.documentElement, which this header
+  overrides locally). CSS custom properties inherit down the DOM tree, so
+  redeclaring them here is enough; no separate hardcoded colors needed.
+-->
+<header class="landing-page__hero" data-theme="ink-signal" data-mode="dark">
+  <nav class="landing-page__nav">
+    <ap-logo />
+    <div class="landing-page__nav-end">
+      <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
+      <a class="landing-page__nav-login" routerLink="/login">Se connecter</a>
+    </div>
+  </nav>
 
-<header class="landing-page__hero">
-  <p class="landing-page__eyebrow">TournArena</p>
-  <h1>Organisez vos tournois, du bracket au site public, en un seul outil.</h1>
-  <p class="landing-page__subtitle">
-    Poules, tableaux à élimination, calendrier, arbitrage et classements — et un site public généré
-    automatiquement pour chacun de vos tournois, sans configuration supplémentaire.
-  </p>
-  <a class="landing-page__cta" routerLink="/register">Créer mon tournoi</a>
+  <!--
+    Ambient figures, not photography -- see the frontend-design skill note
+    in the commit: keeps the pictogram/line-art register already used for
+    icons elsewhere (venue pin on this page's own tournaments section,
+    tournament-shell's back arrow) rather than introducing photography that
+    would clash with it. Decorative only (aria-hidden), low opacity so they
+    never compete with the headline.
+  -->
+  <svg
+    class="landing-page__hero-figure landing-page__hero-figure--left"
+    viewBox="0 0 24 28"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <circle cx="12" cy="4.2" r="2.1" />
+    <path d="M12 6.3 L10.5 14 L6 22 M10.5 14 L16.5 17 L19.5 15" />
+    <path d="M12 9 L8 11.5 M12 9 L16 7.8" />
+  </svg>
+  <svg
+    class="landing-page__hero-figure landing-page__hero-figure--right"
+    viewBox="0 0 24 28"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="1.6"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    aria-hidden="true"
+  >
+    <circle cx="12" cy="5" r="2.1" />
+    <path d="M12 7.1 L11 15 L8 19 L7 23.5 M11 15 L14.5 20 L16.5 24.5" />
+    <path d="M12 9 L8.5 4 M12 9 L15.5 3.2" />
+    <circle cx="15.5" cy="2" r="1.5" />
+  </svg>
+
+  <div class="landing-page__hero-inner">
+    <p class="landing-page__eyebrow">
+      <span class="landing-page__eyebrow-dot" aria-hidden="true"></span>
+      @if (tournaments().length > 0) {
+        {{ tournaments().length }} événements sportifs publiés
+      } @else {
+        TournArena
+      }
+    </p>
+    <h1>Organisez tournois et championnats <em>suivis en direct par tout le monde.</em></h1>
+    <p class="landing-page__subtitle">
+      Poules, tableaux à élimination, calendrier, arbitrage et classements — et un site public
+      généré automatiquement pour chacune de vos compétitions, mis à jour à la seconde où un score
+      est saisi.
+    </p>
+    <div class="landing-page__hero-ctas">
+      <a class="landing-page__cta" routerLink="/register">Créer mon tournoi</a>
+      @if (tournaments().length > 0) {
+        <a class="landing-page__cta-ghost" [routerLink]="['/', tournaments()[0].slug]">
+          Voir un exemple en direct
+        </a>
+      }
+    </div>
+  </div>
+
+  @if (tournaments().length > 0) {
+    <div class="landing-page__marquee">
+      <p class="landing-page__marquee-label">
+        <span class="landing-page__marquee-pulse" aria-hidden="true"></span>
+        En ce moment sur TournArena
+      </p>
+      <ap-tournament-marquee
+        [tournaments]="tournaments()"
+        (tournamentClick)="goToTournament($event)"
+      />
+    </div>
+  }
 </header>
 
 @if (tournaments().length > 0) {
@@ -48,29 +128,123 @@
 }
 
 <section class="landing-page__features">
-  @for (feature of features; track feature.title) {
-    <article class="landing-page__feature">
-      <h2>{{ feature.title }}</h2>
-      <p>{{ feature.description }}</p>
+  <h2>Tout ce qu'il faut pour piloter une compétition, rien de superflu</h2>
+  <p class="landing-page__features-lead">
+    Quatre outils qui se parlent — un changement de score met à jour poules, tableaux et calendrier
+    au même instant.
+  </p>
+  <div class="landing-page__feature-grid">
+    <article class="landing-page__feature" data-accent="signal">
+      <div class="landing-page__feature-mock" aria-hidden="true">
+        <div class="landing-page__feature-mock-row">
+          <span class="landing-page__feature-mock-dot"></span>
+          Poule A — U13
+        </div>
+        <div class="landing-page__feature-mock-row">
+          <span class="landing-page__feature-mock-bar" style="width: 78%"></span>
+          <span class="landing-page__feature-mock-bar landing-page__feature-mock-bar--track"></span>
+        </div>
+        <div class="landing-page__feature-mock-row">
+          <span class="landing-page__feature-mock-bar" style="width: 55%"></span>
+          <span class="landing-page__feature-mock-bar landing-page__feature-mock-bar--track"></span>
+        </div>
+      </div>
+      <span class="landing-page__feature-tag">Classements</span>
+      <h3>Poules et classements</h3>
+      <p>
+        Qualifications calculées automatiquement à chaque score saisi, aucune feuille de calcul à
+        tenir à jour.
+      </p>
     </article>
-  }
+
+    <article class="landing-page__feature" data-accent="ember">
+      <div class="landing-page__feature-mock" aria-hidden="true">
+        <div class="landing-page__feature-mock-row">
+          <span class="landing-page__feature-mock-dot"></span>
+          Quart de finale
+        </div>
+        <div class="landing-page__feature-mock-row">
+          <span class="landing-page__feature-mock-bar" style="width: 60%"></span>
+        </div>
+        <div class="landing-page__feature-mock-row">
+          <span class="landing-page__feature-mock-bar" style="width: 60%"></span>
+        </div>
+      </div>
+      <span class="landing-page__feature-tag">Élimination directe</span>
+      <h3>Tableaux à élimination</h3>
+      <p>
+        Générés depuis les équipes qualifiées, avec avancement automatique des vainqueurs à chaque
+        tour.
+      </p>
+    </article>
+
+    <article class="landing-page__feature" data-accent="signal">
+      <div class="landing-page__feature-mock" aria-hidden="true">
+        <div class="landing-page__feature-mock-row">
+          <span class="landing-page__feature-mock-dot"></span>
+          Terrain 2 · 14:00
+        </div>
+        <div class="landing-page__feature-mock-row">
+          <span class="landing-page__feature-mock-dot"></span>
+          Terrain 2 · 14:45
+        </div>
+        <div class="landing-page__feature-mock-row">
+          <span class="landing-page__feature-mock-dot"></span>
+          Terrain 1 · 15:30
+        </div>
+      </div>
+      <span class="landing-page__feature-tag">Planification</span>
+      <h3>Calendrier et arbitrage</h3>
+      <p>
+        Matchs planifiés sur vos terrains et créneaux, arbitres assignés, forfaits gérés en un clic.
+      </p>
+    </article>
+
+    <article class="landing-page__feature" data-accent="ember">
+      <div class="landing-page__feature-mock" aria-hidden="true">
+        <div class="landing-page__feature-mock-row">
+          <span class="landing-page__feature-mock-dot"></span>
+          Site public généré
+        </div>
+        <div class="landing-page__feature-mock-row">
+          <span class="landing-page__feature-mock-bar" style="width: 90%"></span>
+        </div>
+        <div class="landing-page__feature-mock-row">
+          <span class="landing-page__feature-mock-bar" style="width: 40%"></span>
+        </div>
+      </div>
+      <span class="landing-page__feature-tag">Temps réel</span>
+      <h3>Site public par tournoi</h3>
+      <p>
+        Équipes, calendrier, classements et résultats en direct — un lien à partager, rien à
+        configurer.
+      </p>
+    </article>
+  </div>
 </section>
 
-<section class="landing-page__preview">
-  <h2>Un site public, prêt pour vos participants</h2>
-  <div class="landing-page__preview-mockup" aria-hidden="true">
-    <div class="landing-page__preview-bar"></div>
-    <div class="landing-page__preview-card"></div>
-    <div class="landing-page__preview-card"></div>
-    <div class="landing-page__preview-card"></div>
-  </div>
+<section class="landing-page__stores">
+  <h2>Disponible partout où vos joueurs regardent</h2>
   <p>
-    Équipes, calendrier, classements de poules, tableau à élimination et classement final — partagez
-    un seul lien avec vos participants et spectateurs.
+    Suivi en direct, notifications de vos équipes favorites — l'app TournArena sur iOS et Android.
   </p>
+  <!--
+    href="#" -- TournArena n'est pour l'instant publiée que sur TestFlight
+    (pas encore en revue App Store publique) et pas du tout sur le Play
+    Store (docs/architecture/adr/0008 et 0009). À remplacer par les vraies
+    fiches une fois publiées.
+  -->
+  <a class="landing-page__store-badges" href="#">
+    <img
+      src="store-badges.png"
+      alt="Disponible sur l'App Store et Google Play"
+      width="180"
+      height="168"
+    />
+  </a>
 </section>
 
 <footer class="landing-page__final-cta">
-  <h2>Prêt à organiser votre prochain tournoi ?</h2>
+  <h2>Prêt à organiser votre prochain tournoi ou championnat ?</h2>
   <a class="landing-page__cta" routerLink="/register">Créer mon tournoi</a>
 </footer>
