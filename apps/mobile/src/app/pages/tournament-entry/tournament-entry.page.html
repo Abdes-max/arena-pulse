@@ -45,7 +45,10 @@
 <ion-content class="tournament-entry-page">
   @if (tournaments().length > 0) {
     <section class="tournament-entry-page__published">
-      <h2 class="tournament-entry-page__published-title">Événements publiés</h2>
+      <h2 class="tournament-entry-page__published-title">
+        <span class="tournament-entry-page__published-pulse" aria-hidden="true"></span>
+        Événements publiés
+      </h2>
       <ap-text-field
         class="tournament-entry-page__published-search"
         type="search"

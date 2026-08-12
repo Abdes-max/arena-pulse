@@ -102,7 +102,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tournament-entry-page__marquee-pulse {
+  .tournament-entry-page__marquee-pulse,
+  .tournament-entry-page__published-pulse {
     animation: none;
   }
 }
@@ -124,10 +125,25 @@ ap-tournament-marquee {
 }
 
 .tournament-entry-page__published-title {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
   font-family: var(--ap-font-heading);
   font-size: 1rem;
   color: var(--ap-color-fg);
   margin: 0 0 var(--ap-space-3);
+}
+
+// Same pulsing dot as the hero's "En ce moment" label -- these tokens
+// resolve to the light-mode palette here (this section is below the
+// always-dark hero, follows the page's own toggle), so the ember amber
+// reads as a warm accent, not the hero's glow.
+.tournament-entry-page__published-pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ap-color-ember);
+  animation: tournament-entry-page-pulse 1.8s ease-in-out infinite;
 }
 
 .tournament-entry-page__published-search {
