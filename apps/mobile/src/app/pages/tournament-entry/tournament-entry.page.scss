@@ -1,48 +1,126 @@
-// No ion-header on this screen (the very first one, before any tournament
-// is loaded) -- a toolbar with nothing but a brand mark in it wasted a row;
-// the logo now leads a proper centered hero instead, same lockup as the
-// admin login/register pages (docs/design/logo.md).
-.tournament-entry-page {
-  --padding-start: var(--ap-space-6);
-  --padding-end: var(--ap-space-6);
-  --padding-top: var(--ap-space-16);
+// ================= Hero — always the dark Ink & Signal palette (see the
+// data-theme/data-mode="dark" scoping comment in tournament-entry.page.html),
+// same deliberate brand moment as apps/web's landing.page. =================
+.tournament-entry-page__hero {
+  position: relative;
+  background: var(--ap-color-bg);
+  color: var(--ap-color-fg);
+  overflow: hidden;
 
-  ap-text-field {
-    display: block;
-    margin-top: var(--ap-space-2);
-  }
-
-  ion-button {
-    margin-top: var(--ap-space-4);
+  ion-toolbar {
+    --background: transparent;
+    --color: var(--ap-color-fg);
+    --border-width: 0;
+    --padding-start: var(--ap-space-4);
+    --padding-end: var(--ap-space-4);
   }
 }
 
-.tournament-entry-page__hero {
+// Narrower than web's equivalent glow -- at web's proportions this read as
+// one dominant blob rather than an ambient wash on a narrow phone screen.
+.tournament-entry-page__hero::before {
+  content: '';
+  position: absolute;
+  inset: -25% 0 auto 0;
+  height: 38%;
+  background:
+    radial-gradient(closest-side, var(--ap-color-signal-soft), transparent),
+    radial-gradient(closest-side at 85% 30%, var(--ap-color-ember-soft), transparent 70%);
+  filter: blur(10px);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.tournament-entry-page__hero-body {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: var(--ap-space-2);
-  margin-bottom: var(--ap-space-8);
+  padding: 0 var(--ap-space-6) var(--ap-space-8);
+
+  ap-text-field {
+    display: block;
+    align-self: stretch;
+    margin-top: var(--ap-space-4);
+  }
 }
 
 .tournament-entry-page__title {
   font-family: var(--ap-font-heading);
   font-size: 1.4rem;
+  font-weight: 700;
   letter-spacing: var(--ap-tracking-tight);
   text-transform: var(--ap-title-case);
   color: var(--ap-color-fg);
-  margin: var(--ap-space-2) 0 0;
+  margin: 0;
 }
 
 .tournament-entry-page__hint {
   color: var(--ap-color-muted);
   font-size: 0.9rem;
-  margin: 0;
+  margin: var(--ap-space-2) 0 0;
 }
 
-.tournament-entry-page__published {
-  margin-top: var(--ap-space-8);
+.tournament-entry-page__cta {
+  align-self: stretch;
+  margin-top: var(--ap-space-4);
+  --background: var(--ap-color-signal);
+  --color: var(--ap-color-on-signal);
+  --background-activated: var(--ap-color-signal);
+  --box-shadow: none;
+}
+
+.tournament-entry-page__marquee-label {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  margin: var(--ap-space-12) 0 var(--ap-space-3);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ap-color-muted);
+}
+
+.tournament-entry-page__marquee-pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ap-color-ember);
+  animation: tournament-entry-page-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes tournament-entry-page-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 var(--ap-color-ember-soft);
+  }
+  50% {
+    box-shadow: 0 0 0 5px transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tournament-entry-page__marquee-pulse {
+    animation: none;
+  }
+}
+
+ap-tournament-marquee {
+  display: block;
+  align-self: stretch;
+  text-align: left;
+}
+
+// ================= Below the hero (ion-content) follows this screen's
+// normal light palette -- no toggle exists yet on this page, unlike the
+// web landing page's. =================
+
+.tournament-entry-page {
+  --padding-start: var(--ap-space-6);
+  --padding-end: var(--ap-space-6);
+  --padding-top: var(--ap-space-6);
 }
 
 .tournament-entry-page__published-title {

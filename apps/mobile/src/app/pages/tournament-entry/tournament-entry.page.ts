@@ -1,13 +1,24 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { IonButton, IonContent } from '@ionic/angular/standalone';
+import { IonButton, IonContent, IonHeader, IonToolbar } from '@ionic/angular/standalone';
 import { PublicApiService } from 'api-client';
-import { Logo, TextField, TournamentCard } from 'design-system';
+import { Logo, TextField, ThemeModeToggle, TournamentCard, TournamentMarquee } from 'design-system';
+import { ThemeMode, ThemeService } from 'design-tokens';
 import { PublicTournamentSummary } from 'shared-models';
 
 @Component({
   selector: 'app-tournament-entry-page',
-  imports: [IonContent, IonButton, Logo, TextField, TournamentCard],
+  imports: [
+    IonContent,
+    IonHeader,
+    IonToolbar,
+    IonButton,
+    Logo,
+    TextField,
+    ThemeModeToggle,
+    TournamentCard,
+    TournamentMarquee,
+  ],
   templateUrl: './tournament-entry.page.html',
   styleUrl: './tournament-entry.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -15,10 +26,15 @@ import { PublicTournamentSummary } from 'shared-models';
 export class TournamentEntryPage {
   private readonly router = inject(Router);
   private readonly api = inject(PublicApiService);
+  private readonly themeService = inject(ThemeService);
 
   protected readonly slug = signal('');
   protected readonly tournaments = signal<PublicTournamentSummary[]>([]);
   protected readonly query = signal('');
+  // Governs everything below the hero, same as apps/web's landing.page --
+  // the hero itself stays forced dark regardless (data-mode="dark" scoped
+  // on tournament-entry-page__hero in the template).
+  protected readonly mode = this.themeService.mode;
 
   // Same pattern as apps/web's LandingPage (and team-search.page's
   // filteredTeams) -- client-side filter over a wider-than-displayed fetch.
@@ -34,6 +50,10 @@ export class TournamentEntryPage {
 
   constructor() {
     void this.api.listTournaments(50).then((tournaments) => this.tournaments.set(tournaments));
+  }
+
+  protected onModeChange(next: ThemeMode): void {
+    this.themeService.setMode(document.documentElement, next);
   }
 
   protected onSlugChange(value: string): void {

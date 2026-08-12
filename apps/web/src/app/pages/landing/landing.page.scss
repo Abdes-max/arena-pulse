@@ -2,13 +2,69 @@
   display: block;
 }
 
+// ================= Hero — always the dark Ink & Signal palette (see the
+// data-theme/data-mode="dark" scoping comment in landing.page.html), a
+// deliberate brand moment independent of the toggle governing everything
+// below it. =================
+.landing-page__hero {
+  position: relative;
+  background: var(--ap-color-bg);
+  color: var(--ap-color-fg);
+  padding-bottom: var(--ap-space-16);
+  overflow: hidden;
+
+  h1 {
+    position: relative;
+    margin: var(--ap-space-3) 0 0;
+    font-family: var(--ap-font-heading);
+    font-size: clamp(2.1rem, 5vw, 3.25rem);
+    font-weight: 700;
+    letter-spacing: var(--ap-tracking-tight);
+    line-height: 1.1;
+  }
+
+  // The gradient is the hero's one aesthetic risk (frontend-design skill:
+  // "spend your boldness in one place") -- signal cyan into ember amber,
+  // used nowhere else on the page, and only on the two or three words that
+  // carry the product's actual promise ("suivi en direct").
+  h1 em {
+    font-style: normal;
+    background: linear-gradient(100deg, var(--ap-color-signal), var(--ap-color-ember));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+// Ambient glow behind the headline -- cyan (signal) and ember, echoing the
+// h1 gradient without repeating it as a literal shape.
+.landing-page__hero::before {
+  content: '';
+  position: absolute;
+  inset: -30% -10% auto -10%;
+  height: 60%;
+  background:
+    radial-gradient(closest-side, var(--ap-color-signal-soft), transparent),
+    radial-gradient(closest-side at 80% 20%, var(--ap-color-ember-soft), transparent 70%);
+  filter: blur(10px);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
 .landing-page__nav {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
   max-width: 1000px;
   margin: 0 auto;
   padding: var(--ap-space-6) var(--ap-space-6) 0;
+}
+
+.landing-page__nav-end {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-3);
 }
 
 .landing-page__nav-login {
@@ -24,45 +80,88 @@
 
   &:hover {
     background: var(--ap-color-surface);
-    border-color: var(--ap-color-signal-text);
+    border-color: var(--ap-color-signal);
   }
 }
 
-.landing-page__hero {
+.landing-page__hero-figure {
+  position: absolute;
+  top: 14%;
+  width: 130px;
+  height: auto;
+  color: var(--ap-color-signal);
+  opacity: 0.16;
+  pointer-events: none;
+}
+
+.landing-page__hero-figure--left {
+  left: 4%;
+  transform: scaleX(-1);
+}
+
+.landing-page__hero-figure--right {
+  right: 4%;
+  color: var(--ap-color-ember);
+}
+
+// Full-width figures fight the headline/subtitle for room below ~960px --
+// hidden rather than shrunk, the ambient touch isn't worth the collision.
+@media (max-width: 960px) {
+  .landing-page__hero-figure {
+    display: none;
+  }
+}
+
+.landing-page__hero-inner {
+  position: relative;
   max-width: 720px;
   margin: 0 auto;
-  padding: var(--ap-space-24) var(--ap-space-6) var(--ap-space-16);
+  padding: var(--ap-space-16) var(--ap-space-6) 0;
   text-align: center;
-
-  h1 {
-    margin: var(--ap-space-2) 0 var(--ap-space-4);
-    font-family: var(--ap-font-heading);
-    font-size: clamp(2rem, 5vw, 3rem);
-    letter-spacing: var(--ap-tracking-tight);
-  }
 }
 
 .landing-page__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ap-space-2);
   margin: 0;
-  color: var(--ap-color-signal-text);
+  color: var(--ap-color-signal);
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
 
+.landing-page__eyebrow-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ap-color-signal);
+  box-shadow: 0 0 0 3px var(--ap-color-signal-soft);
+}
+
 .landing-page__subtitle {
-  margin: 0 0 var(--ap-space-6);
+  margin: var(--ap-space-4) auto 0;
+  max-width: 52ch;
   color: var(--ap-color-muted);
-  font-size: 1.1rem;
+  font-size: 1.05rem;
+}
+
+.landing-page__hero-ctas {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  gap: var(--ap-space-3);
+  margin-top: var(--ap-space-6);
+  flex-wrap: wrap;
 }
 
 .landing-page__cta {
   display: inline-block;
   padding: var(--ap-space-3) var(--ap-space-8);
   border-radius: var(--ap-radius-md);
-  background: var(--ap-color-primary);
-  color: var(--ap-color-on-primary);
+  background: var(--ap-color-signal);
+  color: var(--ap-color-on-signal);
   font-weight: 700;
   text-decoration: none;
   transition: filter var(--ap-motion-fast) var(--ap-easing-standard);
@@ -72,10 +171,81 @@
   }
 }
 
+.landing-page__cta-ghost {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--ap-space-3) var(--ap-space-6);
+  border-radius: var(--ap-radius-md);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  color: var(--ap-color-fg);
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color var(--ap-motion-fast) var(--ap-easing-standard);
+
+  &:hover {
+    border-color: var(--ap-color-signal);
+  }
+}
+
+.landing-page__marquee {
+  position: relative;
+  max-width: 1100px;
+  margin: var(--ap-space-20) auto 0;
+}
+
+.landing-page__marquee-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ap-space-2);
+  margin: 0 0 var(--ap-space-3);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ap-color-muted);
+}
+
+.landing-page__marquee-pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ap-color-ember);
+  animation: landing-page-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes landing-page-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 var(--ap-color-ember-soft);
+  }
+  50% {
+    box-shadow: 0 0 0 5px transparent;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-page__marquee-pulse {
+    animation: none;
+  }
+
+  .landing-page__feature:hover {
+    transform: none;
+  }
+}
+
+ap-tournament-marquee {
+  display: block;
+  padding-bottom: var(--ap-space-2);
+}
+
+// ================= Everything below the hero follows the page's own
+// light/dark toggle as usual (plain --ap-color-* tokens, no override). =================
+
 .landing-page__tournaments {
   max-width: 1000px;
   margin: 0 auto;
-  padding: 0 var(--ap-space-6) var(--ap-space-16);
+  padding: var(--ap-space-16) var(--ap-space-6);
 
   h2 {
     margin: 0 0 var(--ap-space-4);
@@ -102,34 +272,73 @@
   gap: var(--ap-space-4);
 }
 
+// The hover/focus lift itself lives in ap-tournament-card (:host(:hover)) --
+// this wrapper only needs to stop looking/behaving like a link.
 .landing-page__tournament-link {
   display: block;
   color: inherit;
   text-decoration: none;
-  transition: transform var(--ap-motion-fast) var(--ap-easing-standard);
-
-  &:hover {
-    transform: translateY(-2px);
-  }
 }
 
 .landing-page__features {
   max-width: 1000px;
   margin: 0 auto;
-  padding: 0 var(--ap-space-6) var(--ap-space-16);
+  padding: 0 var(--ap-space-8) var(--ap-space-16);
+  text-align: center;
+
+  h2 {
+    font-family: var(--ap-font-heading);
+    font-size: 1.6rem;
+    letter-spacing: var(--ap-tracking-tight);
+  }
+}
+
+.landing-page__features-lead {
+  max-width: 50ch;
+  margin: var(--ap-space-3) auto 0;
+  color: var(--ap-color-muted);
+}
+
+.landing-page__feature-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: var(--ap-space-4);
+  margin-top: var(--ap-space-8);
+  text-align: left;
 }
 
 .landing-page__feature {
-  padding: var(--ap-space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-3);
+  padding: var(--ap-space-5);
   background: var(--ap-color-surface);
   border: var(--ap-border-width) solid var(--ap-color-border);
   border-radius: var(--ap-radius-lg);
+  transition:
+    border-color var(--ap-motion-fast) var(--ap-easing-standard),
+    box-shadow var(--ap-motion-fast) var(--ap-easing-standard),
+    transform var(--ap-motion-fast) var(--ap-easing-standard);
 
-  h2 {
-    margin: 0 0 var(--ap-space-2);
+  &:hover {
+    border-color: var(--accent);
+    box-shadow: var(--ap-shadow-md);
+    transform: translateY(-3px);
+  }
+  // Accent pair (signal/ember), driven by custom properties instead of a
+  // separate override selector per element that needs it.
+  --accent: var(--ap-color-signal);
+  --accent-tag: var(--ap-color-signal-text);
+  --accent-soft: var(--ap-color-signal-soft);
+
+  &[data-accent='ember'] {
+    --accent: var(--ap-color-ember);
+    --accent-tag: var(--ap-color-ember);
+    --accent-soft: var(--ap-color-ember-soft);
+  }
+
+  h3 {
+    margin: 0;
     font-family: var(--ap-font-heading);
     font-size: 1.05rem;
   }
@@ -138,13 +347,64 @@
     margin: 0;
     color: var(--ap-color-muted);
     font-size: 0.9rem;
+    line-height: 1.5;
   }
 }
 
-.landing-page__preview {
-  max-width: 800px;
+.landing-page__feature-mock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-3);
+  padding: var(--ap-space-4);
+  background: var(--ap-color-bg);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+}
+
+.landing-page__feature-mock-row {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--ap-color-muted);
+}
+
+.landing-page__feature-mock-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--accent);
+}
+
+.landing-page__feature-mock-bar {
+  height: 5px;
+  border-radius: 3px;
+  background: var(--accent);
+}
+
+.landing-page__feature-mock-bar--track {
+  flex: 1;
+  background: var(--ap-color-border);
+}
+
+.landing-page__feature-tag {
+  align-self: flex-start;
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px var(--ap-space-2);
+  border-radius: 999px;
+  color: var(--accent-tag);
+  background: var(--accent-soft);
+}
+
+.landing-page__stores {
+  max-width: 640px;
   margin: 0 auto;
-  padding: 0 var(--ap-space-6) var(--ap-space-16);
+  padding: 0 var(--ap-space-6) var(--ap-space-20);
   text-align: center;
 
   h2 {
@@ -153,33 +413,31 @@
   }
 
   p {
+    margin: var(--ap-space-2) 0 0;
     color: var(--ap-color-muted);
   }
 }
 
-.landing-page__preview-mockup {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--ap-space-3);
-  padding: var(--ap-space-4);
-  background: var(--ap-color-surface);
-  border: var(--ap-border-width) solid var(--ap-color-border);
-  border-radius: var(--ap-radius-lg);
-  margin-bottom: var(--ap-space-4);
-}
-
-.landing-page__preview-bar {
-  grid-column: 1 / -1;
-  height: 16px;
-  border-radius: var(--ap-radius-sm);
-  background: var(--ap-color-signal-soft);
-}
-
-.landing-page__preview-card {
-  height: 80px;
+.landing-page__store-badges {
+  display: inline-block;
+  margin-top: var(--ap-space-6);
   border-radius: var(--ap-radius-md);
-  background: var(--ap-color-bg);
-  border: var(--ap-border-width) solid var(--ap-color-border);
+  opacity: 0.94;
+  transition:
+    opacity var(--ap-motion-fast) var(--ap-easing-standard),
+    transform var(--ap-motion-fast) var(--ap-easing-standard);
+
+  &:hover {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+
+  img {
+    display: block;
+    width: 150px;
+    height: auto;
+    border-radius: var(--ap-radius-md);
+  }
 }
 
 .landing-page__final-cta {

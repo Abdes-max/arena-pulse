@@ -1,0 +1,25 @@
+<div class="ap-tournament-marquee">
+  <div class="ap-tournament-marquee__track">
+    @for (t of loop(); track $index; let i = $index) {
+      <button
+        type="button"
+        class="ap-tournament-marquee__card"
+        [attr.data-accent]="accentFor(i)"
+        [attr.aria-hidden]="i >= tournaments().length ? 'true' : null"
+        [tabIndex]="i >= tournaments().length ? -1 : 0"
+        (click)="tournamentClick.emit(t)"
+      >
+        <span class="ap-tournament-marquee__meta">
+          <span class="ap-tournament-marquee__sport">{{ t.sportName }}</span>
+          @if (dateRangeLabel(t); as dates) {
+            <span class="ap-tournament-marquee__dates">{{ dates }}</span>
+          }
+        </span>
+        <span class="ap-tournament-marquee__name">{{ t.name }}</span>
+        @if (locationLabel(t); as loc) {
+          <span class="ap-tournament-marquee__loc">{{ loc }}</span>
+        }
+      </button>
+    }
+  </div>
+</div>
