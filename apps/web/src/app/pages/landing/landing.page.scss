@@ -156,6 +156,32 @@
   flex-wrap: wrap;
 }
 
+.landing-page__hero-stores {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--ap-space-3);
+  margin-top: var(--ap-space-4);
+  flex-wrap: wrap;
+
+  img {
+    display: block;
+    height: 40px;
+    width: auto;
+    border-radius: var(--ap-radius-md);
+  }
+
+  a {
+    opacity: 0.9;
+    transition: opacity var(--ap-motion-fast) var(--ap-easing-standard);
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}
+
 .landing-page__cta {
   display: inline-block;
   padding: var(--ap-space-3) var(--ap-space-8);
@@ -189,8 +215,8 @@
 
 .landing-page__marquee {
   position: relative;
-  max-width: 1100px;
-  margin: var(--ap-space-20) auto 0;
+  max-width: 800px;
+  margin: var(--ap-space-12) auto 0;
 }
 
 .landing-page__marquee-label {
@@ -299,19 +325,44 @@ ap-tournament-marquee {
   color: var(--ap-color-muted);
 }
 
+// 2 per row on a 5-column track (3+2 split) rather than an even grid -- one
+// card reads as the "lead" of its row, the other as its companion. The
+// pattern alternates which side leads every row (4n+1/4n take the wide
+// column, 4n+2/4n+3 the narrow one), so it doesn't read as one column
+// permanently more important than the other across the whole section.
 .landing-page__feature-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(5, 1fr);
   gap: var(--ap-space-4);
   margin-top: var(--ap-space-8);
   text-align: left;
+}
+
+.landing-page__feature:nth-child(4n + 1),
+.landing-page__feature:nth-child(4n) {
+  grid-column: span 3;
+}
+
+.landing-page__feature:nth-child(4n + 2),
+.landing-page__feature:nth-child(4n + 3) {
+  grid-column: span 2;
+}
+
+@media (max-width: 720px) {
+  .landing-page__feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .landing-page__feature {
+    grid-column: span 1 !important;
+  }
 }
 
 .landing-page__feature {
   display: flex;
   flex-direction: column;
   gap: var(--ap-space-3);
-  padding: var(--ap-space-5);
+  padding: var(--ap-space-6);
   background: var(--ap-color-surface);
   border: var(--ap-border-width) solid var(--ap-color-border);
   border-radius: var(--ap-radius-lg);
@@ -404,7 +455,7 @@ ap-tournament-marquee {
 .landing-page__stores {
   max-width: 640px;
   margin: 0 auto;
-  padding: 0 var(--ap-space-6) var(--ap-space-20);
+  padding: 0 var(--ap-space-6) var(--ap-space-24);
   text-align: center;
 
   h2 {
@@ -419,23 +470,29 @@ ap-tournament-marquee {
 }
 
 .landing-page__store-badges {
-  display: inline-block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--ap-space-3);
   margin-top: var(--ap-space-6);
-  border-radius: var(--ap-radius-md);
-  opacity: 0.94;
-  transition:
-    opacity var(--ap-motion-fast) var(--ap-easing-standard),
-    transform var(--ap-motion-fast) var(--ap-easing-standard);
+  flex-wrap: wrap;
 
-  &:hover {
-    opacity: 1;
-    transform: translateY(-2px);
+  a {
+    opacity: 0.9;
+    transition:
+      opacity var(--ap-motion-fast) var(--ap-easing-standard),
+      transform var(--ap-motion-fast) var(--ap-easing-standard);
+
+    &:hover {
+      opacity: 1;
+      transform: translateY(-2px);
+    }
   }
 
   img {
     display: block;
-    width: 150px;
-    height: auto;
+    height: 44px;
+    width: auto;
     border-radius: var(--ap-radius-md);
   }
 }

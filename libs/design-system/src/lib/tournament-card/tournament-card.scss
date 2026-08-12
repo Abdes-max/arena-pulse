@@ -7,6 +7,7 @@
 .ap-tournament-card {
   background: var(--ap-color-surface);
   border: var(--ap-border-width) solid var(--ap-color-border);
+  border-left: 3px solid var(--ap-color-signal);
   border-radius: var(--ap-radius-lg);
   padding: var(--ap-space-4);
   display: flex;
@@ -59,6 +60,7 @@
 
 .ap-tournament-card__sport {
   font-weight: 700;
+  color: var(--ap-color-signal-text);
 }
 
 .ap-tournament-card__location {
