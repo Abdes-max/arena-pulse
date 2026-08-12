@@ -131,6 +131,6 @@ export class AppShell {
 
   protected async logout(): Promise<void> {
     await this.authService.logout();
-    await this.router.navigateByUrl('/login');
+    await this.router.navigateByUrl('/');
   }
 }
