@@ -5,13 +5,6 @@
 
 .ap-tournament-marquee {
   overflow: hidden;
-}
-
-// Below MIN_TOURNAMENTS_TO_SCROLL (tournament-marquee.ts), data-scroll is
-// false: the mask/animation come off and the (non-duplicated) track is
-// centered as a plain static row instead -- an infinite-scroll loop with
-// only a couple of cards reads as broken, not lively.
-:host([data-scroll='true']) .ap-tournament-marquee {
   mask-image: linear-gradient(90deg, transparent, black 6%, black 94%, transparent);
   -webkit-mask-image: linear-gradient(90deg, transparent, black 6%, black 94%, transparent);
 }
@@ -20,14 +13,7 @@
   display: flex;
   gap: var(--ap-space-3);
   width: max-content;
-}
-
-:host([data-scroll='true']) .ap-tournament-marquee__track {
   animation: ap-tournament-marquee-scroll 34s linear infinite;
-}
-
-:host(:not([data-scroll='true'])) .ap-tournament-marquee__track {
-  margin: 0 auto;
 }
 
 .ap-tournament-marquee:hover .ap-tournament-marquee__track,
@@ -48,7 +34,7 @@
   .ap-tournament-marquee__track {
     animation: none;
   }
-  :host([data-scroll='true']) .ap-tournament-marquee {
+  .ap-tournament-marquee {
     overflow-x: auto;
     mask-image: none;
     -webkit-mask-image: none;

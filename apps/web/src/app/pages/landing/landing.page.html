@@ -78,6 +78,13 @@
         </a>
       }
     </div>
+
+    <!-- href="#" -- pas encore publiée sur l'un ou l'autre store, voir la
+         section stores plus bas pour le detail. -->
+    <div class="landing-page__hero-stores">
+      <a href="#"><img src="badge-app-store.png" alt="Télécharger sur l'App Store" /></a>
+      <a href="#"><img src="badge-google-play.png" alt="Disponible sur Google Play" /></a>
+    </div>
   </div>
 
   @if (tournaments().length > 0) {
@@ -234,14 +241,10 @@
     Store (docs/architecture/adr/0008 et 0009). À remplacer par les vraies
     fiches une fois publiées.
   -->
-  <a class="landing-page__store-badges" href="#">
-    <img
-      src="store-badges.png"
-      alt="Disponible sur Google Play et l'App Store"
-      width="547"
-      height="365"
-    />
-  </a>
+  <div class="landing-page__store-badges">
+    <a href="#"><img src="badge-app-store.png" alt="Télécharger sur l'App Store" /></a>
+    <a href="#"><img src="badge-google-play.png" alt="Disponible sur Google Play" /></a>
+  </div>
 </section>
 
 <footer class="landing-page__final-cta">
