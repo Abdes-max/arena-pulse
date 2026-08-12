@@ -188,7 +188,22 @@ async function main() {
     if (run('npm', ['run', 'build:libs'], { cwd: rootDir }).status !== 0) {
       throw new Error('build:libs failed');
     }
-    if (run('npx', ['ng', 'build', 'mobile'], { cwd: rootDir }).status !== 0) {
+    // --configuration development, not the default "production":
+    // 1. Production runs optimization, which inlines Google Fonts at build
+    //    time by fetching them over the network -- fails outright with no/
+    //    flaky internet (getaddrinfo ENOTFOUND), which a local emulator run
+    //    has no reason to depend on in the first place.
+    // 2. Only the development configuration has the fileReplacement that
+    //    swaps in environment.development.ts (patched above to point at
+    //    this machine's :API_PORT) -- production builds apps/mobile/src/
+    //    environments/environment.ts unchanged, which points at the real
+    //    tournarena.com API since docs/architecture/adr/0008 (before that
+    //    fix this didn't matter, both files happened to say localhost).
+    //    Without this flag the emulator would silently talk to production.
+    if (
+      run('npx', ['ng', 'build', 'mobile', '--configuration', 'development'], { cwd: rootDir })
+        .status !== 0
+    ) {
       throw new Error('ng build mobile failed');
     }
     if (run('npx', ['cap', 'sync', 'android'], { cwd: mobileDir }).status !== 0) {
