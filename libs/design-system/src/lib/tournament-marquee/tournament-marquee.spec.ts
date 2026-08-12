@@ -25,24 +25,46 @@ const ITEMS: TournamentMarqueeItem[] = [
   },
 ];
 
+// >= MIN_TOURNAMENTS_TO_SCROLL (6, tournament-marquee.ts) -- below that
+// threshold the track is a plain centered row instead, no duplication.
+const MANY_ITEMS: TournamentMarqueeItem[] = Array.from({ length: 6 }, (_, i) => ({
+  ...ITEMS[i % ITEMS.length],
+  id: `many-${i}`,
+}));
+
 @Component({
   imports: [TournamentMarquee],
   template: `<ap-tournament-marquee [tournaments]="items" (tournamentClick)="clicked = $event" />`,
 })
 class HostComponent {
-  items = ITEMS;
+  items: TournamentMarqueeItem[] = ITEMS;
   clicked: TournamentMarqueeItem | null = null;
 }
 
 describe('TournamentMarquee', () => {
-  it('duplicates the list for a seamless loop, hiding the duplicate from assistive tech', () => {
+  it('duplicates the list for a seamless loop once there are enough tournaments, hiding the duplicate from assistive tech', () => {
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.componentInstance.items = MANY_ITEMS;
+    fixture.detectChanges();
+
+    const cards = fixture.nativeElement.querySelectorAll('.ap-tournament-marquee__card');
+    expect(cards.length).toBe(12);
+    expect(cards[0].getAttribute('aria-hidden')).toBeNull();
+    expect(cards[6].getAttribute('aria-hidden')).toBe('true');
+    expect(
+      fixture.nativeElement.querySelector('ap-tournament-marquee').getAttribute('data-scroll'),
+    ).toBe('true');
+  });
+
+  it('does not duplicate or scroll below the threshold -- a plain centered row instead', () => {
     const fixture = TestBed.createComponent(HostComponent);
     fixture.detectChanges();
 
     const cards = fixture.nativeElement.querySelectorAll('.ap-tournament-marquee__card');
-    expect(cards.length).toBe(4);
-    expect(cards[0].getAttribute('aria-hidden')).toBeNull();
-    expect(cards[2].getAttribute('aria-hidden')).toBe('true');
+    expect(cards.length).toBe(ITEMS.length);
+    expect(
+      fixture.nativeElement.querySelector('ap-tournament-marquee').getAttribute('data-scroll'),
+    ).toBe('false');
   });
 
   it('alternates the signal/ember accent per card', () => {

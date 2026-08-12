@@ -12,6 +12,7 @@
        rather than relying on ion-header's own top padding untested here. -->
   <ion-toolbar>
     <ap-logo slot="start" />
+    <ap-theme-mode-toggle slot="end" [mode]="mode()" (modeChange)="onModeChange($event)" />
   </ion-toolbar>
 
   <div class="tournament-entry-page__hero-body">

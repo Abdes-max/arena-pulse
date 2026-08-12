@@ -190,7 +190,7 @@
 .landing-page__marquee {
   position: relative;
   max-width: 1100px;
-  margin: var(--ap-space-10) auto 0;
+  margin: var(--ap-space-20) auto 0;
 }
 
 .landing-page__marquee-label {
@@ -227,6 +227,10 @@
 @media (prefers-reduced-motion: reduce) {
   .landing-page__marquee-pulse {
     animation: none;
+  }
+
+  .landing-page__feature:hover {
+    transform: none;
   }
 }
 
@@ -279,7 +283,7 @@ ap-tournament-marquee {
 .landing-page__features {
   max-width: 1000px;
   margin: 0 auto;
-  padding: 0 var(--ap-space-6) var(--ap-space-16);
+  padding: 0 var(--ap-space-8) var(--ap-space-16);
   text-align: center;
 
   h2 {
@@ -311,6 +315,16 @@ ap-tournament-marquee {
   background: var(--ap-color-surface);
   border: var(--ap-border-width) solid var(--ap-color-border);
   border-radius: var(--ap-radius-lg);
+  transition:
+    border-color var(--ap-motion-fast) var(--ap-easing-standard),
+    box-shadow var(--ap-motion-fast) var(--ap-easing-standard),
+    transform var(--ap-motion-fast) var(--ap-easing-standard);
+
+  &:hover {
+    border-color: var(--accent);
+    box-shadow: var(--ap-shadow-md);
+    transform: translateY(-3px);
+  }
   // Accent pair (signal/ember), driven by custom properties instead of a
   // separate override selector per element that needs it.
   --accent: var(--ap-color-signal);
@@ -372,7 +386,6 @@ ap-tournament-marquee {
 
 .landing-page__feature-mock-bar--track {
   flex: 1;
-  width: auto !important;
   background: var(--ap-color-border);
 }
 

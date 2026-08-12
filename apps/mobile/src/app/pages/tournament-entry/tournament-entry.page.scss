@@ -11,19 +11,23 @@
     --background: transparent;
     --color: var(--ap-color-fg);
     --border-width: 0;
+    --padding-start: var(--ap-space-4);
+    --padding-end: var(--ap-space-4);
   }
 }
 
+// Narrower than web's equivalent glow -- at web's proportions this read as
+// one dominant blob rather than an ambient wash on a narrow phone screen.
 .tournament-entry-page__hero::before {
   content: '';
   position: absolute;
-  inset: -20% -20% auto -20%;
-  height: 55%;
+  inset: -25% 0 auto 0;
+  height: 38%;
   background:
     radial-gradient(closest-side, var(--ap-color-signal-soft), transparent),
-    radial-gradient(closest-side at 85% 10%, var(--ap-color-ember-soft), transparent 70%);
+    radial-gradient(closest-side at 85% 30%, var(--ap-color-ember-soft), transparent 70%);
   filter: blur(10px);
-  opacity: 0.6;
+  opacity: 0.35;
   pointer-events: none;
 }
 
@@ -71,7 +75,7 @@
   display: flex;
   align-items: center;
   gap: var(--ap-space-2);
-  margin: var(--ap-space-8) 0 var(--ap-space-3);
+  margin: var(--ap-space-12) 0 var(--ap-space-3);
   font-size: 0.68rem;
   font-weight: 700;
   text-transform: uppercase;
