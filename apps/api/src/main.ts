@@ -1,6 +1,8 @@
+import { resolve } from 'path';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
@@ -8,7 +10,7 @@ import { AppModule } from './app.module';
 import { JsonLogger } from './common/logger/json-logger.service';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: new JsonLogger(),
     // Needed for Stripe webhook signature verification (payments/webhook
     // uses req.rawBody) -- Nest still populates the parsed req.body for
@@ -16,6 +18,19 @@ async function bootstrap() {
     rawBody: true,
   });
   const configService = app.get(ConfigService);
+
+  // Team logos (feat/045) -- local-disk upload served back out under
+  // /uploads, outside the /api/v1 prefix set below since it's a static
+  // asset, not an API route. UPLOADS_DIR must match TeamsService's own
+  // resolution of the same env var (default ./uploads, relative to the
+  // process cwd) -- see docker-compose.prod.yml for the persistent volume
+  // mounted there in production.
+  app.useStaticAssets(
+    resolve(configService.get<string>('UPLOADS_DIR', './uploads')),
+    {
+      prefix: '/uploads',
+    },
+  );
 
   app.setGlobalPrefix('api/v1');
   // CSP is meant to constrain what a *browser-rendered page* can load --

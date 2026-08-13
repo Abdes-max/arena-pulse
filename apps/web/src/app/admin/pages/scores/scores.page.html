@@ -63,18 +63,33 @@
                           Annuler le forfait
                         </ap-button>
                       } @else if (pendingOpponents(match)) {
-                        <span class="scores-page__team scores-page__team--home">{{
-                          match.homeTeam?.name ?? match.homeSourceLabel ?? '?'
-                        }}</span>
+                        <span class="scores-page__team scores-page__team--home">
+                          @if (logoUrl(match.homeTeam?.logoUrl); as logo) {
+                            <img class="scores-page__team-logo" [src]="logo" alt="" />
+                          }
+                          <span class="scores-page__team-name">{{
+                            match.homeTeam?.name ?? match.homeSourceLabel ?? '?'
+                          }}</span>
+                        </span>
                         <span>-</span>
-                        <span class="scores-page__team scores-page__team--away">{{
-                          match.awayTeam?.name ?? match.awaySourceLabel ?? '?'
-                        }}</span>
+                        <span class="scores-page__team scores-page__team--away">
+                          @if (logoUrl(match.awayTeam?.logoUrl); as logo) {
+                            <img class="scores-page__team-logo" [src]="logo" alt="" />
+                          }
+                          <span class="scores-page__team-name">{{
+                            match.awayTeam?.name ?? match.awaySourceLabel ?? '?'
+                          }}</span>
+                        </span>
                         <span class="scores-page__pending-badge">En attente des équipes</span>
                       } @else {
-                        <span class="scores-page__team scores-page__team--home">{{
-                          match.homeTeam?.name ?? '?'
-                        }}</span>
+                        <span class="scores-page__team scores-page__team--home">
+                          @if (logoUrl(match.homeTeam?.logoUrl); as logo) {
+                            <img class="scores-page__team-logo" [src]="logo" alt="" />
+                          }
+                          <span class="scores-page__team-name">{{
+                            match.homeTeam?.name ?? '?'
+                          }}</span>
+                        </span>
                         <ap-text-field
                           class="scores-page__score-input"
                           label="Score à domicile"
@@ -94,9 +109,14 @@
                           [value]="draftFor(match).away"
                           (valueChange)="onDraftChange(match, 'away', $event)"
                         />
-                        <span class="scores-page__team scores-page__team--away">{{
-                          match.awayTeam?.name ?? '?'
-                        }}</span>
+                        <span class="scores-page__team scores-page__team--away">
+                          @if (logoUrl(match.awayTeam?.logoUrl); as logo) {
+                            <img class="scores-page__team-logo" [src]="logo" alt="" />
+                          }
+                          <span class="scores-page__team-name">{{
+                            match.awayTeam?.name ?? '?'
+                          }}</span>
+                        </span>
 
                         @if (isDraw(match) && penaltyShootoutEnabled(match)) {
                           <span class="scores-page__penalty-label">Tirs au but</span>

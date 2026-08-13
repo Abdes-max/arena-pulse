@@ -1,6 +1,7 @@
 import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { AssetUrlService } from 'api-client';
 import { Badge, Button, Select, SelectOption } from 'design-system';
 import { AuthService } from '../../core/auth.service';
 import {
@@ -38,6 +39,7 @@ export class StandingsPage {
   private readonly tournamentsService = inject(TournamentsService);
   private readonly competitionFormatsService = inject(CompetitionFormatsService);
   private readonly standingsService = inject(StandingsService);
+  private readonly assetUrl = inject(AssetUrlService);
 
   protected readonly organization = computed(() => this.authService.organizations()[0] ?? null);
   protected readonly tournamentId = this.route.snapshot.paramMap.get('tournamentId')!;
@@ -149,6 +151,10 @@ export class StandingsPage {
   protected async onPhaseChange(phaseId: string): Promise<void> {
     this.selectedPhaseId.set(phaseId);
     await this.loadStandings();
+  }
+
+  protected logoUrl(url: string | null | undefined): string | null {
+    return this.assetUrl.resolve(url);
   }
 
   protected isQualified(group: GroupStandings, teamId: string): boolean {

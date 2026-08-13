@@ -1,10 +1,31 @@
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { promises as fs } from 'fs';
 import { CategoriesService } from './categories.service';
 import { DivisionsService } from './divisions.service';
 import { GroupsService } from './groups.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { TeamsService } from './teams.service';
 import { TournamentsService } from './tournaments.service';
+
+// TeamsService writes/reads the local filesystem for logo uploads -- mocked
+// entirely so these stay unit tests, not e2e-with-a-real-disk tests.
+jest.mock('fs', () => ({
+  promises: {
+    mkdir: jest.fn().mockResolvedValue(undefined),
+    writeFile: jest.fn().mockResolvedValue(undefined),
+    unlink: jest.fn().mockResolvedValue(undefined),
+  },
+}));
+const fsMock = fs as unknown as {
+  mkdir: jest.Mock;
+  writeFile: jest.Mock;
+  unlink: jest.Mock;
+};
 
 type PrismaMock = {
   team: {
@@ -77,12 +98,21 @@ describe('TeamsService', () => {
     groupsService = {
       assertGroupExists: jest.fn(),
     };
+    fsMock.mkdir.mockClear();
+    fsMock.writeFile.mockClear();
+    fsMock.unlink.mockClear();
+    const configService = {
+      get: jest.fn(
+        (_key: string, defaultValue?: string) => defaultValue ?? './uploads',
+      ),
+    };
     service = new TeamsService(
       prisma as unknown as PrismaService,
       tournamentsService as unknown as TournamentsService,
       categoriesService as unknown as CategoriesService,
       divisionsService as unknown as DivisionsService,
       groupsService as unknown as GroupsService,
+      configService as unknown as ConfigService,
     );
   });
 
@@ -230,6 +260,8 @@ describe('TeamsService', () => {
     });
 
     it('deletes only teams scoped to this tournament', async () => {
+      prisma.team.findMany.mockResolvedValue([]);
+
       await service.bulkRemove('org-1', 'tournament-1', {
         teamIds: ['team-1', 'team-2'],
       });
@@ -239,6 +271,170 @@ describe('TeamsService', () => {
           tournamentId: 'tournament-1',
           id: { in: ['team-1', 'team-2'] },
         },
+      });
+    });
+
+    it("deletes each removed team's logo file, if any", async () => {
+      prisma.team.findMany.mockResolvedValue([
+        { logoUrl: '/uploads/team-logos/team-1-abc.png' },
+        { logoUrl: null },
+      ]);
+
+      await service.bulkRemove('org-1', 'tournament-1', {
+        teamIds: ['team-1', 'team-2'],
+      });
+
+      expect(fsMock.unlink).toHaveBeenCalledTimes(1);
+      expect(fsMock.unlink).toHaveBeenCalledWith(
+        expect.stringContaining('team-1-abc.png'),
+      );
+    });
+  });
+
+  describe('remove', () => {
+    it("deletes the team's logo file when it has one", async () => {
+      prisma.team.findUnique.mockResolvedValue({
+        id: 'team-1',
+        tournamentId: 'tournament-1',
+        category,
+        division: null,
+        group: null,
+        logoUrl: '/uploads/team-logos/team-1-abc.png',
+      });
+
+      await service.remove('org-1', 'tournament-1', 'team-1');
+
+      expect(prisma.team.delete).toHaveBeenCalledWith({
+        where: { id: 'team-1' },
+      });
+      expect(fsMock.unlink).toHaveBeenCalledWith(
+        expect.stringContaining('team-1-abc.png'),
+      );
+    });
+
+    it('does not touch the filesystem when the team has no logo', async () => {
+      prisma.team.findUnique.mockResolvedValue({
+        id: 'team-1',
+        tournamentId: 'tournament-1',
+        category,
+        division: null,
+        group: null,
+        logoUrl: null,
+      });
+
+      await service.remove('org-1', 'tournament-1', 'team-1');
+
+      expect(fsMock.unlink).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('uploadLogo', () => {
+    const teamRow = {
+      id: 'team-1',
+      tournamentId: 'tournament-1',
+      category,
+      division: null,
+      group: null,
+      logoUrl: null as string | null,
+    };
+
+    function pngFile(overrides: Partial<Express.Multer.File> = {}) {
+      return {
+        mimetype: 'image/png',
+        size: 1024,
+        buffer: Buffer.from('fake-png'),
+        ...overrides,
+      } as Express.Multer.File;
+    }
+
+    it('rejects an unsupported mimetype without touching the filesystem', async () => {
+      prisma.team.findUnique.mockResolvedValue(teamRow);
+
+      await expect(
+        service.uploadLogo(
+          'org-1',
+          'tournament-1',
+          'team-1',
+          pngFile({ mimetype: 'image/svg+xml' }),
+        ),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(fsMock.writeFile).not.toHaveBeenCalled();
+    });
+
+    it('rejects a file over the 2 MB limit', async () => {
+      prisma.team.findUnique.mockResolvedValue(teamRow);
+
+      await expect(
+        service.uploadLogo(
+          'org-1',
+          'tournament-1',
+          'team-1',
+          pngFile({ size: 3 * 1024 * 1024 }),
+        ),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(fsMock.writeFile).not.toHaveBeenCalled();
+    });
+
+    it('writes the file and sets logoUrl to a public /uploads path', async () => {
+      prisma.team.findUnique.mockResolvedValue(teamRow);
+      prisma.team.update.mockImplementation(
+        ({ data }: { data: { logoUrl: string } }) => ({
+          ...teamRow,
+          logoUrl: data.logoUrl,
+        }),
+      );
+
+      const result = await service.uploadLogo(
+        'org-1',
+        'tournament-1',
+        'team-1',
+        pngFile(),
+      );
+
+      expect(fsMock.mkdir).toHaveBeenCalled();
+      expect(fsMock.writeFile).toHaveBeenCalledTimes(1);
+      expect(fsMock.unlink).not.toHaveBeenCalled(); // no previous logo
+      expect(result.logoUrl).toMatch(/^\/uploads\/team-logos\/team-1-.+\.png$/);
+    });
+
+    it('deletes the previous logo file when replacing an existing one', async () => {
+      prisma.team.findUnique.mockResolvedValue({
+        ...teamRow,
+        logoUrl: '/uploads/team-logos/team-1-old.png',
+      });
+      prisma.team.update.mockResolvedValue({
+        ...teamRow,
+        logoUrl: '/uploads/team-logos/new.png',
+      });
+
+      await service.uploadLogo('org-1', 'tournament-1', 'team-1', pngFile());
+
+      expect(fsMock.unlink).toHaveBeenCalledWith(
+        expect.stringContaining('team-1-old.png'),
+      );
+    });
+  });
+
+  describe('removeLogo', () => {
+    it('clears logoUrl and deletes the file', async () => {
+      prisma.team.findUnique.mockResolvedValue({
+        id: 'team-1',
+        tournamentId: 'tournament-1',
+        category,
+        division: null,
+        group: null,
+        logoUrl: '/uploads/team-logos/team-1-abc.png',
+      });
+      prisma.team.update.mockResolvedValue({ logoUrl: null });
+
+      await service.removeLogo('org-1', 'tournament-1', 'team-1');
+
+      expect(fsMock.unlink).toHaveBeenCalledWith(
+        expect.stringContaining('team-1-abc.png'),
+      );
+      expect(prisma.team.update).toHaveBeenCalledWith({
+        where: { id: 'team-1' },
+        data: { logoUrl: null },
       });
     });
   });

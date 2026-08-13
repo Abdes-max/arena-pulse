@@ -5,6 +5,7 @@ export interface FinalRankingRow {
   position: number;
   teamId: string;
   teamName: string;
+  teamLogoUrl: string | null;
   phaseId: string;
   phaseName: string;
   stageLabel: string;
@@ -18,6 +19,7 @@ interface PhaseMatches {
 interface StageEntry {
   teamId: string;
   teamName: string;
+  teamLogoUrl: string | null;
   stageRank: number;
   stageLabel: string;
 }
@@ -42,6 +44,7 @@ export function computeFinalRanking(phasesWithMatches: PhaseMatches[]): FinalRan
         position: 0,
         teamId: entry.teamId,
         teamName: entry.teamName,
+        teamLogoUrl: entry.teamLogoUrl,
         phaseId: phase.id,
         phaseName: phase.name,
         stageLabel: entry.stageLabel,
@@ -109,7 +112,13 @@ function teamEntry(
   stageLabel: string,
 ): StageEntry {
   const team = match.homeTeam?.id === teamId ? match.homeTeam : match.awayTeam;
-  return { teamId, teamName: team?.name ?? '?', stageRank, stageLabel };
+  return {
+    teamId,
+    teamName: team?.name ?? '?',
+    teamLogoUrl: team?.logoUrl ?? null,
+    stageRank,
+    stageLabel,
+  };
 }
 
 function getWinnerTeamId(match: Match): string | null {

@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -10,9 +11,13 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
+import { memoryStorage } from 'multer';
 import { OrganizationRole } from '../../generated/prisma/client';
 import { RequireOrgRole } from '../organizations/decorators/require-org-role.decorator';
 import { OrganizationRoleGuard } from '../organizations/guards/organization-role.guard';
@@ -131,6 +136,43 @@ export class TeamsController {
       teamId,
       dto,
     );
+  }
+
+  @RequireOrgRole(OrganizationRole.ORG_MEMBER)
+  @RequireTournamentPermission('MANAGE_PARTICIPANTS')
+  @UseInterceptors(
+    FileInterceptor('logo', {
+      storage: memoryStorage(),
+      limits: { fileSize: 2 * 1024 * 1024 },
+    }),
+  )
+  @Post(':teamId/logo')
+  uploadLogo(
+    @Param('organizationId') organizationId: string,
+    @Param('tournamentId') tournamentId: string,
+    @Param('teamId') teamId: string,
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
+    if (!file) {
+      throw new BadRequestException('Aucun fichier reçu.');
+    }
+    return this.teamsService.uploadLogo(
+      organizationId,
+      tournamentId,
+      teamId,
+      file,
+    );
+  }
+
+  @RequireOrgRole(OrganizationRole.ORG_MEMBER)
+  @RequireTournamentPermission('MANAGE_PARTICIPANTS')
+  @Delete(':teamId/logo')
+  removeLogo(
+    @Param('organizationId') organizationId: string,
+    @Param('tournamentId') tournamentId: string,
+    @Param('teamId') teamId: string,
+  ) {
+    return this.teamsService.removeLogo(organizationId, tournamentId, teamId);
   }
 
   @RequireOrgRole(OrganizationRole.ORG_MEMBER)

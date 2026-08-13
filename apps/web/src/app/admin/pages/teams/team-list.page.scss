@@ -51,6 +51,63 @@
   gap: var(--ap-space-2);
 }
 
+.team-list-page__logo-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+}
+
+.team-list-page__logo,
+.team-list-page__logo-placeholder {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--ap-radius-sm);
+  flex: none;
+}
+
+.team-list-page__logo {
+  object-fit: cover;
+}
+
+.team-list-page__logo-placeholder {
+  border: var(--ap-border-width) dashed var(--ap-color-border);
+}
+
+// A styled <label> wrapping a visually-hidden native file input -- clicking
+// anywhere on the label text opens the file picker, same affordance as a
+// button without needing to intercept the click to call input.click()
+// ourselves.
+.team-list-page__logo-upload {
+  position: relative;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ap-color-signal-text);
+  cursor: pointer;
+  white-space: nowrap;
+
+  input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+}
+
+.team-list-page__logo-remove {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-size: 0.8rem;
+  color: var(--ap-color-muted);
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:hover {
+    color: var(--ap-color-error);
+  }
+}
+
 .team-list-page__player-list {
   list-style: none;
   margin: 0 0 var(--ap-space-3);

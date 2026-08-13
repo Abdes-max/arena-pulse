@@ -3,6 +3,14 @@ export type TournamentStatus = 'DRAFT' | 'PUBLISHED' | 'UNPUBLISHED' | 'ARCHIVED
 /** Visual theme of this tournament's public site + slideshow, chosen by its organizer. */
 export type PublicTheme = 'INK_SIGNAL' | 'PULSE_EMBER' | 'NEON_COURT';
 
+// Sport catalog is global, not per-organization -- publicly readable (the
+// landing page's "Sports" nav dropdown lists these for a logged-out
+// visitor, see sports.controller.ts).
+export interface PublicSport {
+  id: string;
+  name: string;
+}
+
 export interface Field {
   id: string;
   name: string;
@@ -90,6 +98,9 @@ export interface PublicTeam {
   divisionName: string | null;
   groupId: string | null;
   groupName: string | null;
+  // Path relative to the API origin (e.g. /uploads/team-logos/x.png) --
+  // resolveAssetUrl() turns this into a fetchable URL from any app.
+  logoUrl: string | null;
   position: number;
 }
 
@@ -119,14 +130,14 @@ export interface Match {
   isThirdPlaceMatch: boolean;
   round: number;
   status: MatchStatus;
-  homeTeam: { id: string; name: string } | null;
-  awayTeam: { id: string; name: string } | null;
+  homeTeam: { id: string; name: string; logoUrl: string | null } | null;
+  awayTeam: { id: string; name: string; logoUrl: string | null } | null;
   // Display-only placeholder shown while the real team above is still
   // unknown (e.g. "1er Poule A", "Vainqueur Quart de finale 1") -- always
   // null once the corresponding team is known.
   homeSourceLabel: string | null;
   awaySourceLabel: string | null;
-  forfeitedTeam: { id: string; name: string } | null;
+  forfeitedTeam: { id: string; name: string; logoUrl: string | null } | null;
   timeSlot: {
     id: string;
     startTime: string;
@@ -140,6 +151,7 @@ export interface Match {
 export interface StandingRow {
   teamId: string;
   teamName: string;
+  teamLogoUrl: string | null;
   played: number;
   won: number;
   drawn: number;

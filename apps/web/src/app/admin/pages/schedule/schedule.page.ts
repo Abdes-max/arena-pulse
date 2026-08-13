@@ -10,6 +10,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { AssetUrlService } from 'api-client';
 import { Button, Select, SelectOption, TextField } from 'design-system';
 import { AuthService } from '../../core/auth.service';
 import { CompetitionFormatsService } from '../../core/competition-formats.service';
@@ -56,6 +57,7 @@ export class SchedulePage {
   private readonly timeSlotsService = inject(TimeSlotsService);
   private readonly refereesService = inject(RefereesService);
   private readonly teamsService = inject(TeamsService);
+  private readonly assetUrl = inject(AssetUrlService);
 
   protected readonly organization = computed(() => this.authService.organizations()[0] ?? null);
   protected readonly tournamentId = this.route.snapshot.paramMap.get('tournamentId')!;
@@ -477,6 +479,10 @@ export class SchedulePage {
   // by phase or round, so with several knockout tiers shown together (or
   // even just poules vs. élimination directe) the card itself needs to say
   // which phase it belongs to, not just which round.
+  protected logoUrl(url: string | null | undefined): string | null {
+    return this.assetUrl.resolve(url);
+  }
+
   protected roundDisplay(match: Match): string {
     const phase = this.phaseForMatch(match);
     if (!phase) {

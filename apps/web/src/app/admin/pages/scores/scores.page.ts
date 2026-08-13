@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { AssetUrlService } from 'api-client';
 import { Button, Select, SelectOption, TextField } from 'design-system';
 import { AuthService } from '../../core/auth.service';
 import { CompetitionFormatsService } from '../../core/competition-formats.service';
@@ -51,6 +52,7 @@ export class ScoresPage {
   private readonly competitionFormatsService = inject(CompetitionFormatsService);
   private readonly scheduleService = inject(ScheduleService);
   private readonly scoresService = inject(ScoresService);
+  private readonly assetUrl = inject(AssetUrlService);
 
   protected readonly organization = computed(() => this.authService.organizations()[0] ?? null);
   protected readonly tournamentId = this.route.snapshot.paramMap.get('tournamentId')!;
@@ -382,6 +384,10 @@ export class ScoresPage {
 
   protected pendingOpponents(match: Match): boolean {
     return !match.homeTeam || !match.awayTeam;
+  }
+
+  protected logoUrl(url: string | null | undefined): string | null {
+    return this.assetUrl.resolve(url);
   }
 
   protected isDraw(match: Match): boolean {

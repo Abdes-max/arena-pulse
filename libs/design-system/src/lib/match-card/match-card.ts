@@ -5,6 +5,9 @@ export type MatchCardVariant = 'featured' | 'live' | 'upcoming' | 'result' | 'co
 
 export interface MatchCardTeam {
   name: string;
+  // Already resolved to a fetchable URL by the caller (shared-models'
+  // resolveAssetUrl) -- this component doesn't know the app's own apiUrl.
+  logoUrl?: string | null;
 }
 
 /**

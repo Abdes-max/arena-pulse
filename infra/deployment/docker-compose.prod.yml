@@ -92,6 +92,11 @@ services:
       TOURNAMENT_PUBLICATION_TIER_MID_PRICE_CENTS: ${TOURNAMENT_PUBLICATION_TIER_MID_PRICE_CENTS:-0}
       TOURNAMENT_PUBLICATION_TIER_HIGH_PRICE_CENTS: ${TOURNAMENT_PUBLICATION_TIER_HIGH_PRICE_CENTS:-0}
       ORGANIZATION_ANNUAL_SUBSCRIPTION_PRICE_CENTS: ${ORGANIZATION_ANNUAL_SUBSCRIPTION_PRICE_CENTS:-0}
+      # Team logos (feat/045) -- must match the volume mount below, and
+      # infra/docker/api.Dockerfile's WORKDIR (/app).
+      UPLOADS_DIR: /app/uploads
+    volumes:
+      - arena-pulse-uploads-prod:/app/uploads
     depends_on:
       migrate:
         condition: service_completed_successfully
@@ -143,5 +148,6 @@ services:
 
 volumes:
   arena-pulse-postgres-prod:
+  arena-pulse-uploads-prod:
   caddy-data-prod:
   caddy-config-prod:

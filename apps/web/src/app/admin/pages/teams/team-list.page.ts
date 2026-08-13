@@ -1,5 +1,7 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { AssetUrlService } from 'api-client';
 import { Button, Select, SelectOption, TextField } from 'design-system';
 import { AuthService } from '../../core/auth.service';
 import { Category, Player, Team, TeamImportResult } from '../../core/models';
@@ -18,6 +20,7 @@ export class TeamListPage {
   private readonly authService = inject(AuthService);
   private readonly teamsService = inject(TeamsService);
   private readonly tournamentsService = inject(TournamentsService);
+  private readonly assetUrl = inject(AssetUrlService);
 
   protected readonly organization = computed(() => this.authService.organizations()[0] ?? null);
   protected readonly tournamentId = this.route.snapshot.paramMap.get('tournamentId')!;
@@ -180,6 +183,52 @@ export class TeamListPage {
       this.teams.update((teams) => teams.filter((t) => t.id !== team.id));
     } catch {
       this.errorMessage.set('Impossible de supprimer cette équipe.');
+    }
+  }
+
+  protected logoUrl(url: string | null): string | null {
+    return this.assetUrl.resolve(url);
+  }
+
+  protected async onLogoFileSelected(team: Team, event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = ''; // allow re-selecting the same file later (e.g. after an error)
+    const organizationId = this.organization()?.id;
+    if (!file || !organizationId) {
+      return;
+    }
+    try {
+      const updated = await this.teamsService.uploadLogo(
+        organizationId,
+        this.tournamentId,
+        team.id,
+        file,
+      );
+      this.teams.update((teams) => teams.map((t) => (t.id === updated.id ? updated : t)));
+    } catch (error) {
+      this.errorMessage.set(
+        error instanceof HttpErrorResponse && error.status === 400
+          ? 'Format ou taille de fichier invalide (PNG, JPEG ou WebP, 2 Mo maximum).'
+          : "Impossible d'envoyer ce logo, réessayez.",
+      );
+    }
+  }
+
+  protected async removeLogo(team: Team): Promise<void> {
+    const organizationId = this.organization()?.id;
+    if (!organizationId) {
+      return;
+    }
+    try {
+      const updated = await this.teamsService.removeLogo(
+        organizationId,
+        this.tournamentId,
+        team.id,
+      );
+      this.teams.update((teams) => teams.map((t) => (t.id === updated.id ? updated : t)));
+    } catch {
+      this.errorMessage.set('Impossible de retirer ce logo.');
     }
   }
 
