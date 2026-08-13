@@ -109,6 +109,20 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./admin/pages/collaborators/collaborators.page').then((m) => m.CollaboratorsPage),
       },
+      {
+        path: 'organization/subscription',
+        loadComponent: () =>
+          import('./admin/pages/subscription/organization-subscription.page').then(
+            (m) => m.OrganizationSubscriptionPage,
+          ),
+      },
+      {
+        path: 'organization/subscription/success',
+        loadComponent: () =>
+          import('./admin/pages/subscription/organization-subscription-success.page').then(
+            (m) => m.OrganizationSubscriptionSuccessPage,
+          ),
+      },
     ],
   },
   {

@@ -1,0 +1,24 @@
+<main class="subscription-success-page">
+  @if (loading()) {
+    <p>Vérification du paiement…</p>
+  } @else if (status(); as s) {
+    @if (s.status === 'ACTIVE') {
+      <h1>Abonnement actif</h1>
+      <p>
+        Toutes les publications de tournois de votre organisation sont désormais gratuites jusqu'au
+        <strong>{{ formatDate(s.expiresAt) }}</strong
+        >.
+      </p>
+    } @else {
+      <h1>Paiement en cours de confirmation</h1>
+      <p>
+        L'activation de l'abonnement sera confirmée dès que le paiement sera validé. Vous pouvez
+        recharger cette page dans quelques instants.
+      </p>
+    }
+    <a routerLink="/admin/organization/subscription">Retour à l'abonnement</a>
+  } @else {
+    <h1>Organisation introuvable</h1>
+    <a routerLink="/admin/tournaments">Retour aux tournois</a>
+  }
+</main>

@@ -2,7 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { OrganizationMember, OrganizationRole, PendingInvitation } from './models';
+import {
+  OrganizationMember,
+  OrganizationRole,
+  OrganizationSubscriptionStatus,
+  PendingInvitation,
+  SubscribeResult,
+} from './models';
 
 @Injectable({ providedIn: 'root' })
 export class OrganizationsService {
@@ -63,6 +69,23 @@ export class OrganizationsService {
     return firstValueFrom(
       this.http.delete<void>(
         `${environment.apiUrl}/organizations/${organizationId}/invitations/${invitationId}`,
+      ),
+    );
+  }
+
+  getSubscriptionStatus(organizationId: string): Promise<OrganizationSubscriptionStatus> {
+    return firstValueFrom(
+      this.http.get<OrganizationSubscriptionStatus>(
+        `${environment.apiUrl}/organizations/${organizationId}/subscription`,
+      ),
+    );
+  }
+
+  subscribe(organizationId: string): Promise<SubscribeResult> {
+    return firstValueFrom(
+      this.http.post<SubscribeResult>(
+        `${environment.apiUrl}/organizations/${organizationId}/subscription`,
+        {},
       ),
     );
   }

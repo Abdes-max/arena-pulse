@@ -48,10 +48,11 @@ model Organization {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  members     OrganizationMember[]
-  invitations Invitation[]
-  tournaments Tournament[]
-  teamRatings TeamRating[]
+  members       OrganizationMember[]
+  invitations   Invitation[]
+  tournaments   Tournament[]
+  teamRatings   TeamRating[]
+  subscriptions OrganizationSubscription[]
 }
 
 model OrganizationMember {
@@ -694,4 +695,34 @@ model TournamentPublicationOrder {
   tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
 
   @@index([tournamentId])
+}
+
+enum OrganizationSubscriptionStatus {
+  PENDING_PAYMENT
+  ACTIVE
+}
+
+// feat/044-pricing-tiers-and-annual-subscription: an alternative to paying
+// per publication (TournamentPublicationOrder) -- one active row per
+// organization at a time covers every tournament it publishes for one year,
+// regardless of team count/tier. Deliberately doesn't get touched by
+// TournamentsService.publish() once a tournament is PUBLISHED under it: an
+// expiring subscription never un-publishes anything already live (see ADR
+// 0006's revision) -- it only stops covering *future* publish() calls.
+model OrganizationSubscription {
+  id                      String                          @id @default(uuid())
+  organizationId          String
+  status                  OrganizationSubscriptionStatus  @default(PENDING_PAYMENT)
+  startsAt                DateTime?
+  expiresAt               DateTime?
+  amountCents             Int
+  currency                String
+  stripeCheckoutSessionId String?                         @unique
+  stripePaymentIntentId   String?
+  createdAt               DateTime                        @default(now())
+  paidAt                  DateTime?
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
 }
