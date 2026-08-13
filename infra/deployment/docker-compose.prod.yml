@@ -79,6 +79,16 @@ services:
       SMTP_USER: ${SMTP_USER:-}
       SMTP_PASSWORD: ${SMTP_PASSWORD:-}
       SMTP_FROM: ${SMTP_FROM:-TournArena <no-reply@tournarena.com>}
+      # Optional, not required-with-:? like JWT_SECRET above -- StripeService
+      # only reads these lazily at the moment of an actual paid registration/
+      # publication or an incoming webhook (docs/architecture/adr/0005), so
+      # the rest of the stack still boots fine before Stripe is configured.
+      # A real attempt to pay fails loudly with a clear "not set" error
+      # instead, same as leaving it unset in apps/api/.env.example locally.
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+      TOURNAMENT_PUBLICATION_FEE_PER_CATEGORY_CENTS: ${TOURNAMENT_PUBLICATION_FEE_PER_CATEGORY_CENTS:-0}
+      TOURNAMENT_PUBLICATION_FEE_PER_TEAM_CENTS: ${TOURNAMENT_PUBLICATION_FEE_PER_TEAM_CENTS:-0}
     depends_on:
       migrate:
         condition: service_completed_successfully
