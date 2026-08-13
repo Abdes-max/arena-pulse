@@ -61,10 +61,109 @@
   padding: var(--ap-space-6) var(--ap-space-6) 0;
 }
 
+.landing-page__nav-links {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-6);
+}
+
+.landing-page__nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ap-space-1);
+  color: var(--ap-color-fg);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  cursor: pointer;
+  list-style: none; // <summary> gets a default marker in some browsers otherwise
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  svg {
+    width: 10px;
+    height: 7px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.7;
+  }
+
+  &:hover {
+    color: var(--ap-color-signal);
+  }
+}
+
+.landing-page__nav-dropdown {
+  position: relative;
+
+  // Native <details> toggles the chevron's rotation for free via [open],
+  // no extra state to track in the component.
+  &[open] .landing-page__nav-link svg {
+    transform: rotate(180deg);
+  }
+}
+
+.landing-page__nav-dropdown-menu {
+  position: absolute;
+  top: calc(100% + var(--ap-space-3));
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  min-width: 160px;
+  padding: var(--ap-space-2);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  box-shadow: var(--ap-shadow-md);
+  z-index: 1;
+
+  a {
+    padding: var(--ap-space-2) var(--ap-space-3);
+    border-radius: var(--ap-radius-sm);
+    color: var(--ap-color-fg);
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+
+    &:hover {
+      background: var(--ap-color-signal-soft);
+      color: var(--ap-color-signal-text);
+    }
+  }
+}
+
+@media (max-width: 720px) {
+  .landing-page__nav-links {
+    display: none;
+  }
+}
+
 .landing-page__nav-end {
   display: flex;
   align-items: center;
   gap: var(--ap-space-3);
+}
+
+.landing-page__nav-cta {
+  padding: var(--ap-space-2) var(--ap-space-4);
+  border-radius: var(--ap-radius-md);
+  background: var(--ap-color-surface);
+  color: var(--ap-color-fg);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: opacity var(--ap-motion-fast) var(--ap-easing-standard);
+
+  &:hover {
+    opacity: 0.85;
+  }
 }
 
 .landing-page__nav-login {

@@ -1,9 +1,9 @@
 import { Match } from '../../generated/prisma/client';
 
 export type MatchWithRelations = Match & {
-  homeTeam: { id: string; name: string } | null;
-  awayTeam: { id: string; name: string } | null;
-  forfeitedTeam: { id: string; name: string } | null;
+  homeTeam: { id: string; name: string; logoUrl: string | null } | null;
+  awayTeam: { id: string; name: string; logoUrl: string | null } | null;
+  forfeitedTeam: { id: string; name: string; logoUrl: string | null } | null;
   timeSlot: {
     id: string;
     startTime: Date;
@@ -26,9 +26,9 @@ export type MatchWithRelations = Match & {
 };
 
 export const MATCH_INCLUDE = {
-  homeTeam: { select: { id: true, name: true } },
-  awayTeam: { select: { id: true, name: true } },
-  forfeitedTeam: { select: { id: true, name: true } },
+  homeTeam: { select: { id: true, name: true, logoUrl: true } },
+  awayTeam: { select: { id: true, name: true, logoUrl: true } },
+  forfeitedTeam: { select: { id: true, name: true, logoUrl: true } },
   timeSlot: {
     include: { field: { select: { id: true, name: true } } },
   },

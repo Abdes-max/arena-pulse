@@ -208,6 +208,9 @@ model Team {
   managerName  String?
   managerEmail String?
   managerPhone String?
+  // Public path served by the API (e.g. /uploads/team-logos/<file>) -- see
+  // TeamsService.uploadLogo. Null until an organizer uploads one.
+  logoUrl      String?
   position     Int      @default(0)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt

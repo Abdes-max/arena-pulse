@@ -50,6 +50,22 @@
   gap: var(--ap-space-3);
 }
 
+.ap-match-card__team-identity {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  min-width: 0; // lets .ap-match-card__team-name ellipsize instead of overflowing
+  flex: 1;
+}
+
+.ap-match-card__team-logo {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--ap-radius-sm);
+  object-fit: cover;
+  flex: none;
+}
+
 .ap-match-card__team-name {
   font-weight: 600;
   color: var(--ap-color-fg);
@@ -102,6 +118,11 @@
   font-size: 0.85rem;
 }
 
+:host([data-variant='compact']) .ap-match-card__team-logo {
+  width: 16px;
+  height: 16px;
+}
+
 // --- live: la couleur signal de la direction marque le direct ---
 // --ap-color-signal-text (not the raw --ap-color-signal used for fills
 // elsewhere) since this is text/a border on the card's own light surface --
@@ -137,6 +158,11 @@
 
 :host([data-variant='featured']) .ap-match-card__team-name {
   font-size: 1.1rem;
+}
+
+:host([data-variant='featured']) .ap-match-card__team-logo {
+  width: 28px;
+  height: 28px;
 }
 
 :host([data-variant='featured']) .ap-match-card__score {

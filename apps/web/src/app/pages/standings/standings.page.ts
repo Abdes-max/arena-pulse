@@ -8,7 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { Badge, BracketMatch, Tabs } from 'design-system';
-import { PublicApiService } from 'api-client';
+import { AssetUrlService, PublicApiService } from 'api-client';
 import { TournamentContextService } from '../../core/tournament-context.service';
 import {
   BracketView,
@@ -49,6 +49,7 @@ const BRACKET_ROW_HEIGHT = 96;
 export class StandingsPage {
   private readonly api = inject(PublicApiService);
   private readonly context = inject(TournamentContextService);
+  private readonly assetUrl = inject(AssetUrlService);
 
   protected readonly loading = signal(true);
   protected readonly categories = signal<Category[]>([]);
@@ -211,6 +212,10 @@ export class StandingsPage {
     document
       .getElementById(`bracket-round-${this.selectedTab()}-${value}`)
       ?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+  }
+
+  protected logoUrl(url: string | null | undefined): string | null {
+    return this.assetUrl.resolve(url);
   }
 
   protected isQualified(group: GroupStandings, teamId: string): boolean {

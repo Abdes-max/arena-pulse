@@ -1,6 +1,7 @@
 export interface StandingRow {
   teamId: string;
   teamName: string;
+  teamLogoUrl: string | null;
   played: number;
   won: number;
   drawn: number;
@@ -15,6 +16,10 @@ export interface StandingRow {
 interface TeamInput {
   id: string;
   name: string;
+  // Optional so pre-existing test fixtures across this file's spec don't
+  // all need updating for a field they don't assert on -- real callers
+  // (standings.service.ts) always provide it.
+  logoUrl?: string | null;
 }
 
 interface ValidatedMatchInput {
@@ -50,6 +55,7 @@ export function computeStandings(
       {
         teamId: team.id,
         teamName: team.name,
+        teamLogoUrl: team.logoUrl ?? null,
         played: 0,
         won: 0,
         drawn: 0,

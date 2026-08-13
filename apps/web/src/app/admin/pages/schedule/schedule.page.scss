@@ -206,11 +206,22 @@
 }
 
 .schedule-page__match-card-team {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-1);
   font-weight: 600;
   color: var(--ap-color-fg);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.schedule-page__match-card-team-logo {
+  width: 16px;
+  height: 16px;
+  border-radius: var(--ap-radius-sm);
+  object-fit: cover;
+  flex: none;
 }
 
 .schedule-page__match-card .schedule-page__officials {

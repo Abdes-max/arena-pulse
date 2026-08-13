@@ -20,9 +20,19 @@ describe('Reference data (e2e)', () => {
     await app.close();
   });
 
-  it('rejects unauthenticated access to /sports and /permissions', async () => {
-    await request(app.getHttpServer()).get('/api/v1/sports').expect(401);
+  it('rejects unauthenticated access to /permissions', async () => {
     await request(app.getHttpServer()).get('/api/v1/permissions').expect(401);
+  });
+
+  // Public (feat/045): the landing page's "Sports" nav dropdown lists these
+  // for a logged-out visitor -- see sports.controller.ts.
+  it('allows unauthenticated access to /sports', async () => {
+    const res = await request(app.getHttpServer())
+      .get('/api/v1/sports')
+      .expect(200);
+    const sports = res.body as { id: string; name: string }[];
+    expect(sports.length).toBeGreaterThan(0);
+    expect(sports.map((sport) => sport.name)).toContain('Football');
   });
 
   it('lists the seeded sports and permissions for an authenticated user', async () => {

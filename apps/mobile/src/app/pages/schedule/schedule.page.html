@@ -61,8 +61,8 @@
               } @else {
                 <ap-match-card
                   [variant]="variantFor(match)"
-                  [homeTeam]="match.homeTeam ?? { name: match.homeSourceLabel ?? '?' }"
-                  [awayTeam]="match.awayTeam ?? { name: match.awaySourceLabel ?? '?' }"
+                  [homeTeam]="teamCardInput(match.homeTeam, match.homeSourceLabel)"
+                  [awayTeam]="teamCardInput(match.awayTeam, match.awaySourceLabel)"
                   [homeScore]="match.score?.homeScore"
                   [awayScore]="match.score?.awayScore"
                   [kickoff]="match.timeSlot ? formatKickoff(match.timeSlot.startTime) : undefined"

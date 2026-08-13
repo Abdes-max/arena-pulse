@@ -146,12 +146,18 @@
                   }
                 </div>
                 <div class="schedule-page__match-card-teams">
-                  <span class="schedule-page__match-card-team">{{
-                    match.homeTeam?.name ?? match.homeSourceLabel ?? '?'
-                  }}</span>
-                  <span class="schedule-page__match-card-team">{{
-                    match.awayTeam?.name ?? match.awaySourceLabel ?? '?'
-                  }}</span>
+                  <span class="schedule-page__match-card-team">
+                    @if (logoUrl(match.homeTeam?.logoUrl); as logo) {
+                      <img class="schedule-page__match-card-team-logo" [src]="logo" alt="" />
+                    }
+                    {{ match.homeTeam?.name ?? match.homeSourceLabel ?? '?' }}
+                  </span>
+                  <span class="schedule-page__match-card-team">
+                    @if (logoUrl(match.awayTeam?.logoUrl); as logo) {
+                      <img class="schedule-page__match-card-team-logo" [src]="logo" alt="" />
+                    }
+                    {{ match.awayTeam?.name ?? match.awaySourceLabel ?? '?' }}
+                  </span>
                 </div>
 
                 @if (showOfficials) {

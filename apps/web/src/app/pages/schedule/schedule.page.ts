@@ -6,8 +6,8 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { MatchCard, MatchCardVariant, Tabs, TextField } from 'design-system';
-import { PublicApiService } from 'api-client';
+import { MatchCard, MatchCardTeam, MatchCardVariant, Tabs, TextField } from 'design-system';
+import { AssetUrlService, PublicApiService } from 'api-client';
 import { TournamentContextService } from '../../core/tournament-context.service';
 import { Category, CompetitionPhase, Match, roundLabel } from 'shared-models';
 
@@ -21,6 +21,7 @@ import { Category, CompetitionPhase, Match, roundLabel } from 'shared-models';
 export class SchedulePage {
   private readonly api = inject(PublicApiService);
   private readonly context = inject(TournamentContextService);
+  private readonly assetUrl = inject(AssetUrlService);
 
   protected readonly loading = signal(true);
   protected readonly categories = signal<Category[]>([]);
@@ -180,6 +181,15 @@ export class SchedulePage {
 
   protected formatKickoff(startTime: string): string {
     return new Date(startTime).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' });
+  }
+
+  protected teamCardInput(
+    team: { name: string; logoUrl: string | null } | null,
+    fallbackLabel: string | null,
+  ): MatchCardTeam {
+    return team
+      ? { name: team.name, logoUrl: this.assetUrl.resolve(team.logoUrl) }
+      : { name: fallbackLabel ?? '?' };
   }
 
   protected competitionLabel(match: Match): string {

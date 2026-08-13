@@ -90,6 +90,15 @@
   }
 }
 
+.standings-page__team-logo {
+  width: 16px;
+  height: 16px;
+  margin: 0 var(--ap-space-1);
+  border-radius: var(--ap-radius-sm);
+  object-fit: cover;
+  vertical-align: middle;
+}
+
 .standings-page__row--qualified {
   background: var(--ap-color-signal-soft);
 }
@@ -253,6 +262,13 @@
   font-size: 1.75rem;
   font-weight: 800;
   color: var(--ap-color-signal-text);
+}
+
+.standings-page__podium-logo {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--ap-radius-sm);
+  object-fit: cover;
 }
 
 .standings-page__podium-name {

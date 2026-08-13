@@ -24,6 +24,7 @@ function toPublicTeam(team: {
   divisionName: string | null;
   groupId: string | null;
   groupName: string | null;
+  logoUrl: string | null;
   position: number;
 }) {
   return {
@@ -35,6 +36,7 @@ function toPublicTeam(team: {
     divisionName: team.divisionName,
     groupId: team.groupId,
     groupName: team.groupName,
+    logoUrl: team.logoUrl,
     position: team.position,
   };
 }

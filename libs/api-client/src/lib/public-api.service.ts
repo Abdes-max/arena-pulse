@@ -8,6 +8,7 @@ import {
   CreateRegistrationResult,
   Match,
   PlayerRegistration,
+  PublicSport,
   PublicTeam,
   PublicTeamDetail,
   PublicTournament,
@@ -24,6 +25,10 @@ export class PublicApiService {
 
   private base(slug: string): string {
     return `${this.config.apiUrl}/public/tournaments/${slug}`;
+  }
+
+  listSports(): Promise<PublicSport[]> {
+    return firstValueFrom(this.http.get<PublicSport[]>(`${this.config.apiUrl}/sports`));
   }
 
   listTournaments(limit?: number): Promise<PublicTournamentSummary[]> {

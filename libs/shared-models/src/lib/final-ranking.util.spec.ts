@@ -2,7 +2,7 @@ import { CompetitionPhase, Match } from './models';
 import { computeFinalRanking } from './final-ranking.util';
 
 function team(id: string, name: string) {
-  return { id, name };
+  return { id, name, logoUrl: null };
 }
 
 function match(overrides: Partial<Match> & { id: string; round: number }): Match {

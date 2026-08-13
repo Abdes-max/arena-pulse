@@ -152,6 +152,7 @@ export interface Team {
   managerName: string | null;
   managerEmail: string | null;
   managerPhone: string | null;
+  logoUrl: string | null;
   position: number;
 }
 

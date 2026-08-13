@@ -3,3 +3,6 @@ node_modules
 .env
 
 /generated/prisma
+
+# Local team-logo uploads (feat/045) -- UPLOADS_DIR default, see main.ts/teams.service.ts
+/uploads

@@ -70,7 +70,7 @@ export class StandingsService {
     const [teams, matches, standingRule] = await Promise.all([
       this.prisma.team.findMany({
         where: { groupId },
-        select: { id: true, name: true },
+        select: { id: true, name: true, logoUrl: true },
         orderBy: { name: 'asc' },
       }),
       this.prisma.match.findMany({

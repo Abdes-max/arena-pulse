@@ -6,7 +6,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { PublicApiService } from 'api-client';
+import { AssetUrlService, PublicApiService } from 'api-client';
 import {
   IonButton,
   IonContent,
@@ -80,6 +80,7 @@ const BRACKET_ROW_HEIGHT = 96;
 export class StandingsPage {
   private readonly api = inject(PublicApiService);
   private readonly context = inject(TournamentContextService);
+  private readonly assetUrl = inject(AssetUrlService);
   protected readonly cache = inject(OfflineCacheService);
 
   protected readonly loading = signal(true);
@@ -312,6 +313,10 @@ export class StandingsPage {
         this.errorMessage.set('Impossible de charger les classements pour cette catégorie.');
       }
     }
+  }
+
+  protected logoUrl(url: string | null | undefined): string | null {
+    return this.assetUrl.resolve(url);
   }
 
   protected isQualified(group: GroupStandings, teamId: string): boolean {

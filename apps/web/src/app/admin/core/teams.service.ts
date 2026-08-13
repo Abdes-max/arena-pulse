@@ -76,6 +76,25 @@ export class TeamsService {
     );
   }
 
+  uploadLogo(
+    organizationId: string,
+    tournamentId: string,
+    teamId: string,
+    file: File,
+  ): Promise<Team> {
+    const formData = new FormData();
+    formData.append('logo', file);
+    return firstValueFrom(
+      this.http.post<Team>(`${this.base(organizationId, tournamentId)}/${teamId}/logo`, formData),
+    );
+  }
+
+  removeLogo(organizationId: string, tournamentId: string, teamId: string): Promise<Team> {
+    return firstValueFrom(
+      this.http.delete<Team>(`${this.base(organizationId, tournamentId)}/${teamId}/logo`),
+    );
+  }
+
   assignGroup(
     organizationId: string,
     tournamentId: string,

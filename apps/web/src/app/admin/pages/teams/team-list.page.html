@@ -86,6 +86,7 @@
           <thead>
             <tr>
               <th scope="col"></th>
+              <th scope="col">Logo</th>
               <th scope="col">Nom</th>
               <th scope="col">Catégorie</th>
               <th scope="col">Division</th>
@@ -102,6 +103,30 @@
                     [checked]="isSelected(team.id)"
                     (change)="toggleSelected(team.id, $event)"
                   />
+                </td>
+                <td class="team-list-page__logo-cell">
+                  @if (logoUrl(team.logoUrl); as logo) {
+                    <img class="team-list-page__logo" [src]="logo" alt="" />
+                  } @else {
+                    <span class="team-list-page__logo-placeholder" aria-hidden="true"></span>
+                  }
+                  <label class="team-list-page__logo-upload">
+                    {{ team.logoUrl ? 'Changer' : 'Ajouter' }}
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp"
+                      (change)="onLogoFileSelected(team, $event)"
+                    />
+                  </label>
+                  @if (team.logoUrl) {
+                    <button
+                      type="button"
+                      class="team-list-page__logo-remove"
+                      (click)="removeLogo(team)"
+                    >
+                      Retirer
+                    </button>
+                  }
                 </td>
                 <td>{{ team.name }}</td>
                 <td>{{ team.categoryName }}</td>
@@ -122,7 +147,7 @@
               @if (expandedTeamId() === team.id) {
                 <tr>
                   <td></td>
-                  <td colspan="5">
+                  <td colspan="6">
                     <ul class="team-list-page__player-list">
                       @for (player of players(); track player.id) {
                         <li>

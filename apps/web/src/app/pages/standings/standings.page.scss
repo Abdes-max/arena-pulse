@@ -63,6 +63,20 @@
   }
 }
 
+.standings-page__team-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-1);
+}
+
+.standings-page__team-logo {
+  width: 18px;
+  height: 18px;
+  border-radius: var(--ap-radius-sm);
+  object-fit: cover;
+  flex: none;
+}
+
 // table-layout: fixed + explicit widths on every column but Équipe (which
 // takes whatever's left) -- otherwise each pool's own table sizes its
 // columns from its own content, so J/G/N/.../Rating land at a different x
@@ -300,6 +314,13 @@
   font-size: 1.75rem;
   font-weight: 800;
   color: var(--ap-color-signal-text);
+}
+
+.standings-page__podium-logo {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--ap-radius-sm);
+  object-fit: cover;
 }
 
 .standings-page__podium-name {

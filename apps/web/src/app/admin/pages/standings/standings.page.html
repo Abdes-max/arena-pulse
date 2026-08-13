@@ -73,7 +73,12 @@
                         [style.background]="tier?.soft ?? null"
                       >
                         <td>{{ row.position }}</td>
-                        <td>{{ row.teamName }}</td>
+                        <td class="standings-page__team-cell">
+                          @if (logoUrl(row.teamLogoUrl); as logo) {
+                            <img class="standings-page__team-logo" [src]="logo" alt="" />
+                          }
+                          {{ row.teamName }}
+                        </td>
                         <td>
                           @if (qualificationTierPhases().length < 2) {
                             @if (isQualified(group, row.teamId)) {

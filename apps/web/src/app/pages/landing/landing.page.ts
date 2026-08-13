@@ -3,7 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { PublicApiService } from 'api-client';
 import { Logo, TextField, ThemeModeToggle, TournamentCard, TournamentMarquee } from 'design-system';
 import { ThemeMode, ThemeService } from 'design-tokens';
-import { PublicTournamentSummary } from 'shared-models';
+import { PublicSport, PublicTournamentSummary } from 'shared-models';
 
 @Component({
   selector: 'app-landing-page',
@@ -19,6 +19,7 @@ export class LandingPage {
 
   protected readonly mode = this.themeService.mode;
   protected readonly tournaments = signal<PublicTournamentSummary[]>([]);
+  protected readonly sports = signal<PublicSport[]>([]);
   protected readonly query = signal('');
 
   // Client-side over a wider-than-displayed fetch (50, not just the first
@@ -37,6 +38,7 @@ export class LandingPage {
 
   constructor() {
     void this.api.listTournaments(50).then((tournaments) => this.tournaments.set(tournaments));
+    void this.api.listSports().then((sports) => this.sports.set(sports));
   }
 
   protected onModeChange(next: ThemeMode): void {
@@ -45,6 +47,13 @@ export class LandingPage {
 
   protected onQueryChange(value: string): void {
     this.query.set(value);
+  }
+
+  // Nav "Sports" dropdown item -- filters the tournaments grid by this
+  // sport's name, reusing the same search box the grid already exposes,
+  // and lets the #tournaments anchor (native <a href>) scroll there.
+  protected onSportNavClick(sportName: string): void {
+    this.query.set(sportName);
   }
 
   protected goToTournament(tournament: PublicTournamentSummary): void {

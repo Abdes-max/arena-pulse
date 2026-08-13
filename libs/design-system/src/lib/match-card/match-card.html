@@ -11,13 +11,23 @@
 
   <div class="ap-match-card__teams">
     <div class="ap-match-card__team" [class.ap-match-card__team--winner]="homeIsWinner()">
-      <span class="ap-match-card__team-name">{{ homeTeam().name }}</span>
+      <span class="ap-match-card__team-identity">
+        @if (homeTeam().logoUrl; as logo) {
+          <img class="ap-match-card__team-logo" [src]="logo" alt="" />
+        }
+        <span class="ap-match-card__team-name">{{ homeTeam().name }}</span>
+      </span>
       @if (hasScore()) {
         <span class="ap-match-card__score">{{ homeScore() }}</span>
       }
     </div>
     <div class="ap-match-card__team" [class.ap-match-card__team--winner]="awayIsWinner()">
-      <span class="ap-match-card__team-name">{{ awayTeam().name }}</span>
+      <span class="ap-match-card__team-identity">
+        @if (awayTeam().logoUrl; as logo) {
+          <img class="ap-match-card__team-logo" [src]="logo" alt="" />
+        }
+        <span class="ap-match-card__team-name">{{ awayTeam().name }}</span>
+      </span>
       @if (hasScore()) {
         <span class="ap-match-card__score">{{ awayScore() }}</span>
       }
