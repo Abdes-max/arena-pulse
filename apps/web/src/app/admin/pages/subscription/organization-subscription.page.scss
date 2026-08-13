@@ -1,0 +1,41 @@
+.subscription-page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: var(--ap-space-6);
+  color: var(--ap-color-fg);
+  font-family: var(--ap-font-body);
+
+  h1 {
+    margin: 0 0 var(--ap-space-4);
+  }
+}
+
+.subscription-page__intro {
+  color: var(--ap-color-muted);
+  margin: 0 0 var(--ap-space-6);
+}
+
+.subscription-page__error {
+  color: var(--ap-color-error);
+  font-size: 0.9rem;
+}
+
+.subscription-page__card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ap-space-3);
+  padding: var(--ap-space-6);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-lg);
+}
+
+.subscription-page__card--active {
+  border-color: var(--ap-color-win);
+}
+
+.subscription-page__note {
+  color: var(--ap-color-muted);
+  font-size: 0.9rem;
+  margin: 0;
+}

@@ -1,0 +1,58 @@
+<main class="subscription-page">
+  <h1>Abonnement annuel</h1>
+  <p class="subscription-page__intro">
+    Publier un tournoi est facturé par palier selon le nombre d'équipes (gratuit jusqu'à 8 équipes,
+    25&nbsp;€ de 9 à 48 équipes, 80&nbsp;€ au-delà). L'abonnement annuel remplace ce paiement à
+    l'unité&nbsp;: 200&nbsp;€ par an, publications illimitées pour toute l'organisation.
+  </p>
+
+  @if (loading()) {
+    <p>Chargement…</p>
+  } @else {
+    @if (errorMessage(); as message) {
+      <p class="subscription-page__error" role="alert">{{ message }}</p>
+    }
+
+    @if (!isAdmin()) {
+      <p>Seul un administrateur de l'organisation peut gérer l'abonnement.</p>
+    } @else if (status(); as s) {
+      @switch (s.status) {
+        @case ('ACTIVE') {
+          <section class="subscription-page__card subscription-page__card--active">
+            <ap-badge status="published" label="Abonnement actif" />
+            <p>
+              Toutes les publications de tournois sont gratuites jusqu'au
+              <strong>{{ formatDate(s.expiresAt) }}</strong
+              >.
+            </p>
+            <p class="subscription-page__note">
+              Le renouvellement est manuel&nbsp;: revenez sur cette page après cette date pour
+              souscrire un nouvel abonnement. Les tournois publiés pendant que l'abonnement est
+              actif restent publiés après son expiration.
+            </p>
+          </section>
+        }
+        @case ('PENDING_PAYMENT') {
+          <section class="subscription-page__card">
+            <ap-badge status="unpublished" label="Paiement en attente" />
+            <p>
+              Une souscription est en cours de confirmation. Si le paiement a été abandonné, vous
+              pouvez relancer un nouveau paiement.
+            </p>
+            <ap-button type="button" [disabled]="subscribing()" (click)="subscribe()">
+              Relancer le paiement — 200&nbsp;€
+            </ap-button>
+          </section>
+        }
+        @case ('NONE') {
+          <section class="subscription-page__card">
+            <p>Aucun abonnement actif pour cette organisation.</p>
+            <ap-button type="button" [disabled]="subscribing()" (click)="subscribe()">
+              Souscrire — 200&nbsp;€ / an
+            </ap-button>
+          </section>
+        }
+      }
+    }
+  }
+</main>

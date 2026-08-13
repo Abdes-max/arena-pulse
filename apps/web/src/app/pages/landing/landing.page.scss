@@ -306,7 +306,8 @@ ap-tournament-marquee {
   text-decoration: none;
 }
 
-.landing-page__features {
+.landing-page__features,
+.landing-page__pricing {
   max-width: 1000px;
   margin: 0 auto;
   padding: 0 var(--ap-space-8) var(--ap-space-16);
@@ -319,7 +320,8 @@ ap-tournament-marquee {
   }
 }
 
-.landing-page__features-lead {
+.landing-page__features-lead,
+.landing-page__pricing-lead {
   max-width: 50ch;
   margin: var(--ap-space-3) auto 0;
   color: var(--ap-color-muted);
@@ -450,6 +452,175 @@ ap-tournament-marquee {
   border-radius: 999px;
   color: var(--accent-tag);
   background: var(--accent-soft);
+}
+
+.landing-page__pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--ap-space-4);
+  margin-top: var(--ap-space-8);
+  text-align: left;
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .landing-page__pricing-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .landing-page__pricing-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Same accent-pair convention as .landing-page__feature: signal/ember driven
+// by custom properties, neutral (muted) for the free tier. The 4th tier
+// (annual subscription) is a filled card rather than outlined, using the
+// same signal accent as the "upsell" -- it still gets the same hover lift.
+.landing-page__pricing-tier {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-3);
+  padding: var(--ap-space-6);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-lg);
+  transition:
+    border-color var(--ap-motion-fast) var(--ap-easing-standard),
+    box-shadow var(--ap-motion-fast) var(--ap-easing-standard),
+    transform var(--ap-motion-fast) var(--ap-easing-standard);
+
+  &:hover {
+    border-color: var(--accent);
+    box-shadow: var(--ap-shadow-md);
+    transform: translateY(-3px);
+  }
+
+  --accent: var(--ap-color-muted);
+  --accent-tag: var(--ap-color-fg);
+  --accent-soft: var(--ap-color-border);
+
+  &[data-accent='signal'] {
+    --accent: var(--ap-color-signal);
+    --accent-tag: var(--ap-color-signal-text);
+    --accent-soft: var(--ap-color-signal-soft);
+  }
+
+  &[data-accent='ember'] {
+    --accent: var(--ap-color-ember);
+    --accent-tag: var(--ap-color-ember);
+    --accent-soft: var(--ap-color-ember-soft);
+  }
+
+  &[data-accent='signal-fill'] {
+    --accent: var(--ap-color-on-signal);
+    --accent-tag: var(--ap-color-on-signal);
+    --accent-soft: rgb(255 255 255 / 18%);
+    background: var(--ap-color-signal);
+    border-color: var(--ap-color-signal);
+    color: var(--ap-color-on-signal);
+  }
+}
+
+.landing-page__pricing-tier-tag {
+  align-self: flex-start;
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px var(--ap-space-2);
+  border-radius: 999px;
+  color: var(--accent-tag);
+  background: var(--accent-soft);
+}
+
+.landing-page__pricing-tier-price {
+  margin: var(--ap-space-2) 0 0;
+  font-family: var(--ap-font-heading);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--accent-tag);
+}
+
+.landing-page__pricing-tier-unit {
+  margin: 0;
+  font-size: 0.75rem;
+  color: inherit;
+  opacity: 0.7;
+}
+
+.landing-page__pricing-tier-desc {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  opacity: 0.85;
+  min-height: 4.5em;
+}
+
+.landing-page__pricing-tier-cta {
+  display: block;
+  text-align: center;
+  padding: var(--ap-space-2) var(--ap-space-3);
+  border-radius: var(--ap-radius-md);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  color: var(--ap-color-fg);
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition:
+    opacity var(--ap-motion-fast) var(--ap-easing-standard),
+    transform var(--ap-motion-fast) var(--ap-easing-standard);
+
+  &:hover {
+    opacity: 0.85;
+    transform: translateY(-1px);
+  }
+}
+
+.landing-page__pricing-tier-cta--fill {
+  background: var(--ap-color-signal);
+  border-color: var(--ap-color-signal);
+  color: var(--ap-color-on-signal);
+}
+
+// The annual card is itself filled with signal -- its button flips to a
+// light pill so it still reads against the colored background.
+[data-accent='signal-fill'] .landing-page__pricing-tier-cta--fill {
+  background: var(--ap-color-on-signal);
+  border-color: var(--ap-color-on-signal);
+  color: var(--ap-color-signal);
+}
+
+.landing-page__pricing-tier-features-label {
+  margin: var(--ap-space-2) 0 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  opacity: 0.7;
+}
+
+.landing-page__pricing-tier-features {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+
+  li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ap-space-2);
+    font-size: 0.85rem;
+  }
+}
+
+.landing-page__pricing-tier-info {
+  flex: none;
+  font-size: 0.8rem;
+  opacity: 0.5;
+  cursor: help;
 }
 
 .landing-page__stores {

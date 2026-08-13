@@ -12,6 +12,7 @@ import {
   TournamentPublicationOrderStatus,
   TournamentStatus,
 } from '../../generated/prisma/client';
+import { OrganizationsService } from '../organizations/organizations.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { StripeService } from '../payments/stripe.service';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
@@ -30,6 +31,7 @@ export class TournamentsService {
     private readonly prisma: PrismaService,
     private readonly stripeService: StripeService,
     private readonly configService: ConfigService,
+    private readonly organizationsService: OrganizationsService,
   ) {}
 
   async create(organizationId: string, dto: CreateTournamentDto) {
@@ -103,13 +105,16 @@ export class TournamentsService {
   }
 
   /**
-   * Publishing is gated behind a one-time Stripe payment computed from the
-   * tournament's current category/team counts (feat/039, see
-   * docs/architecture/adr/0006-paid-tournament-publication.md) -- unless a
-   * TournamentPublicationOrder for this tournament already reached PAID, in
-   * which case a later publish (e.g. after an unpublish) is free: the
-   * payment unlocks PUBLISHED for the tournament's lifetime, it isn't billed
-   * again as categories/teams grow.
+   * Publishing is gated behind a one-time Stripe payment computed from a
+   * team-count tier (feat/044, see
+   * docs/architecture/adr/0006-paid-tournament-publication.md) -- unless
+   * either (a) a TournamentPublicationOrder for this tournament already
+   * reached PAID, in which case a later publish (e.g. after an unpublish) is
+   * free: the payment unlocks PUBLISHED for the tournament's lifetime, it
+   * isn't billed again as the team count grows -- or (b) the organization
+   * holds an active annual subscription, which covers every publish() call
+   * for free while it's active (an order is still recorded, at 0, for a
+   * uniform history/audit trail).
    */
   async publish(organizationId: string, tournamentId: string) {
     const tournament = await this.getOrThrow(organizationId, tournamentId);
@@ -128,14 +133,15 @@ export class TournamentsService {
       return this.setStatus(tournamentId, TournamentStatus.PUBLISHED);
     }
 
-    const [categoriesCount, teamsCount] = await Promise.all([
-      this.prisma.category.count({ where: { tournamentId } }),
-      this.prisma.team.count({ where: { tournamentId } }),
-    ]);
-    const amountCents = this.computePublicationFeeCents(
-      categoriesCount,
-      teamsCount,
-    );
+    const [categoriesCount, teamsCount, hasActiveSubscription] =
+      await Promise.all([
+        this.prisma.category.count({ where: { tournamentId } }),
+        this.prisma.team.count({ where: { tournamentId } }),
+        this.organizationsService.hasActiveSubscription(organizationId),
+      ]);
+    const amountCents = hasActiveSubscription
+      ? 0
+      : this.computePublicationFeeCents(teamsCount);
     const currency = 'eur';
 
     if (amountCents <= 0) {
@@ -447,28 +453,46 @@ export class TournamentsService {
   }
 
   /**
-   * No base fee -- see docs/architecture/adr/0006-paid-tournament-publication.md.
-   * Both rates default to 0 (unset in .env) so publishing stays free until
-   * the project owner explicitly sets a price, same posture already taken
-   * for STRIPE_SECRET_KEY.
+   * Tiered by team count alone (feat/044, replaces the per-category/per-team
+   * rate of feat/039 -- see
+   * docs/architecture/adr/0006-paid-tournament-publication.md): free up to
+   * the free-tier max, a flat mid price up to the mid-tier max, a flat high
+   * price beyond that (unlimited teams). Both tier prices default to 0
+   * (unset in .env) so publishing stays free until the project owner
+   * explicitly sets a price, same posture already taken for
+   * STRIPE_SECRET_KEY. The tier boundaries themselves also have defaults
+   * (8 / 48 teams) matching the product decision, but stay configurable.
    */
-  private computePublicationFeeCents(
-    categoriesCount: number,
-    teamsCount: number,
-  ): number {
-    const perCategoryCents = Number(
+  private computePublicationFeeCents(teamsCount: number): number {
+    const freeMaxTeams = Number(
       this.configService.get<string>(
-        'TOURNAMENT_PUBLICATION_FEE_PER_CATEGORY_CENTS',
+        'TOURNAMENT_PUBLICATION_TIER_FREE_MAX_TEAMS',
+        '8',
+      ),
+    );
+    const midMaxTeams = Number(
+      this.configService.get<string>(
+        'TOURNAMENT_PUBLICATION_TIER_MID_MAX_TEAMS',
+        '48',
+      ),
+    );
+    if (teamsCount <= freeMaxTeams) {
+      return 0;
+    }
+    if (teamsCount <= midMaxTeams) {
+      return Number(
+        this.configService.get<string>(
+          'TOURNAMENT_PUBLICATION_TIER_MID_PRICE_CENTS',
+          '0',
+        ),
+      );
+    }
+    return Number(
+      this.configService.get<string>(
+        'TOURNAMENT_PUBLICATION_TIER_HIGH_PRICE_CENTS',
         '0',
       ),
     );
-    const perTeamCents = Number(
-      this.configService.get<string>(
-        'TOURNAMENT_PUBLICATION_FEE_PER_TEAM_CENTS',
-        '0',
-      ),
-    );
-    return categoriesCount * perCategoryCents + teamsCount * perTeamCents;
   }
 
   private async setStatus(tournamentId: string, status: TournamentStatus) {

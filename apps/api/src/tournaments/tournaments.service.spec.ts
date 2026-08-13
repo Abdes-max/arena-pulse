@@ -8,6 +8,7 @@ import {
   TournamentPublicationOrderStatus,
   TournamentStatus,
 } from '../../generated/prisma/client';
+import type { OrganizationsService } from '../organizations/organizations.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { StripeService } from '../payments/stripe.service';
 import { TournamentsService } from './tournaments.service';
@@ -87,6 +88,13 @@ function createStripeServiceMock() {
   };
 }
 
+// Same untyped-mock rationale as createStripeServiceMock above.
+function createOrganizationsServiceMock() {
+  return {
+    hasActiveSubscription: jest.fn().mockResolvedValue(false),
+  };
+}
+
 const SPORT = { id: 'sport-1', name: 'Football' };
 
 function tournamentFixture(overrides: Partial<Record<string, unknown>> = {}) {
@@ -110,17 +118,20 @@ function tournamentFixture(overrides: Partial<Record<string, unknown>> = {}) {
 describe('TournamentsService', () => {
   let prisma: PrismaMock;
   let stripeService: ReturnType<typeof createStripeServiceMock>;
+  let organizationsService: ReturnType<typeof createOrganizationsServiceMock>;
   let service: TournamentsService;
 
   beforeEach(() => {
     prisma = createPrismaMock();
     stripeService = createStripeServiceMock();
+    organizationsService = createOrganizationsServiceMock();
     // Zero-cents defaults, matching production until the project owner sets
     // real fees -- individual publish-pricing tests below override this.
     service = new TournamentsService(
       prisma as unknown as PrismaService,
       stripeService as unknown as StripeService,
       createConfigServiceMock(),
+      organizationsService as unknown as OrganizationsService,
     );
   });
 
@@ -207,34 +218,92 @@ describe('TournamentsService', () => {
       expect(stripeService.createCheckoutSession).not.toHaveBeenCalled();
     });
 
-    it('creates a Stripe checkout session and does not publish yet when the computed fee is positive', async () => {
+    it('creates a Stripe checkout session and does not publish yet when the team count lands in a paid tier', async () => {
       const paidService = new TournamentsService(
         prisma as unknown as PrismaService,
         stripeService as unknown as StripeService,
         createConfigServiceMock({
-          TOURNAMENT_PUBLICATION_FEE_PER_CATEGORY_CENTS: '1000',
-          TOURNAMENT_PUBLICATION_FEE_PER_TEAM_CENTS: '500',
+          TOURNAMENT_PUBLICATION_TIER_MID_PRICE_CENTS: '2500',
         }),
+        organizationsService as unknown as OrganizationsService,
       );
       prisma.tournament.findUnique.mockResolvedValue(tournamentFixture());
       prisma.tournamentPublicationOrder.findFirst.mockResolvedValue(null);
       prisma.category.count.mockResolvedValue(2);
-      prisma.team.count.mockResolvedValue(3);
+      prisma.team.count.mockResolvedValue(10); // between the 8/48 tier bounds
       prisma.tournamentPublicationOrder.create.mockResolvedValue({
         id: 'order-1',
       });
 
       const result = await paidService.publish('org-1', 'tournament-1');
 
-      // 2 categories x 1000 + 3 teams x 500 = 3500.
       expect(stripeService.createCheckoutSession).toHaveBeenCalledWith(
-        expect.objectContaining({ amountCents: 3500, currency: 'eur' }),
+        expect.objectContaining({ amountCents: 2500, currency: 'eur' }),
       );
       expect(result).toEqual({
         status: 'PENDING_PAYMENT',
         checkoutUrl: 'https://checkout.stripe.example/cs_test_publish_123',
       });
       expect(prisma.tournament.update).not.toHaveBeenCalled();
+    });
+
+    it.each([
+      [8, 0], // free tier upper bound
+      [9, 2500], // just above it -> mid tier
+      [48, 2500], // mid tier upper bound
+      [49, 8000], // just above it -> high tier
+    ])(
+      'computes the tiered fee for %i teams as %i cents',
+      async (teamsCount, expectedAmountCents) => {
+        const paidService = new TournamentsService(
+          prisma as unknown as PrismaService,
+          stripeService as unknown as StripeService,
+          createConfigServiceMock({
+            TOURNAMENT_PUBLICATION_TIER_MID_PRICE_CENTS: '2500',
+            TOURNAMENT_PUBLICATION_TIER_HIGH_PRICE_CENTS: '8000',
+          }),
+          organizationsService as unknown as OrganizationsService,
+        );
+        prisma.tournament.findUnique.mockResolvedValue(tournamentFixture());
+        prisma.tournamentPublicationOrder.findFirst.mockResolvedValue(null);
+        prisma.category.count.mockResolvedValue(1);
+        prisma.team.count.mockResolvedValue(teamsCount);
+        prisma.tournamentPublicationOrder.create.mockResolvedValue({
+          id: 'order-1',
+        });
+        prisma.tournament.update.mockResolvedValue(
+          tournamentFixture({ status: TournamentStatus.PUBLISHED }),
+        );
+
+        await paidService.publish('org-1', 'tournament-1');
+
+        if (expectedAmountCents === 0) {
+          expect(stripeService.createCheckoutSession).not.toHaveBeenCalled();
+        } else {
+          expect(stripeService.createCheckoutSession).toHaveBeenCalledWith(
+            expect.objectContaining({ amountCents: expectedAmountCents }),
+          );
+        }
+      },
+    );
+
+    it('publishes for free without charging when the organization has an active subscription', async () => {
+      organizationsService.hasActiveSubscription.mockResolvedValue(true);
+      prisma.tournament.findUnique.mockResolvedValue(tournamentFixture());
+      prisma.tournamentPublicationOrder.findFirst.mockResolvedValue(null);
+      prisma.category.count.mockResolvedValue(3);
+      prisma.team.count.mockResolvedValue(50); // would be the high tier otherwise
+      prisma.tournament.update.mockResolvedValue(
+        tournamentFixture({ status: TournamentStatus.PUBLISHED }),
+      );
+
+      const result = await service.publish('org-1', 'tournament-1');
+
+      expect(result).toMatchObject({ status: TournamentStatus.PUBLISHED });
+      const [[createCall]] = prisma.tournamentPublicationOrder.create.mock
+        .calls as [[{ data: { status: string; amountCents: number } }]];
+      expect(createCall.data.amountCents).toBe(0);
+      expect(stripeService.createCheckoutSession).not.toHaveBeenCalled();
     });
 
     it('skips payment and publishes directly when a PAID order already exists (republish)', async () => {

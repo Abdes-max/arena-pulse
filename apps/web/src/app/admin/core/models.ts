@@ -52,6 +52,37 @@ export interface InvitationLookup {
   requiresNewAccount: boolean;
 }
 
+// Alternative to paying per tournament publication (feat/044) -- one active
+// subscription per organization covers every publication for a year. See
+// docs/architecture/adr/0006-paid-tournament-publication.md.
+export interface OrganizationSubscriptionNone {
+  status: 'NONE';
+}
+
+export interface OrganizationSubscriptionPending {
+  status: 'PENDING_PAYMENT';
+  amountCents: number;
+  currency: string;
+}
+
+export interface OrganizationSubscriptionActive {
+  status: 'ACTIVE';
+  startsAt: string;
+  expiresAt: string;
+}
+
+export type OrganizationSubscriptionStatus =
+  OrganizationSubscriptionNone | OrganizationSubscriptionPending | OrganizationSubscriptionActive;
+
+// Same shape as PublishPendingPayment (tournaments.service.ts) -- returned
+// when subscribing requires a Stripe payment first.
+export interface SubscribePendingPayment {
+  status: 'PENDING_PAYMENT';
+  checkoutUrl: string;
+}
+
+export type SubscribeResult = OrganizationSubscriptionActive | SubscribePendingPayment;
+
 export interface Sport {
   id: string;
   name: string;
