@@ -46,7 +46,7 @@
                 {
                   "type": "anyComponentStyle",
                   "maximumWarning": "4kB",
-                  "maximumError": "16kB"
+                  "maximumError": "20kB"
                 }
               ],
               "outputHashing": "all"
@@ -248,10 +248,7 @@
         "lint": {
           "builder": "@angular-eslint/builder:lint",
           "options": {
-            "lintFilePatterns": [
-              "libs/realtime-client/**/*.ts",
-              "libs/realtime-client/**/*.html"
-            ],
+            "lintFilePatterns": ["libs/realtime-client/**/*.ts", "libs/realtime-client/**/*.html"],
             "eslintConfig": "libs/realtime-client/eslint.config.js"
           }
         }

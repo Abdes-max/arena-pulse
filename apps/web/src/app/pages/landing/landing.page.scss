@@ -166,13 +166,20 @@
   }
 }
 
+// Shared by the <a>-based "Connexion" link and the <button>-based "Se
+// déconnecter" action (once authenticated) -- font/background/cursor reset
+// so the button reads identically to the link it replaces.
 .landing-page__nav-login {
   padding: var(--ap-space-2) var(--ap-space-4);
   border-radius: var(--ap-radius-md);
   border: var(--ap-border-width) solid var(--ap-color-border);
+  background: transparent;
   color: var(--ap-color-fg);
+  font: inherit;
   font-weight: 600;
   text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
   transition:
     background var(--ap-motion-fast) var(--ap-easing-standard),
     border-color var(--ap-motion-fast) var(--ap-easing-standard);
@@ -180,6 +187,107 @@
   &:hover {
     background: var(--ap-color-surface);
     border-color: var(--ap-color-signal);
+  }
+}
+
+.landing-page__nav-end-links {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-3);
+}
+
+.landing-page__nav-toggle {
+  display: none; // shown only under the mobile breakpoint below
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  background: transparent;
+  color: var(--ap-color-fg);
+  cursor: pointer;
+
+  svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+  }
+}
+
+.landing-page__mobile-menu {
+  display: none; // shown only under the mobile breakpoint below; also
+  // guards against a stale open state surviving a resize back to desktop.
+}
+
+@media (max-width: 720px) {
+  .landing-page__nav-end-links {
+    display: none;
+  }
+
+  .landing-page__nav-toggle {
+    display: inline-flex;
+  }
+
+  .landing-page__mobile-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--ap-space-1);
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: var(--ap-space-4) var(--ap-space-6) var(--ap-space-6);
+  }
+
+  .landing-page__mobile-menu-link {
+    padding: var(--ap-space-2) 0;
+    color: var(--ap-color-fg);
+    font-weight: 600;
+    text-decoration: none;
+    width: 100%;
+  }
+
+  .landing-page__mobile-menu-label {
+    margin: var(--ap-space-3) 0 0;
+    color: var(--ap-color-muted);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .landing-page__mobile-menu-sports {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .landing-page__mobile-menu-toggle {
+    margin: var(--ap-space-3) 0;
+  }
+
+  .landing-page__mobile-menu-cta,
+  .landing-page__mobile-menu-login {
+    width: 100%;
+    padding: var(--ap-space-3) var(--ap-space-4);
+    margin-top: var(--ap-space-2);
+    border-radius: var(--ap-radius-md);
+    border: var(--ap-border-width) solid var(--ap-color-border);
+    background: transparent;
+    color: var(--ap-color-fg);
+    font: inherit;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .landing-page__mobile-menu-cta {
+    background: var(--ap-color-surface);
   }
 }
 

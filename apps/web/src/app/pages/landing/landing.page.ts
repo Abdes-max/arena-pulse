@@ -4,6 +4,7 @@ import { PublicApiService } from 'api-client';
 import { Logo, TextField, ThemeModeToggle, TournamentCard, TournamentMarquee } from 'design-system';
 import { ThemeMode, ThemeService } from 'design-tokens';
 import { PublicSport, PublicTournamentSummary } from 'shared-models';
+import { AuthService } from '../../admin/core/auth.service';
 
 @Component({
   selector: 'app-landing-page',
@@ -16,11 +17,17 @@ export class LandingPage {
   private readonly themeService = inject(ThemeService);
   private readonly api = inject(PublicApiService);
   private readonly router = inject(Router);
+  protected readonly authService = inject(AuthService);
 
   protected readonly mode = this.themeService.mode;
   protected readonly tournaments = signal<PublicTournamentSummary[]>([]);
   protected readonly sports = signal<PublicSport[]>([]);
   protected readonly query = signal('');
+  // Mobile nav (< 720px, see .landing-page__nav-links breakpoint): the
+  // Fonctionnalités/Sports/Tarifs links and the CTA/login buttons all move
+  // into this slide-down panel behind a hamburger toggle instead of being
+  // hidden outright, which is what broke access to them on mobile before.
+  protected readonly mobileMenuOpen = signal(false);
 
   // Client-side over a wider-than-displayed fetch (50, not just the first
   // handful) -- same pattern as team-search.page's filteredTeams, and simple
@@ -58,5 +65,18 @@ export class LandingPage {
 
   protected goToTournament(tournament: PublicTournamentSummary): void {
     void this.router.navigate(['/', tournament.slug]);
+  }
+
+  protected toggleMobileMenu(): void {
+    this.mobileMenuOpen.update((open) => !open);
+  }
+
+  protected closeMobileMenu(): void {
+    this.mobileMenuOpen.set(false);
+  }
+
+  protected async logout(): Promise<void> {
+    this.closeMobileMenu();
+    await this.authService.logout();
   }
 }
