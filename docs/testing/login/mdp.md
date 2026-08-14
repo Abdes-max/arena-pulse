@@ -8,9 +8,9 @@ Comptes organisateurs actuellement valides dans la base Postgres locale
 entièrement la base dev à chaque exécution. Voir « Lancer les e2e sans
 perdre les données » ci-dessous pour sauvegarder/restaurer autour d'un run.
 
-| Email                        | Mot de passe             | Organisation       | Rôle / usage                                                                                                                                          |
-| ----------------------------- | ------------------------ | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `test-organizer@example.com` | `a-very-strong-password` | Organisation Test  | Tournoi "Tournoi Test" (`tournoi-test-6aff787e`, Football, catégorie Senior) : phase de poules (2 groupes de 5 équipes) puis phase finale à élimination directe (tableau de 8, petite finale activée), **jouée jusqu'au bout** — tous les scores sont saisis, y compris la finale et la petite finale (vainqueur : ASA, 2–1 en finale contre FC Aixois ; 3ᵉ place : Luynes, 2–1 contre Tholonet). Sert à vérifier l'affichage d'un tournoi entièrement terminé (tags "Terminé", classements figés, etc.). Une copie ("Tournoi Test (copie)", `tournoi-test-copie-15008496`) existe aussi, créée via le bouton Dupliquer, sans résultats saisis. |
+| Email                              | Mot de passe             | Organisation                | Rôle / usage                                                                                                                                                                                                                                                                                                                                                       |
+| ----------------------------------- | ------------------------ | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `demo-1786664015995@example.com`   | `a-very-strong-password` | Demo Data 1786664015995      | Créé via `node infra/scripts/seed-demo-data.mjs` (2026-08-14) — 6 tournois publiés couvrant sports/thèmes/formats différents (Football élimination directe, Basketball championnat poule unique, Handball poules+finale, Volleyball poules seules, Tennis tableau de 16, Rugby multi-catégories). Voir la sortie du script pour les slugs/URLs exacts par tournoi. |
 
 ## Lancer les e2e sans perdre les données
 
@@ -62,12 +62,28 @@ node infra/scripts/seed-demo-data.mjs
 cd apps/api && npm run build && node dist/prisma/seed-world-cup-2026.js
 ```
 
+### Bug connu (2026-08-14) — `seed-world-cup-2026.ts` plante à la finale
+
+Le script échoue systématiquement dans `playFinalAndThirdPlace` avec
+`Cannot read properties of undefined (reading 'homeTeam')` : `matches.find(m
+=> m.round === 5 && !m.isThirdPlaceMatch)` renvoie `undefined` juste après
+que les deux demi-finales aient été validées (round 4) — le match de finale
+(et/ou de petite finale) n'a pas encore été généré côté serveur au moment de
+ce `GET`, malgré l'`await` séquentiel sur chaque validation de score. Pas
+encore diagnostiqué plus finement (possible incohérence dans
+`tryAdvanceRound` spécifique aux brackets `hasRankingMatch: true` de cette
+taille, ou une condition de course réelle) — non lié aux changements de
+feat/044/feat/045. Le compte `worldcup2026-1786663914835@example.com`
+(mot de passe standard) reste en base avec le tournoi jusqu'aux demi-finales
+jouées, finale/petite finale non générées/non jouées — utile pour reproduire
+le bug, pas pour une démo. Utiliser `seed-demo-data.mjs` en attendant.
+
 ## Comptes historiques (obsolètes)
 
 Ces emails apparaissaient dans une version précédente de ce fichier mais ne
 correspondent plus à aucun utilisateur en base (perdus lors d'un reset e2e) :
-`test-1785497132@example.com`, `theme-check@example.com`,
-`theme-verify-1785452564953@example.com`, `demo-1785497894298@example.com`,
-`a11y-1785706221073@example.com`, `demo-1785708404009@example.com`,
-`worldcup2026-1785708440780@example.com`,
+`test-organizer@example.com`, `test-1785497132@example.com`,
+`theme-check@example.com`, `theme-verify-1785452564953@example.com`,
+`demo-1785497894298@example.com`, `a11y-1785706221073@example.com`,
+`demo-1785708404009@example.com`, `worldcup2026-1785708440780@example.com`,
 `demo-1785711044713@example.com`, `worldcup2026-1785711069372@example.com`.
