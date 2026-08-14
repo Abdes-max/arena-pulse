@@ -2,6 +2,7 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import type Stripe from 'stripe';
 import { App } from 'supertest/types';
+import { MailService } from '../src/mail/mail.service';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { StripeService } from '../src/payments/stripe.service';
 import { createTestApp } from './utils/bootstrap-app';
@@ -36,6 +37,12 @@ const stripeService = {
   ),
 };
 
+const mailService = {
+  sendAccountCreatedEmail: jest.fn().mockResolvedValue(undefined),
+  sendPublicationReceiptEmail: jest.fn().mockResolvedValue(undefined),
+  sendSubscriptionReceiptEmail: jest.fn().mockResolvedValue(undefined),
+};
+
 async function registerOrganizer(app: INestApplication<App>) {
   const res = await request(app.getHttpServer())
     .post('/api/v1/auth/register')
@@ -60,6 +67,9 @@ describe('Paid tournament publication (e2e)', () => {
 
   beforeEach(async () => {
     stripeService.createCheckoutSession.mockClear();
+    mailService.sendAccountCreatedEmail.mockClear();
+    mailService.sendPublicationReceiptEmail.mockClear();
+    mailService.sendSubscriptionReceiptEmail.mockClear();
     // ConfigService reads process.env at module init -- set before
     // createTestApp() so TournamentsService picks up a non-zero fee instead
     // of the 0-cents default used by every other e2e spec. Free tier max of
@@ -69,7 +79,11 @@ describe('Paid tournament publication (e2e)', () => {
     process.env['TOURNAMENT_PUBLICATION_TIER_MID_PRICE_CENTS'] = '1000';
     process.env['ORGANIZATION_ANNUAL_SUBSCRIPTION_PRICE_CENTS'] = '20000';
     app = await createTestApp((builder) =>
-      builder.overrideProvider(StripeService).useValue(stripeService),
+      builder
+        .overrideProvider(StripeService)
+        .useValue(stripeService)
+        .overrideProvider(MailService)
+        .useValue(mailService),
     );
     prisma = app.get(PrismaService);
     await resetDatabase(prisma);
@@ -153,6 +167,12 @@ describe('Paid tournament publication (e2e)', () => {
     ).expect(200);
     expect((afterWebhook.body as TournamentResponseBody).status).toBe(
       'PUBLISHED',
+    );
+    expect(mailService.sendPublicationReceiptEmail).toHaveBeenCalledWith(
+      'organizer@example.com',
+      'Coupe Payante',
+      1000,
+      'eur',
     );
 
     // A retried webhook delivery is a silent no-op, not a second charge.

@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { MailModule } from '../mail/mail.module';
 import { OrganizationsModule } from '../organizations/organizations.module';
 import { PaymentsModule } from '../payments/payments.module';
 import { PermissionsModule } from '../permissions/permissions.module';
@@ -53,7 +54,7 @@ import { VenuesController } from './venues.controller';
 import { VenuesService } from './venues.service';
 
 @Module({
-  imports: [OrganizationsModule, PermissionsModule, PaymentsModule],
+  imports: [OrganizationsModule, PermissionsModule, PaymentsModule, MailModule],
   controllers: [
     TournamentsController,
     CategoriesController,

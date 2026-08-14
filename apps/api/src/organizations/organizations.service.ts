@@ -1,6 +1,7 @@
 import {
   ConflictException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -9,6 +10,7 @@ import {
   OrganizationRole,
   OrganizationSubscriptionStatus,
 } from '../../generated/prisma/client';
+import { MailService } from '../mail/mail.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { StripeService } from '../payments/stripe.service';
 
@@ -16,10 +18,13 @@ const SUBSCRIPTION_DURATION_YEARS = 1;
 
 @Injectable()
 export class OrganizationsService {
+  private readonly logger = new Logger(OrganizationsService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly stripeService: StripeService,
     private readonly configService: ConfigService,
+    private readonly mailService: MailService,
   ) {}
 
   async listMembers(organizationId: string) {
@@ -37,6 +42,20 @@ export class OrganizationsService {
       role: member.role,
       joinedAt: member.createdAt,
     }));
+  }
+
+  /**
+   * Used to notify every admin of an organization about something that
+   * concerns the organization as a whole (a payment receipt, not a single
+   * member's action) -- there's no dedicated "contact email" field on
+   * Organization, so this is the canonical way to resolve who to email.
+   */
+  async getAdminEmails(organizationId: string): Promise<string[]> {
+    const admins = await this.prisma.organizationMember.findMany({
+      where: { organizationId, role: OrganizationRole.ORG_ADMIN },
+      include: { user: true },
+    });
+    return admins.map((admin) => admin.user.email);
   }
 
   async changeRole(
@@ -227,7 +246,7 @@ export class OrganizationsService {
         ? session.payment_intent
         : (session.payment_intent?.id ?? null);
 
-    await this.prisma.organizationSubscription.update({
+    const updated = await this.prisma.organizationSubscription.update({
       where: { id: subscription.id },
       data: {
         status: OrganizationSubscriptionStatus.ACTIVE,
@@ -236,6 +255,43 @@ export class OrganizationsService {
         ...this.activePeriod(),
       },
     });
+
+    await this.sendSubscriptionReceipt(updated);
+  }
+
+  /**
+   * Best-effort, non-blocking (same rationale as
+   * InvitationsService.invite's mail try/catch): the subscription is
+   * already ACTIVE regardless of whether the receipt email makes it out.
+   */
+  private async sendSubscriptionReceipt(subscription: {
+    organizationId: string;
+    amountCents: number;
+    currency: string;
+    expiresAt: Date | null;
+  }): Promise<void> {
+    const organization = await this.prisma.organization.findUnique({
+      where: { id: subscription.organizationId },
+    });
+    if (!organization || !subscription.expiresAt) {
+      return;
+    }
+    const adminEmails = await this.getAdminEmails(subscription.organizationId);
+    for (const email of adminEmails) {
+      try {
+        await this.mailService.sendSubscriptionReceiptEmail(
+          email,
+          organization.name,
+          subscription.amountCents,
+          subscription.currency,
+          subscription.expiresAt,
+        );
+      } catch (error) {
+        this.logger.warn(
+          `Failed to send subscription receipt email to ${email}: ${(error as Error).message}`,
+        );
+      }
+    }
   }
 
   private activePeriod(): { startsAt: Date; expiresAt: Date } {

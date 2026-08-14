@@ -2,6 +2,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import { OrganizationRole } from '../../generated/prisma/client';
+import { MailService } from '../mail/mail.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthService } from './auth.service';
 import { PasswordService } from './password.service';
@@ -49,12 +50,24 @@ function createPrismaMock(): PrismaMock {
   return prisma;
 }
 
+// Deliberately untyped, same rationale as tournaments.service.spec.ts.
+function createMailServiceMock() {
+  return {
+    sendInvitationEmail: jest.fn().mockResolvedValue(undefined),
+    sendAccountCreatedEmail: jest.fn().mockResolvedValue(undefined),
+    sendPublicationReceiptEmail: jest.fn().mockResolvedValue(undefined),
+    sendSubscriptionReceiptEmail: jest.fn().mockResolvedValue(undefined),
+  };
+}
+
 describe('AuthService', () => {
   let prisma: PrismaMock;
+  let mailService: ReturnType<typeof createMailServiceMock>;
   let service: AuthService;
 
   beforeEach(() => {
     prisma = createPrismaMock();
+    mailService = createMailServiceMock();
     const configService = new ConfigService({
       JWT_EXPIRES_IN: '3600s',
       JWT_REFRESH_EXPIRES_IN: '30d',
@@ -67,6 +80,7 @@ describe('AuthService', () => {
       prisma as unknown as PrismaService,
       new PasswordService(),
       tokenService,
+      mailService as unknown as MailService,
     );
   });
 
@@ -113,6 +127,11 @@ describe('AuthService', () => {
           role: OrganizationRole.ORG_ADMIN,
         },
       });
+      expect(mailService.sendAccountCreatedEmail).toHaveBeenCalledWith(
+        registerDto.email,
+        registerDto.firstName,
+        registerDto.organizationName,
+      );
     });
 
     it('rejects a duplicate email', async () => {
@@ -121,6 +140,32 @@ describe('AuthService', () => {
       await expect(service.register(registerDto)).rejects.toBeInstanceOf(
         ConflictException,
       );
+    });
+
+    it('succeeds even when the confirmation email fails to send', async () => {
+      prisma.user.findUnique.mockResolvedValue(null);
+      prisma.user.create.mockResolvedValue({
+        id: 'user-1',
+        email: registerDto.email,
+        firstName: registerDto.firstName,
+        lastName: registerDto.lastName,
+        passwordHash: 'irrelevant',
+      });
+      prisma.organization.create.mockResolvedValue({
+        id: 'org-1',
+        name: registerDto.organizationName,
+      });
+      prisma.organizationMember.create.mockResolvedValue({
+        role: OrganizationRole.ORG_ADMIN,
+      });
+      prisma.refreshToken.create.mockResolvedValue({});
+      mailService.sendAccountCreatedEmail.mockRejectedValue(
+        new Error('SMTP unreachable'),
+      );
+
+      const result = await service.register(registerDto);
+
+      expect(result.user.email).toBe(registerDto.email);
     });
   });
 

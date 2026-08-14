@@ -49,4 +49,68 @@ export class MailService {
       `,
     });
   }
+
+  async sendAccountCreatedEmail(
+    to: string,
+    firstName: string,
+    organizationName: string,
+  ): Promise<void> {
+    await this.transporter.sendMail({
+      from: this.from,
+      to,
+      subject: 'Bienvenue sur TournArena',
+      html: `
+        <p>Bonjour ${firstName},</p>
+        <p>Votre compte organisateur·rice a bien été créé, ainsi que votre organisation <strong>${organizationName}</strong> sur TournArena.</p>
+        <p>Vous pouvez dès à présent créer votre premier tournoi depuis votre espace d'administration.</p>
+      `,
+    });
+  }
+
+  async sendPublicationReceiptEmail(
+    to: string,
+    tournamentName: string,
+    amountCents: number,
+    currency: string,
+  ): Promise<void> {
+    await this.transporter.sendMail({
+      from: this.from,
+      to,
+      subject: `Reçu de paiement — Publication de ${tournamentName}`,
+      html: `
+        <p>Nous vous confirmons la réception de votre paiement pour la publication du tournoi <strong>${tournamentName}</strong>.</p>
+        <p>Montant réglé : <strong>${this.formatAmount(amountCents, currency)}</strong></p>
+        <p>Votre tournoi est désormais publié et visible publiquement.</p>
+      `,
+    });
+  }
+
+  async sendSubscriptionReceiptEmail(
+    to: string,
+    organizationName: string,
+    amountCents: number,
+    currency: string,
+    expiresAt: Date,
+  ): Promise<void> {
+    const formattedExpiry = new Intl.DateTimeFormat('fr-FR', {
+      dateStyle: 'long',
+    }).format(expiresAt);
+    await this.transporter.sendMail({
+      from: this.from,
+      to,
+      subject: 'Confirmation de votre abonnement annuel TournArena',
+      html: `
+        <p>Nous vous confirmons la souscription de <strong>${organizationName}</strong> à l'abonnement annuel TournArena.</p>
+        <p>Montant réglé : <strong>${this.formatAmount(amountCents, currency)}</strong></p>
+        <p>Votre abonnement est actif jusqu'au <strong>${formattedExpiry}</strong> et couvre la publication de tous vos tournois sur cette période.</p>
+      `,
+    });
+  }
+
+  private formatAmount(amountCents: number, currency: string): string {
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: currency.toUpperCase(),
+    }).format(amountCents / 100);
+  }
 }
