@@ -89,10 +89,7 @@ export interface CrossGroupUnresolvedTie {
 
 // Kept in sync by hand with StructurePresetFormat in
 // apps/api/src/tournaments/dto/create-structure-preset.dto.ts.
-export type StructurePresetFormat =
-  | 'POOLS_ONLY'
-  | 'POOLS_AND_KNOCKOUT'
-  | 'KNOCKOUT_ONLY';
+export type StructurePresetFormat = 'POOLS_ONLY' | 'POOLS_AND_KNOCKOUT' | 'KNOCKOUT_ONLY';
 
 export interface StructurePresetTierPayload {
   name: string;

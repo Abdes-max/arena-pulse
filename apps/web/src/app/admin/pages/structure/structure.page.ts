@@ -170,9 +170,9 @@ export class StructurePage {
   protected readonly presetIntroText = computed(() => {
     switch (this.presetFormat()) {
       case 'POOLS_ONLY':
-        return "Met en place un championnat en poules (round-robin), sans phase finale à élimination directe, à partir des équipes déjà créées dans cette catégorie.";
+        return 'Met en place un championnat en poules (round-robin), sans phase finale à élimination directe, à partir des équipes déjà créées dans cette catégorie.';
       case 'KNOCKOUT_ONLY':
-        return "Met en place directement un tableau à élimination directe à partir des équipes déjà créées dans cette catégorie, sans phase de classement en poules.";
+        return 'Met en place directement un tableau à élimination directe à partir des équipes déjà créées dans cette catégorie, sans phase de classement en poules.';
       default:
         return "Met en place d'un coup les poules et le tableau à élimination directe, à partir des équipes déjà créées dans cette catégorie.";
     }
