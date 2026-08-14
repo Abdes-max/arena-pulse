@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -12,6 +13,7 @@ import {
   TournamentPublicationOrderStatus,
   TournamentStatus,
 } from '../../generated/prisma/client';
+import { MailService } from '../mail/mail.service';
 import { OrganizationsService } from '../organizations/organizations.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { StripeService } from '../payments/stripe.service';
@@ -27,11 +29,14 @@ type TournamentWithSportAndVenue = TournamentWithSport & {
 
 @Injectable()
 export class TournamentsService {
+  private readonly logger = new Logger(TournamentsService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly stripeService: StripeService,
     private readonly configService: ConfigService,
     private readonly organizationsService: OrganizationsService,
+    private readonly mailService: MailService,
   ) {}
 
   async create(organizationId: string, dto: CreateTournamentDto) {
@@ -198,6 +203,7 @@ export class TournamentsService {
     const session = event.data.object;
     const order = await this.prisma.tournamentPublicationOrder.findUnique({
       where: { stripeCheckoutSessionId: session.id },
+      include: { tournament: true },
     });
     // Idempotent: a retried webhook delivery, or an event for a session this
     // service didn't create (e.g. a player registration's), is a silent
@@ -229,6 +235,37 @@ export class TournamentsService {
         data: { status: TournamentStatus.PUBLISHED },
       }),
     ]);
+
+    await this.sendPublicationReceipt(order);
+  }
+
+  /**
+   * Best-effort, non-blocking (same rationale as
+   * InvitationsService.invite's mail try/catch): the tournament is already
+   * PUBLISHED regardless of whether the receipt email makes it out.
+   */
+  private async sendPublicationReceipt(order: {
+    tournament: { name: string; organizationId: string };
+    amountCents: number;
+    currency: string;
+  }): Promise<void> {
+    const adminEmails = await this.organizationsService.getAdminEmails(
+      order.tournament.organizationId,
+    );
+    for (const email of adminEmails) {
+      try {
+        await this.mailService.sendPublicationReceiptEmail(
+          email,
+          order.tournament.name,
+          order.amountCents,
+          order.currency,
+        );
+      } catch (error) {
+        this.logger.warn(
+          `Failed to send publication receipt email to ${email}: ${(error as Error).message}`,
+        );
+      }
+    }
   }
 
   async unpublish(organizationId: string, tournamentId: string) {

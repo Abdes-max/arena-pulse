@@ -2,9 +2,11 @@ import { randomUUID } from 'node:crypto';
 import {
   ConflictException,
   Injectable,
+  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { OrganizationRole } from '../../generated/prisma/client';
+import { MailService } from '../mail/mail.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -27,10 +29,13 @@ export interface TokenPair {
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly passwordService: PasswordService,
     private readonly tokenService: TokenService,
+    private readonly mailService: MailService,
   ) {}
 
   async register(dto: RegisterDto): Promise<
@@ -77,6 +82,21 @@ export class AuthService {
     );
 
     const tokens = await this.issueTokenPair(user.id, user.email, randomUUID());
+
+    // Best-effort, non-blocking (same rationale as InvitationsService.
+    // invite's mail try/catch): the account is already created regardless
+    // of whether the welcome email makes it out.
+    try {
+      await this.mailService.sendAccountCreatedEmail(
+        user.email,
+        user.firstName,
+        organization.name,
+      );
+    } catch (error) {
+      this.logger.warn(
+        `Failed to send account confirmation email to ${user.email}: ${(error as Error).message}`,
+      );
+    }
 
     return {
       ...tokens,

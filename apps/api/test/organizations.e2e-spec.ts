@@ -34,6 +34,7 @@ const mailService = {
   sendInvitationEmail: jest
     .fn<Promise<void>, [string, string, string]>()
     .mockResolvedValue(undefined),
+  sendAccountCreatedEmail: jest.fn().mockResolvedValue(undefined),
 };
 
 function getSentInviteToken(): string {
@@ -69,6 +70,7 @@ describe('Organizations (e2e)', () => {
 
   beforeEach(async () => {
     mailService.sendInvitationEmail.mockClear();
+    mailService.sendAccountCreatedEmail.mockClear();
     app = await createTestApp((builder) =>
       builder.overrideProvider(MailService).useValue(mailService),
     );

@@ -5,13 +5,16 @@ import {
   OrganizationRole,
   OrganizationSubscriptionStatus,
 } from '../../generated/prisma/client';
+import { MailService } from '../mail/mail.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { StripeService } from '../payments/stripe.service';
 import { OrganizationsService } from './organizations.service';
 
 type PrismaMock = {
+  organization: { findUnique: jest.Mock };
   organizationMember: {
     findUnique: jest.Mock;
+    findMany: jest.Mock;
     update: jest.Mock;
     delete: jest.Mock;
     count: jest.Mock;
@@ -26,8 +29,10 @@ type PrismaMock = {
 
 function createPrismaMock(): PrismaMock {
   return {
+    organization: { findUnique: jest.fn() },
     organizationMember: {
       findUnique: jest.fn(),
+      findMany: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
       count: jest.fn(),
@@ -38,6 +43,16 @@ function createPrismaMock(): PrismaMock {
       create: jest.fn(),
       update: jest.fn(),
     },
+  };
+}
+
+// Deliberately untyped, same rationale as tournaments.service.spec.ts.
+function createMailServiceMock() {
+  return {
+    sendInvitationEmail: jest.fn().mockResolvedValue(undefined),
+    sendAccountCreatedEmail: jest.fn().mockResolvedValue(undefined),
+    sendPublicationReceiptEmail: jest.fn().mockResolvedValue(undefined),
+    sendSubscriptionReceiptEmail: jest.fn().mockResolvedValue(undefined),
   };
 }
 
@@ -74,15 +89,18 @@ function checkoutCompletedEvent(sessionId: string): Stripe.Event {
 describe('OrganizationsService', () => {
   let prisma: PrismaMock;
   let stripeService: ReturnType<typeof createStripeServiceMock>;
+  let mailService: ReturnType<typeof createMailServiceMock>;
   let service: OrganizationsService;
 
   beforeEach(() => {
     prisma = createPrismaMock();
     stripeService = createStripeServiceMock();
+    mailService = createMailServiceMock();
     service = new OrganizationsService(
       prisma as unknown as PrismaService,
       stripeService as unknown as StripeService,
       createConfigServiceMock(),
+      mailService as unknown as MailService,
     );
   });
 
@@ -166,6 +184,20 @@ describe('OrganizationsService', () => {
     });
   });
 
+  it('getAdminEmails returns only ORG_ADMIN emails', async () => {
+    prisma.organizationMember.findMany.mockResolvedValue([
+      { user: { email: 'admin@example.com' } },
+    ]);
+
+    const emails = await service.getAdminEmails('org-1');
+
+    expect(emails).toEqual(['admin@example.com']);
+    expect(prisma.organizationMember.findMany).toHaveBeenCalledWith({
+      where: { organizationId: 'org-1', role: OrganizationRole.ORG_ADMIN },
+      include: { user: true },
+    });
+  });
+
   describe('annual subscription', () => {
     it('hasActiveSubscription is false with no row and true with an unexpired ACTIVE row', async () => {
       prisma.organizationSubscription.findFirst.mockResolvedValueOnce(null);
@@ -205,6 +237,7 @@ describe('OrganizationsService', () => {
         createConfigServiceMock({
           ORGANIZATION_ANNUAL_SUBSCRIPTION_PRICE_CENTS: '20000',
         }),
+        mailService as unknown as MailService,
       );
       prisma.organizationSubscription.findFirst.mockResolvedValue(null);
       prisma.organizationSubscription.create.mockResolvedValue({
@@ -242,6 +275,12 @@ describe('OrganizationsService', () => {
         id: 'sub-1',
         status: OrganizationSubscriptionStatus.PENDING_PAYMENT,
       });
+      prisma.organizationSubscription.update.mockResolvedValue({
+        organizationId: 'org-1',
+        amountCents: 20000,
+        currency: 'eur',
+        expiresAt: new Date('2027-08-14'),
+      });
 
       await service.handleSubscriptionStripeEvent(
         checkoutCompletedEvent('cs_test_subscription_123'),
@@ -256,6 +295,70 @@ describe('OrganizationsService', () => {
         OrganizationSubscriptionStatus.ACTIVE,
       );
       expect(updateCall.data.stripePaymentIntentId).toBe('pi_123');
+    });
+
+    it('handleSubscriptionStripeEvent emails every org admin a receipt', async () => {
+      const expiresAt = new Date('2027-08-14');
+      prisma.organizationSubscription.findUnique.mockResolvedValue({
+        id: 'sub-1',
+        status: OrganizationSubscriptionStatus.PENDING_PAYMENT,
+      });
+      prisma.organizationSubscription.update.mockResolvedValue({
+        organizationId: 'org-1',
+        amountCents: 20000,
+        currency: 'eur',
+        expiresAt,
+      });
+      prisma.organization.findUnique.mockResolvedValue({
+        id: 'org-1',
+        name: 'Ada Tournaments',
+      });
+      prisma.organizationMember.findMany.mockResolvedValue([
+        { user: { email: 'admin1@example.com' } },
+        { user: { email: 'admin2@example.com' } },
+      ]);
+
+      await service.handleSubscriptionStripeEvent(
+        checkoutCompletedEvent('cs_test_subscription_123'),
+      );
+
+      expect(mailService.sendSubscriptionReceiptEmail).toHaveBeenCalledTimes(2);
+      expect(mailService.sendSubscriptionReceiptEmail).toHaveBeenCalledWith(
+        'admin1@example.com',
+        'Ada Tournaments',
+        20000,
+        'eur',
+        expiresAt,
+      );
+    });
+
+    it('handleSubscriptionStripeEvent still activates the subscription even if the receipt email fails', async () => {
+      prisma.organizationSubscription.findUnique.mockResolvedValue({
+        id: 'sub-1',
+        status: OrganizationSubscriptionStatus.PENDING_PAYMENT,
+      });
+      prisma.organizationSubscription.update.mockResolvedValue({
+        organizationId: 'org-1',
+        amountCents: 20000,
+        currency: 'eur',
+        expiresAt: new Date('2027-08-14'),
+      });
+      prisma.organization.findUnique.mockResolvedValue({
+        id: 'org-1',
+        name: 'Ada Tournaments',
+      });
+      prisma.organizationMember.findMany.mockResolvedValue([
+        { user: { email: 'admin1@example.com' } },
+      ]);
+      mailService.sendSubscriptionReceiptEmail.mockRejectedValue(
+        new Error('SMTP unreachable'),
+      );
+
+      await expect(
+        service.handleSubscriptionStripeEvent(
+          checkoutCompletedEvent('cs_test_subscription_123'),
+        ),
+      ).resolves.toBeUndefined();
     });
 
     it("handleSubscriptionStripeEvent is a no-op for an unknown session (e.g. a tournament publication's)", async () => {

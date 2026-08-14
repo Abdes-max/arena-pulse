@@ -4,10 +4,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import type Stripe from 'stripe';
 import {
   TournamentPublicationOrderStatus,
   TournamentStatus,
 } from '../../generated/prisma/client';
+import type { MailService } from '../mail/mail.service';
 import type { OrganizationsService } from '../organizations/organizations.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { StripeService } from '../payments/stripe.service';
@@ -28,6 +30,7 @@ type PrismaMock = {
   tournamentAdministratorPermission: { create: jest.Mock };
   tournamentPublicationOrder: {
     findFirst: jest.Mock;
+    findUnique: jest.Mock;
     create: jest.Mock;
     update: jest.Mock;
   };
@@ -50,6 +53,7 @@ function createPrismaMock(): PrismaMock {
     tournamentAdministratorPermission: { create: jest.fn() },
     tournamentPublicationOrder: {
       findFirst: jest.fn(),
+      findUnique: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),
     },
@@ -92,6 +96,14 @@ function createStripeServiceMock() {
 function createOrganizationsServiceMock() {
   return {
     hasActiveSubscription: jest.fn().mockResolvedValue(false),
+    getAdminEmails: jest.fn().mockResolvedValue([]),
+  };
+}
+
+// Same untyped-mock rationale as createStripeServiceMock above.
+function createMailServiceMock() {
+  return {
+    sendPublicationReceiptEmail: jest.fn().mockResolvedValue(undefined),
   };
 }
 
@@ -119,12 +131,14 @@ describe('TournamentsService', () => {
   let prisma: PrismaMock;
   let stripeService: ReturnType<typeof createStripeServiceMock>;
   let organizationsService: ReturnType<typeof createOrganizationsServiceMock>;
+  let mailService: ReturnType<typeof createMailServiceMock>;
   let service: TournamentsService;
 
   beforeEach(() => {
     prisma = createPrismaMock();
     stripeService = createStripeServiceMock();
     organizationsService = createOrganizationsServiceMock();
+    mailService = createMailServiceMock();
     // Zero-cents defaults, matching production until the project owner sets
     // real fees -- individual publish-pricing tests below override this.
     service = new TournamentsService(
@@ -132,6 +146,7 @@ describe('TournamentsService', () => {
       stripeService as unknown as StripeService,
       createConfigServiceMock(),
       organizationsService as unknown as OrganizationsService,
+      mailService as unknown as MailService,
     );
   });
 
@@ -226,6 +241,7 @@ describe('TournamentsService', () => {
           TOURNAMENT_PUBLICATION_TIER_MID_PRICE_CENTS: '2500',
         }),
         organizationsService as unknown as OrganizationsService,
+        mailService as unknown as MailService,
       );
       prisma.tournament.findUnique.mockResolvedValue(tournamentFixture());
       prisma.tournamentPublicationOrder.findFirst.mockResolvedValue(null);
@@ -263,6 +279,7 @@ describe('TournamentsService', () => {
             TOURNAMENT_PUBLICATION_TIER_HIGH_PRICE_CENTS: '8000',
           }),
           organizationsService as unknown as OrganizationsService,
+          mailService as unknown as MailService,
         );
         prisma.tournament.findUnique.mockResolvedValue(tournamentFixture());
         prisma.tournamentPublicationOrder.findFirst.mockResolvedValue(null);
@@ -389,6 +406,81 @@ describe('TournamentsService', () => {
       await expect(
         service.unarchive('org-1', 'tournament-1'),
       ).rejects.toBeInstanceOf(ConflictException);
+    });
+  });
+
+  describe('handlePublicationStripeEvent', () => {
+    function checkoutCompletedEvent(sessionId: string): Stripe.Event {
+      return {
+        type: 'checkout.session.completed',
+        data: { object: { id: sessionId, payment_intent: 'pi_123' } },
+      } as unknown as Stripe.Event;
+    }
+
+    it('emails every org admin a receipt once the order is confirmed PAID', async () => {
+      prisma.tournamentPublicationOrder.findUnique.mockResolvedValue({
+        id: 'order-1',
+        status: TournamentPublicationOrderStatus.PENDING_PAYMENT,
+        tournamentId: 'tournament-1',
+        amountCents: 2500,
+        currency: 'eur',
+        tournament: { name: 'Coupe de printemps', organizationId: 'org-1' },
+      });
+      prisma.tournamentPublicationOrder.update.mockResolvedValue({});
+      prisma.tournament.update.mockResolvedValue({});
+      organizationsService.getAdminEmails.mockResolvedValue([
+        'admin1@example.com',
+        'admin2@example.com',
+      ]);
+
+      await service.handlePublicationStripeEvent(
+        checkoutCompletedEvent('cs_test_publish_123'),
+      );
+
+      expect(organizationsService.getAdminEmails).toHaveBeenCalledWith('org-1');
+      expect(mailService.sendPublicationReceiptEmail).toHaveBeenCalledTimes(2);
+      expect(mailService.sendPublicationReceiptEmail).toHaveBeenCalledWith(
+        'admin1@example.com',
+        'Coupe de printemps',
+        2500,
+        'eur',
+      );
+    });
+
+    it('still confirms the payment even if the receipt email fails', async () => {
+      prisma.tournamentPublicationOrder.findUnique.mockResolvedValue({
+        id: 'order-1',
+        status: TournamentPublicationOrderStatus.PENDING_PAYMENT,
+        tournamentId: 'tournament-1',
+        amountCents: 2500,
+        currency: 'eur',
+        tournament: { name: 'Coupe de printemps', organizationId: 'org-1' },
+      });
+      prisma.tournamentPublicationOrder.update.mockResolvedValue({});
+      prisma.tournament.update.mockResolvedValue({});
+      organizationsService.getAdminEmails.mockResolvedValue([
+        'admin1@example.com',
+      ]);
+      mailService.sendPublicationReceiptEmail.mockRejectedValue(
+        new Error('SMTP unreachable'),
+      );
+
+      await expect(
+        service.handlePublicationStripeEvent(
+          checkoutCompletedEvent('cs_test_publish_123'),
+        ),
+      ).resolves.toBeUndefined();
+      expect(prisma.tournamentPublicationOrder.update).toHaveBeenCalled();
+    });
+
+    it('does not email anyone for an unknown session or an already-PAID order', async () => {
+      prisma.tournamentPublicationOrder.findUnique.mockResolvedValue(null);
+
+      await service.handlePublicationStripeEvent(
+        checkoutCompletedEvent('cs_not_ours'),
+      );
+
+      expect(mailService.sendPublicationReceiptEmail).not.toHaveBeenCalled();
     });
   });
 
