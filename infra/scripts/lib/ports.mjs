@@ -1,5 +1,6 @@
 import net from 'node:net';
 import http from 'node:http';
+import { spawnSync } from 'node:child_process';
 
 // Checked on both loopback addresses: dev servers (and the "localhost" a
 // browser resolves) can end up on either 127.0.0.1 or ::1 depending on the
@@ -68,4 +69,51 @@ export async function fetchMatches(port, path, expectedSubstring, timeoutMs = 15
     if (body?.includes(expectedSubstring)) return true;
   }
   return false;
+}
+
+/**
+ * Force-kills whatever is listening on `port`, by PID, regardless of who
+ * started it or whether it's tracked in .run/pids.json -- a process started
+ * outside `npm run run` (e.g. a one-off `ng serve` re-run by hand) is
+ * invisible to the pid-file-based stop in stop.mjs, and would otherwise be
+ * left running forever, silently serving stale code on a subsequent restart.
+ * Best-effort: never throws, a port with nothing on it is a silent no-op.
+ */
+export function killProcessOnPort(port) {
+  const pids = findPidsOnPort(port);
+  for (const pid of pids) {
+    if (process.platform === 'win32') {
+      spawnSync('taskkill', ['/PID', String(pid), '/T', '/F'], { stdio: 'ignore' });
+    } else {
+      spawnSync('kill', ['-9', String(pid)], { stdio: 'ignore' });
+    }
+  }
+  return pids;
+}
+
+function findPidsOnPort(port) {
+  if (process.platform === 'win32') {
+    // "netstat -ano" output columns: Proto Local Foreign State PID -- match
+    // lines for this exact local port in LISTENING state, PID is the last
+    // whitespace-separated field.
+    const result = spawnSync('netstat', ['-ano'], { encoding: 'utf8' });
+    const lines = (result.stdout ?? '').split('\n');
+    const pids = new Set();
+    for (const line of lines) {
+      if (!line.includes('LISTENING')) continue;
+      const columns = line.trim().split(/\s+/);
+      const localAddress = columns[1] ?? '';
+      const portSuffix = `:${port}`;
+      if (!localAddress.endsWith(portSuffix)) continue;
+      const pid = Number(columns[columns.length - 1]);
+      if (Number.isInteger(pid) && pid > 0) pids.add(pid);
+    }
+    return [...pids];
+  }
+  // macOS/Linux: lsof lists one PID per line for everything holding the port open.
+  const result = spawnSync('lsof', ['-ti', `:${port}`], { encoding: 'utf8' });
+  return (result.stdout ?? '')
+    .split('\n')
+    .map((line) => Number(line.trim()))
+    .filter((pid) => Number.isInteger(pid) && pid > 0);
 }
