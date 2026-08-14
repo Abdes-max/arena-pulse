@@ -87,6 +87,10 @@ export interface CrossGroupUnresolvedTie {
   ties: { teams: { id: string; name: string; groupName: string }[] }[];
 }
 
+// Kept in sync by hand with StructurePresetFormat in
+// apps/api/src/tournaments/dto/create-structure-preset.dto.ts.
+export type StructurePresetFormat = 'POOLS_ONLY' | 'POOLS_AND_KNOCKOUT' | 'KNOCKOUT_ONLY';
+
 export interface StructurePresetTierPayload {
   name: string;
   qualifiersPerPool: number;
@@ -98,9 +102,14 @@ export interface StructurePresetBestOfPositionPayload {
 }
 
 export interface CreateStructurePresetPayload {
+  format: StructurePresetFormat;
   teamCount: number;
-  poolCount: number;
-  tiers: StructurePresetTierPayload[];
+  // Not sent for KNOCKOUT_ONLY -- no real pool phase in that format.
+  poolCount?: number;
+  // Only sent for POOLS_AND_KNOCKOUT.
+  tiers?: StructurePresetTierPayload[];
+  // Only relevant for KNOCKOUT_ONLY -- defaults to "Tableau final" server-side.
+  knockoutName?: string;
   bestOfPosition?: StructurePresetBestOfPositionPayload;
   matchDurationMinutes?: number;
   breakDurationMinutes?: number;

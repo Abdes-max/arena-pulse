@@ -2,13 +2,26 @@ import { Type } from 'class-transformer';
 import {
   ArrayMinSize,
   IsBoolean,
+  IsEnum,
   IsInt,
   IsOptional,
   IsString,
   Min,
   MinLength,
+  ValidateIf,
   ValidateNested,
 } from 'class-validator';
+
+// The 3 shapes this generator can produce -- POOLS_AND_KNOCKOUT is the
+// original (and still default) behaviour; the other two reuse the same pool
+// phase creation / same knockout+bracket creation, just skipping the part
+// that doesn't apply. See structure-presets.service.ts for how each format
+// is built.
+export enum StructurePresetFormat {
+  POOLS_ONLY = 'POOLS_ONLY',
+  POOLS_AND_KNOCKOUT = 'POOLS_AND_KNOCKOUT',
+  KNOCKOUT_ONLY = 'KNOCKOUT_ONLY',
+}
 
 // One knockout tier per qualification tranche (e.g. "Ligue des Champions" for
 // positions 1-2, "Europa League" for 3-4...) -- the "no multi-tier" case is
@@ -37,18 +50,40 @@ export class StructurePresetBestOfPositionDto {
 }
 
 export class CreateStructurePresetDto {
+  @IsEnum(StructurePresetFormat)
+  format!: StructurePresetFormat;
+
   @IsInt()
   @Min(1)
   teamCount!: number;
 
+  // Not applicable to KNOCKOUT_ONLY -- there's no real pool phase to size in
+  // that format (see the seed-group pattern in the service).
+  @ValidateIf(
+    (dto: CreateStructurePresetDto) =>
+      dto.format !== StructurePresetFormat.KNOCKOUT_ONLY,
+  )
   @IsInt()
   @Min(1)
-  poolCount!: number;
+  poolCount?: number;
 
+  // Only POOLS_AND_KNOCKOUT has tiers -- POOLS_ONLY has no knockout phase at
+  // all, and KNOCKOUT_ONLY names its single bracket via knockoutName instead.
+  @ValidateIf(
+    (dto: CreateStructurePresetDto) =>
+      dto.format === StructurePresetFormat.POOLS_AND_KNOCKOUT,
+  )
   @ValidateNested({ each: true })
   @Type(() => StructurePresetTierDto)
   @ArrayMinSize(1)
-  tiers!: StructurePresetTierDto[];
+  tiers?: StructurePresetTierDto[];
+
+  // KNOCKOUT_ONLY's single bracket has no tier to borrow a name from --
+  // optional, defaults to "Tableau final" in the service when omitted.
+  @ValidateIf((dto: CreateStructurePresetDto) => dto.knockoutName !== undefined)
+  @IsString()
+  @MinLength(1)
+  knockoutName?: string;
 
   @IsOptional()
   @ValidateNested()

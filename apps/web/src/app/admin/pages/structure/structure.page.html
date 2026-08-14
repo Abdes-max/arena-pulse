@@ -22,10 +22,16 @@
       @if (phases().length === 0) {
         <section class="structure-page__section">
           <h2>Mode Tournoi</h2>
+
+          <ap-tabs
+            label="Format"
+            [value]="presetFormat()"
+            [options]="presetFormatOptions"
+            (valueChange)="onPresetFormatChange($event)"
+          />
+
           <p class="structure-page__hint">
-            Met en place d'un coup les poules et le tableau à élimination directe, à partir des
-            équipes déjà créées dans cette catégorie. Le calendrier se génère séparément sur la page
-            Calendrier.
+            {{ presetIntroText() }}
             @if (unassignedTeams().length > 0) {
               {{ unassignedTeams().length }} équipe(s) non assignée(s) disponible(s) ici.
             } @else {
@@ -48,96 +54,110 @@
               [value]="presetTeamCount()"
               (valueChange)="onPresetTeamCountChange($event)"
             />
-            <ap-text-field
-              label="Nombre de poules"
-              type="number"
-              [min]="1"
-              [value]="presetPoolCount()"
-              (valueChange)="onPresetPoolCountChange($event)"
-            />
+            @if (presetFormat() !== 'KNOCKOUT_ONLY') {
+              <ap-text-field
+                label="Nombre de poules"
+                type="number"
+                [min]="1"
+                [value]="presetPoolCount()"
+                (valueChange)="onPresetPoolCountChange($event)"
+              />
+            }
           </div>
 
-          <div class="structure-page__checkbox-row structure-page__checkbox-row--spaced">
-            <label class="structure-page__checkbox-label">
-              <input
-                type="checkbox"
-                [checked]="presetMultiTierEnabled()"
-                (change)="onPresetMultiTierToggle($event)"
-              />
-              Qualifier vers plusieurs compétitions
-            </label>
-            <label class="structure-page__checkbox-label">
-              <input
-                type="checkbox"
-                [checked]="presetBestOfPositionEnabled()"
-                (change)="onPresetBestOfPositionToggle($event)"
-              />
-              Inclure les meilleurs classés à une position
-            </label>
-          </div>
+          @if (presetFormat() === 'POOLS_AND_KNOCKOUT') {
+            <div class="structure-page__checkbox-row structure-page__checkbox-row--spaced">
+              <label class="structure-page__checkbox-label">
+                <input
+                  type="checkbox"
+                  [checked]="presetMultiTierEnabled()"
+                  (change)="onPresetMultiTierToggle($event)"
+                />
+                Qualifier vers plusieurs compétitions
+              </label>
+              <label class="structure-page__checkbox-label">
+                <input
+                  type="checkbox"
+                  [checked]="presetBestOfPositionEnabled()"
+                  (change)="onPresetBestOfPositionToggle($event)"
+                />
+                Inclure les meilleurs classés à une position
+              </label>
+            </div>
 
-          @if (!presetMultiTierEnabled()) {
-            <ap-text-field
-              class="structure-page__spaced-field"
-              label="Qualifiés par poule"
-              type="number"
-              [min]="1"
-              [value]="presetTiers()[0].qualifiersPerPool"
-              (valueChange)="onPresetTierQualifiersChange(0, $event)"
-            />
-          } @else {
-            @for (tier of presetTiers(); track $index) {
+            @if (!presetMultiTierEnabled()) {
+              <ap-text-field
+                class="structure-page__spaced-field"
+                label="Qualifiés par poule"
+                type="number"
+                [min]="1"
+                [value]="presetTiers()[0].qualifiersPerPool"
+                (valueChange)="onPresetTierQualifiersChange(0, $event)"
+              />
+            } @else {
+              @for (tier of presetTiers(); track $index) {
+                <div class="structure-page__inline-form">
+                  <ap-text-field
+                    label="Nom du palier"
+                    [hideLabel]="true"
+                    placeholder="Nom du palier (ex. Ligue des Champions)"
+                    [value]="tier.name"
+                    (valueChange)="onPresetTierNameChange($index, $event)"
+                  />
+                  <ap-text-field
+                    label="Qualifiés par poule"
+                    [hideLabel]="true"
+                    type="number"
+                    [min]="1"
+                    placeholder="Qualifiés par poule"
+                    [value]="tier.qualifiersPerPool"
+                    (valueChange)="onPresetTierQualifiersChange($index, $event)"
+                  />
+                  @if (presetTiers().length > 1) {
+                    <ap-button type="button" variant="ghost" (click)="removePresetTier($index)">
+                      Retirer
+                    </ap-button>
+                  }
+                </div>
+              }
+              <ap-button type="button" variant="ghost" (click)="addPresetTier()">
+                Ajouter un palier
+              </ap-button>
+            }
+
+            @if (presetBestOfPositionEnabled()) {
               <div class="structure-page__inline-form">
                 <ap-text-field
-                  label="Nom du palier"
-                  [hideLabel]="true"
-                  placeholder="Nom du palier (ex. Ligue des Champions)"
-                  [value]="tier.name"
-                  (valueChange)="onPresetTierNameChange($index, $event)"
-                />
-                <ap-text-field
-                  label="Qualifiés par poule"
-                  [hideLabel]="true"
+                  label="Position"
                   type="number"
                   [min]="1"
-                  placeholder="Qualifiés par poule"
-                  [value]="tier.qualifiersPerPool"
-                  (valueChange)="onPresetTierQualifiersChange($index, $event)"
+                  [value]="presetBestOfPositionPosition()"
+                  (valueChange)="onPresetBestOfPositionPositionChange($event)"
                 />
-                @if (presetTiers().length > 1) {
-                  <ap-button type="button" variant="ghost" (click)="removePresetTier($index)">
-                    Retirer
-                  </ap-button>
-                }
+                <ap-text-field
+                  label="Nombre de meilleurs classés"
+                  type="number"
+                  [min]="1"
+                  [value]="presetBestOfPositionBestCount()"
+                  (valueChange)="onPresetBestOfPositionBestCountChange($event)"
+                />
               </div>
+              <p class="structure-page__hint">
+                Les {{ presetBestOfPositionBestCount() || 'N' }} meilleures équipes classées
+                {{ presetBestOfPositionPosition() || 'X' }}ᵉ de leur poule, comparées entre elles,
+                rejoignent le tableau du premier palier.
+              </p>
             }
-            <ap-button type="button" variant="ghost" (click)="addPresetTier()">
-              Ajouter un palier
-            </ap-button>
           }
 
-          @if (presetBestOfPositionEnabled()) {
-            <div class="structure-page__inline-form">
-              <ap-text-field
-                label="Position"
-                type="number"
-                [min]="1"
-                [value]="presetBestOfPositionPosition()"
-                (valueChange)="onPresetBestOfPositionPositionChange($event)"
-              />
-              <ap-text-field
-                label="Nombre de meilleurs classés"
-                type="number"
-                [min]="1"
-                [value]="presetBestOfPositionBestCount()"
-                (valueChange)="onPresetBestOfPositionBestCountChange($event)"
-              />
-            </div>
-            <p class="structure-page__hint">
-              Les {{ presetBestOfPositionBestCount() || 'N' }} meilleures équipes classées
-              {{ presetBestOfPositionPosition() || 'X' }}ᵉ de leur poule, comparées entre elles,
-              rejoignent le tableau du premier palier.
-            </p>
+          @if (presetFormat() === 'KNOCKOUT_ONLY') {
+            <ap-text-field
+              class="structure-page__spaced-field"
+              label="Nom du tableau"
+              placeholder="Tableau final"
+              [value]="presetKnockoutName()"
+              (valueChange)="onPresetKnockoutNameChange($event)"
+            />
           }
 
           @for (tier of presetTierBracketSizes(); track $index) {
