@@ -86,7 +86,7 @@ async function main() {
   await ensureNativeService('api', 'npm', ['--prefix', 'apps/api', 'run', 'start:dev'], 3000, '/api/v1', 'Hello World');
 
   console.log('4/4 — Web app (Angular)');
-  await ensureNativeService('web', 'npx', ['ng', 'serve', 'web'], 4200, '/', 'Arena Pulse');
+  await ensureNativeService('web', 'npx', ['ng', 'serve', 'web'], 4200, '/', 'TournArena');
 
   writeFileSync(pidsFile, JSON.stringify(pids, null, 2));
 
