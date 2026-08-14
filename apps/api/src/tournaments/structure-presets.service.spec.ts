@@ -1,5 +1,6 @@
 import { BadRequestException, ConflictException } from '@nestjs/common';
 import { CategoriesService } from './categories.service';
+import { StructurePresetFormat } from './dto/create-structure-preset.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { StructurePresetsService } from './structure-presets.service';
 import { TournamentsService } from './tournaments.service';
@@ -50,6 +51,7 @@ function createPrismaMock(): PrismaMock {
 }
 
 const BASE_DTO = {
+  format: StructurePresetFormat.POOLS_AND_KNOCKOUT,
   teamCount: 8,
   poolCount: 2,
   tiers: [{ name: 'Tableau final', qualifiersPerPool: 2 }],
@@ -310,5 +312,155 @@ describe('StructurePresetsService', () => {
       { phaseId: 'phase-2', name: 'Ligue des Champions', bracketSize: 2 },
       { phaseId: 'phase-3', name: 'Europa League', bracketSize: 2 },
     ]);
+  });
+
+  describe('format: POOLS_ONLY', () => {
+    const DTO = {
+      format: StructurePresetFormat.POOLS_ONLY,
+      teamCount: 8,
+      poolCount: 2,
+    };
+
+    it('creates the pool phase and its pools, no knockout phase at all', async () => {
+      const result = await service.create(
+        'org-1',
+        'tournament-1',
+        'category-1',
+        DTO,
+      );
+
+      expect(prisma.competitionPhase.create).toHaveBeenCalledTimes(1);
+      expect(prisma.competitionPhase.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          name: 'Phase de poules',
+        }) as unknown,
+      });
+      expect(prisma.group.create).toHaveBeenCalledTimes(2);
+      expect(prisma.team.update).toHaveBeenCalledTimes(8);
+      expect(prisma.knockoutBracket.create).not.toHaveBeenCalled();
+      expect(prisma.qualificationRule.create).not.toHaveBeenCalled();
+      expect(result).toEqual({ groupPhaseId: 'phase-1', tiers: [] });
+    });
+
+    it('does not require tiers to be present', async () => {
+      await expect(
+        service.create('org-1', 'tournament-1', 'category-1', DTO),
+      ).resolves.toBeDefined();
+    });
+  });
+
+  describe('format: KNOCKOUT_ONLY', () => {
+    beforeEach(() => {
+      prisma.team.findMany.mockResolvedValue(
+        Array.from({ length: 8 }, (_, i) => team(`team-${i + 1}`, i)),
+      );
+    });
+
+    it('creates a single seed pool with every team, a knockout phase, one bracket, and one qualification rule spanning every team', async () => {
+      const result = await service.create(
+        'org-1',
+        'tournament-1',
+        'category-1',
+        {
+          format: StructurePresetFormat.KNOCKOUT_ONLY,
+          teamCount: 8,
+        },
+      );
+
+      expect(prisma.competitionPhase.create).toHaveBeenNthCalledWith(1, {
+        data: {
+          categoryId: 'category-1',
+          name: 'Équipes engagées',
+          type: 'GROUP_STAGE',
+          position: 0,
+        },
+      });
+      expect(prisma.group.create).toHaveBeenCalledTimes(1);
+      expect(prisma.group.create).toHaveBeenCalledWith({
+        data: { phaseId: 'phase-1', name: 'Équipes engagées', position: 0 },
+      });
+      expect(prisma.team.update).toHaveBeenCalledTimes(8);
+      expect(prisma.team.update).toHaveBeenNthCalledWith(1, {
+        where: { id: 'team-1' },
+        data: { groupId: 'group-1' },
+      });
+
+      expect(prisma.competitionPhase.create).toHaveBeenNthCalledWith(2, {
+        data: {
+          categoryId: 'category-1',
+          name: 'Tableau final',
+          type: 'KNOCKOUT',
+          position: 1,
+        },
+      });
+      expect(prisma.knockoutBracket.create).toHaveBeenCalledWith({
+        data: { phaseId: 'phase-2', name: 'Tableau final', size: 8 },
+      });
+      expect(prisma.qualificationRule.create).toHaveBeenCalledTimes(1);
+      expect(prisma.qualificationRule.create).toHaveBeenCalledWith({
+        data: {
+          groupId: 'group-1',
+          fromPosition: 1,
+          toPosition: 8,
+          targetPhaseId: 'phase-2',
+        },
+      });
+
+      expect(result).toEqual({
+        groupPhaseId: 'phase-1',
+        tiers: [{ phaseId: 'phase-2', name: 'Tableau final', bracketSize: 8 }],
+      });
+    });
+
+    it('uses knockoutName when provided instead of the default name', async () => {
+      await service.create('org-1', 'tournament-1', 'category-1', {
+        format: StructurePresetFormat.KNOCKOUT_ONLY,
+        teamCount: 8,
+        knockoutName: 'Coupe des Champions',
+      });
+
+      expect(prisma.competitionPhase.create).toHaveBeenNthCalledWith(2, {
+        data: {
+          categoryId: 'category-1',
+          name: 'Coupe des Champions',
+          type: 'KNOCKOUT',
+          position: 1,
+        },
+      });
+    });
+
+    it('ignores match duration / break / referee / double round-robin settings on the seed phase', async () => {
+      await service.create('org-1', 'tournament-1', 'category-1', {
+        format: StructurePresetFormat.KNOCKOUT_ONLY,
+        teamCount: 8,
+        matchDurationMinutes: 20,
+        breakDurationMinutes: 5,
+        refereesPerMatch: 2,
+        doubleRoundRobin: true,
+      });
+
+      expect(prisma.competitionPhase.create).toHaveBeenNthCalledWith(1, {
+        data: {
+          categoryId: 'category-1',
+          name: 'Équipes engagées',
+          type: 'GROUP_STAGE',
+          position: 0,
+        },
+      });
+    });
+
+    it('rejects a team count that is not a power of two', async () => {
+      prisma.team.findMany.mockResolvedValue(
+        Array.from({ length: 6 }, (_, i) => team(`team-${i + 1}`, i)),
+      );
+
+      await expect(
+        service.create('org-1', 'tournament-1', 'category-1', {
+          format: StructurePresetFormat.KNOCKOUT_ONLY,
+          teamCount: 6,
+        }),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(prisma.$transaction).not.toHaveBeenCalled();
+    });
   });
 });

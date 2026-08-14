@@ -1,9 +1,12 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Button, Select, SelectOption, TextField } from 'design-system';
+import { Button, Select, SelectOption, Tabs, TabOption, TextField } from 'design-system';
 import { AuthService } from '../../core/auth.service';
-import { CompetitionFormatsService } from '../../core/competition-formats.service';
+import {
+  CompetitionFormatsService,
+  StructurePresetFormat,
+} from '../../core/competition-formats.service';
 import {
   Category,
   CompetitionGroup,
@@ -36,7 +39,7 @@ interface QualificationRuleGroup {
 
 @Component({
   selector: 'app-structure-page',
-  imports: [Button, Select, TextField],
+  imports: [Button, Select, Tabs, TextField],
   templateUrl: './structure.page.html',
   styleUrl: './structure.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -100,8 +103,18 @@ export class StructurePage {
   // category has no phases yet (see structure-presets.service.ts). Sets up
   // phases/pools/brackets/qualification rules only -- no calendar; that's
   // generated separately on the Calendrier page once the organizer is ready.
+  protected readonly presetFormat = signal<StructurePresetFormat>('POOLS_AND_KNOCKOUT');
+  protected readonly presetFormatOptions: TabOption[] = [
+    { value: 'POOLS_ONLY', label: 'Poules seulement (championnat)' },
+    { value: 'POOLS_AND_KNOCKOUT', label: 'Poules + élimination directe' },
+    { value: 'KNOCKOUT_ONLY', label: 'Élimination directe seulement' },
+  ];
   protected readonly presetTeamCount = signal('');
   protected readonly presetPoolCount = signal('');
+  // Only used in KNOCKOUT_ONLY -- the single bracket's name (no tier list in
+  // that format to borrow a name from). Defaults to "Tableau final" server-
+  // side when left blank.
+  protected readonly presetKnockoutName = signal('');
   protected readonly presetSubmitting = signal(false);
   protected readonly presetError = signal<string | null>(null);
   protected readonly presetSuccessMessage = signal<string | null>(null);
@@ -126,6 +139,21 @@ export class StructurePage {
   );
 
   protected readonly presetTierBracketSizes = computed(() => {
+    if (this.presetFormat() === 'KNOCKOUT_ONLY') {
+      const teamCount = Number(this.presetTeamCount());
+      if (!teamCount) {
+        return [];
+      }
+      return [
+        {
+          name: this.presetKnockoutName().trim() || 'Tableau final',
+          size: teamCount,
+        },
+      ];
+    }
+    if (this.presetFormat() === 'POOLS_ONLY') {
+      return [];
+    }
     const poolCount = Number(this.presetPoolCount());
     if (!poolCount) {
       return [];
@@ -139,18 +167,54 @@ export class StructurePage {
     }));
   });
 
+  protected readonly presetIntroText = computed(() => {
+    switch (this.presetFormat()) {
+      case 'POOLS_ONLY':
+        return "Met en place un championnat en poules (round-robin), sans phase finale à élimination directe, à partir des équipes déjà créées dans cette catégorie.";
+      case 'KNOCKOUT_ONLY':
+        return "Met en place directement un tableau à élimination directe à partir des équipes déjà créées dans cette catégorie, sans phase de classement en poules.";
+      default:
+        return "Met en place d'un coup les poules et le tableau à élimination directe, à partir des équipes déjà créées dans cette catégorie.";
+    }
+  });
+
   // Client-side mirror of structure-presets.service.ts's validation -- lets
   // the organizer fix an impossible combination before submitting, instead
   // of round-tripping to the API to find out.
   protected readonly presetValidationError = computed<string | null>(() => {
+    if (this.presetFormat() === 'KNOCKOUT_ONLY') {
+      const teamCount = Number(this.presetTeamCount());
+      if (!teamCount) {
+        return null;
+      }
+      if (!(teamCount >= 2 && (teamCount & (teamCount - 1)) === 0)) {
+        return `Pour un tableau à élimination directe seule, le nombre d'équipes doit être une puissance de 2 (2, 4, 8, 16…) — ${teamCount} équipe(s) ne convient pas.`;
+      }
+      if (this.unassignedTeams().length !== teamCount) {
+        return `${this.unassignedTeams().length} équipe(s) non assignée(s) trouvée(s) dans cette catégorie, ${teamCount} attendue(s).`;
+      }
+      return null;
+    }
+
     const teamCount = Number(this.presetTeamCount());
     const poolCount = Number(this.presetPoolCount());
-    const tiers = this.presetTiers();
-    if (!teamCount || !poolCount || tiers.some((tier) => !Number(tier.qualifiersPerPool))) {
+    if (!teamCount || !poolCount) {
       return null;
     }
     if (poolCount > teamCount) {
       return 'Le nombre de poules ne peut pas dépasser le nombre d’équipes.';
+    }
+
+    if (this.presetFormat() === 'POOLS_ONLY') {
+      if (this.unassignedTeams().length !== teamCount) {
+        return `${this.unassignedTeams().length} équipe(s) non assignée(s) trouvée(s) dans cette catégorie, ${teamCount} attendue(s).`;
+      }
+      return null;
+    }
+
+    const tiers = this.presetTiers();
+    if (tiers.some((tier) => !Number(tier.qualifiersPerPool))) {
+      return null;
     }
     const smallestPoolSize = Math.floor(teamCount / poolCount);
     const totalDirectQualifiersPerPool = this.presetTiersTotalQualifiersPerPool();
@@ -191,8 +255,17 @@ export class StructurePage {
     return null;
   });
 
-  protected readonly presetCanSubmit = computed(
-    () =>
+  protected readonly presetCanSubmit = computed(() => {
+    if (this.presetValidationError() !== null) {
+      return false;
+    }
+    if (this.presetFormat() === 'KNOCKOUT_ONLY') {
+      return Number(this.presetTeamCount()) > 0;
+    }
+    if (this.presetFormat() === 'POOLS_ONLY') {
+      return Number(this.presetTeamCount()) > 0 && Number(this.presetPoolCount()) > 0;
+    }
+    return (
       Number(this.presetTeamCount()) > 0 &&
       Number(this.presetPoolCount()) > 0 &&
       this.presetTiers().every(
@@ -200,9 +273,9 @@ export class StructurePage {
       ) &&
       (!this.presetBestOfPositionEnabled() ||
         (Number(this.presetBestOfPositionPosition()) > 0 &&
-          Number(this.presetBestOfPositionBestCount()) > 0)) &&
-      this.presetValidationError() === null,
-  );
+          Number(this.presetBestOfPositionBestCount()) > 0))
+    );
+  });
 
   protected readonly categoryOptions = computed<SelectOption[]>(() =>
     this.categories().map((category) => ({ value: category.id, label: category.name })),
@@ -256,8 +329,10 @@ export class StructurePage {
   }
 
   private resetPresetForm(): void {
+    this.presetFormat.set('POOLS_AND_KNOCKOUT');
     this.presetTeamCount.set('');
     this.presetPoolCount.set('');
+    this.presetKnockoutName.set('');
     this.presetMultiTierEnabled.set(false);
     this.presetTiers.set([{ name: 'Tableau final', qualifiersPerPool: '' }]);
     this.presetBestOfPositionEnabled.set(false);
@@ -1008,12 +1083,33 @@ export class StructurePage {
     }
   }
 
+  protected onPresetFormatChange(value: string): void {
+    this.presetFormat.set(value as StructurePresetFormat);
+    // Fields that don't apply to the newly chosen format are cleared, so a
+    // stale value never sneaks into the payload built by
+    // generateStructurePreset() (which only reads the fields relevant to
+    // presetFormat() anyway, but this also keeps the form itself honest).
+    if (value === 'KNOCKOUT_ONLY') {
+      this.presetPoolCount.set('');
+      this.presetBestOfPositionEnabled.set(false);
+    } else if (value === 'POOLS_ONLY') {
+      this.presetKnockoutName.set('');
+      this.presetBestOfPositionEnabled.set(false);
+    } else {
+      this.presetKnockoutName.set('');
+    }
+  }
+
   protected onPresetTeamCountChange(value: string): void {
     this.presetTeamCount.set(value);
   }
 
   protected onPresetPoolCountChange(value: string): void {
     this.presetPoolCount.set(value);
+  }
+
+  protected onPresetKnockoutNameChange(value: string): void {
+    this.presetKnockoutName.set(value);
   }
 
   protected onPresetMultiTierToggle(event: Event): void {
@@ -1080,6 +1176,7 @@ export class StructurePage {
     this.presetSubmitting.set(true);
     this.presetError.set(null);
     this.presetSuccessMessage.set(null);
+    const format = this.presetFormat();
     const poolCount = this.presetPoolCount();
     try {
       const result = await this.competitionFormatsService.createStructurePreset(
@@ -1087,18 +1184,25 @@ export class StructurePage {
         this.tournamentId,
         categoryId,
         {
+          format,
           teamCount: Number(this.presetTeamCount()),
-          poolCount: Number(poolCount),
-          tiers: this.presetTiers().map((tier) => ({
-            name: tier.name.trim(),
-            qualifiersPerPool: Number(tier.qualifiersPerPool),
-          })),
-          ...(this.presetBestOfPositionEnabled() && {
-            bestOfPosition: {
-              position: Number(this.presetBestOfPositionPosition()),
-              bestCount: Number(this.presetBestOfPositionBestCount()),
-            },
+          ...(format !== 'KNOCKOUT_ONLY' && { poolCount: Number(poolCount) }),
+          ...(format === 'POOLS_AND_KNOCKOUT' && {
+            tiers: this.presetTiers().map((tier) => ({
+              name: tier.name.trim(),
+              qualifiersPerPool: Number(tier.qualifiersPerPool),
+            })),
+            ...(this.presetBestOfPositionEnabled() && {
+              bestOfPosition: {
+                position: Number(this.presetBestOfPositionPosition()),
+                bestCount: Number(this.presetBestOfPositionBestCount()),
+              },
+            }),
           }),
+          ...(format === 'KNOCKOUT_ONLY' &&
+            this.presetKnockoutName().trim() && {
+              knockoutName: this.presetKnockoutName().trim(),
+            }),
         },
       );
       this.resetPresetForm();
@@ -1106,7 +1210,11 @@ export class StructurePage {
         .map((tier) => `${tier.name} (${tier.bracketSize} équipes)`)
         .join(', ');
       this.presetSuccessMessage.set(
-        `Structure générée : ${poolCount} poules, ${tiersSummary}. Rendez-vous sur la page Calendrier pour planifier les matchs des poules et de l'élimination directe.`,
+        format === 'POOLS_ONLY'
+          ? `Structure générée : ${poolCount} poules. Rendez-vous sur la page Calendrier pour planifier les matchs des poules.`
+          : format === 'KNOCKOUT_ONLY'
+            ? `Structure générée : ${tiersSummary}. Rendez-vous sur la page Calendrier pour planifier les matchs du tableau.`
+            : `Structure générée : ${poolCount} poules, ${tiersSummary}. Rendez-vous sur la page Calendrier pour planifier les matchs des poules et de l'élimination directe.`,
       );
       await this.loadCategoryData();
     } catch (error) {
