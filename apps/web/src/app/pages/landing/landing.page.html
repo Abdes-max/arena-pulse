@@ -27,13 +27,89 @@
       <a class="landing-page__nav-link" href="#tarifs">Tarifs</a>
     </div>
     <div class="landing-page__nav-end">
-      <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
-      @if (tournaments().length > 0) {
-        <a class="landing-page__nav-cta" href="#tournois">Découvrir les événements</a>
-      }
-      <a class="landing-page__nav-login" routerLink="/login">Connexion</a>
+      <div class="landing-page__nav-end-links">
+        <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
+        @if (tournaments().length > 0) {
+          <a class="landing-page__nav-cta" href="#tournois">Découvrir les événements</a>
+        }
+        @if (authService.isAuthenticated()) {
+          <a class="landing-page__nav-login" routerLink="/admin/tournaments">Mon espace</a>
+          <button type="button" class="landing-page__nav-login" (click)="logout()">
+            Se déconnecter
+          </button>
+        } @else {
+          <a class="landing-page__nav-login" routerLink="/login">Connexion</a>
+        }
+      </div>
+      <button
+        type="button"
+        class="landing-page__nav-toggle"
+        (click)="toggleMobileMenu()"
+        [attr.aria-expanded]="mobileMenuOpen()"
+        aria-controls="landing-mobile-menu"
+        aria-label="Menu"
+      >
+        @if (mobileMenuOpen()) {
+          <svg viewBox="0 0 20 20" aria-hidden="true">
+            <path d="M4 4 L16 16 M16 4 L4 16" />
+          </svg>
+        } @else {
+          <svg viewBox="0 0 20 20" aria-hidden="true">
+            <path d="M3 5 L17 5 M3 10 L17 10 M3 15 L17 15" />
+          </svg>
+        }
+      </button>
     </div>
   </nav>
+
+  @if (mobileMenuOpen()) {
+    <div class="landing-page__mobile-menu" id="landing-mobile-menu">
+      <a class="landing-page__mobile-menu-link" href="#fonctionnalites" (click)="closeMobileMenu()"
+        >Fonctionnalités</a
+      >
+      @if (sports().length > 0) {
+        <p class="landing-page__mobile-menu-label">Sports</p>
+        <div class="landing-page__mobile-menu-sports">
+          @for (sport of sports(); track sport.id) {
+            <a
+              class="landing-page__mobile-menu-link"
+              href="#tournois"
+              (click)="onSportNavClick(sport.name); closeMobileMenu()"
+              >{{ sport.name }}</a
+            >
+          }
+        </div>
+      }
+      <a class="landing-page__mobile-menu-link" href="#tarifs" (click)="closeMobileMenu()"
+        >Tarifs</a
+      >
+
+      <div class="landing-page__mobile-menu-toggle">
+        <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
+      </div>
+
+      @if (tournaments().length > 0) {
+        <a class="landing-page__mobile-menu-cta" href="#tournois" (click)="closeMobileMenu()">
+          Découvrir les événements
+        </a>
+      }
+      @if (authService.isAuthenticated()) {
+        <a
+          class="landing-page__mobile-menu-login"
+          routerLink="/admin/tournaments"
+          (click)="closeMobileMenu()"
+          >Mon espace</a
+        >
+        <button type="button" class="landing-page__mobile-menu-login" (click)="logout()">
+          Se déconnecter
+        </button>
+      } @else {
+        <a class="landing-page__mobile-menu-login" routerLink="/login" (click)="closeMobileMenu()"
+          >Connexion</a
+        >
+      }
+    </div>
+  }
 
   <!--
     Ambient figures, not photography -- see the frontend-design skill note
