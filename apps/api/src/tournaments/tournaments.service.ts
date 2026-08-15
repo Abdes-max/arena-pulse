@@ -109,6 +109,25 @@ export class TournamentsService {
     return this.toDetail(updated);
   }
 
+  /** Every TournamentPublicationOrder row ever created for this tournament, most recent first -- usually 0 or 1, but a PENDING_PAYMENT order left behind by an abandoned checkout can coexist with the PAID one that actually unlocked publication. */
+  async listPublicationOrders(organizationId: string, tournamentId: string) {
+    await this.getOrThrow(organizationId, tournamentId);
+    const orders = await this.prisma.tournamentPublicationOrder.findMany({
+      where: { tournamentId },
+      orderBy: { createdAt: 'desc' },
+    });
+    return orders.map((order) => ({
+      id: order.id,
+      status: order.status,
+      categoriesCount: order.categoriesCount,
+      teamsCount: order.teamsCount,
+      amountCents: order.amountCents,
+      currency: order.currency,
+      createdAt: order.createdAt,
+      paidAt: order.paidAt,
+    }));
+  }
+
   /**
    * Publishing is gated behind a one-time Stripe payment computed from a
    * team-count tier (feat/044, see

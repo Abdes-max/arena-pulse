@@ -38,27 +38,42 @@ const stripeService = {
 };
 
 const mailService = {
+  sendEmailVerificationEmail: jest.fn().mockResolvedValue(undefined),
   sendAccountCreatedEmail: jest.fn().mockResolvedValue(undefined),
   sendPublicationReceiptEmail: jest.fn().mockResolvedValue(undefined),
   sendSubscriptionReceiptEmail: jest.fn().mockResolvedValue(undefined),
 };
 
 async function registerOrganizer(app: INestApplication<App>) {
-  const res = await request(app.getHttpServer())
+  const email = 'organizer@example.com';
+  const password = 'a-very-strong-password';
+  await request(app.getHttpServer())
     .post('/api/v1/auth/register')
     .send({
-      email: 'organizer@example.com',
-      password: 'a-very-strong-password',
+      email,
+      password,
       firstName: 'Ada',
       lastName: 'Lovelace',
       organizationName: 'Ada Tournaments',
     })
     .expect(201);
-  const body = res.body as AuthResponseBody;
-  return {
-    accessToken: body.accessToken,
-    organizationId: body.organization!.id,
-  };
+  // register() no longer issues a session -- mark the test account verified
+  // directly in DB (bypassing the email link) and log in for real tokens,
+  // mirroring what a real user does after clicking the verification link.
+  await app
+    .get(PrismaService)
+    .user.update({ where: { email }, data: { emailVerifiedAt: new Date() } });
+  const loginRes = await request(app.getHttpServer())
+    .post('/api/v1/auth/login')
+    .send({ email, password })
+    .expect(200);
+  const { accessToken } = loginRes.body as AuthResponseBody;
+  const meRes = await request(app.getHttpServer())
+    .get('/api/v1/auth/me')
+    .set('Authorization', `Bearer ${accessToken}`)
+    .expect(200);
+  const { organizations } = meRes.body as { organizations: { id: string }[] };
+  return { accessToken, organizationId: organizations[0].id };
 }
 
 describe('Paid tournament publication (e2e)', () => {
@@ -67,6 +82,7 @@ describe('Paid tournament publication (e2e)', () => {
 
   beforeEach(async () => {
     stripeService.createCheckoutSession.mockClear();
+    mailService.sendEmailVerificationEmail.mockClear();
     mailService.sendAccountCreatedEmail.mockClear();
     mailService.sendPublicationReceiptEmail.mockClear();
     mailService.sendSubscriptionReceiptEmail.mockClear();
@@ -218,6 +234,67 @@ describe('Paid tournament publication (e2e)', () => {
       'PUBLISHED',
     );
     expect(stripeService.createCheckoutSession).not.toHaveBeenCalled();
+  });
+
+  it('lists publication orders for a tournament and rejects another organization from reading them', async () => {
+    const { accessToken, organizationId } = await registerOrganizer(app);
+    const auth = (req: request.Test) =>
+      req.set('Authorization', `Bearer ${accessToken}`);
+    const base = `/api/v1/organizations/${organizationId}/tournaments`;
+
+    const sportRes = await auth(
+      request(app.getHttpServer()).get('/api/v1/sports'),
+    ).expect(200);
+    const sportId = (sportRes.body as { id: string }[])[0].id;
+
+    const tournamentRes = await auth(request(app.getHttpServer()).post(base))
+      .send({ name: 'Coupe des Reçus', sportId })
+      .expect(201);
+    const tournamentId = (tournamentRes.body as { id: string }).id;
+
+    // No category/team -- computed fee is 0, publishes immediately and
+    // still records a PAID order (amountCents 0).
+    await auth(
+      request(app.getHttpServer()).post(`${base}/${tournamentId}/publish`),
+    ).expect(200);
+
+    const ordersRes = await auth(
+      request(app.getHttpServer()).get(
+        `${base}/${tournamentId}/publication-orders`,
+      ),
+    ).expect(200);
+    const orders = ordersRes.body as { status: string; amountCents: number }[];
+    expect(orders).toHaveLength(1);
+    expect(orders[0]).toMatchObject({ status: 'PAID', amountCents: 0 });
+
+    // A member of a different organization must not read this one's orders.
+    const otherEmail = 'other-organizer@example.com';
+    const otherPassword = 'a-very-strong-password';
+    await request(app.getHttpServer())
+      .post('/api/v1/auth/register')
+      .send({
+        email: otherEmail,
+        password: otherPassword,
+        firstName: 'Bo',
+        lastName: 'Belote',
+        organizationName: 'Other Org',
+      })
+      .expect(201);
+    await prisma.user.update({
+      where: { email: otherEmail },
+      data: { emailVerifiedAt: new Date() },
+    });
+    const otherLoginRes = await request(app.getHttpServer())
+      .post('/api/v1/auth/login')
+      .send({ email: otherEmail, password: otherPassword })
+      .expect(200);
+    const otherAccessToken = (otherLoginRes.body as AuthResponseBody)
+      .accessToken;
+
+    await request(app.getHttpServer())
+      .get(`${base}/${tournamentId}/publication-orders`)
+      .set('Authorization', `Bearer ${otherAccessToken}`)
+      .expect(403);
   });
 
   it('an active organization subscription covers publication for free, without a Stripe checkout', async () => {

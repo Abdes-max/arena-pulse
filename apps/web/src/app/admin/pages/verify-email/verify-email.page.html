@@ -1,0 +1,22 @@
+<main class="verify-email-page">
+  <div class="verify-email-page__card">
+    <ap-logo class="verify-email-page__brand" />
+    @switch (state()) {
+      @case ('loading') {
+        <p>Vérification de votre email…</p>
+      }
+      @case ('success') {
+        <p>Email vérifié, connexion en cours…</p>
+      }
+      @case ('error') {
+        <h1>Lien invalide</h1>
+        <p>{{ errorMessage() }}</p>
+        <p class="verify-email-page__footer">
+          <a routerLink="/register">Créer un nouveau compte</a>
+          ·
+          <a routerLink="/login">Se connecter</a>
+        </p>
+      }
+    }
+  </div>
+</main>

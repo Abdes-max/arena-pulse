@@ -50,6 +50,24 @@ export class MailService {
     });
   }
 
+  async sendEmailVerificationEmail(
+    to: string,
+    firstName: string,
+    verifyUrl: string,
+  ): Promise<void> {
+    await this.transporter.sendMail({
+      from: this.from,
+      to,
+      subject: 'Vérifiez votre adresse email — TournArena',
+      html: this.wrapEmail(`
+        <p>Bonjour ${firstName},</p>
+        <p>Encore une étape avant de pouvoir utiliser votre compte organisateur·rice : confirmez que cette adresse email vous appartient bien.</p>
+        <p><a href="${verifyUrl}" class="ap-mail-cta">Vérifier mon email</a></p>
+        <p>Ce lien expire dans 24 heures.</p>
+      `),
+    });
+  }
+
   async sendAccountCreatedEmail(
     to: string,
     firstName: string,

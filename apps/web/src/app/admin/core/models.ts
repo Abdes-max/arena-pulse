@@ -83,6 +83,33 @@ export interface SubscribePendingPayment {
 
 export type SubscribeResult = OrganizationSubscriptionActive | SubscribePendingPayment;
 
+// Full payment history for the organization's subscription, most recent
+// first -- distinct from OrganizationSubscriptionStatus above, which only
+// reports the single current row.
+export interface SubscriptionHistoryEntry {
+  id: string;
+  status: 'PENDING_PAYMENT' | 'ACTIVE';
+  amountCents: number;
+  currency: string;
+  startsAt: string | null;
+  expiresAt: string | null;
+  createdAt: string;
+  paidAt: string | null;
+}
+
+// One TournamentPublicationOrder row -- usually a single PAID entry, but an
+// abandoned checkout can leave a PENDING_PAYMENT one alongside it.
+export interface PublicationOrder {
+  id: string;
+  status: 'PENDING_PAYMENT' | 'PAID';
+  categoriesCount: number;
+  teamsCount: number;
+  amountCents: number;
+  currency: string;
+  createdAt: string;
+  paidAt: string | null;
+}
+
 export interface Sport {
   id: string;
   name: string;

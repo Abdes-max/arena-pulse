@@ -26,18 +26,35 @@ describe('Public tournament site (e2e)', () => {
   });
 
   it('exposes a published tournament by slug, and only a published one', async () => {
-    const registerRes = await request(app.getHttpServer())
+    const email = 'organizer@example.com';
+    const password = 'a-very-strong-password';
+    await request(app.getHttpServer())
       .post('/api/v1/auth/register')
       .send({
-        email: 'organizer@example.com',
-        password: 'a-very-strong-password',
+        email,
+        password,
         firstName: 'Ada',
         lastName: 'Lovelace',
         organizationName: 'Ada Tournaments',
       })
       .expect(201);
-    const { accessToken, organization } = registerRes.body as AuthResponseBody;
-    const organizationId = organization!.id;
+    // register() no longer issues a session -- mark the test account
+    // verified directly in DB (bypassing the email link) and log in.
+    await prisma.user.update({
+      where: { email },
+      data: { emailVerifiedAt: new Date() },
+    });
+    const loginRes = await request(app.getHttpServer())
+      .post('/api/v1/auth/login')
+      .send({ email, password })
+      .expect(200);
+    const { accessToken } = loginRes.body as AuthResponseBody;
+    const meRes = await request(app.getHttpServer())
+      .get('/api/v1/auth/me')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(200);
+    const organizationId = (meRes.body as { organizations: { id: string }[] })
+      .organizations[0].id;
     const auth = (req: request.Test) =>
       req.set('Authorization', `Bearer ${accessToken}`);
     const base = `/api/v1/organizations/${organizationId}/tournaments`;
@@ -196,18 +213,35 @@ describe('Public tournament site (e2e)', () => {
   });
 
   it("lists a tournament's soonest scheduled matches, in chronological order", async () => {
-    const registerRes = await request(app.getHttpServer())
+    const email = 'organizer@example.com';
+    const password = 'a-very-strong-password';
+    await request(app.getHttpServer())
       .post('/api/v1/auth/register')
       .send({
-        email: 'organizer@example.com',
-        password: 'a-very-strong-password',
+        email,
+        password,
         firstName: 'Ada',
         lastName: 'Lovelace',
         organizationName: 'Ada Tournaments',
       })
       .expect(201);
-    const { accessToken, organization } = registerRes.body as AuthResponseBody;
-    const organizationId = organization!.id;
+    // register() no longer issues a session -- mark the test account
+    // verified directly in DB (bypassing the email link) and log in.
+    await prisma.user.update({
+      where: { email },
+      data: { emailVerifiedAt: new Date() },
+    });
+    const loginRes = await request(app.getHttpServer())
+      .post('/api/v1/auth/login')
+      .send({ email, password })
+      .expect(200);
+    const { accessToken } = loginRes.body as AuthResponseBody;
+    const meRes = await request(app.getHttpServer())
+      .get('/api/v1/auth/me')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(200);
+    const organizationId = (meRes.body as { organizations: { id: string }[] })
+      .organizations[0].id;
     const auth = (req: request.Test) =>
       req.set('Authorization', `Bearer ${accessToken}`);
     const base = `/api/v1/organizations/${organizationId}/tournaments`;
@@ -307,18 +341,35 @@ describe('Public tournament site (e2e)', () => {
   });
 
   it("exposes the organizer's chosen public theme, defaulting to INK_SIGNAL", async () => {
-    const registerRes = await request(app.getHttpServer())
+    const email = 'organizer@example.com';
+    const password = 'a-very-strong-password';
+    await request(app.getHttpServer())
       .post('/api/v1/auth/register')
       .send({
-        email: 'organizer@example.com',
-        password: 'a-very-strong-password',
+        email,
+        password,
         firstName: 'Ada',
         lastName: 'Lovelace',
         organizationName: 'Ada Tournaments',
       })
       .expect(201);
-    const { accessToken, organization } = registerRes.body as AuthResponseBody;
-    const organizationId = organization!.id;
+    // register() no longer issues a session -- mark the test account
+    // verified directly in DB (bypassing the email link) and log in.
+    await prisma.user.update({
+      where: { email },
+      data: { emailVerifiedAt: new Date() },
+    });
+    const loginRes = await request(app.getHttpServer())
+      .post('/api/v1/auth/login')
+      .send({ email, password })
+      .expect(200);
+    const { accessToken } = loginRes.body as AuthResponseBody;
+    const meRes = await request(app.getHttpServer())
+      .get('/api/v1/auth/me')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(200);
+    const organizationId = (meRes.body as { organizations: { id: string }[] })
+      .organizations[0].id;
     const auth = (req: request.Test) =>
       req.set('Authorization', `Bearer ${accessToken}`);
     const base = `/api/v1/organizations/${organizationId}/tournaments`;

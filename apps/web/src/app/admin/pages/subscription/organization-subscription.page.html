@@ -1,58 +1,125 @@
 <main class="subscription-page">
-  <h1>Abonnement annuel</h1>
-  <p class="subscription-page__intro">
-    Publier un tournoi est facturé par palier selon le nombre d'équipes (gratuit jusqu'à 8 équipes,
-    25&nbsp;€ de 9 à 48 équipes, 80&nbsp;€ au-delà). L'abonnement annuel remplace ce paiement à
-    l'unité&nbsp;: 200&nbsp;€ par an, publications illimitées pour toute l'organisation.
-  </p>
+  <div class="subscription-page__no-print">
+    <h1>Abonnement annuel</h1>
+    <p class="subscription-page__intro">
+      Publier un tournoi est facturé par palier selon le nombre d'équipes (gratuit jusqu'à 8
+      équipes, 25&nbsp;€ de 9 à 48 équipes, 80&nbsp;€ au-delà). L'abonnement annuel remplace ce
+      paiement à l'unité&nbsp;: 200&nbsp;€ par an, publications illimitées pour toute
+      l'organisation.
+    </p>
 
-  @if (loading()) {
-    <p>Chargement…</p>
-  } @else {
-    @if (errorMessage(); as message) {
-      <p class="subscription-page__error" role="alert">{{ message }}</p>
-    }
+    @if (loading()) {
+      <p>Chargement…</p>
+    } @else {
+      @if (errorMessage(); as message) {
+        <p class="subscription-page__error" role="alert">{{ message }}</p>
+      }
 
-    @if (!isAdmin()) {
-      <p>Seul un administrateur de l'organisation peut gérer l'abonnement.</p>
-    } @else if (status(); as s) {
-      @switch (s.status) {
-        @case ('ACTIVE') {
-          <section class="subscription-page__card subscription-page__card--active">
-            <ap-badge status="published" label="Abonnement actif" />
-            <p>
-              Toutes les publications de tournois sont gratuites jusqu'au
-              <strong>{{ formatDate(s.expiresAt) }}</strong
-              >.
-            </p>
-            <p class="subscription-page__note">
-              Le renouvellement est manuel&nbsp;: revenez sur cette page après cette date pour
-              souscrire un nouvel abonnement. Les tournois publiés pendant que l'abonnement est
-              actif restent publiés après son expiration.
-            </p>
-          </section>
-        }
-        @case ('PENDING_PAYMENT') {
-          <section class="subscription-page__card">
-            <ap-badge status="unpublished" label="Paiement en attente" />
-            <p>
-              Une souscription est en cours de confirmation. Si le paiement a été abandonné, vous
-              pouvez relancer un nouveau paiement.
-            </p>
-            <ap-button type="button" [disabled]="subscribing()" (click)="subscribe()">
-              Relancer le paiement — 200&nbsp;€
-            </ap-button>
-          </section>
-        }
-        @case ('NONE') {
-          <section class="subscription-page__card">
-            <p>Aucun abonnement actif pour cette organisation.</p>
-            <ap-button type="button" [disabled]="subscribing()" (click)="subscribe()">
-              Souscrire — 200&nbsp;€ / an
-            </ap-button>
-          </section>
+      @if (!isAdmin()) {
+        <p>Seul un administrateur de l'organisation peut gérer l'abonnement.</p>
+      } @else if (status(); as s) {
+        @switch (s.status) {
+          @case ('ACTIVE') {
+            <section class="subscription-page__card subscription-page__card--active">
+              <ap-badge status="published" label="Abonnement actif" />
+              <p>
+                Toutes les publications de tournois sont gratuites jusqu'au
+                <strong>{{ formatDate(s.expiresAt) }}</strong
+                >.
+              </p>
+              <p class="subscription-page__note">
+                Le renouvellement est manuel&nbsp;: revenez sur cette page après cette date pour
+                souscrire un nouvel abonnement. Les tournois publiés pendant que l'abonnement est
+                actif restent publiés après son expiration.
+              </p>
+            </section>
+          }
+          @case ('PENDING_PAYMENT') {
+            <section class="subscription-page__card">
+              <ap-badge status="unpublished" label="Paiement en attente" />
+              <p>
+                Une souscription est en cours de confirmation. Si le paiement a été abandonné,
+                vous pouvez relancer un nouveau paiement.
+              </p>
+              <ap-button type="button" [disabled]="subscribing()" (click)="subscribe()">
+                Relancer le paiement — 200&nbsp;€
+              </ap-button>
+            </section>
+          }
+          @case ('NONE') {
+            <section class="subscription-page__card">
+              <p>Aucun abonnement actif pour cette organisation.</p>
+              <ap-button type="button" [disabled]="subscribing()" (click)="subscribe()">
+                Souscrire — 200&nbsp;€ / an
+              </ap-button>
+            </section>
+          }
         }
       }
+
+      @if (isAdmin()) {
+        <section class="subscription-page__history">
+          <h2>Historique des paiements</h2>
+          @if (historyLoading()) {
+            <p>Chargement…</p>
+          } @else if (history().length === 0) {
+            <p class="subscription-page__note">Aucun paiement enregistré pour le moment.</p>
+          } @else {
+            <table class="subscription-page__table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Montant</th>
+                  <th>Statut</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (entry of history(); track entry.id) {
+                  <tr>
+                    <td>{{ formatDate(entry.paidAt ?? entry.createdAt) }}</td>
+                    <td>{{ formatAmount(entry.amountCents, entry.currency) }}</td>
+                    <td>
+                      @if (entry.status === 'ACTIVE') {
+                        <ap-badge status="published" label="Payé" />
+                      } @else {
+                        <ap-badge status="unpublished" label="En attente" />
+                      }
+                    </td>
+                    <td>
+                      @if (entry.status === 'ACTIVE') {
+                        <button
+                          type="button"
+                          class="subscription-page__print-btn"
+                          (click)="printReceipt(entry)"
+                        >
+                          Imprimer
+                        </button>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+        </section>
+      }
     }
+  </div>
+
+  @if (printingEntry(); as entry) {
+    <section class="subscription-page__print-only subscription-page__receipt">
+      <h1>Reçu — Abonnement annuel TournArena</h1>
+      <dl>
+        <dt>Organisation</dt>
+        <dd>{{ organization()?.name }}</dd>
+        <dt>Date de paiement</dt>
+        <dd>{{ formatDate(entry.paidAt ?? entry.createdAt) }}</dd>
+        <dt>Montant</dt>
+        <dd>{{ formatAmount(entry.amountCents, entry.currency) }}</dd>
+        <dt>Période couverte</dt>
+        <dd>{{ formatDate(entry.startsAt) }} — {{ formatDate(entry.expiresAt) }}</dd>
+      </dl>
+    </section>
   }
 </main>

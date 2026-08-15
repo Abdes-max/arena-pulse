@@ -21,6 +21,7 @@ type PrismaMock = {
   };
   organizationSubscription: {
     findFirst: jest.Mock;
+    findMany: jest.Mock;
     findUnique: jest.Mock;
     create: jest.Mock;
     update: jest.Mock;
@@ -39,6 +40,7 @@ function createPrismaMock(): PrismaMock {
     },
     organizationSubscription: {
       findFirst: jest.fn(),
+      findMany: jest.fn(),
       findUnique: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),
@@ -412,6 +414,41 @@ describe('OrganizationsService', () => {
       expect(await service.getSubscriptionStatus('org-1')).toEqual({
         status: 'NONE',
       });
+    });
+
+    it('listSubscriptionHistory scopes the query to the given organization and maps every row', async () => {
+      const paidAt = new Date('2026-08-01');
+      prisma.organizationSubscription.findMany.mockResolvedValue([
+        {
+          id: 'sub-1',
+          status: OrganizationSubscriptionStatus.ACTIVE,
+          amountCents: 20000,
+          currency: 'eur',
+          startsAt: paidAt,
+          expiresAt: new Date('2027-08-01'),
+          createdAt: paidAt,
+          paidAt,
+        },
+      ]);
+
+      const history = await service.listSubscriptionHistory('org-1');
+
+      expect(prisma.organizationSubscription.findMany).toHaveBeenCalledWith({
+        where: { organizationId: 'org-1' },
+        orderBy: { createdAt: 'desc' },
+      });
+      expect(history).toEqual([
+        {
+          id: 'sub-1',
+          status: OrganizationSubscriptionStatus.ACTIVE,
+          amountCents: 20000,
+          currency: 'eur',
+          startsAt: paidAt,
+          expiresAt: new Date('2027-08-01'),
+          createdAt: paidAt,
+          paidAt,
+        },
+      ]);
     });
   });
 });

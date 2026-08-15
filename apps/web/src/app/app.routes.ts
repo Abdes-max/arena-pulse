@@ -25,6 +25,11 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'verify-email/:token',
+    loadComponent: () =>
+      import('./admin/pages/verify-email/verify-email.page').then((m) => m.VerifyEmailPage),
+  },
+  {
     path: 'player/login',
     loadComponent: () =>
       import('./pages/player-auth/login/player-login.page').then((m) => m.PlayerLoginPage),

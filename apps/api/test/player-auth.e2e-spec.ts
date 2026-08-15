@@ -155,16 +155,28 @@ describe('Player auth (e2e)', () => {
       .expect(201);
     const playerToken = (playerRes.body as PlayerAuthResponseBody).accessToken;
 
-    const organizerRes = await request(app.getHttpServer())
+    const organizerEmail = 'organizer@example.com';
+    const organizerPassword = 'a-very-strong-password';
+    await request(app.getHttpServer())
       .post('/api/v1/auth/register')
       .send({
-        email: 'organizer@example.com',
-        password: 'a-very-strong-password',
+        email: organizerEmail,
+        password: organizerPassword,
         firstName: 'Ada',
         lastName: 'Lovelace',
         organizationName: 'Ada Tournaments',
       })
       .expect(201);
+    // register() no longer issues a session -- mark the test account
+    // verified directly in DB (bypassing the email link) and log in.
+    await prisma.user.update({
+      where: { email: organizerEmail },
+      data: { emailVerifiedAt: new Date() },
+    });
+    const organizerRes = await request(app.getHttpServer())
+      .post('/api/v1/auth/login')
+      .send({ email: organizerEmail, password: organizerPassword })
+      .expect(200);
     const organizerToken = (organizerRes.body as OrganizerAuthResponseBody)
       .accessToken;
 

@@ -12,6 +12,15 @@
     @if (errorMessage(); as message) {
       <p class="login-page__error" role="alert">{{ message }}</p>
     }
+    @if (needsVerification()) {
+      @if (resent()) {
+        <p class="login-page__hint">Email renvoyé.</p>
+      } @else {
+        <ap-button type="button" [disabled]="submitting()" (click)="resendVerification()">
+          Renvoyer l'email de vérification
+        </ap-button>
+      }
+    }
     <ap-button type="submit" [disabled]="submitting()">Se connecter</ap-button>
     <p class="login-page__footer">
       Pas encore de compte ? <a routerLink="/register">Créer une organisation</a>

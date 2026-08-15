@@ -58,18 +58,35 @@ describe('Public realtime updates (e2e)', () => {
   });
 
   it('streams a match-updated event when a score is entered', async () => {
-    const registerRes = await request(app.getHttpServer())
+    const email = 'organizer@example.com';
+    const password = 'a-very-strong-password';
+    await request(app.getHttpServer())
       .post('/api/v1/auth/register')
       .send({
-        email: 'organizer@example.com',
-        password: 'a-very-strong-password',
+        email,
+        password,
         firstName: 'Ada',
         lastName: 'Lovelace',
         organizationName: 'Ada Tournaments',
       })
       .expect(201);
-    const { accessToken, organization } = registerRes.body as AuthResponseBody;
-    const organizationId = organization!.id;
+    // register() no longer issues a session -- mark the test account
+    // verified directly in DB (bypassing the email link) and log in.
+    await prisma.user.update({
+      where: { email },
+      data: { emailVerifiedAt: new Date() },
+    });
+    const loginRes = await request(app.getHttpServer())
+      .post('/api/v1/auth/login')
+      .send({ email, password })
+      .expect(200);
+    const { accessToken } = loginRes.body as AuthResponseBody;
+    const meRes = await request(app.getHttpServer())
+      .get('/api/v1/auth/me')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(200);
+    const organizationId = (meRes.body as { organizations: { id: string }[] })
+      .organizations[0].id;
     const auth = (req: request.Test) =>
       req.set('Authorization', `Bearer ${accessToken}`);
     const base = `/api/v1/organizations/${organizationId}/tournaments`;

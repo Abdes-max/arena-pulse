@@ -1,10 +1,13 @@
-import { randomUUID } from 'node:crypto';
+import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   Logger,
+  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { OrganizationRole } from '../../generated/prisma/client';
 import { MailService } from '../mail/mail.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -12,6 +15,8 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { PasswordService } from './password.service';
 import { TokenService } from './token.service';
+
+const EMAIL_VERIFICATION_TTL_MS = 24 * 60 * 60 * 1000;
 
 export interface UserSummary {
   id: string;
@@ -36,14 +41,13 @@ export class AuthService {
     private readonly passwordService: PasswordService,
     private readonly tokenService: TokenService,
     private readonly mailService: MailService,
+    private readonly configService: ConfigService,
   ) {}
 
-  async register(dto: RegisterDto): Promise<
-    TokenPair & {
-      user: UserSummary;
-      organization: { id: string; name: string; role: OrganizationRole };
-    }
-  > {
+  async register(dto: RegisterDto): Promise<{
+    status: 'PENDING_EMAIL_VERIFICATION';
+    email: string;
+  }> {
     const existing = await this.prisma.user.findUnique({
       where: { email: dto.email },
     });
@@ -52,8 +56,9 @@ export class AuthService {
     }
 
     const passwordHash = await this.passwordService.hash(dto.password);
+    const verificationToken = randomBytes(32).toString('base64url');
 
-    const { user, organization, membership } = await this.prisma.$transaction(
+    const { user, organization } = await this.prisma.$transaction(
       async (tx) => {
         const createdUser = await tx.user.create({
           data: {
@@ -61,31 +66,41 @@ export class AuthService {
             passwordHash,
             firstName: dto.firstName,
             lastName: dto.lastName,
+            emailVerificationTokenHash: this.hashToken(verificationToken),
+            emailVerificationExpiresAt: new Date(
+              Date.now() + EMAIL_VERIFICATION_TTL_MS,
+            ),
           },
         });
         const createdOrganization = await tx.organization.create({
           data: { name: dto.organizationName },
         });
-        const createdMembership = await tx.organizationMember.create({
+        await tx.organizationMember.create({
           data: {
             organizationId: createdOrganization.id,
             userId: createdUser.id,
             role: OrganizationRole.ORG_ADMIN,
           },
         });
-        return {
-          user: createdUser,
-          organization: createdOrganization,
-          membership: createdMembership,
-        };
+        return { user: createdUser, organization: createdOrganization };
       },
     );
 
-    const tokens = await this.issueTokenPair(user.id, user.email, randomUUID());
-
     // Best-effort, non-blocking (same rationale as InvitationsService.
     // invite's mail try/catch): the account is already created regardless
-    // of whether the welcome email makes it out.
+    // of whether the email makes it out -- resendVerificationEmail() covers
+    // the case where it doesn't.
+    try {
+      await this.mailService.sendEmailVerificationEmail(
+        user.email,
+        user.firstName,
+        this.buildVerifyEmailUrl(verificationToken),
+      );
+    } catch (error) {
+      this.logger.warn(
+        `Failed to send verification email to ${user.email}: ${(error as Error).message}`,
+      );
+    }
     try {
       await this.mailService.sendAccountCreatedEmail(
         user.email,
@@ -98,15 +113,10 @@ export class AuthService {
       );
     }
 
-    return {
-      ...tokens,
-      user: this.toUserSummary(user),
-      organization: {
-        id: organization.id,
-        name: organization.name,
-        role: membership.role,
-      },
-    };
+    // No session issued here -- register() no longer logs the account in.
+    // The account only becomes usable once verifyEmail() confirms the
+    // address, which is where issueTokenPair() actually happens.
+    return { status: 'PENDING_EMAIL_VERIFICATION', email: user.email };
   }
 
   async login(dto: LoginDto): Promise<TokenPair & { user: UserSummary }> {
@@ -119,9 +129,85 @@ export class AuthService {
     ) {
       throw new UnauthorizedException('Identifiants invalides.');
     }
+    if (!user.emailVerifiedAt) {
+      throw new ForbiddenException(
+        'Vérifiez votre email avant de vous connecter.',
+      );
+    }
 
     const tokens = await this.issueTokenPair(user.id, user.email, randomUUID());
     return { ...tokens, user: this.toUserSummary(user) };
+  }
+
+  /** Consumes a verification token (single use, same pattern as InvitationsService's tokenHash) and logs the now-verified account in directly -- avoids an extra login round-trip right after confirming. */
+  async verifyEmail(token: string): Promise<TokenPair & { user: UserSummary }> {
+    const user = await this.prisma.user.findUnique({
+      where: { emailVerificationTokenHash: this.hashToken(token) },
+    });
+    if (!user) {
+      throw new NotFoundException(
+        'Lien de vérification invalide ou déjà utilisé.',
+      );
+    }
+    if (
+      !user.emailVerificationExpiresAt ||
+      user.emailVerificationExpiresAt < new Date()
+    ) {
+      throw new NotFoundException('Lien de vérification expiré.');
+    }
+
+    const verifiedUser = await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        emailVerifiedAt: new Date(),
+        emailVerificationTokenHash: null,
+        emailVerificationExpiresAt: null,
+      },
+    });
+
+    const tokens = await this.issueTokenPair(
+      verifiedUser.id,
+      verifiedUser.email,
+      randomUUID(),
+    );
+    return { ...tokens, user: this.toUserSummary(verifiedUser) };
+  }
+
+  /**
+   * Always responds the same way whether or not the account exists (avoids
+   * leaking which emails are registered) -- same posture as most "forgot
+   * password"-style endpoints. Silently no-ops for an already-verified
+   * account instead of erroring, since re-requesting a link for a verified
+   * account isn't a meaningful error state for the caller.
+   */
+  async resendVerificationEmail(email: string): Promise<void> {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user || user.emailVerifiedAt) {
+      return;
+    }
+
+    const verificationToken = randomBytes(32).toString('base64url');
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        emailVerificationTokenHash: this.hashToken(verificationToken),
+        emailVerificationExpiresAt: new Date(
+          Date.now() + EMAIL_VERIFICATION_TTL_MS,
+        ),
+      },
+    });
+
+    try {
+      await this.mailService.sendEmailVerificationEmail(
+        user.email,
+        user.firstName,
+        this.buildVerifyEmailUrl(verificationToken),
+      );
+    } catch (error) {
+      this.logger.warn(
+        `Failed to send verification email to ${user.email}: ${(error as Error).message}`,
+      );
+    }
   }
 
   async refresh(presentedToken: string): Promise<TokenPair> {
@@ -227,6 +313,18 @@ export class AuthService {
       refreshToken: issued.token,
       refreshTokenExpiresAt: issued.expiresAt,
     };
+  }
+
+  private hashToken(token: string): string {
+    return createHash('sha256').update(token).digest('hex');
+  }
+
+  private buildVerifyEmailUrl(token: string): string {
+    const adminWebUrl = this.configService.get<string>(
+      'ADMIN_WEB_URL',
+      'http://localhost:4300',
+    );
+    return `${adminWebUrl}/verify-email/${token}`;
   }
 
   private toUserSummary(user: {

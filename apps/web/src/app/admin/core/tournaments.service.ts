@@ -6,6 +6,7 @@ import {
   Category,
   Division,
   Field,
+  PublicationOrder,
   PublicTheme,
   Tournament,
   TournamentAdministrator,
@@ -87,6 +88,17 @@ export class TournamentsService {
       this.http.post<PublishTournamentResult>(
         `${this.base(organizationId)}/${tournamentId}/publish`,
         {},
+      ),
+    );
+  }
+
+  listPublicationOrders(
+    organizationId: string,
+    tournamentId: string,
+  ): Promise<PublicationOrder[]> {
+    return firstValueFrom(
+      this.http.get<PublicationOrder[]>(
+        `${this.base(organizationId)}/${tournamentId}/publication-orders`,
       ),
     );
   }

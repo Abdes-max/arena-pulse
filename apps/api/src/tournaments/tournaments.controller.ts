@@ -62,6 +62,18 @@ export class TournamentsController {
     return this.tournamentsService.update(organizationId, tournamentId, dto);
   }
 
+  @RequireOrgRole(OrganizationRole.ORG_MEMBER)
+  @Get(':tournamentId/publication-orders')
+  listPublicationOrders(
+    @Param('organizationId') organizationId: string,
+    @Param('tournamentId') tournamentId: string,
+  ) {
+    return this.tournamentsService.listPublicationOrders(
+      organizationId,
+      tournamentId,
+    );
+  }
+
   @RequireOrgRole(OrganizationRole.ORG_ADMIN)
   @HttpCode(HttpStatus.OK)
   @Post(':tournamentId/publish')

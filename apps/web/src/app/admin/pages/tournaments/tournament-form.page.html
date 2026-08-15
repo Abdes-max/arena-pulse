@@ -2,6 +2,7 @@
   @if (loading()) {
     <p>Chargement…</p>
   } @else {
+    <div class="tournament-form-page__no-print">
     @if (errorMessage(); as message) {
       <p class="tournament-form-page__error" role="alert">{{ message }}</p>
     }
@@ -23,6 +24,56 @@
         }
         <ap-button type="button" variant="ghost" (click)="duplicate()">Dupliquer</ap-button>
       </div>
+    }
+
+    @if (isEditMode()) {
+      <section class="tournament-form-page__section">
+        <h2>Paiement de publication</h2>
+        @if (publicationOrdersLoading()) {
+          <p>Chargement…</p>
+        } @else if (publicationOrders().length === 0) {
+          <p class="tournament-form-page__note">Ce tournoi n'a jamais été publié.</p>
+        } @else {
+          <table class="tournament-form-page__table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Équipes</th>
+                <th>Montant</th>
+                <th>Statut</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (order of publicationOrders(); track order.id) {
+                <tr>
+                  <td>{{ formatDate(order.paidAt ?? order.createdAt) }}</td>
+                  <td>{{ order.teamsCount }}</td>
+                  <td>{{ formatAmount(order.amountCents, order.currency) }}</td>
+                  <td>
+                    @if (order.status === 'PAID') {
+                      <ap-badge status="published" label="Payé" />
+                    } @else {
+                      <ap-badge status="unpublished" label="En attente" />
+                    }
+                  </td>
+                  <td>
+                    @if (order.status === 'PAID') {
+                      <button
+                        type="button"
+                        class="tournament-form-page__print-btn"
+                        (click)="printReceipt(order)"
+                      >
+                        Imprimer
+                      </button>
+                    }
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      </section>
     }
 
     <form class="tournament-form-page__form" [formGroup]="form" (ngSubmit)="submit()">
@@ -202,6 +253,23 @@
             >Ajouter comme administrateur</ap-button
           >
         </div>
+      </section>
+    }
+    </div>
+
+    @if (printingOrder(); as order) {
+      <section class="tournament-form-page__print-only tournament-form-page__receipt">
+        <h1>Reçu — Publication de tournoi TournArena</h1>
+        <dl>
+          <dt>Tournoi</dt>
+          <dd>{{ tournament()?.name }}</dd>
+          <dt>Date de paiement</dt>
+          <dd>{{ formatDate(order.paidAt ?? order.createdAt) }}</dd>
+          <dt>Équipes concernées</dt>
+          <dd>{{ order.teamsCount }}</dd>
+          <dt>Montant</dt>
+          <dd>{{ formatAmount(order.amountCents, order.currency) }}</dd>
+        </dl>
       </section>
     }
   }

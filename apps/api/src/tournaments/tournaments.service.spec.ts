@@ -30,6 +30,7 @@ type PrismaMock = {
   tournamentAdministratorPermission: { create: jest.Mock };
   tournamentPublicationOrder: {
     findFirst: jest.Mock;
+    findMany: jest.Mock;
     findUnique: jest.Mock;
     create: jest.Mock;
     update: jest.Mock;
@@ -53,6 +54,7 @@ function createPrismaMock(): PrismaMock {
     tournamentAdministratorPermission: { create: jest.fn() },
     tournamentPublicationOrder: {
       findFirst: jest.fn(),
+      findMany: jest.fn(),
       findUnique: jest.fn(),
       create: jest.fn(),
       update: jest.fn(),
@@ -198,6 +200,58 @@ describe('TournamentsService', () => {
       await expect(
         service.getDetail('org-1', 'tournament-1'),
       ).rejects.toBeInstanceOf(NotFoundException);
+    });
+  });
+
+  describe('listPublicationOrders', () => {
+    it('rejects a tournament belonging to another organization', async () => {
+      prisma.tournament.findUnique.mockResolvedValue(
+        tournamentFixture({ organizationId: 'org-2' }),
+      );
+
+      await expect(
+        service.listPublicationOrders('org-1', 'tournament-1'),
+      ).rejects.toBeInstanceOf(NotFoundException);
+      expect(prisma.tournamentPublicationOrder.findMany).not.toHaveBeenCalled();
+    });
+
+    it('lists every order for the tournament, most recent first', async () => {
+      prisma.tournament.findUnique.mockResolvedValue(tournamentFixture());
+      const paidAt = new Date('2026-08-01');
+      prisma.tournamentPublicationOrder.findMany.mockResolvedValue([
+        {
+          id: 'order-1',
+          status: TournamentPublicationOrderStatus.PAID,
+          categoriesCount: 2,
+          teamsCount: 10,
+          amountCents: 2500,
+          currency: 'eur',
+          createdAt: paidAt,
+          paidAt,
+        },
+      ]);
+
+      const orders = await service.listPublicationOrders(
+        'org-1',
+        'tournament-1',
+      );
+
+      expect(prisma.tournamentPublicationOrder.findMany).toHaveBeenCalledWith({
+        where: { tournamentId: 'tournament-1' },
+        orderBy: { createdAt: 'desc' },
+      });
+      expect(orders).toEqual([
+        {
+          id: 'order-1',
+          status: TournamentPublicationOrderStatus.PAID,
+          categoriesCount: 2,
+          teamsCount: 10,
+          amountCents: 2500,
+          currency: 'eur',
+          createdAt: paidAt,
+          paidAt,
+        },
+      ]);
     });
   });
 

@@ -12,6 +12,11 @@ export interface RegisterPayload {
   organizationName: string;
 }
 
+export interface RegisterResponse {
+  status: 'PENDING_EMAIL_VERIFICATION';
+  email: string;
+}
+
 interface TokenResponse {
   accessToken: string;
   expiresIn: number;
@@ -33,14 +38,32 @@ export class AuthService {
     return this.accessToken();
   }
 
-  async register(payload: RegisterPayload): Promise<void> {
+  /** No session is issued anymore -- the account stays unusable until the emailed link is clicked (see verifyEmail below). */
+  async register(payload: RegisterPayload): Promise<RegisterResponse> {
+    return firstValueFrom(
+      this.http.post<RegisterResponse>(`${environment.apiUrl}/auth/register`, payload),
+    );
+  }
+
+  /** Consumes the token from the verification email and logs the now-verified account in directly. */
+  async verifyEmail(token: string): Promise<void> {
     const response = await firstValueFrom(
-      this.http.post<TokenResponse>(`${environment.apiUrl}/auth/register`, payload, {
-        withCredentials: true,
-      }),
+      this.http.post<TokenResponse>(
+        `${environment.apiUrl}/auth/verify-email/${token}`,
+        {},
+        { withCredentials: true },
+      ),
     );
     this.accessToken.set(response.accessToken);
     await this.loadProfile();
+  }
+
+  /** Always resolves the same way whether or not the account exists or is already verified -- mirrors the backend's no-leak posture. */
+  async resendVerification(email: string): Promise<void> {
+    await firstValueFrom(
+      // Reuses the login endpoint's body shape purely for its `email` field -- password is ignored server-side.
+      this.http.post<void>(`${environment.apiUrl}/auth/resend-verification`, { email, password: '' }),
+    );
   }
 
   async login(email: string, password: string): Promise<void> {
