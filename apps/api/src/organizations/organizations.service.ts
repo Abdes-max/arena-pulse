@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   Logger,
   NotFoundException,
@@ -114,6 +115,26 @@ export class OrganizationsService {
   }
 
   /**
+   * A super admin can suspend an organization (see SuperAdminOrganizationsService)
+   * to block it from publishing/subscribing without touching its data or
+   * blocking member login -- called at the top of both money-moving entry
+   * points (this service's subscribe() and TournamentsService.publish()).
+   */
+  async assertNotSuspended(organizationId: string): Promise<void> {
+    const organization = await this.prisma.organization.findUnique({
+      where: { id: organizationId },
+    });
+    if (!organization) {
+      throw new NotFoundException('Organisation introuvable.');
+    }
+    if (organization.suspendedAt) {
+      throw new ForbiddenException(
+        'Cette organisation est suspendue, contactez le support.',
+      );
+    }
+  }
+
+  /**
    * Alternative to paying per publication (TournamentsService.publish()):
    * one active subscription per organization covers every tournament it
    * publishes for a year, regardless of team count/tier -- see
@@ -187,6 +208,7 @@ export class OrganizationsService {
    * stacking/extending, keeping "one active row at a time" simple.
    */
   async subscribe(organizationId: string) {
+    await this.assertNotSuspended(organizationId);
     if (await this.hasActiveSubscription(organizationId)) {
       throw new ConflictException(
         'Cette organisation a déjà un abonnement annuel actif.',

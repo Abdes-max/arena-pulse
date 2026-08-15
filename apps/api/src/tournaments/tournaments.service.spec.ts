@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -99,6 +100,7 @@ function createOrganizationsServiceMock() {
   return {
     hasActiveSubscription: jest.fn().mockResolvedValue(false),
     getAdminEmails: jest.fn().mockResolvedValue([]),
+    assertNotSuspended: jest.fn().mockResolvedValue(undefined),
   };
 }
 
@@ -264,6 +266,19 @@ describe('TournamentsService', () => {
       await expect(
         service.publish('org-1', 'tournament-1'),
       ).rejects.toBeInstanceOf(ConflictException);
+    });
+
+    it('rejects publishing for a suspended organization, before even loading the tournament', async () => {
+      organizationsService.assertNotSuspended.mockRejectedValue(
+        new ForbiddenException(
+          'Cette organisation est suspendue, contactez le support.',
+        ),
+      );
+
+      await expect(
+        service.publish('org-1', 'tournament-1'),
+      ).rejects.toBeInstanceOf(ForbiddenException);
+      expect(prisma.tournament.findUnique).not.toHaveBeenCalled();
     });
 
     it('publishes for free and records a PAID order when the computed fee is 0', async () => {

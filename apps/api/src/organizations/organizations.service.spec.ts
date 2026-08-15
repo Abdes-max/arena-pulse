@@ -1,4 +1,8 @@
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type Stripe from 'stripe';
 import {
@@ -98,6 +102,12 @@ describe('OrganizationsService', () => {
     prisma = createPrismaMock();
     stripeService = createStripeServiceMock();
     mailService = createMailServiceMock();
+    // Default: not suspended -- assertNotSuspended() (called at the top of
+    // subscribe()) reads this for every test unless overridden.
+    prisma.organization.findUnique.mockResolvedValue({
+      id: 'org-1',
+      suspendedAt: null,
+    });
     service = new OrganizationsService(
       prisma as unknown as PrismaService,
       stripeService as unknown as StripeService,
@@ -200,6 +210,38 @@ describe('OrganizationsService', () => {
     });
   });
 
+  describe('assertNotSuspended', () => {
+    it('rejects a suspended organization and passes through an active one', async () => {
+      prisma.organization.findUnique.mockResolvedValueOnce({
+        id: 'org-1',
+        suspendedAt: new Date('2026-08-15'),
+      });
+      await expect(service.assertNotSuspended('org-1')).rejects.toBeInstanceOf(
+        ForbiddenException,
+      );
+
+      prisma.organization.findUnique.mockResolvedValueOnce({
+        id: 'org-1',
+        suspendedAt: null,
+      });
+      await expect(
+        service.assertNotSuspended('org-1'),
+      ).resolves.toBeUndefined();
+    });
+
+    it('subscribe() rejects for a suspended organization before checking for an existing subscription', async () => {
+      prisma.organization.findUnique.mockResolvedValue({
+        id: 'org-1',
+        suspendedAt: new Date('2026-08-15'),
+      });
+
+      await expect(service.subscribe('org-1')).rejects.toBeInstanceOf(
+        ForbiddenException,
+      );
+      expect(prisma.organizationSubscription.findFirst).not.toHaveBeenCalled();
+    });
+  });
+
   describe('annual subscription', () => {
     it('hasActiveSubscription is false with no row and true with an unexpired ACTIVE row', async () => {
       prisma.organizationSubscription.findFirst.mockResolvedValueOnce(null);
@@ -283,6 +325,11 @@ describe('OrganizationsService', () => {
         currency: 'eur',
         expiresAt: new Date('2027-08-14'),
       });
+      // Not asserted on here (see the next test for that) -- just needs to
+      // not throw now that the beforeEach default makes
+      // sendSubscriptionReceipt's organization.findUnique() succeed and
+      // fall through to getAdminEmails().
+      prisma.organizationMember.findMany.mockResolvedValue([]);
 
       await service.handleSubscriptionStripeEvent(
         checkoutCompletedEvent('cs_test_subscription_123'),

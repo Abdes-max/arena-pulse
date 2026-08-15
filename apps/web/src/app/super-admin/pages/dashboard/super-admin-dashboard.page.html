@@ -1,0 +1,46 @@
+<main class="super-admin-dashboard-page">
+  <h1>Tableau de bord</h1>
+
+  @if (loading()) {
+    <p>Chargement…</p>
+  } @else if (errorMessage(); as message) {
+    <p class="super-admin-dashboard-page__error" role="alert">{{ message }}</p>
+  } @else if (stats(); as s) {
+    <div class="super-admin-dashboard-page__grid">
+      <section class="super-admin-dashboard-page__card">
+        <span class="super-admin-dashboard-page__label">Comptes organisateurs</span>
+        <span class="super-admin-dashboard-page__value">{{ s.totalUsers }}</span>
+      </section>
+      <section class="super-admin-dashboard-page__card">
+        <span class="super-admin-dashboard-page__label">Organisations</span>
+        <span class="super-admin-dashboard-page__value">{{ s.totalOrganizations }}</span>
+      </section>
+      <section class="super-admin-dashboard-page__card">
+        <span class="super-admin-dashboard-page__label">Abonnements actifs</span>
+        <span class="super-admin-dashboard-page__value">{{ s.activeSubscriptions }}</span>
+      </section>
+      <section class="super-admin-dashboard-page__card">
+        <span class="super-admin-dashboard-page__label">Matchs joués</span>
+        <span class="super-admin-dashboard-page__value">{{ s.matchesPlayed }}</span>
+      </section>
+      <section class="super-admin-dashboard-page__card super-admin-dashboard-page__card--wide">
+        <span class="super-admin-dashboard-page__label">Revenu total collecté</span>
+        <span class="super-admin-dashboard-page__value">{{ formatAmount(s.revenueCents) }}</span>
+      </section>
+    </div>
+
+    <section class="super-admin-dashboard-page__section">
+      <h2>Tournois par statut</h2>
+      <dl class="super-admin-dashboard-page__status-list">
+        <dt>Brouillon</dt>
+        <dd>{{ s.tournamentsByStatus.DRAFT }}</dd>
+        <dt>Publié</dt>
+        <dd>{{ s.tournamentsByStatus.PUBLISHED }}</dd>
+        <dt>Dépublié</dt>
+        <dd>{{ s.tournamentsByStatus.UNPUBLISHED }}</dd>
+        <dt>Archivé</dt>
+        <dd>{{ s.tournamentsByStatus.ARCHIVED }}</dd>
+      </dl>
+    </section>
+  }
+</main>

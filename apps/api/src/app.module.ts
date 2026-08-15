@@ -17,6 +17,8 @@ import { PlayerAuthModule } from './player-auth/player-auth.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { RegistrationsModule } from './registrations/registrations.module';
 import { SportsModule } from './sports/sports.module';
+import { SuperAdminModule } from './super-admin/super-admin.module';
+import { SuperAdminAuthModule } from './super-admin-auth/super-admin-auth.module';
 import { TournamentsModule } from './tournaments/tournaments.module';
 
 @Module({
@@ -36,6 +38,8 @@ import { TournamentsModule } from './tournaments/tournaments.module';
     PrismaModule,
     AuthModule,
     PlayerAuthModule,
+    SuperAdminAuthModule,
+    SuperAdminModule,
     MailModule,
     OrganizationsModule,
     SportsModule,

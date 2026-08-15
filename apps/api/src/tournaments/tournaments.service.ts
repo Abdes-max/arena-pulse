@@ -141,6 +141,7 @@ export class TournamentsService {
    * uniform history/audit trail).
    */
   async publish(organizationId: string, tournamentId: string) {
+    await this.organizationsService.assertNotSuspended(organizationId);
     const tournament = await this.getOrThrow(organizationId, tournamentId);
     this.assertEditable(tournament);
     if (tournament.status === TournamentStatus.PUBLISHED) {

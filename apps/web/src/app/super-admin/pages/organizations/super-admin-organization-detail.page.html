@@ -1,0 +1,53 @@
+<main class="super-admin-organization-detail-page">
+  <p><a routerLink="/super-admin/organizations">← Organisations</a></p>
+
+  @if (loading()) {
+    <p>Chargement…</p>
+  } @else if (errorMessage(); as message) {
+    <p class="super-admin-organization-detail-page__error" role="alert">{{ message }}</p>
+  } @else if (organization(); as org) {
+    <div class="super-admin-organization-detail-page__header">
+      <h1>{{ org.name }}</h1>
+      @if (org.suspendedAt) {
+        <ap-badge status="cancelled" label="Suspendue" />
+        <ap-button type="button" variant="ghost" [disabled]="toggling()" (click)="reactivate()">
+          Réactiver
+        </ap-button>
+      } @else {
+        <ap-badge status="published" label="Active" />
+        <ap-button type="button" variant="ghost" [disabled]="toggling()" (click)="suspend()">
+          Suspendre
+        </ap-button>
+      }
+    </div>
+
+    <section class="super-admin-organization-detail-page__section">
+      <h2>Membres</h2>
+      <ul class="super-admin-organization-detail-page__list">
+        @for (member of org.members; track member.id) {
+          <li>
+            {{ member.firstName }} {{ member.lastName }} ({{ member.email }}) — {{ member.role }}
+          </li>
+        }
+      </ul>
+    </section>
+
+    <section class="super-admin-organization-detail-page__section">
+      <h2>Tournois</h2>
+      @if (org.tournaments.length === 0) {
+        <p>Aucun tournoi.</p>
+      } @else {
+        <ul class="super-admin-organization-detail-page__list">
+          @for (tournament of org.tournaments; track tournament.id) {
+            <li>
+              <a [routerLink]="['/super-admin/tournaments', tournament.id]">{{
+                tournament.name
+              }}</a>
+              — {{ tournament.sportName }} — {{ tournament.status }}
+            </li>
+          }
+        </ul>
+      }
+    </section>
+  }
+</main>

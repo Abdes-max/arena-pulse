@@ -1,0 +1,26 @@
+<div class="super-admin-shell">
+  <header class="super-admin-shell__header">
+    <ap-logo />
+    <nav class="super-admin-shell__nav">
+      <a routerLink="/super-admin/dashboard" routerLinkActive="super-admin-shell__link--active"
+        >Tableau de bord</a
+      >
+      <a routerLink="/super-admin/organizations" routerLinkActive="super-admin-shell__link--active"
+        >Organisations</a
+      >
+      <a routerLink="/super-admin/users" routerLinkActive="super-admin-shell__link--active"
+        >Comptes</a
+      >
+      <a routerLink="/super-admin/tournaments" routerLinkActive="super-admin-shell__link--active"
+        >Tournois</a
+      >
+      <a routerLink="/super-admin/payments" routerLinkActive="super-admin-shell__link--active"
+        >Paiements</a
+      >
+    </nav>
+    <ap-button type="button" variant="ghost" (click)="logout()">Se déconnecter</ap-button>
+  </header>
+  <main class="super-admin-shell__content">
+    <router-outlet />
+  </main>
+</div>
