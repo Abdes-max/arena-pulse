@@ -346,16 +346,35 @@ async function main() {
   const email = `worldcup2026-${stamp}@example.com`;
   const password = 'a-very-strong-password';
 
+  const organizationName = `FIFA Demo ${stamp}`;
   console.log(`Registering organization (${email})…`);
-  const register: any = await api('POST', '/auth/register', null, {
+  await api('POST', '/auth/register', null, {
     email,
     password,
-    organizationName: `FIFA Demo ${stamp}`,
+    organizationName,
     firstName: 'Demo',
     lastName: 'FIFA',
   });
-  const token = register.accessToken;
-  const orgId = register.organization.id;
+
+  // Accounts are no longer auto-logged-in on register() (mandatory email
+  // verification, see docs/product/pull-request-plan.md's feat/095 entry).
+  // This script already has a raw Prisma connection (see the round-of-32
+  // write below) -- reused here to mark the account verified directly,
+  // rather than adding a Mailhog dependency for a one-off local seed run.
+  console.log('Marking the seed account verified…');
+  const authPrisma = new PrismaClient({
+    adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
+  });
+  try {
+    await authPrisma.user.update({ where: { email }, data: { emailVerifiedAt: new Date() } });
+  } finally {
+    await authPrisma.$disconnect();
+  }
+
+  const login: any = await api('POST', '/auth/login', null, { email, password });
+  const token = login.accessToken;
+  const me: any = await api('GET', '/auth/me', token);
+  const orgId = me.organizations[0].id;
 
   const sports: any[] = await api('GET', '/sports', token);
   const football = sports.find((s) => s.name === 'Football');
@@ -491,7 +510,7 @@ async function main() {
   await api('POST', `/organizations/${orgId}/tournaments/${tournamentId}/publish`, token);
 
   console.log('\n=== Coupe du Monde FIFA 2026 créée ===');
-  console.log(`Organisation : ${register.organization.name} (login : ${email} / ${password})`);
+  console.log(`Organisation : ${organizationName} (login : ${email} / ${password})`);
   console.log(`Slug     : ${tournament.slug}`);
   console.log(`Public   : http://localhost:4200/${tournament.slug}`);
   console.log(`Admin    : http://localhost:4200/admin/tournaments/${tournament.id}`);
