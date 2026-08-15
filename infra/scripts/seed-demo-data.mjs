@@ -10,6 +10,7 @@
 // Env:   API_URL (default http://localhost:3000/api/v1)
 
 const API = process.env.API_URL ?? 'http://localhost:3000/api/v1';
+const MAILHOG = process.env.MAILHOG_URL ?? 'http://localhost:8025';
 
 async function api(method, path, token, body) {
   const res = await fetch(`${API}${path}`, {
@@ -25,6 +26,32 @@ async function api(method, path, token, body) {
     throw new Error(`${method} ${path} -> ${res.status}: ${text}`);
   }
   return res.status === 204 ? null : res.json();
+}
+
+/**
+ * Accounts are no longer auto-logged-in on register() (mandatory email
+ * verification, see docs/product/pull-request-plan.md's feat/095 entry) --
+ * pulls the verification link straight from Mailhog, exactly like a real
+ * user clicking the emailed link, instead of talking to the database
+ * directly (this script only ever speaks HTTP to the API).
+ */
+async function getVerificationToken(email, attempts = 20, delayMs = 300) {
+  for (let i = 0; i < attempts; i++) {
+    const res = await fetch(`${MAILHOG}/api/v2/search?kind=to&query=${encodeURIComponent(email)}`);
+    const data = await res.json();
+    const item = (data.items ?? []).find((candidate) =>
+      (candidate.Content?.Headers?.Subject ?? []).some((subject) => subject.includes('rifiez')),
+    );
+    if (item) {
+      const body = item.Content.Body.replace(/=\r?\n/g, '').replace(/=3D/g, '=');
+      const match = body.match(/href="([^"]*\/verify-email\/[^"]*)"/);
+      if (match) {
+        return match[1].split('/verify-email/')[1];
+      }
+    }
+    await new Promise((resolve) => setTimeout(resolve, delayMs));
+  }
+  throw new Error(`Aucun email de vérification reçu pour ${email} dans Mailhog (${MAILHOG}).`);
 }
 
 /** Deterministic, plausible-looking score for a given sport family. */
@@ -300,16 +327,22 @@ async function main() {
   const email = `demo-${stamp}@example.com`;
   const password = 'a-very-strong-password';
 
+  const organizationName = `Demo Data ${stamp}`;
   console.log(`Registering demo organization (${email})…`);
-  const register = await api('POST', '/auth/register', null, {
+  await api('POST', '/auth/register', null, {
     email,
     password,
-    organizationName: `Demo Data ${stamp}`,
+    organizationName,
     firstName: 'Demo',
     lastName: 'Data',
   });
-  const token = register.accessToken;
-  const orgId = register.organization.id;
+
+  console.log('Verifying email via Mailhog…');
+  const verifyToken = await getVerificationToken(email);
+  const verify = await api('POST', `/auth/verify-email/${verifyToken}`, null, {});
+  const token = verify.accessToken;
+  const me = await api('GET', '/auth/me', token);
+  const orgId = me.organizations[0].id;
 
   const sports = await api('GET', '/sports', token);
   const sportId = (name) => {
@@ -526,7 +559,7 @@ async function main() {
   }
 
   console.log('\n=== Jeu de données créé ===');
-  console.log(`Organisation : ${register.organization.name} (login : ${email} / ${password})\n`);
+  console.log(`Organisation : ${organizationName} (login : ${email} / ${password})\n`);
   for (const r of results) {
     console.log(`- ${r.tournament.name} [${r.sportName} · ${r.theme}]`);
     console.log(`    Format   : ${r.format}`);

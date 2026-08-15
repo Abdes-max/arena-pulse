@@ -8,10 +8,22 @@ Comptes organisateurs actuellement valides dans la base Postgres locale
 entièrement la base dev à chaque exécution. Voir « Lancer les e2e sans
 perdre les données » ci-dessous pour sauvegarder/restaurer autour d'un run.
 
-| Email                              | Mot de passe             | Organisation                | Rôle / usage                                                                                                                                                                                                                                                                                                                                                       |
-| ----------------------------------- | ------------------------ | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `demo-1786664015995@example.com`   | `a-very-strong-password` | Demo Data 1786664015995      | Créé via `node infra/scripts/seed-demo-data.mjs` (2026-08-14) — 6 tournois publiés couvrant sports/thèmes/formats différents (Football élimination directe, Basketball championnat poule unique, Handball poules+finale, Volleyball poules seules, Tennis tableau de 16, Rugby multi-catégories). Voir la sortie du script pour les slugs/URLs exacts par tournoi. |
-| `demo-1786715828182@example.com`   | `a-very-strong-password` | Demo Data 1786664015995      | Créé via `node infra/scripts/seed-demo-data.mjs` (2026-08-14) — 6 tournois publiés couvrant sports/thèmes/formats différents (Football élimination directe, Basketball championnat poule unique, Handball poules+finale, Volleyball poules seules, Tennis tableau de 16, Rugby multi-catégories). Voir la sortie du script pour les slugs/URLs exacts par tournoi. |
+**Vérification d'email obligatoire (depuis feat/095, 2026-08-15)** : un
+compte créé via l'UI ou `POST /auth/register` n'est plus utilisable tant
+que le lien reçu par email n'a pas été cliqué (voir Mailhog,
+`http://localhost:8025`). Les comptes déjà en base au moment de la
+migration ont été marqués vérifiés rétroactivement, donc tous les comptes
+listés ci-dessous restent utilisables tels quels. `seed-demo-data.mjs` et
+`seed-world-cup-2026.ts` ont été adaptés en conséquence (le premier
+récupère le lien de vérification depuis Mailhog, le second — qui a déjà
+une connexion Prisma directe pour écrire le tableau final — marque le
+compte vérifié en base).
+
+| Email                            | Mot de passe             | Organisation             | Rôle / usage                                                                                                                                                                                                                                                                                                                                                       |
+| --------------------------------- | ------------------------ | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `demo-1786664015995@example.com` | `a-very-strong-password` | Demo Data 1786664015995    | Créé via `node infra/scripts/seed-demo-data.mjs` (2026-08-14) — 6 tournois publiés couvrant sports/thèmes/formats différents (Football élimination directe, Basketball championnat poule unique, Handball poules+finale, Volleyball poules seules, Tennis tableau de 16, Rugby multi-catégories). Voir la sortie du script pour les slugs/URLs exacts par tournoi. |
+| `demo-1786715828182@example.com` | `a-very-strong-password` | Demo Data 1786664015995    | Créé via `node infra/scripts/seed-demo-data.mjs` (2026-08-14) — 6 tournois publiés couvrant sports/thèmes/formats différents (Football élimination directe, Basketball championnat poule unique, Handball poules+finale, Volleyball poules seules, Tennis tableau de 16, Rugby multi-catégories). Voir la sortie du script pour les slugs/URLs exacts par tournoi. |
+| `demo-1786818178517@example.com` | `a-very-strong-password` | Demo Data 1786818178517    | Créé via `node infra/scripts/seed-demo-data.mjs` (2026-08-15), en vérification du correctif ci-dessus — mêmes 6 tournois que les comptes demo précédents.                                                                                                                                                                                                        |
 
 ## Lancer les e2e sans perdre les données
 
