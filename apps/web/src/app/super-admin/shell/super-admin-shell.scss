@@ -6,11 +6,18 @@
 }
 
 .super-admin-shell__header {
+  position: sticky;
+  top: 0;
+  z-index: var(--ap-z-sticky);
+  background: var(--ap-color-surface);
+  border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+}
+
+.super-admin-shell__topbar {
   display: flex;
   align-items: center;
   gap: var(--ap-space-6);
   padding: var(--ap-space-3) var(--ap-space-6);
-  border-bottom: var(--ap-border-width) solid var(--ap-color-border);
 }
 
 .super-admin-shell__nav {
@@ -35,6 +42,68 @@
 .super-admin-shell__link--active {
   color: var(--ap-color-fg) !important;
   border-bottom: 2px solid var(--ap-color-primary);
+}
+
+// Hidden by default (desktop) -- shown only under the mobile breakpoint
+// below, top-right of the topbar. Same pattern as admin/shell/app-shell's
+// own hamburger toggle.
+.super-admin-shell__nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  background: transparent;
+  color: var(--ap-color-fg);
+  cursor: pointer;
+
+  svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+  }
+}
+
+.super-admin-shell__mobile-menu {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .super-admin-shell__nav,
+  .super-admin-shell__logout {
+    display: none;
+  }
+
+  .super-admin-shell__nav-toggle {
+    display: inline-flex;
+  }
+
+  .super-admin-shell__mobile-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--ap-space-1);
+    padding: 0 var(--ap-space-6) var(--ap-space-4);
+  }
+
+  .super-admin-shell__mobile-menu-link {
+    padding: var(--ap-space-2) 0;
+    color: var(--ap-color-fg);
+    font-family: var(--ap-font-body);
+    font-weight: 600;
+    text-decoration: none;
+
+    &.super-admin-shell__link--active {
+      color: var(--ap-color-primary);
+      border-bottom: none;
+    }
+  }
 }
 
 .super-admin-shell__content {

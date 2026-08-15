@@ -1,24 +1,89 @@
 <div class="super-admin-shell">
   <header class="super-admin-shell__header">
-    <ap-logo />
-    <nav class="super-admin-shell__nav">
-      <a routerLink="/super-admin/dashboard" routerLinkActive="super-admin-shell__link--active"
-        >Tableau de bord</a
+    <div class="super-admin-shell__topbar">
+      <ap-logo />
+      <nav class="super-admin-shell__nav">
+        <a routerLink="/super-admin/dashboard" routerLinkActive="super-admin-shell__link--active"
+          >Tableau de bord</a
+        >
+        <a
+          routerLink="/super-admin/organizations"
+          routerLinkActive="super-admin-shell__link--active"
+          >Organisations</a
+        >
+        <a routerLink="/super-admin/users" routerLinkActive="super-admin-shell__link--active"
+          >Comptes</a
+        >
+        <a routerLink="/super-admin/tournaments" routerLinkActive="super-admin-shell__link--active"
+          >Tournois</a
+        >
+        <a routerLink="/super-admin/payments" routerLinkActive="super-admin-shell__link--active"
+          >Paiements</a
+        >
+      </nav>
+      <ap-button type="button" variant="ghost" class="super-admin-shell__logout" (click)="logout()">
+        Se déconnecter
+      </ap-button>
+      <button
+        type="button"
+        class="super-admin-shell__nav-toggle"
+        (click)="toggleMobileMenu()"
+        [attr.aria-expanded]="mobileMenuOpen()"
+        aria-controls="super-admin-shell-mobile-menu"
+        aria-label="Menu"
       >
-      <a routerLink="/super-admin/organizations" routerLinkActive="super-admin-shell__link--active"
-        >Organisations</a
-      >
-      <a routerLink="/super-admin/users" routerLinkActive="super-admin-shell__link--active"
-        >Comptes</a
-      >
-      <a routerLink="/super-admin/tournaments" routerLinkActive="super-admin-shell__link--active"
-        >Tournois</a
-      >
-      <a routerLink="/super-admin/payments" routerLinkActive="super-admin-shell__link--active"
-        >Paiements</a
-      >
-    </nav>
-    <ap-button type="button" variant="ghost" (click)="logout()">Se déconnecter</ap-button>
+        @if (mobileMenuOpen()) {
+          <svg viewBox="0 0 20 20" aria-hidden="true">
+            <path d="M4 4 L16 16 M16 4 L4 16" />
+          </svg>
+        } @else {
+          <svg viewBox="0 0 20 20" aria-hidden="true">
+            <path d="M3 5 L17 5 M3 10 L17 10 M3 15 L17 15" />
+          </svg>
+        }
+      </button>
+    </div>
+
+    @if (mobileMenuOpen()) {
+      <div class="super-admin-shell__mobile-menu" id="super-admin-shell-mobile-menu">
+        <a
+          class="super-admin-shell__mobile-menu-link"
+          routerLink="/super-admin/dashboard"
+          routerLinkActive="super-admin-shell__link--active"
+          (click)="closeMobileMenu()"
+          >Tableau de bord</a
+        >
+        <a
+          class="super-admin-shell__mobile-menu-link"
+          routerLink="/super-admin/organizations"
+          routerLinkActive="super-admin-shell__link--active"
+          (click)="closeMobileMenu()"
+          >Organisations</a
+        >
+        <a
+          class="super-admin-shell__mobile-menu-link"
+          routerLink="/super-admin/users"
+          routerLinkActive="super-admin-shell__link--active"
+          (click)="closeMobileMenu()"
+          >Comptes</a
+        >
+        <a
+          class="super-admin-shell__mobile-menu-link"
+          routerLink="/super-admin/tournaments"
+          routerLinkActive="super-admin-shell__link--active"
+          (click)="closeMobileMenu()"
+          >Tournois</a
+        >
+        <a
+          class="super-admin-shell__mobile-menu-link"
+          routerLink="/super-admin/payments"
+          routerLinkActive="super-admin-shell__link--active"
+          (click)="closeMobileMenu()"
+          >Paiements</a
+        >
+        <ap-button type="button" variant="ghost" (click)="logout()">Se déconnecter</ap-button>
+      </div>
+    }
   </header>
   <main class="super-admin-shell__content">
     <router-outlet />
