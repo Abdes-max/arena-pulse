@@ -6,6 +6,32 @@ import { ThemeMode, ThemeService } from 'design-tokens';
 import { PublicSport, PublicTournamentSummary } from 'shared-models';
 import { AuthService } from '../../admin/core/auth.service';
 
+// One concrete, product-true detail per sport (not interchangeable filler)
+// for the #sports section -- each names a real TournArena capability
+// (poules, tirs au but, prolongations, têtes de série...) rather than a
+// generic "manage your tournament" line repeated nine times. Falls back to
+// a neutral line for any sport seeded later that isn't listed here yet.
+const SPORT_DESCRIPTIONS: Record<string, string> = {
+  Football:
+    'Poules puis phase finale, tirs au but en cas d’égalité — le format classique, entièrement automatisé.',
+  Basketball:
+    'Championnat ou play-offs, prolongations gérées match par match, classement recalculé à chaque panier.',
+  Volleyball: 'Sets comptés, tableaux à élimination directe pour les phases finales de vos ligues.',
+  Handball:
+    'Poules et tableaux croisés, jusqu’aux demi-finales et à la petite finale si vous la jouez.',
+  Rugby:
+    'Championnat toutes rondes ou tournoi à élimination — classements par bonus, à votre façon.',
+  Tennis:
+    'Tableaux à élimination directe, têtes de série et byes gérés automatiquement à chaque tour.',
+  Badminton:
+    'Simples, doubles, plusieurs catégories d’âge dans un même tournoi — chacune son propre tableau.',
+  Futsal: 'Le même moteur que le foot à onze, calibré pour vos formats en salle.',
+  Esport:
+    'Tournois en ligne ou LAN, un site public en direct pour suivre chaque match comme les autres sports.',
+};
+const DEFAULT_SPORT_DESCRIPTION =
+  'Poules, championnat ou élimination directe — votre format, vos règles.';
+
 @Component({
   selector: 'app-landing-page',
   imports: [RouterLink, Logo, ThemeModeToggle, TournamentCard, TournamentMarquee, TextField],
@@ -61,6 +87,10 @@ export class LandingPage {
   // and lets the #tournaments anchor (native <a href>) scroll there.
   protected onSportNavClick(sportName: string): void {
     this.query.set(sportName);
+  }
+
+  protected sportDescription(sportName: string): string {
+    return SPORT_DESCRIPTIONS[sportName] ?? DEFAULT_SPORT_DESCRIPTION;
   }
 
   protected goToTournament(tournament: PublicTournamentSummary): void {

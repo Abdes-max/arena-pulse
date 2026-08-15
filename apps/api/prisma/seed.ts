@@ -2,7 +2,20 @@ import 'dotenv/config';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../generated/prisma/client';
 
-const SPORTS = ['Football', 'Basketball', 'Volleyball', 'Handball', 'Rugby', 'Tennis', 'Badminton', 'Futsal'];
+// Esport added alongside the physical sports (feat/099) -- Tournament.isOnline
+// already existed as a generic per-tournament flag, but no Sport row let an
+// organizer actually pick "esport" as the sport itself before this.
+const SPORTS = [
+  'Football',
+  'Basketball',
+  'Volleyball',
+  'Handball',
+  'Rugby',
+  'Tennis',
+  'Badminton',
+  'Futsal',
+  'Esport',
+];
 
 // Order and labels match docs/product/roles-and-permissions.md exactly.
 const PERMISSIONS = [
@@ -25,7 +38,11 @@ async function main(): Promise<void> {
 
   try {
     for (const name of SPORTS) {
-      await prisma.sport.upsert({ where: { name }, update: {}, create: { name } });
+      await prisma.sport.upsert({
+        where: { name },
+        update: {},
+        create: { name },
+      });
     }
 
     for (const [position, { key, label }] of PERMISSIONS.entries()) {
@@ -37,7 +54,9 @@ async function main(): Promise<void> {
     }
 
     // eslint-disable-next-line no-console
-    console.log(`Seeded ${SPORTS.length} sports and ${PERMISSIONS.length} permissions.`);
+    console.log(
+      `Seeded ${SPORTS.length} sports and ${PERMISSIONS.length} permissions.`,
+    );
   } finally {
     await prisma.$disconnect();
   }

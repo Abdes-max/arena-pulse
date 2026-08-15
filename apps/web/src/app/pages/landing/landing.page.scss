@@ -98,46 +98,6 @@
   }
 }
 
-.landing-page__nav-dropdown {
-  position: relative;
-
-  // Native <details> toggles the chevron's rotation for free via [open],
-  // no extra state to track in the component.
-  &[open] .landing-page__nav-link svg {
-    transform: rotate(180deg);
-  }
-}
-
-.landing-page__nav-dropdown-menu {
-  position: absolute;
-  top: calc(100% + var(--ap-space-3));
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  min-width: 160px;
-  padding: var(--ap-space-2);
-  background: var(--ap-color-surface);
-  border: var(--ap-border-width) solid var(--ap-color-border);
-  border-radius: var(--ap-radius-md);
-  box-shadow: var(--ap-shadow-md);
-  z-index: 1;
-
-  a {
-    padding: var(--ap-space-2) var(--ap-space-3);
-    border-radius: var(--ap-radius-sm);
-    color: var(--ap-color-fg);
-    font-size: 0.85rem;
-    font-weight: 500;
-    text-decoration: none;
-
-    &:hover {
-      background: var(--ap-color-signal-soft);
-      color: var(--ap-color-signal-text);
-    }
-  }
-}
-
 @media (max-width: 720px) {
   .landing-page__nav-links {
     display: none;
@@ -248,21 +208,6 @@
     color: var(--ap-color-fg);
     font-weight: 600;
     text-decoration: none;
-    width: 100%;
-  }
-
-  .landing-page__mobile-menu-label {
-    margin: var(--ap-space-3) 0 0;
-    color: var(--ap-color-muted);
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
-
-  .landing-page__mobile-menu-sports {
-    display: flex;
-    flex-direction: column;
     width: 100%;
   }
 
@@ -514,6 +459,7 @@ ap-tournament-marquee {
 }
 
 .landing-page__features,
+.landing-page__sports,
 .landing-page__pricing {
   max-width: 1000px;
   margin: 0 auto;
@@ -528,6 +474,7 @@ ap-tournament-marquee {
 }
 
 .landing-page__features-lead,
+.landing-page__sports-lead,
 .landing-page__pricing-lead {
   max-width: 50ch;
   margin: var(--ap-space-3) auto 0;
@@ -659,6 +606,93 @@ ap-tournament-marquee {
   border-radius: 999px;
   color: var(--accent-tag);
   background: var(--accent-soft);
+}
+
+// Simpler cousin of .landing-page__feature-grid -- an even grid (no
+// wide/narrow row split) since every sport card carries the same amount of
+// content (icon, name, one line), unlike the features section's mixed
+// text/mock-block cards.
+.landing-page__sport-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--ap-space-4);
+  margin-top: var(--ap-space-8);
+  text-align: left;
+}
+
+@media (max-width: 900px) {
+  .landing-page__sport-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  .landing-page__sport-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Same accent-pair + hover pattern as .landing-page__feature, minus the tag
+// pill and mock block this section has no use for.
+.landing-page__sport-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-3);
+  padding: var(--ap-space-6);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-lg);
+  color: inherit;
+  text-decoration: none;
+  transition:
+    border-color var(--ap-motion-fast) var(--ap-easing-standard),
+    box-shadow var(--ap-motion-fast) var(--ap-easing-standard),
+    transform var(--ap-motion-fast) var(--ap-easing-standard);
+
+  --accent: var(--ap-color-signal);
+  --accent-soft: var(--ap-color-signal-soft);
+  --accent-text: var(--ap-color-signal-text);
+
+  &[data-accent='ember'] {
+    --accent: var(--ap-color-ember);
+    --accent-soft: var(--ap-color-ember-soft);
+    --accent-text: var(--ap-color-ember);
+  }
+
+  &:hover {
+    border-color: var(--accent);
+    box-shadow: var(--ap-shadow-md);
+    transform: translateY(-3px);
+  }
+
+  h3 {
+    margin: 0;
+    font-family: var(--ap-font-heading);
+    font-size: 1.05rem;
+  }
+
+  p {
+    margin: 0;
+    color: var(--ap-color-muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+}
+
+.landing-page__sport-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--ap-radius-md);
+  color: var(--accent-text);
+  background: var(--accent-soft);
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
 }
 
 .landing-page__pricing-grid {
