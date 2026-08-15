@@ -270,7 +270,9 @@ describe('TournamentsService', () => {
 
     it('rejects publishing for a suspended organization, before even loading the tournament', async () => {
       organizationsService.assertNotSuspended.mockRejectedValue(
-        new ForbiddenException('Cette organisation est suspendue, contactez le support.'),
+        new ForbiddenException(
+          'Cette organisation est suspendue, contactez le support.',
+        ),
       );
 
       await expect(

@@ -22,9 +22,7 @@ export class SuperAdminService {
   }
 
   listOrganizations(): Promise<SuperAdminOrganizationRow[]> {
-    return firstValueFrom(
-      this.http.get<SuperAdminOrganizationRow[]>(`${this.base}/organizations`),
-    );
+    return firstValueFrom(this.http.get<SuperAdminOrganizationRow[]>(`${this.base}/organizations`));
   }
 
   getOrganization(organizationId: string): Promise<SuperAdminOrganizationDetail> {

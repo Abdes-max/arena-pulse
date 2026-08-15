@@ -25,7 +25,9 @@
       <h2>Membres</h2>
       <ul class="super-admin-organization-detail-page__list">
         @for (member of org.members; track member.id) {
-          <li>{{ member.firstName }} {{ member.lastName }} ({{ member.email }}) — {{ member.role }}</li>
+          <li>
+            {{ member.firstName }} {{ member.lastName }} ({{ member.email }}) — {{ member.role }}
+          </li>
         }
       </ul>
     </section>
@@ -38,7 +40,9 @@
         <ul class="super-admin-organization-detail-page__list">
           @for (tournament of org.tournaments; track tournament.id) {
             <li>
-              <a [routerLink]="['/super-admin/tournaments', tournament.id]">{{ tournament.name }}</a>
+              <a [routerLink]="['/super-admin/tournaments', tournament.id]">{{
+                tournament.name
+              }}</a>
               — {{ tournament.sportName }} — {{ tournament.status }}
             </li>
           }

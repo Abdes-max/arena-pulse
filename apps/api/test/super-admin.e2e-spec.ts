@@ -51,7 +51,9 @@ describe('Super admin data endpoints (e2e)', () => {
     await prisma.superAdminAccount.create({
       data: {
         email: SUPER_ADMIN_CREDENTIALS.email,
-        passwordHash: await passwordService.hash(SUPER_ADMIN_CREDENTIALS.password),
+        passwordHash: await passwordService.hash(
+          SUPER_ADMIN_CREDENTIALS.password,
+        ),
         firstName: 'Super',
         lastName: 'Admin',
       },
@@ -70,7 +72,13 @@ describe('Super admin data endpoints (e2e)', () => {
     const password = 'a-very-strong-password';
     await request(app.getHttpServer())
       .post('/api/v1/auth/register')
-      .send({ email, password, firstName: 'Ada', lastName: 'Lovelace', organizationName })
+      .send({
+        email,
+        password,
+        firstName: 'Ada',
+        lastName: 'Lovelace',
+        organizationName,
+      })
       .expect(201);
     await prisma.user.update({
       where: { email },
@@ -86,7 +94,12 @@ describe('Super admin data endpoints (e2e)', () => {
       .set('Authorization', `Bearer ${accessToken}`)
       .expect(200);
     const { organizations } = meRes.body as { organizations: { id: string }[] };
-    return { accessToken, organizationId: organizations[0].id, email, password };
+    return {
+      accessToken,
+      organizationId: organizations[0].id,
+      email,
+      password,
+    };
   }
 
   beforeEach(async () => {
@@ -103,7 +116,8 @@ describe('Super admin data endpoints (e2e)', () => {
   it('lists organizations, users and stats with the right shape', async () => {
     const superAdminToken = await createSuperAdminAndLogin();
     const { organizationId } = await registerOrganizer();
-    const auth = (req: request.Test) => req.set('Authorization', `Bearer ${superAdminToken}`);
+    const auth = (req: request.Test) =>
+      req.set('Authorization', `Bearer ${superAdminToken}`);
 
     const orgsRes = await auth(
       request(app.getHttpServer()).get('/api/v1/super-admin/organizations'),
@@ -119,9 +133,13 @@ describe('Super admin data endpoints (e2e)', () => {
     });
 
     const detailRes = await auth(
-      request(app.getHttpServer()).get(`/api/v1/super-admin/organizations/${organizationId}`),
+      request(app.getHttpServer()).get(
+        `/api/v1/super-admin/organizations/${organizationId}`,
+      ),
     ).expect(200);
-    expect((detailRes.body as { members: { email: string }[] }).members).toHaveLength(1);
+    expect(
+      (detailRes.body as { members: { email: string }[] }).members,
+    ).toHaveLength(1);
 
     const usersRes = await auth(
       request(app.getHttpServer()).get('/api/v1/super-admin/users'),
@@ -131,16 +149,15 @@ describe('Super admin data endpoints (e2e)', () => {
     );
     expect(user?.emailVerifiedAt).not.toBeNull();
 
-    const statsRes = await auth(request(app.getHttpServer()).get('/api/v1/super-admin/stats')).expect(
-      200,
-    );
-    expect(statsRes.body).toMatchObject({
-      totalUsers: expect.any(Number),
-      totalOrganizations: expect.any(Number),
-    });
-    expect((statsRes.body as { totalOrganizations: number }).totalOrganizations).toBeGreaterThanOrEqual(
-      1,
-    );
+    const statsRes = await auth(
+      request(app.getHttpServer()).get('/api/v1/super-admin/stats'),
+    ).expect(200);
+    const stats = statsRes.body as {
+      totalUsers: number;
+      totalOrganizations: number;
+    };
+    expect(typeof stats.totalUsers).toBe('number');
+    expect(stats.totalOrganizations).toBeGreaterThanOrEqual(1);
   });
 
   it('rejects organization list/stats access with an organizer token', async () => {
@@ -155,20 +172,28 @@ describe('Super admin data endpoints (e2e)', () => {
   it('suspending an organization blocks publish, reactivating unblocks it', async () => {
     const superAdminToken = await createSuperAdminAndLogin();
     const { accessToken, organizationId } = await registerOrganizer();
-    const orgAuth = (req: request.Test) => req.set('Authorization', `Bearer ${accessToken}`);
-    const superAuth = (req: request.Test) => req.set('Authorization', `Bearer ${superAdminToken}`);
+    const orgAuth = (req: request.Test) =>
+      req.set('Authorization', `Bearer ${accessToken}`);
+    const superAuth = (req: request.Test) =>
+      req.set('Authorization', `Bearer ${superAdminToken}`);
 
-    const sportRes = await orgAuth(request(app.getHttpServer()).get('/api/v1/sports')).expect(200);
+    const sportRes = await orgAuth(
+      request(app.getHttpServer()).get('/api/v1/sports'),
+    ).expect(200);
     const sportId = (sportRes.body as { id: string }[])[0].id;
     const tournamentRes = await orgAuth(
-      request(app.getHttpServer()).post(`/api/v1/organizations/${organizationId}/tournaments`),
+      request(app.getHttpServer()).post(
+        `/api/v1/organizations/${organizationId}/tournaments`,
+      ),
     )
       .send({ name: 'Coupe Suspension', sportId })
       .expect(201);
     const tournamentId = (tournamentRes.body as { id: string }).id;
 
     await superAuth(
-      request(app.getHttpServer()).post(`/api/v1/super-admin/organizations/${organizationId}/suspend`),
+      request(app.getHttpServer()).post(
+        `/api/v1/super-admin/organizations/${organizationId}/suspend`,
+      ),
     ).expect(204);
 
     await orgAuth(
@@ -179,7 +204,9 @@ describe('Super admin data endpoints (e2e)', () => {
 
     // A second suspend on an already-suspended organization is rejected, not silently repeated.
     await superAuth(
-      request(app.getHttpServer()).post(`/api/v1/super-admin/organizations/${organizationId}/suspend`),
+      request(app.getHttpServer()).post(
+        `/api/v1/super-admin/organizations/${organizationId}/suspend`,
+      ),
     ).expect(409);
 
     await superAuth(
@@ -197,13 +224,20 @@ describe('Super admin data endpoints (e2e)', () => {
 
   it("verifying a user's email by hand unblocks their login", async () => {
     const superAdminToken = await createSuperAdminAndLogin();
-    const superAuth = (req: request.Test) => req.set('Authorization', `Bearer ${superAdminToken}`);
+    const superAuth = (req: request.Test) =>
+      req.set('Authorization', `Bearer ${superAdminToken}`);
     const email = 'unverified@example.com';
     const password = 'a-very-strong-password';
 
     await request(app.getHttpServer())
       .post('/api/v1/auth/register')
-      .send({ email, password, firstName: 'Non', lastName: 'Vérifié', organizationName: 'Org X' })
+      .send({
+        email,
+        password,
+        firstName: 'Non',
+        lastName: 'Vérifié',
+        organizationName: 'Org X',
+      })
       .expect(201);
 
     await request(app.getHttpServer())
@@ -211,36 +245,51 @@ describe('Super admin data endpoints (e2e)', () => {
       .send({ email, password })
       .expect(403);
 
-    const usersRes = await superAuth(request(app.getHttpServer()).get('/api/v1/super-admin/users')).expect(
-      200,
+    const usersRes = await superAuth(
+      request(app.getHttpServer()).get('/api/v1/super-admin/users'),
+    ).expect(200);
+    const user = (usersRes.body as SuperAdminUserRow[]).find(
+      (u) => u.email === email,
     );
-    const user = (usersRes.body as SuperAdminUserRow[]).find((u) => u.email === email);
     if (!user) {
       throw new Error('User not found in super-admin users list');
     }
 
     await superAuth(
-      request(app.getHttpServer()).post(`/api/v1/super-admin/users/${user.id}/verify-email`),
+      request(app.getHttpServer()).post(
+        `/api/v1/super-admin/users/${user.id}/verify-email`,
+      ),
     ).expect(204);
 
-    await request(app.getHttpServer()).post('/api/v1/auth/login').send({ email, password }).expect(200);
+    await request(app.getHttpServer())
+      .post('/api/v1/auth/login')
+      .send({ email, password })
+      .expect(200);
 
     // Already-verified accounts can't be "verified" again.
     await superAuth(
-      request(app.getHttpServer()).post(`/api/v1/super-admin/users/${user.id}/verify-email`),
+      request(app.getHttpServer()).post(
+        `/api/v1/super-admin/users/${user.id}/verify-email`,
+      ),
     ).expect(409);
   });
 
   it('annotates a stuck payment without touching its status, visible in the payments list', async () => {
     const superAdminToken = await createSuperAdminAndLogin();
     const { accessToken, organizationId } = await registerOrganizer();
-    const orgAuth = (req: request.Test) => req.set('Authorization', `Bearer ${accessToken}`);
-    const superAuth = (req: request.Test) => req.set('Authorization', `Bearer ${superAdminToken}`);
+    const orgAuth = (req: request.Test) =>
+      req.set('Authorization', `Bearer ${accessToken}`);
+    const superAuth = (req: request.Test) =>
+      req.set('Authorization', `Bearer ${superAdminToken}`);
 
-    const sportRes = await orgAuth(request(app.getHttpServer()).get('/api/v1/sports')).expect(200);
+    const sportRes = await orgAuth(
+      request(app.getHttpServer()).get('/api/v1/sports'),
+    ).expect(200);
     const sportId = (sportRes.body as { id: string }[])[0].id;
     const tournamentRes = await orgAuth(
-      request(app.getHttpServer()).post(`/api/v1/organizations/${organizationId}/tournaments`),
+      request(app.getHttpServer()).post(
+        `/api/v1/organizations/${organizationId}/tournaments`,
+      ),
     )
       .send({ name: 'Coupe Paiement Bloqué', sportId })
       .expect(201);
@@ -260,7 +309,9 @@ describe('Super admin data endpoints (e2e)', () => {
     });
 
     await superAuth(
-      request(app.getHttpServer()).post(`/api/v1/super-admin/payments/PUBLICATION/${order.id}/annotate`),
+      request(app.getHttpServer()).post(
+        `/api/v1/super-admin/payments/PUBLICATION/${order.id}/annotate`,
+      ),
     )
       .send({ note: 'Confirmé manuellement dans le dashboard Stripe.' })
       .expect(204);
@@ -268,7 +319,9 @@ describe('Super admin data endpoints (e2e)', () => {
     const paymentsRes = await superAuth(
       request(app.getHttpServer()).get('/api/v1/super-admin/payments'),
     ).expect(200);
-    const row = (paymentsRes.body as SuperAdminPaymentRow[]).find((p) => p.id === order.id);
+    const row = (paymentsRes.body as SuperAdminPaymentRow[]).find(
+      (p) => p.id === order.id,
+    );
     expect(row).toMatchObject({
       type: 'PUBLICATION',
       status: TournamentPublicationOrderStatus.PENDING_PAYMENT,
@@ -276,7 +329,9 @@ describe('Super admin data endpoints (e2e)', () => {
     });
 
     await superAuth(
-      request(app.getHttpServer()).post('/api/v1/super-admin/payments/UNKNOWN_TYPE/some-id/annotate'),
+      request(app.getHttpServer()).post(
+        '/api/v1/super-admin/payments/UNKNOWN_TYPE/some-id/annotate',
+      ),
     )
       .send({ note: 'irrelevant' })
       .expect(400);

@@ -11,7 +11,9 @@
       <ap-badge [status]="statusBadge[t.status]" />
     </div>
     <p class="super-admin-tournament-detail-page__meta">
-      <a [routerLink]="['/super-admin/organizations', t.organizationId]">{{ t.organizationName }}</a>
+      <a [routerLink]="['/super-admin/organizations', t.organizationId]">{{
+        t.organizationName
+      }}</a>
       — {{ t.sportName }}
     </p>
 
@@ -26,7 +28,9 @@
 
     <section class="super-admin-tournament-detail-page__section">
       <h2>Équipes ({{ t.teams.length }})</h2>
-      <ul class="super-admin-tournament-detail-page__list super-admin-tournament-detail-page__list--grid">
+      <ul
+        class="super-admin-tournament-detail-page__list super-admin-tournament-detail-page__list--grid"
+      >
         @for (team of t.teams; track team.id) {
           <li>{{ team.name }}</li>
         }

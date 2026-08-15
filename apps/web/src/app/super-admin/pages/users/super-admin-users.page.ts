@@ -41,7 +41,9 @@ export class SuperAdminUsersPage {
     try {
       await this.superAdminService.verifyUserEmail(user.id);
       this.users.update((users) =>
-        users.map((u) => (u.id === user.id ? { ...u, emailVerifiedAt: new Date().toISOString() } : u)),
+        users.map((u) =>
+          u.id === user.id ? { ...u, emailVerifiedAt: new Date().toISOString() } : u,
+        ),
       );
     } catch {
       this.errorMessage.set("Impossible de vérifier l'email de ce compte.");

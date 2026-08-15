@@ -63,7 +63,9 @@ describe('Super admin auth (e2e)', () => {
     const loginBody = loginRes.body as SuperAdminAuthResponseBody;
     expect(loginBody.accessToken).toEqual(expect.any(String));
     expect(loginBody.superAdmin.email).toBe(credentials.email);
-    expect(extractRefreshCookie(loginRes)).toContain('super_admin_refresh_token=');
+    expect(extractRefreshCookie(loginRes)).toContain(
+      'super_admin_refresh_token=',
+    );
 
     await request(app.getHttpServer())
       .post('/api/v1/super-admin-auth/login')
@@ -79,7 +81,9 @@ describe('Super admin auth (e2e)', () => {
       .expect(200);
     const { accessToken } = loginRes.body as SuperAdminAuthResponseBody;
 
-    await request(app.getHttpServer()).get('/api/v1/super-admin-auth/me').expect(401);
+    await request(app.getHttpServer())
+      .get('/api/v1/super-admin-auth/me')
+      .expect(401);
 
     const meRes = await request(app.getHttpServer())
       .get('/api/v1/super-admin-auth/me')
@@ -145,7 +149,9 @@ describe('Super admin auth (e2e)', () => {
       .post('/api/v1/super-admin-auth/login')
       .send(credentials)
       .expect(200);
-    const superAdminToken = (superAdminLoginRes.body as SuperAdminAuthResponseBody).accessToken;
+    const superAdminToken = (
+      superAdminLoginRes.body as SuperAdminAuthResponseBody
+    ).accessToken;
 
     const organizerEmail = 'organizer@example.com';
     const organizerPassword = 'a-very-strong-password';
@@ -167,7 +173,8 @@ describe('Super admin auth (e2e)', () => {
       .post('/api/v1/auth/login')
       .send({ email: organizerEmail, password: organizerPassword })
       .expect(200);
-    const organizerToken = (organizerLoginRes.body as { accessToken: string }).accessToken;
+    const organizerToken = (organizerLoginRes.body as { accessToken: string })
+      .accessToken;
 
     // An organizer's access token must not unlock a super-admin-only route...
     await request(app.getHttpServer())

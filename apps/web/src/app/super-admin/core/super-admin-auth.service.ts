@@ -68,7 +68,11 @@ export class SuperAdminAuthService {
   async logout(): Promise<void> {
     try {
       await firstValueFrom(
-        this.http.post(`${environment.apiUrl}/super-admin-auth/logout`, {}, { withCredentials: true }),
+        this.http.post(
+          `${environment.apiUrl}/super-admin-auth/logout`,
+          {},
+          { withCredentials: true },
+        ),
       );
     } finally {
       this.clearSession();

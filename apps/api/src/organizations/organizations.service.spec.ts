@@ -1,4 +1,8 @@
-import { ConflictException, ForbiddenException, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type Stripe from 'stripe';
 import {
@@ -220,7 +224,9 @@ describe('OrganizationsService', () => {
         id: 'org-1',
         suspendedAt: null,
       });
-      await expect(service.assertNotSuspended('org-1')).resolves.toBeUndefined();
+      await expect(
+        service.assertNotSuspended('org-1'),
+      ).resolves.toBeUndefined();
     });
 
     it('subscribe() rejects for a suspended organization before checking for an existing subscription', async () => {
@@ -229,7 +235,9 @@ describe('OrganizationsService', () => {
         suspendedAt: new Date('2026-08-15'),
       });
 
-      await expect(service.subscribe('org-1')).rejects.toBeInstanceOf(ForbiddenException);
+      await expect(service.subscribe('org-1')).rejects.toBeInstanceOf(
+        ForbiddenException,
+      );
       expect(prisma.organizationSubscription.findFirst).not.toHaveBeenCalled();
     });
   });

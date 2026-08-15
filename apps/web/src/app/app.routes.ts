@@ -53,7 +53,8 @@ export const routes: Routes = [
     // SuperAdminAccount session -- see super-admin/core).
     path: 'super-admin',
     canActivate: [superAdminAuthGuard],
-    loadComponent: () => import('./super-admin/shell/super-admin-shell').then((m) => m.SuperAdminShell),
+    loadComponent: () =>
+      import('./super-admin/shell/super-admin-shell').then((m) => m.SuperAdminShell),
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
       {
