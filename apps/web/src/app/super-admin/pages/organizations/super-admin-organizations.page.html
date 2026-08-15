@@ -1,0 +1,52 @@
+<main class="super-admin-organizations-page">
+  <h1>Organisations</h1>
+
+  @if (loading()) {
+    <p>Chargement…</p>
+  } @else if (errorMessage(); as message) {
+    <p class="super-admin-organizations-page__error" role="alert">{{ message }}</p>
+  } @else if (organizations().length === 0) {
+    <p>Aucune organisation.</p>
+  } @else {
+    <table class="super-admin-organizations-page__table">
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Membres</th>
+          <th>Tournois</th>
+          <th>Abonnement</th>
+          <th>Statut</th>
+          <th>Créée le</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (organization of organizations(); track organization.id) {
+          <tr>
+            <td>{{ organization.name }}</td>
+            <td>{{ organization.membersCount }}</td>
+            <td>{{ organization.tournamentsCount }}</td>
+            <td>
+              @if (organization.subscriptionStatus === 'ACTIVE') {
+                <ap-badge status="published" label="Actif" />
+              } @else {
+                <ap-badge status="draft" label="Aucun" />
+              }
+            </td>
+            <td>
+              @if (organization.suspendedAt) {
+                <ap-badge status="cancelled" label="Suspendue" />
+              } @else {
+                <ap-badge status="published" label="Active" />
+              }
+            </td>
+            <td>{{ formatDate(organization.createdAt) }}</td>
+            <td>
+              <a [routerLink]="['/super-admin/organizations', organization.id]">Voir</a>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</main>

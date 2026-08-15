@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { authGuard } from './admin/core/auth.guard';
 import { resetThemeGuard } from './admin/core/reset-theme.guard';
 import { playerAuthGuard } from './core/player-auth.guard';
+import { superAdminAuthGuard } from './super-admin/core/super-admin-auth.guard';
 
 export const routes: Routes = [
   {
@@ -38,6 +39,73 @@ export const routes: Routes = [
     path: 'player/register',
     loadComponent: () =>
       import('./pages/player-auth/register/player-register.page').then((m) => m.PlayerRegisterPage),
+  },
+  {
+    path: 'super-admin/login',
+    loadComponent: () =>
+      import('./super-admin/pages/login/super-admin-login.page').then((m) => m.SuperAdminLoginPage),
+  },
+  {
+    // Sibling to 'admin', not nested under it: AppShell is hard-wired to
+    // authService.organizations()[0] and a single-organization submenu --
+    // this area is deliberately cross-organization, so it gets its own
+    // shell and its own guard (superAdminAuthGuard, a separate
+    // SuperAdminAccount session -- see super-admin/core).
+    path: 'super-admin',
+    canActivate: [superAdminAuthGuard],
+    loadComponent: () => import('./super-admin/shell/super-admin-shell').then((m) => m.SuperAdminShell),
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
+      {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./super-admin/pages/dashboard/super-admin-dashboard.page').then(
+            (m) => m.SuperAdminDashboardPage,
+          ),
+      },
+      {
+        path: 'organizations',
+        loadComponent: () =>
+          import('./super-admin/pages/organizations/super-admin-organizations.page').then(
+            (m) => m.SuperAdminOrganizationsPage,
+          ),
+      },
+      {
+        path: 'organizations/:organizationId',
+        loadComponent: () =>
+          import('./super-admin/pages/organizations/super-admin-organization-detail.page').then(
+            (m) => m.SuperAdminOrganizationDetailPage,
+          ),
+      },
+      {
+        path: 'users',
+        loadComponent: () =>
+          import('./super-admin/pages/users/super-admin-users.page').then(
+            (m) => m.SuperAdminUsersPage,
+          ),
+      },
+      {
+        path: 'tournaments',
+        loadComponent: () =>
+          import('./super-admin/pages/tournaments/super-admin-tournaments.page').then(
+            (m) => m.SuperAdminTournamentsPage,
+          ),
+      },
+      {
+        path: 'tournaments/:tournamentId',
+        loadComponent: () =>
+          import('./super-admin/pages/tournaments/super-admin-tournament-detail.page').then(
+            (m) => m.SuperAdminTournamentDetailPage,
+          ),
+      },
+      {
+        path: 'payments',
+        loadComponent: () =>
+          import('./super-admin/pages/payments/super-admin-payments.page').then(
+            (m) => m.SuperAdminPaymentsPage,
+          ),
+      },
+    ],
   },
   {
     path: 'admin',

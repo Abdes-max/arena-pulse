@@ -1,0 +1,57 @@
+<main class="super-admin-users-page">
+  <h1>Comptes organisateurs</h1>
+
+  @if (loading()) {
+    <p>Chargement…</p>
+  } @else if (errorMessage(); as message) {
+    <p class="super-admin-users-page__error" role="alert">{{ message }}</p>
+  } @else if (users().length === 0) {
+    <p>Aucun compte.</p>
+  } @else {
+    <table class="super-admin-users-page__table">
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Email</th>
+          <th>Organisations</th>
+          <th>Vérification</th>
+          <th>Créé le</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (user of users(); track user.id) {
+          <tr>
+            <td>{{ user.firstName }} {{ user.lastName }}</td>
+            <td>{{ user.email }}</td>
+            <td>
+              @for (org of user.organizations; track org.id) {
+                <div>{{ org.name }} ({{ org.role }})</div>
+              }
+            </td>
+            <td>
+              @if (user.emailVerifiedAt) {
+                <ap-badge status="published" label="Vérifié" />
+              } @else {
+                <ap-badge status="unpublished" label="Non vérifié" />
+              }
+            </td>
+            <td>{{ formatDate(user.createdAt) }}</td>
+            <td>
+              @if (!user.emailVerifiedAt) {
+                <ap-button
+                  type="button"
+                  variant="ghost"
+                  [disabled]="verifying() === user.id"
+                  (click)="verifyEmail(user)"
+                >
+                  Vérifier l'email
+                </ap-button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</main>

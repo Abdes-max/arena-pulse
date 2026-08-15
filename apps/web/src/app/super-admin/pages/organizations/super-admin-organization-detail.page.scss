@@ -1,0 +1,45 @@
+.super-admin-organization-detail-page {
+  max-width: 800px;
+  margin: 0 auto;
+  color: var(--ap-color-fg);
+  font-family: var(--ap-font-body);
+
+  a {
+    color: var(--ap-color-primary);
+  }
+}
+
+.super-admin-organization-detail-page__error {
+  color: var(--ap-color-error);
+}
+
+.super-admin-organization-detail-page__header {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-3);
+  margin-bottom: var(--ap-space-6);
+
+  h1 {
+    margin: 0;
+    flex: 1;
+  }
+}
+
+.super-admin-organization-detail-page__section {
+  margin-top: var(--ap-space-6);
+
+  h2 {
+    font-size: 1.1rem;
+    margin: 0 0 var(--ap-space-3);
+  }
+}
+
+.super-admin-organization-detail-page__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+  font-size: 0.9rem;
+}

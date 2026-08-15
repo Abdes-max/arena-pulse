@@ -1,0 +1,33 @@
+.super-admin-login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: var(--ap-space-6);
+}
+
+.super-admin-login-page__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-4);
+  width: 100%;
+  max-width: 360px;
+
+  h1 {
+    font-family: var(--ap-font-body);
+    color: var(--ap-color-fg);
+    margin: 0 0 var(--ap-space-2);
+    text-align: center;
+  }
+}
+
+.super-admin-login-page__brand {
+  align-self: center;
+  margin-bottom: var(--ap-space-2);
+}
+
+.super-admin-login-page__error {
+  color: var(--ap-color-error);
+  font-size: 0.9rem;
+  margin: 0;
+}

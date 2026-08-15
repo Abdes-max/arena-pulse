@@ -1,0 +1,81 @@
+<main class="super-admin-payments-page">
+  <h1>Paiements</h1>
+
+  @if (loading()) {
+    <p>Chargement…</p>
+  } @else if (errorMessage(); as message) {
+    <p class="super-admin-payments-page__error" role="alert">{{ message }}</p>
+  } @else if (payments().length === 0) {
+    <p>Aucun paiement.</p>
+  } @else {
+    <table class="super-admin-payments-page__table">
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Organisation</th>
+          <th>Montant</th>
+          <th>Statut</th>
+          <th>Date</th>
+          <th>Note</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (payment of payments(); track payment.id) {
+          <tr>
+            <td>{{ typeLabel[payment.type] }}</td>
+            <td>
+              <a [routerLink]="['/super-admin/organizations', payment.organizationId]">{{
+                payment.organizationName
+              }}</a>
+            </td>
+            <td>{{ formatAmount(payment.amountCents, payment.currency) }}</td>
+            <td>
+              @if (payment.status === 'PAID' || payment.status === 'ACTIVE') {
+                <ap-badge status="published" label="Payé" />
+              } @else if (payment.status === 'PENDING_PAYMENT') {
+                <ap-badge status="unpublished" label="En attente" />
+              } @else {
+                <ap-badge status="cancelled" [label]="payment.status" />
+              }
+            </td>
+            <td>{{ formatDate(payment.paidAt ?? payment.createdAt) }}</td>
+            <td>
+              @if (annotatingId() !== payment.id) {
+                {{ payment.note ?? '—' }}
+              }
+            </td>
+            <td>
+              @if (annotatingId() === payment.id) {
+                <div class="super-admin-payments-page__annotate">
+                  <ap-text-field
+                    label="Note"
+                    [hideLabel]="true"
+                    placeholder="Note interne"
+                    [value]="noteDraft()"
+                    (valueChange)="onNoteDraftChange($event)"
+                  />
+                  <ap-button
+                    type="button"
+                    variant="ghost"
+                    [disabled]="saving()"
+                    (click)="saveAnnotation(payment)"
+                  >
+                    Enregistrer
+                  </ap-button>
+                  <ap-button type="button" variant="ghost" (click)="cancelAnnotating()">
+                    Annuler
+                  </ap-button>
+                </div>
+              } @else {
+                <ap-button type="button" variant="ghost" (click)="startAnnotating(payment)">
+                  Annoter
+                </ap-button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</main>

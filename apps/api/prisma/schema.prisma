@@ -56,6 +56,12 @@ model Organization {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // Set only by a super admin (see SuperAdminAuditLog) -- blocks
+  // TournamentsService.publish() and OrganizationsService.subscribe() with
+  // a clear error, but never blocks member login/read access so the
+  // organization can still reach support.
+  suspendedAt DateTime?
+
   members       OrganizationMember[]
   invitations   Invitation[]
   tournaments   Tournament[]
@@ -92,6 +98,68 @@ model RefreshToken {
 
   @@index([userId])
   @@index([familyId])
+}
+
+// Platform-wide operator account -- deliberately NOT a role/flag on User.
+// User is structurally "member of one or more organizations" (every access
+// path goes through OrganizationMember); a cross-organization account
+// doesn't fit that shape and mixing the two identities on one row/JWT type
+// would risk an org-scoped guard accidentally granting platform-wide
+// access. Modeled the same way PlayerAccount is kept fully separate from
+// User. No registration endpoint exists for this model anywhere in the API
+// -- the only way to create a row is infra/scripts/create-super-admin.mjs,
+// run by hand.
+model SuperAdminAccount {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  firstName    String
+  lastName     String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  refreshTokens SuperAdminRefreshToken[]
+  auditLogs     SuperAdminAuditLog[]
+}
+
+// Same rotation-with-family-revocation shape as RefreshToken above, kept as
+// a fully separate table/cookie (super_admin_refresh_token) rather than a
+// shared one -- mirrors how player-auth's refresh tokens are also modeled
+// on their own table, never mixed with organizer sessions.
+model SuperAdminRefreshToken {
+  id                String    @id @default(uuid())
+  superAdminId      String
+  tokenHash         String    @unique
+  familyId          String
+  createdAt         DateTime  @default(now())
+  expiresAt         DateTime
+  revokedAt         DateTime?
+  replacedByTokenId String?
+
+  superAdmin SuperAdminAccount @relation(fields: [superAdminId], references: [id], onDelete: Cascade)
+
+  @@index([superAdminId])
+  @@index([familyId])
+}
+
+// Doubles as both an audit trail and the annotation store for the "annotate
+// a stuck payment" action -- rather than adding a note column on each of
+// the three separate payment-bearing models (Registration,
+// TournamentPublicationOrder, OrganizationSubscription), a single audit row
+// keyed by (targetType, targetId) covers all of them uniformly.
+model SuperAdminAuditLog {
+  id           String   @id @default(uuid())
+  superAdminId String
+  action       String
+  targetType   String
+  targetId     String
+  note         String?
+  createdAt    DateTime @default(now())
+
+  superAdmin SuperAdminAccount @relation(fields: [superAdminId], references: [id], onDelete: Cascade)
+
+  @@index([superAdminId])
+  @@index([targetType, targetId])
 }
 
 model Invitation {

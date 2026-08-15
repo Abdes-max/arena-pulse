@@ -1,0 +1,43 @@
+.super-admin-payments-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  color: var(--ap-color-fg);
+  font-family: var(--ap-font-body);
+
+  h1 {
+    margin: 0 0 var(--ap-space-6);
+  }
+}
+
+.super-admin-payments-page__error {
+  color: var(--ap-color-error);
+}
+
+.super-admin-payments-page__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+
+  th,
+  td {
+    text-align: left;
+    padding: var(--ap-space-2) var(--ap-space-3);
+    border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+  }
+
+  th {
+    color: var(--ap-color-muted);
+    font-weight: 600;
+  }
+
+  a {
+    color: var(--ap-color-primary);
+  }
+}
+
+.super-admin-payments-page__annotate {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  min-width: 320px;
+}

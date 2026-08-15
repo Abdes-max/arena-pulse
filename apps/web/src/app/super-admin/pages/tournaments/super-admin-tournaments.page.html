@@ -1,0 +1,44 @@
+<main class="super-admin-tournaments-page">
+  <h1>Tournois</h1>
+
+  @if (loading()) {
+    <p>Chargement…</p>
+  } @else if (errorMessage(); as message) {
+    <p class="super-admin-tournaments-page__error" role="alert">{{ message }}</p>
+  } @else if (tournaments().length === 0) {
+    <p>Aucun tournoi.</p>
+  } @else {
+    <table class="super-admin-tournaments-page__table">
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Organisation</th>
+          <th>Sport</th>
+          <th>Statut</th>
+          <th>Équipes</th>
+          <th>Matchs joués</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (tournament of tournaments(); track tournament.id) {
+          <tr>
+            <td>{{ tournament.name }}</td>
+            <td>
+              <a [routerLink]="['/super-admin/organizations', tournament.organizationId]">{{
+                tournament.organizationName
+              }}</a>
+            </td>
+            <td>{{ tournament.sportName }}</td>
+            <td><ap-badge [status]="statusBadge[tournament.status]" /></td>
+            <td>{{ tournament.teamsCount }}</td>
+            <td>{{ tournament.matchesPlayedCount }}</td>
+            <td>
+              <a [routerLink]="['/super-admin/tournaments', tournament.id]">Voir</a>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</main>

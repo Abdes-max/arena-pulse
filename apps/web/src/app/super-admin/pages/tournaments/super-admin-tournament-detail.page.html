@@ -1,0 +1,88 @@
+<main class="super-admin-tournament-detail-page">
+  <p><a routerLink="/super-admin/tournaments">← Tournois</a></p>
+
+  @if (loading()) {
+    <p>Chargement…</p>
+  } @else if (errorMessage(); as message) {
+    <p class="super-admin-tournament-detail-page__error" role="alert">{{ message }}</p>
+  } @else if (tournament(); as t) {
+    <div class="super-admin-tournament-detail-page__header">
+      <h1>{{ t.name }}</h1>
+      <ap-badge [status]="statusBadge[t.status]" />
+    </div>
+    <p class="super-admin-tournament-detail-page__meta">
+      <a [routerLink]="['/super-admin/organizations', t.organizationId]">{{ t.organizationName }}</a>
+      — {{ t.sportName }}
+    </p>
+
+    <section class="super-admin-tournament-detail-page__section">
+      <h2>Catégories</h2>
+      <ul class="super-admin-tournament-detail-page__list">
+        @for (category of t.categories; track category.id) {
+          <li>{{ category.name }}</li>
+        }
+      </ul>
+    </section>
+
+    <section class="super-admin-tournament-detail-page__section">
+      <h2>Équipes ({{ t.teams.length }})</h2>
+      <ul class="super-admin-tournament-detail-page__list super-admin-tournament-detail-page__list--grid">
+        @for (team of t.teams; track team.id) {
+          <li>{{ team.name }}</li>
+        }
+      </ul>
+    </section>
+
+    <section class="super-admin-tournament-detail-page__section">
+      <h2>Arbitres ({{ t.referees.length }})</h2>
+      @if (t.referees.length === 0) {
+        <p>Aucun arbitre.</p>
+      } @else {
+        <ul class="super-admin-tournament-detail-page__list">
+          @for (referee of t.referees; track referee.id) {
+            <li>
+              {{ referee.firstName }} {{ referee.lastName }}
+              @if (referee.email) {
+                ({{ referee.email }})
+              }
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    <section class="super-admin-tournament-detail-page__section">
+      <h2>Matchs ({{ t.matches.length }})</h2>
+      @if (t.matches.length === 0) {
+        <p>Aucun match.</p>
+      } @else {
+        <table class="super-admin-tournament-detail-page__table">
+          <thead>
+            <tr>
+              <th>Domicile</th>
+              <th>Score</th>
+              <th>Extérieur</th>
+              <th>Statut</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (match of t.matches; track match.id) {
+              <tr>
+                <td>{{ match.homeTeamName ?? '—' }}</td>
+                <td>
+                  @if (match.homeScore !== null && match.awayScore !== null) {
+                    {{ match.homeScore }} – {{ match.awayScore }}
+                  } @else {
+                    —
+                  }
+                </td>
+                <td>{{ match.awayTeamName ?? '—' }}</td>
+                <td><ap-badge [status]="matchStatusBadge[match.status]" /></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    </section>
+  }
+</main>
