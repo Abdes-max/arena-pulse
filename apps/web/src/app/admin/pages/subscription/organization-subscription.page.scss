@@ -39,3 +39,77 @@
   font-size: 0.9rem;
   margin: 0;
 }
+
+.subscription-page__history {
+  margin-top: var(--ap-space-6);
+
+  h2 {
+    font-size: 1.1rem;
+    margin: 0 0 var(--ap-space-3);
+  }
+}
+
+.subscription-page__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+
+  th,
+  td {
+    text-align: left;
+    padding: var(--ap-space-2) var(--ap-space-3);
+    border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+  }
+
+  th {
+    color: var(--ap-color-muted);
+    font-weight: 600;
+  }
+}
+
+.subscription-page__print-btn {
+  background: none;
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-sm, 4px);
+  color: var(--ap-color-fg);
+  font-family: var(--ap-font-body);
+  font-size: 0.85rem;
+  padding: var(--ap-space-1) var(--ap-space-2);
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--ap-color-primary);
+    color: var(--ap-color-primary);
+  }
+}
+
+// Only rendered when a receipt is being printed (see printReceipt()) --
+// invisible on screen either way, but this keeps intent explicit.
+.subscription-page__print-only {
+  display: none;
+}
+
+@media print {
+  .subscription-page__no-print {
+    display: none;
+  }
+
+  .subscription-page__print-only {
+    display: block;
+    padding: var(--ap-space-6);
+
+    dl {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: var(--ap-space-2) var(--ap-space-4);
+    }
+
+    dt {
+      font-weight: 600;
+    }
+
+    dd {
+      margin: 0;
+    }
+  }
+}

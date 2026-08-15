@@ -8,6 +8,7 @@ import {
   OrganizationSubscriptionStatus,
   PendingInvitation,
   SubscribeResult,
+  SubscriptionHistoryEntry,
 } from './models';
 
 @Injectable({ providedIn: 'root' })
@@ -86,6 +87,14 @@ export class OrganizationsService {
       this.http.post<SubscribeResult>(
         `${environment.apiUrl}/organizations/${organizationId}/subscription`,
         {},
+      ),
+    );
+  }
+
+  listSubscriptionHistory(organizationId: string): Promise<SubscriptionHistoryEntry[]> {
+    return firstValueFrom(
+      this.http.get<SubscriptionHistoryEntry[]>(
+        `${environment.apiUrl}/organizations/${organizationId}/subscription/history`,
       ),
     );
   }

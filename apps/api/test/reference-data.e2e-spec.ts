@@ -36,18 +36,29 @@ describe('Reference data (e2e)', () => {
   });
 
   it('lists the seeded sports and permissions for an authenticated user', async () => {
-    const registerRes = await request(app.getHttpServer())
+    const email = 'organizer@example.com';
+    const password = 'a-very-strong-password';
+    await request(app.getHttpServer())
       .post('/api/v1/auth/register')
       .send({
-        email: 'organizer@example.com',
-        password: 'a-very-strong-password',
+        email,
+        password,
         firstName: 'Ada',
         lastName: 'Lovelace',
         organizationName: 'Ada Tournaments',
       })
       .expect(201);
-    const accessToken = (registerRes.body as { accessToken: string })
-      .accessToken;
+    // register() no longer issues a session -- mark the test account
+    // verified directly in DB (bypassing the email link) and log in.
+    await prisma.user.update({
+      where: { email },
+      data: { emailVerifiedAt: new Date() },
+    });
+    const loginRes = await request(app.getHttpServer())
+      .post('/api/v1/auth/login')
+      .send({ email, password })
+      .expect(200);
+    const accessToken = (loginRes.body as { accessToken: string }).accessToken;
 
     const sportsRes = await request(app.getHttpServer())
       .get('/api/v1/sports')

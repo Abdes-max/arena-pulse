@@ -130,6 +130,24 @@ export class OrganizationsService {
     return active !== null;
   }
 
+  /** Every OrganizationSubscription row ever created for this organization, most recent first -- unlike getSubscriptionStatus() this isn't filtered down to "the current one", it's the full payment history for the receipts screen. */
+  async listSubscriptionHistory(organizationId: string) {
+    const subscriptions = await this.prisma.organizationSubscription.findMany({
+      where: { organizationId },
+      orderBy: { createdAt: 'desc' },
+    });
+    return subscriptions.map((subscription) => ({
+      id: subscription.id,
+      status: subscription.status,
+      amountCents: subscription.amountCents,
+      currency: subscription.currency,
+      startsAt: subscription.startsAt,
+      expiresAt: subscription.expiresAt,
+      createdAt: subscription.createdAt,
+      paidAt: subscription.paidAt,
+    }));
+  }
+
   async getSubscriptionStatus(organizationId: string) {
     const active = await this.prisma.organizationSubscription.findFirst({
       where: {

@@ -22,21 +22,35 @@ async function registerOrganizer(
   app: INestApplication<App>,
   overrides: Partial<{ email: string; organizationName: string }> = {},
 ) {
-  const res = await request(app.getHttpServer())
+  const email = overrides.email ?? 'organizer@example.com';
+  const password = 'a-very-strong-password';
+  await request(app.getHttpServer())
     .post('/api/v1/auth/register')
     .send({
-      email: overrides.email ?? 'organizer@example.com',
-      password: 'a-very-strong-password',
+      email,
+      password,
       firstName: 'Ada',
       lastName: 'Lovelace',
       organizationName: overrides.organizationName ?? 'Ada Tournaments',
     })
     .expect(201);
-  const body = res.body as AuthResponseBody;
-  return {
-    accessToken: body.accessToken,
-    organizationId: body.organization!.id,
-  };
+  // register() no longer issues a session -- mark the test account verified
+  // directly in DB (bypassing the email link) and log in for real tokens,
+  // mirroring what a real user does after clicking the verification link.
+  await app
+    .get(PrismaService)
+    .user.update({ where: { email }, data: { emailVerifiedAt: new Date() } });
+  const loginRes = await request(app.getHttpServer())
+    .post('/api/v1/auth/login')
+    .send({ email, password })
+    .expect(200);
+  const { accessToken } = loginRes.body as AuthResponseBody;
+  const meRes = await request(app.getHttpServer())
+    .get('/api/v1/auth/me')
+    .set('Authorization', `Bearer ${accessToken}`)
+    .expect(200);
+  const { organizations } = meRes.body as { organizations: { id: string }[] };
+  return { accessToken, organizationId: organizations[0].id };
 }
 
 async function firstSportId(

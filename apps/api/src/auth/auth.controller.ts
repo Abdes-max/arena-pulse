@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
   Req,
   Res,
@@ -41,11 +42,22 @@ export class AuthController {
   @Public()
   @Throttle(AUTH_THROTTLE)
   @Post('register')
-  async register(
-    @Body() dto: RegisterDto,
+  async register(@Body() dto: RegisterDto) {
+    // No session issued here anymore -- the account isn't usable until the
+    // verification email's link is clicked (see verifyEmail below), so
+    // there's no refresh cookie to set and no accessToken to return.
+    return this.authService.register(dto);
+  }
+
+  @Public()
+  @Throttle(AUTH_THROTTLE)
+  @HttpCode(HttpStatus.OK)
+  @Post('verify-email/:token')
+  async verifyEmail(
+    @Param('token') token: string,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const result = await this.authService.register(dto);
+    const result = await this.authService.verifyEmail(token);
     this.setRefreshCookie(
       res,
       result.refreshToken,
@@ -55,8 +67,17 @@ export class AuthController {
       accessToken: result.accessToken,
       expiresIn: result.expiresIn,
       user: result.user,
-      organization: result.organization,
     };
+  }
+
+  @Public()
+  @Throttle(AUTH_THROTTLE)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Post('resend-verification')
+  async resendVerification(@Body() dto: LoginDto) {
+    // Reuses LoginDto purely for its `email` field shape (already validated
+    // as a proper email) -- no password involved here.
+    await this.authService.resendVerificationEmail(dto.email);
   }
 
   @Public()

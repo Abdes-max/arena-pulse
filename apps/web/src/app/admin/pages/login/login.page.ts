@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Button, Logo, TextField } from 'design-system';
@@ -24,6 +25,8 @@ export class LoginPage {
 
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
+  protected readonly needsVerification = signal(false);
+  protected readonly resent = signal(false);
 
   protected async submit(): Promise<void> {
     if (this.form.invalid || this.submitting()) {
@@ -31,13 +34,36 @@ export class LoginPage {
     }
     this.submitting.set(true);
     this.errorMessage.set(null);
+    this.needsVerification.set(false);
+    this.resent.set(false);
     try {
       const { email, password } = this.form.getRawValue();
       await this.authService.login(email, password);
       const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/admin/tournaments';
       await this.router.navigateByUrl(returnUrl);
+    } catch (error) {
+      if (error instanceof HttpErrorResponse && error.status === 403) {
+        this.errorMessage.set('Vérifiez votre email avant de vous connecter.');
+        this.needsVerification.set(true);
+      } else {
+        this.errorMessage.set('Email ou mot de passe incorrect.');
+      }
+    } finally {
+      this.submitting.set(false);
+    }
+  }
+
+  protected async resendVerification(): Promise<void> {
+    const email = this.form.controls.email.value;
+    if (!email || this.submitting()) {
+      return;
+    }
+    this.submitting.set(true);
+    try {
+      await this.authService.resendVerification(email);
+      this.resent.set(true);
     } catch {
-      this.errorMessage.set('Email ou mot de passe incorrect.');
+      this.errorMessage.set('Une erreur est survenue, réessayez.');
     } finally {
       this.submitting.set(false);
     }

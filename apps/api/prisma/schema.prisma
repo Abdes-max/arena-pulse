@@ -34,6 +34,14 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
+  // Null until the "Vérifiez votre email" link is clicked -- register()
+  // does not issue a session until then (see AuthService.verifyEmail()).
+  // The token itself is never stored in clear text, same pattern as
+  // Invitation.tokenHash below: only its SHA-256 hash is persisted.
+  emailVerifiedAt            DateTime?
+  emailVerificationTokenHash String?   @unique
+  emailVerificationExpiresAt DateTime?
+
   memberships                  OrganizationMember[]
   refreshTokens                RefreshToken[]
   sentInvitations              Invitation[]              @relation("InvitedBy")

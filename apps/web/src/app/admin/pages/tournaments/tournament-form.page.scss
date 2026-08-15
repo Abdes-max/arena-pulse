@@ -110,3 +110,74 @@
   gap: var(--ap-space-2);
   font-size: 0.9rem;
 }
+
+.tournament-form-page__note {
+  color: var(--ap-color-muted);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.tournament-form-page__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+
+  th,
+  td {
+    text-align: left;
+    padding: var(--ap-space-2) var(--ap-space-3);
+    border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+  }
+
+  th {
+    color: var(--ap-color-muted);
+    font-weight: 600;
+  }
+}
+
+.tournament-form-page__print-btn {
+  background: none;
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-sm, 4px);
+  color: var(--ap-color-fg);
+  font-family: var(--ap-font-body);
+  font-size: 0.85rem;
+  padding: var(--ap-space-1) var(--ap-space-2);
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--ap-color-primary);
+    color: var(--ap-color-primary);
+  }
+}
+
+// Only rendered when a receipt is being printed (see printReceipt()) --
+// invisible on screen either way, but this keeps intent explicit.
+.tournament-form-page__print-only {
+  display: none;
+}
+
+@media print {
+  .tournament-form-page__no-print {
+    display: none;
+  }
+
+  .tournament-form-page__print-only {
+    display: block;
+    padding: var(--ap-space-6);
+
+    dl {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: var(--ap-space-2) var(--ap-space-4);
+    }
+
+    dt {
+      font-weight: 600;
+    }
+
+    dd {
+      margin: 0;
+    }
+  }
+}

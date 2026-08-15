@@ -18,6 +18,12 @@ export class OrganizationSubscriptionController {
   }
 
   @RequireOrgRole(OrganizationRole.ORG_ADMIN)
+  @Get('history')
+  getHistory(@Param('organizationId') organizationId: string) {
+    return this.organizationsService.listSubscriptionHistory(organizationId);
+  }
+
+  @RequireOrgRole(OrganizationRole.ORG_ADMIN)
   @Post()
   subscribe(@Param('organizationId') organizationId: string) {
     return this.organizationsService.subscribe(organizationId);

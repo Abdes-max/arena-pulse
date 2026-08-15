@@ -32,26 +32,41 @@ const stripeService = {
 };
 
 const mailService = {
+  sendEmailVerificationEmail: jest.fn().mockResolvedValue(undefined),
   sendAccountCreatedEmail: jest.fn().mockResolvedValue(undefined),
   sendSubscriptionReceiptEmail: jest.fn().mockResolvedValue(undefined),
 };
 
 async function registerOrganizer(app: INestApplication<App>) {
-  const res = await request(app.getHttpServer())
+  const email = 'organizer@example.com';
+  const password = 'a-very-strong-password';
+  await request(app.getHttpServer())
     .post('/api/v1/auth/register')
     .send({
-      email: 'organizer@example.com',
-      password: 'a-very-strong-password',
+      email,
+      password,
       firstName: 'Ada',
       lastName: 'Lovelace',
       organizationName: 'Ada Tournaments',
     })
     .expect(201);
-  const body = res.body as AuthResponseBody;
-  return {
-    accessToken: body.accessToken,
-    organizationId: body.organization!.id,
-  };
+  // register() no longer issues a session -- mark the test account verified
+  // directly in DB (bypassing the email link) and log in for real tokens,
+  // mirroring what a real user does after clicking the verification link.
+  await app
+    .get(PrismaService)
+    .user.update({ where: { email }, data: { emailVerifiedAt: new Date() } });
+  const loginRes = await request(app.getHttpServer())
+    .post('/api/v1/auth/login')
+    .send({ email, password })
+    .expect(200);
+  const { accessToken } = loginRes.body as AuthResponseBody;
+  const meRes = await request(app.getHttpServer())
+    .get('/api/v1/auth/me')
+    .set('Authorization', `Bearer ${accessToken}`)
+    .expect(200);
+  const { organizations } = meRes.body as { organizations: { id: string }[] };
+  return { accessToken, organizationId: organizations[0].id };
 }
 
 describe('Organization annual subscription (e2e)', () => {
@@ -60,6 +75,7 @@ describe('Organization annual subscription (e2e)', () => {
 
   beforeEach(async () => {
     stripeService.createCheckoutSession.mockClear();
+    mailService.sendEmailVerificationEmail.mockClear();
     mailService.sendAccountCreatedEmail.mockClear();
     mailService.sendSubscriptionReceiptEmail.mockClear();
     // ConfigService reads process.env at module init -- set before
@@ -164,5 +180,72 @@ describe('Organization annual subscription (e2e)', () => {
       .expect(200, { received: true });
 
     await auth(request(app.getHttpServer()).post(subscriptionUrl)).expect(409);
+  });
+
+  it('lists the full subscription history for the organization, most recent first, and rejects another organization from reading it', async () => {
+    const { accessToken, organizationId } = await registerOrganizer(app);
+    const auth = (req: request.Test) =>
+      req.set('Authorization', `Bearer ${accessToken}`);
+    const subscriptionUrl = `/api/v1/organizations/${organizationId}/subscription`;
+    const historyUrl = `${subscriptionUrl}/history`;
+
+    await auth(request(app.getHttpServer()).post(subscriptionUrl)).expect(201);
+    await request(app.getHttpServer())
+      .post('/api/v1/payments/webhook')
+      .set('stripe-signature', 'test-signature')
+      .send({
+        type: 'checkout.session.completed',
+        data: {
+          object: {
+            id: 'cs_test_subscription_123',
+            payment_intent: 'pi_test_sub_1',
+          },
+        },
+      })
+      .expect(200, { received: true });
+
+    const historyRes = await auth(
+      request(app.getHttpServer()).get(historyUrl),
+    ).expect(200);
+    const history = historyRes.body as {
+      status: string;
+      amountCents: number;
+      currency: string;
+    }[];
+    expect(history).toHaveLength(1);
+    expect(history[0]).toMatchObject({
+      status: 'ACTIVE',
+      amountCents: 20000,
+      currency: 'eur',
+    });
+
+    // A member of a different organization must not read this one's history.
+    const otherEmail = 'other-organizer@example.com';
+    const otherPassword = 'a-very-strong-password';
+    await request(app.getHttpServer())
+      .post('/api/v1/auth/register')
+      .send({
+        email: otherEmail,
+        password: otherPassword,
+        firstName: 'Bo',
+        lastName: 'Belote',
+        organizationName: 'Other Org',
+      })
+      .expect(201);
+    await prisma.user.update({
+      where: { email: otherEmail },
+      data: { emailVerifiedAt: new Date() },
+    });
+    const otherLoginRes = await request(app.getHttpServer())
+      .post('/api/v1/auth/login')
+      .send({ email: otherEmail, password: otherPassword })
+      .expect(200);
+    const otherAccessToken = (otherLoginRes.body as AuthResponseBody)
+      .accessToken;
+
+    await request(app.getHttpServer())
+      .get(historyUrl)
+      .set('Authorization', `Bearer ${otherAccessToken}`)
+      .expect(403);
   });
 });

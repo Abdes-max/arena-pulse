@@ -16,6 +16,7 @@ import { AuthService } from '../../core/auth.service';
 import {
   Category,
   Permission,
+  PublicationOrder,
   PublicTheme,
   Sport,
   TournamentAdministrator,
@@ -79,6 +80,9 @@ export class TournamentFormPage {
   protected readonly categories = signal<Category[]>([]);
   protected readonly venues = signal<Venue[]>([]);
   protected readonly administrators = signal<TournamentAdministrator[]>([]);
+  protected readonly publicationOrders = signal<PublicationOrder[]>([]);
+  protected readonly publicationOrdersLoading = signal(true);
+  protected readonly printingOrder = signal<PublicationOrder | null>(null);
 
   protected readonly isArchived = computed(() => this.tournament()?.status === 'ARCHIVED');
 
@@ -132,6 +136,8 @@ export class TournamentFormPage {
     this.newFieldNameByVenue.set({});
     this.newAdministratorEmail.set('');
     this.newAdministratorPermissionKeys.set([]);
+    this.publicationOrders.set([]);
+    this.publicationOrdersLoading.set(true);
     try {
       this.sports.set(await this.sportsService.listSports());
       this.permissions.set(await this.permissionsService.listPermissions());
@@ -173,6 +179,27 @@ export class TournamentFormPage {
     this.administrators.set(
       await this.tournamentsService.listAdministrators(organizationId, tournamentId),
     );
+    void this.loadPublicationOrders();
+  }
+
+  private async loadPublicationOrders(): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const tournamentId = this.tournamentId();
+    if (!organizationId || !tournamentId) {
+      this.publicationOrdersLoading.set(false);
+      return;
+    }
+    this.publicationOrdersLoading.set(true);
+    try {
+      this.publicationOrders.set(
+        await this.tournamentsService.listPublicationOrders(organizationId, tournamentId),
+      );
+    } catch {
+      // Non-blocking: the tournament itself already loaded above, this
+      // table just stays empty on failure.
+    } finally {
+      this.publicationOrdersLoading.set(false);
+    }
   }
 
   protected async submit(): Promise<void> {
@@ -227,6 +254,7 @@ export class TournamentFormPage {
         return;
       }
       this.tournament.set(result);
+      void this.loadPublicationOrders();
     } catch (error) {
       this.errorMessage.set(
         error instanceof HttpErrorResponse && error.status === 409
@@ -565,5 +593,36 @@ export class TournamentFormPage {
     } catch {
       this.errorMessage.set('Impossible de retirer cet administrateur.');
     }
+  }
+
+  /** Renders the print-only receipt block for this order, then opens the browser's print dialog. */
+  protected printReceipt(order: PublicationOrder): void {
+    this.printingOrder.set(order);
+    const reset = () => {
+      this.printingOrder.set(null);
+      window.removeEventListener('afterprint', reset);
+    };
+    window.addEventListener('afterprint', reset);
+    // Deferred a tick so Angular renders the print-only block before the
+    // print dialog captures the page.
+    setTimeout(() => window.print(), 0);
+  }
+
+  protected formatDate(iso: string | null): string {
+    if (!iso) {
+      return '—';
+    }
+    return new Date(iso).toLocaleDateString('fr-FR', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+  }
+
+  protected formatAmount(amountCents: number, currency: string): string {
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: currency.toUpperCase(),
+    }).format(amountCents / 100);
   }
 }

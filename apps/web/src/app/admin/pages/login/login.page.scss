@@ -32,6 +32,12 @@
   margin: 0;
 }
 
+.login-page__hint {
+  color: var(--ap-color-fg-muted, var(--ap-color-fg));
+  font-size: 0.9rem;
+  margin: 0;
+}
+
 .login-page__footer {
   font-size: 0.9rem;
   color: var(--ap-color-fg);
