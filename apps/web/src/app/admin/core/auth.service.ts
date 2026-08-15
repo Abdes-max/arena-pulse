@@ -62,7 +62,10 @@ export class AuthService {
   async resendVerification(email: string): Promise<void> {
     await firstValueFrom(
       // Reuses the login endpoint's body shape purely for its `email` field -- password is ignored server-side.
-      this.http.post<void>(`${environment.apiUrl}/auth/resend-verification`, { email, password: '' }),
+      this.http.post<void>(`${environment.apiUrl}/auth/resend-verification`, {
+        email,
+        password: '',
+      }),
     );
   }
 

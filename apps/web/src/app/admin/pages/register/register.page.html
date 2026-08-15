@@ -22,7 +22,9 @@
           <p class="register-page__error" role="alert">{{ message }}</p>
         }
         <ap-button type="submit" [disabled]="submitting()">Créer mon organisation</ap-button>
-        <p class="register-page__footer">Déjà un compte ? <a routerLink="/login">Se connecter</a></p>
+        <p class="register-page__footer">
+          Déjà un compte ? <a routerLink="/login">Se connecter</a>
+        </p>
       </form>
     }
     @case ('sent') {

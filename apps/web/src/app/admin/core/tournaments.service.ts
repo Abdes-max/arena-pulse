@@ -92,10 +92,7 @@ export class TournamentsService {
     );
   }
 
-  listPublicationOrders(
-    organizationId: string,
-    tournamentId: string,
-  ): Promise<PublicationOrder[]> {
+  listPublicationOrders(organizationId: string, tournamentId: string): Promise<PublicationOrder[]> {
     return firstValueFrom(
       this.http.get<PublicationOrder[]>(
         `${this.base(organizationId)}/${tournamentId}/publication-orders`,
