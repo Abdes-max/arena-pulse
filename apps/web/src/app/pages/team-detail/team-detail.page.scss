@@ -2,6 +2,24 @@
   color: var(--ap-color-error);
 }
 
+.team-detail-page__header {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-3);
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.team-detail-page__logo {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--ap-radius-md);
+  object-fit: cover;
+  flex: none;
+}
+
 .team-detail-page__meta {
   color: var(--ap-color-muted);
   margin-top: 0;

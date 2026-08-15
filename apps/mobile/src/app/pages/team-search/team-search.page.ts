@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { PublicApiService } from 'api-client';
+import { AssetUrlService, PublicApiService } from 'api-client';
 import {
   IonButton,
   IonContent,
@@ -25,6 +25,7 @@ export class TeamSearchPage {
   private readonly router = inject(Router);
   private readonly context = inject(TournamentContextService);
   protected readonly favorites = inject(FavoritesService);
+  protected readonly assetUrl = inject(AssetUrlService);
 
   protected readonly loading = signal(true);
   protected readonly categories = signal<Category[]>([]);

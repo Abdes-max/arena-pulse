@@ -81,6 +81,13 @@
   }
 }
 
+.team-search-page__team-logo {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--ap-radius-sm);
+  object-fit: cover;
+}
+
 .team-search-page__team-name {
   font-weight: 700;
   color: var(--ap-color-fg);

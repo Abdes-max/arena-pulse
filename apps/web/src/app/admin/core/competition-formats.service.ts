@@ -94,6 +94,7 @@ export type StructurePresetFormat = 'POOLS_ONLY' | 'POOLS_AND_KNOCKOUT' | 'KNOCK
 export interface StructurePresetTierPayload {
   name: string;
   qualifiersPerPool: number;
+  hasRankingMatch?: boolean;
 }
 
 export interface StructurePresetBestOfPositionPayload {
@@ -110,6 +111,8 @@ export interface CreateStructurePresetPayload {
   tiers?: StructurePresetTierPayload[];
   // Only relevant for KNOCKOUT_ONLY -- defaults to "Tableau final" server-side.
   knockoutName?: string;
+  // Only relevant for KNOCKOUT_ONLY -- POOLS_AND_KNOCKOUT sets this per tier instead.
+  hasRankingMatch?: boolean;
   bestOfPosition?: StructurePresetBestOfPositionPayload;
   matchDurationMinutes?: number;
   breakDurationMinutes?: number;

@@ -25,7 +25,55 @@
         <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
         <ap-button type="button" variant="ghost" (click)="logout()">Se déconnecter</ap-button>
       </div>
+      <button
+        type="button"
+        class="app-shell__nav-toggle"
+        (click)="toggleMobileMenu()"
+        [attr.aria-expanded]="mobileMenuOpen()"
+        aria-controls="app-shell-mobile-menu"
+        aria-label="Menu"
+      >
+        @if (mobileMenuOpen()) {
+          <svg viewBox="0 0 20 20" aria-hidden="true">
+            <path d="M4 4 L16 16 M16 4 L4 16" />
+          </svg>
+        } @else {
+          <svg viewBox="0 0 20 20" aria-hidden="true">
+            <path d="M3 5 L17 5 M3 10 L17 10 M3 15 L17 15" />
+          </svg>
+        }
+      </button>
     </div>
+
+    @if (mobileMenuOpen()) {
+      <div class="app-shell__mobile-menu" id="app-shell-mobile-menu">
+        <a
+          class="app-shell__mobile-menu-link"
+          routerLink="/admin/tournaments"
+          routerLinkActive="app-shell__link--active"
+          (click)="closeMobileMenu()"
+          >Tournois</a
+        >
+        <a
+          class="app-shell__mobile-menu-link"
+          routerLink="/admin/collaborators"
+          routerLinkActive="app-shell__link--active"
+          (click)="closeMobileMenu()"
+          >Collaborateurs</a
+        >
+        <a
+          class="app-shell__mobile-menu-link"
+          routerLink="/admin/organization/subscription"
+          routerLinkActive="app-shell__link--active"
+          (click)="closeMobileMenu()"
+          >Abonnement</a
+        >
+        <div class="app-shell__mobile-menu-controls">
+          <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
+          <ap-button type="button" variant="ghost" (click)="logout()">Se déconnecter</ap-button>
+        </div>
+      </div>
+    }
     @if (tournamentId(); as id) {
       <app-tournament-submenu
         [tournamentId]="id"

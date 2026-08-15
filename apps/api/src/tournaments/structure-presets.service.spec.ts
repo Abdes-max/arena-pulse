@@ -250,7 +250,12 @@ describe('StructurePresetsService', () => {
     });
 
     expect(prisma.knockoutBracket.create).toHaveBeenCalledWith({
-      data: { phaseId: 'phase-2', name: 'Tableau final', size: 4 },
+      data: {
+        phaseId: 'phase-2',
+        name: 'Tableau final',
+        size: 4,
+        hasRankingMatch: false,
+      },
     });
     expect(prisma.qualificationRule.create).toHaveBeenCalledTimes(2);
     expect(prisma.qualificationRule.create).toHaveBeenCalledWith({
@@ -283,10 +288,20 @@ describe('StructurePresetsService', () => {
     expect(prisma.competitionPhase.create).toHaveBeenCalledTimes(3);
     expect(prisma.knockoutBracket.create).toHaveBeenCalledTimes(2);
     expect(prisma.knockoutBracket.create).toHaveBeenNthCalledWith(1, {
-      data: { phaseId: 'phase-2', name: 'Ligue des Champions', size: 2 },
+      data: {
+        phaseId: 'phase-2',
+        name: 'Ligue des Champions',
+        size: 2,
+        hasRankingMatch: false,
+      },
     });
     expect(prisma.knockoutBracket.create).toHaveBeenNthCalledWith(2, {
-      data: { phaseId: 'phase-3', name: 'Europa League', size: 2 },
+      data: {
+        phaseId: 'phase-3',
+        name: 'Europa League',
+        size: 2,
+        hasRankingMatch: false,
+      },
     });
 
     // Tier 1 (Champions League) claims position 1 in every pool, tier 2
@@ -312,6 +327,24 @@ describe('StructurePresetsService', () => {
       { phaseId: 'phase-2', name: 'Ligue des Champions', bracketSize: 2 },
       { phaseId: 'phase-3', name: 'Europa League', bracketSize: 2 },
     ]);
+  });
+
+  it('passes hasRankingMatch through to the bracket it creates, per tier', async () => {
+    await service.create('org-1', 'tournament-1', 'category-1', {
+      ...BASE_DTO,
+      tiers: [
+        { name: 'Tableau final', qualifiersPerPool: 2, hasRankingMatch: true },
+      ],
+    });
+
+    expect(prisma.knockoutBracket.create).toHaveBeenCalledWith({
+      data: {
+        phaseId: 'phase-2',
+        name: 'Tableau final',
+        size: 4,
+        hasRankingMatch: true,
+      },
+    });
   });
 
   describe('format: POOLS_ONLY', () => {
@@ -394,7 +427,12 @@ describe('StructurePresetsService', () => {
         },
       });
       expect(prisma.knockoutBracket.create).toHaveBeenCalledWith({
-        data: { phaseId: 'phase-2', name: 'Tableau final', size: 8 },
+        data: {
+          phaseId: 'phase-2',
+          name: 'Tableau final',
+          size: 8,
+          hasRankingMatch: false,
+        },
       });
       expect(prisma.qualificationRule.create).toHaveBeenCalledTimes(1);
       expect(prisma.qualificationRule.create).toHaveBeenCalledWith({
@@ -409,6 +447,23 @@ describe('StructurePresetsService', () => {
       expect(result).toEqual({
         groupPhaseId: 'phase-1',
         tiers: [{ phaseId: 'phase-2', name: 'Tableau final', bracketSize: 8 }],
+      });
+    });
+
+    it('passes hasRankingMatch through to the bracket it creates', async () => {
+      await service.create('org-1', 'tournament-1', 'category-1', {
+        format: StructurePresetFormat.KNOCKOUT_ONLY,
+        teamCount: 8,
+        hasRankingMatch: true,
+      });
+
+      expect(prisma.knockoutBracket.create).toHaveBeenCalledWith({
+        data: {
+          phaseId: 'phase-2',
+          name: 'Tableau final',
+          size: 8,
+          hasRankingMatch: true,
+        },
       });
     });
 

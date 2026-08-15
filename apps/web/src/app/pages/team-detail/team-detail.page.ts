@@ -8,8 +8,8 @@ import {
   signal,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { MatchCard, MatchCardVariant } from 'design-system';
-import { PublicApiService } from 'api-client';
+import { MatchCard, MatchCardTeam, MatchCardVariant } from 'design-system';
+import { AssetUrlService, PublicApiService } from 'api-client';
 import { TournamentContextService } from '../../core/tournament-context.service';
 import { PublicTeamDetail, roundLabel } from 'shared-models';
 
@@ -24,6 +24,7 @@ export class TeamDetailPage {
   private readonly route = inject(ActivatedRoute);
   private readonly api = inject(PublicApiService);
   private readonly context = inject(TournamentContextService);
+  protected readonly assetUrl = inject(AssetUrlService);
 
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal<string | null>(null);
@@ -63,6 +64,17 @@ export class TeamDetailPage {
 
   protected variantFor(match: PublicTeamDetail['matches'][number]): MatchCardVariant {
     return match.status === 'LIVE' ? 'live' : 'result';
+  }
+
+  // Resolves the logo's relative API path into a URL fetchable from
+  // wherever this app is actually running -- see AssetUrlService.
+  protected teamCardInput(
+    team: { name: string; logoUrl: string | null } | null,
+    fallbackLabel: string,
+  ): MatchCardTeam {
+    return team
+      ? { name: team.name, logoUrl: this.assetUrl.resolve(team.logoUrl) }
+      : { name: fallbackLabel };
   }
 
   protected formatKickoff(startTime: string): string {

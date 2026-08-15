@@ -42,6 +42,9 @@
             [class.team-search-page__team--favorite]="isFavorite(team)"
           >
             <button type="button" class="team-search-page__team-link" (click)="goToTeam(team)">
+              @if (assetUrl.resolve(team.logoUrl); as logo) {
+                <img class="team-search-page__team-logo" [src]="logo" alt="" />
+              }
               <span class="team-search-page__team-name">{{ team.name }}</span>
               <span class="team-search-page__team-meta">
                 {{ team.categoryName }}

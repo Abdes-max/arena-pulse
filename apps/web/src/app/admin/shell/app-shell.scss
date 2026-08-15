@@ -52,6 +52,74 @@
   gap: var(--ap-space-3);
 }
 
+// Hidden by default (desktop) -- shown only under the mobile breakpoint
+// below, top-right of the topbar. Same pattern as the landing page's own
+// hamburger toggle (landing.page.scss's .landing-page__nav-toggle).
+.app-shell__nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  background: transparent;
+  color: var(--ap-color-fg);
+  cursor: pointer;
+
+  svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+  }
+}
+
+.app-shell__mobile-menu {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .app-shell__nav,
+  .app-shell__controls {
+    display: none;
+  }
+
+  .app-shell__nav-toggle {
+    display: inline-flex;
+  }
+
+  .app-shell__mobile-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--ap-space-1);
+    padding: 0 var(--ap-space-6) var(--ap-space-4);
+  }
+
+  .app-shell__mobile-menu-link {
+    padding: var(--ap-space-2) 0;
+    color: var(--ap-color-fg);
+    font-family: var(--ap-font-body);
+    font-weight: 600;
+    text-decoration: none;
+
+    &.app-shell__link--active {
+      color: var(--ap-color-primary);
+    }
+  }
+
+  .app-shell__mobile-menu-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--ap-space-3);
+    margin-top: var(--ap-space-2);
+  }
+}
+
 .app-shell__content {
   flex: 1;
 }
