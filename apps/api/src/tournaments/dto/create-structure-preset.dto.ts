@@ -34,6 +34,13 @@ export class StructurePresetTierDto {
   @IsInt()
   @Min(1)
   qualifiersPerPool!: number;
+
+  // Whether this tier's bracket includes a 3rd-place match. Per-tier (not a
+  // single flag on the whole DTO) since POOLS_AND_KNOCKOUT can have several
+  // tiers, each with its own bracket.
+  @IsOptional()
+  @IsBoolean()
+  hasRankingMatch?: boolean;
 }
 
 // Optional: on top of the direct per-pool qualifiers above, also qualifies
@@ -84,6 +91,12 @@ export class CreateStructurePresetDto {
   @IsString()
   @MinLength(1)
   knockoutName?: string;
+
+  // KNOCKOUT_ONLY's single bracket has no tiers array to carry
+  // hasRankingMatch on, so it gets its own root-level flag.
+  @IsOptional()
+  @IsBoolean()
+  hasRankingMatch?: boolean;
 
   @IsOptional()
   @ValidateNested()

@@ -3,7 +3,12 @@
 } @else if (errorMessage(); as message) {
   <p class="team-detail-page__error" role="alert">{{ message }}</p>
 } @else if (team(); as t) {
-  <h2>{{ t.name }}</h2>
+  <div class="team-detail-page__header">
+    @if (assetUrl.resolve(t.logoUrl); as logo) {
+      <img class="team-detail-page__logo" [src]="logo" alt="" />
+    }
+    <h2>{{ t.name }}</h2>
+  </div>
   <p class="team-detail-page__meta">
     {{ t.categoryName }}
     @if (t.groupName) {
@@ -56,8 +61,8 @@
         @for (match of upcomingMatches(); track match.id) {
           <ap-match-card
             variant="upcoming"
-            [homeTeam]="match.homeTeam ?? { name: '?' }"
-            [awayTeam]="match.awayTeam ?? { name: '?' }"
+            [homeTeam]="teamCardInput(match.homeTeam, '?')"
+            [awayTeam]="teamCardInput(match.awayTeam, '?')"
             [kickoff]="match.timeSlot ? formatKickoff(match.timeSlot.startTime) : undefined"
             [venue]="match.timeSlot?.field?.name"
             [competitionLabel]="competitionLabel(match)"
@@ -79,8 +84,8 @@
           } @else {
             <ap-match-card
               [variant]="variantFor(match)"
-              [homeTeam]="match.homeTeam ?? { name: '?' }"
-              [awayTeam]="match.awayTeam ?? { name: '?' }"
+              [homeTeam]="teamCardInput(match.homeTeam, '?')"
+              [awayTeam]="teamCardInput(match.awayTeam, '?')"
               [homeScore]="match.score?.homeScore"
               [awayScore]="match.score?.awayScore"
               [venue]="match.timeSlot?.field?.name"

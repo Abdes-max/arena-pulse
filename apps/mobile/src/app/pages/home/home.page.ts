@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 import { IonContent } from '@ionic/angular/standalone';
-import { MatchCard } from 'design-system';
-import { PublicApiService } from 'api-client';
+import { MatchCard, MatchCardTeam } from 'design-system';
+import { AssetUrlService, PublicApiService } from 'api-client';
 import { Category, Match } from 'shared-models';
 import { TournamentContextService } from '../../core/tournament-context.service';
 
@@ -16,6 +16,7 @@ import { TournamentContextService } from '../../core/tournament-context.service'
 export class HomePage {
   private readonly api = inject(PublicApiService);
   protected readonly context = inject(TournamentContextService);
+  private readonly assetUrl = inject(AssetUrlService);
 
   protected readonly tournament = this.context.tournament;
   protected readonly categories = signal<Category[]>([]);
@@ -43,6 +44,18 @@ export class HomePage {
 
   protected formatKickoff(startTime: string): string {
     return new Date(startTime).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' });
+  }
+
+  // Resolves the logo's relative API path into a URL fetchable from
+  // wherever this app is actually running -- mobile runs on a different
+  // Capacitor origin than the API, unlike web, see AssetUrlService.
+  protected teamCardInput(
+    team: { name: string; logoUrl: string | null } | null,
+    fallbackLabel: string,
+  ): MatchCardTeam {
+    return team
+      ? { name: team.name, logoUrl: this.assetUrl.resolve(team.logoUrl) }
+      : { name: fallbackLabel };
   }
 
   protected competitionLabel(match: Match): string {

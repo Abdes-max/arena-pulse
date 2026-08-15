@@ -7,8 +7,8 @@
           @for (match of upcomingMatches(); track match.id; let first = $first) {
             <ap-match-card
               [variant]="first ? 'featured' : 'compact'"
-              [homeTeam]="match.homeTeam ?? { name: '?' }"
-              [awayTeam]="match.awayTeam ?? { name: '?' }"
+              [homeTeam]="teamCardInput(match.homeTeam, '?')"
+              [awayTeam]="teamCardInput(match.awayTeam, '?')"
               [kickoff]="match.timeSlot ? formatKickoff(match.timeSlot.startTime) : undefined"
               [venue]="match.timeSlot?.field?.name"
               [competitionLabel]="competitionLabel(match)"

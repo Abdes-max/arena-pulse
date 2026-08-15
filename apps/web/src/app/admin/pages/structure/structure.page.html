@@ -94,6 +94,14 @@
                 [value]="presetTiers()[0].qualifiersPerPool"
                 (valueChange)="onPresetTierQualifiersChange(0, $event)"
               />
+              <label class="structure-page__checkbox-label">
+                <input
+                  type="checkbox"
+                  [checked]="presetTiers()[0].hasRankingMatch"
+                  (change)="onPresetTierRankingMatchChange(0, $event)"
+                />
+                Petite finale
+              </label>
             } @else {
               @for (tier of presetTiers(); track $index) {
                 <div class="structure-page__inline-form">
@@ -113,6 +121,14 @@
                     [value]="tier.qualifiersPerPool"
                     (valueChange)="onPresetTierQualifiersChange($index, $event)"
                   />
+                  <label class="structure-page__checkbox-label">
+                    <input
+                      type="checkbox"
+                      [checked]="tier.hasRankingMatch"
+                      (change)="onPresetTierRankingMatchChange($index, $event)"
+                    />
+                    Petite finale
+                  </label>
                   @if (presetTiers().length > 1) {
                     <ap-button type="button" variant="ghost" (click)="removePresetTier($index)">
                       Retirer
@@ -158,6 +174,14 @@
               [value]="presetKnockoutName()"
               (valueChange)="onPresetKnockoutNameChange($event)"
             />
+            <label class="structure-page__checkbox-label">
+              <input
+                type="checkbox"
+                [checked]="presetKnockoutHasRankingMatch()"
+                (change)="onPresetKnockoutRankingMatchChange($event)"
+              />
+              Petite finale
+            </label>
           }
 
           @for (tier of presetTierBracketSizes(); track $index) {
@@ -173,7 +197,7 @@
             [disabled]="!presetCanSubmit() || presetSubmitting()"
             (click)="generateStructurePreset()"
           >
-            Générer la structure
+            Enregistrer
           </ap-button>
         </section>
       }

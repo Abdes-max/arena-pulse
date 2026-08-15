@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Tabs, TextField } from 'design-system';
-import { PublicApiService } from 'api-client';
+import { AssetUrlService, PublicApiService } from 'api-client';
 import { TournamentContextService } from '../../core/tournament-context.service';
 import { Category, PublicTeam } from 'shared-models';
 
@@ -15,6 +15,7 @@ import { Category, PublicTeam } from 'shared-models';
 export class TeamSearchPage {
   private readonly api = inject(PublicApiService);
   private readonly context = inject(TournamentContextService);
+  protected readonly assetUrl = inject(AssetUrlService);
 
   protected readonly loading = signal(true);
   protected readonly categories = signal<Category[]>([]);

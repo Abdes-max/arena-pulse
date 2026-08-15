@@ -162,6 +162,7 @@ export class StructurePresetsService {
               phaseId: tierPhase.id,
               name: tier.name,
               size: bracketSize,
+              hasRankingMatch: tier.hasRankingMatch ?? false,
             },
           });
 
@@ -257,6 +258,7 @@ export class StructurePresetsService {
             phaseId: knockoutPhase.id,
             name: knockoutName,
             size: dto.teamCount,
+            hasRankingMatch: dto.hasRankingMatch ?? false,
           },
         });
         await tx.qualificationRule.create({

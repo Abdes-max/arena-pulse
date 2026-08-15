@@ -86,6 +86,13 @@ export class AppShell {
     () => this.tournamentId() === null && !this.isCreatingTournament(),
   );
 
+  // Mobile nav (< 720px, same breakpoint as the landing page's own
+  // hamburger menu -- see landing.page.ts/.scss): the nav links, theme
+  // toggle and logout button all move into this slide-down panel behind a
+  // hamburger toggle instead of just wrapping/overflowing, which is what
+  // this header did before (no responsive treatment at all).
+  protected readonly mobileMenuOpen = signal(false);
+
   constructor() {
     // Applies the current tournament's own public theme to the whole admin
     // shell regardless of which of its sub-pages (Équipes, Arbitres,
@@ -121,6 +128,14 @@ export class AppShell {
     this.themeService.setMode(document.documentElement, next);
   }
 
+  protected toggleMobileMenu(): void {
+    this.mobileMenuOpen.update((open) => !open);
+  }
+
+  protected closeMobileMenu(): void {
+    this.mobileMenuOpen.set(false);
+  }
+
   // index.html sets <base href="/">, so a plain href="#main-content" resolves
   // against that base (i.e. navigates to "/") instead of jumping within the
   // current route -- handled manually here instead.
@@ -130,6 +145,7 @@ export class AppShell {
   }
 
   protected async logout(): Promise<void> {
+    this.closeMobileMenu();
     await this.authService.logout();
     await this.router.navigateByUrl('/');
   }

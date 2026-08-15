@@ -16,6 +16,21 @@
 // Plain <h2>, no special heading font -- same as apps/web's team-detail.page
 // (its "typo" is just the browser's default h2 weight/size on the body
 // font; there's no --ap-font-heading override there either).
+.team-detail-page__title {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-3);
+  min-width: 0;
+}
+
+.team-detail-page__logo {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--ap-radius-md);
+  object-fit: cover;
+  flex: none;
+}
+
 .team-detail-page__name {
   margin: 0;
   font-family: var(--ap-font-body);

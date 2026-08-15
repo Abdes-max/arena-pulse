@@ -115,6 +115,9 @@ export class StructurePage {
   // that format to borrow a name from). Defaults to "Tableau final" server-
   // side when left blank.
   protected readonly presetKnockoutName = signal('');
+  // Only used in KNOCKOUT_ONLY -- POOLS_AND_KNOCKOUT sets this per tier
+  // (presetTiers()[i].hasRankingMatch) instead.
+  protected readonly presetKnockoutHasRankingMatch = signal(false);
   protected readonly presetSubmitting = signal(false);
   protected readonly presetError = signal<string | null>(null);
   protected readonly presetSuccessMessage = signal<string | null>(null);
@@ -124,9 +127,9 @@ export class StructurePage {
   // organizer edits a named list of tiers, each claiming the next slice of
   // standing positions (tier 1: 1..q1, tier 2: q1+1..q1+q2, ...).
   protected readonly presetMultiTierEnabled = signal(false);
-  protected readonly presetTiers = signal<{ name: string; qualifiersPerPool: string }[]>([
-    { name: 'Tableau final', qualifiersPerPool: '' },
-  ]);
+  protected readonly presetTiers = signal<
+    { name: string; qualifiersPerPool: string; hasRankingMatch: boolean }[]
+  >([{ name: 'Tableau final', qualifiersPerPool: '', hasRankingMatch: false }]);
 
   // "Inclure les meilleurs classés à une position" -- best-of-position
   // candidates join the first tier's bracket alongside its direct qualifiers.
@@ -333,8 +336,11 @@ export class StructurePage {
     this.presetTeamCount.set('');
     this.presetPoolCount.set('');
     this.presetKnockoutName.set('');
+    this.presetKnockoutHasRankingMatch.set(false);
     this.presetMultiTierEnabled.set(false);
-    this.presetTiers.set([{ name: 'Tableau final', qualifiersPerPool: '' }]);
+    this.presetTiers.set([
+      { name: 'Tableau final', qualifiersPerPool: '', hasRankingMatch: false },
+    ]);
     this.presetBestOfPositionEnabled.set(false);
     this.presetBestOfPositionPosition.set('');
     this.presetBestOfPositionBestCount.set('');
@@ -1094,10 +1100,16 @@ export class StructurePage {
       this.presetBestOfPositionEnabled.set(false);
     } else if (value === 'POOLS_ONLY') {
       this.presetKnockoutName.set('');
+      this.presetKnockoutHasRankingMatch.set(false);
       this.presetBestOfPositionEnabled.set(false);
     } else {
       this.presetKnockoutName.set('');
+      this.presetKnockoutHasRankingMatch.set(false);
     }
+  }
+
+  protected onPresetKnockoutRankingMatchChange(event: Event): void {
+    this.presetKnockoutHasRankingMatch.set((event.target as HTMLInputElement).checked);
   }
 
   protected onPresetTeamCountChange(value: string): void {
@@ -1117,11 +1129,14 @@ export class StructurePage {
     this.presetMultiTierEnabled.set(checked);
     if (checked) {
       if (this.presetTiers().length < 2) {
-        this.presetTiers.update((tiers) => [...tiers, { name: '', qualifiersPerPool: '' }]);
+        this.presetTiers.update((tiers) => [
+          ...tiers,
+          { name: '', qualifiersPerPool: '', hasRankingMatch: false },
+        ]);
       }
     } else {
-      // Collapse back to a single tier -- keep its qualifiersPerPool value
-      // (that's the field still shown), but restore the default name.
+      // Collapse back to a single tier -- keep its qualifiersPerPool/
+      // hasRankingMatch values (still shown), but restore the default name.
       this.presetTiers.update((tiers) => [{ ...tiers[0], name: 'Tableau final' }]);
     }
   }
@@ -1138,8 +1153,18 @@ export class StructurePage {
     );
   }
 
+  protected onPresetTierRankingMatchChange(index: number, event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.presetTiers.update((tiers) =>
+      tiers.map((tier, i) => (i === index ? { ...tier, hasRankingMatch: checked } : tier)),
+    );
+  }
+
   protected addPresetTier(): void {
-    this.presetTiers.update((tiers) => [...tiers, { name: '', qualifiersPerPool: '' }]);
+    this.presetTiers.update((tiers) => [
+      ...tiers,
+      { name: '', qualifiersPerPool: '', hasRankingMatch: false },
+    ]);
   }
 
   protected removePresetTier(index: number): void {
@@ -1191,6 +1216,7 @@ export class StructurePage {
             tiers: this.presetTiers().map((tier) => ({
               name: tier.name.trim(),
               qualifiersPerPool: Number(tier.qualifiersPerPool),
+              hasRankingMatch: tier.hasRankingMatch,
             })),
             ...(this.presetBestOfPositionEnabled() && {
               bestOfPosition: {
@@ -1199,10 +1225,12 @@ export class StructurePage {
               },
             }),
           }),
-          ...(format === 'KNOCKOUT_ONLY' &&
-            this.presetKnockoutName().trim() && {
+          ...(format === 'KNOCKOUT_ONLY' && {
+            ...(this.presetKnockoutName().trim() && {
               knockoutName: this.presetKnockoutName().trim(),
             }),
+            hasRankingMatch: this.presetKnockoutHasRankingMatch(),
+          }),
         },
       );
       this.resetPresetForm();

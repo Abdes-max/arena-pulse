@@ -8,9 +8,9 @@ import {
   signal,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { PublicApiService } from 'api-client';
+import { AssetUrlService, PublicApiService } from 'api-client';
 import { IonButton, IonContent } from '@ionic/angular/standalone';
-import { MatchCard, MatchCardVariant } from 'design-system';
+import { MatchCard, MatchCardTeam, MatchCardVariant } from 'design-system';
 import { PublicTeamDetail, roundLabel } from 'shared-models';
 import { FavoritesService } from '../../core/favorites.service';
 import { OfflineCacheService } from '../../core/offline-cache.service';
@@ -29,6 +29,7 @@ export class TeamDetailPage {
   private readonly context = inject(TournamentContextService);
   protected readonly favorites = inject(FavoritesService);
   protected readonly cache = inject(OfflineCacheService);
+  protected readonly assetUrl = inject(AssetUrlService);
 
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal<string | null>(null);
@@ -99,6 +100,18 @@ export class TeamDetailPage {
   // of status, same as web's hardcoded value there.
   protected variantFor(match: PublicTeamDetail['matches'][number]): MatchCardVariant {
     return match.status === 'LIVE' ? 'live' : 'result';
+  }
+
+  // Resolves the logo's relative API path into a URL fetchable from
+  // wherever this app is actually running -- see AssetUrlService (mobile
+  // runs on a different Capacitor origin than the API, unlike web).
+  protected teamCardInput(
+    team: { name: string; logoUrl: string | null } | null,
+    fallbackLabel: string,
+  ): MatchCardTeam {
+    return team
+      ? { name: team.name, logoUrl: this.assetUrl.resolve(team.logoUrl) }
+      : { name: fallbackLabel };
   }
 
   protected formatKickoff(startTime: string): string {
