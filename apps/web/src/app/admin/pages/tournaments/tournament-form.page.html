@@ -34,44 +34,46 @@
           } @else if (publicationOrders().length === 0) {
             <p class="tournament-form-page__note">Ce tournoi n'a jamais été publié.</p>
           } @else {
-            <table class="tournament-form-page__table">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Équipes</th>
-                  <th>Montant</th>
-                  <th>Statut</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (order of publicationOrders(); track order.id) {
+            <div class="tournament-form-page__table-scroll">
+              <table class="tournament-form-page__table">
+                <thead>
                   <tr>
-                    <td>{{ formatDate(order.paidAt ?? order.createdAt) }}</td>
-                    <td>{{ order.teamsCount }}</td>
-                    <td>{{ formatAmount(order.amountCents, order.currency) }}</td>
-                    <td>
-                      @if (order.status === 'PAID') {
-                        <ap-badge status="published" label="Payé" />
-                      } @else {
-                        <ap-badge status="unpublished" label="En attente" />
-                      }
-                    </td>
-                    <td>
-                      @if (order.status === 'PAID') {
-                        <button
-                          type="button"
-                          class="tournament-form-page__print-btn"
-                          (click)="printReceipt(order)"
-                        >
-                          Imprimer
-                        </button>
-                      }
-                    </td>
+                    <th>Date</th>
+                    <th>Équipes</th>
+                    <th>Montant</th>
+                    <th>Statut</th>
+                    <th></th>
                   </tr>
-                }
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  @for (order of publicationOrders(); track order.id) {
+                    <tr>
+                      <td>{{ formatDate(order.paidAt ?? order.createdAt) }}</td>
+                      <td>{{ order.teamsCount }}</td>
+                      <td>{{ formatAmount(order.amountCents, order.currency) }}</td>
+                      <td>
+                        @if (order.status === 'PAID') {
+                          <ap-badge status="published" label="Payé" />
+                        } @else {
+                          <ap-badge status="unpublished" label="En attente" />
+                        }
+                      </td>
+                      <td>
+                        @if (order.status === 'PAID') {
+                          <button
+                            type="button"
+                            class="tournament-form-page__print-btn"
+                            (click)="printReceipt(order)"
+                          >
+                            Imprimer
+                          </button>
+                        }
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
           }
         </section>
       }

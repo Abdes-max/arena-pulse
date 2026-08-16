@@ -72,6 +72,10 @@
 
 .tournament-form-page__inline-form {
   display: flex;
+  // Was missing (unlike structure.page's equivalent) -- several
+  // ap-text-field/ap-button in one row with no wrap forces horizontal
+  // overflow on a phone instead of reflowing.
+  flex-wrap: wrap;
   gap: var(--ap-space-3);
   align-items: center;
 }
@@ -117,8 +121,35 @@
   margin: 0;
 }
 
+// Explicit horizontal scroll container for this receipt-like table on a
+// phone (docs/design/responsive-guidelines.md), with an edge fade
+// (mask-image) signalling there's more to scroll to -- same technique as
+// ap-tabs/tournament-submenu (see the phase-0 commit that introduced it).
+// A scroll container rather than a card layout (unlike team-list's much
+// denser table): this one is a log/receipt, not a set of records each with
+// its own actions.
+.tournament-form-page__table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    black var(--ap-space-4),
+    black calc(100% - var(--ap-space-4)),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    black var(--ap-space-4),
+    black calc(100% - var(--ap-space-4)),
+    transparent 100%
+  );
+}
+
 .tournament-form-page__table {
   width: 100%;
+  min-width: 480px;
   border-collapse: collapse;
   font-size: 0.9rem;
 

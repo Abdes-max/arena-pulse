@@ -138,3 +138,132 @@
   color: var(--ap-color-error);
   font-size: 0.9rem;
 }
+
+// Densest table in the admin (7 columns, an image + 3-button action cell)
+// -- per docs/design/responsive-guidelines.md ("tableaux denses proposent
+// une vue alternative sous md"), this abandons table semantics on mobile
+// entirely for a stacked card per team, rather than trying to shrink 7
+// columns onto a phone width. Cells keep their own classes (rather than
+// nth-child) so the expanded player row -- 2 <td>s, not 7 -- can't
+// accidentally match another column's styling.
+@media (max-width: 768px) {
+  .team-list-page__table {
+    display: block;
+    width: 100%;
+    border-collapse: separate;
+
+    thead {
+      // Labels come from each .team-list-page__cell--*::before below
+      // instead of a header row, which has nowhere sensible to sit once
+      // the table becomes a column of cards.
+      display: none;
+    }
+
+    tbody {
+      display: block;
+    }
+  }
+
+  .team-list-page__row {
+    display: block;
+    margin-bottom: var(--ap-space-4);
+    padding: var(--ap-space-3);
+    border: var(--ap-border-width) solid var(--ap-color-border);
+    border-radius: var(--ap-radius-md);
+  }
+
+  // Sits directly under its team's card, not floating as its own bordered
+  // box -- reads as that card's content continuing, not a new unrelated
+  // card.
+  .team-list-page__row--expanded {
+    margin-top: calc(-1 * var(--ap-space-4));
+    border-top: none;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+
+  .team-list-page__cell {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ap-space-3);
+    padding: var(--ap-space-2) 0;
+    border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .team-list-page__cell--select {
+    justify-content: flex-start;
+  }
+
+  .team-list-page__cell--empty {
+    display: none;
+  }
+
+  .team-list-page__cell--name::before,
+  .team-list-page__cell--category::before,
+  .team-list-page__cell--division::before,
+  .team-list-page__cell--manager::before {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ap-color-muted);
+  }
+
+  .team-list-page__cell--name::before {
+    content: 'Nom';
+  }
+
+  .team-list-page__cell--category::before {
+    content: 'Catégorie';
+  }
+
+  .team-list-page__cell--division::before {
+    content: 'Division';
+  }
+
+  .team-list-page__cell--manager::before {
+    content: 'Responsable';
+  }
+
+  // Actions cell: was 3 ap-button crammed into one flex row inside a table
+  // cell -- stacked and stretched here, each with the full row to itself
+  // instead of jostling for space (docs/design/responsive-guidelines.md's
+  // touch-target concern, same family as the logo cell below).
+  .team-list-page__actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--ap-space-2);
+    border-bottom: none;
+
+    ap-button {
+      display: block;
+    }
+  }
+
+  // Was 3 small, closely-clustered targets (thumbnail, "Changer" text
+  // link, "Retirer" text button) in one dense row -- real vertical space
+  // between them here instead of relying on their own compact desktop
+  // sizing.
+  .team-list-page__logo-cell {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--ap-space-2);
+  }
+
+  // Real touch-target sizing only in this stacked mobile layout -- unlike
+  // the phase-0 fixes (schedule/scores), this text link is fine at its
+  // compact desktop size inside the dense table; it only needs growing
+  // once it's a standalone row in the card.
+  .team-list-page__logo-remove {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--ap-touch-target-min);
+  }
+
+  .team-list-page__player-cell {
+    padding-top: 0;
+  }
+}

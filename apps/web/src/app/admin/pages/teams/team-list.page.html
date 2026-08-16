@@ -96,15 +96,15 @@
           </thead>
           <tbody>
             @for (team of teams(); track team.id) {
-              <tr>
-                <td>
+              <tr class="team-list-page__row">
+                <td class="team-list-page__cell team-list-page__cell--select">
                   <input
                     type="checkbox"
                     [checked]="isSelected(team.id)"
                     (change)="toggleSelected(team.id, $event)"
                   />
                 </td>
-                <td class="team-list-page__logo-cell">
+                <td class="team-list-page__cell team-list-page__logo-cell">
                   @if (logoUrl(team.logoUrl); as logo) {
                     <img class="team-list-page__logo" [src]="logo" alt="" />
                   } @else {
@@ -128,11 +128,17 @@
                     </button>
                   }
                 </td>
-                <td>{{ team.name }}</td>
-                <td>{{ team.categoryName }}</td>
-                <td>{{ team.divisionName ?? '—' }}</td>
-                <td>{{ team.managerName ?? '—' }}</td>
-                <td class="team-list-page__actions">
+                <td class="team-list-page__cell team-list-page__cell--name">{{ team.name }}</td>
+                <td class="team-list-page__cell team-list-page__cell--category">
+                  {{ team.categoryName }}
+                </td>
+                <td class="team-list-page__cell team-list-page__cell--division">
+                  {{ team.divisionName ?? '—' }}
+                </td>
+                <td class="team-list-page__cell team-list-page__cell--manager">
+                  {{ team.managerName ?? '—' }}
+                </td>
+                <td class="team-list-page__cell team-list-page__actions">
                   <ap-button type="button" variant="ghost" (click)="startEdit(team)">
                     Modifier
                   </ap-button>
@@ -145,9 +151,9 @@
                 </td>
               </tr>
               @if (expandedTeamId() === team.id) {
-                <tr>
-                  <td></td>
-                  <td colspan="6">
+                <tr class="team-list-page__row team-list-page__row--expanded">
+                  <td class="team-list-page__cell team-list-page__cell--empty"></td>
+                  <td class="team-list-page__cell team-list-page__player-cell" colspan="6">
                     <ul class="team-list-page__player-list">
                       @for (player of players(); track player.id) {
                         <li>
