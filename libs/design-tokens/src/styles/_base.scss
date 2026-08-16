@@ -83,3 +83,22 @@
   min-width: var(--ap-touch-target-min);
   min-height: var(--ap-touch-target-min);
 }
+
+// Global utility for text that must stay in the accessible name of an
+// icon-only control (e.g. a button reduced to just its icon to save space
+// on a phone) without being visually rendered -- standard clip-based
+// visually-hidden pattern, not `display:none`/`visibility:hidden` which
+// would remove it from the accessibility tree too. Applied via
+// class="ap-sr-only" in markup, same "one-off, not a shared component"
+// rationale as .ap-touch-target above.
+.ap-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
