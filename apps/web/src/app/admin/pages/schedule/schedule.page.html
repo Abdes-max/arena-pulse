@@ -136,8 +136,16 @@
             >
               <div
                 class="schedule-page__match-card"
+                [class.schedule-page__match-card--selected]="selectedMatchId() === match.id"
                 draggable="true"
+                role="button"
+                tabindex="0"
+                [attr.aria-pressed]="selectedMatchId() === match.id"
+                aria-label="Sélectionner ce match pour le replanifier"
                 (dragstart)="onMatchDragStart(match.id, $event)"
+                (click)="onMatchTap(match.id)"
+                (keydown.enter)="onMatchTap(match.id)"
+                (keydown.space)="onMatchTap(match.id); $event.preventDefault()"
               >
                 <div class="schedule-page__match-card-header">
                   <span class="schedule-page__match-card-round">{{ roundDisplay(match) }}</span>
@@ -168,7 +176,9 @@
                         <button
                           type="button"
                           aria-label="Retirer cet officiel"
-                          (click)="onRemoveOfficial(official.id, match.id)"
+                          (click)="
+                            onRemoveOfficial(official.id, match.id); $event.stopPropagation()
+                          "
                         >
                           ×
                         </button>
@@ -181,6 +191,7 @@
                         [options]="refereeOptions(match)"
                         [resetAfterSelect]="true"
                         (valueChange)="onAddReferee(match.id, $event)"
+                        (click)="$event.stopPropagation()"
                       />
                     }
                     @if (teamsCanReferee()) {
@@ -190,6 +201,7 @@
                         [options]="refereeingTeamOptions(match)"
                         [resetAfterSelect]="true"
                         (valueChange)="onAddRefereeingTeam(match.id, $event)"
+                        (click)="$event.stopPropagation()"
                       />
                     }
                   </div>
@@ -229,6 +241,9 @@
                         <div
                           class="schedule-page__slot"
                           [class.schedule-page__slot--occupied]="matchBySlotId().has(slot.id)"
+                          [class.schedule-page__slot--target]="
+                            selectedMatchId() && !matchBySlotId().has(slot.id)
+                          "
                           (dragover)="onSlotDragOver($event)"
                           (drop)="onSlotDrop(slot.id, $event)"
                         >
@@ -244,14 +259,28 @@
                               "
                             />
                           } @else {
-                            <span class="schedule-page__slot-time">{{ slotTimeLabel(slot) }}</span>
-                            <button
-                              type="button"
-                              class="schedule-page__delete-slot ap-touch-target"
-                              (click)="deleteTimeSlot(field.id, slot.id)"
+                            <div
+                              class="schedule-page__slot-empty"
+                              role="button"
+                              tabindex="0"
+                              aria-label="Déplacer le match sélectionné vers ce créneau"
+                              (click)="onSlotTap(slot.id)"
+                              (keydown.enter)="onSlotTap(slot.id)"
+                              (keydown.space)="onSlotTap(slot.id); $event.preventDefault()"
                             >
-                              Supprimer le créneau
-                            </button>
+                              <span class="schedule-page__slot-time">{{
+                                slotTimeLabel(slot)
+                              }}</span>
+                              <button
+                                type="button"
+                                class="schedule-page__delete-slot ap-touch-target"
+                                (click)="
+                                  deleteTimeSlot(field.id, slot.id); $event.stopPropagation()
+                                "
+                              >
+                                Supprimer le créneau
+                              </button>
+                            </div>
                           }
                         </div>
                       }
