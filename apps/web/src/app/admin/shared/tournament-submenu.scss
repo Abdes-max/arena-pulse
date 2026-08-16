@@ -30,6 +30,26 @@
     display: none;
   }
 
+  // Edge fade so it's visually obvious there's more to scroll to (7 tabs:
+  // Général/Équipes/Arbitres/Structure/Calendrier/Scores/Classement rarely
+  // all fit on a phone) -- previously nothing signalled that beyond a
+  // hidden native scrollbar. Same technique as ap-tabs
+  // (libs/design-system/tabs/tabs.scss) -- static, not scroll-position-aware.
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    black var(--ap-space-4),
+    black calc(100% - var(--ap-space-4)),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    black var(--ap-space-4),
+    black calc(100% - var(--ap-space-4)),
+    transparent 100%
+  );
+
   a {
     position: relative;
     display: inline-block;

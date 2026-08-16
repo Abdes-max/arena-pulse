@@ -204,6 +204,7 @@
                   <div class="schedule-page__grid-nav-buttons">
                     <button
                       type="button"
+                      class="ap-touch-target"
                       aria-label="Terrains précédents"
                       (click)="scrollGrid('left')"
                     >
@@ -211,6 +212,7 @@
                     </button>
                     <button
                       type="button"
+                      class="ap-touch-target"
                       aria-label="Terrains suivants"
                       (click)="scrollGrid('right')"
                     >
@@ -245,7 +247,7 @@
                             <span class="schedule-page__slot-time">{{ slotTimeLabel(slot) }}</span>
                             <button
                               type="button"
-                              class="schedule-page__delete-slot"
+                              class="schedule-page__delete-slot ap-touch-target"
                               (click)="deleteTimeSlot(field.id, slot.id)"
                             >
                               Supprimer le créneau

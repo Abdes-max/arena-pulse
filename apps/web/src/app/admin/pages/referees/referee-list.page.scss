@@ -15,6 +15,12 @@
   display: flex;
   align-items: center;
   gap: var(--ap-space-2);
+  // The whole label (not just the checkbox) is already the tap target --
+  // clicking anywhere on it toggles the wrapped <input> natively -- so this
+  // just ensures that row is comfortably tall, rather than forcing the
+  // checkbox glyph itself to grow (would look broken next to native OS
+  // checkbox styling).
+  min-height: var(--ap-touch-target-min);
   margin-top: var(--ap-space-4);
   font-weight: 600;
 }

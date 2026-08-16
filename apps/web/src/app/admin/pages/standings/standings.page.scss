@@ -128,7 +128,10 @@
     width: 92px;
   }
 
-  @media (max-width: 600px) {
+  // Was 600px, an ad hoc value not matching the documented breakpoint
+  // scale (docs/design/responsive-guidelines.md: xs/sm/md=768/lg/xl) --
+  // aligned to md so every "compact admin" cutoff in this codebase agrees.
+  @media (max-width: 768px) {
     min-width: 0;
 
     th:nth-child(1),
@@ -146,6 +149,19 @@
     th:nth-child(12),
     td:nth-child(12) {
       display: none;
+    }
+
+    // table-layout: fixed means the columns still remaining (Équipe,
+    // Qualifié, J, +/-, Pts) keep whatever width was declared above for
+    // desktop's 12-column layout -- Équipe (the one column that actually
+    // needs room for team names) got none of the space freed by hiding 7
+    // columns. Narrowing the widest remaining fixed column (the Qualifié
+    // badge, previously sized for its full desktop label) hands that room
+    // back to Équipe, which has no explicit width and absorbs whatever's
+    // left in a fixed-layout table.
+    th:nth-child(3),
+    td:nth-child(3) {
+      width: 80px;
     }
   }
 }
