@@ -1,0 +1,77 @@
+// Shared by terms.page and privacy.page -- same layout (back link, brand,
+// long-form text), just different content, so one stylesheet for both
+// instead of duplicating it.
+:host {
+  display: block;
+  min-height: 100dvh;
+  background: var(--ap-color-bg);
+  color: var(--ap-color-fg);
+}
+
+.legal-page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--ap-space-6) var(--ap-space-6) var(--ap-space-16);
+}
+
+.legal-page__back {
+  display: inline-block;
+  margin-bottom: var(--ap-space-6);
+  padding: var(--ap-space-2) var(--ap-space-3);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  background: transparent;
+  color: var(--ap-color-fg);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color var(--ap-motion-fast) var(--ap-easing-standard);
+
+  &:hover {
+    border-color: var(--ap-color-signal);
+  }
+}
+
+.legal-page__brand {
+  display: block;
+  margin-bottom: var(--ap-space-6);
+}
+
+.legal-page__updated {
+  color: var(--ap-color-muted);
+  font-size: 0.9rem;
+  margin: calc(-1 * var(--ap-space-2)) 0 var(--ap-space-8);
+}
+
+.legal-page__content {
+  h1 {
+    font-family: var(--ap-font-heading);
+    font-size: 1.9rem;
+    margin: 0 0 var(--ap-space-2);
+  }
+
+  h2 {
+    font-family: var(--ap-font-heading);
+    font-size: 1.15rem;
+    margin: var(--ap-space-8) 0 var(--ap-space-3);
+  }
+
+  p,
+  li {
+    color: var(--ap-color-fg);
+    line-height: 1.65;
+  }
+
+  p {
+    margin: 0 0 var(--ap-space-3);
+  }
+
+  ul {
+    margin: 0 0 var(--ap-space-3);
+    padding-left: var(--ap-space-6);
+  }
+
+  a {
+    color: var(--ap-color-primary);
+  }
+}

@@ -31,6 +31,20 @@ export const routes: Routes = [
       import('./admin/pages/verify-email/verify-email.page').then((m) => m.VerifyEmailPage),
   },
   {
+    // Top-level, before the ':slug' catch-all below -- otherwise it would
+    // swallow '/contact', '/terms' and '/privacy' as tournament slugs.
+    path: 'contact',
+    loadComponent: () => import('./pages/contact/contact.page').then((m) => m.ContactPage),
+  },
+  {
+    path: 'terms',
+    loadComponent: () => import('./pages/legal/terms.page').then((m) => m.TermsPage),
+  },
+  {
+    path: 'privacy',
+    loadComponent: () => import('./pages/legal/privacy.page').then((m) => m.PrivacyPage),
+  },
+  {
     path: 'player/login',
     loadComponent: () =>
       import('./pages/player-auth/login/player-login.page').then((m) => m.PlayerLoginPage),

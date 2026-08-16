@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
+import { ContactModule } from './contact/contact.module';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 import { HealthModule } from './health/health.module';
@@ -41,6 +42,7 @@ import { TournamentsModule } from './tournaments/tournaments.module';
     SuperAdminAuthModule,
     SuperAdminModule,
     MailModule,
+    ContactModule,
     OrganizationsModule,
     SportsModule,
     PermissionsModule,
