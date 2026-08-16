@@ -14,10 +14,13 @@ type PrismaMock = {
     update: jest.Mock;
     delete: jest.Mock;
   };
+  match: { findMany: jest.Mock };
+  timeSlot: { deleteMany: jest.Mock };
+  $transaction: jest.Mock;
 };
 
 function createPrismaMock(): PrismaMock {
-  return {
+  const mock: PrismaMock = {
     competitionPhase: {
       findFirst: jest.fn(),
       findUnique: jest.fn(),
@@ -26,7 +29,16 @@ function createPrismaMock(): PrismaMock {
       update: jest.fn(),
       delete: jest.fn(),
     },
+    match: { findMany: jest.fn().mockResolvedValue([]) },
+    timeSlot: { deleteMany: jest.fn() },
+    $transaction: jest.fn(),
   };
+  mock.$transaction.mockImplementation((arg: unknown) =>
+    Array.isArray(arg)
+      ? Promise.all(arg)
+      : (arg as (tx: PrismaMock) => unknown)(mock),
+  );
+  return mock;
 }
 
 describe('PhasesService', () => {
@@ -132,6 +144,37 @@ describe('PhasesService', () => {
     await expect(
       service.remove('org-1', 'tournament-1', 'phase-1'),
     ).rejects.toBeInstanceOf(NotFoundException);
+  });
+
+  it("clears orphaned time slots for the phase's matches before deleting it", async () => {
+    prisma.competitionPhase.findUnique.mockResolvedValue({
+      id: 'phase-1',
+      categoryId: 'category-1',
+      category: { tournamentId: 'tournament-1' },
+    });
+    prisma.match.findMany.mockResolvedValue([
+      { timeSlotId: 'slot-1' },
+      { timeSlotId: 'slot-2' },
+      { timeSlotId: null },
+    ]);
+
+    await service.remove('org-1', 'tournament-1', 'phase-1');
+
+    expect(prisma.match.findMany).toHaveBeenCalledWith({
+      where: {
+        OR: [
+          { group: { phaseId: 'phase-1' } },
+          { knockoutBracket: { phaseId: 'phase-1' } },
+        ],
+      },
+      select: { timeSlotId: true },
+    });
+    expect(prisma.timeSlot.deleteMany).toHaveBeenCalledWith({
+      where: { id: { in: ['slot-1', 'slot-2'] } },
+    });
+    expect(prisma.competitionPhase.delete).toHaveBeenCalledWith({
+      where: { id: 'phase-1' },
+    });
   });
 
   it('assertPhaseExists rejects a phase from another tournament', async () => {

@@ -75,8 +75,12 @@ export class ScoresPage {
   protected readonly categoryOptions = computed<SelectOption[]>(() =>
     this.categories().map((category) => ({ value: category.id, label: category.name })),
   );
+  // Excludes the fictitious pool phase a KNOCKOUT_ONLY structure preset
+  // creates to seed its bracket from (isSeedPhase) -- it never has matches,
+  // so treating it as a real pool phase here would offer a useless "Poules"
+  // filter option. Same fix as schedule.page.ts's own groupStagePhase.
   protected readonly groupStagePhase = computed(
-    () => this.phases().find((phase) => phase.type === 'GROUP_STAGE') ?? null,
+    () => this.phases().find((phase) => phase.type === 'GROUP_STAGE' && !phase.isSeedPhase) ?? null,
   );
   protected readonly knockoutPhases = computed(() =>
     this.phases()

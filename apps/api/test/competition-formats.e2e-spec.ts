@@ -264,6 +264,86 @@ describe('Competition formats (e2e)', () => {
     expect(listedKnockoutPhase.knockoutBracket?.name).toBe('Champions League');
   });
 
+  it("resolves real teams for a KNOCKOUT_ONLY preset's round 1, letting a score be entered right away", async () => {
+    const { accessToken, organizationId } = await registerOrganizer(app);
+    const sportId = await firstSportId(app, accessToken);
+    const auth = (req: request.Test) =>
+      req.set('Authorization', `Bearer ${accessToken}`);
+    const base = `/api/v1/organizations/${organizationId}/tournaments`;
+
+    const tournamentRes = await auth(request(app.getHttpServer()).post(base))
+      .send({ name: 'Coupe U11', sportId })
+      .expect(201);
+    const tournamentId = (tournamentRes.body as { id: string }).id;
+
+    const categoryRes = await auth(
+      request(app.getHttpServer()).post(`${base}/${tournamentId}/categories`),
+    )
+      .send({ name: 'U11' })
+      .expect(201);
+    const categoryId = (categoryRes.body as { id: string }).id;
+
+    for (const name of ['Alpha', 'Beta', 'Gamma', 'Delta']) {
+      await auth(
+        request(app.getHttpServer()).post(`${base}/${tournamentId}/teams`),
+      )
+        .send({ name, categoryId })
+        .expect(201);
+    }
+
+    const presetRes = await auth(
+      request(app.getHttpServer()).post(
+        `${base}/${tournamentId}/categories/${categoryId}/structure-presets`,
+      ),
+    )
+      .send({ format: 'KNOCKOUT_ONLY', teamCount: 4 })
+      .expect(201);
+    const { tiers } = presetRes.body as { tiers: { phaseId: string }[] };
+    const bracketPhaseId = tiers[0].phaseId;
+
+    const phasesRes = await auth(
+      request(app.getHttpServer()).get(
+        `${base}/${tournamentId}/categories/${categoryId}/phases`,
+      ),
+    ).expect(200);
+    const bracketPhase = (phasesRes.body as PhaseResponseBody[]).find(
+      (phase) => phase.id === bracketPhaseId,
+    )!;
+    const bracketId = bracketPhase.knockoutBracket!.id;
+
+    const generatedRes = await auth(
+      request(app.getHttpServer()).post(
+        `${base}/${tournamentId}/knockout-brackets/${bracketId}/generate-matches`,
+      ),
+    ).expect(201);
+    const generated = generatedRes.body as {
+      id: string;
+      round: number;
+      homeTeam: { id: string; name: string } | null;
+      awayTeam: { id: string; name: string } | null;
+    }[];
+
+    const round1 = generated.filter((match) => match.round === 1);
+    expect(round1).toHaveLength(2);
+    // Regression: a KNOCKOUT_ONLY preset's fictitious seed group never has
+    // any match to play, so StandingsService.getStandings never considered
+    // it "complete" -- round 1 stayed stuck on generic placeholder labels
+    // ("1er Équipes engagées"...) forever, with no real team ever assigned
+    // and no way to enter a score.
+    for (const match of round1) {
+      expect(match.homeTeam).not.toBeNull();
+      expect(match.awayTeam).not.toBeNull();
+    }
+
+    await auth(
+      request(app.getHttpServer()).put(
+        `${base}/${tournamentId}/matches/${round1[0].id}/score`,
+      ),
+    )
+      .send({ homeScore: 2, awayScore: 1 })
+      .expect(200);
+  });
+
   it('rejects a phase whose category belongs to another tournament', async () => {
     const { accessToken, organizationId } = await registerOrganizer(app);
     const sportId = await firstSportId(app, accessToken);
