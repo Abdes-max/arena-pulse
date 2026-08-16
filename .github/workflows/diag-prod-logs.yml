@@ -1,7 +1,9 @@
-# Temporary, one-off: reads the `api` service's recent container logs on the
-# VPS to diagnose the seed-world-cup-2026 flag-upload 500s (real exception
-# masked by a generic "Erreur interne du serveur." response). Not meant to
-# stay in the repo -- delete once the underlying bug is understood/fixed.
+# Temporary, one-off: fixes the `/app/uploads` volume ownership on the VPS
+# (created root:root the first time it was ever mounted, before the `api`
+# container's non-root `nestjs` user existed to need write access -- see the
+# EACCES on mkdir '/app/uploads/team-logos' this uncovered) and reads recent
+# `api` container logs. Not meant to stay in the repo -- delete once the
+# underlying bug is understood/fixed (see api.Dockerfile follow-up).
 name: (diag) Read prod api container logs
 
 on:
@@ -9,11 +11,11 @@ on:
 
 jobs:
   diag:
-    name: Read logs on Hostinger VPS
+    name: Fix uploads ownership + read logs on Hostinger VPS
     runs-on: ubuntu-latest
     environment: production
     steps:
-      - name: docker compose logs api
+      - name: chown uploads volume + docker compose logs api
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.DEPLOY_HOST }}
@@ -25,4 +27,5 @@ jobs:
           script: |
             set -euo pipefail
             cd "${{ secrets.DEPLOY_PATH }}"
-            docker compose -f infra/deployment/docker-compose.prod.yml --env-file infra/deployment/.env logs api --since 30m --no-color | grep -iE "error|exception|logo" | tail -n 200
+            docker compose -f infra/deployment/docker-compose.prod.yml --env-file infra/deployment/.env exec -u root -T api chown -R nestjs:nodejs /app/uploads
+            docker compose -f infra/deployment/docker-compose.prod.yml --env-file infra/deployment/.env exec -T api ls -la /app/uploads
