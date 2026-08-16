@@ -44,7 +44,9 @@ describe('StandingsService', () => {
         .mockResolvedValue({ id: 'tournament-1' }),
     };
     groupsService = {
-      assertGroupExists: jest.fn().mockResolvedValue({ id: 'group-1' }),
+      assertGroupExists: jest
+        .fn()
+        .mockResolvedValue({ id: 'group-1', phase: { isSeedPhase: false } }),
     };
     ratingsService = {
       getRatingsForTeamNames: jest.fn().mockResolvedValue(new Map()),
@@ -223,6 +225,33 @@ describe('StandingsService', () => {
 
       expect(result.unresolvedTies).toEqual([]);
       expect(result.rows.map((row) => row.teamId)).toEqual(['z', 'a']);
+    });
+
+    it('is complete with no unresolved ties for a KNOCKOUT_ONLY seed group, even with zero matches and every team tied', async () => {
+      // A seed group (see CompetitionPhase.isSeedPhase) never has a match
+      // generated in it, by design -- unlike a real, not-yet-played pool
+      // (the "reports incomplete when there are no matches at all" and
+      // "flags two teams left totally tied" cases above), it must resolve
+      // immediately, using the deterministic alphabetical fallback as the
+      // real seeding, not report a fairness question nobody can answer.
+      groupsService.assertGroupExists.mockResolvedValue({
+        id: 'group-1',
+        phase: { isSeedPhase: true },
+      });
+      prisma.team.findMany.mockResolvedValue([
+        { id: 'z', name: 'Zeta' },
+        { id: 'a', name: 'Alpha' },
+      ]);
+
+      const result = await service.getStandings(
+        'org-1',
+        'tournament-1',
+        'group-1',
+      );
+
+      expect(result.isComplete).toBe(true);
+      expect(result.unresolvedTies).toEqual([]);
+      expect(result.rows.map((row) => row.teamId)).toEqual(['a', 'z']);
     });
   });
 

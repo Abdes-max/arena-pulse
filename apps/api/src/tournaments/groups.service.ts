@@ -13,7 +13,11 @@ import { DEFAULT_TIE_BREAK_ORDER } from './standing-rule.constants';
 import { TournamentsService } from './tournaments.service';
 
 type GroupWithPhase = Group & {
-  phase: { categoryId: string; type: CompetitionPhaseType };
+  phase: {
+    categoryId: string;
+    type: CompetitionPhaseType;
+    isSeedPhase: boolean;
+  };
 };
 
 @Injectable()

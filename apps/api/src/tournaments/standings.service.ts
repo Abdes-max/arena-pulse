@@ -65,7 +65,10 @@ export class StandingsService {
       organizationId,
       tournamentId,
     );
-    await this.groupsService.assertGroupExists(tournamentId, groupId);
+    const group = await this.groupsService.assertGroupExists(
+      tournamentId,
+      groupId,
+    );
 
     const [teams, matches, standingRule] = await Promise.all([
       this.prisma.team.findMany({
@@ -118,22 +121,35 @@ export class StandingsService {
       manualTieBreakOrder,
     );
     const teamNameById = new Map(rows.map((row) => [row.teamId, row.teamName]));
-    const unresolvedTies: UnresolvedTie[] = findUnresolvedTies(
-      rows,
-      validatedMatches,
-      tieBreakOrder,
-      scheme,
-      manualTieBreakOrder,
-    ).map((teamIds) => ({
-      teams: teamIds.map((teamId) => ({
-        id: teamId,
-        name: teamNameById.get(teamId) ?? teamId,
-      })),
-    }));
+    // A KNOCKOUT_ONLY structure preset's fictitious seed group (see
+    // CompetitionPhase.isSeedPhase) never has any match to play, by design
+    // -- every team ties on every criterion, always. Flagging that as an
+    // "unresolved tie" needing an organizer's pick makes no sense here
+    // (there's no fairness question, just an arbitrary flat list): the
+    // deterministic alphabetical fallback computeStandings already applies
+    // is exactly the intended seeding, so ties are never reported for it.
+    const unresolvedTies: UnresolvedTie[] = group.phase.isSeedPhase
+      ? []
+      : findUnresolvedTies(
+          rows,
+          validatedMatches,
+          tieBreakOrder,
+          scheme,
+          manualTieBreakOrder,
+        ).map((teamIds) => ({
+          teams: teamIds.map((teamId) => ({
+            id: teamId,
+            name: teamNameById.get(teamId) ?? teamId,
+          })),
+        }));
 
-    const isComplete =
-      matches.length > 0 &&
-      matches.every((match) => match.score?.isValidated === true);
+    // Same reasoning: a seed group is trivially "complete" the moment it
+    // exists (nothing is ever scheduled in it), unlike a real pool with no
+    // matches generated yet, which must stay incomplete until it has some.
+    const isComplete = group.phase.isSeedPhase
+      ? true
+      : matches.length > 0 &&
+        matches.every((match) => match.score?.isValidated === true);
 
     const ratingsByTeamName = await this.ratingsService.getRatingsForTeamNames(
       organizationId,

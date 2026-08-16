@@ -126,7 +126,32 @@ export class PhasesService {
       tournamentId,
     );
     await this.getOrThrowForTournament(tournamentId, phaseId);
-    await this.prisma.competitionPhase.delete({ where: { id: phaseId } });
+
+    // Deleting the phase cascades to its groups/knockout bracket and, from
+    // there, to every match (onDelete: Cascade) -- but Match.timeSlot uses
+    // onDelete: SetNull (a TimeSlot's lifecycle belongs to its Field, not
+    // any one match), so the calendar slots those matches occupied would
+    // otherwise survive, empty and unreferenced, on the field's calendar
+    // forever (indistinguishable in the UI from a real still-open slot,
+    // just permanently unusable). Same cleanup ScheduleGenerationService's
+    // own reset() already does before regenerating a phase's schedule --
+    // matches themselves need no explicit delete call here, the phase's own
+    // cascade already handles that once this runs first.
+    const timeSlotIds = (
+      await this.prisma.match.findMany({
+        where: {
+          OR: [{ group: { phaseId } }, { knockoutBracket: { phaseId } }],
+        },
+        select: { timeSlotId: true },
+      })
+    )
+      .map((match) => match.timeSlotId)
+      .filter((id): id is string => id !== null);
+
+    await this.prisma.$transaction([
+      this.prisma.timeSlot.deleteMany({ where: { id: { in: timeSlotIds } } }),
+      this.prisma.competitionPhase.delete({ where: { id: phaseId } }),
+    ]);
   }
 
   /** Used by GroupsService/KnockoutBracketsService/QualificationRulesService to validate a phaseId belongs to the tournament in the URL. */
