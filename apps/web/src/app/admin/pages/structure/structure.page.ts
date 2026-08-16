@@ -535,7 +535,31 @@ export class StructurePage {
     }
     try {
       await this.competitionFormatsService.deletePhase(organizationId, this.tournamentId, phase.id);
-      this.phases.update((phases) => phases.filter((p) => p.id !== phase.id));
+      let remaining = this.phases().filter((p) => p.id !== phase.id);
+
+      // Deleting the last *visible* phase of a KNOCKOUT_ONLY preset (the
+      // bracket itself) leaves only its fictitious seed phase behind --
+      // hidden from visiblePhases() (see that computed), so the organizer
+      // has no way to remove it by hand. Left alone, it would permanently
+      // block both "Mode Tournoi" from reappearing (its gate is
+      // phases().length === 0) and any future preset run on this category
+      // (StructurePresetsService.create() requires a phase-less category).
+      // Clean it up here instead, restoring a genuinely blank category.
+      const onlySeedPhasesLeft = remaining.length > 0 && remaining.every((p) => p.isSeedPhase);
+      if (onlySeedPhasesLeft) {
+        await Promise.all(
+          remaining.map((seedPhase) =>
+            this.competitionFormatsService.deletePhase(
+              organizationId,
+              this.tournamentId,
+              seedPhase.id,
+            ),
+          ),
+        );
+        remaining = [];
+      }
+
+      this.phases.set(remaining);
     } catch {
       this.errorMessage.set('Impossible de supprimer cette phase.');
     }
