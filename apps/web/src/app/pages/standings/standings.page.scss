@@ -63,7 +63,15 @@
   }
 }
 
-.standings-page__team-cell {
+// The <td> itself stays a plain table-cell (no display override) so it
+// stretches to the row's height exactly like its siblings under table
+// layout's normal auto-stretch -- `display: flex` directly on a <td>
+// breaks that (confirmed via getBoundingClientRect: the cell shrank to
+// its own flex content instead of matching sibling cells, producing the
+// misaligned row borders this fixes). The flex row (logo + name) lives on
+// an inner wrapper instead, which is free to size itself without
+// affecting the cell's own box.
+.standings-page__team-cell-inner {
   display: flex;
   align-items: center;
   gap: var(--ap-space-1);
