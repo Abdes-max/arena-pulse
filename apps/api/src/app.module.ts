@@ -26,6 +26,19 @@ import { TournamentsModule } from './tournaments/tournaments.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      // e2e tests (NODE_ENV=test, set automatically under Jest -- see the
+      // ThrottlerModule comment below) get their own database, so running
+      // them locally never touches the same Postgres `npm run dev:api` /
+      // manually-seeded data uses (apps/api/.env.test only overrides
+      // DATABASE_URL; dotenv never overrides an already-set process.env
+      // key, so every other variable still comes from the regular .env
+      // loaded right after). Harmless for CI, which already sets
+      // DATABASE_URL as a real environment variable before Node even starts
+      // (.github/workflows/ci.yml) -- dotenv can't override that either
+      // way, and apps/api/.env.test isn't committed (gitignored, like .env
+      // itself), so this array is a same-directory no-op there regardless.
+      envFilePath:
+        process.env.NODE_ENV === 'test' ? ['.env.test', '.env'] : '.env',
     }),
     // Global default; auth.controller.ts's login/register/refresh endpoints
     // override this with a stricter limit (brute-force/credential-stuffing
