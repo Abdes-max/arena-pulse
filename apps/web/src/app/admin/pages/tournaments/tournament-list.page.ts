@@ -22,10 +22,17 @@ const STATUS_TO_BADGE: Record<TournamentStatus, BadgeStatus> = {
   ARCHIVED: 'archived',
 };
 
+// A tournament list grows mostly with things you're done with (past/
+// cancelled editions get archived, not deleted) -- defaulting to "Non
+// archivé" keeps that clutter out of the default view instead of "Tous",
+// which is still one click away for anyone who does want to see everything.
+type StatusFilter = TournamentStatus | 'ALL' | 'NOT_ARCHIVED';
+
 // Same French wording as ap-badge's own default labels for these statuses
 // (libs/design-system/src/lib/badge/badge.ts) -- kept in sync by hand since
 // this is a filter's option list, not a per-row badge render.
 const STATUS_OPTIONS: SelectOption[] = [
+  { value: 'NOT_ARCHIVED', label: 'Non archivé' },
   { value: 'ALL', label: 'Tous' },
   { value: 'DRAFT', label: 'Brouillon' },
   { value: 'PUBLISHED', label: 'Publié' },
@@ -58,12 +65,16 @@ export class TournamentListPage {
   protected readonly errorMessage = signal<string | null>(null);
 
   protected readonly statusOptions = STATUS_OPTIONS;
-  protected readonly selectedStatus = signal<TournamentStatus | 'ALL'>('ALL');
+  protected readonly selectedStatus = signal<StatusFilter>('NOT_ARCHIVED');
   protected readonly filteredTournaments = computed(() => {
     const status = this.selectedStatus();
-    return status === 'ALL'
-      ? this.tournaments()
-      : this.tournaments().filter((tournament) => tournament.status === status);
+    if (status === 'ALL') {
+      return this.tournaments();
+    }
+    if (status === 'NOT_ARCHIVED') {
+      return this.tournaments().filter((tournament) => tournament.status !== 'ARCHIVED');
+    }
+    return this.tournaments().filter((tournament) => tournament.status === status);
   });
 
   private readonly hasTeam = signal(false);
@@ -204,7 +215,7 @@ export class TournamentListPage {
   }
 
   protected onStatusFilterChange(value: string): void {
-    this.selectedStatus.set(value as TournamentStatus | 'ALL');
+    this.selectedStatus.set(value as StatusFilter);
   }
 
   protected goToCreate(): void {

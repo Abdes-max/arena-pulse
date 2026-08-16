@@ -100,6 +100,7 @@
 .tournament-submenu__public-link-icon {
   width: 14px;
   height: 14px;
-  margin-right: var(--ap-space-1);
+  // No margin-right -- icon-only now (the "Lien public" text is
+  // .ap-sr-only, screen-reader-only), nothing to its right to space out.
   vertical-align: -2px;
 }

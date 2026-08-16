@@ -1,45 +1,52 @@
 <div class="tournament-submenu-row">
-  <nav class="tournament-submenu">
+  <nav class="tournament-submenu" #nav>
     <a
       [routerLink]="['/admin/tournaments', tournamentId()]"
       [routerLinkActiveOptions]="{ exact: true }"
       routerLinkActive="tournament-submenu__link--active"
+      (click)="centerTab($event)"
     >
       Général
     </a>
     <a
       [routerLink]="['/admin/tournaments', tournamentId(), 'teams']"
       routerLinkActive="tournament-submenu__link--active"
+      (click)="centerTab($event)"
     >
       Équipes
     </a>
     <a
       [routerLink]="['/admin/tournaments', tournamentId(), 'referees']"
       routerLinkActive="tournament-submenu__link--active"
+      (click)="centerTab($event)"
     >
       Arbitres
     </a>
     <a
       [routerLink]="['/admin/tournaments', tournamentId(), 'structure']"
       routerLinkActive="tournament-submenu__link--active"
+      (click)="centerTab($event)"
     >
       Structure
     </a>
     <a
       [routerLink]="['/admin/tournaments', tournamentId(), 'schedule']"
       routerLinkActive="tournament-submenu__link--active"
+      (click)="centerTab($event)"
     >
       Calendrier
     </a>
     <a
       [routerLink]="['/admin/tournaments', tournamentId(), 'scores']"
       routerLinkActive="tournament-submenu__link--active"
+      (click)="centerTab($event)"
     >
       Scores
     </a>
     <a
       [routerLink]="['/admin/tournaments', tournamentId(), 'standings']"
       routerLinkActive="tournament-submenu__link--active"
+      (click)="centerTab($event)"
     >
       Classement
     </a>
@@ -74,7 +81,7 @@
           stroke-linejoin="round"
         />
       </svg>
-      Lien public
+      <span class="ap-sr-only">Lien public</span>
     </ap-button>
   }
 </div>
