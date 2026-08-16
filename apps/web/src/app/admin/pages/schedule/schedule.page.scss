@@ -149,6 +149,28 @@
   border-style: solid;
 }
 
+// Highlighted once a match is selected via tap-to-move (see
+// .schedule-page__match-card--selected below) -- signals which empty
+// slots would actually accept it, the same information the mouse
+// drag-and-drop conveys implicitly by only allowing a drop there.
+.schedule-page__slot--target {
+  border-color: var(--ap-color-primary);
+  background: var(--ap-color-signal-soft);
+}
+
+.schedule-page__slot-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ap-space-1);
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: var(--ap-border-width-strong) solid var(--ap-color-focus);
+    outline-offset: 2px;
+  }
+}
+
 .schedule-page__slot-time {
   display: block;
   padding: var(--ap-space-1) 0;
@@ -171,6 +193,19 @@
   overflow: hidden;
   cursor: grab;
   font-size: 0.85rem;
+
+  &:focus-visible {
+    outline: var(--ap-border-width-strong) solid var(--ap-color-focus);
+    outline-offset: 2px;
+  }
+}
+
+// "Picked up" via tap-to-move (see schedule.page.ts#onMatchTap) -- the
+// mouse drag-and-drop has no equivalent resting state to style since the
+// browser's own drag ghost image already shows what's being dragged.
+.schedule-page__match-card--selected {
+  border-color: var(--ap-color-primary);
+  box-shadow: 0 0 0 2px var(--ap-color-primary);
 }
 
 // Round (compact "1/8"/"1/4"/"Finale") on the left, time on the right --

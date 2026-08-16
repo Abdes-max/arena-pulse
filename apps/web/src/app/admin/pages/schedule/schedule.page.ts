@@ -84,6 +84,14 @@ export class SchedulePage {
   protected readonly timeSlotsByField = signal<Map<string, TimeSlot[]>>(new Map());
   protected readonly newSlotDrafts = signal<Map<string, TimeSlotDraft>>(new Map());
   protected readonly draggedMatchId = signal<string | null>(null);
+  // Tap-to-move: touchscreens don't fire the native HTML5 drag events this
+  // grid otherwise relies on (draggable/dragstart/dragover/drop -- neither
+  // iOS Safari nor Chrome/Android translate touch gestures into them for an
+  // arbitrary element). This is a second, independent way to do the same
+  // move -- tap a match to select it, then tap an empty slot to place it
+  // there (or tap the same match again to cancel) -- purely additive, the
+  // existing mouse drag-and-drop above is untouched.
+  protected readonly selectedMatchId = signal<string | null>(null);
 
   protected readonly selectedFieldIds = signal<string[]>([]);
   protected readonly startDateTime = signal('');
@@ -560,6 +568,25 @@ export class SchedulePage {
     if (!matchId || this.matchBySlotId().has(timeSlotId)) {
       return;
     }
+    await this.moveMatchToSlot(matchId, timeSlotId);
+  }
+
+  // Tap #1: select a match (or deselect it if it's already selected).
+  protected onMatchTap(matchId: string): void {
+    this.selectedMatchId.update((current) => (current === matchId ? null : matchId));
+  }
+
+  // Tap #2: place the selected match into this empty slot. No-op if nothing
+  // is selected (a plain tap on an empty slot, not part of a move) --
+  // matchBySlotId().has(timeSlotId) is checked in the template via
+  // schedule-page__slot--target, this only guards against the async gap
+  // between taps.
+  protected async onSlotTap(timeSlotId: string): Promise<void> {
+    const matchId = this.selectedMatchId();
+    if (!matchId) {
+      return;
+    }
+    this.selectedMatchId.set(null);
     await this.moveMatchToSlot(matchId, timeSlotId);
   }
 
