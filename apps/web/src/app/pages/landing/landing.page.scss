@@ -110,22 +110,6 @@
   gap: var(--ap-space-3);
 }
 
-.landing-page__nav-cta {
-  padding: var(--ap-space-2) var(--ap-space-4);
-  border-radius: var(--ap-radius-md);
-  background: var(--ap-color-surface);
-  color: var(--ap-color-fg);
-  font-weight: 600;
-  font-size: 0.9rem;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: opacity var(--ap-motion-fast) var(--ap-easing-standard);
-
-  &:hover {
-    opacity: 0.85;
-  }
-}
-
 // Shared by the <a>-based "Connexion" link and the <button>-based "Se
 // déconnecter" action (once authenticated) -- font/background/cursor reset
 // so the button reads identically to the link it replaces.
@@ -215,7 +199,6 @@
     margin: var(--ap-space-3) 0;
   }
 
-  .landing-page__mobile-menu-cta,
   .landing-page__mobile-menu-login {
     width: 100%;
     padding: var(--ap-space-3) var(--ap-space-4);
@@ -229,10 +212,6 @@
     text-align: center;
     text-decoration: none;
     cursor: pointer;
-  }
-
-  .landing-page__mobile-menu-cta {
-    background: var(--ap-color-surface);
   }
 }
 
