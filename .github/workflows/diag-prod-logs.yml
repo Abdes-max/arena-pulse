@@ -1,0 +1,28 @@
+# Temporary, one-off: reads the `api` service's recent container logs on the
+# VPS to diagnose the seed-world-cup-2026 flag-upload 500s (real exception
+# masked by a generic "Erreur interne du serveur." response). Not meant to
+# stay in the repo -- delete once the underlying bug is understood/fixed.
+name: (diag) Read prod api container logs
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  diag:
+    name: Read logs on Hostinger VPS
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: docker compose logs api
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          timeout: 90s
+          command_timeout: 5m
+          script: |
+            set -euo pipefail
+            cd "${{ secrets.DEPLOY_PATH }}"
+            docker compose -f infra/deployment/docker-compose.prod.yml --env-file infra/deployment/.env logs api --since 30m --no-color | grep -iE "error|exception|logo" | tail -n 200
