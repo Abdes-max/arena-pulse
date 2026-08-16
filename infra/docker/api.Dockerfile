@@ -58,6 +58,19 @@ RUN groupadd --gid 1001 nodejs \
   && useradd --uid 1001 --gid nodejs --no-create-home nestjs
 # node_modules/.remotion was downloaded as root above; nestjs only needs
 # read+execute, which the default umask already grants.
+#
+# uploads/ is where team-logos and other uploaded files get written at
+# runtime (see TeamsService.uploadLogo's `fs.mkdir`/`fs.writeFile`) --
+# infra/deployment/docker-compose.prod.yml mounts a named volume over this
+# path. Docker seeds a brand-new named volume from whatever's already in
+# the image at that path (contents *and* ownership) the first time it's
+# mounted, so creating + chown-ing it here as root, before USER below, is
+# what gives nestjs (uid 1001, non-root) write access on a volume's first
+# ever mount -- otherwise Docker's own default (root:root) wins, and any
+# upload 500s with EACCES until someone chowns the volume by hand (as
+# happened in prod: no team ever had a logo uploaded before the volume was
+# first created, so this went unnoticed until then).
+RUN mkdir -p /app/uploads && chown -R nestjs:nodejs /app/uploads
 USER nestjs
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
