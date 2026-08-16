@@ -33,7 +33,10 @@
 }
 
 .scores-page__slot {
-  margin-top: var(--ap-space-5);
+  // Was --ap-space-5, which isn't a defined design token (only
+  // 1/2/3/4/6/8/12/16/24 exist) -- var() with an unknown custom property
+  // makes margin-top invalid, so it silently computed to 0.
+  margin-top: var(--ap-space-6);
 
   h2 {
     font-size: 1rem;
