@@ -65,42 +65,44 @@
           } @else if (history().length === 0) {
             <p class="subscription-page__note">Aucun paiement enregistré pour le moment.</p>
           } @else {
-            <table class="subscription-page__table">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Montant</th>
-                  <th>Statut</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (entry of history(); track entry.id) {
+            <div class="subscription-page__table-scroll">
+              <table class="subscription-page__table">
+                <thead>
                   <tr>
-                    <td>{{ formatDate(entry.paidAt ?? entry.createdAt) }}</td>
-                    <td>{{ formatAmount(entry.amountCents, entry.currency) }}</td>
-                    <td>
-                      @if (entry.status === 'ACTIVE') {
-                        <ap-badge status="published" label="Payé" />
-                      } @else {
-                        <ap-badge status="unpublished" label="En attente" />
-                      }
-                    </td>
-                    <td>
-                      @if (entry.status === 'ACTIVE') {
-                        <button
-                          type="button"
-                          class="subscription-page__print-btn"
-                          (click)="printReceipt(entry)"
-                        >
-                          Imprimer
-                        </button>
-                      }
-                    </td>
+                    <th>Date</th>
+                    <th>Montant</th>
+                    <th>Statut</th>
+                    <th></th>
                   </tr>
-                }
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  @for (entry of history(); track entry.id) {
+                    <tr>
+                      <td>{{ formatDate(entry.paidAt ?? entry.createdAt) }}</td>
+                      <td>{{ formatAmount(entry.amountCents, entry.currency) }}</td>
+                      <td>
+                        @if (entry.status === 'ACTIVE') {
+                          <ap-badge status="published" label="Payé" />
+                        } @else {
+                          <ap-badge status="unpublished" label="En attente" />
+                        }
+                      </td>
+                      <td>
+                        @if (entry.status === 'ACTIVE') {
+                          <button
+                            type="button"
+                            class="subscription-page__print-btn"
+                            (click)="printReceipt(entry)"
+                          >
+                            Imprimer
+                          </button>
+                        }
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
           }
         </section>
       }

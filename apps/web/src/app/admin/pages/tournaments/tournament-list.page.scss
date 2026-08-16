@@ -8,8 +8,10 @@
 
 .tournament-list-page__header {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
+  gap: var(--ap-space-3);
   margin-bottom: var(--ap-space-6);
 
   h1 {
@@ -56,4 +58,73 @@
   height: 14px;
   margin-right: var(--ap-space-1);
   vertical-align: -2px;
+}
+
+// Post-login landing page -- highest exposure in the admin. Its 4-button
+// action cell (Modifier/Dupliquer/Lien public/Archiver) is already the
+// densest single cell in the app even at size="sm" ; below md the whole
+// row switches to the stacked-card treatment (Phase 3's team-list pattern)
+// so those 4 buttons get a full-width column of their own instead of
+// squeezing next to Nom/Sport/Statut.
+@media (max-width: 768px) {
+  .tournament-list-page__table {
+    display: block;
+    width: 100%;
+
+    thead {
+      display: none;
+    }
+
+    tbody {
+      display: block;
+    }
+  }
+
+  .tournament-list-page__row {
+    display: block;
+    margin-bottom: var(--ap-space-4);
+    padding: var(--ap-space-3);
+    border: var(--ap-border-width) solid var(--ap-color-border);
+    border-radius: var(--ap-radius-md);
+  }
+
+  .tournament-list-page__cell {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ap-space-3);
+    padding: var(--ap-space-2) 0;
+    border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+  }
+
+  .tournament-list-page__cell--name::before,
+  .tournament-list-page__cell--sport::before,
+  .tournament-list-page__cell--status::before {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--ap-color-muted);
+  }
+
+  .tournament-list-page__cell--name::before {
+    content: 'Nom';
+  }
+
+  .tournament-list-page__cell--sport::before {
+    content: 'Sport';
+  }
+
+  .tournament-list-page__cell--status::before {
+    content: 'Statut';
+  }
+
+  .tournament-list-page__actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--ap-space-2);
+    border-bottom: none;
+
+    ap-button {
+      display: block;
+    }
+  }
 }
