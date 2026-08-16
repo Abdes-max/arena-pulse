@@ -27,5 +27,6 @@ jobs:
           script: |
             set -euo pipefail
             cd "${{ secrets.DEPLOY_PATH }}"
-            docker compose -f infra/deployment/docker-compose.prod.yml --env-file infra/deployment/.env exec -u root -T api chown -R nestjs:nodejs /app/uploads
             docker compose -f infra/deployment/docker-compose.prod.yml --env-file infra/deployment/.env exec -T api ls -la /app/uploads
+            docker compose -f infra/deployment/docker-compose.prod.yml --env-file infra/deployment/.env exec -T api ls -la /app/uploads/team-logos | head -5
+            docker compose -f infra/deployment/docker-compose.prod.yml --env-file infra/deployment/.env exec -T api curl -sI http://localhost:3000/uploads/team-logos/3cc17cba-cac1-484c-bfad-2b2476485c6a-cb46d6da-7312-4792-9f28-11bb1faf7ce3.png
