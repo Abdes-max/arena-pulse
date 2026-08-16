@@ -169,3 +169,42 @@
   align-items: center;
   margin-top: var(--ap-space-3);
 }
+
+@media (max-width: 768px) {
+  // This page nests up to 4 levels of bordered/padded box (phase ->
+  // phase-rules -> group -> inline-form), each adding its own padding on
+  // top of the last -- fine on desktop, but the compounding eats a
+  // disproportionate share of a phone's width. Halved rather than removed
+  // (still visually a distinct box, just tighter).
+  .structure-page__phase {
+    padding: var(--ap-space-2);
+  }
+
+  .structure-page__phase-rules {
+    padding: var(--ap-space-2);
+  }
+
+  .structure-page__group {
+    padding: var(--ap-space-2);
+  }
+
+  // Every inline-form field uses [hideLabel]="true" (placeholder only) on
+  // desktop, where the field's purpose is usually clear from its position
+  // next to its siblings -- on a narrow screen those fields stack instead
+  // (each on close to its own line), so the placeholder-only pattern loses
+  // that visual context and needs a real label back. Un-hides
+  // ap-text-field's own visually-hidden label class from here rather than
+  // changing `hideLabel` itself, which stays true so this has no effect on
+  // desktop and no ARIA/DOM change either way (the label was always
+  // present, just visually clipped).
+  .structure-page__inline-form .ap-text-field__label--hidden {
+    position: static;
+    width: auto;
+    height: auto;
+    padding: 0;
+    margin: 0 0 var(--ap-space-1);
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+}
