@@ -92,6 +92,27 @@ export class TournamentsService {
     );
   }
 
+  /**
+   * Called from the "publish success" page (session_id is already on its
+   * URL, since Stripe appends it to the checkoutUrl's successUrl) --
+   * verifies the payment directly against Stripe instead of only ever
+   * polling the tournament and hoping the webhook already landed. Always
+   * returns the tournament's current state, PUBLISHED or not -- never an
+   * error, safe to call unconditionally.
+   */
+  confirmPublicationPayment(
+    organizationId: string,
+    tournamentId: string,
+    sessionId: string,
+  ): Promise<TournamentDetail> {
+    return firstValueFrom(
+      this.http.post<TournamentDetail>(
+        `${this.base(organizationId)}/${tournamentId}/publish/confirm`,
+        { sessionId },
+      ),
+    );
+  }
+
   listPublicationOrders(organizationId: string, tournamentId: string): Promise<PublicationOrder[]> {
     return firstValueFrom(
       this.http.get<PublicationOrder[]>(

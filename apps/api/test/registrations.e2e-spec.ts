@@ -42,6 +42,7 @@ const stripeService = {
   constructWebhookEvent: jest.fn(
     (payload: Buffer) => JSON.parse(payload.toString()) as Stripe.Event,
   ),
+  retrieveCheckoutSession: jest.fn(),
 };
 
 async function registerOrganizer(app: INestApplication<App>) {
@@ -103,6 +104,7 @@ describe('Registrations & payments (e2e)', () => {
   beforeEach(async () => {
     stripeService.createCheckoutSession.mockClear();
     stripeService.constructWebhookEvent.mockClear();
+    stripeService.retrieveCheckoutSession.mockReset();
     app = await createTestApp((builder) =>
       builder.overrideProvider(StripeService).useValue(stripeService),
     );
@@ -281,6 +283,103 @@ describe('Registrations & payments (e2e)', () => {
       request(app.getHttpServer()).get(`${base}/${tournamentId}/teams`),
     ).expect(200);
     expect(teamsRes.body).toHaveLength(1);
+  });
+
+  it('confirms a pending registration directly against Stripe when the player lands back on the success page before the webhook arrives', async () => {
+    const { slug, categoryId, auth, base, tournamentId } =
+      await setupPublishedTournament(app, {
+        registrationFeeCents: 2500,
+        registrationFeeCurrency: 'eur',
+      });
+    const { accessToken: playerToken } = await registerPlayer(app);
+
+    const res = await request(app.getHttpServer())
+      .post(
+        `/api/v1/public/tournaments/${slug}/categories/${categoryId}/registrations`,
+      )
+      .set('Authorization', `Bearer ${playerToken}`)
+      .send(roster)
+      .expect(201);
+    const body = res.body as RegistrationResponseBody;
+
+    // Webhook hasn't landed yet -- Stripe itself reports the session as paid.
+    stripeService.retrieveCheckoutSession.mockResolvedValue({
+      id: 'cs_test_123',
+      payment_status: 'paid',
+      payment_intent: 'pi_test_confirm_456',
+    });
+
+    const confirmRes = await request(app.getHttpServer())
+      .post('/api/v1/public/registrations/confirm')
+      .set('Authorization', `Bearer ${playerToken}`)
+      .send({ sessionId: 'cs_test_123' })
+      .expect(200);
+
+    expect(stripeService.retrieveCheckoutSession).toHaveBeenCalledWith(
+      'cs_test_123',
+    );
+    const confirmed = (
+      confirmRes.body as { id: string; status: string }[]
+    ).find((r) => r.id === body.registrationId);
+    expect(confirmed?.status).toBe('PAID');
+
+    const afterConfirm = await auth(
+      request(app.getHttpServer()).get(`${base}/${tournamentId}/registrations`),
+    ).expect(200);
+    const row = (afterConfirm.body as OrganizerRegistrationRow[])[0];
+    expect(row.status).toBe('PAID');
+    expect(row.teamId).toEqual(expect.any(String));
+
+    // The webhook arriving afterwards for the same session is a silent no-op, not a duplicate team.
+    await request(app.getHttpServer())
+      .post('/api/v1/payments/webhook')
+      .set('stripe-signature', 'test-signature')
+      .send({
+        type: 'checkout.session.completed',
+        data: {
+          object: { id: 'cs_test_123', payment_intent: 'pi_test_confirm_456' },
+        },
+      })
+      .expect(200, { received: true });
+
+    const teamsRes = await auth(
+      request(app.getHttpServer()).get(`${base}/${tournamentId}/teams`),
+    ).expect(200);
+    expect(teamsRes.body).toHaveLength(1);
+  });
+
+  it('does not confirm a registration belonging to another player', async () => {
+    const { slug, categoryId } = await setupPublishedTournament(app, {
+      registrationFeeCents: 2500,
+      registrationFeeCurrency: 'eur',
+    });
+    const { accessToken: playerToken } = await registerPlayer(app);
+    const { accessToken: otherPlayerToken } = await registerPlayer(
+      app,
+      'other-player@example.com',
+    );
+
+    await request(app.getHttpServer())
+      .post(
+        `/api/v1/public/tournaments/${slug}/categories/${categoryId}/registrations`,
+      )
+      .set('Authorization', `Bearer ${playerToken}`)
+      .send(roster)
+      .expect(201);
+
+    stripeService.retrieveCheckoutSession.mockResolvedValue({
+      id: 'cs_test_123',
+      payment_status: 'paid',
+      payment_intent: 'pi_test_other_456',
+    });
+
+    await request(app.getHttpServer())
+      .post('/api/v1/public/registrations/confirm')
+      .set('Authorization', `Bearer ${otherPlayerToken}`)
+      .send({ sessionId: 'cs_test_123' })
+      .expect(200);
+
+    expect(stripeService.retrieveCheckoutSession).not.toHaveBeenCalled();
   });
 
   it('rejects a webhook request with no signature header', async () => {

@@ -1,12 +1,16 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
 import { OrganizationSubscriptionStatus } from '../../core/models';
 import { OrganizationsService } from '../../core/organizations.service';
 
-// Same short-poll pattern as tournament-publish-success.page.ts: the Stripe
-// webhook that confirms payment usually lands within a second or two of the
-// checkout redirect landing here.
+// Fallback only: confirmSubscriptionPayment (called first, see load() below)
+// verifies the payment directly against Stripe using the session_id already
+// on this page's own URL, so it's normally resolved before this poll loop
+// ever runs. Kept as a safety net for the rare case that call itself fails
+// (a transient network error, Stripe briefly unavailable) -- the webhook
+// might still land shortly after even then. Same pattern as
+// tournament-publish-success.page.ts.
 const MAX_POLL_ATTEMPTS = 5;
 const POLL_INTERVAL_MS = 2000;
 
@@ -18,6 +22,7 @@ const POLL_INTERVAL_MS = 2000;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrganizationSubscriptionSuccessPage {
+  private readonly route = inject(ActivatedRoute);
   private readonly authService = inject(AuthService);
   private readonly organizationsService = inject(OrganizationsService);
 
@@ -35,6 +40,23 @@ export class OrganizationSubscriptionSuccessPage {
     if (!organizationId) {
       this.loading.set(false);
       return;
+    }
+    const sessionId = this.route.snapshot.queryParamMap.get('session_id');
+    if (sessionId) {
+      try {
+        const status = await this.organizationsService.confirmSubscriptionPayment(
+          organizationId,
+          sessionId,
+        );
+        this.status.set(status);
+        if (status.status === 'ACTIVE') {
+          this.loading.set(false);
+          return;
+        }
+      } catch {
+        // Fall through to the poll loop below -- confirming ourselves
+        // failed, but the webhook may still land shortly.
+      }
     }
     for (let attempt = 0; attempt < MAX_POLL_ATTEMPTS; attempt++) {
       const status = await this.organizationsService.getSubscriptionStatus(organizationId);

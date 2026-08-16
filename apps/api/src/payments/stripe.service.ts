@@ -46,6 +46,21 @@ export class StripeService {
     });
   }
 
+  /**
+   * Lets a payment flow's own "success" page (session_id is already on that
+   * URL, see createCheckoutSession's successUrl callers) confirm payment
+   * directly against Stripe's API, instead of only ever finding out once
+   * (if) a webhook delivery lands. Genuinely asynchronous either way, and
+   * idempotent alongside the webhook -- just no longer *solely* dependent
+   * on it, which is unreachable at all in local dev (no public URL for
+   * Stripe to call back to) and can occasionally be delayed or dropped even
+   * in production (Stripe's own docs recommend this exact reconciliation
+   * pattern as a webhook complement, not a replacement).
+   */
+  retrieveCheckoutSession(sessionId: string): Promise<Stripe.Checkout.Session> {
+    return this.getClient().checkout.sessions.retrieve(sessionId);
+  }
+
   constructWebhookEvent(payload: Buffer, signature: string): Stripe.Event {
     const webhookSecret = this.configService.getOrThrow<string>(
       'STRIPE_WEBHOOK_SECRET',

@@ -99,12 +99,55 @@ export class RegistrationsService {
     if (event.type !== 'checkout.session.completed') {
       return;
     }
-    const session = event.data.object;
+    await this.applyPaidRegistrationSession(event.data.object);
+  }
+
+  /**
+   * Called from the player's own browser landing on /:slug/register/success
+   * (session_id is already in that URL's query string) -- verifies the
+   * session directly against Stripe instead of just polling the
+   * registration and hoping the webhook already updated it. See
+   * StripeService.retrieveCheckoutSession's doc comment for why this
+   * matters beyond local dev too. A session that isn't the calling player's
+   * own, isn't paid yet, or was already applied (by the webhook, or a
+   * previous call here), is a silent no-op.
+   */
+  async confirmRegistrationPayment(
+    playerAccountId: string,
+    stripeCheckoutSessionId: string,
+  ): Promise<void> {
+    const registration = await this.prisma.registration.findUnique({
+      where: { stripeCheckoutSessionId },
+    });
+    if (
+      !registration ||
+      registration.playerAccountId !== playerAccountId ||
+      registration.status !== RegistrationStatus.PENDING_PAYMENT
+    ) {
+      return;
+    }
+    const session = await this.stripeService.retrieveCheckoutSession(
+      stripeCheckoutSessionId,
+    );
+    if (session.payment_status === 'paid') {
+      await this.applyPaidRegistrationSession(session);
+    }
+  }
+
+  /**
+   * Shared by the webhook handler and confirmRegistrationPayment above --
+   * same "materialize the team + roster, mark paid" side effects regardless
+   * of which one first learns the session is genuinely paid.
+   */
+  private async applyPaidRegistrationSession(
+    session: Stripe.Checkout.Session,
+  ): Promise<void> {
     const registration = await this.prisma.registration.findUnique({
       where: { stripeCheckoutSessionId: session.id },
     });
-    // Idempotent: a retried webhook delivery, or an event for a session this
-    // service didn't create, is a silent no-op rather than an error.
+    // Idempotent: a retried webhook delivery, a confirm call racing the
+    // webhook, or an event/session for a checkout this service didn't
+    // create, is a silent no-op rather than an error.
     if (
       !registration ||
       registration.status !== RegistrationStatus.PENDING_PAYMENT

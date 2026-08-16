@@ -82,6 +82,7 @@ function createStripeServiceMock() {
       url: 'https://checkout.stripe.example/cs_test_subscription_123',
     }),
     constructWebhookEvent: jest.fn(),
+    retrieveCheckoutSession: jest.fn(),
   };
 }
 
@@ -431,6 +432,93 @@ describe('OrganizationsService', () => {
       );
 
       expect(prisma.organizationSubscription.update).not.toHaveBeenCalled();
+    });
+
+    it('confirmSubscriptionPayment is a silent no-op when no subscription matches the session id', async () => {
+      prisma.organizationSubscription.findUnique.mockResolvedValue(null);
+      prisma.organizationSubscription.findFirst.mockResolvedValue(null);
+
+      const result = await service.confirmSubscriptionPayment(
+        'org-1',
+        'cs_not_ours',
+      );
+
+      expect(stripeService.retrieveCheckoutSession).not.toHaveBeenCalled();
+      expect(result.status).toBe('NONE');
+    });
+
+    it('confirmSubscriptionPayment is a silent no-op when the subscription belongs to a different organization', async () => {
+      prisma.organizationSubscription.findUnique.mockResolvedValue({
+        id: 'sub-1',
+        organizationId: 'other-org',
+        status: OrganizationSubscriptionStatus.PENDING_PAYMENT,
+      });
+      prisma.organizationSubscription.findFirst.mockResolvedValue(null);
+
+      await service.confirmSubscriptionPayment(
+        'org-1',
+        'cs_test_subscription_123',
+      );
+
+      expect(stripeService.retrieveCheckoutSession).not.toHaveBeenCalled();
+    });
+
+    it('confirmSubscriptionPayment does not apply the session when Stripe reports it is not yet paid', async () => {
+      prisma.organizationSubscription.findUnique.mockResolvedValue({
+        id: 'sub-1',
+        organizationId: 'org-1',
+        status: OrganizationSubscriptionStatus.PENDING_PAYMENT,
+      });
+      prisma.organizationSubscription.findFirst.mockResolvedValue(null);
+      stripeService.retrieveCheckoutSession.mockResolvedValue({
+        id: 'cs_test_subscription_123',
+        payment_status: 'unpaid',
+      });
+
+      await service.confirmSubscriptionPayment(
+        'org-1',
+        'cs_test_subscription_123',
+      );
+
+      expect(prisma.organizationSubscription.update).not.toHaveBeenCalled();
+    });
+
+    it('confirmSubscriptionPayment retrieves the session from Stripe and activates it when paid', async () => {
+      prisma.organizationSubscription.findUnique.mockResolvedValue({
+        id: 'sub-1',
+        organizationId: 'org-1',
+        status: OrganizationSubscriptionStatus.PENDING_PAYMENT,
+      });
+      stripeService.retrieveCheckoutSession.mockResolvedValue({
+        id: 'cs_test_subscription_123',
+        payment_status: 'paid',
+        payment_intent: 'pi_123',
+      });
+      const expiresAt = new Date('2027-08-14');
+      prisma.organizationSubscription.update.mockResolvedValue({
+        organizationId: 'org-1',
+        amountCents: 20000,
+        currency: 'eur',
+        expiresAt,
+      });
+      prisma.organizationMember.findMany.mockResolvedValue([]);
+      prisma.organizationSubscription.findFirst.mockResolvedValueOnce({
+        organizationId: 'org-1',
+        status: OrganizationSubscriptionStatus.ACTIVE,
+        startsAt: new Date('2026-08-14'),
+        expiresAt,
+      });
+
+      const result = await service.confirmSubscriptionPayment(
+        'org-1',
+        'cs_test_subscription_123',
+      );
+
+      expect(stripeService.retrieveCheckoutSession).toHaveBeenCalledWith(
+        'cs_test_subscription_123',
+      );
+      expect(prisma.organizationSubscription.update).toHaveBeenCalled();
+      expect(result.status).toBe('ACTIVE');
     });
 
     it('getSubscriptionStatus reports ACTIVE, then PENDING_PAYMENT, then NONE', async () => {

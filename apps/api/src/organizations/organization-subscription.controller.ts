@@ -1,6 +1,16 @@
-import { Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { OrganizationRole } from '../../generated/prisma/client';
+import { ConfirmSubscriptionPaymentDto } from './dto/confirm-subscription-payment.dto';
 import { RequireOrgRole } from './decorators/require-org-role.decorator';
 import { OrganizationRoleGuard } from './guards/organization-role.guard';
 import { OrganizationsService } from './organizations.service';
@@ -27,5 +37,18 @@ export class OrganizationSubscriptionController {
   @Post()
   subscribe(@Param('organizationId') organizationId: string) {
     return this.organizationsService.subscribe(organizationId);
+  }
+
+  @RequireOrgRole(OrganizationRole.ORG_ADMIN)
+  @HttpCode(HttpStatus.OK)
+  @Post('confirm')
+  confirmPayment(
+    @Param('organizationId') organizationId: string,
+    @Body() dto: ConfirmSubscriptionPaymentDto,
+  ) {
+    return this.organizationsService.confirmSubscriptionPayment(
+      organizationId,
+      dto.sessionId,
+    );
   }
 }

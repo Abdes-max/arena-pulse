@@ -91,6 +91,26 @@ export class OrganizationsService {
     );
   }
 
+  /**
+   * Called from the "subscription success" page (session_id is already on
+   * its URL, since Stripe appends it to the checkoutUrl's successUrl) --
+   * verifies the payment directly against Stripe instead of only ever
+   * polling the subscription status and hoping the webhook already landed.
+   * Always returns the current status, active or not -- never an error,
+   * safe to call unconditionally.
+   */
+  confirmSubscriptionPayment(
+    organizationId: string,
+    sessionId: string,
+  ): Promise<OrganizationSubscriptionStatus> {
+    return firstValueFrom(
+      this.http.post<OrganizationSubscriptionStatus>(
+        `${environment.apiUrl}/organizations/${organizationId}/subscription/confirm`,
+        { sessionId },
+      ),
+    );
+  }
+
   listSubscriptionHistory(organizationId: string): Promise<SubscriptionHistoryEntry[]> {
     return firstValueFrom(
       this.http.get<SubscriptionHistoryEntry[]>(

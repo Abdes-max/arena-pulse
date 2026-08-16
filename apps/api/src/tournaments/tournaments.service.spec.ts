@@ -92,6 +92,7 @@ function createStripeServiceMock() {
       url: 'https://checkout.stripe.example/cs_test_publish_123',
     }),
     constructWebhookEvent: jest.fn(),
+    retrieveCheckoutSession: jest.fn(),
   };
 }
 
@@ -550,6 +551,128 @@ describe('TournamentsService', () => {
       );
 
       expect(mailService.sendPublicationReceiptEmail).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('confirmPublicationPayment', () => {
+    it('is a silent no-op when no order matches the session id, and just returns the tournament', async () => {
+      prisma.tournamentPublicationOrder.findUnique.mockResolvedValue(null);
+      prisma.tournament.findUnique.mockResolvedValue(tournamentFixture());
+
+      const result = await service.confirmPublicationPayment(
+        'org-1',
+        'tournament-1',
+        'cs_not_ours',
+      );
+
+      expect(stripeService.retrieveCheckoutSession).not.toHaveBeenCalled();
+      expect(result.id).toBe('tournament-1');
+    });
+
+    it('is a silent no-op when the order belongs to a different tournament', async () => {
+      prisma.tournamentPublicationOrder.findUnique.mockResolvedValue({
+        id: 'order-1',
+        status: TournamentPublicationOrderStatus.PENDING_PAYMENT,
+        tournamentId: 'other-tournament',
+        amountCents: 2500,
+        currency: 'eur',
+        tournament: { name: 'Autre', organizationId: 'org-1' },
+      });
+      prisma.tournament.findUnique.mockResolvedValue(tournamentFixture());
+
+      await service.confirmPublicationPayment(
+        'org-1',
+        'tournament-1',
+        'cs_test_publish_123',
+      );
+
+      expect(stripeService.retrieveCheckoutSession).not.toHaveBeenCalled();
+    });
+
+    it('is a silent no-op when the order is already PAID', async () => {
+      prisma.tournamentPublicationOrder.findUnique.mockResolvedValue({
+        id: 'order-1',
+        status: TournamentPublicationOrderStatus.PAID,
+        tournamentId: 'tournament-1',
+        amountCents: 2500,
+        currency: 'eur',
+        tournament: { name: 'Coupe de printemps', organizationId: 'org-1' },
+      });
+      prisma.tournament.findUnique.mockResolvedValue(tournamentFixture());
+
+      await service.confirmPublicationPayment(
+        'org-1',
+        'tournament-1',
+        'cs_test_publish_123',
+      );
+
+      expect(stripeService.retrieveCheckoutSession).not.toHaveBeenCalled();
+    });
+
+    it('does not apply the session when Stripe reports it is not yet paid', async () => {
+      prisma.tournamentPublicationOrder.findUnique.mockResolvedValue({
+        id: 'order-1',
+        status: TournamentPublicationOrderStatus.PENDING_PAYMENT,
+        tournamentId: 'tournament-1',
+        amountCents: 2500,
+        currency: 'eur',
+        tournament: { name: 'Coupe de printemps', organizationId: 'org-1' },
+      });
+      stripeService.retrieveCheckoutSession.mockResolvedValue({
+        id: 'cs_test_publish_123',
+        payment_status: 'unpaid',
+      });
+      prisma.tournament.findUnique.mockResolvedValue(tournamentFixture());
+
+      await service.confirmPublicationPayment(
+        'org-1',
+        'tournament-1',
+        'cs_test_publish_123',
+      );
+
+      expect(prisma.tournamentPublicationOrder.update).not.toHaveBeenCalled();
+    });
+
+    it('retrieves the session from Stripe and applies it when paid, emailing the receipt', async () => {
+      prisma.tournamentPublicationOrder.findUnique.mockResolvedValue({
+        id: 'order-1',
+        status: TournamentPublicationOrderStatus.PENDING_PAYMENT,
+        tournamentId: 'tournament-1',
+        amountCents: 2500,
+        currency: 'eur',
+        tournament: { name: 'Coupe de printemps', organizationId: 'org-1' },
+      });
+      stripeService.retrieveCheckoutSession.mockResolvedValue({
+        id: 'cs_test_publish_123',
+        payment_status: 'paid',
+        payment_intent: 'pi_123',
+      });
+      prisma.tournamentPublicationOrder.update.mockResolvedValue({});
+      prisma.tournament.update.mockResolvedValue({});
+      prisma.tournament.findUnique.mockResolvedValue(
+        tournamentFixture({ status: TournamentStatus.PUBLISHED }),
+      );
+      organizationsService.getAdminEmails.mockResolvedValue([
+        'admin1@example.com',
+      ]);
+
+      const result = await service.confirmPublicationPayment(
+        'org-1',
+        'tournament-1',
+        'cs_test_publish_123',
+      );
+
+      expect(stripeService.retrieveCheckoutSession).toHaveBeenCalledWith(
+        'cs_test_publish_123',
+      );
+      expect(prisma.tournamentPublicationOrder.update).toHaveBeenCalled();
+      expect(mailService.sendPublicationReceiptEmail).toHaveBeenCalledWith(
+        'admin1@example.com',
+        'Coupe de printemps',
+        2500,
+        'eur',
+      );
+      expect(result.status).toBe(TournamentStatus.PUBLISHED);
     });
   });
 
