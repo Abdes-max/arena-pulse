@@ -233,7 +233,7 @@
         </div>
       </section>
 
-      @for (phase of phases(); track phase.id) {
+      @for (phase of visiblePhases(); track phase.id) {
         <section class="structure-page__phase">
           <div class="structure-page__phase-header">
             <h2>
@@ -469,24 +469,17 @@
               <label class="structure-page__checkbox-label">
                 <input
                   type="checkbox"
-                  [checked]="bracket.hasRankingMatch"
-                  (change)="toggleBracketRankingMatch(phase, $event)"
+                  [checked]="bracketRankingMatchFor(bracket)"
+                  (change)="onBracketRankingMatchEditChange(bracket.id, $event)"
                 />
                 Petite finale
               </label>
-              <ap-button
-                type="button"
-                [disabled]="generatingBracketId() === bracket.id"
-                (click)="generateBracketMatches(phase)"
-              >
-                Générer les matchs du tableau
+              <ap-button type="button" (click)="saveBracketRankingMatch(phase)">
+                Enregistrer
               </ap-button>
               <ap-button type="button" variant="ghost" (click)="removeBracket(phase)">
                 Supprimer le tableau
               </ap-button>
-              @if (bracketGeneratedMessage(); as message) {
-                <p class="structure-page__success">{{ message }}</p>
-              }
             } @else {
               <div class="structure-page__inline-form">
                 <ap-text-field

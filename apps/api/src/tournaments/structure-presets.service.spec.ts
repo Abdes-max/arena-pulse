@@ -406,6 +406,7 @@ describe('StructurePresetsService', () => {
           name: 'Équipes engagées',
           type: 'GROUP_STAGE',
           position: 0,
+          isSeedPhase: true,
         },
       });
       expect(prisma.group.create).toHaveBeenCalledTimes(1);
@@ -500,6 +501,7 @@ describe('StructurePresetsService', () => {
           name: 'Équipes engagées',
           type: 'GROUP_STAGE',
           position: 0,
+          isSeedPhase: true,
         },
       });
     });

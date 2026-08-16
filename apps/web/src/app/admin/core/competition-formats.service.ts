@@ -61,9 +61,12 @@ export interface GenerateBracketMatchesPayload {
 
 export interface GenerateAllBracketMatchesPayload {
   fieldIds: string[];
-  // The knockout stage's start isn't entered by hand -- it's computed from
-  // the pool phase's last scheduled match plus this break.
-  breakAfterPoolsMinutes: number;
+  // The knockout stage's start usually isn't entered by hand -- it's
+  // computed from the pool phase's last scheduled match plus this break.
+  // Omit it and pass startDateTime instead for a category with no real pool
+  // phase to derive it from (KNOCKOUT_ONLY structure preset).
+  breakAfterPoolsMinutes?: number;
+  startDateTime?: string;
   matchDurationMinutes?: number;
   breakDurationMinutes?: number;
 }

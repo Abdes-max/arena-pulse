@@ -221,6 +221,7 @@ export class StructurePresetsService {
             name: KNOCKOUT_ONLY_SEED_NAME,
             type: CompetitionPhaseType.GROUP_STAGE,
             position: 0,
+            isSeedPhase: true,
           },
         });
         const seedGroup = await tx.group.create({

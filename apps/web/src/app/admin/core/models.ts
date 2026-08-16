@@ -227,6 +227,11 @@ export interface CompetitionPhase {
   refereesPerMatch: number;
   // GROUP_STAGE only -- always false for KNOCKOUT (two-legged elimination ties are not supported).
   doubleRoundRobin: boolean;
+  // True only for the fictitious pool phase a KNOCKOUT_ONLY structure preset
+  // creates to seed its bracket from -- no match is ever generated in it, so
+  // Structure/Calendrier hide it from their phase lists instead of showing
+  // an empty, unusable pool.
+  isSeedPhase: boolean;
   groups: CompetitionGroup[];
   knockoutBracket: KnockoutBracket | null;
 }

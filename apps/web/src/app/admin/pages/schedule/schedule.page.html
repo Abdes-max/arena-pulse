@@ -46,7 +46,7 @@
               />
 
               <div class="schedule-page__inline-form schedule-page__inline-form--spaced">
-                @if (selectedPhaseType() === 'GROUP_STAGE') {
+                @if (selectedPhaseType() === 'GROUP_STAGE' || !groupStagePhase()) {
                   <ap-text-field
                     label="Début"
                     type="datetime-local"

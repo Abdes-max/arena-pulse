@@ -184,6 +184,7 @@ export class PhasesService {
       breakDurationMinutes: phase.breakDurationMinutes,
       refereesPerMatch: phase.refereesPerMatch,
       doubleRoundRobin: phase.doubleRoundRobin,
+      isSeedPhase: phase.isSeedPhase,
       groups: phase.groups.map((group) => ({
         id: group.id,
         name: group.name,

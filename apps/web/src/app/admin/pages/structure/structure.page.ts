@@ -99,6 +99,15 @@ export class StructurePage {
     this.teams().filter((team) => team.groupId === null),
   );
 
+  // Hides the fictitious pool phase a KNOCKOUT_ONLY structure preset creates
+  // to seed its bracket from -- it has no matches, no groups worth managing,
+  // nothing an organizer can usefully do with it here. It still exists in
+  // `phases()` itself (other logic, e.g. qualification rule resolution,
+  // doesn't care), just not rendered.
+  protected readonly visiblePhases = computed(() =>
+    this.phases().filter((phase) => !phase.isSeedPhase),
+  );
+
   // "Mode Tournoi" -- one-click structure generator, only offered while the
   // category has no phases yet (see structure-presets.service.ts). Sets up
   // phases/pools/brackets/qualification rules only -- no calendar; that's
@@ -1029,63 +1038,48 @@ export class StructurePage {
     }
   }
 
-  /**
-   * Toggling this has no effect on matches already generated for this
-   * bracket -- hasRankingMatch is only read when matches are (re)generated,
-   * so it's safe to flip any time before then, including for brackets
-   * "Mode Tournoi" already created (which never exposes this choice itself,
-   * one per tier).
-   */
-  protected async toggleBracketRankingMatch(phase: CompetitionPhase, event: Event): Promise<void> {
+  // Edited locally until "Enregistrer" is clicked -- matches (see below) are
+  // now generated automatically as soon as a bracket's qualification rules
+  // are complete (BracketsService.tryAutoGenerateMatches, backend), so by
+  // the time this checkbox is visible its bracket usually already has
+  // matches. hasRankingMatch is only read when matches are (re)generated, so
+  // saving it here has no retroactive effect on a bracket already populated
+  // -- same limitation the previous auto-save-on-toggle had, just no longer
+  // silent about it (an explicit save action, not a checkbox that appears to
+  // "just work").
+  protected readonly bracketRankingMatchEditByBracket = signal<Record<string, boolean>>({});
+
+  protected bracketRankingMatchFor(bracket: { id: string; hasRankingMatch: boolean }): boolean {
+    return this.bracketRankingMatchEditByBracket()[bracket.id] ?? bracket.hasRankingMatch;
+  }
+
+  protected onBracketRankingMatchEditChange(bracketId: string, event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.bracketRankingMatchEditByBracket.update((edits) => ({ ...edits, [bracketId]: checked }));
+  }
+
+  protected async saveBracketRankingMatch(phase: CompetitionPhase): Promise<void> {
     const organizationId = this.organization()?.id;
-    const bracketId = phase.knockoutBracket?.id;
-    const hasRankingMatch = (event.target as HTMLInputElement).checked;
-    if (!organizationId || !bracketId) {
+    const bracket = phase.knockoutBracket;
+    if (!organizationId || !bracket) {
       return;
     }
+    const hasRankingMatch = this.bracketRankingMatchFor(bracket);
     try {
       const updated = await this.competitionFormatsService.updateKnockoutBracket(
         organizationId,
         this.tournamentId,
-        bracketId,
+        bracket.id,
         { hasRankingMatch },
+      );
+      this.bracketRankingMatchEditByBracket.update((edits) =>
+        Object.fromEntries(Object.entries(edits).filter(([id]) => id !== bracket.id)),
       );
       this.phases.update((phases) =>
         phases.map((p) => (p.id === phase.id ? { ...p, knockoutBracket: updated } : p)),
       );
     } catch {
       this.errorMessage.set('Impossible de modifier ce réglage.');
-    }
-  }
-
-  protected readonly generatingBracketId = signal<string | null>(null);
-  protected readonly bracketGeneratedMessage = signal<string | null>(null);
-
-  protected async generateBracketMatches(phase: CompetitionPhase): Promise<void> {
-    const organizationId = this.organization()?.id;
-    const bracketId = phase.knockoutBracket?.id;
-    if (!organizationId || !bracketId) {
-      return;
-    }
-    this.generatingBracketId.set(bracketId);
-    this.errorMessage.set(null);
-    this.bracketGeneratedMessage.set(null);
-    try {
-      const matches = await this.competitionFormatsService.generateBracketMatches(
-        organizationId,
-        this.tournamentId,
-        bracketId,
-      );
-      this.bracketGeneratedMessage.set(`${matches.length} match(s) générés pour ce tableau.`);
-    } catch (error) {
-      this.errorMessage.set(
-        error instanceof HttpErrorResponse && error.status === 400
-          ? ((error.error as { message?: string })?.message ??
-              'Les équipes qualifiées ne correspondent pas encore à la taille du tableau.')
-          : 'Impossible de générer les matchs de ce tableau.',
-      );
-    } finally {
-      this.generatingBracketId.set(null);
     }
   }
 
