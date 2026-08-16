@@ -191,6 +191,9 @@ export interface TeamImportError {
 export interface TeamImportResult {
   created: Team[];
   errors: TeamImportError[];
+  // Non-fatal issues that didn't stop a row's team from being created --
+  // today only an unreachable/unrecognized `logo` column value.
+  warnings: TeamImportError[];
 }
 
 export interface Player {

@@ -60,6 +60,14 @@ export interface TeamCsvRow {
   name: string;
   categoryName: string;
   divisionName?: string;
+  managerName?: string;
+  managerEmail?: string;
+  managerPhone?: string;
+  // Either an existing /uploads/team-logos/... path (re-referenced as-is,
+  // no re-upload needed -- typically a value round-tripped from a previous
+  // export) or an absolute http(s) URL to fetch and store as a fresh logo.
+  // See TeamsService.resolveImportLogoUrl.
+  logoUrl?: string;
 }
 
 export interface TeamCsvRowError {
@@ -84,7 +92,15 @@ export function parseTeamsCsv(csv: string): TeamCsvParseResult {
 
   dataRows.forEach((fields, index) => {
     const line = index + 2;
-    const [name, categoryName, divisionName] = fields;
+    const [
+      name,
+      categoryName,
+      divisionName,
+      managerName,
+      managerEmail,
+      managerPhone,
+      logoUrl,
+    ] = fields;
     if (!name?.trim()) {
       errors.push({ line, message: "Nom d'équipe manquant." });
       return;
@@ -98,6 +114,10 @@ export function parseTeamsCsv(csv: string): TeamCsvParseResult {
       name: name.trim(),
       categoryName: categoryName.trim(),
       divisionName: divisionName?.trim() || undefined,
+      managerName: managerName?.trim() || undefined,
+      managerEmail: managerEmail?.trim() || undefined,
+      managerPhone: managerPhone?.trim() || undefined,
+      logoUrl: logoUrl?.trim() || undefined,
     });
   });
 
@@ -108,12 +128,32 @@ export interface TeamCsvExportRow {
   name: string;
   categoryName: string;
   divisionName: string | null;
+  managerName: string | null;
+  managerEmail: string | null;
+  managerPhone: string | null;
+  logoUrl: string | null;
 }
 
 export function serializeTeamsCsv(rows: TeamCsvExportRow[]): string {
   const lines = [
-    ['nom', 'categorie', 'division'],
-    ...rows.map((row) => [row.name, row.categoryName, row.divisionName ?? '']),
+    [
+      'nom',
+      'categorie',
+      'division',
+      'responsable',
+      'email_responsable',
+      'telephone_responsable',
+      'logo',
+    ],
+    ...rows.map((row) => [
+      row.name,
+      row.categoryName,
+      row.divisionName ?? '',
+      row.managerName ?? '',
+      row.managerEmail ?? '',
+      row.managerPhone ?? '',
+      row.logoUrl ?? '',
+    ]),
   ];
   return lines
     .map((line) => line.map(escapeCsvField).join(DELIMITER))

@@ -489,23 +489,195 @@ describe('TeamsService', () => {
         ),
       ).rejects.toThrow('archived');
     });
+
+    it('sets manager fields from the CSV columns', async () => {
+      const csv =
+        'nom;categorie;division;responsable;email_responsable;telephone_responsable;logo\n' +
+        'Les Aigles;U10;;Jean Dupont;jean@example.com;0600000000;';
+
+      prisma.category.findFirst.mockResolvedValue({
+        id: 'category-1',
+        name: 'U10',
+      });
+      prisma.team.findFirst.mockResolvedValue(null);
+      prisma.team.create.mockResolvedValue({
+        id: 'team-1',
+        name: 'Les Aigles',
+        categoryId: 'category-1',
+        divisionId: null,
+        managerName: 'Jean Dupont',
+        managerEmail: 'jean@example.com',
+        managerPhone: '0600000000',
+        logoUrl: null,
+        position: 0,
+      });
+
+      await service.importFromCsv('org-1', 'tournament-1', csv);
+
+      expect(prisma.team.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({
+            managerName: 'Jean Dupont',
+            managerEmail: 'jean@example.com',
+            managerPhone: '0600000000',
+          }) as unknown,
+        }),
+      );
+    });
+
+    it('references an existing /uploads/team-logos path as-is, without fetching', async () => {
+      const csv =
+        'nom;categorie;division;responsable;email_responsable;telephone_responsable;logo\n' +
+        'Les Aigles;U10;;;;;/uploads/team-logos/existing.png';
+
+      prisma.category.findFirst.mockResolvedValue({
+        id: 'category-1',
+        name: 'U10',
+      });
+      prisma.team.findFirst.mockResolvedValue(null);
+      prisma.team.create.mockResolvedValue({
+        id: 'team-1',
+        name: 'Les Aigles',
+        categoryId: 'category-1',
+        divisionId: null,
+        logoUrl: null,
+        position: 0,
+      });
+      prisma.team.update.mockResolvedValue({
+        id: 'team-1',
+        name: 'Les Aigles',
+        categoryId: 'category-1',
+        divisionId: null,
+        logoUrl: '/uploads/team-logos/existing.png',
+        position: 0,
+      });
+      const fetchMock = jest.fn();
+      global.fetch = fetchMock;
+
+      const result = await service.importFromCsv('org-1', 'tournament-1', csv);
+
+      expect(fetchMock).not.toHaveBeenCalled();
+      expect(prisma.team.update).toHaveBeenCalledWith({
+        where: { id: 'team-1' },
+        data: { logoUrl: '/uploads/team-logos/existing.png' },
+      });
+      expect(result.warnings).toEqual([]);
+    });
+
+    it('fetches and stores an http(s) logo URL', async () => {
+      const csv =
+        'nom;categorie;division;responsable;email_responsable;telephone_responsable;logo\n' +
+        'Les Aigles;U10;;;;;https://example.com/logo.png';
+
+      prisma.category.findFirst.mockResolvedValue({
+        id: 'category-1',
+        name: 'U10',
+      });
+      prisma.team.findFirst.mockResolvedValue(null);
+      prisma.team.create.mockResolvedValue({
+        id: 'team-1',
+        name: 'Les Aigles',
+        categoryId: 'category-1',
+        divisionId: null,
+        logoUrl: null,
+        position: 0,
+      });
+      prisma.team.update.mockImplementation(
+        ({ data }: { data: { logoUrl: string } }) => ({
+          id: 'team-1',
+          logoUrl: data.logoUrl,
+        }),
+      );
+      const fetchMock = jest.fn().mockResolvedValue({
+        ok: true,
+        headers: { get: () => 'image/png' },
+        arrayBuffer: () => Promise.resolve(Buffer.from('fake-png').buffer),
+      });
+      global.fetch = fetchMock;
+
+      const result = await service.importFromCsv('org-1', 'tournament-1', csv);
+
+      expect(fetchMock).toHaveBeenCalledWith(
+        'https://example.com/logo.png',
+        expect.anything(),
+      );
+      expect(fsMock.writeFile).toHaveBeenCalledTimes(1);
+      expect(prisma.team.update).toHaveBeenCalledWith({
+        where: { id: 'team-1' },
+        data: {
+          logoUrl: expect.stringMatching(
+            /^\/uploads\/team-logos\/team-1-.+\.png$/,
+          ) as unknown,
+        },
+      });
+      expect(result.warnings).toEqual([]);
+    });
+
+    it('creates the team and reports a warning when the logo URL fails to fetch', async () => {
+      const csv =
+        'nom;categorie;division;responsable;email_responsable;telephone_responsable;logo\n' +
+        'Les Aigles;U10;;;;;https://example.com/broken.png';
+
+      prisma.category.findFirst.mockResolvedValue({
+        id: 'category-1',
+        name: 'U10',
+      });
+      prisma.team.findFirst.mockResolvedValue(null);
+      prisma.team.create.mockResolvedValue({
+        id: 'team-1',
+        name: 'Les Aigles',
+        categoryId: 'category-1',
+        divisionId: null,
+        logoUrl: null,
+        position: 0,
+      });
+      const fetchMock = jest.fn().mockResolvedValue({ ok: false, status: 404 });
+      global.fetch = fetchMock;
+
+      const result = await service.importFromCsv('org-1', 'tournament-1', csv);
+
+      expect(result.created).toHaveLength(1);
+      expect(prisma.team.update).not.toHaveBeenCalled();
+      expect(result.warnings).toEqual([
+        {
+          line: 2,
+          message: expect.stringContaining(
+            'https://example.com/broken.png',
+          ) as unknown,
+        },
+      ]);
+    });
   });
 
   describe('exportToCsv', () => {
-    it('serializes all teams for the tournament', async () => {
+    it('serializes all teams for the tournament, including manager and logo columns', async () => {
       prisma.team.findMany.mockResolvedValue([
         {
           name: 'Les Aigles',
           category: { name: 'U10' },
           division: { name: 'Poule A' },
+          managerName: 'Jean Dupont',
+          managerEmail: 'jean@example.com',
+          managerPhone: '0600000000',
+          logoUrl: '/uploads/team-logos/aigles.png',
         },
-        { name: 'Les Lions', category: { name: 'U12' }, division: null },
+        {
+          name: 'Les Lions',
+          category: { name: 'U12' },
+          division: null,
+          managerName: null,
+          managerEmail: null,
+          managerPhone: null,
+          logoUrl: null,
+        },
       ]);
 
       const csv = await service.exportToCsv('org-1', 'tournament-1');
 
       expect(csv).toBe(
-        'nom;categorie;division\r\nLes Aigles;U10;Poule A\r\nLes Lions;U12;',
+        'nom;categorie;division;responsable;email_responsable;telephone_responsable;logo\r\n' +
+          'Les Aigles;U10;Poule A;Jean Dupont;jean@example.com;0600000000;/uploads/team-logos/aigles.png\r\n' +
+          'Les Lions;U12;;;;;',
       );
     });
   });

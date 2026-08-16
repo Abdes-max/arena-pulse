@@ -222,25 +222,17 @@ export class TeamsService {
     );
     const team = await this.getOrThrow(tournamentId, teamId);
 
-    const extension = TEAM_LOGO_ALLOWED_MIME_TYPES[file.mimetype];
-    if (!extension) {
-      throw new BadRequestException(
-        "Format d'image non supporté (PNG, JPEG ou WebP uniquement).",
-      );
-    }
-    if (file.size > TEAM_LOGO_MAX_SIZE_BYTES) {
-      throw new BadRequestException('Le logo ne doit pas dépasser 2 Mo.');
-    }
-
-    const logosDir = join(this.uploadsDir(), 'team-logos');
-    await fs.mkdir(logosDir, { recursive: true });
-    const filename = `${teamId}-${randomUUID()}.${extension}`;
-    await fs.writeFile(join(logosDir, filename), file.buffer);
+    const logoUrl = await this.saveLogoBuffer(
+      teamId,
+      file.buffer,
+      file.mimetype,
+      file.size,
+    );
     await this.deleteLogoFile(team.logoUrl);
 
     const updated = await this.prisma.team.update({
       where: { id: teamId },
-      data: { logoUrl: `/uploads/team-logos/${filename}` },
+      data: { logoUrl },
     });
     return this.toSummary({
       ...updated,
@@ -248,6 +240,86 @@ export class TeamsService {
       division: team.division,
       group: team.group,
     });
+  }
+
+  /**
+   * Shared by uploadLogo (multipart) and the CSV import's logoUrl column
+   * (fetched from an http(s) URL, see resolveImportLogoUrl) -- same
+   * validation and on-disk layout either way, only where the bytes come
+   * from differs.
+   */
+  private async saveLogoBuffer(
+    teamId: string,
+    buffer: Buffer,
+    mimetype: string,
+    sizeBytes: number,
+  ): Promise<string> {
+    const extension = TEAM_LOGO_ALLOWED_MIME_TYPES[mimetype];
+    if (!extension) {
+      throw new BadRequestException(
+        "Format d'image non supporté (PNG, JPEG ou WebP uniquement).",
+      );
+    }
+    if (sizeBytes > TEAM_LOGO_MAX_SIZE_BYTES) {
+      throw new BadRequestException('Le logo ne doit pas dépasser 2 Mo.');
+    }
+
+    const logosDir = join(this.uploadsDir(), 'team-logos');
+    await fs.mkdir(logosDir, { recursive: true });
+    const filename = `${teamId}-${randomUUID()}.${extension}`;
+    await fs.writeFile(join(logosDir, filename), buffer);
+    return `/uploads/team-logos/${filename}`;
+  }
+
+  /**
+   * Resolves a CSV row's `logo` column: either an existing
+   * /uploads/team-logos/... path (round-tripped from a previous export --
+   * trusted as-is, no fetch needed) or an absolute http(s) URL to download
+   * and store as a fresh logo. Never throws -- a bad/unreachable URL just
+   * means the team is created without a logo, with a warning surfaced back
+   * to the organizer, rather than failing the whole row (same "best effort,
+   * non-fatal" posture as infra/scripts' World Cup seed logo upload).
+   */
+  private async resolveImportLogoUrl(
+    teamId: string,
+    rawLogoUrl: string | undefined,
+  ): Promise<{ logoUrl: string | null; warning?: string }> {
+    if (!rawLogoUrl) {
+      return { logoUrl: null };
+    }
+    if (rawLogoUrl.startsWith('/uploads/team-logos/')) {
+      return { logoUrl: rawLogoUrl };
+    }
+    if (!/^https?:\/\//i.test(rawLogoUrl)) {
+      return {
+        logoUrl: null,
+        warning: `Logo ignoré (${rawLogoUrl}) : URL non reconnue (attendu http(s):// ou un chemin /uploads/team-logos/ existant).`,
+      };
+    }
+    try {
+      const response = await fetch(rawLogoUrl, {
+        signal: AbortSignal.timeout(10_000),
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      const contentType =
+        response.headers.get('content-type')?.split(';')[0]?.trim() ?? '';
+      const buffer = Buffer.from(await response.arrayBuffer());
+      const logoUrl = await this.saveLogoBuffer(
+        teamId,
+        buffer,
+        contentType,
+        buffer.byteLength,
+      );
+      return { logoUrl };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      return {
+        logoUrl: null,
+        warning: `Logo non récupéré (${rawLogoUrl}) : ${message}.`,
+      };
+    }
   }
 
   async removeLogo(
@@ -311,6 +383,7 @@ export class TeamsService {
     );
     const { rows, errors } = parseTeamsCsv(csv);
     const created: ReturnType<TeamsService['toSummary']>[] = [];
+    const warnings: { line: number; message: string }[] = [];
 
     for (const row of rows) {
       const category = await this.prisma.category.findFirst({
@@ -349,20 +422,43 @@ export class TeamsService {
         continue;
       }
 
-      const team = await this.prisma.team.create({
+      let team = await this.prisma.team.create({
         data: {
           tournamentId,
           categoryId: category.id,
           divisionId: division?.id,
           name: row.name,
+          managerName: row.managerName,
+          managerEmail: row.managerEmail,
+          managerPhone: row.managerPhone,
         },
       });
+
+      // Only attempted once the team (and its id, needed for the stored
+      // filename) exists -- a failed fetch just leaves logoUrl null and
+      // surfaces a warning, it never undoes the team creation above.
+      if (row.logoUrl) {
+        const { logoUrl, warning } = await this.resolveImportLogoUrl(
+          team.id,
+          row.logoUrl,
+        );
+        if (warning) {
+          warnings.push({ line: row.line, message: warning });
+        }
+        if (logoUrl) {
+          team = await this.prisma.team.update({
+            where: { id: team.id },
+            data: { logoUrl },
+          });
+        }
+      }
+
       created.push(
         this.toSummary({ ...team, category, division, group: null }),
       );
     }
 
-    return { created, errors };
+    return { created, errors, warnings };
   }
 
   async exportToCsv(
@@ -383,6 +479,10 @@ export class TeamsService {
         name: team.name,
         categoryName: team.category.name,
         divisionName: team.division?.name ?? null,
+        managerName: team.managerName,
+        managerEmail: team.managerEmail,
+        managerPhone: team.managerPhone,
+        logoUrl: team.logoUrl,
       })),
     );
   }

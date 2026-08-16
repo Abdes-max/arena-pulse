@@ -206,13 +206,15 @@
     <section class="team-list-page__section">
       <h2>Importer des équipes (CSV)</h2>
       <p class="team-list-page__hint">
-        Colonnes : nom;catégorie;division (division optionnelle). La catégorie et la division
-        doivent déjà exister.
+        Colonnes : nom;catégorie;division;responsable;email_responsable;telephone_responsable;logo
+        (toutes optionnelles sauf nom et catégorie). La catégorie et la division doivent déjà
+        exister. Le logo peut être une URL http(s) (téléchargée et enregistrée) ou un chemin
+        /uploads/team-logos/… déjà connu (ex. réimport d'un export précédent).
       </p>
       <input type="file" accept=".csv,text/csv" (change)="onImportFileSelected($event)" />
       <textarea
         rows="5"
-        placeholder="nom;categorie;division"
+        placeholder="nom;categorie;division;responsable;email_responsable;telephone_responsable;logo"
         [value]="importCsv()"
         (input)="onImportCsvChange($event)"
       ></textarea>
@@ -224,6 +226,13 @@
           <ul class="team-list-page__import-errors">
             @for (error of result.errors; track error.line) {
               <li>Ligne {{ error.line }} : {{ error.message }}</li>
+            }
+          </ul>
+        }
+        @if (result.warnings.length > 0) {
+          <ul class="team-list-page__import-warnings">
+            @for (warning of result.warnings; track warning.line) {
+              <li>Ligne {{ warning.line }} : {{ warning.message }}</li>
             }
           </ul>
         }
