@@ -99,12 +99,11 @@
   display: flex;
   gap: var(--ap-space-1);
 
+  // Sizing (width/height/centering) now comes from .ap-touch-target on the
+  // buttons themselves (libs/design-tokens/_base.scss) -- was a fixed
+  // 1.75rem (28px), under --ap-touch-target-min and a real tap-precision
+  // problem for the one control that lets you see other courts on a phone.
   button {
-    width: 1.75rem;
-    height: 1.75rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     background: var(--ap-color-surface);
     border: var(--ap-border-width) solid var(--ap-color-border);
     border-radius: var(--ap-radius-sm);
@@ -261,6 +260,11 @@
   border-radius: var(--ap-radius-sm);
   padding: 0.1rem 0.3rem;
 
+  // Not .ap-touch-target here: forcing a full 44px target on this button
+  // would balloon a whole row of otherwise-compact chips. Padding widens
+  // the actual tap area around the small × glyph without growing it
+  // visually as much -- a deliberate partial compromise, not the full
+  // touch-target minimum, given how many chips can sit on one row.
   button {
     background: none;
     border: none;
@@ -268,5 +272,6 @@
     color: inherit;
     font-size: 0.85rem;
     line-height: 1;
+    padding: var(--ap-space-1);
   }
 }

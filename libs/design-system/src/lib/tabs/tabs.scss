@@ -17,6 +17,29 @@
   &::-webkit-scrollbar {
     display: none;
   }
+
+  // Edge fade so a tab row with more content than fits horizontally (the
+  // common case on a phone) has *some* visual signal it's scrollable --
+  // previously nothing but a hidden native scrollbar hinted at that
+  // (docs/design/responsive-guidelines.md: "scroll horizontal explicite
+  // avec indice visuel"). Static, not scroll-position-aware (would need JS
+  // to fade out once fully scrolled) -- a constant hint is still a large
+  // improvement over none, and consistent with the "no unnecessary
+  // machinery" approach used elsewhere in this codebase.
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    black var(--ap-space-4),
+    black calc(100% - var(--ap-space-4)),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    black var(--ap-space-4),
+    black calc(100% - var(--ap-space-4)),
+    transparent 100%
+  );
 }
 
 .ap-tabs__tab {

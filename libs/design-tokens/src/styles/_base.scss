@@ -69,3 +69,17 @@
     --ap-motion-emotional: 0ms;
   }
 }
+
+// Global utility for the handful of raw <button>/<input> controls across the
+// app that don't go through ap-button/ap-select (which already apply
+// --ap-touch-target-min themselves) -- icon-only remove buttons, chip close
+// crosses, small nav arrows. Applied via class="ap-touch-target" in markup
+// rather than a per-page SCSS rule, since these controls are one-offs, not
+// shared components (docs/design/responsive-guidelines.md).
+.ap-touch-target {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--ap-touch-target-min);
+  min-height: var(--ap-touch-target-min);
+}
