@@ -942,7 +942,11 @@ ap-tournament-marquee {
 .landing-page__footer-links {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--ap-space-5);
+  // Was --ap-space-5, which isn't a defined design token (only
+  // 1/2/3/4/6/8/12/16/24 exist) -- var() with an unknown custom property
+  // makes the whole `gap` declaration invalid, so it silently computed to 0
+  // and the Contact/Conditions/Politique links rendered stuck together.
+  gap: var(--ap-space-6);
 
   a {
     color: var(--ap-color-muted);

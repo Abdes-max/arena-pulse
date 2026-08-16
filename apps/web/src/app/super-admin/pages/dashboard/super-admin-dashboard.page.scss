@@ -23,7 +23,10 @@
   display: flex;
   flex-direction: column;
   gap: var(--ap-space-2);
-  padding: var(--ap-space-5);
+  // Was --ap-space-5, which isn't a defined design token (only
+  // 1/2/3/4/6/8/12/16/24 exist) -- var() with an unknown custom property
+  // makes padding invalid, so it silently computed to 0.
+  padding: var(--ap-space-6);
   border: var(--ap-border-width) solid var(--ap-color-border);
   border-radius: var(--ap-radius-lg);
 }
