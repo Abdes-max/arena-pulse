@@ -49,8 +49,33 @@
   }
 }
 
+// Explicit horizontal scroll container for this receipt-like table on a
+// phone (docs/design/responsive-guidelines.md), with an edge fade
+// (mask-image) signalling there's more to scroll to -- same technique as
+// tournament-form-page__table-scroll (see the Phase 3 commit) applied here
+// for the equivalent payment-history table.
+.subscription-page__table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    black var(--ap-space-4),
+    black calc(100% - var(--ap-space-4)),
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    black var(--ap-space-4),
+    black calc(100% - var(--ap-space-4)),
+    transparent 100%
+  );
+}
+
 .subscription-page__table {
   width: 100%;
+  min-width: 420px;
   border-collapse: collapse;
   font-size: 0.9rem;
 

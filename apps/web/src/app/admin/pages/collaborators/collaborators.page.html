@@ -23,10 +23,14 @@
         </thead>
         <tbody>
           @for (member of members(); track member.id) {
-            <tr>
-              <td>{{ member.firstName }} {{ member.lastName }}</td>
-              <td>{{ member.email }}</td>
-              <td>
+            <tr class="collaborators-page__row">
+              <td class="collaborators-page__cell collaborators-page__cell--name">
+                {{ member.firstName }} {{ member.lastName }}
+              </td>
+              <td class="collaborators-page__cell collaborators-page__cell--email">
+                {{ member.email }}
+              </td>
+              <td class="collaborators-page__cell collaborators-page__cell--role">
                 @if (isAdmin()) {
                   <ap-select
                     label="Rôle"
@@ -40,7 +44,7 @@
                 }
               </td>
               @if (isAdmin()) {
-                <td>
+                <td class="collaborators-page__cell collaborators-page__cell--actions">
                   <ap-button type="button" variant="ghost" (click)="removeMember(member)"
                     >Retirer</ap-button
                   >

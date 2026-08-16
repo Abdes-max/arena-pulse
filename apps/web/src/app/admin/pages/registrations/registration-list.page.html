@@ -21,22 +21,30 @@
       </thead>
       <tbody>
         @for (registration of registrations(); track registration.id) {
-          <tr>
-            <td>{{ registration.teamName }}</td>
-            <td>{{ registration.categoryName }}</td>
-            <td>
+          <tr class="registration-list-page__row">
+            <td class="registration-list-page__cell registration-list-page__cell--team">
+              {{ registration.teamName }}
+            </td>
+            <td class="registration-list-page__cell registration-list-page__cell--category">
+              {{ registration.categoryName }}
+            </td>
+            <td class="registration-list-page__cell registration-list-page__cell--manager">
               {{ registration.registrant.firstName }} {{ registration.registrant.lastName }}
               <br />
               <a [href]="'mailto:' + registration.managerEmail">{{ registration.managerEmail }}</a>
             </td>
-            <td>{{ formatAmount(registration) }}</td>
-            <td>
+            <td class="registration-list-page__cell registration-list-page__cell--amount">
+              {{ formatAmount(registration) }}
+            </td>
+            <td class="registration-list-page__cell registration-list-page__cell--status">
               <ap-badge
                 [status]="statusBadge[registration.status]"
                 [label]="statusLabel[registration.status]"
               />
             </td>
-            <td>{{ registration.createdAt | date: 'short' }}</td>
+            <td class="registration-list-page__cell registration-list-page__cell--date">
+              {{ registration.createdAt | date: 'short' }}
+            </td>
           </tr>
         }
       </tbody>
