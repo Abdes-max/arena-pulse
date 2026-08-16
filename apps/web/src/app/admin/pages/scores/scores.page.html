@@ -50,10 +50,12 @@
                 <ul class="scores-page__match-list">
                   @for (match of subgroup.matches; track match.id) {
                     <li class="scores-page__match">
-                      <span class="scores-page__time-badge">{{ matchTimeLabel(match) }}</span>
-                      @if (match.timeSlot; as timeSlot) {
-                        <span class="scores-page__field-name">{{ timeSlot.field.name }}</span>
-                      }
+                      <div class="scores-page__match-meta">
+                        <span class="scores-page__time-badge">{{ matchTimeLabel(match) }}</span>
+                        @if (match.timeSlot; as timeSlot) {
+                          <span class="scores-page__field-name">{{ timeSlot.field.name }}</span>
+                        }
+                      </div>
 
                       @if (match.status === 'FORFEITED') {
                         <span class="scores-page__forfeit-badge">
@@ -82,91 +84,99 @@
                         </span>
                         <span class="scores-page__pending-badge">En attente des équipes</span>
                       } @else {
-                        <span class="scores-page__team scores-page__team--home">
-                          @if (logoUrl(match.homeTeam?.logoUrl); as logo) {
-                            <img class="scores-page__team-logo" [src]="logo" alt="" />
-                          }
-                          <span class="scores-page__team-name">{{
-                            match.homeTeam?.name ?? '?'
-                          }}</span>
-                        </span>
-                        <ap-text-field
-                          class="scores-page__score-input"
-                          label="Score à domicile"
-                          [hideLabel]="true"
-                          type="number"
-                          [min]="0"
-                          [value]="draftFor(match).home"
-                          (valueChange)="onDraftChange(match, 'home', $event)"
-                        />
-                        <span>-</span>
-                        <ap-text-field
-                          class="scores-page__score-input"
-                          label="Score à l'extérieur"
-                          [hideLabel]="true"
-                          type="number"
-                          [min]="0"
-                          [value]="draftFor(match).away"
-                          (valueChange)="onDraftChange(match, 'away', $event)"
-                        />
-                        <span class="scores-page__team scores-page__team--away">
-                          @if (logoUrl(match.awayTeam?.logoUrl); as logo) {
-                            <img class="scores-page__team-logo" [src]="logo" alt="" />
-                          }
-                          <span class="scores-page__team-name">{{
-                            match.awayTeam?.name ?? '?'
-                          }}</span>
-                        </span>
+                        <div class="scores-page__match-row scores-page__match-row--home">
+                          <span class="scores-page__team scores-page__team--home">
+                            @if (logoUrl(match.homeTeam?.logoUrl); as logo) {
+                              <img class="scores-page__team-logo" [src]="logo" alt="" />
+                            }
+                            <span class="scores-page__team-name">{{
+                              match.homeTeam?.name ?? '?'
+                            }}</span>
+                          </span>
+                          <ap-text-field
+                            class="scores-page__score-input"
+                            label="Score à domicile"
+                            [hideLabel]="true"
+                            type="number"
+                            [min]="0"
+                            [value]="draftFor(match).home"
+                            (valueChange)="onDraftChange(match, 'home', $event)"
+                          />
+                        </div>
+                        <span class="scores-page__score-sep">-</span>
+                        <div class="scores-page__match-row scores-page__match-row--away">
+                          <ap-text-field
+                            class="scores-page__score-input"
+                            label="Score à l'extérieur"
+                            [hideLabel]="true"
+                            type="number"
+                            [min]="0"
+                            [value]="draftFor(match).away"
+                            (valueChange)="onDraftChange(match, 'away', $event)"
+                          />
+                          <span class="scores-page__team scores-page__team--away">
+                            @if (logoUrl(match.awayTeam?.logoUrl); as logo) {
+                              <img class="scores-page__team-logo" [src]="logo" alt="" />
+                            }
+                            <span class="scores-page__team-name">{{
+                              match.awayTeam?.name ?? '?'
+                            }}</span>
+                          </span>
+                        </div>
 
                         @if (isDraw(match) && penaltyShootoutEnabled(match)) {
-                          <span class="scores-page__penalty-label">Tirs au but</span>
-                          <ap-text-field
-                            class="scores-page__score-input"
-                            label="Tirs au but à domicile"
-                            [hideLabel]="true"
-                            type="number"
-                            [min]="0"
-                            [value]="draftFor(match).homePenalty"
-                            (valueChange)="onDraftChange(match, 'homePenalty', $event)"
-                          />
-                          <span>-</span>
-                          <ap-text-field
-                            class="scores-page__score-input"
-                            label="Tirs au but à l'extérieur"
-                            [hideLabel]="true"
-                            type="number"
-                            [min]="0"
-                            [value]="draftFor(match).awayPenalty"
-                            (valueChange)="onDraftChange(match, 'awayPenalty', $event)"
-                          />
+                          <div class="scores-page__match-row scores-page__match-row--penalty">
+                            <span class="scores-page__penalty-label">Tirs au but</span>
+                            <ap-text-field
+                              class="scores-page__score-input"
+                              label="Tirs au but à domicile"
+                              [hideLabel]="true"
+                              type="number"
+                              [min]="0"
+                              [value]="draftFor(match).homePenalty"
+                              (valueChange)="onDraftChange(match, 'homePenalty', $event)"
+                            />
+                            <span>-</span>
+                            <ap-text-field
+                              class="scores-page__score-input"
+                              label="Tirs au but à l'extérieur"
+                              [hideLabel]="true"
+                              type="number"
+                              [min]="0"
+                              [value]="draftFor(match).awayPenalty"
+                              (valueChange)="onDraftChange(match, 'awayPenalty', $event)"
+                            />
+                          </div>
                         }
 
-                        <ap-button
-                          class="scores-page__save-button"
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          (click)="saveScore(match)"
-                        >
-                          Enregistrer
-                        </ap-button>
-
-                        @if (match.score) {
-                          @if (match.score.isValidated) {
-                            <span class="scores-page__validated-badge">Validé</span>
-                          } @else {
-                            <ap-button type="button" size="sm" (click)="validateScore(match)"
-                              >Valider</ap-button
-                            >
-                          }
-                          <button
+                        <div class="scores-page__match-actions">
+                          <ap-button
+                            class="scores-page__save-button"
                             type="button"
-                            class="scores-page__clear ap-touch-target"
-                            (click)="clearScore(match)"
+                            variant="ghost"
+                            size="sm"
+                            (click)="saveScore(match)"
                           >
-                            Effacer
-                          </button>
-                        }
+                            Enregistrer
+                          </ap-button>
+
+                          @if (match.score) {
+                            @if (match.score.isValidated) {
+                              <span class="scores-page__validated-badge">Validé</span>
+                            } @else {
+                              <ap-button type="button" size="sm" (click)="validateScore(match)"
+                                >Valider</ap-button
+                              >
+                            }
+                            <button
+                              type="button"
+                              class="scores-page__clear ap-touch-target"
+                              (click)="clearScore(match)"
+                            >
+                              Effacer
+                            </button>
+                          }
+                        </div>
                       }
                     </li>
                   }
