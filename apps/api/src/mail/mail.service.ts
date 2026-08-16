@@ -32,13 +32,13 @@ export class MailService {
       'SMTP_FROM',
       'TournArena <no-reply@arena-pulse.local>',
     );
-    // Temporary destination for the public contact form (feat/100): no
-    // contact@tournarena.com mailbox exists yet (task #16, still pending) --
-    // defaults to the founder's personal address until that's set up, at
-    // which point only this env var needs to change, not the code.
+    // Destination for the public contact form (feat/100). Was temporarily
+    // aziaissa@gmail.com until the contact@tournarena.com mailbox existed
+    // (task #16); now that it's created, this is the real destination --
+    // still overridable via env without a code change if it ever moves again.
     this.contactRecipient = configService.get<string>(
       'CONTACT_RECIPIENT_EMAIL',
-      'aziaissa@gmail.com',
+      'contact@tournarena.com',
     );
   }
 
