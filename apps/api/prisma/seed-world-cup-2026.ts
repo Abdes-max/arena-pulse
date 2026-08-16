@@ -12,13 +12,17 @@
 // bracket (`POST .../knockout-brackets/:id/generate-matches`) seeds R32 from
 // qualification rules using a generic reseeding algorithm (bracket-seeding
 // util's `seedOrder`), not FIFA's actual draw -- there is no API to assign a
-// specific pairing to a specific bracket slot. So this script inserts the 16
-// R32 matches directly via Prisma, in a bracketSlot order chosen so that
-// `BracketsService.tryAdvanceRound`'s fixed adjacent-slot pairing (slot 2k +
-// slot 2k+1 -> next round's slot k) reproduces the real R16/QF/SF/final/3rd
-// place bracket exactly. From R32 onward, everything again goes through the
-// public API (score submission triggers tryAdvanceRound automatically) --
-// only the very first round's team pairing needed the raw DB write.
+// specific pairing to a specific bracket slot. So this script still calls
+// that endpoint (it's the only thing that creates the *placeholder* rows for
+// every later round -- BracketsService.tryAdvanceRound only fills existing
+// placeholders in now, it no longer creates them on the fly), then
+// overwrites just the 16 R32 matches it created with the real pairings via
+// Prisma, in a bracketSlot order chosen so that tryAdvanceRound's fixed
+// adjacent-slot pairing (slot 2k + slot 2k+1 -> next round's slot k)
+// reproduces the real R16/QF/SF/final/3rd place bracket exactly. From R32
+// onward, everything again goes through the public API (score submission
+// triggers tryAdvanceRound automatically) -- only the first round's team
+// pairing needed the raw DB write.
 //
 // Usage (from apps/api): npm run build && node dist/prisma/seed-world-cup-2026.js
 // Env: API_URL (default http://localhost:3000/api/v1)
@@ -29,7 +33,26 @@ import { PrismaClient } from '../generated/prisma/client';
 
 const API = process.env.API_URL ?? 'http://localhost:3000/api/v1';
 
-async function api(method: string, path: string, token: string | null, body?: unknown) {
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// This script's ~350 sequential requests (48 teams, 72 group matches scored
+// + validated, a full 32-team bracket played round by round…) comfortably
+// clear the global rate limit (100 req/60s, app.module.ts -- production-
+// appropriate, not relaxed for this) if fired back-to-back. A fixed pause
+// between every call keeps the sustained rate under that limit instead of
+// bursting through it, rather than reaching for NODE_ENV=test (which also
+// changes unrelated app behaviour, e.g. email-verification/mail-sending
+// paths -- too broad a hammer for what's really just "don't get
+// throttled").
+const API_CALL_DELAY_MS = 650;
+
+async function api(
+  method: string,
+  path: string,
+  token: string | null,
+  body?: unknown,
+) {
+  await sleep(API_CALL_DELAY_MS);
   const res = await fetch(`${API}${path}`, {
     method,
     headers: {
@@ -77,11 +100,31 @@ const GROUPS: GroupDef[] = [
     thirdQualifies: false,
     matches: [
       { home: 'Mexique', away: 'Afrique du Sud', homeScore: 2, awayScore: 0 },
-      { home: 'Corée du Sud', away: 'République tchèque', homeScore: 2, awayScore: 1 },
-      { home: 'République tchèque', away: 'Afrique du Sud', homeScore: 1, awayScore: 1 },
+      {
+        home: 'Corée du Sud',
+        away: 'République tchèque',
+        homeScore: 2,
+        awayScore: 1,
+      },
+      {
+        home: 'République tchèque',
+        away: 'Afrique du Sud',
+        homeScore: 1,
+        awayScore: 1,
+      },
       { home: 'Mexique', away: 'Corée du Sud', homeScore: 1, awayScore: 0 },
-      { home: 'République tchèque', away: 'Mexique', homeScore: 0, awayScore: 3 },
-      { home: 'Afrique du Sud', away: 'Corée du Sud', homeScore: 1, awayScore: 0 },
+      {
+        home: 'République tchèque',
+        away: 'Mexique',
+        homeScore: 0,
+        awayScore: 3,
+      },
+      {
+        home: 'Afrique du Sud',
+        away: 'Corée du Sud',
+        homeScore: 1,
+        awayScore: 0,
+      },
     ],
   },
   {
@@ -89,9 +132,19 @@ const GROUPS: GroupDef[] = [
     teams: ['Canada', 'Bosnie-Herzégovine', 'Qatar', 'Suisse'],
     thirdQualifies: true,
     matches: [
-      { home: 'Canada', away: 'Bosnie-Herzégovine', homeScore: 1, awayScore: 1 },
+      {
+        home: 'Canada',
+        away: 'Bosnie-Herzégovine',
+        homeScore: 1,
+        awayScore: 1,
+      },
       { home: 'Qatar', away: 'Suisse', homeScore: 1, awayScore: 1 },
-      { home: 'Suisse', away: 'Bosnie-Herzégovine', homeScore: 4, awayScore: 1 },
+      {
+        home: 'Suisse',
+        away: 'Bosnie-Herzégovine',
+        homeScore: 4,
+        awayScore: 1,
+      },
       { home: 'Canada', away: 'Qatar', homeScore: 6, awayScore: 0 },
       { home: 'Suisse', away: 'Canada', homeScore: 2, awayScore: 1 },
       { home: 'Bosnie-Herzégovine', away: 'Qatar', homeScore: 3, awayScore: 1 },
@@ -159,7 +212,12 @@ const GROUPS: GroupDef[] = [
       { home: 'Belgique', away: 'Iran', homeScore: 0, awayScore: 0 },
       { home: 'Nouvelle-Zélande', away: 'Égypte', homeScore: 1, awayScore: 3 },
       { home: 'Égypte', away: 'Iran', homeScore: 1, awayScore: 1 },
-      { home: 'Nouvelle-Zélande', away: 'Belgique', homeScore: 1, awayScore: 5 },
+      {
+        home: 'Nouvelle-Zélande',
+        away: 'Belgique',
+        homeScore: 1,
+        awayScore: 5,
+      },
     ],
   },
   {
@@ -235,19 +293,45 @@ const GROUPS: GroupDef[] = [
 // slot k pairing reproduces the real bracket at every subsequent round.
 const ROUND_OF_32: BracketMatch[] = [
   { home: 'Afrique du Sud', away: 'Canada', homeScore: 0, awayScore: 1 },
-  { home: 'Pays-Bas', away: 'Maroc', homeScore: 1, awayScore: 1, homePenaltyScore: 2, awayPenaltyScore: 3 },
-  { home: 'Allemagne', away: 'Paraguay', homeScore: 1, awayScore: 1, homePenaltyScore: 3, awayPenaltyScore: 4 },
+  {
+    home: 'Pays-Bas',
+    away: 'Maroc',
+    homeScore: 1,
+    awayScore: 1,
+    homePenaltyScore: 2,
+    awayPenaltyScore: 3,
+  },
+  {
+    home: 'Allemagne',
+    away: 'Paraguay',
+    homeScore: 1,
+    awayScore: 1,
+    homePenaltyScore: 3,
+    awayPenaltyScore: 4,
+  },
   { home: 'France', away: 'Suède', homeScore: 3, awayScore: 0 },
   { home: 'Portugal', away: 'Croatie', homeScore: 2, awayScore: 1 },
   { home: 'Espagne', away: 'Autriche', homeScore: 3, awayScore: 0 },
-  { home: 'États-Unis', away: 'Bosnie-Herzégovine', homeScore: 2, awayScore: 0 },
+  {
+    home: 'États-Unis',
+    away: 'Bosnie-Herzégovine',
+    homeScore: 2,
+    awayScore: 0,
+  },
   { home: 'Belgique', away: 'Sénégal', homeScore: 3, awayScore: 2 },
   { home: 'Brésil', away: 'Japon', homeScore: 2, awayScore: 1 },
   { home: "Côte d'Ivoire", away: 'Norvège', homeScore: 1, awayScore: 2 },
   { home: 'Mexique', away: 'Équateur', homeScore: 2, awayScore: 0 },
   { home: 'Angleterre', away: 'RD Congo', homeScore: 2, awayScore: 1 },
   { home: 'Argentine', away: 'Cap-Vert', homeScore: 3, awayScore: 2 },
-  { home: 'Australie', away: 'Égypte', homeScore: 1, awayScore: 1, homePenaltyScore: 2, awayPenaltyScore: 4 },
+  {
+    home: 'Australie',
+    away: 'Égypte',
+    homeScore: 1,
+    awayScore: 1,
+    homePenaltyScore: 2,
+    awayPenaltyScore: 4,
+  },
   { home: 'Suisse', away: 'Algérie', homeScore: 2, awayScore: 0 },
   { home: 'Colombie', away: 'Ghana', homeScore: 1, awayScore: 0 },
 ];
@@ -264,7 +348,14 @@ const ROUND_OF_16: BracketMatch[] = [
   { home: 'Brésil', away: 'Norvège', homeScore: 1, awayScore: 2 },
   { home: 'Mexique', away: 'Angleterre', homeScore: 2, awayScore: 3 },
   { home: 'Argentine', away: 'Égypte', homeScore: 3, awayScore: 2 },
-  { home: 'Suisse', away: 'Colombie', homeScore: 0, awayScore: 0, homePenaltyScore: 4, awayPenaltyScore: 3 },
+  {
+    home: 'Suisse',
+    away: 'Colombie',
+    homeScore: 0,
+    awayScore: 0,
+    homePenaltyScore: 4,
+    awayPenaltyScore: 3,
+  },
 ];
 
 const QUARTERFINALS: BracketMatch[] = [
@@ -279,10 +370,29 @@ const SEMIFINALS: BracketMatch[] = [
   { home: 'Angleterre', away: 'Argentine', homeScore: 1, awayScore: 2 },
 ];
 
-const FINAL: BracketMatch = { home: 'Espagne', away: 'Argentine', homeScore: 1, awayScore: 0 };
-const THIRD_PLACE: BracketMatch = { home: 'France', away: 'Angleterre', homeScore: 4, awayScore: 6 };
+const FINAL: BracketMatch = {
+  home: 'Espagne',
+  away: 'Argentine',
+  homeScore: 1,
+  awayScore: 0,
+};
+const THIRD_PLACE: BracketMatch = {
+  home: 'France',
+  away: 'Angleterre',
+  homeScore: 4,
+  awayScore: 6,
+};
 
-function findResult(pool: BracketMatch[], homeName: string, awayName: string): { homeScore: number; awayScore: number; homePenaltyScore?: number; awayPenaltyScore?: number } {
+function findResult(
+  pool: BracketMatch[],
+  homeName: string,
+  awayName: string,
+): {
+  homeScore: number;
+  awayScore: number;
+  homePenaltyScore?: number;
+  awayPenaltyScore?: number;
+} {
   const exact = pool.find((m) => m.home === homeName && m.away === awayName);
   if (exact) {
     return {
@@ -301,10 +411,19 @@ function findResult(pool: BracketMatch[], homeName: string, awayName: string): {
       awayPenaltyScore: reversed.homePenaltyScore,
     };
   }
-  throw new Error(`No real result recorded for ${homeName} vs ${awayName} -- bracket slot order is wrong.`);
+  throw new Error(
+    `No real result recorded for ${homeName} vs ${awayName} -- bracket slot order is wrong.`,
+  );
 }
 
-async function playRound(token: string, orgId: string, tournamentId: string, bracketId: string, round: number, pool: BracketMatch[]) {
+async function playRound(
+  token: string,
+  orgId: string,
+  tournamentId: string,
+  bracketId: string,
+  round: number,
+  pool: BracketMatch[],
+) {
   const matches: any[] = await api(
     'GET',
     `/organizations/${orgId}/tournaments/${tournamentId}/knockout-brackets/${bracketId}/matches`,
@@ -315,29 +434,72 @@ async function playRound(token: string, orgId: string, tournamentId: string, bra
     .sort((a, b) => a.bracketSlot - b.bracketSlot);
   for (const match of roundMatches) {
     const result = findResult(pool, match.homeTeam.name, match.awayTeam.name);
-    await api('PUT', `/organizations/${orgId}/tournaments/${tournamentId}/matches/${match.id}/score`, token, result);
-    await api('POST', `/organizations/${orgId}/tournaments/${tournamentId}/matches/${match.id}/score/validate`, token);
+    await api(
+      'PUT',
+      `/organizations/${orgId}/tournaments/${tournamentId}/matches/${match.id}/score`,
+      token,
+      result,
+    );
+    await api(
+      'POST',
+      `/organizations/${orgId}/tournaments/${tournamentId}/matches/${match.id}/score/validate`,
+      token,
+    );
   }
   return matches;
 }
 
-async function playFinalAndThirdPlace(token: string, orgId: string, tournamentId: string, bracketId: string, round: number) {
+async function playFinalAndThirdPlace(
+  token: string,
+  orgId: string,
+  tournamentId: string,
+  bracketId: string,
+  round: number,
+) {
   const matches: any[] = await api(
     'GET',
     `/organizations/${orgId}/tournaments/${tournamentId}/knockout-brackets/${bracketId}/matches`,
     token,
   );
   const final = matches.find((m) => m.round === round && !m.isThirdPlaceMatch);
-  const thirdPlace = matches.find((m) => m.round === round && m.isThirdPlaceMatch);
+  const thirdPlace = matches.find(
+    (m) => m.round === round && m.isThirdPlaceMatch,
+  );
   {
-    const result = findResult([FINAL], final.homeTeam.name, final.awayTeam.name);
-    await api('PUT', `/organizations/${orgId}/tournaments/${tournamentId}/matches/${final.id}/score`, token, result);
-    await api('POST', `/organizations/${orgId}/tournaments/${tournamentId}/matches/${final.id}/score/validate`, token);
+    const result = findResult(
+      [FINAL],
+      final.homeTeam.name,
+      final.awayTeam.name,
+    );
+    await api(
+      'PUT',
+      `/organizations/${orgId}/tournaments/${tournamentId}/matches/${final.id}/score`,
+      token,
+      result,
+    );
+    await api(
+      'POST',
+      `/organizations/${orgId}/tournaments/${tournamentId}/matches/${final.id}/score/validate`,
+      token,
+    );
   }
   {
-    const result = findResult([THIRD_PLACE], thirdPlace.homeTeam.name, thirdPlace.awayTeam.name);
-    await api('PUT', `/organizations/${orgId}/tournaments/${tournamentId}/matches/${thirdPlace.id}/score`, token, result);
-    await api('POST', `/organizations/${orgId}/tournaments/${tournamentId}/matches/${thirdPlace.id}/score/validate`, token);
+    const result = findResult(
+      [THIRD_PLACE],
+      thirdPlace.homeTeam.name,
+      thirdPlace.awayTeam.name,
+    );
+    await api(
+      'PUT',
+      `/organizations/${orgId}/tournaments/${tournamentId}/matches/${thirdPlace.id}/score`,
+      token,
+      result,
+    );
+    await api(
+      'POST',
+      `/organizations/${orgId}/tournaments/${tournamentId}/matches/${thirdPlace.id}/score/validate`,
+      token,
+    );
   }
 }
 
@@ -366,12 +528,18 @@ async function main() {
     adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
   });
   try {
-    await authPrisma.user.update({ where: { email }, data: { emailVerifiedAt: new Date() } });
+    await authPrisma.user.update({
+      where: { email },
+      data: { emailVerifiedAt: new Date() },
+    });
   } finally {
     await authPrisma.$disconnect();
   }
 
-  const login: any = await api('POST', '/auth/login', null, { email, password });
+  const login: any = await api('POST', '/auth/login', null, {
+    email,
+    password,
+  });
   const token = login.accessToken;
   const me: any = await api('GET', '/auth/me', token);
   const orgId = me.organizations[0].id;
@@ -380,18 +548,28 @@ async function main() {
   const football = sports.find((s) => s.name === 'Football');
   if (!football) throw new Error('Sport not found: Football');
 
-  const tournament: any = await api('POST', `/organizations/${orgId}/tournaments`, token, {
-    name: 'Coupe du Monde FIFA 2026',
-    sportId: football.id,
-    theme: 'PULSE_EMBER',
-    startDate: '2026-06-11',
-    endDate: '2026-07-19',
-  });
+  const tournament: any = await api(
+    'POST',
+    `/organizations/${orgId}/tournaments`,
+    token,
+    {
+      name: 'Coupe du Monde FIFA 2026',
+      sportId: football.id,
+      theme: 'PULSE_EMBER',
+      startDate: '2026-06-11',
+      endDate: '2026-07-19',
+    },
+  );
   const tournamentId = tournament.id;
 
-  const venue: any = await api('POST', `/organizations/${orgId}/tournaments/${tournamentId}/venues`, token, {
-    name: 'Stades Canada-Mexique-États-Unis',
-  });
+  const venue: any = await api(
+    'POST',
+    `/organizations/${orgId}/tournaments/${tournamentId}/venues`,
+    token,
+    {
+      name: 'Stades Canada-Mexique-États-Unis',
+    },
+  );
   const field: any = await api(
     'POST',
     `/organizations/${orgId}/tournaments/${tournamentId}/venues/${venue.id}/fields`,
@@ -399,9 +577,14 @@ async function main() {
     { name: 'Terrain principal' },
   );
 
-  const category: any = await api('POST', `/organizations/${orgId}/tournaments/${tournamentId}/categories`, token, {
-    name: 'Sélections nationales',
-  });
+  const category: any = await api(
+    'POST',
+    `/organizations/${orgId}/tournaments/${tournamentId}/categories`,
+    token,
+    {
+      name: 'Sélections nationales',
+    },
+  );
 
   const groupPhase: any = await api(
     'POST',
@@ -422,10 +605,15 @@ async function main() {
     );
     groupById.push({ group, def });
     for (const name of def.teams) {
-      const team: any = await api('POST', `/organizations/${orgId}/tournaments/${tournamentId}/teams`, token, {
-        name,
-        categoryId: category.id,
-      });
+      const team: any = await api(
+        'POST',
+        `/organizations/${orgId}/tournaments/${tournamentId}/teams`,
+        token,
+        {
+          name,
+          categoryId: category.id,
+        },
+      );
       teamIdByName.set(name, team.id);
       await api(
         'PATCH',
@@ -436,7 +624,9 @@ async function main() {
     }
   }
 
-  console.log('Generating group-stage schedule and entering the 72 real results…');
+  console.log(
+    'Generating group-stage schedule and entering the 72 real results…',
+  );
   const groupMatches: any[] = await api(
     'POST',
     `/organizations/${orgId}/tournaments/${tournamentId}/phases/${groupPhase.id}/generate-schedule`,
@@ -445,9 +635,22 @@ async function main() {
   );
   const allGroupResults = GROUPS.flatMap((g) => g.matches);
   for (const match of groupMatches) {
-    const result = findResult(allGroupResults, match.homeTeam.name, match.awayTeam.name);
-    await api('PUT', `/organizations/${orgId}/tournaments/${tournamentId}/matches/${match.id}/score`, token, result);
-    await api('POST', `/organizations/${orgId}/tournaments/${tournamentId}/matches/${match.id}/score/validate`, token);
+    const result = findResult(
+      allGroupResults,
+      match.homeTeam.name,
+      match.awayTeam.name,
+    );
+    await api(
+      'PUT',
+      `/organizations/${orgId}/tournaments/${tournamentId}/matches/${match.id}/score`,
+      token,
+      result,
+    );
+    await api(
+      'POST',
+      `/organizations/${orgId}/tournaments/${tournamentId}/matches/${match.id}/score/validate`,
+      token,
+    );
   }
 
   console.log('Creating knockout phase, qualification rules and bracket…');
@@ -480,18 +683,54 @@ async function main() {
     { name: 'Tableau final', size: 32, hasRankingMatch: true },
   );
 
-  console.log("Writing the round of 32's real pairings directly (no generic-seeding API exists for this)…");
-  const prisma = new PrismaClient({ adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }) });
+  console.log(
+    'Generating the full bracket skeleton (all 5 rounds -- placeholder-only past round 1)…',
+  );
+  await api(
+    'POST',
+    `/organizations/${orgId}/tournaments/${tournamentId}/knockout-brackets/${bracket.id}/generate-matches`,
+    token,
+    {},
+  );
+
+  console.log(
+    "Overwriting the round of 32's generic seeding with the real pairings (no generic-seeding API produces FIFA's actual draw)…",
+  );
+  const prisma = new PrismaClient({
+    adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
+  });
   try {
-    await prisma.match.createMany({
-      data: ROUND_OF_32.map((m, slot) => ({
+    const round1Matches = await prisma.match.findMany({
+      where: {
         knockoutBracketId: bracket.id,
         round: 1,
-        bracketSlot: slot,
-        homeTeamId: teamIdByName.get(m.home)!,
-        awayTeamId: teamIdByName.get(m.away)!,
-      })),
+        isThirdPlaceMatch: false,
+      },
+      orderBy: { bracketSlot: 'asc' },
     });
+    if (round1Matches.length !== ROUND_OF_32.length) {
+      throw new Error(
+        `Expected ${ROUND_OF_32.length} round-of-32 matches from generate-matches, found ${round1Matches.length}.`,
+      );
+    }
+    for (const [slot, m] of ROUND_OF_32.entries()) {
+      await prisma.match.update({
+        where: { id: round1Matches[slot].id },
+        data: {
+          homeTeamId: teamIdByName.get(m.home)!,
+          awayTeamId: teamIdByName.get(m.away)!,
+          // generate-matches's generic seeding left these set (the "Vainqueur
+          // Poule X" style labels only apply to later rounds here, but round
+          // 1 can get its own placeholder label when a slot's qualifier
+          // isn't resolved yet -- moot at this point in the script, group
+          // stage is already fully played, but clearing them regardless
+          // keeps this consistent with how tryAdvanceRound itself resolves a
+          // slot below).
+          homeSourceLabel: null,
+          awaySourceLabel: null,
+        },
+      });
+    }
   } finally {
     await prisma.$disconnect();
   }
@@ -507,17 +746,71 @@ async function main() {
   console.log('Final and third place match…');
   await playFinalAndThirdPlace(token, orgId, tournamentId, bracket.id, 5);
 
-  await api('POST', `/organizations/${orgId}/tournaments/${tournamentId}/publish`, token);
+  console.log('Publishing…');
+  const publishResult: any = await api(
+    'POST',
+    `/organizations/${orgId}/tournaments/${tournamentId}/publish`,
+    token,
+  );
+  // 48 teams lands this in the paid mid tier (TOURNAMENT_PUBLICATION_TIER_*
+  // env vars, deliberately kept equal to the real advertised pricing in
+  // both local and prod -- see apps/api/.env's comment -- so this is
+  // expected here, not a config bug). publish() just opened a real Stripe
+  // Checkout session; completing that requires a hosted page + a webhook
+  // round-trip, more than a script should automate. This is TournArena's
+  // own showcase tournament though (the one "Voir un exemple en direct"
+  // links to), not a customer's -- so instead of paying itself, mark its
+  // publication order paid directly, the same effect
+  // handlePublicationStripeEvent's webhook handler would have produced, then
+  // call publish() again: it finds that PAID order up front and publishes
+  // immediately (see TournamentsService.publish's `alreadyPaid` check).
+  if (publishResult?.status === 'PENDING_PAYMENT') {
+    console.log(
+      "Paid tier reached (48 teams) -- marking this showcase tournament's own publication order paid…",
+    );
+    const prisma = new PrismaClient({
+      adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
+    });
+    try {
+      const order = await prisma.tournamentPublicationOrder.findFirst({
+        where: { tournamentId },
+        orderBy: { createdAt: 'desc' },
+      });
+      if (!order) {
+        throw new Error(
+          'Expected a TournamentPublicationOrder to exist after a PENDING_PAYMENT response.',
+        );
+      }
+      await prisma.tournamentPublicationOrder.update({
+        where: { id: order.id },
+        data: { status: 'PAID', paidAt: new Date() },
+      });
+    } finally {
+      await prisma.$disconnect();
+    }
+    await api(
+      'POST',
+      `/organizations/${orgId}/tournaments/${tournamentId}/publish`,
+      token,
+    );
+  }
 
   console.log('\n=== Coupe du Monde FIFA 2026 créée ===');
-  console.log(`Organisation : ${organizationName} (login : ${email} / ${password})`);
+  console.log(
+    `Organisation : ${organizationName} (login : ${email} / ${password})`,
+  );
   console.log(`Slug     : ${tournament.slug}`);
   console.log(`Public   : http://localhost:4200/${tournament.slug}`);
-  console.log(`Admin    : http://localhost:4200/admin/tournaments/${tournament.id}`);
-  console.log('Vainqueur : Espagne (1-0 a.p. contre l\'Argentine, 19 juillet)');
+  console.log(
+    `Admin    : http://localhost:4200/admin/tournaments/${tournament.id}`,
+  );
+  console.log("Vainqueur : Espagne (1-0 a.p. contre l'Argentine, 19 juillet)");
 }
 
 main().catch((error: unknown) => {
-  console.error('\nÉchec du seed :', error instanceof Error ? error.message : error);
+  console.error(
+    '\nÉchec du seed :',
+    error instanceof Error ? error.message : error,
+  );
   process.exit(1);
 });

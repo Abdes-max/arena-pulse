@@ -1,0 +1,42 @@
+# Manual, one-off: (re-)seeds the reference "Coupe du Monde FIFA 2026"
+# tournament in production -- the tournament the landing page's "Voir un
+# exemple en direct" button links to (most-recently-published tournament
+# wins that slot, see TournamentsService.listPublished's `orderBy:
+# createdAt desc`, so re-running this after a prod deploy keeps a fresh
+# instance featured there if it's ever needed again).
+#
+# Reuses the already-built `migrate` service image (apps/api/prisma/
+# seed-world-cup-2026.ts, compiled into dist/ at that image's build time,
+# same as apps/api/prisma/seed.ts) rather than adding a new service to
+# docker-compose.prod.yml -- `docker compose run` with a one-off command
+# override is enough, and DATABASE_URL is already wired correctly on that
+# service. API_URL is overridden to the api service's own Compose network
+# name (this container isn't the api container, so "localhost" wouldn't
+# resolve to it).
+name: Seed World Cup 2026 example tournament
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  seed:
+    name: Seed on Hostinger VPS
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Run seed-world-cup-2026.ts inside the migrate image
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          timeout: 90s
+          # The script paces its ~350 API calls at 650ms apart (stays under
+          # the API's own rate limit, see seed-world-cup-2026.ts) -- a few
+          # minutes end to end, generous headroom over the default 10s.
+          command_timeout: 10m
+          script: |
+            set -euo pipefail
+            cd "${{ secrets.DEPLOY_PATH }}"
+            docker compose -f infra/deployment/docker-compose.prod.yml --env-file infra/deployment/.env run --rm -e API_URL=http://api:3000/api/v1 migrate node dist/prisma/seed-world-cup-2026.js

@@ -20,9 +20,6 @@
     <div class="landing-page__nav-end">
       <div class="landing-page__nav-end-links">
         <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
-        @if (tournaments().length > 0) {
-          <a class="landing-page__nav-cta" href="#tournois">Découvrir les événements</a>
-        }
         @if (authService.isAuthenticated()) {
           <a class="landing-page__nav-login" routerLink="/admin/tournaments">Mon espace</a>
           <button type="button" class="landing-page__nav-login" (click)="logout()">
@@ -72,11 +69,6 @@
         <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
       </div>
 
-      @if (tournaments().length > 0) {
-        <a class="landing-page__mobile-menu-cta" href="#tournois" (click)="closeMobileMenu()">
-          Découvrir les événements
-        </a>
-      }
       @if (authService.isAuthenticated()) {
         <a
           class="landing-page__mobile-menu-login"
