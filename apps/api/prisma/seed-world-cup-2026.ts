@@ -68,6 +68,115 @@ async function api(
   return res.status === 204 ? null : res.json();
 }
 
+// flagcdn.com: free, no API key, ISO 3166-1 alpha-2 codes (plus the UK's
+// constituent-nation codes flagcdn also serves -- gb-eng/gb-sct -- for the
+// two home nations that play as their own team, not "United Kingdom").
+// PNG only (the product's own upload endpoint only accepts PNG/JPEG/WebP,
+// see TEAM_LOGO_ALLOWED_MIME_TYPES in teams.service.ts) -- w320 is small
+// (a few hundred bytes to a few KB per flag, solid-color-heavy images
+// compress well) and comfortably under the 2 MB upload limit.
+const FLAG_CDN_BASE = 'https://flagcdn.com/w320';
+
+const COUNTRY_FLAG_CODES: Record<string, string> = {
+  Mexique: 'mx',
+  'Afrique du Sud': 'za',
+  'Corée du Sud': 'kr',
+  'République tchèque': 'cz',
+  Canada: 'ca',
+  'Bosnie-Herzégovine': 'ba',
+  Qatar: 'qa',
+  Suisse: 'ch',
+  Brésil: 'br',
+  Maroc: 'ma',
+  Haïti: 'ht',
+  Écosse: 'gb-sct',
+  'États-Unis': 'us',
+  Paraguay: 'py',
+  Australie: 'au',
+  Turquie: 'tr',
+  Allemagne: 'de',
+  Curaçao: 'cw',
+  "Côte d'Ivoire": 'ci',
+  Équateur: 'ec',
+  'Pays-Bas': 'nl',
+  Japon: 'jp',
+  Suède: 'se',
+  Tunisie: 'tn',
+  Belgique: 'be',
+  Égypte: 'eg',
+  Iran: 'ir',
+  'Nouvelle-Zélande': 'nz',
+  Espagne: 'es',
+  'Cap-Vert': 'cv',
+  'Arabie Saoudite': 'sa',
+  Uruguay: 'uy',
+  France: 'fr',
+  Norvège: 'no',
+  Sénégal: 'sn',
+  Irak: 'iq',
+  Argentine: 'ar',
+  Algérie: 'dz',
+  Autriche: 'at',
+  Jordanie: 'jo',
+  Portugal: 'pt',
+  'RD Congo': 'cd',
+  Ouzbékistan: 'uz',
+  Colombie: 'co',
+  Angleterre: 'gb-eng',
+  Croatie: 'hr',
+  Ghana: 'gh',
+  Panama: 'pa',
+};
+
+// Separate from `api()` above -- this is a multipart upload (the product's
+// logo endpoint expects a `logo` file field, not JSON), and errors here are
+// deliberately non-fatal: a flag CDN hiccup shouldn't fail the whole seed
+// run over cosmetics the tournament works perfectly well without.
+async function uploadTeamLogo(
+  token: string,
+  orgId: string,
+  tournamentId: string,
+  teamId: string,
+  teamName: string,
+): Promise<void> {
+  const flagCode = COUNTRY_FLAG_CODES[teamName];
+  if (!flagCode) {
+    console.warn(`  (no flag mapped for "${teamName}", skipping logo)`);
+    return;
+  }
+  try {
+    const flagRes = await fetch(`${FLAG_CDN_BASE}/${flagCode}.png`);
+    if (!flagRes.ok) {
+      throw new Error(`GET flag ${flagCode}.png -> ${flagRes.status}`);
+    }
+    const flagBytes = await flagRes.arrayBuffer();
+    const form = new FormData();
+    form.append(
+      'logo',
+      new Blob([flagBytes], { type: 'image/png' }),
+      `${flagCode}.png`,
+    );
+
+    await sleep(API_CALL_DELAY_MS);
+    const uploadRes = await fetch(
+      `${API}/organizations/${orgId}/tournaments/${tournamentId}/teams/${teamId}/logo`,
+      {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: form,
+      },
+    );
+    if (!uploadRes.ok) {
+      const text = await uploadRes.text().catch(() => '');
+      throw new Error(`POST .../logo -> ${uploadRes.status}: ${text}`);
+    }
+  } catch (error) {
+    console.warn(
+      `  (logo upload failed for "${teamName}": ${error instanceof Error ? error.message : error} -- continuing without it)`,
+    );
+  }
+}
+
 interface GroupMatch {
   home: string;
   away: string;
@@ -621,6 +730,7 @@ async function main() {
         token,
         { groupId: group.id },
       );
+      await uploadTeamLogo(token, orgId, tournamentId, team.id, name);
     }
   }
 

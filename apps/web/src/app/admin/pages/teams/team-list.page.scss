@@ -46,12 +46,19 @@
   }
 }
 
-.team-list-page__actions {
+// .team-list-page__actions/.team-list-page__logo-cell (the <td>s
+// themselves) deliberately have no `display: flex` of their own on
+// desktop -- that would break table layout's normal row-height
+// auto-stretch (confirmed via getBoundingClientRect: a flexed <td> shrinks
+// to its own content instead of matching sibling cells, misaligning the
+// row's borders). The flex row lives on an inner wrapper span instead,
+// free to size itself without affecting the cell's own box.
+.team-list-page__actions-inner {
   display: flex;
   gap: var(--ap-space-2);
 }
 
-.team-list-page__logo-cell {
+.team-list-page__logo-cell-inner {
   display: flex;
   align-items: center;
   gap: var(--ap-space-2);
@@ -231,12 +238,19 @@
   // Actions cell: was 3 ap-button crammed into one flex row inside a table
   // cell -- stacked and stretched here, each with the full row to itself
   // instead of jostling for space (docs/design/responsive-guidelines.md's
-  // touch-target concern, same family as the logo cell below).
+  // touch-target concern, same family as the logo cell below). The <td>
+  // itself only loses its border (the generic .team-list-page__cell rule
+  // above already makes it flex to lay out its single child, the inner
+  // wrapper below) -- the column stacking happens on that inner wrapper.
   .team-list-page__actions {
+    border-bottom: none;
+  }
+
+  .team-list-page__actions-inner {
     flex-direction: column;
     align-items: stretch;
     gap: var(--ap-space-2);
-    border-bottom: none;
+    width: 100%;
 
     ap-button {
       display: block;
@@ -247,7 +261,7 @@
   // link, "Retirer" text button) in one dense row -- real vertical space
   // between them here instead of relying on their own compact desktop
   // sizing.
-  .team-list-page__logo-cell {
+  .team-list-page__logo-cell-inner {
     flex-direction: column;
     align-items: flex-start;
     gap: var(--ap-space-2);

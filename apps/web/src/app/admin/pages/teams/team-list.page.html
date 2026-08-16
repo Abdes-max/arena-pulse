@@ -105,28 +105,30 @@
                   />
                 </td>
                 <td class="team-list-page__cell team-list-page__logo-cell">
-                  @if (logoUrl(team.logoUrl); as logo) {
-                    <img class="team-list-page__logo" [src]="logo" alt="" />
-                  } @else {
-                    <span class="team-list-page__logo-placeholder" aria-hidden="true"></span>
-                  }
-                  <label class="team-list-page__logo-upload">
-                    {{ team.logoUrl ? 'Changer' : 'Ajouter' }}
-                    <input
-                      type="file"
-                      accept="image/png,image/jpeg,image/webp"
-                      (change)="onLogoFileSelected(team, $event)"
-                    />
-                  </label>
-                  @if (team.logoUrl) {
-                    <button
-                      type="button"
-                      class="team-list-page__logo-remove"
-                      (click)="removeLogo(team)"
-                    >
-                      Retirer
-                    </button>
-                  }
+                  <span class="team-list-page__logo-cell-inner">
+                    @if (logoUrl(team.logoUrl); as logo) {
+                      <img class="team-list-page__logo" [src]="logo" alt="" />
+                    } @else {
+                      <span class="team-list-page__logo-placeholder" aria-hidden="true"></span>
+                    }
+                    <label class="team-list-page__logo-upload">
+                      {{ team.logoUrl ? 'Changer' : 'Ajouter' }}
+                      <input
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp"
+                        (change)="onLogoFileSelected(team, $event)"
+                      />
+                    </label>
+                    @if (team.logoUrl) {
+                      <button
+                        type="button"
+                        class="team-list-page__logo-remove"
+                        (click)="removeLogo(team)"
+                      >
+                        Retirer
+                      </button>
+                    }
+                  </span>
                 </td>
                 <td class="team-list-page__cell team-list-page__cell--name">{{ team.name }}</td>
                 <td class="team-list-page__cell team-list-page__cell--category">
@@ -139,15 +141,17 @@
                   {{ team.managerName ?? '—' }}
                 </td>
                 <td class="team-list-page__cell team-list-page__actions">
-                  <ap-button type="button" variant="ghost" (click)="startEdit(team)">
-                    Modifier
-                  </ap-button>
-                  <ap-button type="button" variant="ghost" (click)="togglePlayers(team)">
-                    Joueurs
-                  </ap-button>
-                  <ap-button type="button" variant="ghost" (click)="removeTeam(team)">
-                    Supprimer
-                  </ap-button>
+                  <span class="team-list-page__actions-inner">
+                    <ap-button type="button" variant="ghost" (click)="startEdit(team)">
+                      Modifier
+                    </ap-button>
+                    <ap-button type="button" variant="ghost" (click)="togglePlayers(team)">
+                      Joueurs
+                    </ap-button>
+                    <ap-button type="button" variant="ghost" (click)="removeTeam(team)">
+                      Supprimer
+                    </ap-button>
+                  </span>
                 </td>
               </tr>
               @if (expandedTeamId() === team.id) {

@@ -60,10 +60,12 @@
                   >
                     <td>{{ row.position }}</td>
                     <td class="standings-page__team-cell">
-                      @if (logoUrl(row.teamLogoUrl); as logo) {
-                        <img class="standings-page__team-logo" [src]="logo" alt="" />
-                      }
-                      {{ row.teamName }}
+                      <span class="standings-page__team-cell-inner">
+                        @if (logoUrl(row.teamLogoUrl); as logo) {
+                          <img class="standings-page__team-logo" [src]="logo" alt="" />
+                        }
+                        {{ row.teamName }}
+                      </span>
                     </td>
                     <td>
                       @if (qualificationTierPhases().length < 2) {
@@ -205,10 +207,12 @@
                   <tr>
                     <td>{{ row.position }}</td>
                     <td class="standings-page__team-cell">
-                      @if (logoUrl(row.teamLogoUrl); as logo) {
-                        <img class="standings-page__team-logo" [src]="logo" alt="" />
-                      }
-                      {{ row.teamName }}
+                      <span class="standings-page__team-cell-inner">
+                        @if (logoUrl(row.teamLogoUrl); as logo) {
+                          <img class="standings-page__team-logo" [src]="logo" alt="" />
+                        }
+                        {{ row.teamName }}
+                      </span>
                     </td>
                     <td>{{ row.phaseName }}</td>
                     <td>{{ row.stageLabel }}</td>
