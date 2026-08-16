@@ -108,8 +108,7 @@ export class SchedulePage {
   // tab and force entering a "temps de pause après les poules" that makes no
   // sense when there are no pools to pause after. See generateAllKnockoutMatches.
   protected readonly groupStagePhase = computed(
-    () =>
-      this.phases().find((phase) => phase.type === 'GROUP_STAGE' && !phase.isSeedPhase) ?? null,
+    () => this.phases().find((phase) => phase.type === 'GROUP_STAGE' && !phase.isSeedPhase) ?? null,
   );
   protected readonly knockoutPhases = computed(() =>
     this.phases()
