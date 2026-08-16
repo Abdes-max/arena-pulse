@@ -242,7 +242,11 @@ describe('Teams (e2e)', () => {
       .expect(201);
     const teamsBase = `${base}/${tournamentId}/teams`;
 
-    const csv = 'nom;categorie;division\nLes Aigles;U10;\nLes Lions;Inconnue;';
+    const csv =
+      'nom;categorie;division;responsable;email_responsable;telephone_responsable;logo\n' +
+      'Les Aigles;U10;;Jean Dupont;jean@example.com;0600000000;\n' +
+      'Les Lions;Inconnue;;;;;\n' +
+      'Les Ours;U10;;;;;https://not-a-real-host.invalid/logo.png';
     const importRes = await auth(
       request(app.getHttpServer()).post(`${teamsBase}/import`),
     )
@@ -251,16 +255,25 @@ describe('Teams (e2e)', () => {
     const importBody = importRes.body as {
       created: TeamResponseBody[];
       errors: { line: number; message: string }[];
+      warnings: { line: number; message: string }[];
     };
-    expect(importBody.created).toHaveLength(1);
+    expect(importBody.created).toHaveLength(2);
     expect(importBody.errors).toEqual([
       { line: 3, message: 'Catégorie "Inconnue" introuvable.' },
     ]);
+    // Les Ours is still created (partial success) even though its logo URL
+    // can't be resolved -- a non-fatal warning instead of a row error.
+    expect(importBody.warnings).toHaveLength(1);
+    expect(importBody.warnings[0].line).toBe(4);
 
     const exportRes = await auth(
       request(app.getHttpServer()).get(`${teamsBase}/export`),
     ).expect(200);
-    expect(exportRes.text).toBe('nom;categorie;division\r\nLes Aigles;U10;');
+    expect(exportRes.text).toBe(
+      'nom;categorie;division;responsable;email_responsable;telephone_responsable;logo\r\n' +
+        'Les Aigles;U10;;Jean Dupont;jean@example.com;0600000000;\r\n' +
+        'Les Ours;U10;;;;;',
+    );
   });
 
   it('bulk deletes selected teams', async () => {

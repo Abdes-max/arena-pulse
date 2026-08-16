@@ -146,6 +146,13 @@
   font-size: 0.9rem;
 }
 
+// Non-fatal (e.g. a logo URL couldn't be fetched) -- the team was still
+// created, so this reads as a heads-up, not an error.
+.team-list-page__import-warnings {
+  color: var(--ap-color-muted);
+  font-size: 0.9rem;
+}
+
 // Densest table in the admin (7 columns, an image + 3-button action cell)
 // -- per docs/design/responsive-guidelines.md ("tableaux denses proposent
 // une vue alternative sous md"), this abandons table semantics on mobile
