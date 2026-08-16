@@ -1,0 +1,117 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+  background: var(--ap-color-bg);
+  color: var(--ap-color-fg);
+}
+
+.contact-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--ap-space-6);
+}
+
+.contact-page__back {
+  align-self: flex-start;
+  margin-bottom: var(--ap-space-6);
+  padding: var(--ap-space-2) var(--ap-space-3);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  background: transparent;
+  color: var(--ap-color-fg);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color var(--ap-motion-fast) var(--ap-easing-standard);
+
+  &:hover {
+    border-color: var(--ap-color-signal);
+  }
+}
+
+.contact-page__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-4);
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+
+  h1 {
+    font-family: var(--ap-font-heading);
+    color: var(--ap-color-fg);
+    margin: 0;
+    text-align: center;
+  }
+}
+
+.contact-page__brand {
+  align-self: center;
+  margin-bottom: var(--ap-space-2);
+}
+
+.contact-page__lead {
+  margin: 0;
+  color: var(--ap-color-muted);
+  text-align: center;
+}
+
+// Hand-rolled to match ap-text-field's visuals (libs/design-system/text-field)
+// without pulling in the component -- that one doesn't support a textarea,
+// which this page needs for the message field, so every field here (not
+// just the textarea) is kept consistent with it instead of mixing two
+// slightly different input styles on the same form.
+.contact-page__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+
+  label {
+    font-family: var(--ap-font-body);
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--ap-color-fg);
+  }
+
+  input,
+  textarea {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    font-family: var(--ap-font-body);
+    font-size: 1rem;
+    color: var(--ap-color-fg);
+    background: var(--ap-color-surface);
+    border: var(--ap-border-width) solid var(--ap-color-border);
+    border-radius: var(--ap-radius-md);
+    padding: var(--ap-space-3) var(--ap-space-4);
+    transition: border-color var(--ap-motion-fast) var(--ap-easing-standard);
+
+    &:focus-visible {
+      outline: var(--ap-border-width-strong) solid var(--ap-color-focus);
+      outline-offset: 2px;
+    }
+  }
+
+  input {
+    min-height: var(--ap-touch-target-min);
+  }
+
+  textarea {
+    resize: vertical;
+    font: inherit;
+  }
+}
+
+.contact-page__error {
+  margin: 0;
+  color: var(--ap-color-error);
+  font-size: 0.9rem;
+}
+
+.contact-page__home-link {
+  align-self: center;
+  color: var(--ap-color-primary);
+  font-weight: 600;
+}

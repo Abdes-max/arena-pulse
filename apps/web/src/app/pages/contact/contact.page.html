@@ -1,0 +1,43 @@
+<main class="contact-page">
+  <button type="button" class="contact-page__back" (click)="goBack()">← Retour</button>
+  @switch (state()) {
+    @case ('form') {
+      <form class="contact-page__card" [formGroup]="form" (ngSubmit)="submit()">
+        <ap-logo class="contact-page__brand" />
+        <h1>Nous contacter</h1>
+        <p class="contact-page__lead">
+          Une question, un problème, une suggestion&nbsp;? Écrivez-nous, nous répondons
+          personnellement à chaque message.
+        </p>
+        <div class="contact-page__field">
+          <label for="contact-name">Nom</label>
+          <input id="contact-name" type="text" formControlName="name" autocomplete="name" />
+        </div>
+        <div class="contact-page__field">
+          <label for="contact-email">Email</label>
+          <input id="contact-email" type="email" formControlName="email" autocomplete="email" />
+        </div>
+        <div class="contact-page__field">
+          <label for="contact-subject">Sujet</label>
+          <input id="contact-subject" type="text" formControlName="subject" />
+        </div>
+        <div class="contact-page__field">
+          <label for="contact-message">Message</label>
+          <textarea id="contact-message" rows="6" formControlName="message"></textarea>
+        </div>
+        @if (errorMessage(); as message) {
+          <p class="contact-page__error" role="alert">{{ message }}</p>
+        }
+        <ap-button type="submit" [disabled]="submitting()">Envoyer le message</ap-button>
+      </form>
+    }
+    @case ('sent') {
+      <div class="contact-page__card">
+        <ap-logo class="contact-page__brand" />
+        <h1>Message envoyé</h1>
+        <p>Merci, votre message a bien été transmis. Nous vous répondrons rapidement.</p>
+        <a class="contact-page__home-link" routerLink="/">Retour à l'accueil</a>
+      </div>
+    }
+  }
+</main>

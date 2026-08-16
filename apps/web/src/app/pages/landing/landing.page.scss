@@ -919,3 +919,45 @@ ap-tournament-marquee {
     font-size: 1.75rem;
   }
 }
+
+// Site footer proper (below the CTA band above) -- logo, legal/contact
+// links, copyright. Follows the page's light/dark mode toggle like every
+// other section below the hero (unlike the hero itself, which is
+// fixed-dark -- see the data-theme comment at the top of the header).
+.landing-page__footer {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: var(--ap-space-8) var(--ap-space-6);
+  border-top: var(--ap-border-width) solid var(--ap-color-border);
+}
+
+.landing-page__footer-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-4);
+}
+
+.landing-page__footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ap-space-5);
+
+  a {
+    color: var(--ap-color-muted);
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+
+    &:hover {
+      color: var(--ap-color-fg);
+    }
+  }
+}
+
+.landing-page__footer-copyright {
+  margin: var(--ap-space-6) 0 0;
+  color: var(--ap-color-muted);
+  font-size: 0.8rem;
+}

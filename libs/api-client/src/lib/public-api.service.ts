@@ -4,6 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import {
   Category,
   CompetitionPhase,
+  ContactMessagePayload,
   CreateRegistrationPayload,
   CreateRegistrationResult,
   Match,
@@ -109,5 +110,9 @@ export class PublicApiService {
     return firstValueFrom(
       this.http.get<PlayerRegistration[]>(`${this.config.apiUrl}/public/registrations/me`),
     );
+  }
+
+  sendContactMessage(payload: ContactMessagePayload): Promise<void> {
+    return firstValueFrom(this.http.post<void>(`${this.config.apiUrl}/contact`, payload));
   }
 }

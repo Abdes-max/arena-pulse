@@ -11,6 +11,15 @@ export interface PublicSport {
   name: string;
 }
 
+// Public contact form (landing page footer) -- no persistence, this is
+// relayed straight to an inbox by the API (see contact.controller.ts).
+export interface ContactMessagePayload {
+  name: string;
+  email: string;
+  subject: string;
+  message: string;
+}
+
 export interface Field {
   id: string;
   name: string;

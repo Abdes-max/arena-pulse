@@ -6,6 +6,7 @@ import nodemailer, { Transporter } from 'nodemailer';
 export class MailService {
   private readonly transporter: Transporter;
   private readonly from: string;
+  private readonly contactRecipient: string;
 
   constructor(configService: ConfigService) {
     const port = configService.get<number>('SMTP_PORT', 1025);
@@ -30,6 +31,14 @@ export class MailService {
     this.from = configService.get<string>(
       'SMTP_FROM',
       'TournArena <no-reply@arena-pulse.local>',
+    );
+    // Temporary destination for the public contact form (feat/100): no
+    // contact@tournarena.com mailbox exists yet (task #16, still pending) --
+    // defaults to the founder's personal address until that's set up, at
+    // which point only this env var needs to change, not the code.
+    this.contactRecipient = configService.get<string>(
+      'CONTACT_RECIPIENT_EMAIL',
+      'aziaissa@gmail.com',
     );
   }
 
@@ -123,6 +132,41 @@ export class MailService {
         <p>Votre abonnement est actif jusqu'au <strong>${formattedExpiry}</strong> et couvre la publication de tous vos tournois sur cette période.</p>
       `),
     });
+  }
+
+  async sendContactMessage(data: {
+    name: string;
+    email: string;
+    subject: string;
+    message: string;
+  }): Promise<void> {
+    await this.transporter.sendMail({
+      from: this.from,
+      to: this.contactRecipient,
+      // Lets hitting "Reply" in the mail client go straight back to the
+      // visitor instead of to no-reply@ -- this.from stays the fixed
+      // TournArena sender identity, only the reply target changes.
+      replyTo: `${data.name} <${data.email}>`,
+      subject: `[Contact TournArena] ${data.subject}`,
+      html: this.wrapEmail(`
+        <p><strong>De :</strong> ${this.escapeHtml(data.name)} (${this.escapeHtml(data.email)})</p>
+        <p><strong>Sujet :</strong> ${this.escapeHtml(data.subject)}</p>
+        <p style="white-space: pre-wrap;">${this.escapeHtml(data.message)}</p>
+      `),
+    });
+  }
+
+  // The 4 email templates above only ever interpolate values the product
+  // itself generated (org/tournament names entered by an authenticated
+  // organizer, amounts, dates) -- this one interpolates raw text typed by an
+  // anonymous visitor into an HTML email body, so it needs actual escaping.
+  private escapeHtml(value: string): string {
+    return value
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
   }
 
   private formatAmount(amountCents: number, currency: string): string {
