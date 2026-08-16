@@ -45,13 +45,28 @@ export class StructurePresetsService {
     );
     await this.categoriesService.assertCategoryExists(tournamentId, categoryId);
 
-    const existingPhaseCount = await this.prisma.competitionPhase.count({
+    const existingPhases = await this.prisma.competitionPhase.findMany({
       where: { categoryId },
+      select: { id: true, isSeedPhase: true },
     });
-    if (existingPhaseCount > 0) {
+    if (existingPhases.some((phase) => !phase.isSeedPhase)) {
       throw new ConflictException(
         'Cette catégorie a déjà des phases -- ce générateur ne fonctionne que sur une catégorie vierge.',
       );
+    }
+    if (existingPhases.length > 0) {
+      // Only the fictitious seed phase(s) a previous KNOCKOUT_ONLY run
+      // created remain (see CompetitionPhase.isSeedPhase) -- its own
+      // bracket phase was since deleted, but nothing ever cleared this one
+      // (either the frontend's own cleanup ran before this backend guard
+      // existed, or the delete came from somewhere else entirely). Clearing
+      // it here -- cascades to its group, which frees any team still
+      // pointing at it back to unassigned via onDelete: SetNull -- restores
+      // a genuinely blank category instead of permanently blocking every
+      // future preset run on it.
+      await this.prisma.competitionPhase.deleteMany({
+        where: { id: { in: existingPhases.map((phase) => phase.id) } },
+      });
     }
 
     this.assertCombinationIsPossible(dto);

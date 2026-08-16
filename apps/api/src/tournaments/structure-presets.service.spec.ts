@@ -6,7 +6,11 @@ import { StructurePresetsService } from './structure-presets.service';
 import { TournamentsService } from './tournaments.service';
 
 type PrismaMock = {
-  competitionPhase: { count: jest.Mock; create: jest.Mock };
+  competitionPhase: {
+    findMany: jest.Mock;
+    create: jest.Mock;
+    deleteMany: jest.Mock;
+  };
   group: { create: jest.Mock };
   standingRule: { create: jest.Mock };
   team: { findMany: jest.Mock; update: jest.Mock };
@@ -23,8 +27,9 @@ function team(id: string, position: number) {
 function createPrismaMock(): PrismaMock {
   const mock: PrismaMock = {
     competitionPhase: {
-      count: jest.fn().mockResolvedValue(0),
+      findMany: jest.fn().mockResolvedValue([]),
       create: jest.fn(),
+      deleteMany: jest.fn().mockResolvedValue({ count: 0 }),
     },
     group: { create: jest.fn() },
     standingRule: { create: jest.fn() },
@@ -93,13 +98,36 @@ describe('StructurePresetsService', () => {
     ).rejects.toThrow('archived');
   });
 
-  it('rejects when the category already has phases', async () => {
-    prisma.competitionPhase.count.mockResolvedValue(1);
+  it('rejects when the category already has a real (non-seed) phase', async () => {
+    prisma.competitionPhase.findMany.mockResolvedValue([
+      { id: 'phase-1', isSeedPhase: false },
+    ]);
 
     await expect(
       service.create('org-1', 'tournament-1', 'category-1', BASE_DTO),
     ).rejects.toBeInstanceOf(ConflictException);
     expect(prisma.$transaction).not.toHaveBeenCalled();
+    expect(prisma.competitionPhase.deleteMany).not.toHaveBeenCalled();
+  });
+
+  it('clears an orphaned seed phase from a previous KNOCKOUT_ONLY run instead of rejecting', async () => {
+    prisma.competitionPhase.findMany.mockResolvedValue([
+      { id: 'seed-phase-1', isSeedPhase: true },
+    ]);
+    prisma.team.findMany.mockResolvedValue([
+      team('team-1', 0),
+      team('team-2', 1),
+    ]);
+
+    await service.create('org-1', 'tournament-1', 'category-1', {
+      format: StructurePresetFormat.KNOCKOUT_ONLY,
+      teamCount: 2,
+    });
+
+    expect(prisma.competitionPhase.deleteMany).toHaveBeenCalledWith({
+      where: { id: { in: ['seed-phase-1'] } },
+    });
+    expect(prisma.$transaction).toHaveBeenCalled();
   });
 
   it('rejects when pool count exceeds team count', async () => {
