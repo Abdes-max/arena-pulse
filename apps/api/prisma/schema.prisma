@@ -368,6 +368,13 @@ model CompetitionPhase {
   // the phase, so this is read once per "clean" generation rather than
   // toggled after matches exist.
   doubleRoundRobin     Boolean              @default(false)
+  // True only for the fictitious GROUP_STAGE phase StructurePresetsService's
+  // KNOCKOUT_ONLY branch creates to seed a bracket from (QualificationRule
+  // always points from a group's standings, so a "no pools" format still
+  // needs one) -- no match is ever generated in it. Lets the admin UI (and
+  // BracketsService.generateAllMatches) treat it as "no real pool phase"
+  // instead of a genuine one, rather than name-matching KNOCKOUT_ONLY_SEED_NAME.
+  isSeedPhase          Boolean              @default(false)
   createdAt            DateTime             @default(now())
   updatedAt            DateTime             @updatedAt
 

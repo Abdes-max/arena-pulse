@@ -180,25 +180,37 @@ export class BracketsService {
     const poolPhase = await this.prisma.competitionPhase.findFirst({
       where: { categoryId, type: CompetitionPhaseType.GROUP_STAGE },
     });
-    if (!poolPhase) {
-      throw new BadRequestException(
-        'Cette catégorie n’a pas de phase de poules.',
+
+    // A real pool phase feeds the knockout start time (last scheduled pool
+    // match's end + a configurable break). A category with no pool phase at
+    // all, or only the fictitious seed phase a KNOCKOUT_ONLY structure
+    // preset creates (CompetitionPhase.isSeedPhase -- it never has scheduled
+    // matches, by design), has nothing to compute from: the organizer picks
+    // the start time directly instead.
+    let startDateTime: Date;
+    if (poolPhase && !poolPhase.isSeedPhase) {
+      const lastPoolMatch = await this.prisma.match.findFirst({
+        where: { group: { phaseId: poolPhase.id }, timeSlotId: { not: null } },
+        include: { timeSlot: true },
+        orderBy: { timeSlot: { endTime: 'desc' } },
+      });
+      if (!lastPoolMatch?.timeSlot) {
+        throw new BadRequestException(
+          'Générez d’abord le calendrier des poules avant celui de l’élimination directe.',
+        );
+      }
+      startDateTime = new Date(
+        lastPoolMatch.timeSlot.endTime.getTime() +
+          (dto.breakAfterPoolsMinutes ?? 0) * 60_000,
       );
+    } else {
+      if (!dto.startDateTime) {
+        throw new BadRequestException(
+          'Une date de début est requise (cette catégorie n’a pas de phase de poules à partir de laquelle la calculer).',
+        );
+      }
+      startDateTime = new Date(dto.startDateTime);
     }
-    const lastPoolMatch = await this.prisma.match.findFirst({
-      where: { group: { phaseId: poolPhase.id }, timeSlotId: { not: null } },
-      include: { timeSlot: true },
-      orderBy: { timeSlot: { endTime: 'desc' } },
-    });
-    if (!lastPoolMatch?.timeSlot) {
-      throw new BadRequestException(
-        'Générez d’abord le calendrier des poules avant celui de l’élimination directe.',
-      );
-    }
-    const startDateTime = new Date(
-      lastPoolMatch.timeSlot.endTime.getTime() +
-        dto.breakAfterPoolsMinutes * 60_000,
-    );
 
     // Validate every bracket up front, cumulating every failure instead of
     // stopping at the first -- the organizer sees the full picture in one

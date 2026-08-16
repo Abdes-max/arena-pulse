@@ -102,8 +102,13 @@ export class SchedulePage {
   protected readonly breakDurationMinutes = signal('');
   protected readonly refereesPerMatch = signal('');
 
+  // Excludes the fictitious pool phase a KNOCKOUT_ONLY structure preset
+  // creates to seed its bracket from (isSeedPhase) -- it never has matches,
+  // so treating it as a real pool phase here would offer a useless "Poules"
+  // tab and force entering a "temps de pause après les poules" that makes no
+  // sense when there are no pools to pause after. See generateAllKnockoutMatches.
   protected readonly groupStagePhase = computed(
-    () => this.phases().find((phase) => phase.type === 'GROUP_STAGE') ?? null,
+    () => this.phases().find((phase) => phase.type === 'GROUP_STAGE' && !phase.isSeedPhase) ?? null,
   );
   protected readonly knockoutPhases = computed(() =>
     this.phases()
@@ -401,14 +406,21 @@ export class SchedulePage {
    * time the way a single bracket's matches are. Reserves a slot for every
    * round of every tier up front (round 1 immediately gets real opponents;
    * later rounds claim their reservation automatically once known, as their
-   * own scores validate). The start time isn't entered by hand -- it's the
-   * pool phase's last scheduled match plus the configured pause.
+   * own scores validate). The start time is usually not entered by hand --
+   * it's the pool phase's last scheduled match plus the configured pause --
+   * except for a category with no real pool phase (KNOCKOUT_ONLY structure
+   * preset, see groupStagePhase), where the organizer picks it directly
+   * (reusing the same startDateTime field the pool-phase generation form
+   * uses, which is otherwise unreachable here since there's no "Poules" tab
+   * to show it on).
    */
   protected async generateAllKnockoutMatches(): Promise<void> {
     const organizationId = this.organization()?.id;
     const categoryId = this.selectedCategoryId();
     const fieldIds = this.selectedFieldIds();
+    const hasPoolPhase = this.groupStagePhase() !== null;
     const breakAfterPoolsMinutes = this.breakAfterPoolsMinutes();
+    const startDateTime = this.startDateTime();
     if (!organizationId || !categoryId) {
       return;
     }
@@ -416,8 +428,12 @@ export class SchedulePage {
       this.errorMessage.set('Sélectionnez au moins un terrain avant de générer les tableaux.');
       return;
     }
-    if (breakAfterPoolsMinutes === '') {
+    if (hasPoolPhase && breakAfterPoolsMinutes === '') {
       this.errorMessage.set('Renseignez le temps de pause après les poules.');
+      return;
+    }
+    if (!hasPoolPhase && !startDateTime) {
+      this.errorMessage.set('Renseignez une date de début avant de générer les tableaux.');
       return;
     }
     this.errorMessage.set(null);
@@ -429,7 +445,9 @@ export class SchedulePage {
         categoryId,
         {
           fieldIds,
-          breakAfterPoolsMinutes: Number(breakAfterPoolsMinutes),
+          ...(hasPoolPhase
+            ? { breakAfterPoolsMinutes: Number(breakAfterPoolsMinutes) }
+            : { startDateTime: new Date(startDateTime).toISOString() }),
           matchDurationMinutes: this.matchDurationMinutes()
             ? Number(this.matchDurationMinutes())
             : undefined,
