@@ -96,6 +96,10 @@ export interface CompetitionPhase {
   position: number;
   groups: CompetitionGroup[];
   knockoutBracket: KnockoutBracket | null;
+  // True for the fictitious pool phase a KNOCKOUT_ONLY structure preset
+  // creates just to seed its bracket from -- no match is ever generated in
+  // it, so it should never surface as a real "Poules"/"Classement" tab.
+  isSeedPhase: boolean;
 }
 
 export interface PublicTeam {

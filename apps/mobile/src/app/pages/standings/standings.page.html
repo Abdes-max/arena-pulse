@@ -39,9 +39,11 @@
       (ionChange)="onTabChange($event.detail.value)"
       scrollable
     >
-      <ion-segment-button value="pools">
-        <ion-label>Phase de poules</ion-label>
-      </ion-segment-button>
+      @if (hasGroupStagePhase()) {
+        <ion-segment-button value="pools">
+          <ion-label>Phase de poules</ion-label>
+        </ion-segment-button>
+      }
       @if (hasFinalPhase()) {
         <ion-segment-button value="final">
           <ion-label>Phase finale</ion-label>
@@ -51,6 +53,10 @@
         </ion-segment-button>
       }
     </ion-segment>
+
+    @if (hasNoTabsYet()) {
+      <p class="standings-page__empty">Pas encore de classement pour cette catégorie.</p>
+    }
 
     @if (activeTab() === 'pools') {
       @if (!hasGroupStagePhase()) {
@@ -136,23 +142,35 @@
               Le tableau n'a pas encore été généré pour cette phase.
             </p>
           } @else {
-            <ion-segment
-              class="standings-page__filters"
-              [value]="selectedRoundValue()"
-              (ionChange)="onRoundChange(asString($event.detail.value))"
-              scrollable
-            >
-              @for (option of roundOptions(); track option.value) {
-                <ion-segment-button [value]="option.value">
-                  <ion-label>{{ option.label }}</ion-label>
-                </ion-segment-button>
-              }
-            </ion-segment>
+            @if (roundOptions().length > 2) {
+              <ion-segment
+                class="standings-page__filters"
+                [value]="selectedRoundValue()"
+                (ionChange)="onRoundChange(asString($event.detail.value))"
+                scrollable
+              >
+                @for (option of roundOptions(); track option.value) {
+                  <ion-segment-button [value]="option.value">
+                    <ion-label>{{ option.label }}</ion-label>
+                  </ion-segment-button>
+                }
+              </ion-segment>
+            }
 
-            <div class="standings-page__bracket" [style.height.px]="bracketHeight(bracket)">
+            <div
+              class="standings-page__bracket"
+              [class.standings-page__bracket--focus-mode]="selectedRoundValue()"
+              [style.height.px]="selectedRoundValue() ? null : bracketHeight(bracket)"
+            >
               @for (round of bracket.rounds; track round.round) {
                 <div
                   class="standings-page__bracket-round"
+                  [class.standings-page__bracket-round--focused]="
+                    selectedRoundValue() === round.round.toString()
+                  "
+                  [class.standings-page__bracket-round--collapsed]="
+                    selectedRoundValue() && selectedRoundValue() !== round.round.toString()
+                  "
                   [id]="'bracket-round-' + selectedBracketPhaseId() + '-' + round.round"
                 >
                   <h3>{{ round.label }}</h3>
@@ -178,6 +196,10 @@
             @if (bracket.thirdPlaceMatch; as match) {
               <div
                 class="standings-page__third-place"
+                [class.standings-page__third-place--focused]="selectedRoundValue() === 'third'"
+                [class.standings-page__third-place--collapsed]="
+                  selectedRoundValue() && selectedRoundValue() !== 'third'
+                "
                 [id]="'bracket-round-' + selectedBracketPhaseId() + '-third'"
               >
                 <h3>Pour la 3e place</h3>

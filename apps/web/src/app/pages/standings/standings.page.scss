@@ -271,6 +271,9 @@
 .standings-page__third-place {
   width: 200px;
   margin: var(--ap-space-3) 0 0 auto;
+  transition:
+    width 0.2s ease,
+    opacity 0.2s ease;
 
   h3 {
     font-size: 0.85rem;
@@ -278,6 +281,62 @@
     letter-spacing: 0.06em;
     color: var(--ap-color-muted);
     margin: 0 0 var(--ap-space-2);
+  }
+}
+
+// --- Mode accordéon : un tour cliqué dans le fil "Tour" ci-dessus se
+// resserre (ses matchs se rapprochent au lieu d'être étirés sur toute la
+// hauteur de l'arbre) pendant que les autres tours se réduisent à une
+// bande fine. Les connecteurs n'ont plus de sens dans cet état (leur
+// géométrie dépend de `space-around` sur une hauteur partagée), donc ils
+// sont masqués tant qu'un tour est mis en avant.
+.standings-page__bracket--focus-mode {
+  align-items: flex-start;
+
+  .standings-page__bracket-slot::before,
+  .standings-page__bracket-slot::after {
+    display: none;
+  }
+}
+
+.standings-page__bracket-round--focused {
+  width: 240px;
+
+  .standings-page__bracket-round-matches {
+    justify-content: flex-start;
+    gap: var(--ap-space-3);
+  }
+}
+
+.standings-page__bracket-round--collapsed {
+  width: 28px;
+  overflow: hidden;
+  opacity: 0.5;
+  transition:
+    width 0.2s ease,
+    opacity 0.2s ease;
+
+  h3 {
+    writing-mode: vertical-rl;
+    margin: 0;
+  }
+
+  .standings-page__bracket-round-matches {
+    display: none;
+  }
+}
+
+.standings-page__third-place--focused {
+  width: 240px;
+}
+
+.standings-page__third-place--collapsed {
+  width: 28px;
+  opacity: 0.5;
+  overflow: hidden;
+
+  ap-bracket-match {
+    display: none;
   }
 }
 

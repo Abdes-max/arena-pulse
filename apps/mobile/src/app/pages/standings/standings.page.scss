@@ -213,6 +213,9 @@
 .standings-page__third-place {
   width: 180px;
   margin: var(--ap-space-3) var(--ap-space-4) 0 auto;
+  transition:
+    width 0.2s ease,
+    opacity 0.2s ease;
 
   h3 {
     font-size: 0.8rem;
@@ -220,6 +223,62 @@
     letter-spacing: 0.06em;
     color: var(--ap-color-muted);
     margin: 0 0 var(--ap-space-2);
+  }
+}
+
+// --- Mode accordéon : mirrors apps/web's public standings.page.scss --
+// tapping a round in the segment above collapses every other round to a
+// thin strip and lets the tapped one's matches sit close together instead
+// of stretched across the tree's full shared height. Connectors are
+// meaningless in this state (their geometry depends on `space-around` over
+// a shared height), so they're hidden while a round is focused.
+.standings-page__bracket--focus-mode {
+  align-items: flex-start;
+
+  .standings-page__bracket-slot::before,
+  .standings-page__bracket-slot::after {
+    display: none;
+  }
+}
+
+.standings-page__bracket-round--focused {
+  width: 220px;
+
+  .standings-page__bracket-round-matches {
+    justify-content: flex-start;
+    gap: var(--ap-space-3);
+  }
+}
+
+.standings-page__bracket-round--collapsed {
+  width: 24px;
+  overflow: hidden;
+  opacity: 0.5;
+  transition:
+    width 0.2s ease,
+    opacity 0.2s ease;
+
+  h3 {
+    writing-mode: vertical-rl;
+    margin: 0;
+  }
+
+  .standings-page__bracket-round-matches {
+    display: none;
+  }
+}
+
+.standings-page__third-place--focused {
+  width: 220px;
+}
+
+.standings-page__third-place--collapsed {
+  width: 24px;
+  opacity: 0.5;
+  overflow: hidden;
+
+  ap-bracket-match {
+    display: none;
   }
 }
 

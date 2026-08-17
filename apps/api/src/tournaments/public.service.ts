@@ -124,14 +124,24 @@ export class PublicService {
       orderBy: [{ timeSlot: { startTime: 'asc' } }],
     });
 
+    // A KNOCKOUT_ONLY structure preset's group is the fictitious seed group
+    // (see StructurePresetsService's KNOCKOUT_ONLY_SEED_NAME) -- teams never
+    // actually play a pool phase there, so there's no real "Classement de
+    // poule" to show for them.
     let standing: StandingRow | null = null;
     if (team.groupId) {
-      const { rows } = await this.standingsService.getStandings(
-        tournament.organizationId,
-        tournament.tournamentId,
-        team.groupId,
-      );
-      standing = rows.find((row) => row.teamId === teamId) ?? null;
+      const group = await this.prisma.group.findUnique({
+        where: { id: team.groupId },
+        select: { phase: { select: { isSeedPhase: true } } },
+      });
+      if (group && !group.phase.isSeedPhase) {
+        const { rows } = await this.standingsService.getStandings(
+          tournament.organizationId,
+          tournament.tournamentId,
+          team.groupId,
+        );
+        standing = rows.find((row) => row.teamId === teamId) ?? null;
+      }
     }
 
     return {

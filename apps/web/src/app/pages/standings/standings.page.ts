@@ -62,7 +62,7 @@ export class StandingsPage {
   protected readonly finalRanking = signal<FinalRankingRow[]>([]);
 
   protected readonly groupStagePhases = computed(() =>
-    this.phases().filter((phase) => phase.type === 'GROUP_STAGE'),
+    this.phases().filter((phase) => phase.type === 'GROUP_STAGE' && !phase.isSeedPhase),
   );
   protected readonly knockoutPhases = computed(() =>
     this.phases().filter((phase) => phase.type === 'KNOCKOUT' && phase.knockoutBracket),
@@ -95,19 +95,28 @@ export class StandingsPage {
     ...(this.knockoutPhases().length > 0 ? [{ value: 'final', label: 'Classement final' }] : []),
   ]);
 
-  // Quick-jump row above the connected bracket tree: clicking a round
-  // scrolls it into view instead of making the visitor drag the horizontal
-  // scroll all the way there themselves.
+  // Quick-jump row above the connected bracket tree, and also this bracket's
+  // "accordion" focus state: clicking a round both scrolls it into view and
+  // collapses every other round to a thin strip, letting the focused round's
+  // own matches sit close together instead of stretched across the tree's
+  // full shared height. Empty string means no round focused -- the full
+  // connected tree, every round at its natural connector-aligned spacing.
+  // Clicking the already-focused round again clears it back to that state.
   protected readonly selectedRoundView = signal('');
   protected readonly roundOptions = computed(() => {
     const bracket = this.bracketByPhase().get(this.selectedTab());
     if (!bracket) {
       return [];
     }
-    const options = bracket.rounds.map((round) => ({
-      value: String(round.round),
-      label: round.label,
-    }));
+    // "Vue complète" is a real, distinct tab value (not just re-clicking the
+    // focused round) -- ap-tabs only emits valueChange when the clicked
+    // value differs from the currently bound one, so toggling accordion
+    // focus back off needs its own option rather than relying on a
+    // click-to-deselect gesture on the same tab.
+    const options = [{ value: '', label: 'Vue complète' }];
+    options.push(
+      ...bracket.rounds.map((round) => ({ value: String(round.round), label: round.label })),
+    );
     if (bracket.thirdPlaceMatch) {
       options.push({ value: 'third', label: 'Pour la 3e place' });
     }
@@ -121,15 +130,15 @@ export class StandingsPage {
         void this.loadPhases();
       }
     });
-    // Keeps the round quick-jump's active option valid whenever the bracket
-    // (phase, category, reload…) changes underneath it.
+    // Clears the round quick-jump's focused round if it stops existing under
+    // it (bracket/phase/category change) -- doesn't force a round to be
+    // focused by default, unlike the old always-select-the-first-round
+    // behaviour this replaces (see selectedRoundView's own doc comment).
     effect(() => {
       const options = this.roundOptions();
-      if (
-        options.length > 0 &&
-        !options.some((option) => option.value === this.selectedRoundView())
-      ) {
-        this.selectedRoundView.set(options[0].value);
+      const current = this.selectedRoundView();
+      if (current && !options.some((option) => option.value === current)) {
+        this.selectedRoundView.set('');
       }
     });
   }
@@ -165,7 +174,7 @@ export class StandingsPage {
     this.phases.set(phases);
 
     const groupStandings = new Map<string, GroupStandings[]>();
-    for (const phase of phases.filter((p) => p.type === 'GROUP_STAGE')) {
+    for (const phase of phases.filter((p) => p.type === 'GROUP_STAGE' && !p.isSeedPhase)) {
       const perGroup = await Promise.all(
         phase.groups.map(async (group) => ({
           groupId: group.id,
@@ -209,9 +218,11 @@ export class StandingsPage {
 
   protected onRoundJump(value: string): void {
     this.selectedRoundView.set(value);
-    document
-      .getElementById(`bracket-round-${this.selectedTab()}-${value}`)
-      ?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+    if (value) {
+      document
+        .getElementById(`bracket-round-${this.selectedTab()}-${value}`)
+        ?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+    }
   }
 
   protected logoUrl(url: string | null | undefined): string | null {
