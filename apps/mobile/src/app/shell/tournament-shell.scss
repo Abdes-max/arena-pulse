@@ -57,8 +57,23 @@ ion-toolbar {
   letter-spacing: 0.08em;
 }
 
-.tournament-shell__title {
+.tournament-shell__title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
   margin: var(--ap-space-1) 0 0;
+}
+
+.tournament-shell__logo {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--ap-radius-md);
+  object-fit: cover;
+  flex: none;
+}
+
+.tournament-shell__title {
+  margin: 0;
   font-family: var(--ap-font-heading);
   font-size: 1.4rem;
   letter-spacing: var(--ap-tracking-tight);
