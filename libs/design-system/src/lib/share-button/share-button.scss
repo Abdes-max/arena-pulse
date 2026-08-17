@@ -24,8 +24,20 @@
   }
 }
 
+// Success (copied) uses the theme's own signal color, matching every other
+// confirmation state in the app. Failure uses --ap-color-error instead --
+// unlike the sports win/loss convention elsewhere (never red for a simple
+// defeat), this is a genuine UI error state, not a match result.
+.ap-share-button--copied {
+  color: var(--ap-color-signal-text);
+}
+
+.ap-share-button--failed {
+  color: var(--ap-color-error);
+}
+
 .ap-share-button__label {
   font-size: 0.75rem;
   font-weight: 600;
-  color: var(--ap-color-signal-text);
+  color: inherit;
 }

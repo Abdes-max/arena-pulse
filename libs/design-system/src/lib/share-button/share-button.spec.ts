@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ShareButton } from './share-button';
 
 const { shareMock, clipboardWriteMock } = vi.hoisted(() => ({
@@ -21,9 +21,17 @@ class HostComponent {
 }
 
 describe('ShareButton', () => {
+  beforeEach(() => {
+    // share()/copyToClipboard() deliberately console.error the raw failure
+    // for remote debugging (see the component's doc comment) -- silenced
+    // here so the expected-failure tests below don't spam the test output.
+    vi.spyOn(console, 'error').mockImplementation(() => undefined);
+  });
+
   afterEach(() => {
     shareMock.mockReset();
     clipboardWriteMock.mockReset();
+    vi.restoreAllMocks();
   });
 
   it('shares through the Capacitor plugin (native sheet on mobile, Web Share API on web)', async () => {
@@ -63,6 +71,39 @@ describe('ShareButton', () => {
     expect(button.getAttribute('aria-label')).toBe('Lien copié');
     expect(button.textContent).toContain('Copié');
   });
+
+  it('shows a visible failure state (not silence) when both sharing and the clipboard fallback fail', async () => {
+    shareMock.mockRejectedValue(new Error('Not implemented on web.'));
+    clipboardWriteMock.mockRejectedValue(new Error('Clipboard permission denied.'));
+
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.detectChanges();
+    const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+    button.click();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    fixture.detectChanges();
+
+    expect(button.getAttribute('aria-label')).toBe('Échec du partage');
+    expect(button.textContent).toContain('Échec');
+  });
+
+  it('falls back to the clipboard if the native share call never settles (hung bridge)', async () => {
+    shareMock.mockImplementation(() => new Promise(() => undefined)); // never resolves/rejects
+    clipboardWriteMock.mockResolvedValue(undefined);
+
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.detectChanges();
+    const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+    button.click();
+    // Comfortably past the component's own timeout (see SHARE_TIMEOUT_MS).
+    await new Promise((resolve) => setTimeout(resolve, 5100));
+    fixture.detectChanges();
+
+    expect(clipboardWriteMock).toHaveBeenCalledWith({
+      string: 'https://tournarena.com/coupe-du-monde-fifa-2026',
+    });
+    expect(button.getAttribute('aria-label')).toBe('Lien copié');
+  }, 10000);
 
   it('does not fall back to the clipboard when the visitor cancels the native share sheet', async () => {
     shareMock.mockRejectedValue(new Error('Share canceled'));

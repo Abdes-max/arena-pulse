@@ -1,7 +1,9 @@
 <button
   type="button"
   class="ap-share-button"
-  [attr.aria-label]="copied() ? 'Lien copié' : 'Partager'"
+  [class.ap-share-button--copied]="copied()"
+  [class.ap-share-button--failed]="failed()"
+  [attr.aria-label]="copied() ? 'Lien copié' : failed() ? 'Échec du partage' : 'Partager'"
   (click)="share()"
 >
   @if (copied()) {
@@ -9,6 +11,14 @@
       <path fill="currentColor" d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
     </svg>
     <span class="ap-share-button__label">Copié</span>
+  } @else if (failed()) {
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <path
+        fill="currentColor"
+        d="M12 2 1 21h22L12 2zm0 15a1.2 1.2 0 1 1 0 2.4 1.2 1.2 0 0 1 0-2.4zm1-3h-2v-5h2v5z"
+      />
+    </svg>
+    <span class="ap-share-button__label">Échec</span>
   } @else {
     <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
       <path

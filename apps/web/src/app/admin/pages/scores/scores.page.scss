@@ -236,6 +236,28 @@
     justify-content: space-between;
   }
 
+  // Desktop's away row has the score input *before* the team name in the
+  // DOM (see scores.page.html) so both names converge toward the "-"
+  // separator in the middle of one shared dense row. That convergence
+  // stops meaning anything once each team gets its own full-width row --
+  // visually reversing this row only (row-reverse, not a DOM change, so
+  // desktop is untouched) puts the team name back on the left and the
+  // input on the right, same reading order as the home row right above it,
+  // instead of the input floating on the far left of its own row.
+  .scores-page__match-row--away {
+    flex-direction: row-reverse;
+  }
+
+  // Desktop's "home right-aligned / away left-aligned, converging on the
+  // score in the middle" convention (see the comment above
+  // .scores-page__team--home) doesn't apply once each team has its own
+  // full-width row to itself -- both should read the same way here: team
+  // name flush left, score input flush right (the away row's flex-start
+  // already does this; home defaults to flex-end, overridden back here).
+  .scores-page__team--home {
+    justify-content: flex-start;
+  }
+
   .scores-page__score-sep {
     display: none;
   }
