@@ -295,6 +295,104 @@
             >
           </div>
         </section>
+
+        <section class="tournament-form-page__section">
+          <h2>Description</h2>
+          <textarea
+            class="tournament-form-page__textarea"
+            rows="5"
+            placeholder="Présentez votre compétition aux visiteurs du site public…"
+            [value]="descriptionDraft()"
+            (input)="onDescriptionDraftChange($event)"
+          ></textarea>
+          <ap-button type="button" variant="ghost" (click)="saveDescription()">
+            Enregistrer
+          </ap-button>
+        </section>
+
+        <section class="tournament-form-page__section">
+          <h2>Règlement</h2>
+          <textarea
+            class="tournament-form-page__textarea"
+            rows="5"
+            placeholder="Règlement de la compétition…"
+            [value]="rulesDraft()"
+            (input)="onRulesDraftChange($event)"
+          ></textarea>
+          <ap-button type="button" variant="ghost" (click)="saveRules()"> Enregistrer </ap-button>
+        </section>
+
+        <section class="tournament-form-page__section">
+          <h2>Infos pratiques</h2>
+          <textarea
+            class="tournament-form-page__textarea"
+            rows="5"
+            placeholder="Parking, restauration, accès… (les lieux sont gérés dans « Sites et terrains »)"
+            [value]="practicalInfoDraft()"
+            (input)="onPracticalInfoDraftChange($event)"
+          ></textarea>
+          <ap-button type="button" variant="ghost" (click)="savePracticalInfo()">
+            Enregistrer
+          </ap-button>
+        </section>
+
+        <section class="tournament-form-page__section">
+          <h2>Sponsors</h2>
+          @for (sponsor of sponsors(); track sponsor.id) {
+            <div class="tournament-form-page__category">
+              <div class="tournament-form-page__category-header">
+                <div class="tournament-form-page__logo-row">
+                  @if (logoUrl(sponsor.logoUrl); as logo) {
+                    <img class="tournament-form-page__logo" [src]="logo" alt="" />
+                  } @else {
+                    <span class="tournament-form-page__logo-placeholder" aria-hidden="true"></span>
+                  }
+                  <label class="tournament-form-page__logo-upload">
+                    {{ sponsor.logoUrl ? 'Changer' : 'Ajouter un logo' }}
+                    <input
+                      type="file"
+                      accept="image/png,image/jpeg,image/webp"
+                      (change)="onSponsorLogoFileSelected(sponsor, $event)"
+                    />
+                  </label>
+                  @if (sponsor.logoUrl) {
+                    <button
+                      type="button"
+                      class="tournament-form-page__logo-remove"
+                      (click)="removeSponsorLogo(sponsor)"
+                    >
+                      Retirer le logo
+                    </button>
+                  }
+                </div>
+                <ap-button type="button" variant="ghost" (click)="removeSponsor(sponsor)">
+                  Supprimer
+                </ap-button>
+              </div>
+              <strong>{{ sponsor.name }}</strong>
+              @if (sponsor.linkUrl) {
+                <p class="tournament-form-page__note">{{ sponsor.linkUrl }}</p>
+              }
+            </div>
+          }
+          <div class="tournament-form-page__inline-form">
+            <ap-text-field
+              label="Nom du sponsor"
+              [hideLabel]="true"
+              placeholder="Nom du sponsor"
+              [value]="newSponsorName()"
+              (valueChange)="onNewSponsorNameChange($event)"
+            />
+            <ap-text-field
+              label="Lien (optionnel)"
+              [hideLabel]="true"
+              placeholder="https://…"
+              [value]="newSponsorLinkUrl()"
+              (valueChange)="onNewSponsorLinkUrlChange($event)"
+            />
+            <ap-button type="button" variant="ghost" (click)="addSponsor()">Ajouter</ap-button>
+          </div>
+        </section>
       }
     </div>
 

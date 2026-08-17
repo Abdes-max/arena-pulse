@@ -8,6 +8,7 @@ import { MATCH_INCLUDE, toMatchSummary } from './match-summary.util';
 import { PhasesService } from './phases.service';
 import { RealtimeService } from './realtime.service';
 import { ScheduleGenerationService } from './schedule-generation.service';
+import { SponsorsService } from './sponsors.service';
 import { StandingsService } from './standings.service';
 import { StandingRow } from './standings.util';
 import { TeamsService } from './teams.service';
@@ -47,6 +48,7 @@ export class PublicService {
     private readonly prisma: PrismaService,
     private readonly tournamentsService: TournamentsService,
     private readonly venuesService: VenuesService,
+    private readonly sponsorsService: SponsorsService,
     private readonly categoriesService: CategoriesService,
     private readonly phasesService: PhasesService,
     private readonly teamsService: TeamsService,
@@ -63,10 +65,16 @@ export class PublicService {
 
   async getTournament(slug: string) {
     const tournament = await this.resolveTournament(slug);
-    const venues = await this.venuesService.list(
-      tournament.organizationId,
-      tournament.tournamentId,
-    );
+    const [venues, sponsors] = await Promise.all([
+      this.venuesService.list(
+        tournament.organizationId,
+        tournament.tournamentId,
+      ),
+      this.sponsorsService.list(
+        tournament.organizationId,
+        tournament.tournamentId,
+      ),
+    ]);
     return {
       id: tournament.id,
       name: tournament.name,
@@ -78,7 +86,11 @@ export class PublicService {
       isOnline: tournament.isOnline,
       theme: tournament.theme,
       logoUrl: tournament.logoUrl,
+      description: tournament.description,
+      rules: tournament.rules,
+      practicalInfo: tournament.practicalInfo,
       venues,
+      sponsors,
     };
   }
 

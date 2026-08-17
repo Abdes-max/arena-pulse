@@ -135,6 +135,20 @@
   align-items: center;
 }
 
+.tournament-form-page__textarea {
+  display: block;
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: var(--ap-space-3);
+  padding: var(--ap-space-3);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  background: var(--ap-color-surface);
+  color: var(--ap-color-fg);
+  font: inherit;
+  resize: vertical;
+}
+
 .tournament-form-page__administrator-list {
   list-style: none;
   margin: 0 0 var(--ap-space-4);

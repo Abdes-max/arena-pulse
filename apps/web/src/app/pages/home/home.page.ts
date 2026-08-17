@@ -55,6 +55,10 @@ export class HomePage {
       : { name: fallbackLabel };
   }
 
+  protected logoUrl(url: string | null): string | null {
+    return this.assetUrl.resolve(url);
+  }
+
   protected competitionLabel(match: Match): string {
     if (match.isThirdPlaceMatch) {
       return 'Pour la 3e place';

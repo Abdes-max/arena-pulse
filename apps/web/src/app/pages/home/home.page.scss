@@ -9,6 +9,15 @@
   }
 }
 
+// Organizer-authored free text (Description/Règlement/Infos pratiques) --
+// white-space: pre-line respects the line breaks they typed without needing
+// a Markdown renderer (the field itself is plain text, see schema.prisma).
+.home-page__text {
+  margin: 0 0 var(--ap-space-4);
+  color: var(--ap-color-fg);
+  white-space: pre-line;
+}
+
 .home-page__upcoming {
   display: flex;
   flex-direction: column;
@@ -78,4 +87,29 @@
   li {
     padding: var(--ap-space-1) 0;
   }
+}
+
+.home-page__sponsors {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ap-space-6);
+}
+
+.home-page__sponsor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+
+  img {
+    max-height: 100%;
+    max-width: 160px;
+    object-fit: contain;
+  }
+}
+
+.home-page__sponsor-name {
+  font-weight: 600;
+  color: var(--ap-color-fg);
 }

@@ -32,6 +32,9 @@ export interface UpdateTournamentPayload {
   isOnline?: boolean;
   teamsCanReferee?: boolean;
   theme?: PublicTheme;
+  description?: string;
+  rules?: string;
+  practicalInfo?: string;
 }
 
 // Publishing may require a Stripe payment first (feat/039, tarif calculé sur

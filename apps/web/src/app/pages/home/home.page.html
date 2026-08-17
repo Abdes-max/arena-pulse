@@ -1,4 +1,11 @@
 @if (tournament(); as t) {
+  @if (t.description) {
+    <section class="home-page__section">
+      <h2>Description</h2>
+      <p class="home-page__text">{{ t.description }}</p>
+    </section>
+  }
+
   @if (upcomingMatches().length > 0) {
     <section class="home-page__section">
       <h2>Prochains matchs</h2>
@@ -28,9 +35,19 @@
     </section>
   }
 
-  @if (t.venues.length > 0) {
+  @if (t.rules) {
+    <section class="home-page__section">
+      <h2>Règlement</h2>
+      <p class="home-page__text">{{ t.rules }}</p>
+    </section>
+  }
+
+  @if (t.venues.length > 0 || t.practicalInfo) {
     <section class="home-page__section">
       <h2>Infos pratiques</h2>
+      @if (t.practicalInfo) {
+        <p class="home-page__text">{{ t.practicalInfo }}</p>
+      }
       <div class="home-page__venues">
         @for (venue of t.venues; track venue.id) {
           <article class="home-page__venue">
@@ -60,6 +77,33 @@
               </ul>
             }
           </article>
+        }
+      </div>
+    </section>
+  }
+
+  @if (t.sponsors.length > 0) {
+    <section class="home-page__section">
+      <h2>Sponsors</h2>
+      <div class="home-page__sponsors">
+        @for (sponsor of t.sponsors; track sponsor.id) {
+          @if (sponsor.linkUrl) {
+            <a class="home-page__sponsor" [href]="sponsor.linkUrl" target="_blank" rel="noopener">
+              @if (logoUrl(sponsor.logoUrl); as logo) {
+                <img [src]="logo" [alt]="sponsor.name" />
+              } @else {
+                <span class="home-page__sponsor-name">{{ sponsor.name }}</span>
+              }
+            </a>
+          } @else {
+            <span class="home-page__sponsor">
+              @if (logoUrl(sponsor.logoUrl); as logo) {
+                <img [src]="logo" [alt]="sponsor.name" />
+              } @else {
+                <span class="home-page__sponsor-name">{{ sponsor.name }}</span>
+              }
+            </span>
+          }
         }
       </div>
     </section>

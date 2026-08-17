@@ -1,5 +1,12 @@
 @if (tournament(); as t) {
   <ion-content class="home-page">
+    @if (t.description) {
+      <section class="home-page__section">
+        <h3 class="home-page__section-title">Description</h3>
+        <p class="home-page__text">{{ t.description }}</p>
+      </section>
+    }
+
     @if (upcomingMatches().length > 0) {
       <section class="home-page__section">
         <h3 class="home-page__section-title">Prochains matchs</h3>
@@ -29,9 +36,19 @@
       </section>
     }
 
-    @if (t.venues.length > 0) {
+    @if (t.rules) {
+      <section class="home-page__section">
+        <h3 class="home-page__section-title">Règlement</h3>
+        <p class="home-page__text">{{ t.rules }}</p>
+      </section>
+    }
+
+    @if (t.venues.length > 0 || t.practicalInfo) {
       <section class="home-page__section">
         <h3 class="home-page__section-title">Infos pratiques</h3>
+        @if (t.practicalInfo) {
+          <p class="home-page__text">{{ t.practicalInfo }}</p>
+        }
         <div class="home-page__venues">
           @for (venue of t.venues; track venue.id) {
             <article class="home-page__venue">
@@ -47,6 +64,33 @@
                 </ul>
               }
             </article>
+          }
+        </div>
+      </section>
+    }
+
+    @if (t.sponsors.length > 0) {
+      <section class="home-page__section">
+        <h3 class="home-page__section-title">Sponsors</h3>
+        <div class="home-page__sponsors">
+          @for (sponsor of t.sponsors; track sponsor.id) {
+            @if (sponsor.linkUrl) {
+              <a class="home-page__sponsor" [href]="sponsor.linkUrl" target="_blank" rel="noopener">
+                @if (logoUrl(sponsor.logoUrl); as logo) {
+                  <img [src]="logo" [alt]="sponsor.name" />
+                } @else {
+                  <span class="home-page__sponsor-name">{{ sponsor.name }}</span>
+                }
+              </a>
+            } @else {
+              <span class="home-page__sponsor">
+                @if (logoUrl(sponsor.logoUrl); as logo) {
+                  <img [src]="logo" [alt]="sponsor.name" />
+                } @else {
+                  <span class="home-page__sponsor-name">{{ sponsor.name }}</span>
+                }
+              </span>
+            }
           }
         </div>
       </section>

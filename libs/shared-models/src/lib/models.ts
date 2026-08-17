@@ -35,6 +35,14 @@ export interface Venue {
   fields: Field[];
 }
 
+export interface Sponsor {
+  id: string;
+  name: string;
+  logoUrl: string | null;
+  linkUrl: string | null;
+  position: number;
+}
+
 /** One row of the public tournament directory (home page card lists) — see PublicTournament for a single tournament's full detail. */
 export interface PublicTournamentSummary {
   id: string;
@@ -61,7 +69,11 @@ export interface PublicTournament {
   isOnline: boolean;
   theme: PublicTheme;
   logoUrl: string | null;
+  description: string | null;
+  rules: string | null;
+  practicalInfo: string | null;
   venues: Venue[];
+  sponsors: Sponsor[];
 }
 
 export interface Category {

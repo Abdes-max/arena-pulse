@@ -38,6 +38,8 @@ import { ScheduleController } from './schedule.controller';
 import { ScheduleGenerationService } from './schedule-generation.service';
 import { ScoresController } from './scores.controller';
 import { ScoresService } from './scores.service';
+import { SponsorsController } from './sponsors.controller';
+import { SponsorsService } from './sponsors.service';
 import { StandingRulesController } from './standing-rules.controller';
 import { StandingRulesService } from './standing-rules.service';
 import { StandingsController } from './standings.controller';
@@ -63,6 +65,7 @@ import { VenuesService } from './venues.service';
     TeamsController,
     PlayersController,
     VenuesController,
+    SponsorsController,
     FieldsController,
     TimeSlotsController,
     RefereesController,
@@ -88,6 +91,7 @@ import { VenuesService } from './venues.service';
     TeamsService,
     PlayersService,
     VenuesService,
+    SponsorsService,
     FieldsService,
     TimeSlotsService,
     RefereesService,
