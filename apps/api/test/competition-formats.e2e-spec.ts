@@ -342,6 +342,26 @@ describe('Competition formats (e2e)', () => {
     )
       .send({ homeScore: 2, awayScore: 1 })
       .expect(200);
+
+    // Regression: a KNOCKOUT_ONLY preset's fictitious seed group isn't a
+    // real pool the team ever played -- the public team page shouldn't show
+    // a "Classement de poule" for it (PublicService.getTeam nulls out
+    // `standing` for a seed-phase group).
+    const tournamentRes2 = await auth(
+      request(app.getHttpServer()).get(`${base}/${tournamentId}`),
+    ).expect(200);
+    const slug = (tournamentRes2.body as { slug: string }).slug;
+    await auth(
+      request(app.getHttpServer()).post(`${base}/${tournamentId}/publish`),
+    ).expect(200);
+    const publicTeamsRes = await request(app.getHttpServer())
+      .get(`/api/v1/public/tournaments/${slug}/teams`)
+      .expect(200);
+    const anyTeamId = (publicTeamsRes.body as { id: string }[])[0].id;
+    const publicTeamRes = await request(app.getHttpServer())
+      .get(`/api/v1/public/tournaments/${slug}/teams/${anyTeamId}`)
+      .expect(200);
+    expect((publicTeamRes.body as { standing: unknown }).standing).toBeNull();
   });
 
   it('rejects a phase whose category belongs to another tournament', async () => {
