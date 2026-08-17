@@ -5,7 +5,11 @@ import { Button } from './button';
 
 @Component({
   imports: [Button],
-  template: `<ap-button [variant]="variant" [size]="size" [disabled]="disabled"
+  template: `<ap-button
+    [variant]="variant"
+    [size]="size"
+    [disabled]="disabled"
+    [fullWidth]="fullWidth"
     >Valider</ap-button
   >`,
 })
@@ -13,6 +17,7 @@ class HostComponent {
   variant: 'primary' | 'secondary' | 'ghost' = 'primary';
   size: 'md' | 'sm' = 'md';
   disabled = false;
+  fullWidth = false;
 }
 
 @Component({
@@ -55,6 +60,23 @@ describe('Button', () => {
 
     const host = fixture.nativeElement.querySelector('ap-button');
     expect(host.getAttribute('data-size')).toBe('sm');
+  });
+
+  it('reflects fullWidth as a host attribute for styling', () => {
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.componentInstance.fullWidth = true;
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement.querySelector('ap-button');
+    expect(host.getAttribute('data-full-width')).toBe('true');
+  });
+
+  it('does not set data-full-width when fullWidth is false', () => {
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement.querySelector('ap-button');
+    expect(host.hasAttribute('data-full-width')).toBe(false);
   });
 
   it('disables the native button when disabled is true', () => {

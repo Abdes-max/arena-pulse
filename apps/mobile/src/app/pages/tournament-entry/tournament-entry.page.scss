@@ -7,6 +7,17 @@
   color: var(--ap-color-fg);
   overflow: hidden;
 
+  // Scoped override, not a global redefinition: any ap-button rendered
+  // inside this hero (the CTA row below) picks up the vivid marketing
+  // "signal" cyan instead of the theme's own pale --ap-color-primary
+  // (#c7d2e5 in dark mode) -- keeps the hero's deliberate brand-moment
+  // color while routing through the same component/metrics (weight, size,
+  // touch target) every other button in the app uses. Custom properties
+  // cross Angular's view-encapsulation boundary, so this reaches ap-button's
+  // own template without needing ::ng-deep or an extra @Input.
+  --ap-color-primary: var(--ap-color-signal);
+  --ap-color-on-primary: var(--ap-color-on-signal);
+
   ion-toolbar {
     --background: transparent;
     --color: var(--ap-color-fg);
@@ -22,11 +33,12 @@
   gap: var(--ap-space-3);
 }
 
-.tournament-entry-page__nav-login {
+.tournament-entry-page__nav-link {
   color: var(--ap-color-fg);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 600;
   text-decoration: none;
+  white-space: nowrap;
 
   &:hover {
     color: var(--ap-color-signal);
@@ -73,37 +85,14 @@
   margin: var(--ap-space-2) 0 0;
 }
 
+// Stacked, each ap-button given [fullWidth]="true" in the template -- same
+// layout the previous ad hoc .cta/.cta-ghost classes produced.
 .tournament-entry-page__hero-ctas {
   display: flex;
   flex-direction: column;
   align-self: stretch;
   gap: var(--ap-space-3);
   margin-top: var(--ap-space-4);
-}
-
-.tournament-entry-page__cta {
-  display: block;
-  padding: var(--ap-space-3) var(--ap-space-6);
-  border-radius: var(--ap-radius-md);
-  background: var(--ap-color-signal);
-  color: var(--ap-color-on-signal);
-  font-weight: 700;
-  text-align: center;
-  text-decoration: none;
-}
-
-.tournament-entry-page__cta-ghost {
-  display: block;
-  width: 100%;
-  padding: var(--ap-space-3) var(--ap-space-6);
-  border-radius: var(--ap-radius-md);
-  border: var(--ap-border-width) solid var(--ap-color-border);
-  background: none;
-  color: var(--ap-color-fg);
-  font: inherit;
-  font-weight: 600;
-  text-align: center;
-  cursor: pointer;
 }
 
 .tournament-entry-page__marquee-label {

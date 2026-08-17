@@ -1,8 +1,23 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  computed,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { IonContent, IonHeader, IonToolbar } from '@ionic/angular/standalone';
 import { AssetUrlService, PublicApiService } from 'api-client';
-import { Logo, TextField, ThemeModeToggle, TournamentCard, TournamentMarquee } from 'design-system';
+import {
+  Button,
+  Logo,
+  TextField,
+  ThemeModeToggle,
+  TournamentCard,
+  TournamentMarquee,
+} from 'design-system';
 import { ThemeMode, ThemeService } from 'design-tokens';
 import { PublicTournamentSummary } from 'shared-models';
 import { environment } from '../../../environments/environment';
@@ -10,6 +25,7 @@ import { environment } from '../../../environments/environment';
 @Component({
   selector: 'app-tournament-entry-page',
   imports: [
+    Button,
     IonContent,
     IonHeader,
     IonToolbar,
@@ -36,12 +52,20 @@ export class TournamentEntryPage {
   // on tournament-entry-page__hero in the template).
   protected readonly mode = this.themeService.mode;
 
-  // There's no admin UI or tournament-creation flow in this app -- both
-  // buttons below just hand off to the web app, same as apps/web's landing
-  // page hero ("Créer mon tournoi"/"Voir un exemple en direct").
+  // There's no tournament-creation flow in this app itself -- the nav link
+  // below just hands off to the web app's registration flow, same as
+  // apps/web's landing page hero ("Créer mon tournoi").
   protected readonly createTournamentUrl = `${environment.webUrl}/register`;
   protected readonly loginUrl = `${environment.webUrl}/login`;
   protected readonly exampleTournament = computed(() => this.tournaments()[0] ?? null);
+  // Governs the hero's own CTA: this screen's H1 promises "Suivre une
+  // compétition", so its primary action should deliver on that (jump to
+  // the published-events list already on this same page) rather than
+  // "Créer un tournoi" -- an organizer action, and one this app can't even
+  // complete itself. That link still lives in the nav next to Connexion,
+  // just no longer competing for the hero's single most prominent button.
+  protected readonly hasTournaments = computed(() => this.tournaments().length > 0);
+  private readonly publishedSection = viewChild<ElementRef<HTMLElement>>('publishedSection');
 
   // Same pattern as apps/web's LandingPage (and team-search.page's
   // filteredTeams) -- client-side filter over a wider-than-displayed fetch.
@@ -80,5 +104,13 @@ export class TournamentEntryPage {
 
   protected goToTournament(tournament: PublicTournamentSummary): void {
     void this.router.navigate(['/', tournament.slug]);
+  }
+
+  // scrollIntoView (not a plain #anchor href) -- reliably finds the nearest
+  // scrollable ancestor regardless of ion-content's own internal scroll
+  // container, unlike native fragment navigation which targets the
+  // document's scrolling box and isn't guaranteed to reach inside it.
+  protected scrollToPublished(): void {
+    this.publishedSection()?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 }
