@@ -20,6 +20,9 @@ export class TournamentCard {
   readonly endDate = input<string | null>(null);
   readonly isOnline = input<boolean>(false);
   readonly location = input<string | null>(null);
+  // Already resolved to an absolute URL by the caller (AssetUrlService) --
+  // this component stays a dumb presenter, same as every other input here.
+  readonly logoUrl = input<string | null>(null);
 
   protected readonly locationLabel = computed(() =>
     this.isOnline() ? 'En ligne' : this.location(),

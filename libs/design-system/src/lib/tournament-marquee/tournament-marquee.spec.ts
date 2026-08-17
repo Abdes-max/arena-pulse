@@ -12,6 +12,7 @@ const ITEMS: TournamentMarqueeItem[] = [
     endDate: '2026-09-14T00:00:00.000Z',
     isOnline: false,
     location: 'Andenne, BE',
+    logoUrl: null,
   },
   {
     id: '2',
@@ -22,6 +23,7 @@ const ITEMS: TournamentMarqueeItem[] = [
     endDate: null,
     isOnline: true,
     location: null,
+    logoUrl: null,
   },
 ];
 

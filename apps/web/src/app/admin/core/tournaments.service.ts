@@ -83,6 +83,23 @@ export class TournamentsService {
     );
   }
 
+  uploadLogo(organizationId: string, tournamentId: string, file: File): Promise<TournamentDetail> {
+    const formData = new FormData();
+    formData.append('logo', file);
+    return firstValueFrom(
+      this.http.post<TournamentDetail>(
+        `${this.base(organizationId)}/${tournamentId}/logo`,
+        formData,
+      ),
+    );
+  }
+
+  removeLogo(organizationId: string, tournamentId: string): Promise<TournamentDetail> {
+    return firstValueFrom(
+      this.http.delete<TournamentDetail>(`${this.base(organizationId)}/${tournamentId}/logo`),
+    );
+  }
+
   publish(organizationId: string, tournamentId: string): Promise<PublishTournamentResult> {
     return firstValueFrom(
       this.http.post<PublishTournamentResult>(

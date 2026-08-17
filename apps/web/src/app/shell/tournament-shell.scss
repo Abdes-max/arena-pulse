@@ -30,6 +30,20 @@
   }
 }
 
+.tournament-shell__title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-3);
+}
+
+.tournament-shell__logo {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--ap-radius-md);
+  object-fit: cover;
+  flex: none;
+}
+
 // Sport name and the mode toggle share one row instead of the toggle
 // getting its own bar above -- saves a row of vertical space.
 .tournament-shell__sport-row {

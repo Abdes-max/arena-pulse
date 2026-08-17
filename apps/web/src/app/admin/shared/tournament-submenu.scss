@@ -18,6 +18,33 @@
   padding: 0 var(--ap-space-6);
 }
 
+// Same max-width/margin/padding as .tournament-submenu-row above, so the
+// logo+name line lines up with the tabs directly below it.
+.tournament-submenu__identity {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: var(--ap-space-3) var(--ap-space-6) 0;
+}
+
+.tournament-submenu__logo {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--ap-radius-sm);
+  object-fit: cover;
+  flex: none;
+}
+
+.tournament-submenu__name {
+  font-weight: 600;
+  color: var(--ap-color-fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .tournament-submenu {
   display: flex;
   flex: 1 1 auto;

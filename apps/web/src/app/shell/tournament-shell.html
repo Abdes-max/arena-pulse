@@ -23,7 +23,12 @@
         </div>
         <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
       </div>
-      <h1>{{ t.name }}</h1>
+      <div class="tournament-shell__title-row">
+        @if (logoUrl(t.logoUrl); as logo) {
+          <img class="tournament-shell__logo" [src]="logo" alt="" />
+        }
+        <h1>{{ t.name }}</h1>
+      </div>
       <p class="tournament-shell__meta">
         @if (formattedDates(); as dates) {
           <span>{{ dates }}</span>

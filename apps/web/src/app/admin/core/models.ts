@@ -132,6 +132,7 @@ export interface Tournament {
   endDate: string | null;
   isOnline: boolean;
   theme: PublicTheme;
+  logoUrl: string | null;
   createdAt: string;
 }
 

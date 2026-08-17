@@ -77,6 +77,7 @@ export class PublicService {
       endDate: tournament.endDate,
       isOnline: tournament.isOnline,
       theme: tournament.theme,
+      logoUrl: tournament.logoUrl,
       venues,
     };
   }

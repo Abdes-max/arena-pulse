@@ -16,6 +16,7 @@ import {
   RouterOutlet,
 } from '@angular/router';
 import { filter, map, startWith } from 'rxjs';
+import { AssetUrlService } from 'api-client';
 import { Button, Logo, ThemeModeToggle } from 'design-system';
 import { ThemeMode, ThemeService } from 'design-tokens';
 import { AuthService } from '../core/auth.service';
@@ -44,6 +45,7 @@ export class AppShell {
   private readonly route = inject(ActivatedRoute);
   private readonly themeService = inject(ThemeService);
   private readonly tournamentsService = inject(TournamentsService);
+  private readonly assetUrl = inject(AssetUrlService);
 
   protected readonly mode = this.themeService.mode;
   private readonly organizationId = computed(() => this.authService.organizations()[0]?.id ?? null);
@@ -54,6 +56,10 @@ export class AppShell {
   // The link only makes sense once there's something public to visit --
   // an unpublished tournament's site 404s for a visitor.
   protected readonly tournamentPublished = signal(false);
+  // Small logo+name line above the submenu tabs -- fetched alongside the
+  // theme below (null hides it, same lifecycle as tournamentSlug).
+  protected readonly tournamentName = signal<string | null>(null);
+  protected readonly tournamentLogoUrl = signal<string | null>(null);
 
   // tournamentId lives on whichever leaf route is currently active (teams,
   // referees, schedule…), not on AppShell's own route -- re-read from the
@@ -106,6 +112,8 @@ export class AppShell {
       if (!organizationId || !tournamentId) {
         this.tournamentSlug.set(null);
         this.tournamentPublished.set(false);
+        this.tournamentName.set(null);
+        this.tournamentLogoUrl.set(null);
         return;
       }
       void this.applyTournamentTheme(organizationId, tournamentId);
@@ -117,10 +125,14 @@ export class AppShell {
       const tournament = await this.tournamentsService.getTournament(organizationId, tournamentId);
       this.tournamentSlug.set(tournament.slug);
       this.tournamentPublished.set(tournament.status === 'PUBLISHED');
+      this.tournamentName.set(tournament.name);
+      this.tournamentLogoUrl.set(this.assetUrl.resolve(tournament.logoUrl));
       this.themeService.setAdminTheme(document.documentElement, THEME_MAP[tournament.theme]);
     } catch {
       this.tournamentSlug.set(null);
       this.tournamentPublished.set(false);
+      this.tournamentName.set(null);
+      this.tournamentLogoUrl.set(null);
     }
   }
 

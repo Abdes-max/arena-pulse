@@ -38,6 +38,7 @@
         <table class="tournament-list-page__table">
           <thead>
             <tr>
+              <th scope="col">Logo</th>
               <th scope="col">Nom</th>
               <th scope="col">Sport</th>
               <th scope="col">Statut</th>
@@ -47,6 +48,13 @@
           <tbody>
             @for (tournament of filteredTournaments(); track tournament.id) {
               <tr class="tournament-list-page__row">
+                <td class="tournament-list-page__cell tournament-list-page__logo-cell">
+                  @if (logoUrl(tournament.logoUrl); as logo) {
+                    <img class="tournament-list-page__logo" [src]="logo" alt="" />
+                  } @else {
+                    <span class="tournament-list-page__logo-placeholder" aria-hidden="true"></span>
+                  }
+                </td>
                 <td class="tournament-list-page__cell tournament-list-page__cell--name">
                   {{ tournament.name }}
                 </td>

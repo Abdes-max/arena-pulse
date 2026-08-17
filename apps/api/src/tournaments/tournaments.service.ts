@@ -6,6 +6,9 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { randomUUID } from 'crypto';
+import { promises as fs } from 'fs';
+import { join } from 'path';
 import type Stripe from 'stripe';
 import {
   Sport,
@@ -26,6 +29,15 @@ type TournamentWithSport = Tournament & { sport: Sport };
 type TournamentWithSportAndVenue = TournamentWithSport & {
   venues: { name: string; address: string | null }[];
 };
+
+// Extension derived from the validated mimetype, never from the client's
+// original filename -- same rationale as TeamsService's own logo upload.
+const TOURNAMENT_LOGO_ALLOWED_MIME_TYPES: Record<string, string> = {
+  'image/png': 'png',
+  'image/jpeg': 'jpg',
+  'image/webp': 'webp',
+};
+const TOURNAMENT_LOGO_MAX_SIZE_BYTES = 2 * 1024 * 1024;
 
 @Injectable()
 export class TournamentsService {
@@ -465,6 +477,97 @@ export class TournamentsService {
   }
 
   /**
+   * Stored on local disk under UPLOADS_DIR (default ./uploads), served
+   * statically by the API itself at /uploads (see main.ts) -- same layout
+   * as TeamsService.uploadLogo, just its own tournament-logos subfolder.
+   */
+  async uploadLogo(
+    organizationId: string,
+    tournamentId: string,
+    file: Express.Multer.File,
+  ) {
+    const tournament = await this.assertTournamentIsEditable(
+      organizationId,
+      tournamentId,
+    );
+
+    const logoUrl = await this.saveLogoBuffer(
+      tournamentId,
+      file.buffer,
+      file.mimetype,
+      file.size,
+    );
+    await this.deleteLogoFile(tournament.logoUrl);
+
+    const updated = await this.prisma.tournament.update({
+      where: { id: tournamentId },
+      data: { logoUrl },
+      include: { sport: true },
+    });
+    return this.toDetail(updated);
+  }
+
+  async removeLogo(organizationId: string, tournamentId: string) {
+    const tournament = await this.assertTournamentIsEditable(
+      organizationId,
+      tournamentId,
+    );
+    await this.deleteLogoFile(tournament.logoUrl);
+
+    const updated = await this.prisma.tournament.update({
+      where: { id: tournamentId },
+      data: { logoUrl: null },
+      include: { sport: true },
+    });
+    return this.toDetail(updated);
+  }
+
+  private async saveLogoBuffer(
+    tournamentId: string,
+    buffer: Buffer,
+    mimetype: string,
+    sizeBytes: number,
+  ): Promise<string> {
+    const extension = TOURNAMENT_LOGO_ALLOWED_MIME_TYPES[mimetype];
+    if (!extension) {
+      throw new BadRequestException(
+        "Format d'image non supporté (PNG, JPEG ou WebP uniquement).",
+      );
+    }
+    if (sizeBytes > TOURNAMENT_LOGO_MAX_SIZE_BYTES) {
+      throw new BadRequestException('Le logo ne doit pas dépasser 2 Mo.');
+    }
+
+    const logosDir = join(this.uploadsDir(), 'tournament-logos');
+    await fs.mkdir(logosDir, { recursive: true });
+    const filename = `${tournamentId}-${randomUUID()}.${extension}`;
+    await fs.writeFile(join(logosDir, filename), buffer);
+    return `/uploads/tournament-logos/${filename}`;
+  }
+
+  private uploadsDir(): string {
+    return this.configService.get<string>('UPLOADS_DIR', './uploads');
+  }
+
+  /** Best-effort: a file already gone (or never existing) is not an error. */
+  private async deleteLogoFile(logoUrl: string | null): Promise<void> {
+    if (!logoUrl) {
+      return;
+    }
+    const filename = logoUrl.split('/').pop();
+    if (!filename) {
+      return;
+    }
+    try {
+      await fs.unlink(join(this.uploadsDir(), 'tournament-logos', filename));
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+        throw error;
+      }
+    }
+  }
+
+  /**
    * Public directory: every PUBLISHED tournament across every organization
    * (there is no per-organizer opt-out today — publishing already makes the
    * tournament's own site reachable by anyone with the slug, this just makes
@@ -619,6 +722,7 @@ export class TournamentsService {
       endDate: tournament.endDate,
       isOnline: tournament.isOnline,
       theme: tournament.theme,
+      logoUrl: tournament.logoUrl,
       createdAt: tournament.createdAt,
     };
   }
@@ -634,6 +738,7 @@ export class TournamentsService {
       startDate: tournament.startDate,
       endDate: tournament.endDate,
       isOnline: tournament.isOnline,
+      logoUrl: tournament.logoUrl,
       location: tournament.isOnline
         ? null
         : (venue?.address ?? venue?.name ?? null),

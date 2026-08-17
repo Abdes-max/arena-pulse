@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { PublicApiService } from 'api-client';
+import { AssetUrlService, PublicApiService } from 'api-client';
 import { Logo, TextField, ThemeModeToggle, TournamentCard, TournamentMarquee } from 'design-system';
 import { ThemeMode, ThemeService } from 'design-tokens';
 import { PublicSport, PublicTournamentSummary } from 'shared-models';
@@ -43,6 +43,7 @@ export class LandingPage {
   private readonly themeService = inject(ThemeService);
   private readonly api = inject(PublicApiService);
   private readonly router = inject(Router);
+  private readonly assetUrl = inject(AssetUrlService);
   protected readonly authService = inject(AuthService);
 
   protected readonly mode = this.themeService.mode;
@@ -69,9 +70,20 @@ export class LandingPage {
     );
   });
 
+  // ap-tournament-marquee's TournamentMarqueeItem needs a resolved (absolute)
+  // logoUrl -- it's a dumb presenter, same reason ap-tournament-card gets
+  // its own [logoUrl]="logoUrl(t.logoUrl)" binding per-card below instead.
+  protected readonly marqueeTournaments = computed(() =>
+    this.tournaments().map((t) => ({ ...t, logoUrl: this.logoUrl(t.logoUrl) })),
+  );
+
   constructor() {
     void this.api.listTournaments(50).then((tournaments) => this.tournaments.set(tournaments));
     void this.api.listSports().then((sports) => this.sports.set(sports));
+  }
+
+  protected logoUrl(url: string | null): string | null {
+    return this.assetUrl.resolve(url);
   }
 
   protected onModeChange(next: ThemeMode): void {

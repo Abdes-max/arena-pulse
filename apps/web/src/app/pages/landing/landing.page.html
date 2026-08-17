@@ -164,7 +164,7 @@
         En ce moment sur TournArena
       </p>
       <ap-tournament-marquee
-        [tournaments]="tournaments()"
+        [tournaments]="marqueeTournaments()"
         (tournamentClick)="goToTournament($event)"
       />
     </div>
@@ -196,6 +196,7 @@
               [endDate]="t.endDate"
               [isOnline]="t.isOnline"
               [location]="t.location"
+              [logoUrl]="logoUrl(t.logoUrl)"
             />
           </a>
         }

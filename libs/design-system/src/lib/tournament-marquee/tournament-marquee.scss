@@ -103,6 +103,20 @@
   font-weight: 600;
 }
 
+.ap-tournament-marquee__name-row {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+}
+
+.ap-tournament-marquee__logo {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--ap-radius-sm);
+  object-fit: cover;
+  flex: none;
+}
+
 .ap-tournament-marquee__name {
   font-family: var(--ap-font-heading);
   font-size: 0.92rem;
