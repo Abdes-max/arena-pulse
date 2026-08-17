@@ -136,6 +136,11 @@
   background: var(--ap-color-surface);
   border: var(--ap-border-width) solid var(--ap-color-border);
   border-radius: var(--ap-radius-lg);
+  // Same restrained elevation scale the mission already settled on
+  // (see _base.scss's --ap-shadow-* comment) -- lifts each card a hair off
+  // the page background instead of relying on the border alone, closer to
+  // the weight of ion-tab-bar's own --ap-color-surface bar below.
+  box-shadow: var(--ap-shadow-sm);
   overflow: hidden;
 }
 
@@ -147,6 +152,14 @@
   border-bottom: var(--ap-border-width) solid var(--ap-color-border);
   color: var(--ap-color-fg);
   text-decoration: none;
+  // Same soft-tint interaction language as ion-tab-bar's selected pill
+  // (tournament-shell.scss: --background: var(--ap-color-signal-soft)) --
+  // "prendre la même base que les onglets" -- rather than a bare text-color
+  // shift on its own, so a row's active/hover state reads as the same kind
+  // of touch feedback as the rest of the app instead of a one-off.
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
 
   &:last-child {
     border-bottom: none;
@@ -157,7 +170,9 @@
     font-size: 0.92rem;
   }
 
-  &:hover {
+  &:hover,
+  &:active {
+    background: var(--ap-color-signal-soft);
     color: var(--ap-color-signal);
   }
 }
@@ -172,7 +187,17 @@
 // vividness of the porteur de projet's reference screenshot's own colored
 // icon badges, just kept to our one brand accent rather than a different
 // color per row.
-.tournament-entry-page__settings-row-icon {
+//
+// Compound selector, same reason as .settings-trailing/.settings-badge
+// below: bare `.settings-row-icon` (specificity 0,1,0) was silently losing
+// its own `flex: 0 0 auto; width: 2rem` to `.settings-row span`'s
+// `flex: 1 1 auto` (0,1,1) -- the icon span IS a span, so it inherited
+// stretch-to-fill instead of staying a fixed square, and every badge ended
+// up a different width depending on how much flex space its row's label
+// text left over (confirmed live: 69-107px wide, all at the same fixed
+// 32px height). Nesting under .settings-row fixes that the same way the
+// other two overrides already do.
+.tournament-entry-page__settings-row .tournament-entry-page__settings-row-icon {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -226,7 +251,12 @@
     color: var(--ap-color-muted);
   }
 
-  &:hover {
+  // Overrides the base row's soft-tint hover/active too, not just its
+  // color -- this row isn't actionable (see the template's comment), so it
+  // shouldn't pick up the same touch feedback as a real link/button.
+  &:hover,
+  &:active {
+    background: none;
     color: var(--ap-color-muted);
   }
 }
