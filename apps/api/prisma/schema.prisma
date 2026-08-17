@@ -222,6 +222,13 @@ model Tournament {
   // Public path served by the API (e.g. /uploads/tournament-logos/<file>) --
   // see TournamentsService.uploadLogo. Null until an organizer uploads one.
   logoUrl         String?
+  // Free-text content shown on the tournament's public "Tournoi" page --
+  // null until the organizer fills them in. Markdown-free plain text on
+  // purpose (rendered with white-space: pre-line), same as every other
+  // organizer-authored text field in this schema.
+  description     String?
+  rules           String?
+  practicalInfo   String?
   archivedAt      DateTime?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
@@ -235,9 +242,28 @@ model Tournament {
   referees          Referee[]
   registrations     Registration[]
   publicationOrders TournamentPublicationOrder[]
+  sponsors          TournamentSponsor[]
 
   @@index([organizationId])
   @@index([sportId])
+}
+
+model TournamentSponsor {
+  id           String   @id @default(uuid())
+  tournamentId String
+  name         String
+  // Public path served by the API (e.g. /uploads/sponsor-logos/<file>) --
+  // same upload pattern as Tournament.logoUrl/Team.logoUrl. Null until the
+  // organizer uploads one (a sponsor can exist name-only in the meantime).
+  logoUrl      String?
+  linkUrl      String?
+  position     Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+
+  @@index([tournamentId])
 }
 
 model Category {

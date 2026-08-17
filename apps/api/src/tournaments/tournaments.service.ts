@@ -115,6 +115,9 @@ export class TournamentsService {
         isOnline: dto.isOnline,
         teamsCanReferee: dto.teamsCanReferee,
         theme: dto.theme,
+        description: dto.description,
+        rules: dto.rules,
+        practicalInfo: dto.practicalInfo,
       },
       include: { sport: true },
     });
@@ -608,6 +611,13 @@ export class TournamentsService {
       organizationId: tournament.organizationId,
       tournamentId: tournament.id,
       ...this.toSummary(tournament),
+      // Not on toSummary() itself -- that would also load onto every row of
+      // the admin's own tournament list (list() above uses toSummary too),
+      // wasteful for a list view. This is the only public endpoint
+      // (PublicService.getTournament) that needs the full text.
+      description: tournament.description,
+      rules: tournament.rules,
+      practicalInfo: tournament.practicalInfo,
     };
   }
 
@@ -752,6 +762,9 @@ export class TournamentsService {
       archivedAt: tournament.archivedAt,
       updatedAt: tournament.updatedAt,
       teamsCanReferee: tournament.teamsCanReferee,
+      description: tournament.description,
+      rules: tournament.rules,
+      practicalInfo: tournament.practicalInfo,
     };
   }
 }
