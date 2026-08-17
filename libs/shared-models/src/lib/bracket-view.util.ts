@@ -1,9 +1,14 @@
 import { Match } from './models';
-import { roundLabelPlural } from './round-label.util';
+import { roundLabel, roundLabelPlural } from './round-label.util';
 
 export interface BracketRound {
   round: number;
   label: string;
+  // Singular form ("Quart de finale", not "Quarts de finale") -- used as the
+  // base for each match's own per-card header (e.g. "Quart de finale 1"),
+  // unlike `label` which names the round as a whole (a bracket column/tab
+  // title, or the round-pager's current-round heading).
+  singularLabel: string;
   matches: Match[];
 }
 
@@ -29,6 +34,7 @@ export function buildBracketView(matches: Match[], totalRounds: number): Bracket
     .map(([round, roundMatches]) => ({
       round,
       label: roundLabelPlural(totalRounds - round),
+      singularLabel: roundLabel(totalRounds - round),
       matches: roundMatches.sort((a, b) => (a.bracketSlot ?? 0) - (b.bracketSlot ?? 0)),
     }));
   return { rounds, thirdPlaceMatch };

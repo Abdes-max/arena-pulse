@@ -7,7 +7,14 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { Badge, BracketMatch, Tabs } from 'design-system';
+import {
+  Badge,
+  BracketMatch,
+  MatchCard,
+  MatchCardTeam,
+  MatchCardVariant,
+  Tabs,
+} from 'design-system';
 import { AssetUrlService, PublicApiService } from 'api-client';
 import { TournamentContextService } from '../../core/tournament-context.service';
 import {
@@ -15,6 +22,7 @@ import {
   Category,
   CompetitionPhase,
   FinalRankingRow,
+  Match,
   Qualification,
   QualificationTierColor,
   Standings,
@@ -36,12 +44,23 @@ interface QualificationTier {
   soft: string;
 }
 
+interface BracketPageCard {
+  match: Match;
+  cardLabel: string;
+}
+
+/** One round-pager "screen" for a bracket -- a round's matches, laid out full-width and stacked. */
+interface BracketPage {
+  label: string;
+  cards: BracketPageCard[];
+}
+
 /** Row height (px) used to size the bracket tree so every round column shares the same total height. */
 const BRACKET_ROW_HEIGHT = 96;
 
 @Component({
   selector: 'app-standings-page',
-  imports: [Badge, BracketMatch, DecimalPipe, Tabs],
+  imports: [Badge, BracketMatch, MatchCard, DecimalPipe, Tabs],
   templateUrl: './standings.page.html',
   styleUrl: './standings.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -60,6 +79,12 @@ export class StandingsPage {
   protected readonly groupStandingsByPhase = signal<Map<string, GroupStandings[]>>(new Map());
   protected readonly bracketByPhase = signal<Map<string, BracketView>>(new Map());
   protected readonly finalRanking = signal<FinalRankingRow[]>([]);
+
+  // Round-pager position for the mobile-width bracket view below (one per
+  // bracket phase) -- mirrors apps/mobile's own standings.page, kept
+  // separate from selectedRoundView above which only drives the desktop
+  // connected-tree's accordion focus.
+  protected readonly pageIndexByPhase = signal<Record<string, number>>({});
 
   protected readonly groupStagePhases = computed(() =>
     this.phases().filter((phase) => phase.type === 'GROUP_STAGE' && !phase.isSeedPhase),
@@ -195,6 +220,7 @@ export class StandingsPage {
       bracketByPhase.set(phase.id, buildBracketView(matches, totalRounds));
     }
     this.bracketByPhase.set(bracketByPhase);
+    this.pageIndexByPhase.set({});
 
     if (knockoutPhases.length > 0) {
       const allBracketMatches = await Promise.all(
@@ -255,6 +281,63 @@ export class StandingsPage {
   protected bracketHeight(bracket: BracketView): number {
     const firstRoundCount = bracket.rounds[0]?.matches.length ?? 1;
     return firstRoundCount * BRACKET_ROW_HEIGHT;
+  }
+
+  // --- Mobile-width bracket view: one round per "page", stacked full-width
+  // ap-match-card's instead of the desktop's connected tree (too dense once
+  // columns start getting squeezed under ~768px). Mirrors
+  // apps/mobile's own standings.page implementation of the same idea.
+
+  // One "page" per round -- the third-place match rides along on the last
+  // page (final and petite finale share one screen) rather than getting a
+  // page of its own.
+  protected pagesFor(bracket: BracketView): BracketPage[] {
+    const pages = bracket.rounds.map((round) => ({
+      label: round.label,
+      cards: round.matches.map((match, index) => ({
+        match,
+        // Only number cards when a round actually has more than one match
+        // ("Quart de finale 1/2/3/4") -- a lone final doesn't need "Finale 1".
+        cardLabel:
+          round.matches.length > 1 ? `${round.singularLabel} ${index + 1}` : round.singularLabel,
+      })),
+    }));
+    if (bracket.thirdPlaceMatch && pages.length > 0) {
+      pages[pages.length - 1].cards.push({
+        match: bracket.thirdPlaceMatch,
+        cardLabel: 'Pour la 3e place',
+      });
+    }
+    return pages;
+  }
+
+  protected currentPageIndex(phaseId: string): number {
+    return this.pageIndexByPhase()[phaseId] ?? 0;
+  }
+
+  protected goToPage(phaseId: string, delta: number, pageCount: number): void {
+    const next = Math.min(Math.max(this.currentPageIndex(phaseId) + delta, 0), pageCount - 1);
+    this.pageIndexByPhase.update((map) => ({ ...map, [phaseId]: next }));
+  }
+
+  protected variantFor(match: Match): MatchCardVariant {
+    if (match.status === 'LIVE') {
+      return 'live';
+    }
+    return match.score ? 'result' : 'upcoming';
+  }
+
+  protected formatKickoff(startTime: string): string {
+    return new Date(startTime).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' });
+  }
+
+  protected teamCardInput(
+    team: { name: string; logoUrl: string | null } | null,
+    fallbackLabel: string | null,
+  ): MatchCardTeam {
+    return team
+      ? { name: team.name, logoUrl: this.assetUrl.resolve(team.logoUrl) }
+      : { name: fallbackLabel ?? '?' };
   }
 
   protected readonly podium = computed(() => {

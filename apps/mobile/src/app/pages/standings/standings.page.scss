@@ -125,161 +125,83 @@
   font-weight: 700;
 }
 
-// --- Tableau à élimination : arbre connecté ---
-// Repose sur la propriété de `justify-content: space-around` : dans une
-// colonne de M créneaux répartis sur une hauteur H, le centre du créneau i
-// est exactement le milieu des deux créneaux "parents" (2i et 2i+1) du tour
-// précédent, dès lors que toutes les colonnes partagent la même hauteur H
-// (fixée depuis le composant via [style.height.px]). Les connecteurs n'ont
-// donc besoin d'aucune valeur calculée par créneau, seulement de CSS. Mirrors
-// apps/web's public standings.page.scss bracket treatment.
-.standings-page__bracket {
-  --bracket-gap: 32px;
+// --- Tableau à élimination : pager par tour ---
+// Chaque bracket (phase KNOCKOUT) est une section indépendante, empilée
+// verticalement, affichant un seul tour à la fois en pleine largeur --
+// remplace l'ancien arbre connecté (trop dense en mobile) par un "carrousel"
+// paginé au ◁/▷, avec un aperçu tronqué du tour suivant qui dépasse du bord
+// droit pour signaler qu'il y a une suite (cf. apps/web's même traitement
+// pour son propre point de rupture mobile).
+.standings-page__bracket-section {
+  margin-bottom: var(--ap-space-6);
+}
+
+.standings-page__bracket-title {
+  margin: 0 var(--ap-space-4) var(--ap-space-2);
+  font-family: var(--ap-font-heading);
+  font-size: 1rem;
+  color: var(--ap-color-fg);
+}
+
+.standings-page__pager-header {
   display: flex;
-  align-items: stretch;
-  overflow-x: auto;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ap-space-3);
   padding: 0 var(--ap-space-4) var(--ap-space-3);
 }
 
-.standings-page__bracket-round {
-  display: flex;
-  flex-direction: column;
+.standings-page__pager-nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
   flex: none;
-  width: 180px;
+  border-radius: var(--ap-radius-md);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  background: var(--ap-color-surface);
+  color: var(--ap-color-fg);
+  font-size: 1.1rem;
+  line-height: 1;
 
-  & + & {
-    margin-left: var(--bracket-gap);
-  }
-
-  h3 {
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--ap-color-muted);
-    margin: 0 0 var(--ap-space-3);
+  &:disabled {
+    opacity: 0.35;
   }
 }
 
-.standings-page__bracket-round-matches {
-  flex: 1;
+.standings-page__pager-label {
+  min-width: 140px;
+  text-align: center;
+  font-family: var(--ap-font-heading);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ap-color-muted);
+}
+
+.standings-page__pager-viewport {
+  overflow: hidden;
+  padding: 0 0 var(--ap-space-2) var(--ap-space-4);
+}
+
+// The transform formula shifts by exactly one page's footprint (its width
+// plus the track gap) per step, so page i always lands flush against the
+// viewport's left edge while page i+1's first card peeks in from the right.
+.standings-page__pager-track {
+  --peek: 44px;
+  --gap: var(--ap-space-3);
+  display: flex;
+  gap: var(--gap);
+  transition: transform 0.25s ease;
+  transform: translateX(calc(-1 * var(--i, 0) * (100% - var(--peek) + var(--gap))));
+}
+
+.standings-page__pager-page {
+  flex: 0 0 calc(100% - var(--peek));
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
-}
-
-.standings-page__bracket-slot {
-  position: relative;
-}
-
-// Connecteur sortant : du bord droit de la carte vers le point de fusion
-// avec son partenaire de paire — un demi-coin par créneau (haut pour le
-// premier de la paire, bas pour le second), qui se rejoignent exactement
-// au milieu grâce à la symétrie de `space-around`.
-.standings-page__bracket-round:not(:last-child) .standings-page__bracket-slot::after {
-  content: '';
-  position: absolute;
-  right: calc(var(--bracket-gap) / -2);
-  width: calc(var(--bracket-gap) / 2);
-  height: 50%;
-  border-right: var(--ap-border-width) solid var(--ap-color-border);
-}
-
-.standings-page__bracket-round:not(:last-child)
-  .standings-page__bracket-slot:nth-child(odd)::after {
-  top: 50%;
-  border-top: var(--ap-border-width) solid var(--ap-color-border);
-}
-
-.standings-page__bracket-round:not(:last-child)
-  .standings-page__bracket-slot:nth-child(even)::after {
-  top: 0;
-  border-bottom: var(--ap-border-width) solid var(--ap-color-border);
-}
-
-// Connecteur entrant : du point de fusion (déjà tracé côté sortant) jusqu'au
-// bord gauche de la carte du tour suivant.
-.standings-page__bracket-round:not(:first-child) .standings-page__bracket-slot::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: calc(var(--bracket-gap) / -2);
-  width: calc(var(--bracket-gap) / 2);
-  border-top: var(--ap-border-width) solid var(--ap-color-border);
-}
-
-// Positionné sous la finale (dernière colonne, donc déjà la plus à droite
-// de l'arbre) plutôt qu'en pleine largeur -- juste décalé vers le bas, sans
-// cadre autour du titre.
-.standings-page__third-place {
-  width: 180px;
-  margin: var(--ap-space-3) var(--ap-space-4) 0 auto;
-  transition:
-    width 0.2s ease,
-    opacity 0.2s ease;
-
-  h3 {
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--ap-color-muted);
-    margin: 0 0 var(--ap-space-2);
-  }
-}
-
-// --- Mode accordéon : mirrors apps/web's public standings.page.scss --
-// tapping a round in the segment above collapses every other round to a
-// thin strip and lets the tapped one's matches sit close together instead
-// of stretched across the tree's full shared height. Connectors are
-// meaningless in this state (their geometry depends on `space-around` over
-// a shared height), so they're hidden while a round is focused.
-.standings-page__bracket--focus-mode {
-  align-items: flex-start;
-
-  .standings-page__bracket-slot::before,
-  .standings-page__bracket-slot::after {
-    display: none;
-  }
-}
-
-.standings-page__bracket-round--focused {
-  width: 220px;
-
-  .standings-page__bracket-round-matches {
-    justify-content: flex-start;
-    gap: var(--ap-space-3);
-  }
-}
-
-.standings-page__bracket-round--collapsed {
-  width: 24px;
-  overflow: hidden;
-  opacity: 0.5;
-  transition:
-    width 0.2s ease,
-    opacity 0.2s ease;
-
-  h3 {
-    writing-mode: vertical-rl;
-    margin: 0;
-  }
-
-  .standings-page__bracket-round-matches {
-    display: none;
-  }
-}
-
-.standings-page__third-place--focused {
-  width: 220px;
-}
-
-.standings-page__third-place--collapsed {
-  width: 24px;
-  opacity: 0.5;
-  overflow: hidden;
-
-  ap-bracket-match {
-    display: none;
-  }
+  gap: var(--ap-space-3);
 }
 
 // Fluid width (flex + max-width), not a fixed px per step -- three

@@ -184,6 +184,90 @@
   color: var(--ap-color-muted);
 }
 
+// --- Bascule desktop/mobile : deux implémentations parallèles du tableau à
+// élimination, une seule visible à la fois selon la largeur d'écran plutôt
+// qu'un composant unique qui se reconfigurerait -- l'arbre connecté (espacé
+// par colonnes) et le pager par tour (une carte pleine largeur à la fois)
+// n'ont ni la même géométrie ni le même état, les mélanger dans un seul
+// template aurait été plus fragile que de les garder distincts.
+.standings-page__bracket-mobile {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .standings-page__bracket-desktop {
+    display: none;
+  }
+
+  .standings-page__bracket-mobile {
+    display: block;
+  }
+}
+
+// --- Tableau à élimination (mobile) : pager par tour ---
+// Un tour à la fois, en pleine largeur, avec un aperçu tronqué du tour
+// suivant qui dépasse du bord droit pour signaler qu'il y a une suite --
+// mirrors apps/mobile's own standings.page.scss treatment of the same idea.
+.standings-page__pager-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ap-space-3);
+  padding-bottom: var(--ap-space-3);
+}
+
+.standings-page__pager-nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex: none;
+  border-radius: var(--ap-radius-md);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  background: var(--ap-color-surface);
+  color: var(--ap-color-fg);
+  font-size: 1.1rem;
+  line-height: 1;
+
+  &:disabled {
+    opacity: 0.35;
+  }
+}
+
+.standings-page__pager-label {
+  min-width: 140px;
+  text-align: center;
+  font-family: var(--ap-font-heading);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ap-color-muted);
+}
+
+.standings-page__pager-viewport {
+  overflow: hidden;
+}
+
+// The transform formula shifts by exactly one page's footprint (its width
+// plus the track gap) per step, so page i always lands flush against the
+// viewport's left edge while page i+1's first card peeks in from the right.
+.standings-page__pager-track {
+  --peek: 44px;
+  --gap: var(--ap-space-3);
+  display: flex;
+  gap: var(--gap);
+  transition: transform 0.25s ease;
+  transform: translateX(calc(-1 * var(--i, 0) * (100% - var(--peek) + var(--gap))));
+}
+
+.standings-page__pager-page {
+  flex: 0 0 calc(100% - var(--peek));
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-3);
+}
+
 // --- Tableau à élimination : arbre connecté ---
 // Repose sur la propriété de `justify-content: space-around` : dans une
 // colonne de M créneaux répartis sur une hauteur H, le centre du créneau i

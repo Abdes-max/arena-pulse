@@ -16,12 +16,13 @@ import {
   IonSegment,
   IonSegmentButton,
 } from '@ionic/angular/standalone';
-import { Badge, BracketMatch } from 'design-system';
+import { Badge, MatchCard, MatchCardTeam, MatchCardVariant } from 'design-system';
 import {
   BracketView,
   Category,
   CompetitionPhase,
   FinalRankingRow,
+  Match,
   Qualification,
   QualificationTierColor,
   Standings,
@@ -45,6 +46,17 @@ interface QualificationTier {
   soft: string;
 }
 
+interface BracketPageCard {
+  match: Match;
+  cardLabel: string;
+}
+
+/** One round-pager "screen" for a bracket -- a round's matches, laid out full-width and stacked. */
+interface BracketPage {
+  label: string;
+  cards: BracketPageCard[];
+}
+
 type StandingsTab = 'pools' | 'final' | 'ranking';
 
 // localStorage (OfflineCacheService) round-trips through JSON.stringify --
@@ -57,9 +69,6 @@ interface CachedStandingsSnapshot {
   finalRanking: FinalRankingRow[];
 }
 
-/** Row height (px) used to size the bracket tree so every round column shares the same total height. */
-const BRACKET_ROW_HEIGHT = 96;
-
 @Component({
   selector: 'app-standings-page',
   imports: [
@@ -70,7 +79,7 @@ const BRACKET_ROW_HEIGHT = 96;
     IonItem,
     IonLabel,
     Badge,
-    BracketMatch,
+    MatchCard,
     IonButton,
   ],
   templateUrl: './standings.page.html',
@@ -94,8 +103,13 @@ export class StandingsPage {
   protected readonly phases = signal<CompetitionPhase[]>([]);
   protected readonly groupStandings = signal<GroupStandings[]>([]);
   protected readonly bracketByPhase = signal<Map<string, BracketView>>(new Map());
-  protected readonly selectedBracketPhaseId = signal('');
   protected readonly finalRanking = signal<FinalRankingRow[]>([]);
+
+  // Round-pager position, one per bracket phase (a category can have several
+  // knockout brackets, e.g. "Coupe Or"/"Coupe Argent", each paged
+  // independently) -- keyed by phase id rather than a single signal so
+  // paging one bracket never resets another's.
+  protected readonly pageIndexByPhase = signal<Record<string, number>>({});
 
   protected readonly hasGroupStagePhase = computed(() => this.groupStandings().length > 0);
 
@@ -109,10 +123,6 @@ export class StandingsPage {
   protected readonly hasNoTabsYet = computed(
     () => !this.hasGroupStagePhase() && !this.hasFinalPhase(),
   );
-  protected readonly bracketPhaseOptions = computed(() =>
-    this.knockoutPhases().map((phase) => ({ value: phase.id, label: phase.name })),
-  );
-
   // Every KNOCKOUT phase in this category, in tournament order -- used to
   // color-code and label the "Qualifié" badge once a pool's teams can be
   // routed to more than one tier (e.g. 1-2 -> LDC, 3-4 -> EP, 5 -> CF).
@@ -133,36 +143,6 @@ export class StandingsPage {
     });
     return map;
   });
-  protected readonly selectedBracket = computed(() =>
-    this.bracketByPhase().get(this.selectedBracketPhaseId()),
-  );
-
-  // Quick-jump row above the connected bracket tree, and also this bracket's
-  // "accordion" focus state: tapping a round both scrolls it into view and
-  // collapses every other round to a thin strip, letting the focused
-  // round's own matches sit close together instead of stretched across the
-  // tree's full shared height -- mirrors apps/web's public standings page.
-  // Empty string means no round focused (the full connected tree).
-  protected readonly selectedRoundValue = signal('');
-  protected readonly roundOptions = computed(() => {
-    const bracket = this.selectedBracket();
-    if (!bracket) {
-      return [];
-    }
-    // "Vue complète" is a real, distinct option value -- tapping the
-    // already-focused round again wouldn't re-emit anything (segment
-    // buttons only fire ionChange on an actual value change), so toggling
-    // focus back off needs its own option.
-    const options = [{ value: '', label: 'Vue complète' }];
-    options.push(
-      ...bracket.rounds.map((round) => ({ value: String(round.round), label: round.label })),
-    );
-    if (bracket.thirdPlaceMatch) {
-      options.push({ value: 'third', label: 'Pour la 3e place' });
-    }
-    return options;
-  });
-
   protected readonly podium = computed(() => {
     const ranking = this.finalRanking();
     if (ranking.length < 3) {
@@ -181,17 +161,6 @@ export class StandingsPage {
     effect(() => {
       if (this.context.lastMatchEvent()) {
         void this.loadStandings();
-      }
-    });
-    // Clears the focused round if it stops existing under it (bracket,
-    // phase, category change) -- doesn't force a round to be focused by
-    // default, unlike the old always-select-the-first-round behaviour this
-    // replaces (see selectedRoundValue's own doc comment).
-    effect(() => {
-      const options = this.roundOptions();
-      const current = this.selectedRoundValue();
-      if (current && !options.some((option) => option.value === current)) {
-        this.selectedRoundValue.set('');
       }
     });
   }
@@ -243,22 +212,59 @@ export class StandingsPage {
     this.activeTab.set(this.hasGroupStagePhase() ? 'pools' : 'final');
   }
 
-  protected onBracketPhaseChange(phaseId: string): void {
-    this.selectedBracketPhaseId.set(phaseId);
-  }
-
-  protected onRoundChange(value: string): void {
-    this.selectedRoundValue.set(value);
-    if (value) {
-      document
-        .getElementById(`bracket-round-${this.selectedBracketPhaseId()}-${value}`)
-        ?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+  // One "page" per round -- the third-place match rides along on the last
+  // page (same as the reference layout: final and petite finale share one
+  // screen) rather than getting a page of its own.
+  protected pagesFor(bracket: BracketView): BracketPage[] {
+    const pages = bracket.rounds.map((round) => ({
+      label: round.label,
+      cards: round.matches.map((match, index) => ({
+        match,
+        // Only number cards when a round actually has more than one match
+        // ("Quart de finale 1/2/3/4") -- a lone final doesn't need "Finale 1".
+        cardLabel:
+          round.matches.length > 1 ? `${round.singularLabel} ${index + 1}` : round.singularLabel,
+      })),
+    }));
+    if (bracket.thirdPlaceMatch && pages.length > 0) {
+      pages[pages.length - 1].cards.push({
+        match: bracket.thirdPlaceMatch,
+        cardLabel: 'Pour la 3e place',
+      });
     }
+    return pages;
   }
 
-  protected bracketHeight(bracket: BracketView): number {
-    const firstRoundCount = bracket.rounds[0]?.matches.length ?? 1;
-    return firstRoundCount * BRACKET_ROW_HEIGHT;
+  protected currentPageIndex(phaseId: string): number {
+    return this.pageIndexByPhase()[phaseId] ?? 0;
+  }
+
+  protected goToPage(phaseId: string, delta: number, pageCount: number): void {
+    const next = Math.min(Math.max(this.currentPageIndex(phaseId) + delta, 0), pageCount - 1);
+    this.pageIndexByPhase.update((map) => ({ ...map, [phaseId]: next }));
+  }
+
+  // ap-match-card is the shared design-system component web already uses
+  // (card box, background, badge) -- mirrors schedule.page.ts's own helpers
+  // of the same name.
+  protected variantFor(match: Match): MatchCardVariant {
+    if (match.status === 'LIVE') {
+      return 'live';
+    }
+    return match.score ? 'result' : 'upcoming';
+  }
+
+  protected formatKickoff(startTime: string): string {
+    return new Date(startTime).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' });
+  }
+
+  protected teamCardInput(
+    team: { name: string; logoUrl: string | null } | null,
+    fallbackLabel: string | null,
+  ): MatchCardTeam {
+    return team
+      ? { name: team.name, logoUrl: this.assetUrl.resolve(team.logoUrl) }
+      : { name: fallbackLabel ?? '?' };
   }
 
   // ion-segment's ionChange event types its value as SegmentValue (string |
@@ -316,7 +322,7 @@ export class StandingsPage {
       this.phases.set(phases);
       this.groupStandings.set(groupStandings);
       this.bracketByPhase.set(bracketByPhase);
-      this.selectedBracketPhaseId.set(knockoutPhases[0]?.id ?? '');
+      this.pageIndexByPhase.set({});
       this.finalRanking.set(finalRanking);
       this.cachedAt.set(null);
       this.cache.set(cacheKey, {
@@ -331,7 +337,7 @@ export class StandingsPage {
         this.phases.set(cached.data.phases);
         this.groupStandings.set(cached.data.groupStandings);
         this.bracketByPhase.set(new Map(cached.data.bracketByPhaseEntries));
-        this.selectedBracketPhaseId.set(cached.data.bracketByPhaseEntries[0]?.[0] ?? '');
+        this.pageIndexByPhase.set({});
         this.finalRanking.set(cached.data.finalRanking);
         this.cachedAt.set(cached.cachedAt);
       } else if (!cached) {
