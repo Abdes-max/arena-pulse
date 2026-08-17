@@ -5,6 +5,7 @@ import { AssetUrlService, PublicApiService } from 'api-client';
 import {
   Button,
   Logo,
+  ShareButton,
   TextField,
   ThemeModeToggle,
   TournamentCard,
@@ -22,6 +23,7 @@ import { environment } from '../../../environments/environment';
     IonHeader,
     IonToolbar,
     Logo,
+    ShareButton,
     TextField,
     ThemeModeToggle,
     TournamentCard,
@@ -44,13 +46,24 @@ export class TournamentEntryPage {
   // on tournament-entry-page__hero in the template).
   protected readonly mode = this.themeService.mode;
 
-  // There's no tournament-creation flow in this app itself -- the nav link
-  // below just hands off to the web app's registration flow, same as
-  // apps/web's landing page hero ("Créer mon tournoi").
+  // There's no tournament-creation flow in this app itself -- these all just
+  // hand off to the web app, same as apps/web's landing page hero ("Créer
+  // mon tournoi"). Moved out of the toolbar into the Paramètres panel below
+  // (grouped with the rest of the app's external/legal links) so the
+  // toolbar itself stays down to just the logo, the settings button and the
+  // theme toggle.
   protected readonly createTournamentUrl = `${environment.webUrl}/register`;
   protected readonly loginUrl = `${environment.webUrl}/login`;
+  protected readonly contactUrl = `${environment.webUrl}/contact`;
+  protected readonly pricingUrl = `${environment.webUrl}/#tarifs`;
   protected readonly privacyUrl = `${environment.webUrl}/privacy`;
   protected readonly termsUrl = `${environment.webUrl}/terms`;
+  // Placeholder, same convention as apps/web's landing.page store badges
+  // (href="#") -- TournArena isn't listed on the App Store yet (TestFlight
+  // only), so there's no real review page to link to until it ships.
+  protected readonly rateUrl = '#';
+  protected readonly appUrl = environment.webUrl;
+  protected readonly shareText = 'Découvrez TournArena, l’app pour suivre vos compétitions.';
   protected readonly exampleTournament = computed(() => this.tournaments()[0] ?? null);
   // Governs the hero's own CTA: this screen's H1 promises "Suivre une
   // compétition", so its primary action should deliver on that (jump to
