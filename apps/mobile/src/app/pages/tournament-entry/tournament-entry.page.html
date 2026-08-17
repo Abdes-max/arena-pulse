@@ -12,22 +12,39 @@
        rather than relying on ion-header's own top padding untested here. -->
   <ion-toolbar>
     <ap-logo slot="start" />
-    <ap-theme-mode-toggle slot="end" [mode]="mode()" (modeChange)="onModeChange($event)" />
+    <div class="tournament-entry-page__nav-actions" slot="end">
+      <a class="tournament-entry-page__nav-login" [href]="loginUrl" target="_blank" rel="noopener">
+        Connexion
+      </a>
+      <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
+    </div>
   </ion-toolbar>
 
   <div class="tournament-entry-page__hero-body">
     <h1 class="tournament-entry-page__title">Suivre une compétition</h1>
-    <p class="tournament-entry-page__hint">Entrez l'identifiant fourni par l'organisateur.</p>
+    <p class="tournament-entry-page__hint">
+      Poules, tableaux à élimination, calendrier et classements en direct.
+    </p>
 
-    <ap-text-field
-      label="Identifiant de la compétition"
-      placeholder="ex. coupe-de-printemps-2026"
-      [value]="slug()"
-      (valueChange)="onSlugChange($event)"
-    />
-    <ion-button expand="block" class="tournament-entry-page__cta" (click)="go()">
-      Voir la compétition
-    </ion-button>
+    <div class="tournament-entry-page__hero-ctas">
+      <a
+        class="tournament-entry-page__cta"
+        [href]="createTournamentUrl"
+        target="_blank"
+        rel="noopener"
+      >
+        Créer un tournoi
+      </a>
+      @if (exampleTournament(); as example) {
+        <button
+          type="button"
+          class="tournament-entry-page__cta-ghost"
+          (click)="goToTournament(example)"
+        >
+          Voir un exemple
+        </button>
+      }
+    </div>
 
     @if (tournaments().length > 0) {
       <p class="tournament-entry-page__marquee-label">

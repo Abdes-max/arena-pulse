@@ -16,6 +16,23 @@
   }
 }
 
+.tournament-entry-page__nav-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-3);
+}
+
+.tournament-entry-page__nav-login {
+  color: var(--ap-color-fg);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover {
+    color: var(--ap-color-signal);
+  }
+}
+
 // Narrower than web's equivalent glow -- at web's proportions this read as
 // one dominant blob rather than an ambient wash on a narrow phone screen.
 .tournament-entry-page__hero::before {
@@ -38,12 +55,6 @@
   align-items: center;
   text-align: center;
   padding: 0 var(--ap-space-6) var(--ap-space-8);
-
-  ap-text-field {
-    display: block;
-    align-self: stretch;
-    margin-top: var(--ap-space-4);
-  }
 }
 
 .tournament-entry-page__title {
@@ -62,13 +73,37 @@
   margin: var(--ap-space-2) 0 0;
 }
 
-.tournament-entry-page__cta {
+.tournament-entry-page__hero-ctas {
+  display: flex;
+  flex-direction: column;
   align-self: stretch;
+  gap: var(--ap-space-3);
   margin-top: var(--ap-space-4);
-  --background: var(--ap-color-signal);
-  --color: var(--ap-color-on-signal);
-  --background-activated: var(--ap-color-signal);
-  --box-shadow: none;
+}
+
+.tournament-entry-page__cta {
+  display: block;
+  padding: var(--ap-space-3) var(--ap-space-6);
+  border-radius: var(--ap-radius-md);
+  background: var(--ap-color-signal);
+  color: var(--ap-color-on-signal);
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+}
+
+.tournament-entry-page__cta-ghost {
+  display: block;
+  width: 100%;
+  padding: var(--ap-space-3) var(--ap-space-6);
+  border-radius: var(--ap-radius-md);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  background: none;
+  color: var(--ap-color-fg);
+  font: inherit;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
 }
 
 .tournament-entry-page__marquee-label {
