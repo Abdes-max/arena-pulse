@@ -30,9 +30,11 @@ describe('buildBracketView', () => {
 
     const view = buildBracketView(matches, 2);
 
-    expect(view.rounds.map((r) => [r.round, r.label, r.matches.map((m) => m.id)])).toEqual([
-      [1, 'Demi-finales', ['sf1', 'sf2']],
-      [2, 'Finale', ['final']],
+    expect(
+      view.rounds.map((r) => [r.round, r.label, r.singularLabel, r.matches.map((m) => m.id)]),
+    ).toEqual([
+      [1, 'Demi-finales', 'Demi-finale', ['sf1', 'sf2']],
+      [2, 'Finale', 'Finale', ['final']],
     ]);
     expect(view.thirdPlaceMatch).toBeNull();
   });
@@ -45,7 +47,9 @@ describe('buildBracketView', () => {
 
     const view = buildBracketView(matches, 2);
 
-    expect(view.rounds).toEqual([{ round: 2, label: 'Finale', matches: [matches[0]] }]);
+    expect(view.rounds).toEqual([
+      { round: 2, label: 'Finale', singularLabel: 'Finale', matches: [matches[0]] },
+    ]);
     expect(view.thirdPlaceMatch?.id).toBe('third');
   });
 

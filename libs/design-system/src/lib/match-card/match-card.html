@@ -34,7 +34,12 @@
     </div>
   </div>
 
-  @if (!hasScore() && kickoff(); as time) {
+  @if (forfeitedTeamName(); as name) {
+    <div class="ap-match-card__footer">
+      <ap-badge status="cancelled" label="Forfait" />
+      <span>{{ name }}</span>
+    </div>
+  } @else if (!hasScore() && kickoff(); as time) {
     <div class="ap-match-card__footer">
       <span class="ap-match-card__time">{{ time }}</span>
       @if (venue(); as v) {

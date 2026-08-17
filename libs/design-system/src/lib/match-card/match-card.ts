@@ -38,6 +38,7 @@ export class MatchCard {
   readonly kickoff = input<string>();
   readonly venue = input<string>();
   readonly competitionLabel = input<string>();
+  readonly forfeitedTeamName = input<string>();
 
   protected readonly hasScore = computed(
     () => this.homeScore() !== undefined && this.awayScore() !== undefined,

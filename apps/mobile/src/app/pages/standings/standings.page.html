@@ -121,99 +121,77 @@
       @if (!hasFinalPhase()) {
         <p class="standings-page__empty">Pas encore de phase finale pour cette catégorie.</p>
       } @else {
-        @if (bracketPhaseOptions().length > 1) {
-          <ion-segment
-            class="standings-page__filters"
-            [value]="selectedBracketPhaseId()"
-            (ionChange)="onBracketPhaseChange(asString($event.detail.value))"
-            scrollable
-          >
-            @for (option of bracketPhaseOptions(); track option.value) {
-              <ion-segment-button [value]="option.value">
-                <ion-label>{{ option.label }}</ion-label>
-              </ion-segment-button>
-            }
-          </ion-segment>
-        }
+        @for (phase of knockoutPhases(); track phase.id) {
+          @let bracket = bracketByPhase().get(phase.id);
+          @if (bracket) {
+            <section class="standings-page__bracket-section">
+              <h2 class="standings-page__bracket-title">{{ phase.name }}</h2>
 
-        @if (selectedBracket(); as bracket) {
-          @if (bracket.rounds.length === 0) {
-            <p class="standings-page__empty">
-              Le tableau n'a pas encore été généré pour cette phase.
-            </p>
-          } @else {
-            @if (roundOptions().length > 2) {
-              <ion-segment
-                class="standings-page__filters"
-                [value]="selectedRoundValue()"
-                (ionChange)="onRoundChange(asString($event.detail.value))"
-                scrollable
-              >
-                @for (option of roundOptions(); track option.value) {
-                  <ion-segment-button [value]="option.value">
-                    <ion-label>{{ option.label }}</ion-label>
-                  </ion-segment-button>
-                }
-              </ion-segment>
-            }
+              @if (bracket.rounds.length === 0) {
+                <p class="standings-page__empty">
+                  Le tableau n'a pas encore été généré pour cette phase.
+                </p>
+              } @else {
+                @let pages = pagesFor(bracket);
+                @let pageIndex = currentPageIndex(phase.id);
 
-            <div
-              class="standings-page__bracket"
-              [class.standings-page__bracket--focus-mode]="selectedRoundValue()"
-              [style.height.px]="selectedRoundValue() ? null : bracketHeight(bracket)"
-            >
-              @for (round of bracket.rounds; track round.round) {
-                <div
-                  class="standings-page__bracket-round"
-                  [class.standings-page__bracket-round--focused]="
-                    selectedRoundValue() === round.round.toString()
-                  "
-                  [class.standings-page__bracket-round--collapsed]="
-                    selectedRoundValue() && selectedRoundValue() !== round.round.toString()
-                  "
-                  [id]="'bracket-round-' + selectedBracketPhaseId() + '-' + round.round"
-                >
-                  <h3>{{ round.label }}</h3>
-                  <div class="standings-page__bracket-round-matches">
-                    @for (match of round.matches; track match.id) {
-                      <div class="standings-page__bracket-slot">
-                        <ap-bracket-match
-                          [homeTeam]="match.homeTeam ?? { name: match.homeSourceLabel ?? '—' }"
-                          [awayTeam]="match.awayTeam ?? { name: match.awaySourceLabel ?? '—' }"
-                          [homeScore]="match.score?.homeScore"
-                          [awayScore]="match.score?.awayScore"
-                          [forfeitedTeamName]="
-                            match.status === 'FORFEITED' ? match.forfeitedTeam?.name : undefined
-                          "
-                        />
+                <div class="standings-page__pager-header">
+                  <button
+                    type="button"
+                    class="standings-page__pager-nav"
+                    [disabled]="pageIndex === 0"
+                    (click)="goToPage(phase.id, -1, pages.length)"
+                    aria-label="Tour précédent"
+                  >
+                    ‹
+                  </button>
+                  <span class="standings-page__pager-label">{{ pages[pageIndex].label }}</span>
+                  <button
+                    type="button"
+                    class="standings-page__pager-nav"
+                    [disabled]="pageIndex === pages.length - 1"
+                    (click)="goToPage(phase.id, 1, pages.length)"
+                    aria-label="Tour suivant"
+                  >
+                    ›
+                  </button>
+                </div>
+
+                <div class="standings-page__pager-viewport">
+                  <div class="standings-page__pager-track" [style.--i]="pageIndex">
+                    @for (page of pages; track page.label + $index) {
+                      <div class="standings-page__pager-page">
+                        @for (card of page.cards; track card.match.id) {
+                          <ap-match-card
+                            [variant]="variantFor(card.match)"
+                            [competitionLabel]="card.cardLabel"
+                            [venue]="card.match.timeSlot?.field?.name"
+                            [kickoff]="
+                              card.match.timeSlot
+                                ? formatKickoff(card.match.timeSlot.startTime)
+                                : undefined
+                            "
+                            [homeTeam]="
+                              teamCardInput(card.match.homeTeam, card.match.homeSourceLabel)
+                            "
+                            [awayTeam]="
+                              teamCardInput(card.match.awayTeam, card.match.awaySourceLabel)
+                            "
+                            [homeScore]="card.match.score?.homeScore"
+                            [awayScore]="card.match.score?.awayScore"
+                            [forfeitedTeamName]="
+                              card.match.status === 'FORFEITED'
+                                ? card.match.forfeitedTeam?.name
+                                : undefined
+                            "
+                          />
+                        }
                       </div>
                     }
                   </div>
                 </div>
               }
-            </div>
-
-            @if (bracket.thirdPlaceMatch; as match) {
-              <div
-                class="standings-page__third-place"
-                [class.standings-page__third-place--focused]="selectedRoundValue() === 'third'"
-                [class.standings-page__third-place--collapsed]="
-                  selectedRoundValue() && selectedRoundValue() !== 'third'
-                "
-                [id]="'bracket-round-' + selectedBracketPhaseId() + '-third'"
-              >
-                <h3>Pour la 3e place</h3>
-                <ap-bracket-match
-                  [homeTeam]="match.homeTeam ?? { name: match.homeSourceLabel ?? '—' }"
-                  [awayTeam]="match.awayTeam ?? { name: match.awaySourceLabel ?? '—' }"
-                  [homeScore]="match.score?.homeScore"
-                  [awayScore]="match.score?.awayScore"
-                  [forfeitedTeamName]="
-                    match.status === 'FORFEITED' ? match.forfeitedTeam?.name : undefined
-                  "
-                />
-              </div>
-            }
+            </section>
           }
         }
       }
