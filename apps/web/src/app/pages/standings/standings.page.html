@@ -201,6 +201,7 @@
           <div class="standings-page__pager-viewport">
             <div
               class="standings-page__pager-track"
+              [attr.data-phase-id]="selectedTab()"
               [class.standings-page__pager-track--dragging]="isDragging(selectedTab())"
               [style.--i]="pageIndex"
               [style.--drag]="dragOffsetPx(selectedTab()) + 'px'"
@@ -210,7 +211,14 @@
               (touchcancel)="onSwipeCancel(selectedTab())"
             >
               @for (page of pages; track page.label + $index) {
-                <div class="standings-page__pager-page">
+                <div
+                  class="standings-page__pager-page"
+                  [attr.data-page-index]="$index"
+                  [class.standings-page__pager-page--peeking]="$index === pageIndex + 1"
+                  [style.height.px]="
+                    $index === pageIndex + 1 ? activePageHeight(selectedTab()) : null
+                  "
+                >
                   @for (card of page.cards; track card.match.id) {
                     <ap-match-card
                       [variant]="variantFor(card.match)"

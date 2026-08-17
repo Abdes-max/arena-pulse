@@ -212,9 +212,32 @@
 
 .standings-page__pager-page {
   flex: 0 0 calc(100% - var(--peek));
+  // Opts out of the track's default align-items: stretch -- every page
+  // keeps its own natural (dense-content) height instead of matching
+  // whichever round in the whole list happens to be tallest (round 1,
+  // almost always). Needed both so the active page never grows taller than
+  // its own content for no reason, and so measureActivePageHeights (see the
+  // .ts file) reads that page's *true* height rather than an inflated
+  // stretched one.
+  align-self: flex-start;
   display: flex;
   flex-direction: column;
   gap: var(--ap-space-3);
+}
+
+// While a round is only peeking (not yet the active page), its cards are
+// spaced out to land between the pairs of matches that feed them -- the
+// same justify-content: space-around trick the old connected-tree bracket
+// view used, except here it's temporary. The height this distributes
+// across is set inline ([style.height.px], see activePageHeight in the
+// .ts file) to match the *active* page's own real rendered height, so card
+// k lands at the midpoint of the active page's cards (2k, 2k+1) -- a
+// preview of "this is where these two matches feed into." Swiping/tapping
+// forward makes this page active and drops the class (and the inline
+// height), reverting to the dense stack above.
+.standings-page__pager-page--peeking {
+  justify-content: space-around;
+  gap: 0;
 }
 
 // Fluid width (flex + max-width), not a fixed px per step -- three

@@ -2,6 +2,7 @@ import { DecimalPipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   computed,
   effect,
   inject,
@@ -84,6 +85,7 @@ export class StandingsPage {
   private readonly api = inject(PublicApiService);
   private readonly context = inject(TournamentContextService);
   private readonly assetUrl = inject(AssetUrlService);
+  private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
 
   protected readonly loading = signal(true);
   protected readonly categories = signal<Category[]>([]);
@@ -100,6 +102,11 @@ export class StandingsPage {
   // separate from selectedRoundView above which only drives the desktop
   // connected-tree's accordion focus.
   protected readonly pageIndexByPhase = signal<Record<string, number>>({});
+
+  // Height (px) of the active page, measured after render and applied to
+  // the peeking (next) page below -- see measureActivePageHeight's own
+  // doc comment for why this can't be pure CSS.
+  protected readonly activePageHeightPx = signal<Record<string, number>>({});
 
   protected readonly groupStagePhases = computed(() =>
     this.phases().filter((phase) => phase.type === 'GROUP_STAGE' && !phase.isSeedPhase),
@@ -181,6 +188,41 @@ export class StandingsPage {
         this.selectedRoundView.set('');
       }
     });
+    // Re-measure whenever the active page changes (round navigation) or the
+    // bracket's data changes (tab switch, realtime score update) --
+    // deferred one frame so the new page has actually painted first.
+    effect(() => {
+      this.pageIndexByPhase();
+      this.bracketByPhase();
+      requestAnimationFrame(() => this.measureActivePageHeight());
+    });
+  }
+
+  // ap-match-card's own height isn't fixed (a "Terminé" badge, a forfeit
+  // line, or a kickoff+venue footer all change it slightly), so the
+  // peeking page's height can't be assumed from a constant -- it's read
+  // directly off the currently active page's real rendered height instead
+  // (see standings.page.scss's --peeking rule, which turns this into
+  // justify-content: space-around spacing once applied). Only one bracket
+  // is ever shown at a time here (selectedTab()), unlike apps/mobile's own
+  // version of this which loops over every bracket phase.
+  private measureActivePageHeight(): void {
+    const track = this.elementRef.nativeElement.querySelector<HTMLElement>(
+      '.standings-page__pager-track[data-phase-id]',
+    );
+    const phaseId = track?.dataset['phaseId'];
+    if (!track || !phaseId) {
+      return;
+    }
+    const activePage = track.querySelector<HTMLElement>(
+      `[data-page-index="${this.currentPageIndex(phaseId)}"]`,
+    );
+    if (activePage) {
+      this.activePageHeightPx.update((map) => ({
+        ...map,
+        [phaseId]: activePage.getBoundingClientRect().height,
+      }));
+    }
   }
 
   private async loadCategories(): Promise<void> {
@@ -328,6 +370,13 @@ export class StandingsPage {
 
   protected currentPageIndex(phaseId: string): number {
     return this.pageIndexByPhase()[phaseId] ?? 0;
+  }
+
+  // null (not 0) until measured -- 0 would flash the peeking page's cards
+  // collapsed to zero height for one frame before the real measurement
+  // lands, instead of just leaving the CSS default (natural height) until then.
+  protected activePageHeight(phaseId: string): number | null {
+    return this.activePageHeightPx()[phaseId] ?? null;
   }
 
   protected goToPage(phaseId: string, delta: number, pageCount: number): void {

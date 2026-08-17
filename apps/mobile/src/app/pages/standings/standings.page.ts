@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   computed,
   effect,
   inject,
@@ -105,6 +106,7 @@ export class StandingsPage {
   private readonly api = inject(PublicApiService);
   private readonly context = inject(TournamentContextService);
   private readonly assetUrl = inject(AssetUrlService);
+  private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
   protected readonly cache = inject(OfflineCacheService);
 
   protected readonly loading = signal(true);
@@ -125,6 +127,15 @@ export class StandingsPage {
   // independently) -- keyed by phase id rather than a single signal so
   // paging one bracket never resets another's.
   protected readonly pageIndexByPhase = signal<Record<string, number>>({});
+
+  // Height (px) of each bracket's currently active page, measured after
+  // render and applied to its peeking (next) page below -- see
+  // measureActivePageHeights' own doc comment for why this can't be pure
+  // CSS (align-items: stretch alone stretches every round to the tallest
+  // one *in the whole list*, e.g. round of 16, not to its own immediate
+  // predecessor, which pushes a later round's peek too far down once
+  // there's more than one round between it and the tallest).
+  protected readonly activePageHeightPx = signal<Record<string, number>>({});
 
   protected readonly hasGroupStagePhase = computed(() => this.groupStandings().length > 0);
 
@@ -178,6 +189,41 @@ export class StandingsPage {
         void this.loadStandings();
       }
     });
+    // Re-measure whenever a bracket's active page changes (round navigation)
+    // or its data changes (category switch, realtime score update) --
+    // deferred one frame so the new page has actually painted first (a
+    // freshly-navigated-to page's height isn't known until then).
+    effect(() => {
+      this.pageIndexByPhase();
+      this.bracketByPhase();
+      requestAnimationFrame(() => this.measureActivePageHeights());
+    });
+  }
+
+  // ap-match-card's own height isn't fixed (a "Terminé" badge, a forfeit
+  // line, or a kickoff+venue footer all change it slightly), so the
+  // peeking page's height can't be assumed from a constant -- it's read
+  // directly off the currently active page's real rendered height instead
+  // (see standings.page.scss's --peeking rule, which turns this into
+  // justify-content: space-around spacing once applied).
+  private measureActivePageHeights(): void {
+    const tracks = this.elementRef.nativeElement.querySelectorAll<HTMLElement>(
+      '.standings-page__pager-track[data-phase-id]',
+    );
+    const heights: Record<string, number> = {};
+    tracks.forEach((track) => {
+      const phaseId = track.dataset['phaseId'];
+      if (!phaseId) {
+        return;
+      }
+      const activePage = track.querySelector<HTMLElement>(
+        `[data-page-index="${this.currentPageIndex(phaseId)}"]`,
+      );
+      if (activePage) {
+        heights[phaseId] = activePage.getBoundingClientRect().height;
+      }
+    });
+    this.activePageHeightPx.set(heights);
   }
 
   private async loadCategories(): Promise<void> {
@@ -252,6 +298,13 @@ export class StandingsPage {
 
   protected currentPageIndex(phaseId: string): number {
     return this.pageIndexByPhase()[phaseId] ?? 0;
+  }
+
+  // null (not 0) until measured -- 0 would flash the peeking page's cards
+  // collapsed to zero height for one frame before the real measurement
+  // lands, instead of just leaving the CSS default (natural height) until then.
+  protected activePageHeight(phaseId: string): number | null {
+    return this.activePageHeightPx()[phaseId] ?? null;
   }
 
   protected goToPage(phaseId: string, delta: number, pageCount: number): void {

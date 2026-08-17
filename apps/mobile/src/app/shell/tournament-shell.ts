@@ -22,6 +22,7 @@ import {
 import { AssetUrlService } from 'api-client';
 import { ShareButton, ThemeModeToggle } from 'design-system';
 import { PublicTheme } from 'shared-models';
+import { environment } from '../../environments/environment';
 import { FavoritesService } from '../core/favorites.service';
 import { NotificationsService } from '../core/notifications.service';
 import { OfflineCacheService } from '../core/offline-cache.service';
@@ -80,7 +81,15 @@ export class TournamentShell {
   // -- shares the tournament's own public URL rather than whichever sub-page
   // happens to be open, so the recipient always lands on the same place
   // regardless of where the visitor tapped Partager from.
-  protected readonly shareUrl = computed(() => `${window.location.origin}/${this.context.slug()}`);
+  //
+  // environment.webUrl, not window.location.origin: the native app runs
+  // from its own internal origin (capacitor://localhost on iOS,
+  // https://localhost on Android), never from the real public domain --
+  // sharing window.location.origin there produced a capacitor://localhost/…
+  // link, meaningless (and likely rejected) outside the app. apps/web's own
+  // TournamentShell keeps window.location.origin: it's genuinely served
+  // from the public domain, so there's nothing to substitute there.
+  protected readonly shareUrl = computed(() => `${environment.webUrl}/${this.context.slug()}`);
   protected readonly shareText = computed(() => {
     const tournament = this.tournament();
     return tournament ? `Suivez ${tournament.name} sur TournArena` : '';

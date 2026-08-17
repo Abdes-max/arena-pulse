@@ -91,63 +91,6 @@
   color: var(--ap-color-muted);
 }
 
-@media (max-width: 768px) {
-  .scores-page__match {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  // Un-collapse the wrapper groups back into real flex rows now that the
-  // parent is a column -- each becomes one full-width line of the card:
-  // meta (time + field), home team+score, away team+score, penalty
-  // shootout (if any), then the action buttons.
-  .scores-page__match-meta,
-  .scores-page__match-row,
-  .scores-page__match-actions {
-    display: flex;
-    align-items: center;
-    gap: var(--ap-space-2);
-  }
-
-  .scores-page__match-row {
-    justify-content: space-between;
-  }
-
-  .scores-page__score-sep {
-    display: none;
-  }
-
-  // Fixed 11rem (from the desktop "every column lines up" layout, see
-  // comment above .scores-page__time-badge) would force horizontal
-  // scrolling or truncate every team name on a phone -- each team now has
-  // its own full-width row (.scores-page__match-row) to itself, so it can
-  // take whatever space it needs instead of a fixed column width.
-  .scores-page__team {
-    flex: 1 1 auto;
-  }
-
-  .scores-page__match-actions {
-    flex-wrap: wrap;
-  }
-
-  .scores-page__save-button {
-    margin-left: 0;
-  }
-
-  // Enregistrer/Valider default to size="sm" (28px, see button.scss) for
-  // desktop's dense one-row-per-match layout -- each match is now a full
-  // card with room to spare, so the actions get the real touch-target
-  // minimum instead. Overriding a design-system component's own
-  // :host([data-size='sm']) rule from outside needs !important (same
-  // precedent already used for a breakpoint override in
-  // structure.page.scss) -- its selector's specificity would otherwise win.
-  .scores-page__match-actions ap-button[data-size='sm'] .ap-button {
-    min-height: var(--ap-touch-target-min) !important;
-    padding: var(--ap-space-3) var(--ap-space-6) !important;
-    font-size: 0.9rem !important;
-  }
-}
-
 // Fixed (not min-) widths on every column before the score inputs, so the
 // inputs themselves start at the same x position on every row regardless
 // of how long a given team/field name happens to be.
@@ -257,4 +200,73 @@
   margin-left: auto;
   flex: 0 0 auto;
   width: 10rem;
+}
+
+// Kept last in the file, not right after the rules it toggles (its
+// previous position) -- .scores-page__team's own fixed flex:0 0 11rem rule
+// (and the others this overrides) is defined further down the file, and at
+// equal specificity CSS breaks ties by *source order*, not by whether one
+// side happens to be inside a media query. With the override defined
+// earlier, the later unconditional desktop rule silently won at every
+// viewport width -- the mobile column layout never actually got its
+// full-width team/score rows, breaking the whole card (team names and
+// score inputs stayed pinned to their fixed desktop widths and columns,
+// overflowing the narrow viewport). Moving the whole block here, after
+// every rule it needs to beat, fixes that for good regardless of which
+// rules get added above in the future.
+@media (max-width: 768px) {
+  .scores-page__match {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  // Un-collapse the wrapper groups back into real flex rows now that the
+  // parent is a column -- each becomes one full-width line of the card:
+  // meta (time + field), home team+score, away team+score, penalty
+  // shootout (if any), then the action buttons.
+  .scores-page__match-meta,
+  .scores-page__match-row,
+  .scores-page__match-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--ap-space-2);
+  }
+
+  .scores-page__match-row {
+    justify-content: space-between;
+  }
+
+  .scores-page__score-sep {
+    display: none;
+  }
+
+  // Fixed 11rem (from the desktop "every column lines up" layout, see
+  // comment above .scores-page__time-badge) would force horizontal
+  // scrolling or truncate every team name on a phone -- each team now has
+  // its own full-width row (.scores-page__match-row) to itself, so it can
+  // take whatever space it needs instead of a fixed column width.
+  .scores-page__team {
+    flex: 1 1 auto;
+  }
+
+  .scores-page__match-actions {
+    flex-wrap: wrap;
+  }
+
+  .scores-page__save-button {
+    margin-left: 0;
+  }
+
+  // Enregistrer/Valider default to size="sm" (28px, see button.scss) for
+  // desktop's dense one-row-per-match layout -- each match is now a full
+  // card with room to spare, so the actions get the real touch-target
+  // minimum instead. Overriding a design-system component's own
+  // :host([data-size='sm']) rule from outside needs !important (same
+  // precedent already used for a breakpoint override in
+  // structure.page.scss) -- its selector's specificity would otherwise win.
+  .scores-page__match-actions ap-button[data-size='sm'] .ap-button {
+    min-height: var(--ap-touch-target-min) !important;
+    padding: var(--ap-space-3) var(--ap-space-6) !important;
+    font-size: 0.9rem !important;
+  }
 }
