@@ -106,7 +106,9 @@ export class StandingsPage {
   // KNOCKOUT_ONLY category whose bracket hasn't been generated yet: neither
   // segment button exists, so the usual per-tab content blocks would all
   // stay silent -- shown instead of a blank screen.
-  protected readonly hasNoTabsYet = computed(() => !this.hasGroupStagePhase() && !this.hasFinalPhase());
+  protected readonly hasNoTabsYet = computed(
+    () => !this.hasGroupStagePhase() && !this.hasFinalPhase(),
+  );
   protected readonly bracketPhaseOptions = computed(() =>
     this.knockoutPhases().map((phase) => ({ value: phase.id, label: phase.name })),
   );
