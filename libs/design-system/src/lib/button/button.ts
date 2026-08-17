@@ -15,6 +15,7 @@ export type ButtonSize = 'md' | 'sm';
     '[attr.data-variant]': 'variant()',
     '[attr.data-size]': 'size()',
     '[attr.data-disabled]': 'disabled() || null',
+    '[attr.data-full-width]': 'fullWidth() || null',
   },
 })
 export class Button {
@@ -23,6 +24,8 @@ export class Button {
   readonly size = input<ButtonSize>('md');
   readonly type = input<'button' | 'submit'>('button');
   readonly disabled = input(false);
+  /** Stretches the button to fill its container's width (e.g. stacked CTAs in a narrow hero) instead of the default shrink-to-content sizing. */
+  readonly fullWidth = input(false);
   /** When set, renders an <a> instead of a <button> — same look, but for navigation rather than an action. */
   readonly href = input<string | undefined>(undefined);
   readonly target = input<string | undefined>(undefined);

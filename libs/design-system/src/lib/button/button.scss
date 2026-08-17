@@ -70,6 +70,14 @@
   }
 }
 
+:host([data-full-width]) {
+  display: block;
+}
+
+:host([data-full-width]) .ap-button {
+  width: 100%;
+}
+
 // Current-tab indicator for a routerLink button used in a tab-style sub-menu
 // (RouterLinkActive adds this class) — wins over the variant's own colors.
 .ap-button--active {

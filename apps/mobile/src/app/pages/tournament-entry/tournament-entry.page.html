@@ -13,8 +13,16 @@
   <ion-toolbar>
     <ap-logo slot="start" />
     <div class="tournament-entry-page__nav-actions" slot="end">
-      <a class="tournament-entry-page__nav-login" [href]="loginUrl" target="_blank" rel="noopener">
+      <a class="tournament-entry-page__nav-link" [href]="loginUrl" target="_blank" rel="noopener">
         Connexion
+      </a>
+      <a
+        class="tournament-entry-page__nav-link"
+        [href]="createTournamentUrl"
+        target="_blank"
+        rel="noopener"
+      >
+        Créer
       </a>
       <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
     </div>
@@ -26,25 +34,23 @@
       Poules, tableaux à élimination, calendrier et classements en direct.
     </p>
 
-    <div class="tournament-entry-page__hero-ctas">
-      <a
-        class="tournament-entry-page__cta"
-        [href]="createTournamentUrl"
-        target="_blank"
-        rel="noopener"
-      >
-        Créer un tournoi
-      </a>
-      @if (exampleTournament(); as example) {
-        <button
-          type="button"
-          class="tournament-entry-page__cta-ghost"
-          (click)="goToTournament(example)"
-        >
-          Voir un exemple
-        </button>
-      }
-    </div>
+    @if (hasTournaments()) {
+      <div class="tournament-entry-page__hero-ctas">
+        <ap-button type="button" [fullWidth]="true" (click)="scrollToPublished()">
+          Voir les événements
+        </ap-button>
+        @if (exampleTournament(); as example) {
+          <ap-button
+            type="button"
+            variant="secondary"
+            [fullWidth]="true"
+            (click)="goToTournament(example)"
+          >
+            Voir un exemple
+          </ap-button>
+        }
+      </div>
+    }
 
     @if (tournaments().length > 0) {
       <p class="tournament-entry-page__marquee-label">
@@ -61,7 +67,7 @@
 
 <ion-content class="tournament-entry-page">
   @if (tournaments().length > 0) {
-    <section class="tournament-entry-page__published">
+    <section class="tournament-entry-page__published" #publishedSection>
       <h2 class="tournament-entry-page__published-title">
         <span class="tournament-entry-page__published-pulse" aria-hidden="true"></span>
         Événements publiés
