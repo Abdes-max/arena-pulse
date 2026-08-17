@@ -19,6 +19,7 @@ import {
   IonTabButton,
   IonToolbar,
 } from '@ionic/angular/standalone';
+import { AssetUrlService } from 'api-client';
 import { ThemeModeToggle } from 'design-system';
 import { PublicTheme } from 'shared-models';
 import { FavoritesService } from '../core/favorites.service';
@@ -59,6 +60,7 @@ export class TournamentShell {
   private readonly destroyRef = inject(DestroyRef);
   private readonly favorites = inject(FavoritesService);
   private readonly notifications = inject(NotificationsService);
+  private readonly assetUrl = inject(AssetUrlService);
   protected readonly cache = inject(OfflineCacheService);
   protected readonly context = inject(TournamentContextService);
 
@@ -127,6 +129,10 @@ export class TournamentShell {
       }
       void this.notifications.checkFavoriteUpdates(slug, this.favorites.favoritesFor(slug));
     });
+  }
+
+  protected logoUrl(url: string | null | undefined): string | null {
+    return this.assetUrl.resolve(url ?? null);
   }
 
   protected retry(): void {

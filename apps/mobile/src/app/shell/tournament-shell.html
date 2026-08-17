@@ -22,7 +22,12 @@
       </ion-buttons>
     </ion-toolbar>
     <div class="tournament-shell__hero">
-      <h1 class="tournament-shell__title">{{ t.name }}</h1>
+      <div class="tournament-shell__title-row">
+        @if (logoUrl(t.logoUrl); as logo) {
+          <img class="tournament-shell__logo" [src]="logo" alt="" />
+        }
+        <h1 class="tournament-shell__title">{{ t.name }}</h1>
+      </div>
       @if (formattedDates(); as dates) {
         <p class="tournament-shell__dates">{{ dates }}</p>
       }
