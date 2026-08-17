@@ -220,15 +220,61 @@ export class TournamentsService {
     if (event.type !== 'checkout.session.completed') {
       return;
     }
-    const session = event.data.object;
+    await this.applyPaidPublicationSession(event.data.object);
+  }
+
+  /**
+   * Called from the organizer's own browser landing on /publish/success
+   * (session_id is already in that URL's query string) -- verifies the
+   * session directly against Stripe instead of just polling the tournament
+   * and hoping the webhook already updated it. See
+   * StripeService.retrieveCheckoutSession's doc comment for why this
+   * matters beyond local dev too. A session that isn't ours, isn't paid
+   * yet, or was already applied (by the webhook, or a previous call here)
+   * is a silent no-op -- this always just returns the tournament's current
+   * state either way, never an error, so the success page can call it
+   * unconditionally.
+   */
+  async confirmPublicationPayment(
+    organizationId: string,
+    tournamentId: string,
+    stripeCheckoutSessionId: string,
+  ) {
+    const order = await this.prisma.tournamentPublicationOrder.findUnique({
+      where: { stripeCheckoutSessionId },
+    });
+    if (
+      order &&
+      order.tournamentId === tournamentId &&
+      order.status === TournamentPublicationOrderStatus.PENDING_PAYMENT
+    ) {
+      const session = await this.stripeService.retrieveCheckoutSession(
+        stripeCheckoutSessionId,
+      );
+      if (session.payment_status === 'paid') {
+        await this.applyPaidPublicationSession(session);
+      }
+    }
+    const tournament = await this.getOrThrow(organizationId, tournamentId);
+    return this.toDetail(tournament);
+  }
+
+  /**
+   * Shared by the webhook handler and confirmPublicationPayment above --
+   * same "mark paid + publish + email the receipt" side effects regardless
+   * of which one first learns the session is genuinely paid.
+   */
+  private async applyPaidPublicationSession(
+    session: Stripe.Checkout.Session,
+  ): Promise<void> {
     const order = await this.prisma.tournamentPublicationOrder.findUnique({
       where: { stripeCheckoutSessionId: session.id },
       include: { tournament: true },
     });
-    // Idempotent: a retried webhook delivery, or an event for a session this
-    // service didn't create (e.g. a player registration's), is a silent
-    // no-op rather than an error -- same guarantee as
-    // RegistrationsService.handleStripeEvent.
+    // Idempotent: a retried webhook delivery, a confirm call racing the
+    // webhook, or an event/session for a checkout this service didn't
+    // create (e.g. a player registration's), is a silent no-op rather than
+    // an error -- same guarantee as RegistrationsService.handleStripeEvent.
     if (
       !order ||
       order.status !== TournamentPublicationOrderStatus.PENDING_PAYMENT

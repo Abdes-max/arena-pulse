@@ -5,9 +5,12 @@ import { AuthService } from '../../core/auth.service';
 import { TournamentDetail } from '../../core/models';
 import { TournamentsService } from '../../core/tournaments.service';
 
-// The Stripe webhook that confirms payment usually lands within a second or
-// two of the checkout redirect landing here -- a short poll covers that gap,
-// same pattern as register-success.page.ts for the player registration flow.
+// Fallback only: confirmPublicationPayment (called first, see load() below)
+// verifies the payment directly against Stripe using the session_id already
+// on this page's own URL, so it's normally resolved before this poll loop
+// ever runs. Kept as a safety net for the rare case that call itself fails
+// (a transient network error, Stripe briefly unavailable) -- the webhook
+// might still land shortly after even then.
 const MAX_POLL_ATTEMPTS = 5;
 const POLL_INTERVAL_MS = 2000;
 
@@ -42,6 +45,24 @@ export class TournamentPublishSuccessPage {
     if (!organizationId || !tournamentId) {
       this.loading.set(false);
       return;
+    }
+    const sessionId = this.route.snapshot.queryParamMap.get('session_id');
+    if (sessionId) {
+      try {
+        const tournament = await this.tournamentsService.confirmPublicationPayment(
+          organizationId,
+          tournamentId,
+          sessionId,
+        );
+        this.tournament.set(tournament);
+        if (tournament.status === 'PUBLISHED') {
+          this.loading.set(false);
+          return;
+        }
+      } catch {
+        // Fall through to the poll loop below -- confirming ourselves
+        // failed, but the webhook may still land shortly.
+      }
     }
     for (let attempt = 0; attempt < MAX_POLL_ATTEMPTS; attempt++) {
       const tournament = await this.tournamentsService.getTournament(organizationId, tournamentId);

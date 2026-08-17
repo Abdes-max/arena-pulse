@@ -112,6 +112,22 @@ export class PublicApiService {
     );
   }
 
+  /**
+   * Called from the "register success" page (session_id is already on its
+   * URL, since Stripe appends it to the checkoutUrl's successUrl) --
+   * verifies the payment directly against Stripe instead of only ever
+   * polling the player's registrations and hoping the webhook already
+   * landed. Returns the same shape as listMyRegistrations (the now
+   * up-to-date list), safe to call unconditionally.
+   */
+  confirmRegistrationPayment(sessionId: string): Promise<PlayerRegistration[]> {
+    return firstValueFrom(
+      this.http.post<PlayerRegistration[]>(`${this.config.apiUrl}/public/registrations/confirm`, {
+        sessionId,
+      }),
+    );
+  }
+
   sendContactMessage(payload: ContactMessagePayload): Promise<void> {
     return firstValueFrom(this.http.post<void>(`${this.config.apiUrl}/contact`, payload));
   }

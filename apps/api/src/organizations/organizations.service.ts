@@ -266,14 +266,59 @@ export class OrganizationsService {
     if (event.type !== 'checkout.session.completed') {
       return;
     }
-    const session = event.data.object;
+    await this.applyPaidSubscriptionSession(event.data.object);
+  }
+
+  /**
+   * Called from the organizer's own browser landing on
+   * /organization/subscription/success (session_id is already in that
+   * URL's query string) -- verifies the session directly against Stripe
+   * instead of just polling the subscription status and hoping the webhook
+   * already updated it. See StripeService.retrieveCheckoutSession's doc
+   * comment for why this matters beyond local dev too. A session that isn't
+   * paid yet, or was already applied (by the webhook, or a previous call
+   * here), is a silent no-op -- this always just returns the current
+   * subscription status either way, never an error, so the success page
+   * can call it unconditionally.
+   */
+  async confirmSubscriptionPayment(
+    organizationId: string,
+    stripeCheckoutSessionId: string,
+  ) {
+    const subscription = await this.prisma.organizationSubscription.findUnique({
+      where: { stripeCheckoutSessionId },
+    });
+    if (
+      subscription &&
+      subscription.organizationId === organizationId &&
+      subscription.status === OrganizationSubscriptionStatus.PENDING_PAYMENT
+    ) {
+      const session = await this.stripeService.retrieveCheckoutSession(
+        stripeCheckoutSessionId,
+      );
+      if (session.payment_status === 'paid') {
+        await this.applyPaidSubscriptionSession(session);
+      }
+    }
+    return this.getSubscriptionStatus(organizationId);
+  }
+
+  /**
+   * Shared by the webhook handler and confirmSubscriptionPayment above --
+   * same "mark active + email the receipt" side effects regardless of which
+   * one first learns the session is genuinely paid.
+   */
+  private async applyPaidSubscriptionSession(
+    session: Stripe.Checkout.Session,
+  ): Promise<void> {
     const subscription = await this.prisma.organizationSubscription.findUnique({
       where: { stripeCheckoutSessionId: session.id },
     });
-    // Idempotent: a retried webhook delivery, or an event for a session this
-    // service didn't create (e.g. a tournament publication's), is a silent
-    // no-op rather than an error -- same guarantee as
-    // TournamentsService.handlePublicationStripeEvent.
+    // Idempotent: a retried webhook delivery, a confirm call racing the
+    // webhook, or an event/session for a checkout this service didn't
+    // create (e.g. a tournament publication's), is a silent no-op rather
+    // than an error -- same guarantee as
+    // TournamentsService.applyPaidPublicationSession.
     if (
       !subscription ||
       subscription.status !== OrganizationSubscriptionStatus.PENDING_PAYMENT

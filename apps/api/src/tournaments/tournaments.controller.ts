@@ -14,6 +14,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { OrganizationRole } from '../../generated/prisma/client';
 import { RequireOrgRole } from '../organizations/decorators/require-org-role.decorator';
 import { OrganizationRoleGuard } from '../organizations/guards/organization-role.guard';
+import { ConfirmPublicationPaymentDto } from './dto/confirm-publication-payment.dto';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { DuplicateTournamentDto } from './dto/duplicate-tournament.dto';
 import { UpdateTournamentDto } from './dto/update-tournament.dto';
@@ -82,6 +83,21 @@ export class TournamentsController {
     @Param('tournamentId') tournamentId: string,
   ) {
     return this.tournamentsService.publish(organizationId, tournamentId);
+  }
+
+  @RequireOrgRole(OrganizationRole.ORG_ADMIN)
+  @HttpCode(HttpStatus.OK)
+  @Post(':tournamentId/publish/confirm')
+  confirmPublicationPayment(
+    @Param('organizationId') organizationId: string,
+    @Param('tournamentId') tournamentId: string,
+    @Body() dto: ConfirmPublicationPaymentDto,
+  ) {
+    return this.tournamentsService.confirmPublicationPayment(
+      organizationId,
+      tournamentId,
+      dto.sessionId,
+    );
   }
 
   @RequireOrgRole(OrganizationRole.ORG_ADMIN)
