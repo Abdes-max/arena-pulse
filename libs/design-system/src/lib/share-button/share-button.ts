@@ -1,6 +1,14 @@
-import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, WritableSignal, input, signal } from '@angular/core';
 import { Clipboard } from '@capacitor/clipboard';
 import { Share } from '@capacitor/share';
+
+// If the native bridge never resolves Share.share (e.g. the plugin somehow
+// isn't wired up in a given build), awaiting it directly would hang
+// forever -- the button would tap and nothing would ever visibly happen,
+// with no way to tell a genuine hang apart from "still working". Racing it
+// against this timeout guarantees the clipboard fallback (or a visible
+// failure) always shows up within a bounded time instead.
+const SHARE_TIMEOUT_MS = 5000;
 
 /**
  * Share button for the top-right of a tournament header (mobile app, mobile
@@ -16,8 +24,10 @@ import { Share } from '@capacitor/share';
  * there. On the web (desktop or mobile browser), the plugin's own web
  * implementation is a thin wrapper over navigator.share, so this still
  * degrades to the same behaviour there. Either way, sharing that isn't
- * possible falls back to copying the link to the clipboard with a brief
- * "Copié" confirmation.
+ * possible falls back to copying the link to the clipboard -- and if even
+ * that fails, a brief "Échec" state instead of nothing, so a tap always
+ * visibly does *something* (both states also console.error the underlying
+ * reason, for remote debugging via Safari's Web Inspector).
  */
 @Component({
   selector: 'ap-share-button',
@@ -32,26 +42,46 @@ export class ShareButton {
   readonly url = input.required<string>();
 
   protected readonly copied = signal(false);
-  private copiedTimeout?: ReturnType<typeof setTimeout>;
+  protected readonly failed = signal(false);
+  private feedbackTimeout?: ReturnType<typeof setTimeout>;
 
   protected async share(): Promise<void> {
     try {
-      await Share.share({
-        title: this.title(),
-        text: this.text(),
-        url: this.url(),
-        dialogTitle: 'Partager',
-      });
+      await this.withTimeout(
+        Share.share({
+          title: this.title(),
+          text: this.text(),
+          url: this.url(),
+          dialogTitle: 'Partager',
+        }),
+        SHARE_TIMEOUT_MS,
+      );
       return;
     } catch (error) {
       // The visitor dismissed the share sheet -- nothing more to do. Any
-      // other failure (e.g. no native share available on this web browser)
-      // falls through to the clipboard below instead of failing silently.
+      // other failure (e.g. no native share available on this web browser,
+      // or the bridge call above timing out) falls through to the
+      // clipboard below instead of failing silently.
       if (this.isCancelled(error)) {
         return;
       }
+      console.error('[ap-share-button] Share.share failed:', error);
     }
     await this.copyToClipboard();
+  }
+
+  // Clears its own timer once the race is decided either way -- without
+  // this, a promise that settles well before the deadline (the overwhelmingly
+  // common case: a real share/cancel, not a hang) would still leave its
+  // timeout scheduled, rejecting an already-settled race later with nothing
+  // listening -- an unhandled rejection days after the fact, not just a
+  // wasted timer.
+  private withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+    let timeoutId: ReturnType<typeof setTimeout>;
+    const timeout = new Promise<T>((_, reject) => {
+      timeoutId = setTimeout(() => reject(new Error(`Share.share timed out after ${ms}ms`)), ms);
+    });
+    return Promise.race([promise, timeout]).finally(() => clearTimeout(timeoutId));
   }
 
   // Capacitor's native implementations reject with a plain Error whose
@@ -75,13 +105,18 @@ export class ShareButton {
   private async copyToClipboard(): Promise<void> {
     try {
       await Clipboard.write({ string: this.url() });
-      clearTimeout(this.copiedTimeout);
-      this.copied.set(true);
-      this.copiedTimeout = setTimeout(() => this.copied.set(false), 2000);
-    } catch {
-      // Clipboard unavailable (insecure context, permission denied) -- no
-      // further fallback, the visitor can still copy the URL from the
-      // address bar themselves.
+      this.showFeedback(this.copied);
+    } catch (error) {
+      console.error('[ap-share-button] Clipboard.write failed:', error);
+      this.showFeedback(this.failed);
     }
+  }
+
+  private showFeedback(state: WritableSignal<boolean>): void {
+    clearTimeout(this.feedbackTimeout);
+    this.copied.set(false);
+    this.failed.set(false);
+    state.set(true);
+    this.feedbackTimeout = setTimeout(() => state.set(false), 2500);
   }
 }
