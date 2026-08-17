@@ -87,18 +87,20 @@
                 </svg>
               </span>
               <span>Connexion</span>
-              <svg
-                class="tournament-entry-page__settings-trailing-icon"
-                viewBox="0 0 24 24"
-                width="16"
-                height="16"
-                aria-hidden="true"
-              >
-                <path
-                  fill="currentColor"
-                  d="M14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3zM5 5v14h14v-7h-2v5H7V7h5V5z"
-                />
-              </svg>
+              <span class="tournament-entry-page__settings-trailing">
+                <svg
+                  class="tournament-entry-page__settings-trailing-icon"
+                  viewBox="0 0 24 24"
+                  width="16"
+                  height="16"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3zM5 5v14h14v-7h-2v5H7V7h5V5z"
+                  />
+                </svg>
+              </span>
             </a>
             <a
               class="tournament-entry-page__settings-row"
@@ -112,18 +114,20 @@
                 </svg>
               </span>
               <span>Créer un tournoi</span>
-              <svg
-                class="tournament-entry-page__settings-trailing-icon"
-                viewBox="0 0 24 24"
-                width="16"
-                height="16"
-                aria-hidden="true"
-              >
-                <path
-                  fill="currentColor"
-                  d="M14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3zM5 5v14h14v-7h-2v5H7V7h5V5z"
-                />
-              </svg>
+              <span class="tournament-entry-page__settings-trailing">
+                <svg
+                  class="tournament-entry-page__settings-trailing-icon"
+                  viewBox="0 0 24 24"
+                  width="16"
+                  height="16"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3zM5 5v14h14v-7h-2v5H7V7h5V5z"
+                  />
+                </svg>
+              </span>
             </a>
           </div>
         </section>
@@ -151,7 +155,9 @@
                 </svg>
               </span>
               <span>Évaluer l'app</span>
-              <span class="tournament-entry-page__settings-badge">Bientôt disponible</span>
+              <span class="tournament-entry-page__settings-trailing">
+                <span class="tournament-entry-page__settings-badge">Bientôt disponible</span>
+              </span>
             </div>
             <!-- L'icône et l'étiquette ne sont que la partie visible du
                  ap-share-button niché en fin de ligne (voir plus bas) --
@@ -178,7 +184,14 @@
                 </svg>
               </span>
               <span>Partager l'app</span>
-              <ap-share-button #shareButton title="TournArena" [text]="shareText" [url]="appUrl" />
+              <span class="tournament-entry-page__settings-trailing">
+                <ap-share-button
+                  #shareButton
+                  title="TournArena"
+                  [text]="shareText"
+                  [url]="appUrl"
+                />
+              </span>
             </div>
             <a
               class="tournament-entry-page__settings-row"
@@ -195,18 +208,20 @@
                 </svg>
               </span>
               <span>Nous contacter</span>
-              <svg
-                class="tournament-entry-page__settings-trailing-icon"
-                viewBox="0 0 24 24"
-                width="16"
-                height="16"
-                aria-hidden="true"
-              >
-                <path
-                  fill="currentColor"
-                  d="M14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3zM5 5v14h14v-7h-2v5H7V7h5V5z"
-                />
-              </svg>
+              <span class="tournament-entry-page__settings-trailing">
+                <svg
+                  class="tournament-entry-page__settings-trailing-icon"
+                  viewBox="0 0 24 24"
+                  width="16"
+                  height="16"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3zM5 5v14h14v-7h-2v5H7V7h5V5z"
+                  />
+                </svg>
+              </span>
             </a>
             <a
               class="tournament-entry-page__settings-row"
@@ -223,18 +238,20 @@
                 </svg>
               </span>
               <span>Tarifs</span>
-              <svg
-                class="tournament-entry-page__settings-trailing-icon"
-                viewBox="0 0 24 24"
-                width="16"
-                height="16"
-                aria-hidden="true"
-              >
-                <path
-                  fill="currentColor"
-                  d="M14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3zM5 5v14h14v-7h-2v5H7V7h5V5z"
-                />
-              </svg>
+              <span class="tournament-entry-page__settings-trailing">
+                <svg
+                  class="tournament-entry-page__settings-trailing-icon"
+                  viewBox="0 0 24 24"
+                  width="16"
+                  height="16"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3zM5 5v14h14v-7h-2v5H7V7h5V5z"
+                  />
+                </svg>
+              </span>
             </a>
           </div>
         </section>
@@ -257,18 +274,20 @@
                 </svg>
               </span>
               <span>Politique de confidentialité</span>
-              <svg
-                class="tournament-entry-page__settings-trailing-icon"
-                viewBox="0 0 24 24"
-                width="16"
-                height="16"
-                aria-hidden="true"
-              >
-                <path
-                  fill="currentColor"
-                  d="M14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3zM5 5v14h14v-7h-2v5H7V7h5V5z"
-                />
-              </svg>
+              <span class="tournament-entry-page__settings-trailing">
+                <svg
+                  class="tournament-entry-page__settings-trailing-icon"
+                  viewBox="0 0 24 24"
+                  width="16"
+                  height="16"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3zM5 5v14h14v-7h-2v5H7V7h5V5z"
+                  />
+                </svg>
+              </span>
             </a>
             <a
               class="tournament-entry-page__settings-row"
@@ -285,18 +304,20 @@
                 </svg>
               </span>
               <span>Conditions d'utilisation</span>
-              <svg
-                class="tournament-entry-page__settings-trailing-icon"
-                viewBox="0 0 24 24"
-                width="16"
-                height="16"
-                aria-hidden="true"
-              >
-                <path
-                  fill="currentColor"
-                  d="M14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3zM5 5v14h14v-7h-2v5H7V7h5V5z"
-                />
-              </svg>
+              <span class="tournament-entry-page__settings-trailing">
+                <svg
+                  class="tournament-entry-page__settings-trailing-icon"
+                  viewBox="0 0 24 24"
+                  width="16"
+                  height="16"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3zM5 5v14h14v-7h-2v5H7V7h5V5z"
+                  />
+                </svg>
+              </span>
             </a>
           </div>
         </section>

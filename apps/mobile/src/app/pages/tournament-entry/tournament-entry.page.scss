@@ -185,8 +185,30 @@
 }
 
 .tournament-entry-page__settings-trailing-icon {
-  flex: 0 0 auto;
   color: var(--ap-color-muted);
+}
+
+// Shared right-hand slot for whatever a row's trailing content actually is
+// (external-link icon, the "Bientôt disponible" badge, or ap-share-button)
+// -- without a common width these landed at very different sizes (a 16px
+// icon vs. a full pill of text), so nothing on the right edge actually
+// lined up between rows. min-width matches the badge's own natural width
+// (the widest of the three), so icon rows get padded out to the same
+// column instead of the badge being the odd one out. Compound selector,
+// same reason as the badge rule below: out-specifities .settings-row's own
+// `span` descendant rule (flex: 1 1 auto) rather than reaching for
+// !important -- this wrapper is itself a <span>, so it'd otherwise inherit
+// stretch-to-fill instead of staying a fixed-width column.
+.tournament-entry-page__settings-row .tournament-entry-page__settings-trailing {
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: flex-end;
+  align-items: center;
+  // Measured: the "Bientôt disponible" badge (the widest of the three
+  // trailing variants) renders at ~6.9rem -- 7rem gives it a hair of
+  // breathing room without over-squeezing the longer row labels
+  // ("Politique de confidentialité") for width they don't actually need.
+  min-width: 7rem;
 }
 
 // "Évaluer l'app" -- no real destination yet (see the template's comment),
