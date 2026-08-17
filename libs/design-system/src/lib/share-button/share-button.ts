@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
+import { Clipboard } from '@capacitor/clipboard';
 import { Share } from '@capacitor/share';
 
 /**
@@ -65,9 +66,15 @@ export class ShareButton {
     return /cancel/i.test(message);
   }
 
+  // @capacitor/clipboard, not navigator.clipboard.writeText directly, for
+  // the same reason as @capacitor/share above: the raw Clipboard API is
+  // unreliable inside a Capacitor WKWebView (permission prompts that never
+  // resolve, or a silent no-op) -- the plugin's native implementations
+  // write to the OS clipboard directly, and its web implementation still
+  // wraps navigator.clipboard.writeText, so browser behaviour is unchanged.
   private async copyToClipboard(): Promise<void> {
     try {
-      await navigator.clipboard.writeText(this.url());
+      await Clipboard.write({ string: this.url() });
       clearTimeout(this.copiedTimeout);
       this.copied.set(true);
       this.copiedTimeout = setTimeout(() => this.copied.set(false), 2000);
