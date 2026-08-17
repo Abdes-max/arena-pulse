@@ -59,6 +59,21 @@ interface BracketPage {
 
 type StandingsTab = 'pools' | 'final' | 'ranking';
 
+// Swipe tuning for the round-pager below: a horizontal drag has to clear
+// this many px before release commits a page change (otherwise it snaps
+// back), and this many px of initial movement before the gesture is
+// classified horizontal vs vertical at all.
+const SWIPE_THRESHOLD_PX = 60;
+const DIRECTION_LOCK_PX = 10;
+
+interface PagerDragState {
+  phaseId: string;
+  startX: number;
+  startY: number;
+  deltaPx: number;
+  direction: 'horizontal' | 'vertical' | null;
+}
+
 // localStorage (OfflineCacheService) round-trips through JSON.stringify --
 // a Map wouldn't survive that, so the cached snapshot keeps bracketByPhase
 // as plain [phaseId, BracketView][] entries instead.
@@ -242,6 +257,81 @@ export class StandingsPage {
   protected goToPage(phaseId: string, delta: number, pageCount: number): void {
     const next = Math.min(Math.max(this.currentPageIndex(phaseId) + delta, 0), pageCount - 1);
     this.pageIndexByPhase.update((map) => ({ ...map, [phaseId]: next }));
+  }
+
+  // --- Swipe (in addition to the ◁/▷ buttons above) ---
+  // Only one bracket section can be actively touched at a time, so a single
+  // signal is enough. Direction locks in on the first ~10px of movement
+  // (see DIRECTION_LOCK_PX): once it reads as horizontal, the gesture owns
+  // the pager (preventDefault stops the page itself from scrolling too);
+  // once vertical, the drag is left alone and the page scrolls normally.
+  protected readonly dragState = signal<PagerDragState | null>(null);
+
+  protected onSwipeStart(event: TouchEvent, phaseId: string): void {
+    const touch = event.touches[0];
+    if (!touch) {
+      return;
+    }
+    this.dragState.set({
+      phaseId,
+      startX: touch.clientX,
+      startY: touch.clientY,
+      deltaPx: 0,
+      direction: null,
+    });
+  }
+
+  protected onSwipeMove(event: TouchEvent, phaseId: string): void {
+    const state = this.dragState();
+    const touch = event.touches[0];
+    if (!state || state.phaseId !== phaseId || !touch) {
+      return;
+    }
+    const deltaPx = touch.clientX - state.startX;
+    let direction = state.direction;
+    if (!direction) {
+      const deltaY = touch.clientY - state.startY;
+      if (Math.abs(deltaPx) > DIRECTION_LOCK_PX || Math.abs(deltaY) > DIRECTION_LOCK_PX) {
+        direction = Math.abs(deltaPx) > Math.abs(deltaY) ? 'horizontal' : 'vertical';
+      }
+    }
+    if (direction === 'horizontal') {
+      event.preventDefault();
+    }
+    this.dragState.set({ ...state, deltaPx, direction });
+  }
+
+  protected onSwipeEnd(phaseId: string, pageCount: number): void {
+    const state = this.dragState();
+    this.dragState.set(null);
+    if (!state || state.phaseId !== phaseId || state.direction !== 'horizontal') {
+      return;
+    }
+    if (state.deltaPx <= -SWIPE_THRESHOLD_PX) {
+      this.goToPage(phaseId, 1, pageCount);
+    } else if (state.deltaPx >= SWIPE_THRESHOLD_PX) {
+      this.goToPage(phaseId, -1, pageCount);
+    }
+    // Short of the threshold: no page change, and clearing dragState above
+    // already lets --drag fall back to 0 with the transition re-enabled --
+    // the track visibly snaps back to the current page on its own.
+  }
+
+  protected onSwipeCancel(phaseId: string): void {
+    const state = this.dragState();
+    if (state?.phaseId === phaseId) {
+      this.dragState.set(null);
+    }
+  }
+
+  protected isDragging(phaseId: string): boolean {
+    const state = this.dragState();
+    return state?.phaseId === phaseId && state.direction === 'horizontal';
+  }
+
+  protected dragOffsetPx(phaseId: string): number {
+    const state = this.dragState();
+    return state?.phaseId === phaseId && state.direction === 'horizontal' ? state.deltaPx : 0;
   }
 
   // ap-match-card is the shared design-system component web already uses
