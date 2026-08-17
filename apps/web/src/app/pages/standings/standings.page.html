@@ -100,7 +100,7 @@
       @if (bracket.rounds.length === 0) {
         <p class="standings-page__empty">Le tableau n'a pas encore été généré pour cette phase.</p>
       } @else {
-        @if (roundOptions().length > 1) {
+        @if (roundOptions().length > 2) {
           <ap-tabs
             class="standings-page__round-tabs"
             label="Tour"
@@ -110,10 +110,20 @@
           />
         }
 
-        <div class="standings-page__bracket" [style.height.px]="bracketHeight(bracket)">
+        <div
+          class="standings-page__bracket"
+          [class.standings-page__bracket--focus-mode]="selectedRoundView()"
+          [style.height.px]="selectedRoundView() ? null : bracketHeight(bracket)"
+        >
           @for (round of bracket.rounds; track round.round) {
             <div
               class="standings-page__bracket-round"
+              [class.standings-page__bracket-round--focused]="
+                selectedRoundView() === round.round.toString()
+              "
+              [class.standings-page__bracket-round--collapsed]="
+                selectedRoundView() && selectedRoundView() !== round.round.toString()
+              "
               [id]="'bracket-round-' + selectedTab() + '-' + round.round"
             >
               <h3>{{ round.label }}</h3>
@@ -139,6 +149,10 @@
         @if (bracket.thirdPlaceMatch; as match) {
           <div
             class="standings-page__third-place"
+            [class.standings-page__third-place--focused]="selectedRoundView() === 'third'"
+            [class.standings-page__third-place--collapsed]="
+              selectedRoundView() && selectedRoundView() !== 'third'
+            "
             [id]="'bracket-round-' + selectedTab() + '-third'"
           >
             <h3>Pour la 3e place</h3>

@@ -38,6 +38,7 @@ function phase(id: string, name: string, size = 4): CompetitionPhase {
       size,
       hasRankingMatch: true,
     },
+    isSeedPhase: false,
   };
 }
 

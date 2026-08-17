@@ -59,7 +59,14 @@ export class StandingsPage {
   protected readonly crossGroupTies = signal<CrossGroupUnresolvedTie[]>([]);
 
   protected readonly groupStagePhases = computed(() =>
-    this.phases().filter((phase) => phase.type === 'GROUP_STAGE'),
+    this.phases().filter((phase) => phase.type === 'GROUP_STAGE' && !phase.isSeedPhase),
+  );
+
+  // Distinguishes "no phase configured yet" (organizer still needs to visit
+  // Structure) from "this category is a valid KNOCKOUT_ONLY structure" (no
+  // real pool phase by design) -- the two need different empty-state copy.
+  protected readonly isKnockoutOnly = computed(
+    () => this.phases().length > 0 && this.groupStagePhases().length === 0,
   );
 
   // Every KNOCKOUT phase in this category, in tournament order -- used to
@@ -138,7 +145,9 @@ export class StandingsPage {
         categoryId,
       );
       this.phases.set(phases);
-      const firstGroupStage = phases.find((phase) => phase.type === 'GROUP_STAGE');
+      const firstGroupStage = phases.find(
+        (phase) => phase.type === 'GROUP_STAGE' && !phase.isSeedPhase,
+      );
       if (firstGroupStage) {
         this.selectedPhaseId.set(firstGroupStage.id);
         await this.loadStandings();

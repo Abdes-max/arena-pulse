@@ -31,7 +31,11 @@
       </div>
 
       @if (groupStagePhases().length === 0) {
-        <p>Ajoutez d'abord une phase de poules sur la page Structure de cette catégorie.</p>
+        @if (isKnockoutOnly()) {
+          <p>Ce tournoi est en format Élimination directe : il n'y a pas de classement de poule.</p>
+        } @else {
+          <p>Ajoutez d'abord une phase de poules sur la page Structure de cette catégorie.</p>
+        }
       } @else {
         @if (groupStandings().length === 0) {
           <p>Ajoutez d'abord une poule à cette phase.</p>

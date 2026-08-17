@@ -103,6 +103,12 @@ export class StandingsPage {
     this.phases().filter((phase) => phase.type === 'KNOCKOUT' && phase.knockoutBracket),
   );
   protected readonly hasFinalPhase = computed(() => this.knockoutPhases().length > 0);
+  // KNOCKOUT_ONLY category whose bracket hasn't been generated yet: neither
+  // segment button exists, so the usual per-tab content blocks would all
+  // stay silent -- shown instead of a blank screen.
+  protected readonly hasNoTabsYet = computed(
+    () => !this.hasGroupStagePhase() && !this.hasFinalPhase(),
+  );
   protected readonly bracketPhaseOptions = computed(() =>
     this.knockoutPhases().map((phase) => ({ value: phase.id, label: phase.name })),
   );
@@ -131,19 +137,26 @@ export class StandingsPage {
     this.bracketByPhase().get(this.selectedBracketPhaseId()),
   );
 
-  // Quick-jump row above the connected bracket tree: tapping a round scrolls
-  // it into view instead of making the visitor drag the horizontal scroll
-  // all the way there themselves -- mirrors apps/web's public standings page.
+  // Quick-jump row above the connected bracket tree, and also this bracket's
+  // "accordion" focus state: tapping a round both scrolls it into view and
+  // collapses every other round to a thin strip, letting the focused
+  // round's own matches sit close together instead of stretched across the
+  // tree's full shared height -- mirrors apps/web's public standings page.
+  // Empty string means no round focused (the full connected tree).
   protected readonly selectedRoundValue = signal('');
   protected readonly roundOptions = computed(() => {
     const bracket = this.selectedBracket();
     if (!bracket) {
       return [];
     }
-    const options = bracket.rounds.map((round) => ({
-      value: String(round.round),
-      label: round.label,
-    }));
+    // "Vue complète" is a real, distinct option value -- tapping the
+    // already-focused round again wouldn't re-emit anything (segment
+    // buttons only fire ionChange on an actual value change), so toggling
+    // focus back off needs its own option.
+    const options = [{ value: '', label: 'Vue complète' }];
+    options.push(
+      ...bracket.rounds.map((round) => ({ value: String(round.round), label: round.label })),
+    );
     if (bracket.thirdPlaceMatch) {
       options.push({ value: 'third', label: 'Pour la 3e place' });
     }
@@ -170,15 +183,15 @@ export class StandingsPage {
         void this.loadStandings();
       }
     });
-    // Keeps the round selection valid whenever the bracket (phase, category,
-    // reload…) changes underneath it, defaulting back to the first round.
+    // Clears the focused round if it stops existing under it (bracket,
+    // phase, category change) -- doesn't force a round to be focused by
+    // default, unlike the old always-select-the-first-round behaviour this
+    // replaces (see selectedRoundValue's own doc comment).
     effect(() => {
       const options = this.roundOptions();
-      if (
-        options.length > 0 &&
-        !options.some((option) => option.value === this.selectedRoundValue())
-      ) {
-        this.selectedRoundValue.set(options[0].value);
+      const current = this.selectedRoundValue();
+      if (current && !options.some((option) => option.value === current)) {
+        this.selectedRoundValue.set('');
       }
     });
   }
@@ -196,6 +209,7 @@ export class StandingsPage {
       if (categories.length > 0) {
         this.selectedCategoryId.set(categories[0].id);
         await this.loadStandings();
+        this.syncActiveTabToAvailability();
       }
     } catch (error) {
       const cached = this.cache.get<Category[]>(cacheKey);
@@ -205,6 +219,7 @@ export class StandingsPage {
         if (cached.data.length > 0) {
           this.selectedCategoryId.set(cached.data[0].id);
           await this.loadStandings();
+          this.syncActiveTabToAvailability();
         }
       } else {
         this.errorMessage.set('Impossible de charger les classements.');
@@ -216,8 +231,16 @@ export class StandingsPage {
 
   protected async onCategoryChange(categoryId: string): Promise<void> {
     this.selectedCategoryId.set(categoryId);
-    this.activeTab.set('pools');
     await this.loadStandings();
+    this.syncActiveTabToAvailability();
+  }
+
+  // The "Phase de poules" segment button doesn't exist for a KNOCKOUT_ONLY
+  // category (no real pool phase to show, see hasGroupStagePhase) -- landing
+  // there would leave nothing selected, so fall back to whichever tab this
+  // category actually has.
+  private syncActiveTabToAvailability(): void {
+    this.activeTab.set(this.hasGroupStagePhase() ? 'pools' : 'final');
   }
 
   protected onBracketPhaseChange(phaseId: string): void {
@@ -226,9 +249,11 @@ export class StandingsPage {
 
   protected onRoundChange(value: string): void {
     this.selectedRoundValue.set(value);
-    document
-      .getElementById(`bracket-round-${this.selectedBracketPhaseId()}-${value}`)
-      ?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+    if (value) {
+      document
+        .getElementById(`bracket-round-${this.selectedBracketPhaseId()}-${value}`)
+        ?.scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+    }
   }
 
   protected bracketHeight(bracket: BracketView): number {
@@ -257,7 +282,7 @@ export class StandingsPage {
     try {
       const phases = await this.api.listPhases(slug, categoryId);
 
-      const groupPhases = phases.filter((p) => p.type === 'GROUP_STAGE');
+      const groupPhases = phases.filter((p) => p.type === 'GROUP_STAGE' && !p.isSeedPhase);
       const groupStandings = await Promise.all(
         groupPhases.flatMap((phase) =>
           phase.groups.map(async (group) => ({
