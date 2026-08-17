@@ -88,12 +88,7 @@
       <div class="home-page__sponsors">
         @for (sponsor of t.sponsors; track sponsor.id) {
           @if (sponsor.linkUrl) {
-            <a
-              class="home-page__sponsor"
-              [href]="sponsor.linkUrl"
-              target="_blank"
-              rel="noopener"
-            >
+            <a class="home-page__sponsor" [href]="sponsor.linkUrl" target="_blank" rel="noopener">
               @if (logoUrl(sponsor.logoUrl); as logo) {
                 <img [src]="logo" [alt]="sponsor.name" />
               } @else {
