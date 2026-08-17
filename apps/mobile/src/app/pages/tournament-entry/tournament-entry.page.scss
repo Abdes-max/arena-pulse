@@ -45,6 +45,74 @@
   }
 }
 
+.tournament-entry-page__settings-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ap-space-1);
+  border: none;
+  background: none;
+  color: var(--ap-color-fg);
+  cursor: pointer;
+  border-radius: 999px;
+
+  &:hover {
+    color: var(--ap-color-signal);
+  }
+}
+
+// Dismisses the panel on an outside tap -- covers the whole viewport behind
+// it, transparent (not a dimming scrim, unlike a modal): this is a small
+// utility menu, not a flow that needs the rest of the screen visually
+// suppressed.
+.tournament-entry-page__settings-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: default;
+}
+
+// position: fixed (viewport-relative), not absolute (relative to the
+// nearest positioned ancestor -- .tournament-entry-page__hero) -- the hero
+// has overflow: hidden for its decorative glow (::before), which would
+// otherwise clip a panel positioned below the hero's own bottom edge.
+.tournament-entry-page__settings-panel {
+  position: fixed;
+  top: 3.25rem;
+  right: var(--ap-space-4);
+  z-index: 11;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+  padding: var(--ap-space-3) var(--ap-space-4);
+  min-width: 12rem;
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  box-shadow: var(--ap-shadow-md);
+
+  a {
+    color: var(--ap-color-fg);
+    font-size: 0.85rem;
+    text-decoration: none;
+
+    &:hover {
+      color: var(--ap-color-signal);
+    }
+  }
+}
+
+.tournament-entry-page__settings-trademark {
+  margin: var(--ap-space-1) 0 0;
+  padding-top: var(--ap-space-2);
+  border-top: var(--ap-border-width) solid var(--ap-color-border);
+  color: var(--ap-color-muted);
+  font-size: 0.72rem;
+}
+
 // Narrower than web's equivalent glow -- at web's proportions this read as
 // one dominant blob rather than an ambient wash on a narrow phone screen.
 .tournament-entry-page__hero::before {
@@ -136,6 +204,35 @@ ap-tournament-marquee {
   display: block;
   align-self: stretch;
   text-align: left;
+}
+
+// Replaces the whole hero-body (title/hint/CTAs/marquee) once "Voir les
+// événements" collapses it -- the published list right below gets the
+// screen instead of sharing it, with just this thin bar and its back
+// arrow left of the always-dark hero to return to.
+.tournament-entry-page__hero-back {
+  position: relative;
+  padding: var(--ap-space-2) var(--ap-space-4) var(--ap-space-4);
+}
+
+.tournament-entry-page__back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ap-space-1);
+  padding: var(--ap-space-2) var(--ap-space-3);
+  margin-left: calc(-1 * var(--ap-space-3));
+  border: none;
+  background: none;
+  color: var(--ap-color-fg);
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  border-radius: var(--ap-radius-md);
+
+  &:hover {
+    color: var(--ap-color-signal);
+  }
 }
 
 // ================= Below the hero (ion-content) follows this screen's

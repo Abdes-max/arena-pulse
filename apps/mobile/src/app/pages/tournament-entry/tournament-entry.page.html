@@ -24,50 +24,88 @@
       >
         Créer
       </a>
+      <button
+        type="button"
+        class="tournament-entry-page__settings-btn"
+        aria-label="Paramètres"
+        (click)="toggleSettings()"
+      >
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+          <path
+            fill="currentColor"
+            d="M19.14 12.94c.04-.31.06-.62.06-.94s-.02-.63-.06-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.61-.22l-2.39.96a7.03 7.03 0 0 0-1.62-.94l-.36-2.54a.5.5 0 0 0-.5-.42h-3.84a.5.5 0 0 0-.5.42l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96a.5.5 0 0 0-.61.22L2.7 8.84a.5.5 0 0 0 .12.64l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94L2.82 14.5a.5.5 0 0 0-.12.64l1.92 3.32c.14.24.42.32.61.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.26.42.5.42h3.84c.24 0 .45-.18.5-.42l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.24.1.47.02.61-.22l1.92-3.32a.5.5 0 0 0-.12-.64zM12 15.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7"
+          />
+        </svg>
+      </button>
       <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
     </div>
   </ion-toolbar>
 
-  <div class="tournament-entry-page__hero-body">
-    <h1 class="tournament-entry-page__title">Suivre une compétition</h1>
-    <p class="tournament-entry-page__hint">
-      Poules, tableaux à élimination, calendrier et classements en direct.
-    </p>
+  @if (showSettings()) {
+    <button
+      type="button"
+      class="tournament-entry-page__settings-backdrop"
+      aria-label="Fermer les paramètres"
+      (click)="toggleSettings()"
+    ></button>
+    <div class="tournament-entry-page__settings-panel">
+      <a [href]="privacyUrl" target="_blank" rel="noopener">Politique de confidentialité</a>
+      <a [href]="termsUrl" target="_blank" rel="noopener">Conditions d'utilisation</a>
+      <p class="tournament-entry-page__settings-trademark">TournArena® — Tous droits réservés.</p>
+    </div>
+  }
 
-    @if (hasTournaments()) {
-      <div class="tournament-entry-page__hero-ctas">
-        <ap-button type="button" [fullWidth]="true" (click)="scrollToPublished()">
-          Voir les événements
-        </ap-button>
-        @if (exampleTournament(); as example) {
-          <ap-button
-            type="button"
-            variant="secondary"
-            [fullWidth]="true"
-            (click)="goToTournament(example)"
-          >
-            Voir un exemple
-          </ap-button>
-        }
-      </div>
-    }
-
-    @if (tournaments().length > 0) {
-      <p class="tournament-entry-page__marquee-label">
-        <span class="tournament-entry-page__marquee-pulse" aria-hidden="true"></span>
-        En ce moment
+  @if (showHero()) {
+    <div class="tournament-entry-page__hero-body">
+      <h1 class="tournament-entry-page__title">Suivre une compétition</h1>
+      <p class="tournament-entry-page__hint">
+        Poules, tableaux à élimination, calendrier et classements en direct.
       </p>
-      <ap-tournament-marquee
-        [tournaments]="marqueeTournaments()"
-        (tournamentClick)="goToTournament($event)"
-      />
-    }
-  </div>
+
+      @if (hasTournaments()) {
+        <div class="tournament-entry-page__hero-ctas">
+          <ap-button type="button" [fullWidth]="true" (click)="viewEvents()">
+            Voir les événements
+          </ap-button>
+          @if (exampleTournament(); as example) {
+            <ap-button
+              type="button"
+              variant="secondary"
+              [fullWidth]="true"
+              (click)="goToTournament(example)"
+            >
+              Voir un exemple
+            </ap-button>
+          }
+        </div>
+      }
+
+      @if (tournaments().length > 0) {
+        <p class="tournament-entry-page__marquee-label">
+          <span class="tournament-entry-page__marquee-pulse" aria-hidden="true"></span>
+          En ce moment
+        </p>
+        <ap-tournament-marquee
+          [tournaments]="marqueeTournaments()"
+          (tournamentClick)="goToTournament($event)"
+        />
+      }
+    </div>
+  } @else {
+    <div class="tournament-entry-page__hero-back">
+      <button type="button" class="tournament-entry-page__back-btn" (click)="backToHero()">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+          <path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+        </svg>
+        Retour
+      </button>
+    </div>
+  }
 </ion-header>
 
 <ion-content class="tournament-entry-page">
   @if (tournaments().length > 0) {
-    <section class="tournament-entry-page__published" #publishedSection>
+    <section class="tournament-entry-page__published">
       <h2 class="tournament-entry-page__published-title">
         <span class="tournament-entry-page__published-pulse" aria-hidden="true"></span>
         Événements publiés

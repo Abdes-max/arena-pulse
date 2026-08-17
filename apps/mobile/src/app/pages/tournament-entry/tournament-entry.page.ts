@@ -1,12 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  computed,
-  inject,
-  signal,
-  viewChild,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonContent, IonHeader, IonToolbar } from '@ionic/angular/standalone';
 import { AssetUrlService, PublicApiService } from 'api-client';
@@ -57,6 +49,8 @@ export class TournamentEntryPage {
   // apps/web's landing page hero ("Créer mon tournoi").
   protected readonly createTournamentUrl = `${environment.webUrl}/register`;
   protected readonly loginUrl = `${environment.webUrl}/login`;
+  protected readonly privacyUrl = `${environment.webUrl}/privacy`;
+  protected readonly termsUrl = `${environment.webUrl}/terms`;
   protected readonly exampleTournament = computed(() => this.tournaments()[0] ?? null);
   // Governs the hero's own CTA: this screen's H1 promises "Suivre une
   // compétition", so its primary action should deliver on that (jump to
@@ -65,7 +59,13 @@ export class TournamentEntryPage {
   // complete itself. That link still lives in the nav next to Connexion,
   // just no longer competing for the hero's single most prominent button.
   protected readonly hasTournaments = computed(() => this.tournaments().length > 0);
-  private readonly publishedSection = viewChild<ElementRef<HTMLElement>>('publishedSection');
+  // Whether the hero (title/hint/CTAs/marquee) is shown, or collapsed down
+  // to just a back arrow -- toggled by "Voir les événements" so the
+  // published list gets the whole screen instead of sharing it below the
+  // fold, and the dark hero doesn't stay competing for attention once its
+  // job (getting the visitor to the list) is done.
+  protected readonly showHero = signal(true);
+  protected readonly showSettings = signal(false);
 
   // Same pattern as apps/web's LandingPage (and team-search.page's
   // filteredTeams) -- client-side filter over a wider-than-displayed fetch.
@@ -106,11 +106,15 @@ export class TournamentEntryPage {
     void this.router.navigate(['/', tournament.slug]);
   }
 
-  // scrollIntoView (not a plain #anchor href) -- reliably finds the nearest
-  // scrollable ancestor regardless of ion-content's own internal scroll
-  // container, unlike native fragment navigation which targets the
-  // document's scrolling box and isn't guaranteed to reach inside it.
-  protected scrollToPublished(): void {
-    this.publishedSection()?.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  protected viewEvents(): void {
+    this.showHero.set(false);
+  }
+
+  protected backToHero(): void {
+    this.showHero.set(true);
+  }
+
+  protected toggleSettings(): void {
+    this.showSettings.update((shown) => !shown);
   }
 }
