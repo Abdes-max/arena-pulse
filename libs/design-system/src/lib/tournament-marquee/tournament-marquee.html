@@ -15,7 +15,12 @@
             <span class="ap-tournament-marquee__dates">{{ dates }}</span>
           }
         </span>
-        <span class="ap-tournament-marquee__name">{{ t.name }}</span>
+        <span class="ap-tournament-marquee__name-row">
+          @if (t.logoUrl; as logo) {
+            <img class="ap-tournament-marquee__logo" [src]="logo" alt="" />
+          }
+          <span class="ap-tournament-marquee__name">{{ t.name }}</span>
+        </span>
         @if (locationLabel(t); as loc) {
           <span class="ap-tournament-marquee__loc">{{ loc }}</span>
         }

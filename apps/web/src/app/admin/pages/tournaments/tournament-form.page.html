@@ -78,6 +78,36 @@
         </section>
       }
 
+      @if (isEditMode() && tournament(); as t) {
+        <section class="tournament-form-page__section">
+          <h2>Logo</h2>
+          <div class="tournament-form-page__logo-row">
+            @if (logoUrl(t.logoUrl); as logo) {
+              <img class="tournament-form-page__logo" [src]="logo" alt="" />
+            } @else {
+              <span class="tournament-form-page__logo-placeholder" aria-hidden="true"></span>
+            }
+            <label class="tournament-form-page__logo-upload">
+              {{ t.logoUrl ? 'Changer' : 'Ajouter un logo' }}
+              <input
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                (change)="onLogoFileSelected($event)"
+              />
+            </label>
+            @if (t.logoUrl) {
+              <button
+                type="button"
+                class="tournament-form-page__logo-remove"
+                (click)="removeLogo()"
+              >
+                Retirer
+              </button>
+            }
+          </div>
+        </section>
+      }
+
       <form class="tournament-form-page__form" [formGroup]="form" (ngSubmit)="submit()">
         <ap-text-field label="Nom du tournoi" formControlName="name" />
         <ap-select label="Sport" [options]="sportOptions()" formControlName="sportId" />

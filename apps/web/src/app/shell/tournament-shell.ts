@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { AssetUrlService } from 'api-client';
 import { ThemeModeToggle } from 'design-system';
 import { DEFAULT_THEME, ThemeMode, ThemeName, ThemeService } from 'design-tokens';
 import { TournamentContextService } from '../core/tournament-context.service';
@@ -32,12 +33,17 @@ export class TournamentShell {
   private readonly route = inject(ActivatedRoute);
   private readonly themeService = inject(ThemeService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly assetUrl = inject(AssetUrlService);
   protected readonly context = inject(TournamentContextService);
 
   protected readonly tournament = this.context.tournament;
   protected readonly loading = this.context.loading;
   protected readonly errorMessage = this.context.errorMessage;
   protected readonly mode = this.themeService.mode;
+
+  protected logoUrl(url: string | null | undefined): string | null {
+    return this.assetUrl.resolve(url ?? null);
+  }
 
   protected onModeChange(next: ThemeMode): void {
     this.themeService.setMode(document.documentElement, next);

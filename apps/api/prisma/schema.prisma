@@ -219,6 +219,9 @@ model Tournament {
   isOnline        Boolean          @default(false)
   teamsCanReferee Boolean          @default(false)
   theme           PublicTheme      @default(INK_SIGNAL)
+  // Public path served by the API (e.g. /uploads/tournament-logos/<file>) --
+  // see TournamentsService.uploadLogo. Null until an organizer uploads one.
+  logoUrl         String?
   archivedAt      DateTime?
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt

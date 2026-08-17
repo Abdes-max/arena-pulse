@@ -42,6 +42,10 @@ export class TournamentSubmenu {
   // The link only makes sense once there's something public to visit -- an
   // unpublished tournament's site 404s for a visitor.
   readonly published = input(false);
+  // Small logo+name line above the tabs -- also fetched by AppShell
+  // alongside the theme, already resolved to an absolute URL (or null).
+  readonly name = input<string | null>(null);
+  readonly logoUrl = input<string | null>(null);
 
   protected readonly publicUrl = computed(() => {
     const slug = this.slug();

@@ -10,6 +10,7 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { AssetUrlService } from 'api-client';
 import { Badge, BadgeStatus, Button, Select, SelectOption, TextField } from 'design-system';
 import { ThemeService } from 'design-tokens';
 import { AuthService } from '../../core/auth.service';
@@ -52,6 +53,7 @@ export class TournamentFormPage {
   private readonly permissionsService = inject(PermissionsService);
   private readonly authService = inject(AuthService);
   private readonly themeService = inject(ThemeService);
+  private readonly assetUrl = inject(AssetUrlService);
 
   protected readonly organization = computed(() => this.authService.organizations()[0] ?? null);
   private readonly paramMap = toSignal(this.route.paramMap, {
@@ -293,6 +295,45 @@ export class TournamentFormPage {
       await this.router.navigate(['/admin/tournaments', clone.id]);
     } catch {
       this.errorMessage.set('Impossible de dupliquer ce tournoi.');
+    }
+  }
+
+  protected logoUrl(url: string | null | undefined): string | null {
+    return this.assetUrl.resolve(url ?? null);
+  }
+
+  protected async onLogoFileSelected(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = ''; // allow re-selecting the same file later (e.g. after an error)
+    const organizationId = this.organization()?.id;
+    const tournamentId = this.tournamentId();
+    if (!file || !organizationId || !tournamentId) {
+      return;
+    }
+    try {
+      this.tournament.set(
+        await this.tournamentsService.uploadLogo(organizationId, tournamentId, file),
+      );
+    } catch (error) {
+      this.errorMessage.set(
+        error instanceof HttpErrorResponse && error.status === 400
+          ? 'Format ou taille de fichier invalide (PNG, JPEG ou WebP, 2 Mo maximum).'
+          : "Impossible d'envoyer ce logo, réessayez.",
+      );
+    }
+  }
+
+  protected async removeLogo(): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const tournamentId = this.tournamentId();
+    if (!organizationId || !tournamentId) {
+      return;
+    }
+    try {
+      this.tournament.set(await this.tournamentsService.removeLogo(organizationId, tournamentId));
+    } catch {
+      this.errorMessage.set('Impossible de retirer ce logo.');
     }
   }
 

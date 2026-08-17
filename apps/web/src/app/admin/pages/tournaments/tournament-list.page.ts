@@ -7,6 +7,7 @@ import {
   signal,
 } from '@angular/core';
 import { Router } from '@angular/router';
+import { AssetUrlService } from 'api-client';
 import { Badge, BadgeStatus, Button, Select, SelectOption } from 'design-system';
 import { DEFAULT_THEME, ThemeService } from 'design-tokens';
 import { AuthService } from '../../core/auth.service';
@@ -56,6 +57,7 @@ export class TournamentListPage {
   private readonly router = inject(Router);
   private readonly themeService = inject(ThemeService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly assetUrl = inject(AssetUrlService);
 
   protected readonly organization = computed(() => this.authService.organizations()[0] ?? null);
   protected readonly statusBadge = STATUS_TO_BADGE;
@@ -224,6 +226,10 @@ export class TournamentListPage {
 
   protected editTournament(tournament: Tournament): void {
     void this.router.navigate(['/admin/tournaments', tournament.id]);
+  }
+
+  protected logoUrl(url: string | null): string | null {
+    return this.assetUrl.resolve(url);
   }
 
   protected publicUrl(tournament: Tournament): string {

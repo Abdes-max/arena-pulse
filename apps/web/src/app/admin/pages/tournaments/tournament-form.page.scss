@@ -33,6 +33,61 @@
   max-width: 400px;
 }
 
+.tournament-form-page__logo-row {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-3);
+}
+
+.tournament-form-page__logo,
+.tournament-form-page__logo-placeholder {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--ap-radius-md);
+  flex: none;
+}
+
+.tournament-form-page__logo {
+  object-fit: cover;
+}
+
+.tournament-form-page__logo-placeholder {
+  border: var(--ap-border-width) dashed var(--ap-color-border);
+}
+
+// Same styled-<label>-wrapping-a-hidden-file-input trick as
+// team-list.page.scss's own __logo-upload.
+.tournament-form-page__logo-upload {
+  position: relative;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ap-color-signal-text);
+  cursor: pointer;
+  white-space: nowrap;
+
+  input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+}
+
+.tournament-form-page__logo-remove {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--ap-color-muted);
+  cursor: pointer;
+  white-space: nowrap;
+
+  &:hover {
+    color: var(--ap-color-error);
+  }
+}
+
 .tournament-form-page__checkbox-label {
   display: flex;
   flex-direction: row;

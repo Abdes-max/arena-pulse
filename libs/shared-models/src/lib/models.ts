@@ -47,6 +47,7 @@ export interface PublicTournamentSummary {
   // Null for an online tournament, or a physical one with no venue address
   // recorded yet -- the card simply omits the location line in that case.
   location: string | null;
+  logoUrl: string | null;
 }
 
 export interface PublicTournament {
@@ -59,6 +60,7 @@ export interface PublicTournament {
   endDate: string | null;
   isOnline: boolean;
   theme: PublicTheme;
+  logoUrl: string | null;
   venues: Venue[];
 }
 

@@ -69,12 +69,30 @@
   white-space: nowrap;
 }
 
+.ap-tournament-card__name-row {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  min-width: 0;
+}
+
+.ap-tournament-card__logo {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--ap-radius-sm);
+  object-fit: cover;
+  flex: none;
+}
+
 .ap-tournament-card__name {
   margin: 0;
   font-family: var(--ap-font-heading);
   font-size: 1.05rem;
   font-weight: 700;
   color: var(--ap-color-fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .ap-tournament-card__dates {

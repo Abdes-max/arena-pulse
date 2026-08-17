@@ -9,6 +9,9 @@ export interface TournamentMarqueeItem {
   endDate: string | null;
   isOnline: boolean;
   location: string | null;
+  // Already resolved to an absolute URL by the caller (AssetUrlService) --
+  // this component stays a dumb presenter, same as ap-tournament-card.
+  logoUrl: string | null;
 }
 
 /**

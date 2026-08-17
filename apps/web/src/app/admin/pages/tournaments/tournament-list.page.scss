@@ -53,6 +53,22 @@
   gap: var(--ap-space-2);
 }
 
+.tournament-list-page__logo,
+.tournament-list-page__logo-placeholder {
+  display: block;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--ap-radius-sm);
+}
+
+.tournament-list-page__logo {
+  object-fit: cover;
+}
+
+.tournament-list-page__logo-placeholder {
+  border: var(--ap-border-width) dashed var(--ap-color-border);
+}
+
 .tournament-list-page__public-link-icon {
   width: 14px;
   height: 14px;
@@ -95,6 +111,13 @@
     gap: var(--ap-space-3);
     padding: var(--ap-space-2) 0;
     border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+  }
+
+  // Thumbnail-only column, no meaningful label to show next to it, and the
+  // card already leads with the tournament's name -- dropped on mobile
+  // rather than given its own awkward unlabeled row.
+  .tournament-list-page__logo-cell {
+    display: none;
   }
 
   .tournament-list-page__cell--name::before,

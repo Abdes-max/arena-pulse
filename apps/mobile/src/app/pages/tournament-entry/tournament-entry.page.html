@@ -52,7 +52,7 @@
         En ce moment
       </p>
       <ap-tournament-marquee
-        [tournaments]="tournaments()"
+        [tournaments]="marqueeTournaments()"
         (tournamentClick)="goToTournament($event)"
       />
     }
@@ -92,6 +92,7 @@
                 [endDate]="t.endDate"
                 [isOnline]="t.isOnline"
                 [location]="t.location"
+                [logoUrl]="logoUrl(t.logoUrl)"
               />
             </button>
           }

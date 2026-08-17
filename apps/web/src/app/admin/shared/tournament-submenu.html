@@ -1,3 +1,11 @@
+@if (name(); as tournamentName) {
+  <div class="tournament-submenu__identity">
+    @if (logoUrl(); as logo) {
+      <img class="tournament-submenu__logo" [src]="logo" alt="" />
+    }
+    <span class="tournament-submenu__name">{{ tournamentName }}</span>
+  </div>
+}
 <div class="tournament-submenu-row">
   <nav class="tournament-submenu" #nav>
     <a
