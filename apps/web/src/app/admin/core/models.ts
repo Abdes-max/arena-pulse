@@ -141,6 +141,17 @@ export interface TournamentDetail extends Tournament {
   archivedAt: string | null;
   updatedAt: string;
   teamsCanReferee: boolean;
+  description: string | null;
+  rules: string | null;
+  practicalInfo: string | null;
+}
+
+export interface Sponsor {
+  id: string;
+  name: string;
+  logoUrl: string | null;
+  linkUrl: string | null;
+  position: number;
 }
 
 export interface Division {

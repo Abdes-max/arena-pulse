@@ -19,6 +19,7 @@ import {
   Permission,
   PublicationOrder,
   PublicTheme,
+  Sponsor,
   Sport,
   TournamentAdministrator,
   TournamentDetail,
@@ -26,6 +27,7 @@ import {
   Venue,
 } from '../../core/models';
 import { PermissionsService } from '../../core/permissions.service';
+import { SponsorsService } from '../../core/sponsors.service';
 import { SportsService } from '../../core/sports.service';
 import { THEME_MAP } from '../../core/theme-map';
 import { TournamentsService } from '../../core/tournaments.service';
@@ -51,6 +53,7 @@ export class TournamentFormPage {
   private readonly tournamentsService = inject(TournamentsService);
   private readonly sportsService = inject(SportsService);
   private readonly permissionsService = inject(PermissionsService);
+  private readonly sponsorsService = inject(SponsorsService);
   private readonly authService = inject(AuthService);
   private readonly themeService = inject(ThemeService);
   private readonly assetUrl = inject(AssetUrlService);
@@ -81,6 +84,7 @@ export class TournamentFormPage {
   protected readonly tournament = signal<TournamentDetail | null>(null);
   protected readonly categories = signal<Category[]>([]);
   protected readonly venues = signal<Venue[]>([]);
+  protected readonly sponsors = signal<Sponsor[]>([]);
   protected readonly administrators = signal<TournamentAdministrator[]>([]);
   protected readonly publicationOrders = signal<PublicationOrder[]>([]);
   protected readonly publicationOrdersLoading = signal(true);
@@ -103,6 +107,16 @@ export class TournamentFormPage {
   protected readonly newFieldNameByVenue = signal<Record<string, string>>({});
   protected readonly newAdministratorEmail = signal('');
   protected readonly newAdministratorPermissionKeys = signal<string[]>([]);
+
+  // Draft text for the free-text content sections (Description/Règlement/
+  // Infos pratiques) -- each saved independently via its own "Enregistrer"
+  // button, same pattern as categoryFeeDraftById above, just one field each
+  // instead of one per category.
+  protected readonly descriptionDraft = signal('');
+  protected readonly rulesDraft = signal('');
+  protected readonly practicalInfoDraft = signal('');
+  protected readonly newSponsorName = signal('');
+  protected readonly newSponsorLinkUrl = signal('');
 
   constructor() {
     effect(() => {
@@ -138,6 +152,8 @@ export class TournamentFormPage {
     this.newFieldNameByVenue.set({});
     this.newAdministratorEmail.set('');
     this.newAdministratorPermissionKeys.set([]);
+    this.newSponsorName.set('');
+    this.newSponsorLinkUrl.set('');
     this.publicationOrders.set([]);
     this.publicationOrdersLoading.set(true);
     try {
@@ -167,6 +183,10 @@ export class TournamentFormPage {
       isOnline: tournament.isOnline,
       theme: tournament.theme,
     });
+    this.descriptionDraft.set(tournament.description ?? '');
+    this.rulesDraft.set(tournament.rules ?? '');
+    this.practicalInfoDraft.set(tournament.practicalInfo ?? '');
+    this.sponsors.set(await this.sponsorsService.list(organizationId, tournamentId));
     const categories = await this.tournamentsService.listCategories(organizationId, tournamentId);
     this.categories.set(categories);
     this.categoryFeeDraftById.set(
@@ -332,6 +352,137 @@ export class TournamentFormPage {
     }
     try {
       this.tournament.set(await this.tournamentsService.removeLogo(organizationId, tournamentId));
+    } catch {
+      this.errorMessage.set('Impossible de retirer ce logo.');
+    }
+  }
+
+  protected onDescriptionDraftChange(event: Event): void {
+    this.descriptionDraft.set((event.target as HTMLTextAreaElement).value);
+  }
+
+  protected async saveDescription(): Promise<void> {
+    await this.saveContentField('description', this.descriptionDraft());
+  }
+
+  protected onRulesDraftChange(event: Event): void {
+    this.rulesDraft.set((event.target as HTMLTextAreaElement).value);
+  }
+
+  protected async saveRules(): Promise<void> {
+    await this.saveContentField('rules', this.rulesDraft());
+  }
+
+  protected onPracticalInfoDraftChange(event: Event): void {
+    this.practicalInfoDraft.set((event.target as HTMLTextAreaElement).value);
+  }
+
+  protected async savePracticalInfo(): Promise<void> {
+    await this.saveContentField('practicalInfo', this.practicalInfoDraft());
+  }
+
+  private async saveContentField(
+    field: 'description' | 'rules' | 'practicalInfo',
+    value: string,
+  ): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const tournamentId = this.tournamentId();
+    if (!organizationId || !tournamentId) {
+      return;
+    }
+    try {
+      this.tournament.set(
+        await this.tournamentsService.updateTournament(organizationId, tournamentId, {
+          [field]: value,
+        }),
+      );
+    } catch {
+      this.errorMessage.set("Impossible d'enregistrer cette section.");
+    }
+  }
+
+  protected onNewSponsorNameChange(value: string): void {
+    this.newSponsorName.set(value);
+  }
+
+  protected onNewSponsorLinkUrlChange(value: string): void {
+    this.newSponsorLinkUrl.set(value);
+  }
+
+  protected async addSponsor(): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const tournamentId = this.tournamentId();
+    const name = this.newSponsorName().trim();
+    if (!organizationId || !tournamentId || !name) {
+      return;
+    }
+    try {
+      const linkUrl = this.newSponsorLinkUrl().trim();
+      const sponsor = await this.sponsorsService.create(organizationId, tournamentId, {
+        name,
+        linkUrl: linkUrl || undefined,
+      });
+      this.sponsors.update((sponsors) => [...sponsors, sponsor]);
+      this.newSponsorName.set('');
+      this.newSponsorLinkUrl.set('');
+    } catch {
+      this.errorMessage.set("Impossible d'ajouter ce sponsor.");
+    }
+  }
+
+  protected async removeSponsor(sponsor: Sponsor): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const tournamentId = this.tournamentId();
+    if (!organizationId || !tournamentId) {
+      return;
+    }
+    try {
+      await this.sponsorsService.remove(organizationId, tournamentId, sponsor.id);
+      this.sponsors.update((sponsors) => sponsors.filter((s) => s.id !== sponsor.id));
+    } catch {
+      this.errorMessage.set('Impossible de supprimer ce sponsor.');
+    }
+  }
+
+  protected async onSponsorLogoFileSelected(sponsor: Sponsor, event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = ''; // allow re-selecting the same file later (e.g. after an error)
+    const organizationId = this.organization()?.id;
+    const tournamentId = this.tournamentId();
+    if (!file || !organizationId || !tournamentId) {
+      return;
+    }
+    try {
+      const updated = await this.sponsorsService.uploadLogo(
+        organizationId,
+        tournamentId,
+        sponsor.id,
+        file,
+      );
+      this.sponsors.update((sponsors) => sponsors.map((s) => (s.id === updated.id ? updated : s)));
+    } catch (error) {
+      this.errorMessage.set(
+        error instanceof HttpErrorResponse && error.status === 400
+          ? 'Format ou taille de fichier invalide (PNG, JPEG ou WebP, 2 Mo maximum).'
+          : "Impossible d'envoyer ce logo, réessayez.",
+      );
+    }
+  }
+
+  protected async removeSponsorLogo(sponsor: Sponsor): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const tournamentId = this.tournamentId();
+    if (!organizationId || !tournamentId) {
+      return;
+    }
+    try {
+      const updated = await this.sponsorsService.removeLogo(
+        organizationId,
+        tournamentId,
+        sponsor.id,
+      );
+      this.sponsors.update((sponsors) => sponsors.map((s) => (s.id === updated.id ? updated : s)));
     } catch {
       this.errorMessage.set('Impossible de retirer ce logo.');
     }
