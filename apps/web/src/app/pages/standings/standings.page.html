@@ -199,7 +199,16 @@
           </div>
 
           <div class="standings-page__pager-viewport">
-            <div class="standings-page__pager-track" [style.--i]="pageIndex">
+            <div
+              class="standings-page__pager-track"
+              [class.standings-page__pager-track--dragging]="isDragging(selectedTab())"
+              [style.--i]="pageIndex"
+              [style.--drag]="dragOffsetPx(selectedTab()) + 'px'"
+              (touchstart)="onSwipeStart($event, selectedTab())"
+              (touchmove)="onSwipeMove($event, selectedTab())"
+              (touchend)="onSwipeEnd(selectedTab(), pages.length)"
+              (touchcancel)="onSwipeCancel(selectedTab())"
+            >
               @for (page of pages; track page.label + $index) {
                 <div class="standings-page__pager-page">
                   @for (card of page.cards; track card.match.id) {
@@ -221,6 +230,7 @@
                           ? card.match.forfeitedTeam?.name
                           : undefined
                       "
+                      [highlightWinner]="true"
                     />
                   }
                 </div>

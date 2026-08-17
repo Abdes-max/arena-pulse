@@ -148,6 +148,19 @@
   color: var(--ap-color-muted);
 }
 
+// --- highlightWinner (opt-in, ex. le pager de bracket) : la ligne gagnante
+// reçoit la couleur signal du thème du tournoi, en plus du gras du variant
+// "result" ci-dessus -- toujours accompagnée du score, jamais la couleur
+// seule (docs/design/colors.md). Marge négative égale au padding de la
+// carte pour que le fond déborde jusqu'aux bords, comme une ligne à part
+// entière plutôt qu'un simple texte coloré.
+:host([data-highlight-winner]) .ap-match-card__team--winner {
+  background: var(--ap-color-signal-soft);
+  margin: 0 calc(-1 * var(--ap-space-4));
+  padding: var(--ap-space-1) var(--ap-space-4);
+  border-radius: var(--ap-radius-sm);
+}
+
 // --- featured: mise en avant sur l'accueil public (mission §20) ---
 :host([data-variant='featured']) .ap-match-card {
   padding: var(--ap-space-6);

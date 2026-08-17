@@ -252,13 +252,26 @@
 // The transform formula shifts by exactly one page's footprint (its width
 // plus the track gap) per step, so page i always lands flush against the
 // viewport's left edge while page i+1's first card peeks in from the right.
+// --drag adds the live finger offset (px) on top of that discrete position
+// while a horizontal swipe is in progress -- see onSwipeMove/dragOffsetPx.
 .standings-page__pager-track {
   --peek: 44px;
   --gap: var(--ap-space-3);
+  --drag: 0px;
   display: flex;
   gap: var(--gap);
   transition: transform 0.25s ease;
-  transform: translateX(calc(-1 * var(--i, 0) * (100% - var(--peek) + var(--gap))));
+  transform: translateX(calc(-1 * var(--i, 0) * (100% - var(--peek) + var(--gap)) + var(--drag)));
+  // Vertical scroll stays native; horizontal is claimed by JS once the
+  // gesture locks in as a swipe (see onSwipeMove's preventDefault).
+  touch-action: pan-y;
+}
+
+// No transition while actively dragging -- the track must follow the
+// finger 1:1 with zero lag, only snapping (transition re-enabled) once the
+// gesture ends and --drag resets to 0.
+.standings-page__pager-track--dragging {
+  transition: none;
 }
 
 .standings-page__pager-page {

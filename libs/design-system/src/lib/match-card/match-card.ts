@@ -27,6 +27,7 @@ export interface MatchCardTeam {
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[attr.data-variant]': 'variant()',
+    '[attr.data-highlight-winner]': 'highlightWinnerAttr()',
   },
 })
 export class MatchCard {
@@ -39,6 +40,16 @@ export class MatchCard {
   readonly venue = input<string>();
   readonly competitionLabel = input<string>();
   readonly forfeitedTeamName = input<string>();
+  // Off by default -- opt-in per screen (the bracket round-pager wants the
+  // winning row picked out; a dense schedule/calendar list of many cards
+  // would look noisy with a tinted row on every completed match).
+  readonly highlightWinner = input<boolean>(false);
+
+  // '' (not just true) so the attribute reflects HTML's own boolean-attribute
+  // convention (present with an empty value, absent otherwise) -- attr.
+  // host bindings remove the attribute for null/undefined/false, but a bare
+  // `true` would stringify to the literal text "true", not an empty value.
+  protected readonly highlightWinnerAttr = computed(() => (this.highlightWinner() ? '' : null));
 
   protected readonly hasScore = computed(
     () => this.homeScore() !== undefined && this.awayScore() !== undefined,

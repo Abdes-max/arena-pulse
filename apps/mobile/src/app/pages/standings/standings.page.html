@@ -158,7 +158,16 @@
                 </div>
 
                 <div class="standings-page__pager-viewport">
-                  <div class="standings-page__pager-track" [style.--i]="pageIndex">
+                  <div
+                    class="standings-page__pager-track"
+                    [class.standings-page__pager-track--dragging]="isDragging(phase.id)"
+                    [style.--i]="pageIndex"
+                    [style.--drag]="dragOffsetPx(phase.id) + 'px'"
+                    (touchstart)="onSwipeStart($event, phase.id)"
+                    (touchmove)="onSwipeMove($event, phase.id)"
+                    (touchend)="onSwipeEnd(phase.id, pages.length)"
+                    (touchcancel)="onSwipeCancel(phase.id)"
+                  >
                     @for (page of pages; track page.label + $index) {
                       <div class="standings-page__pager-page">
                         @for (card of page.cards; track card.match.id) {
@@ -184,6 +193,7 @@
                                 ? card.match.forfeitedTeam?.name
                                 : undefined
                             "
+                            [highlightWinner]="true"
                           />
                         }
                       </div>

@@ -13,6 +13,7 @@ import { MatchCard, MatchCardVariant } from './match-card';
       [awayScore]="awayScore"
       [kickoff]="kickoff"
       [competitionLabel]="'Poule A'"
+      [highlightWinner]="highlightWinner"
     />
   `,
 })
@@ -21,6 +22,7 @@ class HostComponent {
   homeScore: number | undefined;
   awayScore: number | undefined;
   kickoff: string | undefined;
+  highlightWinner = false;
 }
 
 describe('MatchCard', () => {
@@ -85,5 +87,22 @@ describe('MatchCard', () => {
 
     const host = fixture.nativeElement.querySelector('ap-match-card');
     expect(host.getAttribute('data-variant')).toBe('featured');
+  });
+
+  it('has no highlight-winner attribute by default', () => {
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement.querySelector('ap-match-card');
+    expect(host.hasAttribute('data-highlight-winner')).toBe(false);
+  });
+
+  it('reflects highlightWinner as a host attribute when enabled', () => {
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.componentInstance.highlightWinner = true;
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement.querySelector('ap-match-card');
+    expect(host.hasAttribute('data-highlight-winner')).toBe(true);
   });
 });
