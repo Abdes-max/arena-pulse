@@ -95,7 +95,7 @@ describe('ShareButton', () => {
     fixture.detectChanges();
     const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
     button.click();
-    // Comfortably past the component's own timeout (see SHARE_TIMEOUT_MS).
+    // Comfortably past the component's own timeout (see BRIDGE_TIMEOUT_MS).
     await new Promise((resolve) => setTimeout(resolve, 5100));
     fixture.detectChanges();
 
@@ -103,6 +103,27 @@ describe('ShareButton', () => {
       string: 'https://tournarena.com/coupe-du-monde-fifa-2026',
     });
     expect(button.getAttribute('aria-label')).toBe('Lien copié');
+  }, 10000);
+
+  // Found via manual browser testing (not a hypothetical): a real
+  // Clipboard.write() call hung indefinitely in one browser automation
+  // context, no rejection ever, matching exactly the native-share hang this
+  // component already guards against -- only Share.share() had a timeout
+  // wrapped around it until this was caught, so this exact scenario would
+  // have silently frozen the button forever with no visible failure state.
+  it('shows a visible failure state if the clipboard write itself never settles (hung bridge)', async () => {
+    shareMock.mockRejectedValue(new Error('Not implemented on web.'));
+    clipboardWriteMock.mockImplementation(() => new Promise(() => undefined)); // never resolves/rejects
+
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.detectChanges();
+    const button: HTMLButtonElement = fixture.nativeElement.querySelector('button');
+    button.click();
+    await new Promise((resolve) => setTimeout(resolve, 5100));
+    fixture.detectChanges();
+
+    expect(button.getAttribute('aria-label')).toBe('Échec du partage');
+    expect(button.textContent).toContain('Échec');
   }, 10000);
 
   it('does not fall back to the clipboard when the visitor cancels the native share sheet', async () => {

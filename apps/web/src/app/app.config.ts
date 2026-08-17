@@ -6,7 +6,7 @@ import {
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import { provideApiClient } from 'api-client';
 
 import { environment } from '../environments/environment';
@@ -23,7 +23,17 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     { provide: ErrorHandler, useClass: GlobalErrorHandler },
-    provideRouter(routes),
+    // anchorScrolling: the landing page's own nav (#fonctionnalites,
+    // #sports, #tournois, #tarifs) already works via plain browser
+    // same-page anchor clicks -- no Angular involvement needed there. But a
+    // FRESH page load with a fragment (e.g. the mobile app's Paramètres
+    // panel opening tournarena.com/#tarifs in the system browser) hits the
+    // fragment before Angular has finished bootstrapping/rendering the SPA,
+    // so the browser's native scroll-to-anchor fires too early and finds
+    // nothing there yet. This re-attempts it once the route's finished
+    // rendering (also covers the very first navigation, not just later
+    // in-app ones).
+    provideRouter(routes, withInMemoryScrolling({ anchorScrolling: 'enabled' })),
     // Each interceptor only ever attaches its own token to its own
     // URL-scoped requests (see player-scoped-request.ts /
     // super-admin-scoped-request.ts) — a no-op otherwise, so all three are

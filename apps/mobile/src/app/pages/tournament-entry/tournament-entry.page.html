@@ -58,181 +58,268 @@
       </div>
 
       <div class="tournament-entry-page__settings-body">
+        <!--
+          External-link icon (opens outside the app, in the OS browser --
+          every row here except Évaluer/Partager/Langue) instead of a plain
+          forward chevron: an honest signal of what tapping the row actually
+          does, same distinction the porteur de projet's reference screenshot
+          made. Rows are grouped in a rounded "card" per section (background:
+          --ap-color-surface, same token ap-tournament-card/ap-tournament-
+          marquee already use for their own cards) rather than a flat
+          full-bleed list, closer to that reference while staying on our own
+          tokens (uniform signal-cyan icon badges, not a rainbow per row).
+        -->
         <section class="tournament-entry-page__settings-section">
           <h3 class="tournament-entry-page__settings-section-title">Compte</h3>
-          <a
-            class="tournament-entry-page__settings-row"
-            [href]="loginUrl"
-            target="_blank"
-            rel="noopener"
-          >
-            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-              <path
-                fill="currentColor"
-                d="M11 7 9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5zm9-2h-8v2h8v14h-8v2h8c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2"
-              />
-            </svg>
-            <span>Connexion</span>
-            <svg
-              class="tournament-entry-page__settings-chevron"
-              viewBox="0 0 24 24"
-              width="18"
-              height="18"
-              aria-hidden="true"
+          <div class="tournament-entry-page__settings-card">
+            <a
+              class="tournament-entry-page__settings-row"
+              [href]="loginUrl"
+              target="_blank"
+              rel="noopener"
             >
-              <path fill="currentColor" d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z" />
-            </svg>
-          </a>
-          <a
-            class="tournament-entry-page__settings-row"
-            [href]="createTournamentUrl"
-            target="_blank"
-            rel="noopener"
-          >
-            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-              <path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z" />
-            </svg>
-            <span>Créer un tournoi</span>
-            <svg
-              class="tournament-entry-page__settings-chevron"
-              viewBox="0 0 24 24"
-              width="18"
-              height="18"
-              aria-hidden="true"
+              <span class="tournament-entry-page__settings-row-icon">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    d="M11 7 9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5zm9-2h-8v2h8v14h-8v2h8c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2"
+                  />
+                </svg>
+              </span>
+              <span>Connexion</span>
+              <span class="tournament-entry-page__settings-trailing">
+                <svg
+                  class="tournament-entry-page__settings-trailing-icon"
+                  viewBox="0 0 24 24"
+                  width="16"
+                  height="16"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3zM5 5v14h14v-7h-2v5H7V7h5V5z"
+                  />
+                </svg>
+              </span>
+            </a>
+            <a
+              class="tournament-entry-page__settings-row"
+              [href]="createTournamentUrl"
+              target="_blank"
+              rel="noopener"
             >
-              <path fill="currentColor" d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z" />
-            </svg>
-          </a>
+              <span class="tournament-entry-page__settings-row-icon">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                  <path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z" />
+                </svg>
+              </span>
+              <span>Créer un tournoi</span>
+              <span class="tournament-entry-page__settings-trailing">
+                <svg
+                  class="tournament-entry-page__settings-trailing-icon"
+                  viewBox="0 0 24 24"
+                  width="16"
+                  height="16"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3zM5 5v14h14v-7h-2v5H7V7h5V5z"
+                  />
+                </svg>
+              </span>
+            </a>
+          </div>
         </section>
 
         <section class="tournament-entry-page__settings-section">
           <h3 class="tournament-entry-page__settings-section-title">Général</h3>
-          <a class="tournament-entry-page__settings-row" [href]="rateUrl">
-            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-              <path
-                fill="currentColor"
-                d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
-              />
-            </svg>
-            <span>Évaluer l'app</span>
-            <svg
-              class="tournament-entry-page__settings-chevron"
-              viewBox="0 0 24 24"
-              width="18"
-              height="18"
-              aria-hidden="true"
+          <div class="tournament-entry-page__settings-card">
+            <!-- Pas de lien réel : TournArena n'est pas encore listée sur
+                 l'App Store (TestFlight uniquement), donc pas de page
+                 d'évaluation vers laquelle renvoyer -- une ligne cliquable
+                 qui ne mène nulle part est pire que pas de lien du tout,
+                 d'où le badge "Bientôt disponible" à la place de l'icône de
+                 lien externe, et pas de tap possible (même logique que
+                 l'état ap-share-button--failed : visible plutôt que
+                 silencieux). -->
+            <div
+              class="tournament-entry-page__settings-row tournament-entry-page__settings-row--disabled"
             >
-              <path fill="currentColor" d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z" />
-            </svg>
-          </a>
-          <div
-            class="tournament-entry-page__settings-row tournament-entry-page__settings-row--share"
-          >
-            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-              <path
-                fill="currentColor"
-                d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"
-              />
-            </svg>
-            <span>Partager l'app</span>
-            <ap-share-button title="TournArena" [text]="shareText" [url]="appUrl" />
+              <span class="tournament-entry-page__settings-row-icon">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
+                  />
+                </svg>
+              </span>
+              <span>Évaluer l'app</span>
+              <span class="tournament-entry-page__settings-trailing">
+                <span class="tournament-entry-page__settings-badge">Bientôt disponible</span>
+              </span>
+            </div>
+            <!-- L'icône et l'étiquette ne sont que la partie visible du
+                 ap-share-button niché en fin de ligne (voir plus bas) --
+                 pointer-events: none dessus, avec (click) porté par la ligne
+                 elle-même et relayé à triggerShare() via #shareButton, pour
+                 que toute la ligne soit cliquable et non la seule icône. -->
+            <!-- role="button"/tabindex/keydown rather than a real <button>:
+                 this row wraps ap-share-button, itself a <button> internally
+                 -- nesting <button> inside <button> is invalid HTML. -->
+            <div
+              class="tournament-entry-page__settings-row tournament-entry-page__settings-row--share"
+              role="button"
+              tabindex="0"
+              (click)="shareApp()"
+              (keydown.enter)="shareApp()"
+              (keydown.space)="shareApp(); $event.preventDefault()"
+            >
+              <span class="tournament-entry-page__settings-row-icon">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"
+                  />
+                </svg>
+              </span>
+              <span>Partager l'app</span>
+              <span class="tournament-entry-page__settings-trailing">
+                <ap-share-button
+                  #shareButton
+                  title="TournArena"
+                  [text]="shareText"
+                  [url]="appUrl"
+                />
+              </span>
+            </div>
+            <a
+              class="tournament-entry-page__settings-row"
+              [href]="contactUrl"
+              target="_blank"
+              rel="noopener"
+            >
+              <span class="tournament-entry-page__settings-row-icon">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m0 4-8 5-8-5V6l8 5 8-5z"
+                  />
+                </svg>
+              </span>
+              <span>Nous contacter</span>
+              <span class="tournament-entry-page__settings-trailing">
+                <svg
+                  class="tournament-entry-page__settings-trailing-icon"
+                  viewBox="0 0 24 24"
+                  width="16"
+                  height="16"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3zM5 5v14h14v-7h-2v5H7V7h5V5z"
+                  />
+                </svg>
+              </span>
+            </a>
+            <a
+              class="tournament-entry-page__settings-row"
+              [href]="pricingUrl"
+              target="_blank"
+              rel="noopener"
+            >
+              <span class="tournament-entry-page__settings-row-icon">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.41l9 9c.36.36.86.59 1.41.59s1.05-.23 1.41-.59l7-7c.37-.36.59-.86.59-1.41s-.23-1.06-.59-1.42M5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7"
+                  />
+                </svg>
+              </span>
+              <span>Tarifs</span>
+              <span class="tournament-entry-page__settings-trailing">
+                <svg
+                  class="tournament-entry-page__settings-trailing-icon"
+                  viewBox="0 0 24 24"
+                  width="16"
+                  height="16"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3zM5 5v14h14v-7h-2v5H7V7h5V5z"
+                  />
+                </svg>
+              </span>
+            </a>
           </div>
-          <a
-            class="tournament-entry-page__settings-row"
-            [href]="contactUrl"
-            target="_blank"
-            rel="noopener"
-          >
-            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-              <path
-                fill="currentColor"
-                d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2m0 4-8 5-8-5V6l8 5 8-5z"
-              />
-            </svg>
-            <span>Nous contacter</span>
-            <svg
-              class="tournament-entry-page__settings-chevron"
-              viewBox="0 0 24 24"
-              width="18"
-              height="18"
-              aria-hidden="true"
-            >
-              <path fill="currentColor" d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z" />
-            </svg>
-          </a>
-          <a
-            class="tournament-entry-page__settings-row"
-            [href]="pricingUrl"
-            target="_blank"
-            rel="noopener"
-          >
-            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-              <path
-                fill="currentColor"
-                d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.41l9 9c.36.36.86.59 1.41.59s1.05-.23 1.41-.59l7-7c.37-.36.59-.86.59-1.41s-.23-1.06-.59-1.42M5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7"
-              />
-            </svg>
-            <span>Tarifs</span>
-            <svg
-              class="tournament-entry-page__settings-chevron"
-              viewBox="0 0 24 24"
-              width="18"
-              height="18"
-              aria-hidden="true"
-            >
-              <path fill="currentColor" d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z" />
-            </svg>
-          </a>
         </section>
 
         <section class="tournament-entry-page__settings-section">
           <h3 class="tournament-entry-page__settings-section-title">Juridique</h3>
-          <a
-            class="tournament-entry-page__settings-row"
-            [href]="privacyUrl"
-            target="_blank"
-            rel="noopener"
-          >
-            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-              <path
-                fill="currentColor"
-                d="M12 1 3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5z"
-              />
-            </svg>
-            <span>Politique de confidentialité</span>
-            <svg
-              class="tournament-entry-page__settings-chevron"
-              viewBox="0 0 24 24"
-              width="18"
-              height="18"
-              aria-hidden="true"
+          <div class="tournament-entry-page__settings-card">
+            <a
+              class="tournament-entry-page__settings-row"
+              [href]="privacyUrl"
+              target="_blank"
+              rel="noopener"
             >
-              <path fill="currentColor" d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z" />
-            </svg>
-          </a>
-          <a
-            class="tournament-entry-page__settings-row"
-            [href]="termsUrl"
-            target="_blank"
-            rel="noopener"
-          >
-            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-              <path
-                fill="currentColor"
-                d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8zm2 16H8v-2h8zm0-4H8v-2h8zm-3-5V3.5L18.5 9z"
-              />
-            </svg>
-            <span>Conditions d'utilisation</span>
-            <svg
-              class="tournament-entry-page__settings-chevron"
-              viewBox="0 0 24 24"
-              width="18"
-              height="18"
-              aria-hidden="true"
+              <span class="tournament-entry-page__settings-row-icon">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    d="M12 1 3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5z"
+                  />
+                </svg>
+              </span>
+              <span>Politique de confidentialité</span>
+              <span class="tournament-entry-page__settings-trailing">
+                <svg
+                  class="tournament-entry-page__settings-trailing-icon"
+                  viewBox="0 0 24 24"
+                  width="16"
+                  height="16"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3zM5 5v14h14v-7h-2v5H7V7h5V5z"
+                  />
+                </svg>
+              </span>
+            </a>
+            <a
+              class="tournament-entry-page__settings-row"
+              [href]="termsUrl"
+              target="_blank"
+              rel="noopener"
             >
-              <path fill="currentColor" d="M8.59 16.59 13.17 12 8.59 7.41 10 6l6 6-6 6z" />
-            </svg>
-          </a>
+              <span class="tournament-entry-page__settings-row-icon">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8zm2 16H8v-2h8zm0-4H8v-2h8zm-3-5V3.5L18.5 9z"
+                  />
+                </svg>
+              </span>
+              <span>Conditions d'utilisation</span>
+              <span class="tournament-entry-page__settings-trailing">
+                <svg
+                  class="tournament-entry-page__settings-trailing-icon"
+                  viewBox="0 0 24 24"
+                  width="16"
+                  height="16"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3zM5 5v14h14v-7h-2v5H7V7h5V5z"
+                  />
+                </svg>
+              </span>
+            </a>
+          </div>
         </section>
       </div>
 

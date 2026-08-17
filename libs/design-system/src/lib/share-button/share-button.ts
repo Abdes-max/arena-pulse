@@ -2,13 +2,16 @@ import { ChangeDetectionStrategy, Component, WritableSignal, input, signal } fro
 import { Clipboard } from '@capacitor/clipboard';
 import { Share } from '@capacitor/share';
 
-// If the native bridge never resolves Share.share (e.g. the plugin somehow
-// isn't wired up in a given build), awaiting it directly would hang
-// forever -- the button would tap and nothing would ever visibly happen,
-// with no way to tell a genuine hang apart from "still working". Racing it
-// against this timeout guarantees the clipboard fallback (or a visible
-// failure) always shows up within a bounded time instead.
-const SHARE_TIMEOUT_MS = 5000;
+// If the native bridge never resolves Share.share or Clipboard.write (e.g.
+// a permission prompt neither can dismiss on its own -- confirmed directly:
+// a clipboard-write permission query hung indefinitely in one browser
+// automation context during testing, no rejection, no console output, ever)
+// awaiting either directly would hang forever -- the button would tap and
+// nothing would ever visibly happen, with no way to tell a genuine hang
+// apart from "still working". Racing each against this timeout guarantees
+// the clipboard fallback, or a visible failure, always shows up within a
+// bounded time instead.
+const BRIDGE_TIMEOUT_MS = 5000;
 
 /**
  * Share button for the top-right of a tournament header (mobile app, mobile
@@ -45,6 +48,15 @@ export class ShareButton {
   protected readonly failed = signal(false);
   private feedbackTimeout?: ReturnType<typeof setTimeout>;
 
+  // Public wrapper around the (protected, template-bound) share() -- lets a
+  // parent that wraps this button in a larger clickable surface (e.g. a
+  // full settings row, where the visible icon is only part of the tap
+  // target) trigger the same share flow via a template reference, instead
+  // of duplicating the timeout/clipboard-fallback/failure-state logic.
+  async triggerShare(): Promise<void> {
+    return this.share();
+  }
+
   protected async share(): Promise<void> {
     try {
       await this.withTimeout(
@@ -54,7 +66,8 @@ export class ShareButton {
           url: this.url(),
           dialogTitle: 'Partager',
         }),
-        SHARE_TIMEOUT_MS,
+        BRIDGE_TIMEOUT_MS,
+        'Share.share',
       );
       return;
     } catch (error) {
@@ -76,10 +89,10 @@ export class ShareButton {
   // timeout scheduled, rejecting an already-settled race later with nothing
   // listening -- an unhandled rejection days after the fact, not just a
   // wasted timer.
-  private withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  private withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
     let timeoutId: ReturnType<typeof setTimeout>;
     const timeout = new Promise<T>((_, reject) => {
-      timeoutId = setTimeout(() => reject(new Error(`Share.share timed out after ${ms}ms`)), ms);
+      timeoutId = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);
     });
     return Promise.race([promise, timeout]).finally(() => clearTimeout(timeoutId));
   }
@@ -104,7 +117,11 @@ export class ShareButton {
   // wraps navigator.clipboard.writeText, so browser behaviour is unchanged.
   private async copyToClipboard(): Promise<void> {
     try {
-      await Clipboard.write({ string: this.url() });
+      await this.withTimeout(
+        Clipboard.write({ string: this.url() }),
+        BRIDGE_TIMEOUT_MS,
+        'Clipboard.write',
+      );
       this.showFeedback(this.copied);
     } catch (error) {
       console.error('[ap-share-button] Clipboard.write failed:', error);

@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { IonContent, IonHeader, IonToolbar } from '@ionic/angular/standalone';
 import { AssetUrlService, PublicApiService } from 'api-client';
@@ -58,10 +65,6 @@ export class TournamentEntryPage {
   protected readonly pricingUrl = `${environment.webUrl}/#tarifs`;
   protected readonly privacyUrl = `${environment.webUrl}/privacy`;
   protected readonly termsUrl = `${environment.webUrl}/terms`;
-  // Placeholder, same convention as apps/web's landing.page store badges
-  // (href="#") -- TournArena isn't listed on the App Store yet (TestFlight
-  // only), so there's no real review page to link to until it ships.
-  protected readonly rateUrl = '#';
   protected readonly appUrl = environment.webUrl;
   protected readonly shareText = 'Découvrez TournArena, l’app pour suivre vos compétitions.';
   protected readonly exampleTournament = computed(() => this.tournaments()[0] ?? null);
@@ -79,6 +82,13 @@ export class TournamentEntryPage {
   // job (getting the visitor to the list) is done.
   protected readonly showHero = signal(true);
   protected readonly showSettings = signal(false);
+  // Lets the whole "Partager l'app" row act as the tap target (matching
+  // every other row) instead of just the small ap-share-button icon inside
+  // it: the row's own (click) is disabled with pointer-events: none on the
+  // button (see the template/scss), and proxies the tap to the button's own
+  // triggerShare() -- reuses its timeout/clipboard-fallback/failure-state
+  // logic rather than duplicating it.
+  private readonly shareButton = viewChild<ShareButton>('shareButton');
 
   // Same pattern as apps/web's LandingPage (and team-search.page's
   // filteredTeams) -- client-side filter over a wider-than-displayed fetch.
@@ -129,5 +139,9 @@ export class TournamentEntryPage {
 
   protected toggleSettings(): void {
     this.showSettings.update((shown) => !shown);
+  }
+
+  protected shareApp(): void {
+    void this.shareButton()?.triggerShare();
   }
 }

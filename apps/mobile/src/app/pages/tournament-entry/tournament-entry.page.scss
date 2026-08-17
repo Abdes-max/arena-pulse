@@ -127,11 +127,23 @@
   margin: 0 0 var(--ap-space-2) var(--ap-space-1);
 }
 
+// Groups a section's rows into one rounded card (background: surface, same
+// token ap-tournament-card/ap-tournament-marquee already use for their own
+// cards) rather than a flat full-bleed list -- overflow: hidden clips the
+// first/last row's corners to the card's own border-radius instead of
+// giving each row its own.
+.tournament-entry-page__settings-card {
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-lg);
+  overflow: hidden;
+}
+
 .tournament-entry-page__settings-row {
   display: flex;
   align-items: center;
   gap: var(--ap-space-3);
-  padding: var(--ap-space-3) var(--ap-space-1);
+  padding: var(--ap-space-3) var(--ap-space-4);
   border-bottom: var(--ap-border-width) solid var(--ap-color-border);
   color: var(--ap-color-fg);
   text-decoration: none;
@@ -150,16 +162,100 @@
   }
 }
 
-.tournament-entry-page__settings-chevron {
+// Solid signal-cyan badge behind every row's leading icon -- without this
+// the whole panel was pure black/grey/white (all its icons and text used
+// only --ap-color-fg/--ap-color-muted), reading as a generic native list
+// rather than a TournArena screen. A first pass used --ap-color-signal-soft
+// (a pale tint, same token apps/mobile's home.page.scss uses for a
+// highlight background) but that still read as barely-there once actually
+// on screen -- the full solid --ap-color-signal instead, matching the
+// vividness of the porteur de projet's reference screenshot's own colored
+// icon badges, just kept to our one brand accent rather than a different
+// color per row.
+.tournament-entry-page__settings-row-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex: 0 0 auto;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--ap-radius-md);
+  background: var(--ap-color-signal);
+  color: var(--ap-color-on-signal);
+}
+
+.tournament-entry-page__settings-trailing-icon {
   color: var(--ap-color-muted);
 }
 
-// ap-share-button already renders its own icon + Copié/Échec label states --
-// takes the trailing chevron's place here instead of stacking both.
+// Shared right-hand slot for whatever a row's trailing content actually is
+// (external-link icon, the "Bientôt disponible" badge, or ap-share-button)
+// -- without a common width these landed at very different sizes (a 16px
+// icon vs. a full pill of text), so nothing on the right edge actually
+// lined up between rows. min-width matches the badge's own natural width
+// (the widest of the three), so icon rows get padded out to the same
+// column instead of the badge being the odd one out. Compound selector,
+// same reason as the badge rule below: out-specifities .settings-row's own
+// `span` descendant rule (flex: 1 1 auto) rather than reaching for
+// !important -- this wrapper is itself a <span>, so it'd otherwise inherit
+// stretch-to-fill instead of staying a fixed-width column.
+.tournament-entry-page__settings-row .tournament-entry-page__settings-trailing {
+  display: flex;
+  flex: 0 0 auto;
+  justify-content: flex-end;
+  align-items: center;
+  // Measured: the "Bientôt disponible" badge (the widest of the three
+  // trailing variants) renders at ~6.9rem -- 7rem gives it a hair of
+  // breathing room without over-squeezing the longer row labels
+  // ("Politique de confidentialité") for width they don't actually need.
+  min-width: 7rem;
+}
+
+// "Évaluer l'app" -- no real destination yet (see the template's comment),
+// so the row itself isn't a link/button at all (no cursor:pointer, no hover
+// color-shift others get) and the trailing chevron is replaced by an
+// explicit badge, rather than a tap that silently does nothing.
+.tournament-entry-page__settings-row--disabled {
+  color: var(--ap-color-muted);
+
+  // Muted, not the vivid signal every other row's icon badge gets --
+  // matches the row's own "not actually available yet" state instead of
+  // implying it's just as actionable as the rest.
+  .tournament-entry-page__settings-row-icon {
+    background: var(--ap-color-border);
+    color: var(--ap-color-muted);
+  }
+
+  &:hover {
+    color: var(--ap-color-muted);
+  }
+}
+
+// Nested under .settings-row to out-specificity that rule's own `span`
+// descendant selector (flex: 1 1 auto; font-size: 0.92rem), rather than
+// reaching for !important.
+.tournament-entry-page__settings-row .tournament-entry-page__settings-badge {
+  flex: 0 0 auto;
+  padding: var(--ap-space-1) var(--ap-space-2);
+  border-radius: 999px;
+  background: var(--ap-color-border);
+  color: var(--ap-color-muted);
+  font-size: 0.68rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+// The whole row is the tap target (click) proxied to ap-share-button's own
+// triggerShare(), not just its icon -- pointer-events: none keeps the
+// button's own native click from *also* firing independently when tapped
+// directly (which would trigger the share flow twice: once via bubbling up
+// to the row, once via the button's own internal handler).
 .tournament-entry-page__settings-row--share {
+  cursor: pointer;
+
   ap-share-button {
     flex: 0 0 auto;
+    pointer-events: none;
   }
 }
 
