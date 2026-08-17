@@ -59,6 +59,12 @@
   gap: var(--ap-space-3);
 }
 
+.tournament-shell__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+}
+
 // Leaves the tournament's own site (routerLink="/") back to the directory --
 // visitors arriving from a shared link have no other way back to browse
 // other tournaments otherwise.

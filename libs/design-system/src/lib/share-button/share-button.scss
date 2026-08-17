@@ -1,0 +1,31 @@
+:host {
+  display: inline-block;
+}
+
+.ap-share-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ap-space-1);
+  padding: var(--ap-space-2);
+  border: none;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 999px;
+  transition: color var(--ap-motion-fast) var(--ap-easing-standard);
+
+  &:hover {
+    color: var(--ap-color-signal-text);
+  }
+
+  &:focus-visible {
+    outline: var(--ap-border-width-strong) solid var(--ap-color-focus);
+    outline-offset: 2px;
+  }
+}
+
+.ap-share-button__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ap-color-signal-text);
+}

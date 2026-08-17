@@ -20,7 +20,7 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { AssetUrlService } from 'api-client';
-import { ThemeModeToggle } from 'design-system';
+import { ShareButton, ThemeModeToggle } from 'design-system';
 import { PublicTheme } from 'shared-models';
 import { FavoritesService } from '../core/favorites.service';
 import { NotificationsService } from '../core/notifications.service';
@@ -48,6 +48,7 @@ const THEME_MAP: Record<PublicTheme, ThemeName> = {
     IonTabButton,
     IonButton,
     ThemeModeToggle,
+    ShareButton,
   ],
   providers: [TournamentContextService],
   templateUrl: './tournament-shell.html',
@@ -74,6 +75,16 @@ export class TournamentShell {
   // effect below stops overwriting mode from prefers-color-scheme on every
   // re-run (e.g. a realtime tournament refresh), so a manual choice sticks.
   private readonly modeManuallySet = signal(false);
+
+  // The header is common to every tab (Tournoi/Équipes/Classements/Calendrier)
+  // -- shares the tournament's own public URL rather than whichever sub-page
+  // happens to be open, so the recipient always lands on the same place
+  // regardless of where the visitor tapped Partager from.
+  protected readonly shareUrl = computed(() => `${window.location.origin}/${this.context.slug()}`);
+  protected readonly shareText = computed(() => {
+    const tournament = this.tournament();
+    return tournament ? `Suivez ${tournament.name} sur TournArena` : '';
+  });
 
   protected readonly formattedDates = computed(() => {
     const tournament = this.tournament();

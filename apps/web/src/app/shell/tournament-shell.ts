@@ -9,7 +9,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AssetUrlService } from 'api-client';
-import { ThemeModeToggle } from 'design-system';
+import { ShareButton, ThemeModeToggle } from 'design-system';
 import { DEFAULT_THEME, ThemeMode, ThemeName, ThemeService } from 'design-tokens';
 import { TournamentContextService } from '../core/tournament-context.service';
 import { PublicTheme } from 'shared-models';
@@ -23,7 +23,7 @@ const THEME_MAP: Record<PublicTheme, ThemeName> = {
 
 @Component({
   selector: 'app-tournament-shell',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, ThemeModeToggle],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, ThemeModeToggle, ShareButton],
   providers: [TournamentContextService],
   templateUrl: './tournament-shell.html',
   styleUrl: './tournament-shell.scss',
@@ -44,6 +44,16 @@ export class TournamentShell {
   protected logoUrl(url: string | null | undefined): string | null {
     return this.assetUrl.resolve(url ?? null);
   }
+
+  // The header is common to every tab (Tournoi/Équipes/Classement/Calendrier)
+  // -- shares the tournament's own public URL rather than whichever sub-page
+  // happens to be open, so the recipient always lands on the same place
+  // regardless of where the visitor clicked Partager from.
+  protected readonly shareUrl = computed(() => `${window.location.origin}/${this.context.slug()}`);
+  protected readonly shareText = computed(() => {
+    const tournament = this.tournament();
+    return tournament ? `Suivez ${tournament.name} sur TournArena` : '';
+  });
 
   protected onModeChange(next: ThemeMode): void {
     this.themeService.setMode(document.documentElement, next);

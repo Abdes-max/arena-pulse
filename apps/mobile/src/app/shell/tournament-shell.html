@@ -18,6 +18,7 @@
         <p class="tournament-shell__sport">{{ t.sportName }}</p>
       </div>
       <ion-buttons slot="end">
+        <ap-share-button [title]="t.name" [text]="shareText()" [url]="shareUrl()" />
         <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
       </ion-buttons>
     </ion-toolbar>
