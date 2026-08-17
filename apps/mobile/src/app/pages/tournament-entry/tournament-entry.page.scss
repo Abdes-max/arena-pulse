@@ -33,18 +33,6 @@
   gap: var(--ap-space-3);
 }
 
-.tournament-entry-page__nav-link {
-  color: var(--ap-color-fg);
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-decoration: none;
-  white-space: nowrap;
-
-  &:hover {
-    color: var(--ap-color-signal);
-  }
-}
-
 .tournament-entry-page__settings-btn {
   display: inline-flex;
   align-items: center;
@@ -61,54 +49,124 @@
   }
 }
 
-// Dismisses the panel on an outside tap -- covers the whole viewport behind
-// it, transparent (not a dimming scrim, unlike a modal): this is a small
-// utility menu, not a flow that needs the rest of the screen visually
-// suppressed.
-.tournament-entry-page__settings-backdrop {
+// Full-screen overlay, not scoped to the forced-dark hero -- the design
+// tokens' dark-mode rule is `[data-theme='ink-signal'][data-mode='dark']`,
+// a COMPOUND selector needing both attributes on the SAME element (see
+// libs/design-tokens/_ink-signal.scss), so re-declaring data-mode alone
+// here isn't enough to override the ancestor: the template repeats
+// data-theme="ink-signal" alongside [attr.data-mode]="mode()" so this
+// panel resolves its own custom properties from the visitor's actual
+// light/dark preference instead of inheriting the hero's permanently dark
+// ones. position: fixed (not absolute) for the same reason as the old
+// dropdown panel it replaces: the hero has overflow: hidden for its
+// decorative glow.
+.tournament-entry-page__settings-overlay {
   position: fixed;
   inset: 0;
-  z-index: 10;
-  padding: 0;
-  border: none;
-  background: none;
-  cursor: default;
-}
-
-// position: fixed (viewport-relative), not absolute (relative to the
-// nearest positioned ancestor -- .tournament-entry-page__hero) -- the hero
-// has overflow: hidden for its decorative glow (::before), which would
-// otherwise clip a panel positioned below the hero's own bottom edge.
-.tournament-entry-page__settings-panel {
-  position: fixed;
-  top: 3.25rem;
-  right: var(--ap-space-4);
-  z-index: 11;
+  z-index: 20;
   display: flex;
   flex-direction: column;
-  gap: var(--ap-space-2);
-  padding: var(--ap-space-3) var(--ap-space-4);
-  min-width: 12rem;
-  background: var(--ap-color-surface);
-  border: var(--ap-border-width) solid var(--ap-color-border);
-  border-radius: var(--ap-radius-md);
-  box-shadow: var(--ap-shadow-md);
+  background: var(--ap-color-bg);
+  color: var(--ap-color-fg);
+  overflow-y: auto;
+}
 
-  a {
-    color: var(--ap-color-fg);
-    font-size: 0.85rem;
-    text-decoration: none;
+.tournament-entry-page__settings-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  padding: var(--ap-space-4);
+  border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+}
 
-    &:hover {
-      color: var(--ap-color-signal);
-    }
+.tournament-entry-page__settings-close {
+  position: absolute;
+  left: var(--ap-space-2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ap-space-2);
+  border: none;
+  background: none;
+  color: var(--ap-color-fg);
+  cursor: pointer;
+  border-radius: 999px;
+
+  &:hover {
+    color: var(--ap-color-signal);
   }
 }
 
-.tournament-entry-page__settings-trademark {
-  margin: var(--ap-space-1) 0 0;
-  padding-top: var(--ap-space-2);
-  border-top: var(--ap-border-width) solid var(--ap-color-border);
+.tournament-entry-page__settings-title {
+  font-family: var(--ap-font-heading);
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.tournament-entry-page__settings-body {
+  flex: 1 1 auto;
+  padding: var(--ap-space-5) var(--ap-space-4);
+}
+
+.tournament-entry-page__settings-section {
+  margin-bottom: var(--ap-space-6);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.tournament-entry-page__settings-section-title {
+  font-family: var(--ap-font-heading);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--ap-color-muted);
+  margin: 0 0 var(--ap-space-2) var(--ap-space-1);
+}
+
+.tournament-entry-page__settings-row {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-3);
+  padding: var(--ap-space-3) var(--ap-space-1);
+  border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+  color: var(--ap-color-fg);
+  text-decoration: none;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  span {
+    flex: 1 1 auto;
+    font-size: 0.92rem;
+  }
+
+  &:hover {
+    color: var(--ap-color-signal);
+  }
+}
+
+.tournament-entry-page__settings-chevron {
+  flex: 0 0 auto;
+  color: var(--ap-color-muted);
+}
+
+// ap-share-button already renders its own icon + Copié/Échec label states --
+// takes the trailing chevron's place here instead of stacking both.
+.tournament-entry-page__settings-row--share {
+  ap-share-button {
+    flex: 0 0 auto;
+  }
+}
+
+.tournament-entry-page__settings-copyright {
+  flex: 0 0 auto;
+  padding: var(--ap-space-3) var(--ap-space-4);
+  text-align: center;
   color: var(--ap-color-muted);
   font-size: 0.72rem;
 }
