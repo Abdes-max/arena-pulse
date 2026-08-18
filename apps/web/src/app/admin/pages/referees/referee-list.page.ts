@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { Button, TextField } from 'design-system';
 import { AuthService } from '../../core/auth.service';
 import { Referee, TournamentDetail } from '../../core/models';
@@ -8,7 +9,7 @@ import { TournamentsService } from '../../core/tournaments.service';
 
 @Component({
   selector: 'app-referee-list-page',
-  imports: [Button, TextField],
+  imports: [Button, TextField, TranslocoPipe],
   templateUrl: './referee-list.page.html',
   styleUrl: './referee-list.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -50,7 +51,7 @@ export class RefereeListPage {
       );
       this.referees.set(await this.refereesService.listReferees(organizationId, this.tournamentId));
     } catch {
-      this.errorMessage.set('Impossible de charger les arbitres.');
+      this.errorMessage.set('admin.refereeList.errors.load');
     } finally {
       this.loading.set(false);
     }
@@ -70,7 +71,7 @@ export class RefereeListPage {
       );
       this.tournament.set(updated);
     } catch {
-      this.errorMessage.set('Impossible de mettre à jour ce réglage.');
+      this.errorMessage.set('admin.refereeList.errors.toggleSetting');
     }
   }
 
@@ -130,7 +131,7 @@ export class RefereeListPage {
       }
       this.cancelEdit();
     } catch {
-      this.errorMessage.set("Impossible d'enregistrer cet arbitre.");
+      this.errorMessage.set('admin.refereeList.errors.save');
     }
   }
 
@@ -143,7 +144,7 @@ export class RefereeListPage {
       await this.refereesService.deleteReferee(organizationId, this.tournamentId, referee.id);
       this.referees.update((referees) => referees.filter((r) => r.id !== referee.id));
     } catch {
-      this.errorMessage.set('Impossible de retirer cet arbitre.');
+      this.errorMessage.set('admin.refereeList.errors.remove');
     }
   }
 }

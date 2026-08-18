@@ -635,6 +635,109 @@
         "addAdminGeneric": "Impossible d'ajouter cet administrateur.",
         "removeAdmin": "Impossible de retirer cet administrateur."
       }
+    },
+    "teamList": {
+      "title": "Équipes",
+      "loading": "Chargement…",
+      "addTitle": "Ajouter une équipe",
+      "editTitle": "Modifier l'équipe",
+      "nameLabel": "Nom de l'équipe",
+      "categoryLabel": "Catégorie",
+      "divisionLabel": "Division",
+      "chooseCategoryOption": "Choisir une catégorie",
+      "noDivisionOption": "Aucune division",
+      "managerLabel": "Responsable",
+      "managerEmailLabel": "Email du responsable",
+      "managerPhoneLabel": "Téléphone du responsable",
+      "save": "Enregistrer",
+      "add": "Ajouter l'équipe",
+      "cancel": "Annuler",
+      "export": "Exporter",
+      "deleteSelected": "Supprimer la sélection",
+      "empty": "Aucune équipe pour l'instant.",
+      "table": {
+        "logo": "Logo",
+        "name": "Nom",
+        "category": "Catégorie",
+        "division": "Division",
+        "manager": "Responsable",
+        "actions": "Actions"
+      },
+      "logoChange": "Changer",
+      "logoAdd": "Ajouter",
+      "logoRemove": "Retirer",
+      "edit": "Modifier",
+      "players": "Joueurs",
+      "delete": "Supprimer",
+      "captain": "(capitaine)",
+      "removePlayer": "Retirer",
+      "firstNameLabel": "Prénom",
+      "lastNameLabel": "Nom",
+      "addPlayer": "Ajouter un joueur",
+      "importTitle": "Importer des équipes (CSV)",
+      "importHint": "Colonnes : nom;catégorie;division;responsable;email_responsable;telephone_responsable;logo (toutes optionnelles sauf nom et catégorie). La catégorie et la division doivent déjà exister. Le logo peut être une URL http(s) (téléchargée et enregistrée) ou un chemin /uploads/team-logos/… déjà connu (ex. réimport d'un export précédent).",
+      "importPlaceholder": "nom;categorie;division;responsable;email_responsable;telephone_responsable;logo",
+      "import": "Importer",
+      "importedCount": "{{count}} équipe(s) importée(s).",
+      "lineError": "Ligne {{line}} : {{message}}",
+      "errors": {
+        "load": "Impossible de charger les équipes.",
+        "save": "Impossible d'enregistrer cette équipe (nom déjà utilisé ?).",
+        "remove": "Impossible de supprimer cette équipe.",
+        "logoInvalid": "Format ou taille de fichier invalide (PNG, JPEG ou WebP, 2 Mo maximum).",
+        "logoUpload": "Impossible d'envoyer ce logo, réessayez.",
+        "logoRemove": "Impossible de retirer ce logo.",
+        "deleteSelected": "Impossible de supprimer les équipes sélectionnées.",
+        "import": "Impossible d'importer ce fichier.",
+        "export": "Impossible d'exporter les équipes.",
+        "loadPlayers": "Impossible de charger les joueurs de cette équipe.",
+        "addPlayer": "Impossible d'ajouter ce joueur.",
+        "removePlayer": "Impossible de retirer ce joueur."
+      }
+    },
+    "refereeList": {
+      "title": "Arbitres",
+      "teamsCanReferee": "Équipes en qualité d'arbitres",
+      "addTitle": "Ajouter un arbitre",
+      "editTitle": "Modifier l'arbitre",
+      "firstNameLabel": "Prénom",
+      "lastNameLabel": "Nom",
+      "emailLabel": "Email",
+      "phoneLabel": "Téléphone",
+      "save": "Enregistrer",
+      "add": "Ajouter",
+      "cancel": "Annuler",
+      "empty": "Ajoutez des arbitres. Utilisez ensuite la page du calendrier pour assigner les arbitres aux matchs.",
+      "edit": "Modifier",
+      "remove": "Retirer",
+      "errors": {
+        "load": "Impossible de charger les arbitres.",
+        "toggleSetting": "Impossible de mettre à jour ce réglage.",
+        "save": "Impossible d'enregistrer cet arbitre.",
+        "remove": "Impossible de retirer cet arbitre."
+      }
+    },
+    "registrationList": {
+      "title": "Inscriptions et paiements",
+      "loading": "Chargement…",
+      "empty": "Aucune inscription pour ce tournoi pour le moment.",
+      "table": {
+        "team": "Équipe",
+        "category": "Catégorie",
+        "manager": "Responsable",
+        "amount": "Montant",
+        "status": "Statut",
+        "registeredAt": "Inscrite le"
+      },
+      "free": "Gratuit",
+      "status": {
+        "paid": "Payée",
+        "pending": "En attente de paiement",
+        "cancelled": "Annulée"
+      },
+      "errors": {
+        "load": "Impossible de charger les inscriptions."
+      }
     }
   }
 }

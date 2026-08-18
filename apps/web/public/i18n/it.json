@@ -541,6 +541,109 @@
         "addAdminGeneric": "Impossibile aggiungere questo amministratore.",
         "removeAdmin": "Impossibile rimuovere questo amministratore."
       }
+    },
+    "teamList": {
+      "title": "Squadre",
+      "loading": "Caricamento…",
+      "addTitle": "Aggiungi una squadra",
+      "editTitle": "Modifica la squadra",
+      "nameLabel": "Nome della squadra",
+      "categoryLabel": "Categoria",
+      "divisionLabel": "Divisione",
+      "chooseCategoryOption": "Scegli una categoria",
+      "noDivisionOption": "Nessuna divisione",
+      "managerLabel": "Responsabile",
+      "managerEmailLabel": "Email del responsabile",
+      "managerPhoneLabel": "Telefono del responsabile",
+      "save": "Salva",
+      "add": "Aggiungi la squadra",
+      "cancel": "Annulla",
+      "export": "Esporta",
+      "deleteSelected": "Elimina la selezione",
+      "empty": "Nessuna squadra per ora.",
+      "table": {
+        "logo": "Logo",
+        "name": "Nome",
+        "category": "Categoria",
+        "division": "Divisione",
+        "manager": "Responsabile",
+        "actions": "Azioni"
+      },
+      "logoChange": "Cambia",
+      "logoAdd": "Aggiungi",
+      "logoRemove": "Rimuovi",
+      "edit": "Modifica",
+      "players": "Giocatori",
+      "delete": "Elimina",
+      "captain": "(capitano/a)",
+      "removePlayer": "Rimuovi",
+      "firstNameLabel": "Nome",
+      "lastNameLabel": "Cognome",
+      "addPlayer": "Aggiungi un giocatore",
+      "importTitle": "Importa squadre (CSV)",
+      "importHint": "Colonne: nome;categoria;divisione;responsabile;email_responsabile;telefono_responsabile;logo (tutte facoltative tranne nome e categoria). La categoria e la divisione devono già esistere. Il logo può essere un URL http(s) (scaricato e salvato) o un percorso /uploads/team-logos/… già noto (es. reimportazione di un'esportazione precedente).",
+      "importPlaceholder": "nome;categoria;divisione;responsabile;email_responsabile;telefono_responsabile;logo",
+      "import": "Importa",
+      "importedCount": "{{count}} squadra/e importata/e.",
+      "lineError": "Riga {{line}}: {{message}}",
+      "errors": {
+        "load": "Impossibile caricare le squadre.",
+        "save": "Impossibile salvare questa squadra (nome già utilizzato?).",
+        "remove": "Impossibile eliminare questa squadra.",
+        "logoInvalid": "Formato o dimensione del file non validi (PNG, JPEG o WebP, 2 MB massimo).",
+        "logoUpload": "Impossibile caricare questo logo, riprova.",
+        "logoRemove": "Impossibile rimuovere questo logo.",
+        "deleteSelected": "Impossibile eliminare le squadre selezionate.",
+        "import": "Impossibile importare questo file.",
+        "export": "Impossibile esportare le squadre.",
+        "loadPlayers": "Impossibile caricare i giocatori di questa squadra.",
+        "addPlayer": "Impossibile aggiungere questo giocatore.",
+        "removePlayer": "Impossibile rimuovere questo giocatore."
+      }
+    },
+    "refereeList": {
+      "title": "Arbitri",
+      "teamsCanReferee": "Le squadre possono arbitrare",
+      "addTitle": "Aggiungi un arbitro",
+      "editTitle": "Modifica l'arbitro",
+      "firstNameLabel": "Nome",
+      "lastNameLabel": "Cognome",
+      "emailLabel": "Email",
+      "phoneLabel": "Telefono",
+      "save": "Salva",
+      "add": "Aggiungi",
+      "cancel": "Annulla",
+      "empty": "Aggiungi degli arbitri. Poi usa la pagina del calendario per assegnarli alle partite.",
+      "edit": "Modifica",
+      "remove": "Rimuovi",
+      "errors": {
+        "load": "Impossibile caricare gli arbitri.",
+        "toggleSetting": "Impossibile aggiornare questa impostazione.",
+        "save": "Impossibile salvare questo arbitro.",
+        "remove": "Impossibile rimuovere questo arbitro."
+      }
+    },
+    "registrationList": {
+      "title": "Iscrizioni e pagamenti",
+      "loading": "Caricamento…",
+      "empty": "Nessuna iscrizione per questo torneo al momento.",
+      "table": {
+        "team": "Squadra",
+        "category": "Categoria",
+        "manager": "Responsabile",
+        "amount": "Importo",
+        "status": "Stato",
+        "registeredAt": "Iscritta il"
+      },
+      "free": "Gratuito",
+      "status": {
+        "paid": "Pagata",
+        "pending": "In attesa di pagamento",
+        "cancelled": "Annullata"
+      },
+      "errors": {
+        "load": "Impossibile caricare le iscrizioni."
+      }
     }
   }
 }
