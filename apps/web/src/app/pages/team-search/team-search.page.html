@@ -1,10 +1,10 @@
 @if (loading()) {
-  <p>Chargement…</p>
+  <p>{{ 'shell.loading' | transloco }}</p>
 } @else {
   @if (categories().length > 1) {
     <ap-tabs
       class="team-search-page__filters"
-      label="Catégorie"
+      [label]="'schedule.categoryLabel' | transloco"
       [value]="selectedCategoryId()"
       [options]="categoryOptions()"
       (valueChange)="onCategoryChange($event)"
@@ -15,8 +15,8 @@
     <ap-text-field
       class="team-search-page__search"
       type="search"
-      label="Rechercher une équipe"
-      placeholder="Rechercher une équipe…"
+      [label]="'teamSearch.searchLabel' | transloco"
+      [placeholder]="'teamSearch.searchPlaceholder' | transloco"
       [hideLabel]="true"
       [value]="query()"
       (valueChange)="onQueryChange($event)"
@@ -24,7 +24,7 @@
   </div>
 
   @if (filteredTeams().length === 0) {
-    <p class="team-search-page__empty">Aucune équipe trouvée.</p>
+    <p class="team-search-page__empty">{{ 'teamSearch.noTeams' | transloco }}</p>
   } @else {
     <div class="team-search-page__grid">
       @for (team of filteredTeams(); track team.id) {

@@ -1,22 +1,22 @@
 @if (loading()) {
-  <p>Chargement…</p>
+  <p>{{ 'shell.loading' | transloco }}</p>
 } @else if (categories().length === 0) {
-  <p>Aucune catégorie pour ce tournoi.</p>
+  <p>{{ 'schedule.noCategories' | transloco }}</p>
 } @else {
   <ap-tabs
     class="standings-page__category-tabs"
-    label="Catégorie"
+    [label]="'schedule.categoryLabel' | transloco"
     [value]="selectedCategoryId()"
     [options]="categoryOptions()"
     (valueChange)="onCategoryChange($event)"
   />
 
   @if (tabs().length === 0) {
-    <p>Aucune phase pour cette catégorie.</p>
+    <p>{{ 'standings.noPhase' | transloco }}</p>
   } @else {
     <ap-tabs
       class="standings-page__phase-tabs"
-      label="Phase"
+      [label]="'schedule.phaseLabel' | transloco"
       [value]="selectedTab()"
       [options]="tabs()"
       (valueChange)="selectTab($event)"
@@ -28,7 +28,9 @@
           <h2>
             {{ group.groupName }}
             @if (!group.standings.isComplete) {
-              <span class="standings-page__provisional">(provisoire)</span>
+              <span class="standings-page__provisional"
+                >({{ 'standings.provisional' | transloco }})</span
+              >
             }
           </h2>
           <div class="standings-page__table-scroll">
@@ -36,16 +38,30 @@
               <thead>
                 <tr>
                   <th>#</th>
-                  <th>Équipe</th>
+                  <th>{{ 'standings.table.team' | transloco }}</th>
                   <th></th>
-                  <th>J</th>
-                  <th>G</th>
-                  <th>N</th>
-                  <th>P</th>
-                  <th>BP</th>
-                  <th>BC</th>
+                  <th [title]="'standings.table.playedFull' | transloco">
+                    {{ 'standings.table.played' | transloco }}
+                  </th>
+                  <th [title]="'standings.table.wonFull' | transloco">
+                    {{ 'standings.table.won' | transloco }}
+                  </th>
+                  <th [title]="'standings.table.drawnFull' | transloco">
+                    {{ 'standings.table.drawn' | transloco }}
+                  </th>
+                  <th [title]="'standings.table.lostFull' | transloco">
+                    {{ 'standings.table.lost' | transloco }}
+                  </th>
+                  <th [title]="'standings.table.goalsForFull' | transloco">
+                    {{ 'standings.table.goalsFor' | transloco }}
+                  </th>
+                  <th [title]="'standings.table.goalsAgainstFull' | transloco">
+                    {{ 'standings.table.goalsAgainst' | transloco }}
+                  </th>
                   <th>+/-</th>
-                  <th>Pts</th>
+                  <th [title]="'standings.table.pointsFull' | transloco">
+                    {{ 'standings.table.points' | transloco }}
+                  </th>
                   <th>Rating</th>
                 </tr>
               </thead>
@@ -98,14 +114,14 @@
 
     @if (bracketByPhase().get(selectedTab()); as bracket) {
       @if (bracket.rounds.length === 0) {
-        <p class="standings-page__empty">Le tableau n'a pas encore été généré pour cette phase.</p>
+        <p class="standings-page__empty">{{ 'standings.bracketNotGenerated' | transloco }}</p>
       } @else {
         <!-- Desktop : arbre connecté, tous les tours visibles côte à côte (>= 768px, voir .scss). -->
         <div class="standings-page__bracket-desktop">
           @if (roundOptions().length > 2) {
             <ap-tabs
               class="standings-page__round-tabs"
-              label="Tour"
+              [label]="'standings.roundLabel' | transloco"
               [value]="selectedRoundView()"
               [options]="roundOptions()"
               (valueChange)="onRoundJump($event)"
@@ -157,7 +173,7 @@
               "
               [id]="'bracket-round-' + selectedTab() + '-third'"
             >
-              <h3>Pour la 3e place</h3>
+              <h3>{{ 'home.competition.thirdPlace' | transloco }}</h3>
               <ap-bracket-match
                 [homeTeam]="match.homeTeam ?? { name: match.homeSourceLabel ?? '—' }"
                 [awayTeam]="match.awayTeam ?? { name: match.awaySourceLabel ?? '—' }"
@@ -182,7 +198,7 @@
               class="standings-page__pager-nav"
               [disabled]="pageIndex === 0"
               (click)="goToPage(selectedTab(), -1, pages.length)"
-              aria-label="Tour précédent"
+              [attr.aria-label]="'standings.previousRound' | transloco"
             >
               ‹
             </button>
@@ -192,7 +208,7 @@
               class="standings-page__pager-nav"
               [disabled]="pageIndex === pages.length - 1"
               (click)="goToPage(selectedTab(), 1, pages.length)"
-              aria-label="Tour suivant"
+              [attr.aria-label]="'standings.nextRound' | transloco"
             >
               ›
             </button>
@@ -252,7 +268,7 @@
     @if (selectedTab() === 'final') {
       @if (finalRanking().length === 0) {
         <p class="standings-page__empty">
-          Le classement final sera disponible une fois les tableaux de phase finale complétés.
+          {{ 'standings.finalRankingEmpty' | transloco }}
         </p>
       } @else {
         @if (podium(); as p) {
@@ -290,9 +306,9 @@
               <thead>
                 <tr>
                   <th>#</th>
-                  <th>Équipe</th>
-                  <th>Tableau</th>
-                  <th>Résultat</th>
+                  <th>{{ 'standings.table.team' | transloco }}</th>
+                  <th>{{ 'standings.table.bracket' | transloco }}</th>
+                  <th>{{ 'standings.table.result' | transloco }}</th>
                 </tr>
               </thead>
               <tbody>

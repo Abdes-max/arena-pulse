@@ -154,5 +154,94 @@
       "title": "Datenschutzrichtlinie",
       "updated": "Zuletzt aktualisiert: 16. August 2026"
     }
+  },
+  "shell": {
+    "loading": "Wird geladen…",
+    "error": {
+      "notFound": "Dieses Turnier existiert nicht oder ist nicht veröffentlicht."
+    },
+    "skipLink": "Zum Hauptinhalt springen",
+    "back": "Andere Turniere",
+    "backAria": "Ein anderes Turnier suchen",
+    "venue": "Austragungsort",
+    "venues": "Austragungsorte",
+    "shareText": "Verfolgen Sie {{name}} auf TournArena",
+    "nav": {
+      "tournament": "Turnier",
+      "teams": "Teams",
+      "standings": "Tabelle",
+      "schedule": "Spielplan"
+    }
+  },
+  "home": {
+    "sections": {
+      "description": "Beschreibung",
+      "upcomingMatches": "Nächste Spiele",
+      "categories": "Kategorien",
+      "rules": "Reglement",
+      "practicalInfo": "Praktische Infos",
+      "sponsors": "Sponsoren"
+    },
+    "competition": {
+      "thirdPlace": "Um Platz 3",
+      "final": "Endrunde",
+      "round": "Runde {{round}}"
+    }
+  },
+  "schedule": {
+    "noCategories": "Keine Kategorie für dieses Turnier.",
+    "categoryLabel": "Kategorie",
+    "phaseLabel": "Phase",
+    "searchLabel": "Team oder Schiedsrichter suchen",
+    "searchPlaceholder": "Team oder Schiedsrichter suchen…",
+    "noMatches": "Kein Spiel für diese Phase.",
+    "unscheduled": "Nicht geplant",
+    "forfeit": "Forfait"
+  },
+  "standings": {
+    "noPhase": "Keine Phase für diese Kategorie.",
+    "provisional": "vorläufig",
+    "bracketNotGenerated": "Der Turnierbaum wurde für diese Phase noch nicht erstellt.",
+    "roundLabel": "Runde",
+    "previousRound": "Vorherige Runde",
+    "nextRound": "Nächste Runde",
+    "finalRankingTab": "Endstand",
+    "fullView": "Gesamtansicht",
+    "finalRankingEmpty": "Der Endstand ist verfügbar, sobald die Endrunden-Turnierbäume abgeschlossen sind.",
+    "table": {
+      "team": "Team",
+      "played": "Sp",
+      "playedFull": "Spiele",
+      "won": "S",
+      "wonFull": "Siege",
+      "drawn": "U",
+      "drawnFull": "Unentschieden",
+      "lost": "N",
+      "lostFull": "Niederlagen",
+      "goalsFor": "TF",
+      "goalsForFull": "Tore für",
+      "goalsAgainst": "TG",
+      "goalsAgainstFull": "Tore gegen",
+      "points": "Pkt",
+      "pointsFull": "Punkte",
+      "bracket": "Turnierbaum",
+      "result": "Ergebnis"
+    }
+  },
+  "teamDetail": {
+    "loadError": "Dieses Team konnte nicht geladen werden.",
+    "groupStanding": "Gruppentabelle",
+    "position": "Position",
+    "wdl": "S / U / N",
+    "goals": "Tore",
+    "upcoming": "Kommende",
+    "noMatches": "Kein Spiel für dieses Team geplant.",
+    "poolRound": "Gruppe — Runde {{round}}"
+  },
+  "teamSearch": {
+    "allCategories": "Alle",
+    "searchLabel": "Team suchen",
+    "searchPlaceholder": "Team suchen…",
+    "noTeams": "Kein Team gefunden."
   }
 }

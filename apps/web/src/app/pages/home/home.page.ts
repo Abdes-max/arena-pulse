@@ -1,12 +1,14 @@
 import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 import { MatchCard, MatchCardTeam } from 'design-system';
 import { AssetUrlService, PublicApiService } from 'api-client';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { LanguageService } from 'design-tokens';
 import { TournamentContextService } from '../../core/tournament-context.service';
 import { Category, Match } from 'shared-models';
 
 @Component({
   selector: 'app-home-page',
-  imports: [MatchCard],
+  imports: [MatchCard, TranslocoPipe],
   templateUrl: './home.page.html',
   styleUrl: './home.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -15,6 +17,8 @@ export class HomePage {
   private readonly api = inject(PublicApiService);
   protected readonly context = inject(TournamentContextService);
   private readonly assetUrl = inject(AssetUrlService);
+  private readonly languageService = inject(LanguageService);
+  private readonly transloco = inject(TranslocoService);
 
   protected readonly tournament = this.context.tournament;
   protected readonly categories = signal<Category[]>([]);
@@ -41,7 +45,10 @@ export class HomePage {
   }
 
   protected formatKickoff(startTime: string): string {
-    return new Date(startTime).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' });
+    return new Date(startTime).toLocaleString(this.languageService.language(), {
+      dateStyle: 'short',
+      timeStyle: 'short',
+    });
   }
 
   // Resolves the logo's relative API path into a URL fetchable from
@@ -60,12 +67,13 @@ export class HomePage {
   }
 
   protected competitionLabel(match: Match): string {
+    const lang = this.languageService.language();
     if (match.isThirdPlaceMatch) {
-      return 'Pour la 3e place';
+      return this.transloco.translate('home.competition.thirdPlace', {}, lang);
     }
     if (match.knockoutBracketId) {
-      return 'Phase finale';
+      return this.transloco.translate('home.competition.final', {}, lang);
     }
-    return `Round ${match.round}`;
+    return this.transloco.translate('home.competition.round', { round: match.round }, lang);
   }
 }

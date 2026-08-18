@@ -248,5 +248,94 @@
         "body": "Cette politique peut être mise à jour ; la version applicable est celle publiée sur cette page, accompagnée de sa date de dernière mise à jour."
       }
     }
+  },
+  "shell": {
+    "loading": "Chargement…",
+    "error": {
+      "notFound": "Ce tournoi n'existe pas ou n'est pas publié."
+    },
+    "skipLink": "Aller au contenu principal",
+    "back": "Autres tournois",
+    "backAria": "Rechercher un autre tournoi",
+    "venue": "lieu",
+    "venues": "lieux",
+    "shareText": "Suivez {{name}} sur TournArena",
+    "nav": {
+      "tournament": "Tournoi",
+      "teams": "Équipes",
+      "standings": "Classement",
+      "schedule": "Calendrier"
+    }
+  },
+  "home": {
+    "sections": {
+      "description": "Description",
+      "upcomingMatches": "Prochains matchs",
+      "categories": "Catégories",
+      "rules": "Règlement",
+      "practicalInfo": "Infos pratiques",
+      "sponsors": "Sponsors"
+    },
+    "competition": {
+      "thirdPlace": "Pour la 3e place",
+      "final": "Phase finale",
+      "round": "Round {{round}}"
+    }
+  },
+  "schedule": {
+    "noCategories": "Aucune catégorie pour ce tournoi.",
+    "categoryLabel": "Catégorie",
+    "phaseLabel": "Phase",
+    "searchLabel": "Rechercher une équipe ou un arbitre",
+    "searchPlaceholder": "Rechercher une équipe ou un arbitre…",
+    "noMatches": "Aucun match pour cette phase.",
+    "unscheduled": "Non planifié",
+    "forfeit": "forfait"
+  },
+  "standings": {
+    "noPhase": "Aucune phase pour cette catégorie.",
+    "provisional": "provisoire",
+    "bracketNotGenerated": "Le tableau n'a pas encore été généré pour cette phase.",
+    "roundLabel": "Tour",
+    "previousRound": "Tour précédent",
+    "nextRound": "Tour suivant",
+    "finalRankingTab": "Classement final",
+    "fullView": "Vue complète",
+    "finalRankingEmpty": "Le classement final sera disponible une fois les tableaux de phase finale complétés.",
+    "table": {
+      "team": "Équipe",
+      "played": "J",
+      "playedFull": "Joués",
+      "won": "G",
+      "wonFull": "Gagnés",
+      "drawn": "N",
+      "drawnFull": "Nuls",
+      "lost": "P",
+      "lostFull": "Perdus",
+      "goalsFor": "BP",
+      "goalsForFull": "Buts pour",
+      "goalsAgainst": "BC",
+      "goalsAgainstFull": "Buts contre",
+      "points": "Pts",
+      "pointsFull": "Points",
+      "bracket": "Tableau",
+      "result": "Résultat"
+    }
+  },
+  "teamDetail": {
+    "loadError": "Impossible de charger cette équipe.",
+    "groupStanding": "Classement de poule",
+    "position": "Position",
+    "wdl": "V / N / D",
+    "goals": "Buts",
+    "upcoming": "À venir",
+    "noMatches": "Aucun match planifié pour cette équipe.",
+    "poolRound": "Poule — round {{round}}"
+  },
+  "teamSearch": {
+    "allCategories": "Toutes",
+    "searchLabel": "Rechercher une équipe",
+    "searchPlaceholder": "Rechercher une équipe…",
+    "noTeams": "Aucune équipe trouvée."
   }
 }

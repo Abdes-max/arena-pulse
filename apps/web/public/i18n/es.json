@@ -154,5 +154,94 @@
       "title": "Política de privacidad",
       "updated": "Última actualización: 16 de agosto de 2026"
     }
+  },
+  "shell": {
+    "loading": "Cargando…",
+    "error": {
+      "notFound": "Este torneo no existe o no está publicado."
+    },
+    "skipLink": "Ir al contenido principal",
+    "back": "Otros torneos",
+    "backAria": "Buscar otro torneo",
+    "venue": "sede",
+    "venues": "sedes",
+    "shareText": "Sigue {{name}} en TournArena",
+    "nav": {
+      "tournament": "Torneo",
+      "teams": "Equipos",
+      "standings": "Clasificación",
+      "schedule": "Calendario"
+    }
+  },
+  "home": {
+    "sections": {
+      "description": "Descripción",
+      "upcomingMatches": "Próximos partidos",
+      "categories": "Categorías",
+      "rules": "Reglamento",
+      "practicalInfo": "Información práctica",
+      "sponsors": "Patrocinadores"
+    },
+    "competition": {
+      "thirdPlace": "Por el 3er puesto",
+      "final": "Fase final",
+      "round": "Ronda {{round}}"
+    }
+  },
+  "schedule": {
+    "noCategories": "Ninguna categoría para este torneo.",
+    "categoryLabel": "Categoría",
+    "phaseLabel": "Fase",
+    "searchLabel": "Buscar un equipo o un árbitro",
+    "searchPlaceholder": "Buscar un equipo o un árbitro…",
+    "noMatches": "Ningún partido para esta fase.",
+    "unscheduled": "Sin programar",
+    "forfeit": "renuncia"
+  },
+  "standings": {
+    "noPhase": "Ninguna fase para esta categoría.",
+    "provisional": "provisional",
+    "bracketNotGenerated": "El cuadro todavía no se ha generado para esta fase.",
+    "roundLabel": "Ronda",
+    "previousRound": "Ronda anterior",
+    "nextRound": "Ronda siguiente",
+    "finalRankingTab": "Clasificación final",
+    "fullView": "Vista completa",
+    "finalRankingEmpty": "La clasificación final estará disponible una vez completados los cuadros de la fase final.",
+    "table": {
+      "team": "Equipo",
+      "played": "J",
+      "playedFull": "Jugados",
+      "won": "G",
+      "wonFull": "Ganados",
+      "drawn": "E",
+      "drawnFull": "Empatados",
+      "lost": "P",
+      "lostFull": "Perdidos",
+      "goalsFor": "GF",
+      "goalsForFull": "Goles a favor",
+      "goalsAgainst": "GC",
+      "goalsAgainstFull": "Goles en contra",
+      "points": "Pts",
+      "pointsFull": "Puntos",
+      "bracket": "Cuadro",
+      "result": "Resultado"
+    }
+  },
+  "teamDetail": {
+    "loadError": "No se pudo cargar este equipo.",
+    "groupStanding": "Clasificación del grupo",
+    "position": "Posición",
+    "wdl": "G / E / P",
+    "goals": "Goles",
+    "upcoming": "Próximos",
+    "noMatches": "Ningún partido programado para este equipo.",
+    "poolRound": "Grupo — ronda {{round}}"
+  },
+  "teamSearch": {
+    "allCategories": "Todas",
+    "searchLabel": "Buscar un equipo",
+    "searchPlaceholder": "Buscar un equipo…",
+    "noTeams": "No se encontró ningún equipo."
   }
 }

@@ -1,5 +1,5 @@
 import { CompetitionPhase, Match } from './models';
-import { eliminatedAtLabel } from './round-label.util';
+import { RoundLabelLang, eliminatedAtLabel, finalRankingStageLabels } from './round-label.util';
 
 export interface FinalRankingRow {
   position: number;
@@ -30,13 +30,16 @@ interface StageEntry {
  * within that bracket. Not a points cumulative table: a semifinalist in the
  * top bracket always outranks the winner of a lesser one.
  */
-export function computeFinalRanking(phasesWithMatches: PhaseMatches[]): FinalRankingRow[] {
+export function computeFinalRanking(
+  phasesWithMatches: PhaseMatches[],
+  lang: RoundLabelLang = 'fr',
+): FinalRankingRow[] {
   // Order is (phase order, i.e. bracket "value") then stage rank within it —
   // phasesWithMatches must already be given in descending bracket-value order.
   const ordered: FinalRankingRow[] = [];
   phasesWithMatches.forEach(({ phase, matches }) => {
     const totalRounds = Math.log2(phase.knockoutBracket?.size ?? 2);
-    const entries = rankBracket(matches, totalRounds).sort(
+    const entries = rankBracket(matches, totalRounds, lang).sort(
       (a, b) => a.stageRank - b.stageRank || a.teamName.localeCompare(b.teamName),
     );
     for (const entry of entries) {
@@ -54,12 +57,13 @@ export function computeFinalRanking(phasesWithMatches: PhaseMatches[]): FinalRan
   return ordered.map((row, index) => ({ ...row, position: index + 1 }));
 }
 
-function rankBracket(matches: Match[], totalRounds: number): StageEntry[] {
+function rankBracket(matches: Match[], totalRounds: number, lang: RoundLabelLang): StageEntry[] {
   const mainMatches = matches.filter((match) => !match.isThirdPlaceMatch);
   const thirdPlaceMatch = matches.find((match) => match.isThirdPlaceMatch);
   if (mainMatches.length === 0) {
     return [];
   }
+  const stageLabels = finalRankingStageLabels(lang);
   const final = mainMatches.find((match) => match.round === totalRounds);
   const entries: StageEntry[] = [];
 
@@ -67,10 +71,10 @@ function rankBracket(matches: Match[], totalRounds: number): StageEntry[] {
     const winnerId = getWinnerTeamId(final);
     const loserId = getLoserTeamId(final);
     if (winnerId && final.homeTeam && final.awayTeam) {
-      entries.push(teamEntry(final, winnerId, 0, 'Vainqueur'));
+      entries.push(teamEntry(final, winnerId, 0, stageLabels.winner));
     }
     if (loserId) {
-      entries.push(teamEntry(final, loserId, 1, 'Finaliste'));
+      entries.push(teamEntry(final, loserId, 1, stageLabels.finalist));
     }
   }
 
@@ -78,10 +82,10 @@ function rankBracket(matches: Match[], totalRounds: number): StageEntry[] {
     const winnerId = getWinnerTeamId(thirdPlaceMatch);
     const loserId = getLoserTeamId(thirdPlaceMatch);
     if (winnerId) {
-      entries.push(teamEntry(thirdPlaceMatch, winnerId, 2, '3e place'));
+      entries.push(teamEntry(thirdPlaceMatch, winnerId, 2, stageLabels.thirdPlace));
     }
     if (loserId) {
-      entries.push(teamEntry(thirdPlaceMatch, loserId, 3, '4e place'));
+      entries.push(teamEntry(thirdPlaceMatch, loserId, 3, stageLabels.fourthPlace));
     }
   }
 
@@ -99,7 +103,7 @@ function rankBracket(matches: Match[], totalRounds: number): StageEntry[] {
     }
     const fromEnd = totalRounds - match.round;
     const stageRank = 4 + (fromEnd - 1) * 2;
-    entries.push(teamEntry(match, loserId, stageRank, eliminatedAtLabel(fromEnd)));
+    entries.push(teamEntry(match, loserId, stageRank, eliminatedAtLabel(fromEnd, lang)));
   }
 
   return entries;

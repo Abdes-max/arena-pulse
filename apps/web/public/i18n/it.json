@@ -154,5 +154,94 @@
       "title": "Informativa sulla privacy",
       "updated": "Ultimo aggiornamento: 16 agosto 2026"
     }
+  },
+  "shell": {
+    "loading": "Caricamento…",
+    "error": {
+      "notFound": "Questo torneo non esiste o non è pubblicato."
+    },
+    "skipLink": "Vai al contenuto principale",
+    "back": "Altri tornei",
+    "backAria": "Cerca un altro torneo",
+    "venue": "sede",
+    "venues": "sedi",
+    "shareText": "Segui {{name}} su TournArena",
+    "nav": {
+      "tournament": "Torneo",
+      "teams": "Squadre",
+      "standings": "Classifica",
+      "schedule": "Calendario"
+    }
+  },
+  "home": {
+    "sections": {
+      "description": "Descrizione",
+      "upcomingMatches": "Prossime partite",
+      "categories": "Categorie",
+      "rules": "Regolamento",
+      "practicalInfo": "Informazioni pratiche",
+      "sponsors": "Sponsor"
+    },
+    "competition": {
+      "thirdPlace": "Per il 3° posto",
+      "final": "Fase finale",
+      "round": "Turno {{round}}"
+    }
+  },
+  "schedule": {
+    "noCategories": "Nessuna categoria per questo torneo.",
+    "categoryLabel": "Categoria",
+    "phaseLabel": "Fase",
+    "searchLabel": "Cerca una squadra o un arbitro",
+    "searchPlaceholder": "Cerca una squadra o un arbitro…",
+    "noMatches": "Nessuna partita per questa fase.",
+    "unscheduled": "Non pianificato",
+    "forfeit": "a tavolino"
+  },
+  "standings": {
+    "noPhase": "Nessuna fase per questa categoria.",
+    "provisional": "provvisorio",
+    "bracketNotGenerated": "Il tabellone non è ancora stato generato per questa fase.",
+    "roundLabel": "Turno",
+    "previousRound": "Turno precedente",
+    "nextRound": "Turno successivo",
+    "finalRankingTab": "Classifica finale",
+    "fullView": "Vista completa",
+    "finalRankingEmpty": "La classifica finale sarà disponibile una volta completati i tabelloni della fase finale.",
+    "table": {
+      "team": "Squadra",
+      "played": "G",
+      "playedFull": "Giocate",
+      "won": "V",
+      "wonFull": "Vinte",
+      "drawn": "N",
+      "drawnFull": "Pareggiate",
+      "lost": "P",
+      "lostFull": "Perse",
+      "goalsFor": "GF",
+      "goalsForFull": "Gol fatti",
+      "goalsAgainst": "GS",
+      "goalsAgainstFull": "Gol subiti",
+      "points": "Pt",
+      "pointsFull": "Punti",
+      "bracket": "Tabellone",
+      "result": "Risultato"
+    }
+  },
+  "teamDetail": {
+    "loadError": "Impossibile caricare questa squadra.",
+    "groupStanding": "Classifica del girone",
+    "position": "Posizione",
+    "wdl": "V / N / P",
+    "goals": "Gol",
+    "upcoming": "Prossime",
+    "noMatches": "Nessuna partita programmata per questa squadra.",
+    "poolRound": "Girone — turno {{round}}"
+  },
+  "teamSearch": {
+    "allCategories": "Tutte",
+    "searchLabel": "Cerca una squadra",
+    "searchPlaceholder": "Cerca una squadra…",
+    "noTeams": "Nessuna squadra trovata."
   }
 }

@@ -1,5 +1,5 @@
 import { Match } from './models';
-import { roundLabel, roundLabelPlural } from './round-label.util';
+import { RoundLabelLang, roundLabel, roundLabelPlural } from './round-label.util';
 
 export interface BracketRound {
   round: number;
@@ -17,8 +17,12 @@ export interface BracketView {
   thirdPlaceMatch: Match | null;
 }
 
-/** Groups a knockout bracket's matches by round, each with its French round label. */
-export function buildBracketView(matches: Match[], totalRounds: number): BracketView {
+/** Groups a knockout bracket's matches by round, each with its round label (French by default -- see round-label.util.ts's `lang` parameter). */
+export function buildBracketView(
+  matches: Match[],
+  totalRounds: number,
+  lang: RoundLabelLang = 'fr',
+): BracketView {
   const thirdPlaceMatch = matches.find((match) => match.isThirdPlaceMatch) ?? null;
   const byRound = new Map<number, Match[]>();
   for (const match of matches) {
@@ -33,8 +37,8 @@ export function buildBracketView(matches: Match[], totalRounds: number): Bracket
     .sort(([a], [b]) => a - b)
     .map(([round, roundMatches]) => ({
       round,
-      label: roundLabelPlural(totalRounds - round),
-      singularLabel: roundLabel(totalRounds - round),
+      label: roundLabelPlural(totalRounds - round, lang),
+      singularLabel: roundLabel(totalRounds - round, lang),
       matches: roundMatches.sort((a, b) => (a.bracketSlot ?? 0) - (b.bracketSlot ?? 0)),
     }));
   return { rounds, thirdPlaceMatch };

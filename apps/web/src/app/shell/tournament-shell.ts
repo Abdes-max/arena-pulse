@@ -9,8 +9,17 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AssetUrlService } from 'api-client';
-import { ShareButton, ThemeModeToggle } from 'design-system';
-import { DEFAULT_THEME, ThemeMode, ThemeName, ThemeService } from 'design-tokens';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { LanguageSwitcher, ShareButton, ThemeModeToggle } from 'design-system';
+import {
+  DEFAULT_THEME,
+  LanguageCode,
+  LanguageService,
+  SUPPORTED_LANGUAGES,
+  ThemeMode,
+  ThemeName,
+  ThemeService,
+} from 'design-tokens';
 import { TournamentContextService } from '../core/tournament-context.service';
 import { PublicTheme } from 'shared-models';
 
@@ -23,7 +32,15 @@ const THEME_MAP: Record<PublicTheme, ThemeName> = {
 
 @Component({
   selector: 'app-tournament-shell',
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, ThemeModeToggle, ShareButton],
+  imports: [
+    RouterOutlet,
+    RouterLink,
+    RouterLinkActive,
+    ThemeModeToggle,
+    ShareButton,
+    LanguageSwitcher,
+    TranslocoPipe,
+  ],
   providers: [TournamentContextService],
   templateUrl: './tournament-shell.html',
   styleUrl: './tournament-shell.scss',
@@ -32,14 +49,23 @@ const THEME_MAP: Record<PublicTheme, ThemeName> = {
 export class TournamentShell {
   private readonly route = inject(ActivatedRoute);
   private readonly themeService = inject(ThemeService);
+  private readonly languageService = inject(LanguageService);
+  private readonly transloco = inject(TranslocoService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly assetUrl = inject(AssetUrlService);
   protected readonly context = inject(TournamentContextService);
 
   protected readonly tournament = this.context.tournament;
   protected readonly loading = this.context.loading;
+  // A Transloco *key* (e.g. 'shell.error.notFound'), not the translated
+  // string itself -- TournamentContextService has no reason to depend on
+  // Transloco, and resolving the key in the template (| transloco) instead
+  // of here keeps the message reactive to a language switch instead of
+  // freezing whatever was active at the moment the fetch failed.
   protected readonly errorMessage = this.context.errorMessage;
   protected readonly mode = this.themeService.mode;
+  protected readonly language = this.languageService.language;
+  protected readonly languages = SUPPORTED_LANGUAGES;
 
   protected logoUrl(url: string | null | undefined): string | null {
     return this.assetUrl.resolve(url ?? null);
@@ -50,13 +76,26 @@ export class TournamentShell {
   // happens to be open, so the recipient always lands on the same place
   // regardless of where the visitor clicked Partager from.
   protected readonly shareUrl = computed(() => `${window.location.origin}/${this.context.slug()}`);
+  // translate() (a plain synchronous lookup), not the `transloco` pipe --
+  // this feeds ap-share-button's [text] input, a plain string property, not
+  // template-bound markup, so there's no pipe to bind it through. Recomputed
+  // whenever the tournament OR the active language signal changes, so a
+  // language switch mid-visit updates the share text without needing to
+  // reopen the share sheet twice.
   protected readonly shareText = computed(() => {
     const tournament = this.tournament();
-    return tournament ? `Suivez ${tournament.name} sur TournArena` : '';
+    if (!tournament) {
+      return '';
+    }
+    return this.transloco.translate('shell.shareText', { name: tournament.name }, this.language());
   });
 
   protected onModeChange(next: ThemeMode): void {
     this.themeService.setMode(document.documentElement, next);
+  }
+
+  protected onLanguageChange(code: string): void {
+    this.languageService.setLanguage(code as LanguageCode);
   }
 
   // index.html sets <base href="/">, so a plain href="#main-content" resolves
@@ -72,11 +111,11 @@ export class TournamentShell {
     if (!tournament?.startDate) {
       return null;
     }
-    const start = new Date(tournament.startDate).toLocaleDateString('fr-FR');
+    const start = new Date(tournament.startDate).toLocaleDateString(this.language());
     if (!tournament.endDate || tournament.endDate === tournament.startDate) {
       return start;
     }
-    return `${start} – ${new Date(tournament.endDate).toLocaleDateString('fr-FR')}`;
+    return `${start} – ${new Date(tournament.endDate).toLocaleDateString(this.language())}`;
   });
 
   constructor() {

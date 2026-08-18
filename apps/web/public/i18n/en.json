@@ -248,5 +248,94 @@
         "body": "This policy may be updated; the applicable version is the one published on this page, along with its last-updated date."
       }
     }
+  },
+  "shell": {
+    "loading": "Loading…",
+    "error": {
+      "notFound": "This tournament doesn't exist or isn't published."
+    },
+    "skipLink": "Skip to main content",
+    "back": "Other tournaments",
+    "backAria": "Search for another tournament",
+    "venue": "venue",
+    "venues": "venues",
+    "shareText": "Follow {{name}} on TournArena",
+    "nav": {
+      "tournament": "Tournament",
+      "teams": "Teams",
+      "standings": "Standings",
+      "schedule": "Schedule"
+    }
+  },
+  "home": {
+    "sections": {
+      "description": "Description",
+      "upcomingMatches": "Upcoming matches",
+      "categories": "Categories",
+      "rules": "Rules",
+      "practicalInfo": "Practical info",
+      "sponsors": "Sponsors"
+    },
+    "competition": {
+      "thirdPlace": "For 3rd place",
+      "final": "Final stage",
+      "round": "Round {{round}}"
+    }
+  },
+  "schedule": {
+    "noCategories": "No category for this tournament.",
+    "categoryLabel": "Category",
+    "phaseLabel": "Phase",
+    "searchLabel": "Search a team or referee",
+    "searchPlaceholder": "Search a team or referee…",
+    "noMatches": "No match for this phase.",
+    "unscheduled": "Unscheduled",
+    "forfeit": "forfeit"
+  },
+  "standings": {
+    "noPhase": "No phase for this category.",
+    "provisional": "provisional",
+    "bracketNotGenerated": "The bracket hasn't been generated for this phase yet.",
+    "roundLabel": "Round",
+    "previousRound": "Previous round",
+    "nextRound": "Next round",
+    "finalRankingTab": "Final ranking",
+    "fullView": "Full view",
+    "finalRankingEmpty": "The final ranking will be available once the knockout brackets are completed.",
+    "table": {
+      "team": "Team",
+      "played": "P",
+      "playedFull": "Played",
+      "won": "W",
+      "wonFull": "Won",
+      "drawn": "D",
+      "drawnFull": "Drawn",
+      "lost": "L",
+      "lostFull": "Lost",
+      "goalsFor": "GF",
+      "goalsForFull": "Goals for",
+      "goalsAgainst": "GA",
+      "goalsAgainstFull": "Goals against",
+      "points": "Pts",
+      "pointsFull": "Points",
+      "bracket": "Bracket",
+      "result": "Result"
+    }
+  },
+  "teamDetail": {
+    "loadError": "Couldn't load this team.",
+    "groupStanding": "Pool standing",
+    "position": "Position",
+    "wdl": "W / D / L",
+    "goals": "Goals",
+    "upcoming": "Upcoming",
+    "noMatches": "No match scheduled for this team.",
+    "poolRound": "Pool — round {{round}}"
+  },
+  "teamSearch": {
+    "allCategories": "All",
+    "searchLabel": "Search a team",
+    "searchPlaceholder": "Search a team…",
+    "noTeams": "No team found."
   }
 }
