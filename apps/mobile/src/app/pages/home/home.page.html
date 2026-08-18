@@ -1,9 +1,43 @@
 @if (tournament(); as t) {
   <ion-content class="home-page">
+    @if (t.venues.length > 0) {
+      <section class="home-page__section">
+        <h3 class="home-page__section-title">Lieux</h3>
+        <div class="home-page__venues">
+          @for (venue of t.venues; track venue.id) {
+            <article class="home-page__venue">
+              <h4 class="home-page__venue-name">{{ venue.name }}</h4>
+              @if (venue.address) {
+                <p class="home-page__address">{{ venue.address }}</p>
+              }
+              @if (venue.fields.length > 0) {
+                <ul class="home-page__fields">
+                  @for (field of venue.fields; track field.id) {
+                    <li>{{ field.name }}</li>
+                  }
+                </ul>
+              }
+            </article>
+          }
+        </div>
+      </section>
+    }
+
+    @if (categories().length > 0) {
+      <section class="home-page__section">
+        <h3 class="home-page__section-title">Catégories</h3>
+        <ul class="home-page__categories">
+          @for (category of categories(); track category.id) {
+            <li>{{ category.name }}</li>
+          }
+        </ul>
+      </section>
+    }
+
     @if (t.description) {
       <section class="home-page__section">
         <h3 class="home-page__section-title">Description</h3>
-        <p class="home-page__text">{{ t.description }}</p>
+        <p class="home-page__text home-page__text--boxed">{{ t.description }}</p>
       </section>
     }
 
@@ -25,47 +59,17 @@
       </section>
     }
 
-    @if (categories().length > 0) {
-      <section class="home-page__section">
-        <h3 class="home-page__section-title">Catégories</h3>
-        <ul class="home-page__categories">
-          @for (category of categories(); track category.id) {
-            <li>{{ category.name }}</li>
-          }
-        </ul>
-      </section>
-    }
-
     @if (t.rules) {
       <section class="home-page__section">
         <h3 class="home-page__section-title">Règlement</h3>
-        <p class="home-page__text">{{ t.rules }}</p>
+        <p class="home-page__text home-page__text--boxed">{{ t.rules }}</p>
       </section>
     }
 
-    @if (t.venues.length > 0 || t.practicalInfo) {
+    @if (t.practicalInfo) {
       <section class="home-page__section">
         <h3 class="home-page__section-title">Infos pratiques</h3>
-        @if (t.practicalInfo) {
-          <p class="home-page__text">{{ t.practicalInfo }}</p>
-        }
-        <div class="home-page__venues">
-          @for (venue of t.venues; track venue.id) {
-            <article class="home-page__venue">
-              <h4 class="home-page__venue-name">{{ venue.name }}</h4>
-              @if (venue.address) {
-                <p class="home-page__address">{{ venue.address }}</p>
-              }
-              @if (venue.fields.length > 0) {
-                <ul class="home-page__fields">
-                  @for (field of venue.fields; track field.id) {
-                    <li>{{ field.name }}</li>
-                  }
-                </ul>
-              }
-            </article>
-          }
-        </div>
+        <p class="home-page__text home-page__text--boxed">{{ t.practicalInfo }}</p>
       </section>
     }
 

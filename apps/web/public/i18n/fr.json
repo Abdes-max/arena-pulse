@@ -269,6 +269,7 @@
   },
   "home": {
     "sections": {
+      "venues": "Lieux",
       "description": "Description",
       "upcomingMatches": "Prochains matchs",
       "categories": "Catégories",

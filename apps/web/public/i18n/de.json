@@ -175,6 +175,7 @@
   },
   "home": {
     "sections": {
+      "venues": "Austragungsorte",
       "description": "Beschreibung",
       "upcomingMatches": "Nächste Spiele",
       "categories": "Kategorien",
