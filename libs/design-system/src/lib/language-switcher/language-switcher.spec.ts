@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { vi } from 'vitest';
 import { LanguageOption, LanguageSwitcher } from './language-switcher';
 
 const LANGUAGES: LanguageOption[] = [
@@ -104,6 +105,36 @@ describe('LanguageSwitcher', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('.ap-language-switcher__panel')).toBeNull();
+  });
+
+  it('opens right-aligned by default (trigger has room to its right)', () => {
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.detectChanges();
+
+    const switcherHost: HTMLElement = fixture.nativeElement.querySelector('ap-language-switcher');
+    vi.spyOn(switcherHost, 'getBoundingClientRect').mockReturnValue({
+      right: 800,
+    } as DOMRect);
+    switcherHost.querySelector<HTMLButtonElement>('.ap-language-switcher__trigger')!.click();
+    fixture.detectChanges();
+
+    const panel = fixture.nativeElement.querySelector('.ap-language-switcher__panel');
+    expect(panel.classList.contains('ap-language-switcher__panel--left')).toBe(false);
+  });
+
+  it('flips to open left-aligned when the trigger sits too close to the left edge for right-anchoring to fit', () => {
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.detectChanges();
+
+    const switcherHost: HTMLElement = fixture.nativeElement.querySelector('ap-language-switcher');
+    vi.spyOn(switcherHost, 'getBoundingClientRect').mockReturnValue({
+      right: 80,
+    } as DOMRect);
+    switcherHost.querySelector<HTMLButtonElement>('.ap-language-switcher__trigger')!.click();
+    fixture.detectChanges();
+
+    const panel = fixture.nativeElement.querySelector('.ap-language-switcher__panel');
+    expect(panel.classList.contains('ap-language-switcher__panel--left')).toBe(true);
   });
 
   it('closes on Escape', () => {
