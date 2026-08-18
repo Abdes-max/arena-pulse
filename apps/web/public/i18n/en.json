@@ -443,6 +443,198 @@
       "errorRoleGeneric": "Unable to change this role, please try again.",
       "errorRemoveLastAdmin": "Unable to remove this collaborator: this is the organization's last administrator.",
       "errorRemoveGeneric": "Unable to remove this collaborator, please try again."
+    },
+    "tournamentList": {
+      "title": "Tournaments",
+      "create": "Create a tournament",
+      "loading": "Loading…",
+      "empty": "No tournaments yet.",
+      "emptyFiltered": "No tournaments with this status.",
+      "errorLoad": "Unable to load tournaments.",
+      "errorDuplicate": "Unable to duplicate this tournament.",
+      "errorArchiveToggle": "Unable to change this tournament's status.",
+      "statusFilterLabel": "Status",
+      "status": {
+        "notArchived": "Not archived",
+        "all": "All",
+        "draft": "Draft",
+        "published": "Published",
+        "unpublished": "Unpublished",
+        "archived": "Archived"
+      },
+      "table": {
+        "logo": "Logo",
+        "name": "Name",
+        "sport": "Sport",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "edit": "Edit",
+      "duplicate": "Duplicate",
+      "publicLink": "Public link",
+      "archive": "Archive",
+      "unarchive": "Unarchive"
+    },
+    "onboarding": {
+      "title": "Get started",
+      "progress": "{{done}} / {{total}} steps completed",
+      "later": "Later",
+      "done": "Done",
+      "steps": {
+        "createTournament": {
+          "title": "Create your first tournament",
+          "description": "Name, sport, and dates for your competition.",
+          "action": "Create"
+        },
+        "addTeam": {
+          "title": "Add at least one team",
+          "description": "On your most recent tournament.",
+          "action": "Add"
+        },
+        "structure": {
+          "title": "Structure your tournament",
+          "description": "Pools and/or knockout brackets.",
+          "action": "Structure"
+        },
+        "publish": {
+          "title": "Publish the tournament",
+          "description": "Make its public site visible.",
+          "action": "Publish"
+        }
+      }
+    },
+    "publishSuccess": {
+      "verifying": "Verifying payment…",
+      "publishedTitle": "Tournament published",
+      "publishedBody": "{{name}} is now visible on its public site.",
+      "pendingTitle": "Payment being confirmed",
+      "pendingBody": "Publication of {{name}} will be confirmed once payment is validated. You can reload this page in a few moments.",
+      "backToTournament": "Back to tournament",
+      "notFoundTitle": "Tournament not found",
+      "backToTournaments": "Back to tournaments"
+    },
+    "tournamentForm": {
+      "loading": "Loading…",
+      "createTitle": "Create a tournament",
+      "generalTitle": "General",
+      "cancelledPayment": "Payment cancelled: the tournament was not published.",
+      "lifecycle": {
+        "unarchive": "Unarchive",
+        "unpublish": "Unpublish",
+        "publish": "Publish",
+        "archive": "Archive",
+        "duplicate": "Duplicate"
+      },
+      "payment": {
+        "title": "Publication payment",
+        "loading": "Loading…",
+        "never": "This tournament has never been published.",
+        "table": { "date": "Date", "teams": "Teams", "amount": "Amount", "status": "Status" },
+        "paid": "Paid",
+        "pending": "Pending",
+        "print": "Print"
+      },
+      "logo": {
+        "title": "Logo",
+        "change": "Change",
+        "add": "Add a logo",
+        "remove": "Remove"
+      },
+      "form": {
+        "nameLabel": "Tournament name",
+        "sportLabel": "Sport",
+        "chooseSport": "Choose a sport",
+        "isOnlineLabel": "Online tournament (esport)",
+        "themeLabel": "Public site theme",
+        "save": "Save",
+        "create": "Create the tournament"
+      },
+      "categories": {
+        "title": "Categories and divisions",
+        "remove": "Delete",
+        "feeLabel": "Registration fee (cents, empty = free)",
+        "saveFee": "Save fee",
+        "removeDivision": "Remove",
+        "newDivisionLabel": "New division",
+        "addDivision": "Add",
+        "newCategoryLabel": "New category",
+        "newCategoryPlaceholder": "New category (e.g. U10)",
+        "newFeeLabel": "Fee (cents, optional)",
+        "addCategory": "Add a category"
+      },
+      "venues": {
+        "title": "Venues and fields",
+        "remove": "Delete",
+        "removeField": "Remove",
+        "newFieldLabel": "New field",
+        "addField": "Add",
+        "newVenueLabel": "New venue",
+        "newVenuePlaceholder": "New venue (e.g. Municipal stadium)",
+        "addVenue": "Add a venue"
+      },
+      "admins": {
+        "title": "Tournament administrators",
+        "remove": "Remove",
+        "emailLabel": "Collaborator's email",
+        "presetFull": "Full administrator",
+        "presetReferee": "Referee (scores only)",
+        "add": "Add as administrator"
+      },
+      "description": {
+        "title": "Description",
+        "placeholder": "Introduce your competition to public site visitors…",
+        "save": "Save"
+      },
+      "rules": {
+        "title": "Rules",
+        "placeholder": "Competition rules…",
+        "save": "Save"
+      },
+      "practicalInfo": {
+        "title": "Practical information",
+        "placeholder": "Parking, catering, access… (venues are managed under \"Venues and fields\")",
+        "save": "Save"
+      },
+      "sponsors": {
+        "title": "Sponsors",
+        "remove": "Delete",
+        "removeLogo": "Remove logo",
+        "nameLabel": "Sponsor name",
+        "linkLabel": "Link (optional)",
+        "add": "Add"
+      },
+      "receipt": {
+        "title": "Receipt — TournArena tournament publication",
+        "tournament": "Tournament",
+        "paidAt": "Payment date",
+        "teams": "Teams involved",
+        "amount": "Amount"
+      },
+      "errors": {
+        "loadData": "Unable to load tournament data.",
+        "save": "Unable to save the tournament.",
+        "actionNotAllowed": "This action isn't possible in the tournament's current state.",
+        "generic": "Something went wrong, please try again.",
+        "duplicate": "Unable to duplicate this tournament.",
+        "logoInvalid": "Invalid file format or size (PNG, JPEG, or WebP, 2 MB maximum).",
+        "logoUpload": "Unable to upload this logo, please try again.",
+        "logoRemove": "Unable to remove this logo.",
+        "saveSection": "Unable to save this section.",
+        "addSponsor": "Unable to add this sponsor.",
+        "removeSponsor": "Unable to delete this sponsor.",
+        "addCategory": "Unable to add this category (name already used?).",
+        "saveCategoryFee": "Unable to save this category's fee.",
+        "removeCategory": "Unable to delete this category.",
+        "addDivision": "Unable to add this division (name already used?).",
+        "removeDivision": "Unable to delete this division.",
+        "addVenue": "Unable to add this venue (name already used?).",
+        "removeVenue": "Unable to delete this venue.",
+        "addField": "Unable to add this field (name already used?).",
+        "removeField": "Unable to delete this field.",
+        "addAdminNotMember": "This person must first be a member of the organization.",
+        "addAdminGeneric": "Unable to add this administrator.",
+        "removeAdmin": "Unable to remove this administrator."
+      }
     }
   }
 }

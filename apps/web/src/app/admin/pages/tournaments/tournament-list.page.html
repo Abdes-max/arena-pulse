@@ -1,14 +1,16 @@
 <main class="tournament-list-page">
   <div class="tournament-list-page__header">
-    <h1>Tournois</h1>
-    <ap-button type="button" (click)="goToCreate()">Créer un tournoi</ap-button>
+    <h1>{{ 'admin.tournamentList.title' | transloco }}</h1>
+    <ap-button type="button" (click)="goToCreate()">{{
+      'admin.tournamentList.create' | transloco
+    }}</ap-button>
   </div>
 
   @if (loading()) {
-    <p>Chargement…</p>
+    <p>{{ 'admin.tournamentList.loading' | transloco }}</p>
   } @else {
     @if (errorMessage(); as message) {
-      <p class="tournament-list-page__error" role="alert">{{ message }}</p>
+      <p class="tournament-list-page__error" role="alert">{{ message | transloco }}</p>
     }
 
     @if (showOnboarding()) {
@@ -20,29 +22,29 @@
     }
 
     @if (tournaments().length === 0) {
-      <p>Aucun tournoi pour l'instant.</p>
+      <p>{{ 'admin.tournamentList.empty' | transloco }}</p>
     } @else {
       <div class="tournament-list-page__selects-row">
         <ap-select
           class="tournament-list-page__select"
-          label="Statut"
-          [options]="statusOptions"
+          [label]="'admin.tournamentList.statusFilterLabel' | transloco"
+          [options]="statusOptions()"
           [value]="selectedStatus()"
           (valueChange)="onStatusFilterChange($event)"
         />
       </div>
 
       @if (filteredTournaments().length === 0) {
-        <p>Aucun tournoi avec ce statut.</p>
+        <p>{{ 'admin.tournamentList.emptyFiltered' | transloco }}</p>
       } @else {
         <table class="tournament-list-page__table">
           <thead>
             <tr>
-              <th scope="col">Logo</th>
-              <th scope="col">Nom</th>
-              <th scope="col">Sport</th>
-              <th scope="col">Statut</th>
-              <th scope="col">Actions</th>
+              <th scope="col">{{ 'admin.tournamentList.table.logo' | transloco }}</th>
+              <th scope="col">{{ 'admin.tournamentList.table.name' | transloco }}</th>
+              <th scope="col">{{ 'admin.tournamentList.table.sport' | transloco }}</th>
+              <th scope="col">{{ 'admin.tournamentList.table.status' | transloco }}</th>
+              <th scope="col">{{ 'admin.tournamentList.table.actions' | transloco }}</th>
             </tr>
           </thead>
           <tbody>
@@ -62,7 +64,10 @@
                   {{ tournament.sportName }}
                 </td>
                 <td class="tournament-list-page__cell tournament-list-page__cell--status">
-                  <ap-badge [status]="statusBadge[tournament.status]" />
+                  <ap-badge
+                    [status]="statusBadge[tournament.status]"
+                    [label]="statusLabel(tournament.status)"
+                  />
                 </td>
                 <td class="tournament-list-page__cell tournament-list-page__actions">
                   <ap-button
@@ -71,7 +76,7 @@
                     size="sm"
                     (click)="editTournament(tournament)"
                   >
-                    Modifier
+                    {{ 'admin.tournamentList.edit' | transloco }}
                   </ap-button>
                   <ap-button
                     type="button"
@@ -79,7 +84,7 @@
                     size="sm"
                     (click)="duplicate(tournament)"
                   >
-                    Dupliquer
+                    {{ 'admin.tournamentList.duplicate' | transloco }}
                   </ap-button>
                   <ap-button
                     variant="ghost"
@@ -109,7 +114,7 @@
                         stroke-linejoin="round"
                       />
                     </svg>
-                    Lien public
+                    {{ 'admin.tournamentList.publicLink' | transloco }}
                   </ap-button>
                   <ap-button
                     type="button"
@@ -117,7 +122,12 @@
                     size="sm"
                     (click)="toggleArchive(tournament)"
                   >
-                    {{ tournament.status === 'ARCHIVED' ? 'Désarchiver' : 'Archiver' }}
+                    {{
+                      (tournament.status === 'ARCHIVED'
+                        ? 'admin.tournamentList.unarchive'
+                        : 'admin.tournamentList.archive'
+                      ) | transloco
+                    }}
                   </ap-button>
                 </td>
               </tr>

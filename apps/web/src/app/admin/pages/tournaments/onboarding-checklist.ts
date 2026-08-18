@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { Badge, Button } from 'design-system';
 
 export interface OnboardingStep {
@@ -16,7 +17,7 @@ export interface OnboardingStep {
  */
 @Component({
   selector: 'app-onboarding-checklist',
-  imports: [Badge, Button],
+  imports: [Badge, Button, TranslocoPipe],
   templateUrl: './onboarding-checklist.html',
   styleUrl: './onboarding-checklist.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

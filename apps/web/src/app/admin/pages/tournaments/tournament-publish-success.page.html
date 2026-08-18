@@ -1,22 +1,21 @@
 <main class="tournament-publish-success-page">
   @if (loading()) {
-    <p>Vérification du paiement…</p>
+    <p>{{ 'admin.publishSuccess.verifying' | transloco }}</p>
   } @else if (tournament(); as t) {
     @if (t.status === 'PUBLISHED') {
-      <h1>Tournoi publié</h1>
-      <p>
-        <strong>{{ t.name }}</strong> est désormais visible sur son site public.
-      </p>
+      <h1>{{ 'admin.publishSuccess.publishedTitle' | transloco }}</h1>
+      <p>{{ 'admin.publishSuccess.publishedBody' | transloco: { name: t.name } }}</p>
     } @else {
-      <h1>Paiement en cours de confirmation</h1>
-      <p>
-        La publication de <strong>{{ t.name }}</strong> sera confirmée dès que le paiement sera
-        validé. Vous pouvez recharger cette page dans quelques instants.
-      </p>
+      <h1>{{ 'admin.publishSuccess.pendingTitle' | transloco }}</h1>
+      <p>{{ 'admin.publishSuccess.pendingBody' | transloco: { name: t.name } }}</p>
     }
-    <a [routerLink]="['/admin/tournaments', tournamentId()]">Retour au tournoi</a>
+    <a [routerLink]="['/admin/tournaments', tournamentId()]">{{
+      'admin.publishSuccess.backToTournament' | transloco
+    }}</a>
   } @else {
-    <h1>Tournoi introuvable</h1>
-    <a [routerLink]="['/admin/tournaments']">Retour aux tournois</a>
+    <h1>{{ 'admin.publishSuccess.notFoundTitle' | transloco }}</h1>
+    <a [routerLink]="['/admin/tournaments']">{{
+      'admin.publishSuccess.backToTournaments' | transloco
+    }}</a>
   }
 </main>

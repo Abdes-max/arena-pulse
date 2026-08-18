@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { AuthService } from '../../core/auth.service';
 import { TournamentDetail } from '../../core/models';
 import { TournamentsService } from '../../core/tournaments.service';
@@ -16,7 +17,7 @@ const POLL_INTERVAL_MS = 2000;
 
 @Component({
   selector: 'app-tournament-publish-success-page',
-  imports: [RouterLink],
+  imports: [RouterLink, TranslocoPipe],
   templateUrl: './tournament-publish-success.page.html',
   styleUrl: './tournament-publish-success.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

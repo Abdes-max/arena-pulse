@@ -443,6 +443,198 @@
       "errorRoleGeneric": "Impossible de modifier ce rôle, réessayez.",
       "errorRemoveLastAdmin": "Impossible de retirer ce collaborateur : c'est le dernier administrateur de l'organisation.",
       "errorRemoveGeneric": "Impossible de retirer ce collaborateur, réessayez."
+    },
+    "tournamentList": {
+      "title": "Tournois",
+      "create": "Créer un tournoi",
+      "loading": "Chargement…",
+      "empty": "Aucun tournoi pour l'instant.",
+      "emptyFiltered": "Aucun tournoi avec ce statut.",
+      "errorLoad": "Impossible de charger les tournois.",
+      "errorDuplicate": "Impossible de dupliquer ce tournoi.",
+      "errorArchiveToggle": "Impossible de modifier l'état de ce tournoi.",
+      "statusFilterLabel": "Statut",
+      "status": {
+        "notArchived": "Non archivé",
+        "all": "Tous",
+        "draft": "Brouillon",
+        "published": "Publié",
+        "unpublished": "Dépublié",
+        "archived": "Archivé"
+      },
+      "table": {
+        "logo": "Logo",
+        "name": "Nom",
+        "sport": "Sport",
+        "status": "Statut",
+        "actions": "Actions"
+      },
+      "edit": "Modifier",
+      "duplicate": "Dupliquer",
+      "publicLink": "Lien public",
+      "archive": "Archiver",
+      "unarchive": "Désarchiver"
+    },
+    "onboarding": {
+      "title": "Bien démarrer",
+      "progress": "{{done}} / {{total}} étapes complétées",
+      "later": "Plus tard",
+      "done": "Fait",
+      "steps": {
+        "createTournament": {
+          "title": "Créer votre premier tournoi",
+          "description": "Nom, sport et dates de votre compétition.",
+          "action": "Créer"
+        },
+        "addTeam": {
+          "title": "Ajouter au moins une équipe",
+          "description": "Sur votre tournoi le plus récent.",
+          "action": "Ajouter"
+        },
+        "structure": {
+          "title": "Structurer votre tournoi",
+          "description": "Poules et/ou tableaux à élimination.",
+          "action": "Structurer"
+        },
+        "publish": {
+          "title": "Publier le tournoi",
+          "description": "Rendre son site public visible.",
+          "action": "Publier"
+        }
+      }
+    },
+    "publishSuccess": {
+      "verifying": "Vérification du paiement…",
+      "publishedTitle": "Tournoi publié",
+      "publishedBody": "{{name}} est désormais visible sur son site public.",
+      "pendingTitle": "Paiement en cours de confirmation",
+      "pendingBody": "La publication de {{name}} sera confirmée dès que le paiement sera validé. Vous pouvez recharger cette page dans quelques instants.",
+      "backToTournament": "Retour au tournoi",
+      "notFoundTitle": "Tournoi introuvable",
+      "backToTournaments": "Retour aux tournois"
+    },
+    "tournamentForm": {
+      "loading": "Chargement…",
+      "createTitle": "Créer un tournoi",
+      "generalTitle": "Général",
+      "cancelledPayment": "Paiement annulé : le tournoi n'a pas été publié.",
+      "lifecycle": {
+        "unarchive": "Désarchiver",
+        "unpublish": "Dépublier",
+        "publish": "Publier",
+        "archive": "Archiver",
+        "duplicate": "Dupliquer"
+      },
+      "payment": {
+        "title": "Paiement de publication",
+        "loading": "Chargement…",
+        "never": "Ce tournoi n'a jamais été publié.",
+        "table": { "date": "Date", "teams": "Équipes", "amount": "Montant", "status": "Statut" },
+        "paid": "Payé",
+        "pending": "En attente",
+        "print": "Imprimer"
+      },
+      "logo": {
+        "title": "Logo",
+        "change": "Changer",
+        "add": "Ajouter un logo",
+        "remove": "Retirer"
+      },
+      "form": {
+        "nameLabel": "Nom du tournoi",
+        "sportLabel": "Sport",
+        "chooseSport": "Choisir un sport",
+        "isOnlineLabel": "Tournoi en ligne (eSport)",
+        "themeLabel": "Thème du site public",
+        "save": "Enregistrer",
+        "create": "Créer le tournoi"
+      },
+      "categories": {
+        "title": "Catégories et divisions",
+        "remove": "Supprimer",
+        "feeLabel": "Tarif d'inscription (centimes, vide = gratuit)",
+        "saveFee": "Enregistrer le tarif",
+        "removeDivision": "Retirer",
+        "newDivisionLabel": "Nouvelle division",
+        "addDivision": "Ajouter",
+        "newCategoryLabel": "Nouvelle catégorie",
+        "newCategoryPlaceholder": "Nouvelle catégorie (ex. U10)",
+        "newFeeLabel": "Tarif (centimes, optionnel)",
+        "addCategory": "Ajouter une catégorie"
+      },
+      "venues": {
+        "title": "Sites et terrains",
+        "remove": "Supprimer",
+        "removeField": "Retirer",
+        "newFieldLabel": "Nouveau terrain",
+        "addField": "Ajouter",
+        "newVenueLabel": "Nouveau site",
+        "newVenuePlaceholder": "Nouveau site (ex. Stade municipal)",
+        "addVenue": "Ajouter un site"
+      },
+      "admins": {
+        "title": "Administrateurs du tournoi",
+        "remove": "Retirer",
+        "emailLabel": "Email du collaborateur",
+        "presetFull": "Administrateur complet",
+        "presetReferee": "Arbitre (scores uniquement)",
+        "add": "Ajouter comme administrateur"
+      },
+      "description": {
+        "title": "Description",
+        "placeholder": "Présentez votre compétition aux visiteurs du site public…",
+        "save": "Enregistrer"
+      },
+      "rules": {
+        "title": "Règlement",
+        "placeholder": "Règlement de la compétition…",
+        "save": "Enregistrer"
+      },
+      "practicalInfo": {
+        "title": "Infos pratiques",
+        "placeholder": "Parking, restauration, accès… (les lieux sont gérés dans « Sites et terrains »)",
+        "save": "Enregistrer"
+      },
+      "sponsors": {
+        "title": "Sponsors",
+        "remove": "Supprimer",
+        "removeLogo": "Retirer le logo",
+        "nameLabel": "Nom du sponsor",
+        "linkLabel": "Lien (optionnel)",
+        "add": "Ajouter"
+      },
+      "receipt": {
+        "title": "Reçu — Publication de tournoi TournArena",
+        "tournament": "Tournoi",
+        "paidAt": "Date de paiement",
+        "teams": "Équipes concernées",
+        "amount": "Montant"
+      },
+      "errors": {
+        "loadData": "Impossible de charger les données du tournoi.",
+        "save": "Impossible d'enregistrer le tournoi.",
+        "actionNotAllowed": "Cette action n'est pas possible dans l'état actuel du tournoi.",
+        "generic": "Une erreur est survenue, réessayez.",
+        "duplicate": "Impossible de dupliquer ce tournoi.",
+        "logoInvalid": "Format ou taille de fichier invalide (PNG, JPEG ou WebP, 2 Mo maximum).",
+        "logoUpload": "Impossible d'envoyer ce logo, réessayez.",
+        "logoRemove": "Impossible de retirer ce logo.",
+        "saveSection": "Impossible d'enregistrer cette section.",
+        "addSponsor": "Impossible d'ajouter ce sponsor.",
+        "removeSponsor": "Impossible de supprimer ce sponsor.",
+        "addCategory": "Impossible d'ajouter cette catégorie (nom déjà utilisé ?).",
+        "saveCategoryFee": "Impossible d'enregistrer le tarif de cette catégorie.",
+        "removeCategory": "Impossible de supprimer cette catégorie.",
+        "addDivision": "Impossible d'ajouter cette division (nom déjà utilisé ?).",
+        "removeDivision": "Impossible de supprimer cette division.",
+        "addVenue": "Impossible d'ajouter ce site (nom déjà utilisé ?).",
+        "removeVenue": "Impossible de supprimer ce site.",
+        "addField": "Impossible d'ajouter ce terrain (nom déjà utilisé ?).",
+        "removeField": "Impossible de supprimer ce terrain.",
+        "addAdminNotMember": "Cette personne doit d'abord être membre de l'organisation.",
+        "addAdminGeneric": "Impossible d'ajouter cet administrateur.",
+        "removeAdmin": "Impossible de retirer cet administrateur."
+      }
     }
   }
 }
