@@ -11,7 +11,9 @@ import {
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AssetUrlService } from 'api-client';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Button, Select, SelectOption, TextField } from 'design-system';
+import { LanguageService } from 'design-tokens';
 import { AuthService } from '../../core/auth.service';
 import { CompetitionFormatsService } from '../../core/competition-formats.service';
 import {
@@ -31,7 +33,7 @@ import { TeamsService } from '../../core/teams.service';
 import { TimeSlotsService } from '../../core/timeslots.service';
 import { TournamentsService } from '../../core/tournaments.service';
 import { FieldSelector } from '../../shared/field-selector';
-import { matchRoundLabel } from 'shared-models';
+import { matchRoundLabel, RoundLabelLang } from 'shared-models';
 
 interface TimeSlotDraft {
   start: string;
@@ -43,7 +45,7 @@ const EMPTY_DRAFT: TimeSlotDraft = { start: '', end: '', label: '' };
 
 @Component({
   selector: 'app-schedule-page',
-  imports: [Button, Select, TextField, NgTemplateOutlet, FieldSelector],
+  imports: [Button, Select, TextField, NgTemplateOutlet, FieldSelector, TranslocoPipe],
   templateUrl: './schedule.page.html',
   styleUrl: './schedule.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -58,6 +60,8 @@ export class SchedulePage {
   private readonly refereesService = inject(RefereesService);
   private readonly teamsService = inject(TeamsService);
   private readonly assetUrl = inject(AssetUrlService);
+  private readonly languageService = inject(LanguageService);
+  private readonly transloco = inject(TranslocoService);
 
   protected readonly organization = computed(() => this.authService.organizations()[0] ?? null);
   protected readonly tournamentId = this.route.snapshot.paramMap.get('tournamentId')!;
@@ -120,15 +124,25 @@ export class SchedulePage {
     this.categories().map((category) => ({ value: category.id, label: category.name })),
   );
   protected readonly phaseTypeOptions = computed<SelectOption[]>(() => {
+    const lang = this.languageService.language();
     const options: SelectOption[] = [];
     if (this.groupStagePhase() || this.knockoutPhases().length > 0) {
-      options.push({ value: 'ALL', label: 'Tous' });
+      options.push({
+        value: 'ALL',
+        label: this.transloco.translate('admin.schedule.allOption', {}, lang),
+      });
     }
     if (this.groupStagePhase()) {
-      options.push({ value: 'GROUP_STAGE', label: 'Poules' });
+      options.push({
+        value: 'GROUP_STAGE',
+        label: this.transloco.translate('admin.structure.typeGroupStage', {}, lang),
+      });
     }
     if (this.knockoutPhases().length > 0) {
-      options.push({ value: 'KNOCKOUT', label: 'Élimination directe' });
+      options.push({
+        value: 'KNOCKOUT',
+        label: this.transloco.translate('admin.structure.typeKnockout', {}, lang),
+      });
     }
     return options;
   });
@@ -197,7 +211,7 @@ export class SchedulePage {
         await this.loadPhases();
       }
     } catch {
-      this.errorMessage.set('Impossible de charger les catégories.');
+      this.errorMessage.set('admin.schedule.errors.loadCategories');
     } finally {
       this.loading.set(false);
     }
@@ -237,7 +251,7 @@ export class SchedulePage {
         await this.teamsService.listTeams(organizationId, this.tournamentId, categoryId),
       );
     } catch {
-      this.errorMessage.set('Impossible de charger les équipes.');
+      this.errorMessage.set('admin.schedule.errors.loadTeams');
     }
   }
 
@@ -258,7 +272,7 @@ export class SchedulePage {
       this.selectedPhaseType.set(this.groupStagePhase() ? 'GROUP_STAGE' : 'KNOCKOUT');
       await this.onPhaseTypeSelected();
     } catch {
-      this.errorMessage.set('Impossible de charger les phases.');
+      this.errorMessage.set('admin.schedule.errors.loadPhases');
     }
   }
 
@@ -305,7 +319,7 @@ export class SchedulePage {
       );
       this.matches.set(results.flat());
     } catch {
-      this.errorMessage.set('Impossible de charger le calendrier.');
+      this.errorMessage.set('admin.schedule.errors.loadMatches');
     }
   }
 
@@ -351,11 +365,11 @@ export class SchedulePage {
       return;
     }
     if (fieldIds.length === 0) {
-      this.errorMessage.set('Sélectionnez au moins un terrain avant de générer le calendrier.');
+      this.errorMessage.set('admin.schedule.errors.selectFieldForSchedule');
       return;
     }
     if (!startDateTime) {
-      this.errorMessage.set('Renseignez une date de début avant de générer le calendrier.');
+      this.errorMessage.set('admin.schedule.errors.enterStartDateForSchedule');
       return;
     }
     this.errorMessage.set(null);
@@ -383,16 +397,14 @@ export class SchedulePage {
       // still empty or has a single team (e.g. teams created but never
       // assigned to a group on the Structure page).
       if (generated.length === 0) {
-        this.errorMessage.set(
-          "Aucun match n'a pu être généré : assignez au moins deux équipes à chaque poule de cette phase sur la page Structure, puis réessayez.",
-        );
+        this.errorMessage.set('admin.schedule.errors.noMatchesGenerated');
       }
       await this.loadTimeSlots();
     } catch (error) {
       this.errorMessage.set(
         error instanceof HttpErrorResponse && error.status === 409
-          ? 'Des matchs existent déjà pour cette phase. Videz le calendrier avant d’en générer un nouveau.'
-          : 'Impossible de générer le calendrier.',
+          ? 'admin.schedule.errors.matchesAlreadyExist'
+          : 'admin.schedule.errors.generateScheduleGeneric',
       );
     } finally {
       this.generating.set(false);
@@ -425,15 +437,15 @@ export class SchedulePage {
       return;
     }
     if (fieldIds.length === 0) {
-      this.errorMessage.set('Sélectionnez au moins un terrain avant de générer les tableaux.');
+      this.errorMessage.set('admin.schedule.errors.selectFieldForBrackets');
       return;
     }
     if (hasPoolPhase && breakAfterPoolsMinutes === '') {
-      this.errorMessage.set('Renseignez le temps de pause après les poules.');
+      this.errorMessage.set('admin.schedule.errors.enterBreakAfterPools');
       return;
     }
     if (!hasPoolPhase && !startDateTime) {
-      this.errorMessage.set('Renseignez une date de début avant de générer les tableaux.');
+      this.errorMessage.set('admin.schedule.errors.enterStartDateForBrackets');
       return;
     }
     this.errorMessage.set(null);
@@ -463,7 +475,7 @@ export class SchedulePage {
         error instanceof HttpErrorResponse &&
           typeof (error.error as { message?: unknown })?.message === 'string'
           ? (error.error as { message: string }).message
-          : 'Impossible de générer les matchs des tableaux.',
+          : 'admin.schedule.errors.generateBracketsGeneric',
       );
     } finally {
       this.generating.set(false);
@@ -484,12 +496,12 @@ export class SchedulePage {
       this.matches.set([]);
       await this.loadTimeSlots();
     } catch {
-      this.errorMessage.set('Impossible de vider le calendrier.');
+      this.errorMessage.set('admin.schedule.errors.resetSchedule');
     }
   }
 
   protected formatSlotTime(startTime: string): string {
-    return new Date(startTime).toLocaleString('fr-FR', {
+    return new Date(startTime).toLocaleString(this.languageService.language(), {
       dateStyle: 'short',
       timeStyle: 'short',
     });
@@ -510,12 +522,21 @@ export class SchedulePage {
   }
 
   protected roundDisplay(match: Match): string {
+    // LanguageService.language() is typed Signal<string> (it aliases
+    // TranslocoService.activeLang directly, see language.service.ts) --
+    // narrowed here since the app only ever sets it to one of the 6
+    // RoundLabelLang-compatible codes (LanguageService.setLanguage only
+    // accepts LanguageCode, same 6 values).
+    const lang = this.languageService.language() as RoundLabelLang;
     const phase = this.phaseForMatch(match);
     if (!phase) {
-      return `Tour ${match.round}`;
+      return this.transloco.translate('admin.schedule.round', { round: match.round }, lang);
     }
-    const phaseLabel = phase.type === 'GROUP_STAGE' ? 'Poules' : phase.name;
-    return `${phaseLabel} · ${matchRoundLabel(phase, match, 'compact')}`;
+    const phaseLabel =
+      phase.type === 'GROUP_STAGE'
+        ? this.transloco.translate('admin.structure.typeGroupStage', {}, lang)
+        : phase.name;
+    return `${phaseLabel} · ${matchRoundLabel(phase, match, 'compact', lang)}`;
   }
 
   // Resolved from the match itself (not the current filter) -- needed as-is
@@ -545,7 +566,14 @@ export class SchedulePage {
 
   protected refereeOptions(match: Match): SelectOption[] {
     return [
-      { value: '', label: '+ Arbitre…' },
+      {
+        value: '',
+        label: this.transloco.translate(
+          'admin.schedule.addRefereeOption',
+          {},
+          this.languageService.language(),
+        ),
+      },
       ...this.availableReferees(match).map((referee) => ({
         value: referee.id,
         label: `${referee.firstName} ${referee.lastName}`,
@@ -565,7 +593,14 @@ export class SchedulePage {
 
   protected refereeingTeamOptions(match: Match): SelectOption[] {
     return [
-      { value: '', label: '+ Équipe arbitre…' },
+      {
+        value: '',
+        label: this.transloco.translate(
+          'admin.schedule.addRefereeingTeamOption',
+          {},
+          this.languageService.language(),
+        ),
+      },
       ...this.availableRefereeingTeams(match).map((team) => ({ value: team.id, label: team.name })),
     ];
   }
@@ -627,8 +662,8 @@ export class SchedulePage {
     } catch (error) {
       this.errorMessage.set(
         error instanceof HttpErrorResponse && error.status === 409
-          ? 'Ce créneau est indisponible : il est occupé ou une équipe/un officiel est déjà engagé à cette heure.'
-          : 'Impossible de déplacer ce match, réessayez.',
+          ? 'admin.schedule.errors.slotUnavailable'
+          : 'admin.schedule.errors.moveMatchGeneric',
       );
     }
   }
@@ -667,8 +702,8 @@ export class SchedulePage {
     } catch (error) {
       this.errorMessage.set(
         error instanceof HttpErrorResponse && error.status === 409
-          ? 'Cet officiel est déjà engagé sur un autre match à ce créneau.'
-          : "Impossible d'ajouter cet officiel, réessayez.",
+          ? 'admin.schedule.errors.officialConflict'
+          : 'admin.schedule.errors.addOfficialGeneric',
       );
     }
   }
@@ -692,7 +727,7 @@ export class SchedulePage {
         ),
       );
     } catch {
-      this.errorMessage.set('Impossible de retirer cet officiel, réessayez.');
+      this.errorMessage.set('admin.schedule.errors.removeOfficial');
     }
   }
 
@@ -744,8 +779,8 @@ export class SchedulePage {
     } catch (error) {
       this.errorMessage.set(
         error instanceof HttpErrorResponse && error.status === 409
-          ? 'Ce créneau chevauche un créneau existant sur ce terrain.'
-          : 'Impossible de créer ce créneau, réessayez.',
+          ? 'admin.schedule.errors.slotOverlap'
+          : 'admin.schedule.errors.createSlotGeneric',
       );
     }
   }
@@ -767,7 +802,7 @@ export class SchedulePage {
         return next;
       });
     } catch {
-      this.errorMessage.set('Impossible de supprimer ce créneau, réessayez.');
+      this.errorMessage.set('admin.schedule.errors.deleteSlot');
     }
   }
 }

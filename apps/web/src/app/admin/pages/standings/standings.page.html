@@ -1,20 +1,20 @@
 <main class="standings-page">
-  <h1>Classement</h1>
+  <h1>{{ 'admin.standings.title' | transloco }}</h1>
 
   @if (loading()) {
-    <p>Chargement…</p>
+    <p>{{ 'admin.standings.loading' | transloco }}</p>
   } @else {
     @if (errorMessage(); as message) {
-      <p class="standings-page__error" role="alert">{{ message }}</p>
+      <p class="standings-page__error" role="alert">{{ message | transloco }}</p>
     }
 
     @if (categories().length === 0) {
-      <p>Ajoutez d'abord une catégorie sur la page du tournoi.</p>
+      <p>{{ 'admin.standings.addCategoryFirst' | transloco }}</p>
     } @else {
       <div class="standings-page__selects-row">
         <ap-select
           class="standings-page__select"
-          label="Catégorie"
+          [label]="'admin.standings.categoryLabel' | transloco"
           [options]="categoryOptions()"
           [value]="selectedCategoryId()"
           (valueChange)="onCategoryChange($event)"
@@ -22,7 +22,7 @@
         @if (groupStagePhases().length > 0) {
           <ap-select
             class="standings-page__select"
-            label="Phase"
+            [label]="'admin.standings.phaseLabel' | transloco"
             [options]="phaseOptions()"
             [value]="selectedPhaseId()"
             (valueChange)="onPhaseChange($event)"
@@ -32,20 +32,22 @@
 
       @if (groupStagePhases().length === 0) {
         @if (isKnockoutOnly()) {
-          <p>Ce tournoi est en format Élimination directe : il n'y a pas de classement de poule.</p>
+          <p>{{ 'admin.standings.knockoutOnlyNote' | transloco }}</p>
         } @else {
-          <p>Ajoutez d'abord une phase de poules sur la page Structure de cette catégorie.</p>
+          <p>{{ 'admin.standings.addPoolPhaseFirst' | transloco }}</p>
         }
       } @else {
         @if (groupStandings().length === 0) {
-          <p>Ajoutez d'abord une poule à cette phase.</p>
+          <p>{{ 'admin.standings.addGroupFirst' | transloco }}</p>
         } @else {
           @for (group of groupStandings(); track group.groupId) {
             <section class="standings-page__group">
               <h2>
                 {{ group.groupName }}
                 @if (!group.standings.isComplete) {
-                  <span class="standings-page__provisional">(provisoire)</span>
+                  <span class="standings-page__provisional">{{
+                    'admin.standings.provisional' | transloco
+                  }}</span>
                 }
               </h2>
 
@@ -54,17 +56,33 @@
                   <thead>
                     <tr>
                       <th>#</th>
-                      <th>Équipe</th>
+                      <th>{{ 'admin.standings.table.team' | transloco }}</th>
                       <th></th>
-                      <th>J</th>
-                      <th>G</th>
-                      <th>N</th>
-                      <th>P</th>
-                      <th>BP</th>
-                      <th>BC</th>
-                      <th>+/-</th>
-                      <th>Pts</th>
-                      <th>Rating</th>
+                      <th [title]="'admin.standings.table.playedFull' | transloco">
+                        {{ 'admin.standings.table.played' | transloco }}
+                      </th>
+                      <th [title]="'admin.standings.table.wonFull' | transloco">
+                        {{ 'admin.standings.table.won' | transloco }}
+                      </th>
+                      <th [title]="'admin.standings.table.drawnFull' | transloco">
+                        {{ 'admin.standings.table.drawn' | transloco }}
+                      </th>
+                      <th [title]="'admin.standings.table.lostFull' | transloco">
+                        {{ 'admin.standings.table.lost' | transloco }}
+                      </th>
+                      <th [title]="'admin.standings.table.goalsForFull' | transloco">
+                        {{ 'admin.standings.table.goalsFor' | transloco }}
+                      </th>
+                      <th [title]="'admin.standings.table.goalsAgainstFull' | transloco">
+                        {{ 'admin.standings.table.goalsAgainst' | transloco }}
+                      </th>
+                      <th [title]="'admin.standings.table.diffFull' | transloco">
+                        {{ 'admin.standings.table.diff' | transloco }}
+                      </th>
+                      <th [title]="'admin.standings.table.pointsFull' | transloco">
+                        {{ 'admin.standings.table.points' | transloco }}
+                      </th>
+                      <th>{{ 'admin.standings.table.rating' | transloco }}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -113,12 +131,12 @@
                 <div class="standings-page__ties">
                   @for (tie of group.standings.unresolvedTies; track tie) {
                     <p class="standings-page__tie">
-                      Égalité totale entre
+                      {{ 'admin.standings.tieTotal' | transloco }}
                       <strong>{{ tie.teams.map((t) => t.name).join(', ') }}</strong>
-                      — qui doit être classé devant les autres ?
+                      {{ 'admin.standings.tieQuestion' | transloco }}
                       <ap-select
                         class="standings-page__tie-select"
-                        label="Choisir l'équipe à classer devant"
+                        [label]="'admin.standings.chooseTeamAheadLabel' | transloco"
                         [hideLabel]="true"
                         [options]="tieOptions(tie)"
                         [resetAfterSelect]="true"
@@ -132,7 +150,7 @@
                     size="sm"
                     (click)="onPoolTieBreakClear(group)"
                   >
-                    Revenir à l'ordre alphabétique
+                    {{ 'admin.standings.resetToAlphabetical' | transloco }}
                   </ap-button>
                 </div>
               }
@@ -141,22 +159,25 @@
 
           @if (crossGroupTies().length > 0) {
             <section class="standings-page__group">
-              <h2>Égalités inter-poules à départager</h2>
+              <h2>{{ 'admin.standings.crossGroupTiesTitle' | transloco }}</h2>
               @for (rule of crossGroupTies(); track rule.ruleId) {
                 <div class="standings-page__ties">
                   <p class="standings-page__tie-context">
-                    Vers {{ rule.targetPhaseName }} ({{ rule.position }}e place de poule)
+                    {{
+                      'admin.standings.crossGroupTieContext'
+                        | transloco: { target: rule.targetPhaseName, position: rule.position }
+                    }}
                   </p>
                   @for (tie of rule.ties; track tie) {
                     <p class="standings-page__tie">
-                      Égalité totale entre
+                      {{ 'admin.standings.tieTotal' | transloco }}
                       <strong>{{
                         tie.teams.map((t) => t.name + ' (' + t.groupName + ')').join(', ')
                       }}</strong>
-                      — qui doit être classé devant les autres ?
+                      {{ 'admin.standings.tieQuestion' | transloco }}
                       <ap-select
                         class="standings-page__tie-select"
-                        label="Choisir l'équipe à classer devant"
+                        [label]="'admin.standings.chooseTeamAheadLabel' | transloco"
                         [hideLabel]="true"
                         [options]="tieOptions(tie)"
                         [resetAfterSelect]="true"
@@ -170,7 +191,7 @@
                     size="sm"
                     (click)="onCrossGroupTieBreakClear(rule.ruleId)"
                   >
-                    Revenir à l'ordre alphabétique
+                    {{ 'admin.standings.resetToAlphabetical' | transloco }}
                   </ap-button>
                 </div>
               }
