@@ -264,7 +264,11 @@
       "schedule": "Spielplan",
       "scores": "Ergebnisse",
       "standings": "Tabelle",
-      "publicLink": "Öffentlicher Link"
+      "publicLink": "Öffentlicher Link",
+      "qrCode": "QR-Code",
+      "qrCodeDialogTitle": "QR-Code des Turniers",
+      "downloadQrCode": "Herunterladen",
+      "close": "Schließen"
     },
     "auth": {
       "login": {

@@ -264,7 +264,11 @@
       "schedule": "Calendário",
       "scores": "Resultados",
       "standings": "Classificação",
-      "publicLink": "Link público"
+      "publicLink": "Link público",
+      "qrCode": "Código QR",
+      "qrCodeDialogTitle": "Código QR do torneio",
+      "downloadQrCode": "Descarregar",
+      "close": "Fechar"
     },
     "auth": {
       "login": {

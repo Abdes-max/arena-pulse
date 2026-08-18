@@ -91,5 +91,94 @@
       </svg>
       <span class="ap-sr-only">{{ 'admin.submenu.publicLink' | transloco }}</span>
     </ap-button>
+
+    <ap-button
+      class="tournament-submenu__public-link"
+      variant="ghost"
+      size="sm"
+      type="button"
+      (click)="openQrDialog()"
+    >
+      <svg
+        class="tournament-submenu__public-link-icon"
+        viewBox="0 0 16 16"
+        fill="none"
+        aria-hidden="true"
+      >
+        <rect
+          x="2"
+          y="2"
+          width="4.5"
+          height="4.5"
+          rx="0.5"
+          stroke="currentColor"
+          stroke-width="1.3"
+        />
+        <rect
+          x="9.5"
+          y="2"
+          width="4.5"
+          height="4.5"
+          rx="0.5"
+          stroke="currentColor"
+          stroke-width="1.3"
+        />
+        <rect
+          x="2"
+          y="9.5"
+          width="4.5"
+          height="4.5"
+          rx="0.5"
+          stroke="currentColor"
+          stroke-width="1.3"
+        />
+        <rect x="9.75" y="9.75" width="1.5" height="1.5" fill="currentColor" />
+        <rect x="12.75" y="9.75" width="1.5" height="1.5" fill="currentColor" />
+        <rect x="9.75" y="12.75" width="1.5" height="1.5" fill="currentColor" />
+        <rect x="12.75" y="12.75" width="1.5" height="1.5" fill="currentColor" />
+      </svg>
+      <span class="ap-sr-only">{{ 'admin.submenu.qrCode' | transloco }}</span>
+    </ap-button>
   }
 </div>
+
+@if (qrDialogOpen() && publicAbsoluteUrl(); as url) {
+  <!-- A real <button>, not a clickable <div> -- natively focusable/keyboard-
+       operable, so this needs no extra keyup/keydown handler to satisfy
+       (or genuinely fulfil) accessibility. Sits as the dialog panel's
+       *sibling* rather than its parent specifically so the panel below
+       never needs a stopPropagation() click handler of its own to avoid
+       closing itself (a <div role="dialog"> nested inside a <button> would
+       also be invalid HTML -- buttons may only contain phrasing content). -->
+  <button
+    type="button"
+    class="tournament-submenu__qr-backdrop"
+    (click)="closeQrDialog()"
+    [attr.aria-label]="'admin.submenu.close' | transloco"
+  ></button>
+  <div
+    class="tournament-submenu__qr-dialog"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="'admin.submenu.qrCodeDialogTitle' | transloco"
+  >
+    <h2 class="tournament-submenu__qr-title">
+      {{ 'admin.submenu.qrCodeDialogTitle' | transloco }}
+    </h2>
+    <ap-qr-code class="tournament-submenu__qr-code" [value]="url" [size]="220" #qr />
+    <div class="tournament-submenu__qr-actions">
+      @if (qr.dataUrl(); as downloadUrl) {
+        <a
+          class="tournament-submenu__qr-download"
+          [href]="downloadUrl"
+          [download]="(slug() ?? 'tournoi') + '-qrcode.png'"
+        >
+          {{ 'admin.submenu.downloadQrCode' | transloco }}
+        </a>
+      }
+      <ap-button type="button" variant="ghost" size="sm" (click)="closeQrDialog()">
+        {{ 'admin.submenu.close' | transloco }}
+      </ap-button>
+    </div>
+  </div>
+}
