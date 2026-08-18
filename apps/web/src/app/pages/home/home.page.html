@@ -1,53 +1,7 @@
 @if (tournament(); as t) {
-  @if (t.description) {
+  @if (t.venues.length > 0) {
     <section class="home-page__section">
-      <h2>{{ 'home.sections.description' | transloco }}</h2>
-      <p class="home-page__text">{{ t.description }}</p>
-    </section>
-  }
-
-  @if (upcomingMatches().length > 0) {
-    <section class="home-page__section">
-      <h2>{{ 'home.sections.upcomingMatches' | transloco }}</h2>
-      <div class="home-page__upcoming">
-        @for (match of upcomingMatches(); track match.id; let first = $first) {
-          <ap-match-card
-            [variant]="first ? 'featured' : 'compact'"
-            [homeTeam]="teamCardInput(match.homeTeam, '?')"
-            [awayTeam]="teamCardInput(match.awayTeam, '?')"
-            [kickoff]="match.timeSlot ? formatKickoff(match.timeSlot.startTime) : undefined"
-            [venue]="match.timeSlot?.field?.name"
-            [competitionLabel]="competitionLabel(match)"
-          />
-        }
-      </div>
-    </section>
-  }
-
-  @if (categories().length > 0) {
-    <section class="home-page__section">
-      <h2>{{ 'home.sections.categories' | transloco }}</h2>
-      <ul class="home-page__categories">
-        @for (category of categories(); track category.id) {
-          <li>{{ category.name }}</li>
-        }
-      </ul>
-    </section>
-  }
-
-  @if (t.rules) {
-    <section class="home-page__section">
-      <h2>{{ 'home.sections.rules' | transloco }}</h2>
-      <p class="home-page__text">{{ t.rules }}</p>
-    </section>
-  }
-
-  @if (t.venues.length > 0 || t.practicalInfo) {
-    <section class="home-page__section">
-      <h2>{{ 'home.sections.practicalInfo' | transloco }}</h2>
-      @if (t.practicalInfo) {
-        <p class="home-page__text">{{ t.practicalInfo }}</p>
-      }
+      <h2>{{ 'home.sections.venues' | transloco }}</h2>
       <div class="home-page__venues">
         @for (venue of t.venues; track venue.id) {
           <article class="home-page__venue">
@@ -79,6 +33,56 @@
           </article>
         }
       </div>
+    </section>
+  }
+
+  @if (categories().length > 0) {
+    <section class="home-page__section">
+      <h2>{{ 'home.sections.categories' | transloco }}</h2>
+      <ul class="home-page__categories">
+        @for (category of categories(); track category.id) {
+          <li>{{ category.name }}</li>
+        }
+      </ul>
+    </section>
+  }
+
+  @if (t.description) {
+    <section class="home-page__section">
+      <h2>{{ 'home.sections.description' | transloco }}</h2>
+      <p class="home-page__text home-page__text--boxed">{{ t.description }}</p>
+    </section>
+  }
+
+  @if (upcomingMatches().length > 0) {
+    <section class="home-page__section">
+      <h2>{{ 'home.sections.upcomingMatches' | transloco }}</h2>
+      <div class="home-page__upcoming">
+        @for (match of upcomingMatches(); track match.id; let first = $first) {
+          <ap-match-card
+            [variant]="first ? 'featured' : 'compact'"
+            [homeTeam]="teamCardInput(match.homeTeam, '?')"
+            [awayTeam]="teamCardInput(match.awayTeam, '?')"
+            [kickoff]="match.timeSlot ? formatKickoff(match.timeSlot.startTime) : undefined"
+            [venue]="match.timeSlot?.field?.name"
+            [competitionLabel]="competitionLabel(match)"
+          />
+        }
+      </div>
+    </section>
+  }
+
+  @if (t.rules) {
+    <section class="home-page__section">
+      <h2>{{ 'home.sections.rules' | transloco }}</h2>
+      <p class="home-page__text home-page__text--boxed">{{ t.rules }}</p>
+    </section>
+  }
+
+  @if (t.practicalInfo) {
+    <section class="home-page__section">
+      <h2>{{ 'home.sections.practicalInfo' | transloco }}</h2>
+      <p class="home-page__text home-page__text--boxed">{{ t.practicalInfo }}</p>
     </section>
   }
 

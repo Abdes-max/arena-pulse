@@ -25,6 +25,17 @@
   white-space: pre-line;
 }
 
+// Same card treatment as .home-page__venue below, so free-text blocks read
+// as distinct content cards rather than bare paragraphs floating on the
+// page background.
+.home-page__text--boxed {
+  margin: 0;
+  padding: var(--ap-space-4);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-lg);
+}
+
 .home-page__upcoming {
   display: flex;
   flex-direction: column;
