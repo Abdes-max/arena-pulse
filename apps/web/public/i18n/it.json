@@ -161,7 +161,6 @@
       "notFound": "Questo torneo non esiste o non è pubblicato."
     },
     "skipLink": "Vai al contenuto principale",
-    "back": "Altri tornei",
     "backAria": "Cerca un altro torneo",
     "venue": "sede",
     "venues": "sedi",
@@ -171,7 +170,8 @@
       "teams": "Squadre",
       "standings": "Classifica",
       "schedule": "Calendario"
-    }
+    },
+    "menu": "Menu"
   },
   "home": {
     "sections": {
@@ -269,7 +269,8 @@
       "qrCodeDialogTitle": "Codice QR del torneo",
       "downloadQrCode": "Scarica",
       "close": "Chiudi",
-      "exportPdf": "Esporta PDF"
+      "exportPdf": "Esporta PDF",
+      "share": "Condividi"
     },
     "auth": {
       "login": {

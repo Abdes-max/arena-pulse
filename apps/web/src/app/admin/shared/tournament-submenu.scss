@@ -132,6 +132,73 @@
   vertical-align: -2px;
 }
 
+// Anchors the dropdown panel below to the trigger button rather than the
+// viewport -- unlike the QR dialog further down, this is a small anchored
+// menu, not a centered modal.
+.tournament-submenu__share {
+  position: relative;
+  flex: none;
+  align-self: center;
+}
+
+// Same reasoning as .tournament-submenu__qr-backdrop below (real <button>,
+// sibling of the panel) but transparent rather than dimmed -- this is a
+// lightweight dropdown, not a modal, so nothing behind it needs obscuring.
+.tournament-submenu__share-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: default;
+}
+
+.tournament-submenu__share-menu {
+  position: absolute;
+  top: calc(100% + var(--ap-space-2));
+  right: 0;
+  z-index: 101;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-1);
+  min-width: 190px;
+  padding: var(--ap-space-2);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  box-shadow: var(--ap-shadow-md);
+}
+
+.tournament-submenu__share-menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  padding: var(--ap-space-2) var(--ap-space-3);
+  border: none;
+  border-radius: var(--ap-radius-sm);
+  background: transparent;
+  color: var(--ap-color-fg);
+  text-decoration: none;
+  font-family: var(--ap-font-body);
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color var(--ap-motion-fast) var(--ap-easing-standard);
+
+  svg {
+    width: 16px;
+    height: 16px;
+    flex: none;
+  }
+
+  &:hover {
+    background: var(--ap-color-signal-soft);
+  }
+}
+
 // No design-system modal component exists yet (checked before building
 // this) -- a plain fixed-position backdrop + centered panel is simplest for
 // a single, one-off use case like this rather than introducing a whole new

@@ -161,7 +161,6 @@
       "notFound": "Dieses Turnier existiert nicht oder ist nicht veröffentlicht."
     },
     "skipLink": "Zum Hauptinhalt springen",
-    "back": "Andere Turniere",
     "backAria": "Ein anderes Turnier suchen",
     "venue": "Austragungsort",
     "venues": "Austragungsorte",
@@ -171,7 +170,8 @@
       "teams": "Teams",
       "standings": "Tabelle",
       "schedule": "Spielplan"
-    }
+    },
+    "menu": "Menü"
   },
   "home": {
     "sections": {
@@ -269,7 +269,8 @@
       "qrCodeDialogTitle": "QR-Code des Turniers",
       "downloadQrCode": "Herunterladen",
       "close": "Schließen",
-      "exportPdf": "PDF exportieren"
+      "exportPdf": "PDF exportieren",
+      "share": "Teilen"
     },
     "auth": {
       "login": {

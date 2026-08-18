@@ -255,7 +255,6 @@
       "notFound": "Ce tournoi n'existe pas ou n'est pas publié."
     },
     "skipLink": "Aller au contenu principal",
-    "back": "Autres tournois",
     "backAria": "Rechercher un autre tournoi",
     "venue": "lieu",
     "venues": "lieux",
@@ -265,7 +264,8 @@
       "teams": "Équipes",
       "standings": "Classement",
       "schedule": "Calendrier"
-    }
+    },
+    "menu": "Menu"
   },
   "home": {
     "sections": {
@@ -363,7 +363,8 @@
       "qrCodeDialogTitle": "QR code du tournoi",
       "downloadQrCode": "Télécharger",
       "close": "Fermer",
-      "exportPdf": "Export PDF"
+      "exportPdf": "Export PDF",
+      "share": "Partager"
     },
     "auth": {
       "login": {

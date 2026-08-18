@@ -23,12 +23,12 @@ import { Button, QrCode } from 'design-system';
  * through the tournament form each time. Plain routerLink anchors (same
  * compact underline/pill treatment as the public site's own tournament nav)
  * rather than a row of `ap-button`s, which took up more horizontal space
- * than seven tabs can afford. The "Lien public" and QR code buttons on the
- * right are the exception -- how the organizer jumps to (or hands someone
- * a scannable way into) what a visitor actually sees for this tournament --
- * but icon-only (`.ap-sr-only` text for screen readers) since even those
- * two buttons crowded the row on a phone, where seven scrollable tabs
- * already compete for width.
+ * than seven tabs can afford. The "Partager" button on the right is the
+ * exception -- a single icon-only trigger (`.ap-sr-only` text for screen
+ * readers) opening a dropdown with the three ways an organizer reaches what
+ * a visitor sees for this tournament (lien public, QR code, export PDF) --
+ * three separate icon buttons used to sit here directly and crowded the row
+ * on a phone, where seven scrollable tabs already compete for width.
  */
 @Component({
   selector: 'app-tournament-submenu',
@@ -73,6 +73,27 @@ export class TournamentSubmenu {
 
   protected closeQrDialog(): void {
     this.qrDialogOpen.set(false);
+  }
+
+  // Lien public/QR code/Export PDF used to be three separate icon buttons
+  // crowding this row -- consolidated into a single "Partager" trigger that
+  // opens a small dropdown menu listing all three, same backdrop-button-
+  // sibling pattern as the QR dialog itself (see that dialog's own comment
+  // on why: a real <button>, not a clickable <div>, sibling rather than
+  // parent of the panel).
+  protected readonly shareMenuOpen = signal(false);
+
+  protected toggleShareMenu(): void {
+    this.shareMenuOpen.update((open) => !open);
+  }
+
+  protected closeShareMenu(): void {
+    this.shareMenuOpen.set(false);
+  }
+
+  protected openQrDialogFromMenu(): void {
+    this.closeShareMenu();
+    this.openQrDialog();
   }
 
   private readonly nav = viewChild.required<ElementRef<HTMLElement>>('nav');
