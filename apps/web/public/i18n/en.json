@@ -443,6 +443,75 @@
       "errorRoleGeneric": "Unable to change this role, please try again.",
       "errorRemoveLastAdmin": "Unable to remove this collaborator: this is the organization's last administrator.",
       "errorRemoveGeneric": "Unable to remove this collaborator, please try again."
+    },
+    "tournamentList": {
+      "title": "Tournaments",
+      "create": "Create a tournament",
+      "loading": "Loading…",
+      "empty": "No tournaments yet.",
+      "emptyFiltered": "No tournaments with this status.",
+      "errorLoad": "Unable to load tournaments.",
+      "errorDuplicate": "Unable to duplicate this tournament.",
+      "errorArchiveToggle": "Unable to change this tournament's status.",
+      "statusFilterLabel": "Status",
+      "status": {
+        "notArchived": "Not archived",
+        "all": "All",
+        "draft": "Draft",
+        "published": "Published",
+        "unpublished": "Unpublished",
+        "archived": "Archived"
+      },
+      "table": {
+        "logo": "Logo",
+        "name": "Name",
+        "sport": "Sport",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "edit": "Edit",
+      "duplicate": "Duplicate",
+      "publicLink": "Public link",
+      "archive": "Archive",
+      "unarchive": "Unarchive"
+    },
+    "onboarding": {
+      "title": "Get started",
+      "progress": "{{done}} / {{total}} steps completed",
+      "later": "Later",
+      "done": "Done",
+      "steps": {
+        "createTournament": {
+          "title": "Create your first tournament",
+          "description": "Name, sport, and dates for your competition.",
+          "action": "Create"
+        },
+        "addTeam": {
+          "title": "Add at least one team",
+          "description": "On your most recent tournament.",
+          "action": "Add"
+        },
+        "structure": {
+          "title": "Structure your tournament",
+          "description": "Pools and/or knockout brackets.",
+          "action": "Structure"
+        },
+        "publish": {
+          "title": "Publish the tournament",
+          "description": "Make its public site visible.",
+          "action": "Publish"
+        }
+      }
+    },
+    "publishSuccess": {
+      "verifying": "Verifying payment…",
+      "publishedTitle": "Tournament published",
+      "publishedBody": "{{name}} is now visible on its public site.",
+      "pendingTitle": "Payment being confirmed",
+      "pendingBody": "Publication of {{name}} will be confirmed once payment is validated. You can reload this page in a few moments.",
+      "backToTournament": "Back to tournament",
+      "notFoundTitle": "Tournament not found",
+      "backToTournaments": "Back to tournaments"
     }
   }
 }

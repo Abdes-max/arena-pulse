@@ -443,6 +443,75 @@
       "errorRoleGeneric": "Impossible de modifier ce rôle, réessayez.",
       "errorRemoveLastAdmin": "Impossible de retirer ce collaborateur : c'est le dernier administrateur de l'organisation.",
       "errorRemoveGeneric": "Impossible de retirer ce collaborateur, réessayez."
+    },
+    "tournamentList": {
+      "title": "Tournois",
+      "create": "Créer un tournoi",
+      "loading": "Chargement…",
+      "empty": "Aucun tournoi pour l'instant.",
+      "emptyFiltered": "Aucun tournoi avec ce statut.",
+      "errorLoad": "Impossible de charger les tournois.",
+      "errorDuplicate": "Impossible de dupliquer ce tournoi.",
+      "errorArchiveToggle": "Impossible de modifier l'état de ce tournoi.",
+      "statusFilterLabel": "Statut",
+      "status": {
+        "notArchived": "Non archivé",
+        "all": "Tous",
+        "draft": "Brouillon",
+        "published": "Publié",
+        "unpublished": "Dépublié",
+        "archived": "Archivé"
+      },
+      "table": {
+        "logo": "Logo",
+        "name": "Nom",
+        "sport": "Sport",
+        "status": "Statut",
+        "actions": "Actions"
+      },
+      "edit": "Modifier",
+      "duplicate": "Dupliquer",
+      "publicLink": "Lien public",
+      "archive": "Archiver",
+      "unarchive": "Désarchiver"
+    },
+    "onboarding": {
+      "title": "Bien démarrer",
+      "progress": "{{done}} / {{total}} étapes complétées",
+      "later": "Plus tard",
+      "done": "Fait",
+      "steps": {
+        "createTournament": {
+          "title": "Créer votre premier tournoi",
+          "description": "Nom, sport et dates de votre compétition.",
+          "action": "Créer"
+        },
+        "addTeam": {
+          "title": "Ajouter au moins une équipe",
+          "description": "Sur votre tournoi le plus récent.",
+          "action": "Ajouter"
+        },
+        "structure": {
+          "title": "Structurer votre tournoi",
+          "description": "Poules et/ou tableaux à élimination.",
+          "action": "Structurer"
+        },
+        "publish": {
+          "title": "Publier le tournoi",
+          "description": "Rendre son site public visible.",
+          "action": "Publier"
+        }
+      }
+    },
+    "publishSuccess": {
+      "verifying": "Vérification du paiement…",
+      "publishedTitle": "Tournoi publié",
+      "publishedBody": "{{name}} est désormais visible sur son site public.",
+      "pendingTitle": "Paiement en cours de confirmation",
+      "pendingBody": "La publication de {{name}} sera confirmée dès que le paiement sera validé. Vous pouvez recharger cette page dans quelques instants.",
+      "backToTournament": "Retour au tournoi",
+      "notFoundTitle": "Tournoi introuvable",
+      "backToTournaments": "Retour aux tournois"
     }
   }
 }

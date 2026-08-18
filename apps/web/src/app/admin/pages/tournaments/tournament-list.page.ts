@@ -8,8 +8,9 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { AssetUrlService } from 'api-client';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Badge, BadgeStatus, Button, Select, SelectOption } from 'design-system';
-import { DEFAULT_THEME, ThemeService } from 'design-tokens';
+import { DEFAULT_THEME, LanguageService, ThemeService } from 'design-tokens';
 import { AuthService } from '../../core/auth.service';
 import { Tournament, TournamentStatus } from '../../core/models';
 import { TeamsService } from '../../core/teams.service';
@@ -29,23 +30,24 @@ const STATUS_TO_BADGE: Record<TournamentStatus, BadgeStatus> = {
 // which is still one click away for anyone who does want to see everything.
 type StatusFilter = TournamentStatus | 'ALL' | 'NOT_ARCHIVED';
 
-// Same French wording as ap-badge's own default labels for these statuses
-// (libs/design-system/src/lib/badge/badge.ts) -- kept in sync by hand since
-// this is a filter's option list, not a per-row badge render.
-const STATUS_OPTIONS: SelectOption[] = [
-  { value: 'NOT_ARCHIVED', label: 'Non archivé' },
-  { value: 'ALL', label: 'Tous' },
-  { value: 'DRAFT', label: 'Brouillon' },
-  { value: 'PUBLISHED', label: 'Publié' },
-  { value: 'UNPUBLISHED', label: 'Dépublié' },
-  { value: 'ARCHIVED', label: 'Archivé' },
-];
+// Maps each StatusFilter value to its admin.tournamentList.status.* key --
+// reused both for the filter's own option list and (a subset of it) for the
+// [label] override passed to ap-badge per row, so a translated label never
+// falls back to ap-badge's own hardcoded French default.
+const STATUS_LABEL_KEYS: Record<StatusFilter, string> = {
+  NOT_ARCHIVED: 'admin.tournamentList.status.notArchived',
+  ALL: 'admin.tournamentList.status.all',
+  DRAFT: 'admin.tournamentList.status.draft',
+  PUBLISHED: 'admin.tournamentList.status.published',
+  UNPUBLISHED: 'admin.tournamentList.status.unpublished',
+  ARCHIVED: 'admin.tournamentList.status.archived',
+};
 
 const DISMISSED_STORAGE_PREFIX = 'arena-pulse:onboarding-dismissed:';
 
 @Component({
   selector: 'app-tournament-list-page',
-  imports: [Badge, Button, OnboardingChecklist, Select],
+  imports: [Badge, Button, OnboardingChecklist, Select, TranslocoPipe],
   templateUrl: './tournament-list.page.html',
   styleUrl: './tournament-list.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -56,6 +58,8 @@ export class TournamentListPage {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly themeService = inject(ThemeService);
+  private readonly languageService = inject(LanguageService);
+  private readonly transloco = inject(TranslocoService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly assetUrl = inject(AssetUrlService);
 
@@ -66,7 +70,16 @@ export class TournamentListPage {
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal<string | null>(null);
 
-  protected readonly statusOptions = STATUS_OPTIONS;
+  // Recomputed on language switch -- [options] is a plain input, not
+  // template markup, so there's no `| transloco` pipe to bind it through
+  // (same reasoning as CollaboratorsPage.roleOptions).
+  protected readonly statusOptions = computed<SelectOption[]>(() => {
+    const lang = this.languageService.language();
+    return (Object.keys(STATUS_LABEL_KEYS) as StatusFilter[]).map((value) => ({
+      value,
+      label: this.transloco.translate(STATUS_LABEL_KEYS[value], {}, lang),
+    }));
+  });
   protected readonly selectedStatus = signal<StatusFilter>('NOT_ARCHIVED');
   protected readonly filteredTournaments = computed(() => {
     const status = this.selectedStatus();
@@ -85,12 +98,14 @@ export class TournamentListPage {
 
   protected readonly onboardingSteps = computed<OnboardingStep[]>(() => {
     const tournaments = this.tournaments();
+    const lang = this.languageService.language();
+    const t = (key: string) => this.transloco.translate(`admin.onboarding.steps.${key}`, {}, lang);
     const createStep: OnboardingStep = {
       key: 'create-tournament',
-      title: 'Créer votre premier tournoi',
-      description: 'Nom, sport et dates de votre compétition.',
+      title: t('createTournament.title'),
+      description: t('createTournament.description'),
       done: tournaments.length > 0,
-      actionLabel: 'Créer',
+      actionLabel: t('createTournament.action'),
     };
 
     // The remaining steps all refer to "your most recent tournament" -- with
@@ -104,27 +119,31 @@ export class TournamentListPage {
       createStep,
       {
         key: 'add-team',
-        title: 'Ajouter au moins une équipe',
-        description: 'Sur votre tournoi le plus récent.',
+        title: t('addTeam.title'),
+        description: t('addTeam.description'),
         done: this.hasTeam(),
-        actionLabel: 'Ajouter',
+        actionLabel: t('addTeam.action'),
       },
       {
         key: 'structure',
-        title: 'Structurer votre tournoi',
-        description: 'Poules et/ou tableaux à élimination.',
+        title: t('structure.title'),
+        description: t('structure.description'),
         done: this.hasStructure(),
-        actionLabel: 'Structurer',
+        actionLabel: t('structure.action'),
       },
       {
         key: 'publish',
-        title: 'Publier le tournoi',
-        description: 'Rendre son site public visible.',
+        title: t('publish.title'),
+        description: t('publish.description'),
         done: tournaments.some((tournament) => tournament.status === 'PUBLISHED'),
-        actionLabel: 'Publier',
+        actionLabel: t('publish.action'),
       },
     ];
   });
+
+  protected statusLabel(status: TournamentStatus): string {
+    return this.transloco.translate(STATUS_LABEL_KEYS[status], {}, this.languageService.language());
+  }
 
   protected readonly showOnboarding = computed(
     () => !this.onboardingDismissed() && this.onboardingSteps().some((step) => !step.done),
@@ -158,7 +177,7 @@ export class TournamentListPage {
       this.tournaments.set(tournaments);
       await this.loadOnboardingSignals(organizationId, tournaments);
     } catch {
-      this.errorMessage.set('Impossible de charger les tournois.');
+      this.errorMessage.set('admin.tournamentList.errorLoad');
     } finally {
       this.loading.set(false);
     }
@@ -245,7 +264,7 @@ export class TournamentListPage {
       await this.tournamentsService.duplicate(organizationId, tournament.id);
       await this.load();
     } catch {
-      this.errorMessage.set('Impossible de dupliquer ce tournoi.');
+      this.errorMessage.set('admin.tournamentList.errorDuplicate');
     }
   }
 
@@ -262,7 +281,7 @@ export class TournamentListPage {
       }
       await this.load();
     } catch {
-      this.errorMessage.set("Impossible de modifier l'état de ce tournoi.");
+      this.errorMessage.set('admin.tournamentList.errorArchiveToggle');
     }
   }
 }

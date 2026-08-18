@@ -349,6 +349,75 @@
       "errorRoleGeneric": "Não foi possível alterar esta função, tente novamente.",
       "errorRemoveLastAdmin": "Não é possível remover este colaborador: é o último administrador da organização.",
       "errorRemoveGeneric": "Não foi possível remover este colaborador, tente novamente."
+    },
+    "tournamentList": {
+      "title": "Torneios",
+      "create": "Criar um torneio",
+      "loading": "A carregar…",
+      "empty": "Ainda não há torneios.",
+      "emptyFiltered": "Nenhum torneio com este estado.",
+      "errorLoad": "Não foi possível carregar os torneios.",
+      "errorDuplicate": "Não foi possível duplicar este torneio.",
+      "errorArchiveToggle": "Não foi possível alterar o estado deste torneio.",
+      "statusFilterLabel": "Estado",
+      "status": {
+        "notArchived": "Não arquivado",
+        "all": "Todos",
+        "draft": "Rascunho",
+        "published": "Publicado",
+        "unpublished": "Despublicado",
+        "archived": "Arquivado"
+      },
+      "table": {
+        "logo": "Logótipo",
+        "name": "Nome",
+        "sport": "Desporto",
+        "status": "Estado",
+        "actions": "Ações"
+      },
+      "edit": "Editar",
+      "duplicate": "Duplicar",
+      "publicLink": "Link público",
+      "archive": "Arquivar",
+      "unarchive": "Desarquivar"
+    },
+    "onboarding": {
+      "title": "Comece por aqui",
+      "progress": "{{done}} / {{total}} etapas concluídas",
+      "later": "Mais tarde",
+      "done": "Concluído",
+      "steps": {
+        "createTournament": {
+          "title": "Crie o seu primeiro torneio",
+          "description": "Nome, desporto e datas da sua competição.",
+          "action": "Criar"
+        },
+        "addTeam": {
+          "title": "Adicione pelo menos uma equipa",
+          "description": "No seu torneio mais recente.",
+          "action": "Adicionar"
+        },
+        "structure": {
+          "title": "Estruture o seu torneio",
+          "description": "Grupos e/ou quadros eliminatórios.",
+          "action": "Estruturar"
+        },
+        "publish": {
+          "title": "Publique o torneio",
+          "description": "Torne o seu site público visível.",
+          "action": "Publicar"
+        }
+      }
+    },
+    "publishSuccess": {
+      "verifying": "A verificar o pagamento…",
+      "publishedTitle": "Torneio publicado",
+      "publishedBody": "{{name}} está agora visível no seu site público.",
+      "pendingTitle": "Pagamento em confirmação",
+      "pendingBody": "A publicação de {{name}} será confirmada assim que o pagamento for validado. Pode recarregar esta página dentro de instantes.",
+      "backToTournament": "Voltar ao torneio",
+      "notFoundTitle": "Torneio não encontrado",
+      "backToTournaments": "Voltar aos torneios"
     }
   }
 }

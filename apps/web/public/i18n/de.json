@@ -349,6 +349,75 @@
       "errorRoleGeneric": "Diese Rolle konnte nicht geändert werden, bitte versuchen Sie es erneut.",
       "errorRemoveLastAdmin": "Dieser Mitarbeiter kann nicht entfernt werden: Dies ist der letzte Administrator der Organisation.",
       "errorRemoveGeneric": "Dieser Mitarbeiter konnte nicht entfernt werden, bitte versuchen Sie es erneut."
+    },
+    "tournamentList": {
+      "title": "Turniere",
+      "create": "Turnier erstellen",
+      "loading": "Wird geladen…",
+      "empty": "Noch keine Turniere.",
+      "emptyFiltered": "Kein Turnier mit diesem Status.",
+      "errorLoad": "Turniere konnten nicht geladen werden.",
+      "errorDuplicate": "Dieses Turnier konnte nicht dupliziert werden.",
+      "errorArchiveToggle": "Der Status dieses Turniers konnte nicht geändert werden.",
+      "statusFilterLabel": "Status",
+      "status": {
+        "notArchived": "Nicht archiviert",
+        "all": "Alle",
+        "draft": "Entwurf",
+        "published": "Veröffentlicht",
+        "unpublished": "Unveröffentlicht",
+        "archived": "Archiviert"
+      },
+      "table": {
+        "logo": "Logo",
+        "name": "Name",
+        "sport": "Sportart",
+        "status": "Status",
+        "actions": "Aktionen"
+      },
+      "edit": "Bearbeiten",
+      "duplicate": "Duplizieren",
+      "publicLink": "Öffentlicher Link",
+      "archive": "Archivieren",
+      "unarchive": "Aus dem Archiv holen"
+    },
+    "onboarding": {
+      "title": "Erste Schritte",
+      "progress": "{{done}} / {{total}} Schritte abgeschlossen",
+      "later": "Später",
+      "done": "Erledigt",
+      "steps": {
+        "createTournament": {
+          "title": "Erstellen Sie Ihr erstes Turnier",
+          "description": "Name, Sportart und Termine Ihres Wettbewerbs.",
+          "action": "Erstellen"
+        },
+        "addTeam": {
+          "title": "Fügen Sie mindestens ein Team hinzu",
+          "description": "In Ihrem neuesten Turnier.",
+          "action": "Hinzufügen"
+        },
+        "structure": {
+          "title": "Strukturieren Sie Ihr Turnier",
+          "description": "Gruppen und/oder K.-o.-Runden.",
+          "action": "Strukturieren"
+        },
+        "publish": {
+          "title": "Veröffentlichen Sie das Turnier",
+          "description": "Machen Sie die öffentliche Seite sichtbar.",
+          "action": "Veröffentlichen"
+        }
+      }
+    },
+    "publishSuccess": {
+      "verifying": "Zahlung wird überprüft…",
+      "publishedTitle": "Turnier veröffentlicht",
+      "publishedBody": "{{name}} ist nun auf der öffentlichen Seite sichtbar.",
+      "pendingTitle": "Zahlung wird bestätigt",
+      "pendingBody": "Die Veröffentlichung von {{name}} wird bestätigt, sobald die Zahlung validiert ist. Sie können diese Seite in wenigen Augenblicken neu laden.",
+      "backToTournament": "Zurück zum Turnier",
+      "notFoundTitle": "Turnier nicht gefunden",
+      "backToTournaments": "Zurück zu den Turnieren"
     }
   }
 }
