@@ -9,8 +9,10 @@ import {
 import { Router } from '@angular/router';
 import { IonContent, IonHeader, IonToolbar } from '@ionic/angular/standalone';
 import { AssetUrlService, PublicApiService } from 'api-client';
+import { TranslocoPipe } from '@jsverse/transloco';
 import {
   Button,
+  LanguageSwitcher,
   Logo,
   ShareButton,
   TextField,
@@ -18,7 +20,7 @@ import {
   TournamentCard,
   TournamentMarquee,
 } from 'design-system';
-import { ThemeMode, ThemeService } from 'design-tokens';
+import { LanguageCode, LanguageService, SUPPORTED_LANGUAGES, ThemeMode, ThemeService } from 'design-tokens';
 import { PublicTournamentSummary } from 'shared-models';
 import { environment } from '../../../environments/environment';
 
@@ -29,12 +31,14 @@ import { environment } from '../../../environments/environment';
     IonContent,
     IonHeader,
     IonToolbar,
+    LanguageSwitcher,
     Logo,
     ShareButton,
     TextField,
     ThemeModeToggle,
     TournamentCard,
     TournamentMarquee,
+    TranslocoPipe,
   ],
   templateUrl: './tournament-entry.page.html',
   styleUrl: './tournament-entry.page.scss',
@@ -44,6 +48,7 @@ export class TournamentEntryPage {
   private readonly router = inject(Router);
   private readonly api = inject(PublicApiService);
   private readonly themeService = inject(ThemeService);
+  private readonly languageService = inject(LanguageService);
   private readonly assetUrl = inject(AssetUrlService);
 
   protected readonly tournaments = signal<PublicTournamentSummary[]>([]);
@@ -52,6 +57,8 @@ export class TournamentEntryPage {
   // the hero itself stays forced dark regardless (data-mode="dark" scoped
   // on tournament-entry-page__hero in the template).
   protected readonly mode = this.themeService.mode;
+  protected readonly language = this.languageService.language;
+  protected readonly languages = SUPPORTED_LANGUAGES;
 
   // There's no tournament-creation flow in this app itself -- these all just
   // hand off to the web app, same as apps/web's landing page hero ("Créer
@@ -66,7 +73,6 @@ export class TournamentEntryPage {
   protected readonly privacyUrl = `${environment.webUrl}/privacy`;
   protected readonly termsUrl = `${environment.webUrl}/terms`;
   protected readonly appUrl = environment.webUrl;
-  protected readonly shareText = 'Découvrez TournArena, l’app pour suivre vos compétitions.';
   protected readonly exampleTournament = computed(() => this.tournaments()[0] ?? null);
   // Governs the hero's own CTA: this screen's H1 promises "Suivre une
   // compétition", so its primary action should deliver on that (jump to
@@ -119,6 +125,10 @@ export class TournamentEntryPage {
 
   protected onModeChange(next: ThemeMode): void {
     this.themeService.setMode(document.documentElement, next);
+  }
+
+  protected onLanguageChange(code: string): void {
+    this.languageService.setLanguage(code as LanguageCode);
   }
 
   protected onQueryChange(value: string): void {

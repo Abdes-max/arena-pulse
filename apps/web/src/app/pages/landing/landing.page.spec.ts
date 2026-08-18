@@ -3,14 +3,26 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
 import { TestBed } from '@angular/core/testing';
 import { provideApiClient } from 'api-client';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { LandingPage } from './landing.page';
 
 // LandingPage now fetches the published-tournaments list on construction
 // (PublicApiService) -- provideHttpClientTesting keeps that a captured,
 // never-flushed request rather than a real network call these tests would
-// otherwise flake on.
+// otherwise flake on. TranslocoTestingModule (empty langs, preloadLangs)
+// stands in for provideTransloco -- the page now injects LanguageService,
+// which injects TranslocoService, which needs a TRANSLOCO_LOADER provider
+// to construct at all; these tests only assert on hrefs, not translated
+// text, so an empty translation set is enough.
 function configureTestBed() {
   return TestBed.configureTestingModule({
+    imports: [
+      TranslocoTestingModule.forRoot({
+        langs: { fr: {} },
+        translocoConfig: { defaultLang: 'fr' },
+        preloadLangs: true,
+      }),
+    ],
     providers: [
       provideRouter([]),
       provideHttpClient(),

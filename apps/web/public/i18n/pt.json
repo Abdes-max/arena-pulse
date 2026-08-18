@@ -1,0 +1,158 @@
+{
+  "landing": {
+    "nav": {
+      "features": "Funcionalidades",
+      "sports": "Desportos",
+      "events": "Eventos",
+      "pricing": "Preços",
+      "myAccount": "O meu espaço",
+      "logout": "Terminar sessão",
+      "login": "Iniciar sessão",
+      "menu": "Menu"
+    },
+    "eyebrow": {
+      "brand": "TournArena",
+      "count": "{{count}} eventos desportivos publicados"
+    },
+    "hero": {
+      "titleMain": "Organize torneios e campeonatos",
+      "titleEmphasis": "seguidos ao vivo por todos.",
+      "subtitle": "Grupos, quadros eliminatórios, calendário, arbitragem e classificações — e um site público gerado automaticamente para cada uma das suas competições, atualizado no instante em que um resultado é registado.",
+      "ctaCreate": "Criar o meu torneio",
+      "ctaExample": "Ver um exemplo ao vivo",
+      "storeApple": "Transferir na App Store",
+      "storeGoogle": "Disponível no Google Play"
+    },
+    "marquee": {
+      "label": "A acontecer agora na TournArena"
+    },
+    "tournaments": {
+      "title": "Competições em curso",
+      "searchLabel": "Procurar um torneio",
+      "searchPlaceholder": "Procurar um torneio…",
+      "empty": "Nenhum torneio encontrado."
+    },
+    "features": {
+      "title": "Tudo o que precisa para gerir uma competição, nada de mais",
+      "lead": "Quatro ferramentas que comunicam entre si — uma alteração de resultado atualiza grupos, quadros e calendário no mesmo instante.",
+      "pools": {
+        "mockRow": "Grupo A — U13",
+        "tag": "Classificações",
+        "title": "Grupos e classificações",
+        "desc": "Qualificações calculadas automaticamente a cada resultado, sem folhas de cálculo para manter."
+      },
+      "bracket": {
+        "mockRow": "Quartos de final",
+        "tag": "Eliminação direta",
+        "title": "Quadros eliminatórios",
+        "desc": "Gerados a partir das equipas qualificadas, com avanço automático dos vencedores em cada ronda."
+      },
+      "schedule": {
+        "mockRow1": "Campo 2 · 14:00",
+        "mockRow2": "Campo 2 · 14:45",
+        "mockRow3": "Campo 1 · 15:30",
+        "tag": "Planeamento",
+        "title": "Calendário e arbitragem",
+        "desc": "Jogos agendados nos seus campos e horários, árbitros atribuídos, desistências geridas num clique."
+      },
+      "publicSite": {
+        "mockRow": "Site público gerado",
+        "tag": "Tempo real",
+        "title": "Site público por torneio",
+        "desc": "Equipas, calendário, classificações e resultados ao vivo — um link para partilhar, nada para configurar."
+      }
+    },
+    "sports": {
+      "title": "Um motor, todos os desportos",
+      "lead": "Bola redonda ou raquete, em pavilhão ou online — a TournArena adapta-se ao formato da sua modalidade, e não o contrário.",
+      "description": {
+        "football": "Grupos e depois fase final, grandes penalidades em caso de empate — o formato clássico, totalmente automatizado.",
+        "basketball": "Campeonato ou playoffs, prolongamentos geridos jogo a jogo, classificação recalculada a cada cesto.",
+        "volleyball": "Sets contados, quadros eliminatórios para as fases finais das suas ligas.",
+        "handball": "Grupos e quadros cruzados, até às meias-finais e ao jogo de terceiro lugar, se o disputar.",
+        "rugby": "Campeonato todos-contra-todos ou torneio eliminatório — classificação por pontos bónus, à sua maneira.",
+        "tennis": "Quadros eliminatórios, cabeças de série e byes geridos automaticamente em cada ronda.",
+        "badminton": "Individuais, pares, várias categorias etárias no mesmo torneio — cada uma com o seu próprio quadro.",
+        "futsal": "O mesmo motor do futebol de onze, adaptado aos seus formatos de pavilhão.",
+        "esport": "Torneios online ou LAN, um site público ao vivo para seguir cada partida como em qualquer outro desporto.",
+        "default": "Grupos, campeonato ou eliminação direta — o seu formato, as suas regras."
+      }
+    },
+    "pricing": {
+      "title": "Um preço que acompanha o tamanho da sua competição",
+      "lead": "Criar e preparar um torneio é sempre gratuito — o preço só se aplica no momento da publicação, consoante o número de equipas inscritas.",
+      "perPublication": "por publicação",
+      "perYear": "por ano",
+      "free": {
+        "tag": "Descoberta",
+        "price": "Grátis",
+        "desc": "Perfeito para um pequeno torneio até 8 equipas, com todas as funcionalidades da TournArena.",
+        "cta": "Começar gratuitamente",
+        "featuresLabel": "Funcionalidades principais",
+        "feature1": "Até 8 equipas",
+        "feature1Info": "Número de equipas inscritas no momento da publicação.",
+        "feature2": "Grupos, quadros e classificações automáticos",
+        "feature2Info": "Qualificações e quadros recalculados a cada resultado.",
+        "feature3": "Calendário e arbitragem",
+        "feature3Info": "Campos, horários e árbitros atribuídos aos seus jogos.",
+        "feature4": "Site público ao vivo",
+        "feature4Info": "Um link para partilhar, atualizado a cada resultado."
+      },
+      "standard": {
+        "tag": "O mais comum",
+        "price": "25 €",
+        "desc": "Para um torneio ou campeonato até 48 equipas, sem mudar a sua forma de trabalhar.",
+        "cta": "Começar",
+        "featuresLabel": "Tudo em Descoberta, mais",
+        "feature1": "Até 48 equipas",
+        "feature1Info": "Número de equipas inscritas no momento da publicação."
+      },
+      "large": {
+        "tag": "Grande formato",
+        "price": "80 €",
+        "desc": "Para um torneio ou uma liga com equipas ilimitadas, sem custo adicional.",
+        "cta": "Começar",
+        "featuresLabel": "Tudo em O mais comum, mais",
+        "feature1": "Equipas ilimitadas",
+        "feature1Info": "Acima de 48 equipas, sem escalão superior."
+      },
+      "subscription": {
+        "tag": "Melhor valor",
+        "price": "200 €",
+        "desc": "Vários torneios por ano? Uma subscrição por organização cobre todas as suas publicações durante um ano.",
+        "cta": "Começar",
+        "featuresLabel": "Tudo em Grande formato, mais",
+        "feature1": "Publicações ilimitadas durante um ano",
+        "feature1Info": "Toda a organização, independentemente do número de equipas de cada torneio.",
+        "feature2": "Renovação manual",
+        "feature2Info": "Sem renovação automática nem cobrança surpresa."
+      }
+    },
+    "stores": {
+      "title": "Disponível onde quer que os seus jogadores estejam a ver",
+      "desc": "Acompanhamento ao vivo, notificações das suas equipas favoritas — a app TournArena em iOS e Android."
+    },
+    "finalCta": {
+      "title": "Pronto para organizar o seu próximo torneio ou campeonato?"
+    },
+    "footer": {
+      "contact": "Contacto",
+      "terms": "Termos de utilização",
+      "privacy": "Política de privacidade",
+      "copyright": "© 2026 TournArena. Todos os direitos reservados."
+    }
+  },
+  "legal": {
+    "back": "← Voltar",
+    "contactLinkText": "formulário de contacto",
+    "translationPending": "Esta página está, por agora, apenas disponível em francês e inglês. A tradução para as restantes línguas chegará em breve.",
+    "terms": {
+      "title": "Termos de utilização",
+      "updated": "Última atualização: 16 de agosto de 2026"
+    },
+    "privacy": {
+      "title": "Política de privacidade",
+      "updated": "Última atualização: 16 de agosto de 2026"
+    }
+  }
+}

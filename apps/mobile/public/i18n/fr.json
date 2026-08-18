@@ -1,0 +1,44 @@
+{
+  "tournamentEntry": {
+    "settingsAria": "Paramètres",
+    "back": "Retour",
+    "shareText": "Découvrez TournArena, l'app pour suivre vos compétitions.",
+    "hero": {
+      "title": "Suivre une compétition",
+      "hint": "Poules, tableaux à élimination, calendrier et classements en direct.",
+      "ctaViewEvents": "Voir les événements",
+      "ctaViewExample": "Voir un exemple",
+      "marqueeLabel": "En ce moment"
+    },
+    "published": {
+      "title": "Événements publiés",
+      "searchLabel": "Rechercher un événement",
+      "searchPlaceholder": "Rechercher un événement…",
+      "empty": "Aucun événement trouvé."
+    },
+    "settings": {
+      "title": "Paramètres",
+      "closeAria": "Fermer les paramètres",
+      "language": "Langue",
+      "account": {
+        "sectionTitle": "Compte",
+        "login": "Connexion",
+        "createTournament": "Créer un tournoi"
+      },
+      "general": {
+        "sectionTitle": "Général",
+        "rate": "Évaluer l'app",
+        "rateBadge": "Bientôt disponible",
+        "share": "Partager l'app",
+        "contact": "Nous contacter",
+        "pricing": "Tarifs"
+      },
+      "legal": {
+        "sectionTitle": "Juridique",
+        "privacy": "Politique de confidentialité",
+        "terms": "Conditions d'utilisation"
+      },
+      "copyright": "© 2026 TournArena. Tous droits réservés."
+    }
+  }
+}

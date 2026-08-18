@@ -1,0 +1,158 @@
+{
+  "landing": {
+    "nav": {
+      "features": "Funktionen",
+      "sports": "Sportarten",
+      "events": "Veranstaltungen",
+      "pricing": "Preise",
+      "myAccount": "Mein Bereich",
+      "logout": "Abmelden",
+      "login": "Anmelden",
+      "menu": "Menü"
+    },
+    "eyebrow": {
+      "brand": "TournArena",
+      "count": "{{count}} veröffentlichte Sportveranstaltungen"
+    },
+    "hero": {
+      "titleMain": "Turniere und Meisterschaften organisieren",
+      "titleEmphasis": "live von allen verfolgt.",
+      "subtitle": "Gruppen, K.-o.-Tabellen, Spielplan, Schiedsrichterwesen und Tabellen — plus eine öffentliche Website, automatisch für jeden Ihrer Wettbewerbe erstellt und in dem Moment aktualisiert, in dem ein Ergebnis eingetragen wird.",
+      "ctaCreate": "Mein Turnier erstellen",
+      "ctaExample": "Live-Beispiel ansehen",
+      "storeApple": "Im App Store laden",
+      "storeGoogle": "Bei Google Play erhältlich"
+    },
+    "marquee": {
+      "label": "Gerade jetzt auf TournArena"
+    },
+    "tournaments": {
+      "title": "Laufende Wettbewerbe",
+      "searchLabel": "Turnier suchen",
+      "searchPlaceholder": "Turnier suchen…",
+      "empty": "Kein Turnier gefunden."
+    },
+    "features": {
+      "title": "Alles, um einen Wettbewerb zu leiten, nichts Überflüssiges",
+      "lead": "Vier Werkzeuge, die miteinander sprechen — eine Ergebnisänderung aktualisiert Gruppen, Tabellen und Spielplan im selben Moment.",
+      "pools": {
+        "mockRow": "Gruppe A — U13",
+        "tag": "Tabellen",
+        "title": "Gruppen und Tabellen",
+        "desc": "Qualifikationen automatisch bei jedem Ergebnis berechnet, keine Tabellenkalkulation zu pflegen."
+      },
+      "bracket": {
+        "mockRow": "Viertelfinale",
+        "tag": "K.-o.-System",
+        "title": "K.-o.-Tabellen",
+        "desc": "Aus den qualifizierten Teams erstellt, mit automatischem Aufstieg der Sieger in jeder Runde."
+      },
+      "schedule": {
+        "mockRow1": "Feld 2 · 14:00",
+        "mockRow2": "Feld 2 · 14:45",
+        "mockRow3": "Feld 1 · 15:30",
+        "tag": "Planung",
+        "title": "Spielplan und Schiedsrichterwesen",
+        "desc": "Spiele auf Ihren Plätzen und Zeitfenstern geplant, Schiedsrichter zugewiesen, Forfaits mit einem Klick verwaltet."
+      },
+      "publicSite": {
+        "mockRow": "Öffentliche Website erstellt",
+        "tag": "Echtzeit",
+        "title": "Öffentliche Website pro Turnier",
+        "desc": "Teams, Spielplan, Tabellen und Live-Ergebnisse — ein Link zum Teilen, nichts zu konfigurieren."
+      }
+    },
+    "sports": {
+      "title": "Eine Engine, jede Sportart",
+      "lead": "Rundball oder Schläger, in der Halle oder online — TournArena passt sich dem Format Ihrer Disziplin an, nicht umgekehrt.",
+      "description": {
+        "football": "Gruppen dann Endrunde, Elfmeterschießen bei Gleichstand — das klassische Format, vollständig automatisiert.",
+        "basketball": "Meisterschaft oder Play-offs, Verlängerung spielweise verwaltet, Tabelle bei jedem Korb neu berechnet.",
+        "volleyball": "Sätze gezählt, K.-o.-Tabellen für die Endrunden Ihrer Ligen.",
+        "handball": "Gruppen und Überkreuztabellen, bis zu den Halbfinals und dem kleinen Finale, falls gespielt.",
+        "rugby": "Jeder-gegen-jeden-Liga oder K.-o.-Turnier — Bonuspunkte-Tabelle, ganz nach Ihrem Wunsch.",
+        "tennis": "K.-o.-Tabellen, Setzliste und Freilose automatisch bei jeder Runde verwaltet.",
+        "badminton": "Einzel, Doppel, mehrere Altersklassen in einem Turnier — jede mit eigener Tabelle.",
+        "futsal": "Dieselbe Engine wie beim Elf-gegen-elf-Fußball, angepasst an Ihre Hallenformate.",
+        "esport": "Online- oder LAN-Turniere, eine Live-Website, um jedes Match wie bei jeder anderen Sportart zu verfolgen.",
+        "default": "Gruppen, Meisterschaft oder K.-o.-System — Ihr Format, Ihre Regeln."
+      }
+    },
+    "pricing": {
+      "title": "Ein Preis, der mit der Größe Ihres Wettbewerbs mitwächst",
+      "lead": "Ein Turnier zu erstellen und vorzubereiten ist immer kostenlos — der Preis gilt erst bei der Veröffentlichung, je nach Anzahl der angemeldeten Teams.",
+      "perPublication": "pro Veröffentlichung",
+      "perYear": "pro Jahr",
+      "free": {
+        "tag": "Einstieg",
+        "price": "Kostenlos",
+        "desc": "Perfekt für ein kleines Turnier mit bis zu 8 Teams, mit allen Funktionen von TournArena.",
+        "cta": "Kostenlos starten",
+        "featuresLabel": "Wichtigste Funktionen",
+        "feature1": "Bis zu 8 Teams",
+        "feature1Info": "Anzahl der zum Zeitpunkt der Veröffentlichung angemeldeten Teams.",
+        "feature2": "Automatische Gruppen, Tabellen und Ranglisten",
+        "feature2Info": "Qualifikationen und Tabellen bei jedem Ergebnis neu berechnet.",
+        "feature3": "Spielplan und Schiedsrichterwesen",
+        "feature3Info": "Plätze, Zeitfenster und Schiedsrichter Ihren Spielen zugewiesen.",
+        "feature4": "Öffentliche Live-Website",
+        "feature4Info": "Ein Link zum Teilen, bei jedem Ergebnis aktualisiert."
+      },
+      "standard": {
+        "tag": "Am beliebtesten",
+        "price": "25 €",
+        "desc": "Für ein Turnier oder eine Meisterschaft mit bis zu 48 Teams, ohne Ihre Arbeitsweise zu ändern.",
+        "cta": "Loslegen",
+        "featuresLabel": "Alles aus Einstieg, plus",
+        "feature1": "Bis zu 48 Teams",
+        "feature1Info": "Anzahl der zum Zeitpunkt der Veröffentlichung angemeldeten Teams."
+      },
+      "large": {
+        "tag": "Großformat",
+        "price": "80 €",
+        "desc": "Für ein Turnier oder eine Liga mit unbegrenzten Teams, ohne zusätzliche Kosten.",
+        "cta": "Loslegen",
+        "featuresLabel": "Alles aus Am beliebtesten, plus",
+        "feature1": "Unbegrenzte Teams",
+        "feature1Info": "Über 48 Teams hinaus gibt es keine höhere Stufe."
+      },
+      "subscription": {
+        "tag": "Bestes Preis-Leistungs-Verhältnis",
+        "price": "200 €",
+        "desc": "Mehrere Turniere im Jahr? Ein Abonnement pro Organisation deckt alle Veröffentlichungen für ein Jahr ab.",
+        "cta": "Loslegen",
+        "featuresLabel": "Alles aus Großformat, plus",
+        "feature1": "Unbegrenzte Veröffentlichungen für ein Jahr",
+        "feature1Info": "Die gesamte Organisation, unabhängig von der Teamanzahl jedes Turniers.",
+        "feature2": "Manuelle Verlängerung",
+        "feature2Info": "Keine automatische Verlängerung, keine Überraschungsabbuchung."
+      }
+    },
+    "stores": {
+      "title": "Überall verfügbar, wo Ihre Spieler zuschauen",
+      "desc": "Live-Verfolgung, Benachrichtigungen für Ihre Lieblingsteams — die TournArena-App für iOS und Android."
+    },
+    "finalCta": {
+      "title": "Bereit, Ihr nächstes Turnier oder Ihre nächste Meisterschaft zu organisieren?"
+    },
+    "footer": {
+      "contact": "Kontakt",
+      "terms": "Nutzungsbedingungen",
+      "privacy": "Datenschutzrichtlinie",
+      "copyright": "© 2026 TournArena. Alle Rechte vorbehalten."
+    }
+  },
+  "legal": {
+    "back": "← Zurück",
+    "contactLinkText": "Kontaktformular",
+    "translationPending": "Diese Seite ist derzeit nur auf Französisch und Englisch verfügbar. Die Übersetzung in weitere Sprachen folgt in Kürze.",
+    "terms": {
+      "title": "Nutzungsbedingungen",
+      "updated": "Zuletzt aktualisiert: 16. August 2026"
+    },
+    "privacy": {
+      "title": "Datenschutzrichtlinie",
+      "updated": "Zuletzt aktualisiert: 16. August 2026"
+    }
+  }
+}

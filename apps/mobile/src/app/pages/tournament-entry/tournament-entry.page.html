@@ -16,7 +16,7 @@
       <button
         type="button"
         class="tournament-entry-page__settings-btn"
-        aria-label="Paramètres"
+        [attr.aria-label]="'tournamentEntry.settingsAria' | transloco"
         (click)="toggleSettings()"
       >
         <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
@@ -47,17 +47,47 @@
         <button
           type="button"
           class="tournament-entry-page__settings-close"
-          aria-label="Fermer les paramètres"
+          [attr.aria-label]="'tournamentEntry.settings.closeAria' | transloco"
           (click)="toggleSettings()"
         >
           <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
             <path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
           </svg>
         </button>
-        <h2 class="tournament-entry-page__settings-title">Paramètres</h2>
+        <h2 class="tournament-entry-page__settings-title">
+          {{ 'tournamentEntry.settings.title' | transloco }}
+        </h2>
       </div>
 
       <div class="tournament-entry-page__settings-body">
+        <!--
+          Standalone row, not inside a .settings-card (overflow: hidden,
+          needed there to clip shared row borders to the card's own rounded
+          corners) -- ap-language-switcher's own dropdown panel is
+          position: absolute and would get silently clipped by that overflow
+          the moment it opened near a card's bottom edge. Same reasoning
+          .settings-overlay itself already documents for using position:
+          fixed over absolute (see the template comment above it).
+        -->
+        <div
+          class="tournament-entry-page__settings-row tournament-entry-page__settings-language"
+        >
+          <span class="tournament-entry-page__settings-row-icon">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+              <path
+                fill="currentColor"
+                d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20m6.93 6h-2.95a15.65 15.65 0 0 0-1.38-3.56A8.03 8.03 0 0 1 18.93 8M12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96M4.26 14a7.9 7.9 0 0 1 0-4h3.38a16.6 16.6 0 0 0 0 4zm.81 2h2.95c.32 1.25.78 2.45 1.38 3.56A7.99 7.99 0 0 1 5.07 16m2.95-8H4.26a8.03 8.03 0 0 1 4.33-3.56A15.65 15.65 0 0 0 8.02 8M12 19.96a15.3 15.3 0 0 1-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96M14.34 14H9.66a14.6 14.6 0 0 1 0-4h4.68a14.6 14.6 0 0 1 0 4m.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.03 8.03 0 0 1-4.33 3.56M16.36 14a16.6 16.6 0 0 0 0-4h3.38a7.9 7.9 0 0 1 0 4z"
+              />
+            </svg>
+          </span>
+          <span>{{ 'tournamentEntry.settings.language' | transloco }}</span>
+          <ap-language-switcher
+            [language]="language()"
+            [languages]="languages"
+            (languageChange)="onLanguageChange($event)"
+          />
+        </div>
+
         <!--
           External-link icon (opens outside the app, in the OS browser --
           every row here except Évaluer/Partager/Langue) instead of a plain
@@ -70,7 +100,9 @@
           tokens (uniform signal-cyan icon badges, not a rainbow per row).
         -->
         <section class="tournament-entry-page__settings-section">
-          <h3 class="tournament-entry-page__settings-section-title">Compte</h3>
+          <h3 class="tournament-entry-page__settings-section-title">
+            {{ 'tournamentEntry.settings.account.sectionTitle' | transloco }}
+          </h3>
           <div class="tournament-entry-page__settings-card">
             <a
               class="tournament-entry-page__settings-row"
@@ -86,7 +118,7 @@
                   />
                 </svg>
               </span>
-              <span>Connexion</span>
+              <span>{{ 'tournamentEntry.settings.account.login' | transloco }}</span>
               <span class="tournament-entry-page__settings-trailing">
                 <svg
                   class="tournament-entry-page__settings-trailing-icon"
@@ -113,7 +145,7 @@
                   <path fill="currentColor" d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6z" />
                 </svg>
               </span>
-              <span>Créer un tournoi</span>
+              <span>{{ 'tournamentEntry.settings.account.createTournament' | transloco }}</span>
               <span class="tournament-entry-page__settings-trailing">
                 <svg
                   class="tournament-entry-page__settings-trailing-icon"
@@ -133,7 +165,9 @@
         </section>
 
         <section class="tournament-entry-page__settings-section">
-          <h3 class="tournament-entry-page__settings-section-title">Général</h3>
+          <h3 class="tournament-entry-page__settings-section-title">
+            {{ 'tournamentEntry.settings.general.sectionTitle' | transloco }}
+          </h3>
           <div class="tournament-entry-page__settings-card">
             <!-- Pas de lien réel : TournArena n'est pas encore listée sur
                  l'App Store (TestFlight uniquement), donc pas de page
@@ -154,9 +188,11 @@
                   />
                 </svg>
               </span>
-              <span>Évaluer l'app</span>
+              <span>{{ 'tournamentEntry.settings.general.rate' | transloco }}</span>
               <span class="tournament-entry-page__settings-trailing">
-                <span class="tournament-entry-page__settings-badge">Bientôt disponible</span>
+                <span class="tournament-entry-page__settings-badge">{{
+                  'tournamentEntry.settings.general.rateBadge' | transloco
+                }}</span>
               </span>
             </div>
             <!-- L'icône et l'étiquette ne sont que la partie visible du
@@ -183,12 +219,12 @@
                   />
                 </svg>
               </span>
-              <span>Partager l'app</span>
+              <span>{{ 'tournamentEntry.settings.general.share' | transloco }}</span>
               <span class="tournament-entry-page__settings-trailing">
                 <ap-share-button
                   #shareButton
                   title="TournArena"
-                  [text]="shareText"
+                  [text]="'tournamentEntry.shareText' | transloco"
                   [url]="appUrl"
                 />
               </span>
@@ -207,7 +243,7 @@
                   />
                 </svg>
               </span>
-              <span>Nous contacter</span>
+              <span>{{ 'tournamentEntry.settings.general.contact' | transloco }}</span>
               <span class="tournament-entry-page__settings-trailing">
                 <svg
                   class="tournament-entry-page__settings-trailing-icon"
@@ -237,7 +273,7 @@
                   />
                 </svg>
               </span>
-              <span>Tarifs</span>
+              <span>{{ 'tournamentEntry.settings.general.pricing' | transloco }}</span>
               <span class="tournament-entry-page__settings-trailing">
                 <svg
                   class="tournament-entry-page__settings-trailing-icon"
@@ -257,7 +293,9 @@
         </section>
 
         <section class="tournament-entry-page__settings-section">
-          <h3 class="tournament-entry-page__settings-section-title">Juridique</h3>
+          <h3 class="tournament-entry-page__settings-section-title">
+            {{ 'tournamentEntry.settings.legal.sectionTitle' | transloco }}
+          </h3>
           <div class="tournament-entry-page__settings-card">
             <a
               class="tournament-entry-page__settings-row"
@@ -273,7 +311,7 @@
                   />
                 </svg>
               </span>
-              <span>Politique de confidentialité</span>
+              <span>{{ 'tournamentEntry.settings.legal.privacy' | transloco }}</span>
               <span class="tournament-entry-page__settings-trailing">
                 <svg
                   class="tournament-entry-page__settings-trailing-icon"
@@ -303,7 +341,7 @@
                   />
                 </svg>
               </span>
-              <span>Conditions d'utilisation</span>
+              <span>{{ 'tournamentEntry.settings.legal.terms' | transloco }}</span>
               <span class="tournament-entry-page__settings-trailing">
                 <svg
                   class="tournament-entry-page__settings-trailing-icon"
@@ -324,22 +362,22 @@
       </div>
 
       <p class="tournament-entry-page__settings-copyright">
-        © 2026 TournArena. Tous droits réservés.
+        {{ 'tournamentEntry.settings.copyright' | transloco }}
       </p>
     </div>
   }
 
   @if (showHero()) {
     <div class="tournament-entry-page__hero-body">
-      <h1 class="tournament-entry-page__title">Suivre une compétition</h1>
+      <h1 class="tournament-entry-page__title">{{ 'tournamentEntry.hero.title' | transloco }}</h1>
       <p class="tournament-entry-page__hint">
-        Poules, tableaux à élimination, calendrier et classements en direct.
+        {{ 'tournamentEntry.hero.hint' | transloco }}
       </p>
 
       @if (hasTournaments()) {
         <div class="tournament-entry-page__hero-ctas">
           <ap-button type="button" [fullWidth]="true" (click)="viewEvents()">
-            Voir les événements
+            {{ 'tournamentEntry.hero.ctaViewEvents' | transloco }}
           </ap-button>
           @if (exampleTournament(); as example) {
             <ap-button
@@ -348,7 +386,7 @@
               [fullWidth]="true"
               (click)="goToTournament(example)"
             >
-              Voir un exemple
+              {{ 'tournamentEntry.hero.ctaViewExample' | transloco }}
             </ap-button>
           }
         </div>
@@ -357,7 +395,7 @@
       @if (tournaments().length > 0) {
         <p class="tournament-entry-page__marquee-label">
           <span class="tournament-entry-page__marquee-pulse" aria-hidden="true"></span>
-          En ce moment
+          {{ 'tournamentEntry.hero.marqueeLabel' | transloco }}
         </p>
         <ap-tournament-marquee
           [tournaments]="marqueeTournaments()"
@@ -371,7 +409,7 @@
         <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
           <path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
         </svg>
-        Retour
+        {{ 'tournamentEntry.back' | transloco }}
       </button>
     </div>
   }
@@ -382,19 +420,21 @@
     <section class="tournament-entry-page__published">
       <h2 class="tournament-entry-page__published-title">
         <span class="tournament-entry-page__published-pulse" aria-hidden="true"></span>
-        Événements publiés
+        {{ 'tournamentEntry.published.title' | transloco }}
       </h2>
       <ap-text-field
         class="tournament-entry-page__published-search"
         type="search"
-        label="Rechercher un événement"
+        [label]="'tournamentEntry.published.searchLabel' | transloco"
         [hideLabel]="true"
-        placeholder="Rechercher un événement…"
+        [placeholder]="'tournamentEntry.published.searchPlaceholder' | transloco"
         [value]="query()"
         (valueChange)="onQueryChange($event)"
       />
       @if (filteredTournaments().length === 0) {
-        <p class="tournament-entry-page__published-empty">Aucun événement trouvé.</p>
+        <p class="tournament-entry-page__published-empty">
+          {{ 'tournamentEntry.published.empty' | transloco }}
+        </p>
       } @else {
         <div class="tournament-entry-page__published-list">
           @for (t of filteredTournaments(); track t.id) {

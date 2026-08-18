@@ -1,0 +1,252 @@
+{
+  "landing": {
+    "nav": {
+      "features": "Features",
+      "sports": "Sports",
+      "events": "Events",
+      "pricing": "Pricing",
+      "myAccount": "My account",
+      "logout": "Log out",
+      "login": "Log in",
+      "menu": "Menu"
+    },
+    "eyebrow": {
+      "brand": "TournArena",
+      "count": "{{count}} published sporting events"
+    },
+    "hero": {
+      "titleMain": "Run tournaments and championships",
+      "titleEmphasis": "followed live by everyone.",
+      "subtitle": "Pools, knockout brackets, schedule, officiating and standings — plus a public site generated automatically for each of your competitions, updated the instant a score is entered.",
+      "ctaCreate": "Create my tournament",
+      "ctaExample": "See a live example",
+      "storeApple": "Download on the App Store",
+      "storeGoogle": "Get it on Google Play"
+    },
+    "marquee": {
+      "label": "Happening now on TournArena"
+    },
+    "tournaments": {
+      "title": "Ongoing competitions",
+      "searchLabel": "Search a tournament",
+      "searchPlaceholder": "Search a tournament…",
+      "empty": "No tournament found."
+    },
+    "features": {
+      "title": "Everything you need to run a competition, nothing you don't",
+      "lead": "Four tools that talk to each other — a score change updates pools, brackets and schedule at the same instant.",
+      "pools": {
+        "mockRow": "Pool A — U13",
+        "tag": "Standings",
+        "title": "Pools and standings",
+        "desc": "Qualifications calculated automatically with every score, no spreadsheet to keep up to date."
+      },
+      "bracket": {
+        "mockRow": "Quarter-final",
+        "tag": "Knockout",
+        "title": "Knockout brackets",
+        "desc": "Generated from qualified teams, with winners automatically advanced to the next round."
+      },
+      "schedule": {
+        "mockRow1": "Court 2 · 2:00 PM",
+        "mockRow2": "Court 2 · 2:45 PM",
+        "mockRow3": "Court 1 · 3:30 PM",
+        "tag": "Scheduling",
+        "title": "Schedule and officiating",
+        "desc": "Matches scheduled across your venues and time slots, referees assigned, forfeits handled in one click."
+      },
+      "publicSite": {
+        "mockRow": "Public site generated",
+        "tag": "Real-time",
+        "title": "A public site for every tournament",
+        "desc": "Teams, schedule, standings and live results — one link to share, nothing to configure."
+      }
+    },
+    "sports": {
+      "title": "One engine, every sport",
+      "lead": "Round ball or racquet, indoors or online — TournArena adapts to your sport's format, not the other way around.",
+      "description": {
+        "football": "Pools then a final phase, penalty shoot-outs in case of a tie — the classic format, fully automated.",
+        "basketball": "League or play-offs, overtime handled match by match, standings recalculated with every basket.",
+        "volleyball": "Sets counted, knockout brackets for your leagues' final phases.",
+        "handball": "Pools and cross brackets, all the way to the semi-finals and third-place match if you play one.",
+        "rugby": "Round-robin league or knockout tournament — bonus-point standings, your way.",
+        "tennis": "Knockout brackets, seeding and byes handled automatically every round.",
+        "badminton": "Singles, doubles, several age categories in the same tournament — each with its own bracket.",
+        "futsal": "The same engine as 11-a-side football, tuned for your indoor formats.",
+        "esport": "Online or LAN tournaments, a live public site to follow every match just like any other sport.",
+        "default": "Pools, league or knockout — your format, your rules."
+      }
+    },
+    "pricing": {
+      "title": "Pricing that scales with your competition",
+      "lead": "Creating and setting up a tournament is always free — the fee only applies at publication, based on the number of registered teams.",
+      "perPublication": "per publication",
+      "perYear": "per year",
+      "free": {
+        "tag": "Starter",
+        "price": "Free",
+        "desc": "Perfect for a small tournament of up to 8 teams, with every TournArena feature included.",
+        "cta": "Start for free",
+        "featuresLabel": "Key features",
+        "feature1": "Up to 8 teams",
+        "feature1Info": "Number of teams registered at the time of publication.",
+        "feature2": "Automatic pools, brackets and standings",
+        "feature2Info": "Qualifications and brackets recalculated with every score.",
+        "feature3": "Schedule and officiating",
+        "feature3Info": "Venues, time slots and referees assigned to your matches.",
+        "feature4": "Live public site",
+        "feature4Info": "One link to share, updated with every score."
+      },
+      "standard": {
+        "tag": "Most common",
+        "price": "€25",
+        "desc": "For a tournament or championship of up to 48 teams, without changing how you work.",
+        "cta": "Get started",
+        "featuresLabel": "Everything in Starter, plus",
+        "feature1": "Up to 48 teams",
+        "feature1Info": "Number of teams registered at the time of publication."
+      },
+      "large": {
+        "tag": "Large format",
+        "price": "€80",
+        "desc": "For a tournament or league with unlimited teams, no extra surcharge.",
+        "cta": "Get started",
+        "featuresLabel": "Everything in Most common, plus",
+        "feature1": "Unlimited teams",
+        "feature1Info": "Beyond 48 teams, no higher tier."
+      },
+      "subscription": {
+        "tag": "Best value",
+        "price": "€200",
+        "desc": "Running several tournaments a year? One subscription per organization covers all your publications for a year.",
+        "cta": "Get started",
+        "featuresLabel": "Everything in Large format, plus",
+        "feature1": "Unlimited publications for a year",
+        "feature1Info": "The whole organization, regardless of each tournament's team count.",
+        "feature2": "Manual renewal",
+        "feature2Info": "No automatic renewal, no surprise charge."
+      }
+    },
+    "stores": {
+      "title": "Available everywhere your players are watching",
+      "desc": "Live follow-along, notifications for your favorite teams — the TournArena app on iOS and Android."
+    },
+    "finalCta": {
+      "title": "Ready to run your next tournament or championship?"
+    },
+    "footer": {
+      "contact": "Contact",
+      "terms": "Terms of use",
+      "privacy": "Privacy policy",
+      "copyright": "© 2026 TournArena. All rights reserved."
+    }
+  },
+  "legal": {
+    "back": "← Back",
+    "contactLinkText": "contact form",
+    "translationPending": "This page is currently only available in French and English. Translations into the other languages are coming soon.",
+    "terms": {
+      "title": "Terms of use",
+      "updated": "Last updated: August 16, 2026",
+      "section1": {
+        "title": "1. Purpose",
+        "body": "These terms of use govern access to and use of TournArena (the \"Service\"), a platform allowing organizers to create and publish sports tournaments and championships, and players and teams to register for them and follow their results."
+      },
+      "section2": {
+        "title": "2. Publisher",
+        "before": "TournArena is published by the TournArena team. For any question about these terms, you can contact us via our",
+        "after": "."
+      },
+      "section3": {
+        "title": "3. Account creation",
+        "body": "Creating an organizer account requires a valid email address, verified before any use of the Service. You are responsible for the confidentiality of your credentials and for any activity carried out from your account."
+      },
+      "section4": {
+        "title": "4. Published content",
+        "body": "The organizer is solely responsible for the content they publish on the Service (tournament name and rules, teams, logos, results, standings). TournArena reserves the right to suspend the publication of a tournament whose content is manifestly unlawful, without prejudice to other remedies."
+      },
+      "section5": {
+        "title": "5. Pricing and payment",
+        "body": "Use of certain features (publishing a tournament, annual subscription) is paid, under the terms described on our Pricing page. Payments are processed by our provider Stripe; TournArena never stores any card data. Except in case of a technical error on our part, amounts paid are not refundable once the service has been rendered (tournament published, subscription period started)."
+      },
+      "section6": {
+        "title": "6. Intellectual property",
+        "body": "The TournArena brand, its logo, and all graphic and software elements of the Service are the property of TournArena and may not be reproduced without authorization."
+      },
+      "section7": {
+        "title": "7. Availability and evolution of the Service",
+        "body": "TournArena implements reasonable means to ensure the Service's availability, without guaranteeing absolute continuity. The Service may evolve, be temporarily suspended for maintenance, or have certain features modified."
+      },
+      "section8": {
+        "title": "8. Liability",
+        "body": "TournArena cannot be held liable for sporting, disciplinary or contractual disputes between organizers, teams and players, the Service being only a management and publication tool made available to them."
+      },
+      "section9": {
+        "title": "9. Termination",
+        "body": "You may stop using the Service at any time. TournArena may suspend or terminate an account in case of non-compliance with these terms."
+      },
+      "section10": {
+        "title": "10. Changes to these terms",
+        "body": "TournArena may amend these terms; the version in force is the one published on this page, along with its last-updated date."
+      },
+      "section11": {
+        "title": "11. Governing law",
+        "body": "These terms are governed by French law. Any dispute falls under the jurisdiction of the French courts, failing an amicable resolution."
+      }
+    },
+    "privacy": {
+      "title": "Privacy policy",
+      "updated": "Last updated: August 16, 2026",
+      "section1": {
+        "title": "1. Preamble",
+        "body": "This policy explains what personal data TournArena collects, why, and what your rights are, in accordance with the General Data Protection Regulation (GDPR)."
+      },
+      "section2": {
+        "title": "2. Data controller",
+        "before": "The TournArena team is responsible for the processing of the data described here. For any question or to exercise your rights, use our",
+        "after": "."
+      },
+      "section3": {
+        "title": "3. Data collected",
+        "item1": "Account data: first name, last name, email address, password (encrypted).",
+        "item2": "Tournament data: team names, results, schedules published by organizers.",
+        "item3": "Payment data: processed directly by our provider Stripe — TournArena never stores any card number.",
+        "item4": "Correspondence: messages sent via the contact form."
+      },
+      "section4": {
+        "title": "4. Purposes",
+        "body": "This data is used to create and secure your account, run published tournaments, process payments, respond to your messages, and improve the Service."
+      },
+      "section5": {
+        "title": "5. Legal basis",
+        "body": "Processing is based on the performance of the contract that binds you to TournArena (account creation, tournament publication, payment) and, for the contact form, on your explicit consent to write to us."
+      },
+      "section6": {
+        "title": "6. Data recipients",
+        "body": "Your data may be shared with our technical providers strictly necessary for the Service to operate: hosting provider, transactional email provider (Brevo), payment provider (Stripe). No data is sold to third parties."
+      },
+      "section7": {
+        "title": "7. Retention period",
+        "body": "Account data is kept as long as the account is active, then deleted or anonymized within a reasonable time after closure, subject to legal retention obligations (in particular accounting ones)."
+      },
+      "section8": {
+        "title": "8. Security",
+        "body": "Passwords are stored hashed, exchanges with the Service are encrypted (HTTPS), and access to data is limited to what is necessary for the Service to operate."
+      },
+      "section9": {
+        "title": "9. Your rights",
+        "before": "In accordance with the GDPR, you have the right to access, rectify, erase, restrict, object to, and port your data. You can exercise these rights via our",
+        "after": ", and lodge a complaint with the CNIL if you believe your rights are not being respected."
+      },
+      "section10": {
+        "title": "10. Cookies",
+        "body": "TournArena only uses technical cookies strictly necessary for the Service to operate (keeping you signed in). No advertising or third-party analytics cookie is set."
+      },
+      "section11": {
+        "title": "11. Changes to this policy",
+        "body": "This policy may be updated; the applicable version is the one published on this page, along with its last-updated date."
+      }
+    }
+  }
+}

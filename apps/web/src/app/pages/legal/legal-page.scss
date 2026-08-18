@@ -14,9 +14,16 @@
   padding: var(--ap-space-6) var(--ap-space-6) var(--ap-space-16);
 }
 
+.legal-page__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-3);
+  margin-bottom: var(--ap-space-6);
+}
+
 .legal-page__back {
   display: inline-block;
-  margin-bottom: var(--ap-space-6);
   padding: var(--ap-space-2) var(--ap-space-3);
   border: var(--ap-border-width) solid var(--ap-color-border);
   border-radius: var(--ap-radius-md);
@@ -41,6 +48,21 @@
   color: var(--ap-color-muted);
   font-size: 0.9rem;
   margin: calc(-1 * var(--ap-space-2)) 0 var(--ap-space-8);
+}
+
+// Shown only when the active language has no real translation of the body
+// yet (see terms.page.ts/privacy.page.ts's bodyAvailable) -- the body text
+// below still renders (Transloco's fallbackLang shows it in French), this
+// banner just makes that explicit instead of silently switching languages
+// mid-page.
+.legal-page__pending-banner {
+  padding: var(--ap-space-3) var(--ap-space-4);
+  margin: 0 0 var(--ap-space-6);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  background: var(--ap-color-surface);
+  color: var(--ap-color-muted);
+  font-size: 0.85rem;
 }
 
 .legal-page__content {
