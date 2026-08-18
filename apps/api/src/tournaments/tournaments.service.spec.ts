@@ -514,6 +514,7 @@ describe('TournamentsService', () => {
         'Coupe de printemps',
         2500,
         'eur',
+        'fr',
       );
     });
 
@@ -671,6 +672,7 @@ describe('TournamentsService', () => {
         'Coupe de printemps',
         2500,
         'eur',
+        'fr',
       );
       expect(result.status).toBe(TournamentStatus.PUBLISHED);
     });

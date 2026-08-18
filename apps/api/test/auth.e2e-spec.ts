@@ -88,6 +88,7 @@ describe('Auth (e2e)', () => {
       credentials.email,
       credentials.firstName,
       expect.stringContaining('/verify-email/'),
+      'fr',
     );
 
     await request(app.getHttpServer())

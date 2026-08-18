@@ -379,6 +379,7 @@ describe('OrganizationsService', () => {
         20000,
         'eur',
         expiresAt,
+        'fr',
       );
     });
 

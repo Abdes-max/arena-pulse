@@ -136,11 +136,13 @@ describe('AuthService', () => {
         registerDto.email,
         registerDto.firstName,
         expect.stringContaining('/verify-email/'),
+        'fr',
       );
       expect(mailService.sendAccountCreatedEmail).toHaveBeenCalledWith(
         registerDto.email,
         registerDto.firstName,
         registerDto.organizationName,
+        'fr',
       );
       // No refresh token issued -- the account isn't usable until verifyEmail().
       expect(prisma.refreshToken.create).not.toHaveBeenCalled();
@@ -314,6 +316,7 @@ describe('AuthService', () => {
         registerDto.email,
         registerDto.firstName,
         expect.stringContaining('/verify-email/'),
+        'fr',
       );
     });
 

@@ -14,6 +14,8 @@ import { ConfirmSubscriptionPaymentDto } from './dto/confirm-subscription-paymen
 import { RequireOrgRole } from './decorators/require-org-role.decorator';
 import { OrganizationRoleGuard } from './guards/organization-role.guard';
 import { OrganizationsService } from './organizations.service';
+import { MailLang } from '../mail/decorators/mail-lang.decorator';
+import type { MailLanguage } from '../mail/mail-language';
 
 @ApiTags('organizations')
 @UseGuards(OrganizationRoleGuard)
@@ -45,10 +47,12 @@ export class OrganizationSubscriptionController {
   confirmPayment(
     @Param('organizationId') organizationId: string,
     @Body() dto: ConfirmSubscriptionPaymentDto,
+    @MailLang() lang: MailLanguage,
   ) {
     return this.organizationsService.confirmSubscriptionPayment(
       organizationId,
       dto.sessionId,
+      lang,
     );
   }
 }

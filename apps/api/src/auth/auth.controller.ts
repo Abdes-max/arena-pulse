@@ -18,6 +18,8 @@ import { CurrentUser } from './decorators/current-user.decorator';
 import { Public } from './decorators/public.decorator';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { MailLang } from '../mail/decorators/mail-lang.decorator';
+import type { MailLanguage } from '../mail/mail-language';
 import type { AuthenticatedUser } from './strategies/jwt.strategy';
 
 export const REFRESH_TOKEN_COOKIE = 'refresh_token';
@@ -42,11 +44,11 @@ export class AuthController {
   @Public()
   @Throttle(AUTH_THROTTLE)
   @Post('register')
-  async register(@Body() dto: RegisterDto) {
+  async register(@Body() dto: RegisterDto, @MailLang() lang: MailLanguage) {
     // No session issued here anymore -- the account isn't usable until the
     // verification email's link is clicked (see verifyEmail below), so
     // there's no refresh cookie to set and no accessToken to return.
-    return this.authService.register(dto);
+    return this.authService.register(dto, lang);
   }
 
   @Public()
@@ -74,10 +76,13 @@ export class AuthController {
   @Throttle(AUTH_THROTTLE)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('resend-verification')
-  async resendVerification(@Body() dto: LoginDto) {
+  async resendVerification(
+    @Body() dto: LoginDto,
+    @MailLang() lang: MailLanguage,
+  ) {
     // Reuses LoginDto purely for its `email` field shape (already validated
     // as a proper email) -- no password involved here.
-    await this.authService.resendVerificationEmail(dto.email);
+    await this.authService.resendVerificationEmail(dto.email, lang);
   }
 
   @Public()

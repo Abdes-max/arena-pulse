@@ -1,6 +1,231 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import nodemailer, { Transporter } from 'nodemailer';
+import { DEFAULT_MAIL_LANGUAGE, MailLanguage } from './mail-language';
+
+interface MailCopy {
+  greeting: (firstName: string) => string;
+  invitationSubject: (organizationName: string) => string;
+  invitationIntro: (organizationName: string) => string;
+  invitationCta: string;
+  invitationExpiry: string;
+  verifySubject: string;
+  verifyIntro: string;
+  verifyCta: string;
+  verifyExpiry: string;
+  welcomeSubject: string;
+  welcomeBody1: (organizationName: string) => string;
+  welcomeBody2: string;
+  publicationReceiptSubject: (tournamentName: string) => string;
+  publicationReceiptBody1: (tournamentName: string) => string;
+  amountPaidLabel: string;
+  publicationReceiptBody2: string;
+  subscriptionReceiptSubject: string;
+  subscriptionReceiptBody1: (organizationName: string) => string;
+  subscriptionReceiptBody2: (formattedExpiry: string) => string;
+  footerTagline: string;
+}
+
+// Same 6 languages, same tone/register choices already made for the
+// frontend's own admin.* i18n JSON (libs/design-tokens's LanguageService):
+// formal "Sie" in German, informal register in Spanish/Italian/Portuguese,
+// neutral in English (no T-V distinction to make). Kept as plain template
+// functions here rather than a nested i18n key structure (like the
+// frontend's transloco JSON) since this is the only place these strings are
+// used -- a full i18n library would be overkill for 6 short emails.
+const MAIL_COPY: Record<MailLanguage, MailCopy> = {
+  fr: {
+    greeting: (firstName) => `Bonjour ${firstName},`,
+    invitationSubject: (org) => `Invitation à rejoindre ${org} sur TournArena`,
+    invitationIntro: (org) =>
+      `Vous avez été invité·e à rejoindre <strong>${org}</strong> sur TournArena.`,
+    invitationCta: "Accepter l'invitation",
+    invitationExpiry: 'Ce lien expire dans 7 jours.',
+    verifySubject: 'Vérifiez votre adresse email — TournArena',
+    verifyIntro:
+      'Encore une étape avant de pouvoir utiliser votre compte organisateur·rice : confirmez que cette adresse email vous appartient bien.',
+    verifyCta: 'Vérifier mon email',
+    verifyExpiry: 'Ce lien expire dans 24 heures.',
+    welcomeSubject: 'Bienvenue sur TournArena',
+    welcomeBody1: (org) =>
+      `Votre compte organisateur·rice a bien été créé, ainsi que votre organisation <strong>${org}</strong> sur TournArena.`,
+    welcomeBody2:
+      "Vous pouvez dès à présent créer votre premier tournoi depuis votre espace d'administration.",
+    publicationReceiptSubject: (name) =>
+      `Reçu de paiement — Publication de ${name}`,
+    publicationReceiptBody1: (name) =>
+      `Nous vous confirmons la réception de votre paiement pour la publication du tournoi <strong>${name}</strong>.`,
+    amountPaidLabel: 'Montant réglé :',
+    publicationReceiptBody2:
+      'Votre tournoi est désormais publié et visible publiquement.',
+    subscriptionReceiptSubject:
+      'Confirmation de votre abonnement annuel TournArena',
+    subscriptionReceiptBody1: (org) =>
+      `Nous vous confirmons la souscription de <strong>${org}</strong> à l'abonnement annuel TournArena.`,
+    subscriptionReceiptBody2: (expiry) =>
+      `Votre abonnement est actif jusqu'au <strong>${expiry}</strong> et couvre la publication de tous vos tournois sur cette période.`,
+    footerTagline: 'TournArena — le pouls de la compétition',
+  },
+  en: {
+    greeting: (firstName) => `Hi ${firstName},`,
+    invitationSubject: (org) => `Invitation to join ${org} on TournArena`,
+    invitationIntro: (org) =>
+      `You've been invited to join <strong>${org}</strong> on TournArena.`,
+    invitationCta: 'Accept invitation',
+    invitationExpiry: 'This link expires in 7 days.',
+    verifySubject: 'Verify your email — TournArena',
+    verifyIntro:
+      'One more step before you can use your organizer account: confirm that this email address is yours.',
+    verifyCta: 'Verify my email',
+    verifyExpiry: 'This link expires in 24 hours.',
+    welcomeSubject: 'Welcome to TournArena',
+    welcomeBody1: (org) =>
+      `Your organizer account has been created, along with your organization <strong>${org}</strong> on TournArena.`,
+    welcomeBody2:
+      'You can now create your first tournament from your admin dashboard.',
+    publicationReceiptSubject: (name) => `Payment receipt — Publishing ${name}`,
+    publicationReceiptBody1: (name) =>
+      `We confirm receipt of your payment for publishing the tournament <strong>${name}</strong>.`,
+    amountPaidLabel: 'Amount paid:',
+    publicationReceiptBody2:
+      'Your tournament is now published and publicly visible.',
+    subscriptionReceiptSubject:
+      'Your TournArena annual subscription confirmation',
+    subscriptionReceiptBody1: (org) =>
+      `We confirm <strong>${org}</strong>'s subscription to the TournArena annual plan.`,
+    subscriptionReceiptBody2: (expiry) =>
+      `Your subscription is active until <strong>${expiry}</strong> and covers publishing all your tournaments during this period.`,
+    footerTagline: 'TournArena — the pulse of competition',
+  },
+  es: {
+    greeting: (firstName) => `Hola ${firstName},`,
+    invitationSubject: (org) => `Invitación para unirte a ${org} en TournArena`,
+    invitationIntro: (org) =>
+      `Te han invitado a unirte a <strong>${org}</strong> en TournArena.`,
+    invitationCta: 'Aceptar la invitación',
+    invitationExpiry: 'Este enlace caduca en 7 días.',
+    verifySubject: 'Verifica tu correo electrónico — TournArena',
+    verifyIntro:
+      'Un paso más antes de poder usar tu cuenta de organizador·a: confirma que esta dirección de correo te pertenece.',
+    verifyCta: 'Verificar mi correo',
+    verifyExpiry: 'Este enlace caduca en 24 horas.',
+    welcomeSubject: 'Bienvenido a TournArena',
+    welcomeBody1: (org) =>
+      `Tu cuenta de organizador·a se ha creado correctamente, junto con tu organización <strong>${org}</strong> en TournArena.`,
+    welcomeBody2:
+      'Ya puedes crear tu primer torneo desde tu panel de administración.',
+    publicationReceiptSubject: (name) =>
+      `Recibo de pago — Publicación de ${name}`,
+    publicationReceiptBody1: (name) =>
+      `Confirmamos la recepción de tu pago para la publicación del torneo <strong>${name}</strong>.`,
+    amountPaidLabel: 'Importe pagado:',
+    publicationReceiptBody2:
+      'Tu torneo ya está publicado y visible públicamente.',
+    subscriptionReceiptSubject:
+      'Confirmación de tu suscripción anual TournArena',
+    subscriptionReceiptBody1: (org) =>
+      `Confirmamos la suscripción de <strong>${org}</strong> al plan anual de TournArena.`,
+    subscriptionReceiptBody2: (expiry) =>
+      `Tu suscripción está activa hasta el <strong>${expiry}</strong> y cubre la publicación de todos tus torneos durante ese período.`,
+    footerTagline: 'TournArena — el pulso de la competición',
+  },
+  de: {
+    greeting: (firstName) => `Hallo ${firstName},`,
+    invitationSubject: (org) => `Einladung, ${org} auf TournArena beizutreten`,
+    invitationIntro: (org) =>
+      `Sie wurden eingeladen, <strong>${org}</strong> auf TournArena beizutreten.`,
+    invitationCta: 'Einladung annehmen',
+    invitationExpiry: 'Dieser Link läuft in 7 Tagen ab.',
+    verifySubject: 'Bestätigen Sie Ihre E-Mail-Adresse — TournArena',
+    verifyIntro:
+      'Noch ein Schritt, bevor Sie Ihr Organisator·innen-Konto nutzen können: Bestätigen Sie, dass diese E-Mail-Adresse Ihnen gehört.',
+    verifyCta: 'Meine E-Mail bestätigen',
+    verifyExpiry: 'Dieser Link läuft in 24 Stunden ab.',
+    welcomeSubject: 'Willkommen bei TournArena',
+    welcomeBody1: (org) =>
+      `Ihr Organisator·innen-Konto wurde erstellt, ebenso wie Ihre Organisation <strong>${org}</strong> auf TournArena.`,
+    welcomeBody2:
+      'Sie können jetzt Ihr erstes Turnier über Ihren Admin-Bereich erstellen.',
+    publicationReceiptSubject: (name) =>
+      `Zahlungsbeleg — Veröffentlichung von ${name}`,
+    publicationReceiptBody1: (name) =>
+      `Wir bestätigen den Eingang Ihrer Zahlung für die Veröffentlichung des Turniers <strong>${name}</strong>.`,
+    amountPaidLabel: 'Bezahlter Betrag:',
+    publicationReceiptBody2:
+      'Ihr Turnier ist nun veröffentlicht und öffentlich sichtbar.',
+    subscriptionReceiptSubject:
+      'Bestätigung Ihres TournArena-Jahresabonnements',
+    subscriptionReceiptBody1: (org) =>
+      `Wir bestätigen den Abschluss des TournArena-Jahresabonnements für <strong>${org}</strong>.`,
+    subscriptionReceiptBody2: (expiry) =>
+      `Ihr Abonnement ist bis zum <strong>${expiry}</strong> aktiv und deckt die Veröffentlichung aller Ihrer Turniere in diesem Zeitraum ab.`,
+    footerTagline: 'TournArena — der Puls des Wettbewerbs',
+  },
+  it: {
+    greeting: (firstName) => `Ciao ${firstName},`,
+    invitationSubject: (org) => `Invito a unirti a ${org} su TournArena`,
+    invitationIntro: (org) =>
+      `Sei stato invitato a unirti a <strong>${org}</strong> su TournArena.`,
+    invitationCta: "Accetta l'invito",
+    invitationExpiry: 'Questo link scade tra 7 giorni.',
+    verifySubject: 'Verifica la tua email — TournArena',
+    verifyIntro:
+      'Ancora un passo prima di poter usare il tuo account organizzatore·rice: conferma che questo indirizzo email è tuo.',
+    verifyCta: 'Verifica la mia email',
+    verifyExpiry: 'Questo link scade tra 24 ore.',
+    welcomeSubject: 'Benvenuto su TournArena',
+    welcomeBody1: (org) =>
+      `Il tuo account organizzatore·rice è stato creato, insieme alla tua organizzazione <strong>${org}</strong> su TournArena.`,
+    welcomeBody2:
+      'Puoi già creare il tuo primo torneo dal tuo pannello di amministrazione.',
+    publicationReceiptSubject: (name) =>
+      `Ricevuta di pagamento — Pubblicazione di ${name}`,
+    publicationReceiptBody1: (name) =>
+      `Confermiamo la ricezione del tuo pagamento per la pubblicazione del torneo <strong>${name}</strong>.`,
+    amountPaidLabel: 'Importo pagato:',
+    publicationReceiptBody2:
+      'Il tuo torneo è ora pubblicato e visibile pubblicamente.',
+    subscriptionReceiptSubject:
+      'Conferma del tuo abbonamento annuale TournArena',
+    subscriptionReceiptBody1: (org) =>
+      `Confermiamo la sottoscrizione di <strong>${org}</strong> all'abbonamento annuale TournArena.`,
+    subscriptionReceiptBody2: (expiry) =>
+      `Il tuo abbonamento è attivo fino al <strong>${expiry}</strong> e copre la pubblicazione di tutti i tuoi tornei in questo periodo.`,
+    footerTagline: 'TournArena — il battito della competizione',
+  },
+  pt: {
+    greeting: (firstName) => `Olá ${firstName},`,
+    invitationSubject: (org) => `Convite para se juntar a ${org} no TournArena`,
+    invitationIntro: (org) =>
+      `Foi convidado·a a juntar-se a <strong>${org}</strong> no TournArena.`,
+    invitationCta: 'Aceitar o convite',
+    invitationExpiry: 'Este link expira em 7 dias.',
+    verifySubject: 'Verifique o seu email — TournArena',
+    verifyIntro:
+      'Mais um passo antes de poder usar a sua conta de organizador·a: confirme que este endereço de email lhe pertence.',
+    verifyCta: 'Verificar o meu email',
+    verifyExpiry: 'Este link expira em 24 horas.',
+    welcomeSubject: 'Bem-vindo ao TournArena',
+    welcomeBody1: (org) =>
+      `A sua conta de organizador·a foi criada, assim como a sua organização <strong>${org}</strong> no TournArena.`,
+    welcomeBody2:
+      'Já pode criar o seu primeiro torneio a partir do seu painel de administração.',
+    publicationReceiptSubject: (name) =>
+      `Recibo de pagamento — Publicação de ${name}`,
+    publicationReceiptBody1: (name) =>
+      `Confirmamos a receção do seu pagamento para a publicação do torneio <strong>${name}</strong>.`,
+    amountPaidLabel: 'Valor pago:',
+    publicationReceiptBody2:
+      'O seu torneio está agora publicado e visível publicamente.',
+    subscriptionReceiptSubject:
+      'Confirmação da sua assinatura anual TournArena',
+    subscriptionReceiptBody1: (org) =>
+      `Confirmamos a assinatura de <strong>${org}</strong> ao plano anual TournArena.`,
+    subscriptionReceiptBody2: (expiry) =>
+      `A sua assinatura está ativa até <strong>${expiry}</strong> e cobre a publicação de todos os seus torneios durante este período.`,
+    footerTagline: 'TournArena — o pulso da competição',
+  },
+};
 
 @Injectable()
 export class MailService {
@@ -59,16 +284,21 @@ export class MailService {
     to: string,
     organizationName: string,
     inviteUrl: string,
+    lang: MailLanguage = DEFAULT_MAIL_LANGUAGE,
   ): Promise<void> {
+    const copy = MAIL_COPY[lang];
     await this.transporter.sendMail({
       from: this.from,
       to,
-      subject: `Invitation à rejoindre ${organizationName} sur TournArena`,
-      html: this.wrapEmail(`
-        <p>Vous avez été invité·e à rejoindre <strong>${organizationName}</strong> sur TournArena.</p>
-        <p><a href="${inviteUrl}" class="ap-mail-cta">Accepter l'invitation</a></p>
-        <p>Ce lien expire dans 7 jours.</p>
-      `),
+      subject: copy.invitationSubject(organizationName),
+      html: this.wrapEmail(
+        `
+        <p>${copy.invitationIntro(organizationName)}</p>
+        <p><a href="${inviteUrl}" class="ap-mail-cta">${copy.invitationCta}</a></p>
+        <p>${copy.invitationExpiry}</p>
+      `,
+        lang,
+      ),
     });
   }
 
@@ -76,17 +306,22 @@ export class MailService {
     to: string,
     firstName: string,
     verifyUrl: string,
+    lang: MailLanguage = DEFAULT_MAIL_LANGUAGE,
   ): Promise<void> {
+    const copy = MAIL_COPY[lang];
     await this.transporter.sendMail({
       from: this.from,
       to,
-      subject: 'Vérifiez votre adresse email — TournArena',
-      html: this.wrapEmail(`
-        <p>Bonjour ${firstName},</p>
-        <p>Encore une étape avant de pouvoir utiliser votre compte organisateur·rice : confirmez que cette adresse email vous appartient bien.</p>
-        <p><a href="${verifyUrl}" class="ap-mail-cta">Vérifier mon email</a></p>
-        <p>Ce lien expire dans 24 heures.</p>
-      `),
+      subject: copy.verifySubject,
+      html: this.wrapEmail(
+        `
+        <p>${copy.greeting(firstName)}</p>
+        <p>${copy.verifyIntro}</p>
+        <p><a href="${verifyUrl}" class="ap-mail-cta">${copy.verifyCta}</a></p>
+        <p>${copy.verifyExpiry}</p>
+      `,
+        lang,
+      ),
     });
   }
 
@@ -94,16 +329,21 @@ export class MailService {
     to: string,
     firstName: string,
     organizationName: string,
+    lang: MailLanguage = DEFAULT_MAIL_LANGUAGE,
   ): Promise<void> {
+    const copy = MAIL_COPY[lang];
     await this.transporter.sendMail({
       from: this.from,
       to,
-      subject: 'Bienvenue sur TournArena',
-      html: this.wrapEmail(`
-        <p>Bonjour ${firstName},</p>
-        <p>Votre compte organisateur·rice a bien été créé, ainsi que votre organisation <strong>${organizationName}</strong> sur TournArena.</p>
-        <p>Vous pouvez dès à présent créer votre premier tournoi depuis votre espace d'administration.</p>
-      `),
+      subject: copy.welcomeSubject,
+      html: this.wrapEmail(
+        `
+        <p>${copy.greeting(firstName)}</p>
+        <p>${copy.welcomeBody1(organizationName)}</p>
+        <p>${copy.welcomeBody2}</p>
+      `,
+        lang,
+      ),
     });
   }
 
@@ -112,16 +352,21 @@ export class MailService {
     tournamentName: string,
     amountCents: number,
     currency: string,
+    lang: MailLanguage = DEFAULT_MAIL_LANGUAGE,
   ): Promise<void> {
+    const copy = MAIL_COPY[lang];
     await this.transporter.sendMail({
       from: this.from,
       to,
-      subject: `Reçu de paiement — Publication de ${tournamentName}`,
-      html: this.wrapEmail(`
-        <p>Nous vous confirmons la réception de votre paiement pour la publication du tournoi <strong>${tournamentName}</strong>.</p>
-        <p>Montant réglé : <strong>${this.formatAmount(amountCents, currency)}</strong></p>
-        <p>Votre tournoi est désormais publié et visible publiquement.</p>
-      `),
+      subject: copy.publicationReceiptSubject(tournamentName),
+      html: this.wrapEmail(
+        `
+        <p>${copy.publicationReceiptBody1(tournamentName)}</p>
+        <p>${copy.amountPaidLabel} <strong>${this.formatAmount(amountCents, currency, lang)}</strong></p>
+        <p>${copy.publicationReceiptBody2}</p>
+      `,
+        lang,
+      ),
     });
   }
 
@@ -131,22 +376,31 @@ export class MailService {
     amountCents: number,
     currency: string,
     expiresAt: Date,
+    lang: MailLanguage = DEFAULT_MAIL_LANGUAGE,
   ): Promise<void> {
-    const formattedExpiry = new Intl.DateTimeFormat('fr-FR', {
+    const copy = MAIL_COPY[lang];
+    const formattedExpiry = new Intl.DateTimeFormat(lang, {
       dateStyle: 'long',
     }).format(expiresAt);
     await this.transporter.sendMail({
       from: this.from,
       to,
-      subject: 'Confirmation de votre abonnement annuel TournArena',
-      html: this.wrapEmail(`
-        <p>Nous vous confirmons la souscription de <strong>${organizationName}</strong> à l'abonnement annuel TournArena.</p>
-        <p>Montant réglé : <strong>${this.formatAmount(amountCents, currency)}</strong></p>
-        <p>Votre abonnement est actif jusqu'au <strong>${formattedExpiry}</strong> et couvre la publication de tous vos tournois sur cette période.</p>
-      `),
+      subject: copy.subscriptionReceiptSubject,
+      html: this.wrapEmail(
+        `
+        <p>${copy.subscriptionReceiptBody1(organizationName)}</p>
+        <p>${copy.amountPaidLabel} <strong>${this.formatAmount(amountCents, currency, lang)}</strong></p>
+        <p>${copy.subscriptionReceiptBody2(formattedExpiry)}</p>
+      `,
+        lang,
+      ),
     });
   }
 
+  // Not translated: this is a message a public visitor typed into the
+  // contact form, delivered to TournArena's own team inbox (this.
+  // contactRecipient) -- there's no organizer/visitor language preference to
+  // honor here, only the internal team's working language.
   async sendContactMessage(data: {
     name: string;
     email: string;
@@ -182,8 +436,12 @@ export class MailService {
       .replace(/'/g, '&#39;');
   }
 
-  private formatAmount(amountCents: number, currency: string): string {
-    return new Intl.NumberFormat('fr-FR', {
+  private formatAmount(
+    amountCents: number,
+    currency: string,
+    lang: MailLanguage,
+  ): string {
+    return new Intl.NumberFormat(lang, {
       style: 'currency',
       currency: currency.toUpperCase(),
     }).format(amountCents / 100);
@@ -201,15 +459,24 @@ export class MailService {
   // reliably load in mail clients. Full doctype/head/meta-charset (rather
   // than a bare table fragment) so clients that sniff the HTML for encoding
   // instead of trusting the MIME Content-Type header still get it right.
-  private wrapEmail(bodyHtml: string): string {
+  // `lang` defaults to French (sendContactMessage's fixed-French use, the
+  // only caller that doesn't pass one) rather than DEFAULT_MAIL_LANGUAGE's
+  // import, since this stays a plain string param independent of the mail
+  // language type -- the <html lang> attribute accepts any BCP-47 tag.
+  private wrapEmail(
+    bodyHtml: string,
+    lang: MailLanguage | 'fr' = 'fr',
+  ): string {
     // Inlined directly on the <a> rather than via a <style> block + class --
     // some webmail sanitizers (confirmed: Hostinger/Titan) strip <style>
     // tags entirely, which would leave CTA buttons completely unstyled.
     const ctaStyle =
       'display:inline-block;background:#1e293b;color:#ffffff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;';
+    const footerTagline =
+      MAIL_COPY[lang]?.footerTagline ?? MAIL_COPY.fr.footerTagline;
     return `
       <!doctype html>
-      <html lang="fr">
+      <html lang="${lang}">
         <head>
           <meta charset="utf-8" />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -240,7 +507,7 @@ export class MailService {
                   </tr>
                   <tr>
                     <td style="padding:16px 32px 24px;font-family:'Inter',-apple-system,'Segoe UI',sans-serif;color:#64748b;font-size:12px;">
-                      TournArena — le pouls de la compétition
+                      ${footerTagline}
                     </td>
                   </tr>
                 </table>

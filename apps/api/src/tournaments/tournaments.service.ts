@@ -16,6 +16,7 @@ import {
   TournamentPublicationOrderStatus,
   TournamentStatus,
 } from '../../generated/prisma/client';
+import { DEFAULT_MAIL_LANGUAGE, MailLanguage } from '../mail/mail-language';
 import { MailService } from '../mail/mail.service';
 import { OrganizationsService } from '../organizations/organizations.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -254,6 +255,7 @@ export class TournamentsService {
     organizationId: string,
     tournamentId: string,
     stripeCheckoutSessionId: string,
+    lang: MailLanguage = DEFAULT_MAIL_LANGUAGE,
   ) {
     const order = await this.prisma.tournamentPublicationOrder.findUnique({
       where: { stripeCheckoutSessionId },
@@ -267,7 +269,7 @@ export class TournamentsService {
         stripeCheckoutSessionId,
       );
       if (session.payment_status === 'paid') {
-        await this.applyPaidPublicationSession(session);
+        await this.applyPaidPublicationSession(session, lang);
       }
     }
     const tournament = await this.getOrThrow(organizationId, tournamentId);
@@ -277,10 +279,13 @@ export class TournamentsService {
   /**
    * Shared by the webhook handler and confirmPublicationPayment above --
    * same "mark paid + publish + email the receipt" side effects regardless
-   * of which one first learns the session is genuinely paid.
+   * of which one first learns the session is genuinely paid. `lang`
+   * defaults to French for the webhook path -- see the identical note on
+   * OrganizationsService.applyPaidSubscriptionSession.
    */
   private async applyPaidPublicationSession(
     session: Stripe.Checkout.Session,
+    lang: MailLanguage = DEFAULT_MAIL_LANGUAGE,
   ): Promise<void> {
     const order = await this.prisma.tournamentPublicationOrder.findUnique({
       where: { stripeCheckoutSessionId: session.id },
@@ -317,7 +322,7 @@ export class TournamentsService {
       }),
     ]);
 
-    await this.sendPublicationReceipt(order);
+    await this.sendPublicationReceipt(order, lang);
   }
 
   /**
@@ -325,11 +330,14 @@ export class TournamentsService {
    * InvitationsService.invite's mail try/catch): the tournament is already
    * PUBLISHED regardless of whether the receipt email makes it out.
    */
-  private async sendPublicationReceipt(order: {
-    tournament: { name: string; organizationId: string };
-    amountCents: number;
-    currency: string;
-  }): Promise<void> {
+  private async sendPublicationReceipt(
+    order: {
+      tournament: { name: string; organizationId: string };
+      amountCents: number;
+      currency: string;
+    },
+    lang: MailLanguage,
+  ): Promise<void> {
     const adminEmails = await this.organizationsService.getAdminEmails(
       order.tournament.organizationId,
     );
@@ -340,6 +348,7 @@ export class TournamentsService {
           order.tournament.name,
           order.amountCents,
           order.currency,
+          lang,
         );
       } catch (error) {
         this.logger.warn(

@@ -18,6 +18,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
 import { memoryStorage } from 'multer';
 import { OrganizationRole } from '../../generated/prisma/client';
+import { MailLang } from '../mail/decorators/mail-lang.decorator';
+import type { MailLanguage } from '../mail/mail-language';
 import { RequireOrgRole } from '../organizations/decorators/require-org-role.decorator';
 import { OrganizationRoleGuard } from '../organizations/guards/organization-role.guard';
 import { ConfirmPublicationPaymentDto } from './dto/confirm-publication-payment.dto';
@@ -130,11 +132,13 @@ export class TournamentsController {
     @Param('organizationId') organizationId: string,
     @Param('tournamentId') tournamentId: string,
     @Body() dto: ConfirmPublicationPaymentDto,
+    @MailLang() lang: MailLanguage,
   ) {
     return this.tournamentsService.confirmPublicationPayment(
       organizationId,
       tournamentId,
       dto.sessionId,
+      lang,
     );
   }
 

@@ -112,6 +112,7 @@ describe('Organizations (e2e)', () => {
       'referee@example.com',
       'Ada Tournaments',
       expect.stringContaining('/accept-invitation/'),
+      'fr',
     );
 
     const token = getSentInviteToken();
