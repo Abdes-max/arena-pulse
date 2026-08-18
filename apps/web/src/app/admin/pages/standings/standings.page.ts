@@ -2,7 +2,9 @@ import { DecimalPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AssetUrlService } from 'api-client';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Badge, Button, Select, SelectOption } from 'design-system';
+import { LanguageService } from 'design-tokens';
 import { AuthService } from '../../core/auth.service';
 import {
   CompetitionFormatsService,
@@ -28,7 +30,7 @@ interface GroupStandings {
 
 @Component({
   selector: 'app-standings-page',
-  imports: [Badge, Button, DecimalPipe, Select],
+  imports: [Badge, Button, DecimalPipe, Select, TranslocoPipe],
   templateUrl: './standings.page.html',
   styleUrl: './standings.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,6 +42,8 @@ export class StandingsPage {
   private readonly competitionFormatsService = inject(CompetitionFormatsService);
   private readonly standingsService = inject(StandingsService);
   private readonly assetUrl = inject(AssetUrlService);
+  private readonly languageService = inject(LanguageService);
+  private readonly transloco = inject(TranslocoService);
 
   protected readonly organization = computed(() => this.authService.organizations()[0] ?? null);
   protected readonly tournamentId = this.route.snapshot.paramMap.get('tournamentId')!;
@@ -119,7 +123,7 @@ export class StandingsPage {
         await this.loadPhases();
       }
     } catch {
-      this.errorMessage.set('Impossible de charger les catégories.');
+      this.errorMessage.set('admin.standings.errors.loadCategories');
     } finally {
       this.loading.set(false);
     }
@@ -153,7 +157,7 @@ export class StandingsPage {
         await this.loadStandings();
       }
     } catch {
-      this.errorMessage.set('Impossible de charger les phases.');
+      this.errorMessage.set('admin.standings.errors.loadPhases');
     }
   }
 
@@ -222,13 +226,20 @@ export class StandingsPage {
       this.groupStandings.set(groupStandings);
       this.crossGroupTies.set(crossGroupTies);
     } catch {
-      this.errorMessage.set('Impossible de charger les classements.');
+      this.errorMessage.set('admin.standings.errors.loadStandings');
     }
   }
 
   protected tieOptions(tie: { teams: { id: string; name: string }[] }): SelectOption[] {
     return [
-      { value: '', label: 'Choisir…' },
+      {
+        value: '',
+        label: this.transloco.translate(
+          'admin.standings.chooseOption',
+          {},
+          this.languageService.language(),
+        ),
+      },
       ...tie.teams.map((team) => ({ value: team.id, label: team.name })),
     ];
   }
@@ -247,7 +258,7 @@ export class StandingsPage {
       );
       await this.loadStandings();
     } catch {
-      this.errorMessage.set("Impossible d'enregistrer ce choix.");
+      this.errorMessage.set('admin.standings.errors.saveTieChoice');
     }
   }
 
@@ -264,7 +275,7 @@ export class StandingsPage {
       );
       await this.loadStandings();
     } catch {
-      this.errorMessage.set('Impossible de réinitialiser ce départage.');
+      this.errorMessage.set('admin.standings.errors.resetTieChoice');
     }
   }
 
@@ -282,7 +293,7 @@ export class StandingsPage {
       );
       await this.loadStandings();
     } catch {
-      this.errorMessage.set("Impossible d'enregistrer ce choix.");
+      this.errorMessage.set('admin.standings.errors.saveTieChoice');
     }
   }
 
@@ -299,7 +310,7 @@ export class StandingsPage {
       );
       await this.loadStandings();
     } catch {
-      this.errorMessage.set('Impossible de réinitialiser ce départage.');
+      this.errorMessage.set('admin.standings.errors.resetTieChoice');
     }
   }
 }

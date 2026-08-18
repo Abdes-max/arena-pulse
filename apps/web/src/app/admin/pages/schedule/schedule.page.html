@@ -1,20 +1,20 @@
 <main class="schedule-page">
-  <h1>Calendrier</h1>
+  <h1>{{ 'admin.schedule.title' | transloco }}</h1>
 
   @if (loading()) {
-    <p>Chargement…</p>
+    <p>{{ 'admin.schedule.loading' | transloco }}</p>
   } @else {
     @if (errorMessage(); as message) {
-      <p class="schedule-page__error" role="alert">{{ message }}</p>
+      <p class="schedule-page__error" role="alert">{{ message | transloco }}</p>
     }
 
     @if (categories().length === 0) {
-      <p>Ajoutez d'abord une catégorie sur la page du tournoi.</p>
+      <p>{{ 'admin.schedule.addCategoryFirst' | transloco }}</p>
     } @else {
       <div class="schedule-page__selects-row">
         <ap-select
           class="schedule-page__select"
-          label="Catégorie"
+          [label]="'admin.schedule.categoryLabel' | transloco"
           [options]="categoryOptions()"
           [value]="selectedCategoryId()"
           (valueChange)="onCategoryChange($event)"
@@ -22,7 +22,7 @@
         @if (phaseTypeOptions().length > 0) {
           <ap-select
             class="schedule-page__select"
-            label="Phase"
+            [label]="'admin.schedule.phaseLabel' | transloco"
             [options]="phaseTypeOptions()"
             [value]="selectedPhaseType()"
             (valueChange)="onPhaseTypeChange($event)"
@@ -31,13 +31,13 @@
       </div>
 
       @if (phaseTypeOptions().length === 0) {
-        <p>Ajoutez d'abord une phase sur la page Structure de cette catégorie.</p>
+        <p>{{ 'admin.schedule.addPhaseFirst' | transloco }}</p>
       } @else {
         @if (selectedPhaseType() !== 'ALL') {
           <section class="schedule-page__section">
-            <h2>Générer le calendrier</h2>
+            <h2>{{ 'admin.schedule.generate.title' | transloco }}</h2>
             @if (venues().length === 0) {
-              <p>Ajoutez d'abord un site et des terrains sur la page du tournoi.</p>
+              <p>{{ 'admin.schedule.addVenueFirst' | transloco }}</p>
             } @else {
               <app-field-selector
                 [fields]="fields()"
@@ -48,14 +48,14 @@
               <div class="schedule-page__inline-form schedule-page__inline-form--spaced">
                 @if (selectedPhaseType() === 'GROUP_STAGE' || !groupStagePhase()) {
                   <ap-text-field
-                    label="Début"
+                    [label]="'admin.schedule.generate.startLabel' | transloco"
                     type="datetime-local"
                     [value]="startDateTime()"
                     (valueChange)="onStartDateTimeChange($event)"
                   />
                 } @else {
                   <ap-text-field
-                    label="Pause après les poules (min)"
+                    [label]="'admin.schedule.generate.breakAfterPoolsLabel' | transloco"
                     type="number"
                     [min]="0"
                     [value]="breakAfterPoolsMinutes()"
@@ -63,14 +63,14 @@
                   />
                 }
                 <ap-text-field
-                  label="Durée de match (min)"
+                  [label]="'admin.schedule.generate.matchDurationLabel' | transloco"
                   type="number"
                   [min]="1"
                   [value]="matchDurationMinutes()"
                   (valueChange)="onMatchDurationChange($event)"
                 />
                 <ap-text-field
-                  label="Pause entre les matchs (min)"
+                  [label]="'admin.schedule.generate.breakDurationLabel' | transloco"
                   type="number"
                   [min]="0"
                   [value]="breakDurationMinutes()"
@@ -78,7 +78,7 @@
                 />
                 @if (selectedPhaseType() === 'GROUP_STAGE' && hasReferees()) {
                   <ap-text-field
-                    label="Arbitres par match"
+                    [label]="'admin.schedule.generate.refereesPerMatchLabel' | transloco"
                     type="number"
                     [min]="1"
                     [value]="refereesPerMatch()"
@@ -90,7 +90,7 @@
               <div class="schedule-page__actions">
                 @if (selectedPhaseType() === 'GROUP_STAGE') {
                   <ap-button type="button" [disabled]="generating()" (click)="generateSchedule()">
-                    Générer le calendrier
+                    {{ 'admin.schedule.generate.generatePools' | transloco }}
                   </ap-button>
                 } @else {
                   <ap-button
@@ -98,20 +98,16 @@
                     [disabled]="generating()"
                     (click)="generateAllKnockoutMatches()"
                   >
-                    Générer tous les tableaux à élimination directe
+                    {{ 'admin.schedule.generate.generateKnockout' | transloco }}
                   </ap-button>
                 }
                 <ap-button type="button" variant="ghost" (click)="resetSchedule()">
-                  Vider le calendrier
+                  {{ 'admin.schedule.generate.reset' | transloco }}
                 </ap-button>
               </div>
               @if (selectedPhaseType() === 'KNOCKOUT') {
                 <p class="schedule-page__hint">
-                  Génère d'un coup tous les tableaux à élimination directe (s'il y en a plusieurs,
-                  ils partagent les mêmes terrains à la suite) et réserve un créneau pour tous les
-                  tours (quarts, demis, finale…). Seul le 1er tour de chaque tableau a des
-                  adversaires connus dès maintenant ; les tours suivants s'y placeront
-                  automatiquement dès que les scores précédents seront validés.
+                  {{ 'admin.schedule.generate.knockoutHint' | transloco }}
                 </p>
               }
             }
@@ -119,13 +115,12 @@
         }
 
         <section class="schedule-page__section">
-          <h2>Éditeur du calendrier</h2>
+          <h2>{{ 'admin.schedule.editor.title' | transloco }}</h2>
           @if (matches().length === 0) {
-            <p>Aucun match généré pour cette phase.</p>
+            <p>{{ 'admin.schedule.editor.empty' | transloco }}</p>
           } @else {
             <p class="schedule-page__hint">
-              Glissez-déposez un match vers un créneau libre pour le replanifier, ou vers « Non
-              planifiés » pour le retirer du calendrier.
+              {{ 'admin.schedule.editor.dragHint' | transloco }}
             </p>
 
             <ng-template
@@ -141,7 +136,7 @@
                 role="button"
                 tabindex="0"
                 [attr.aria-pressed]="selectedMatchId() === match.id"
-                aria-label="Sélectionner ce match pour le replanifier"
+                [attr.aria-label]="'admin.schedule.editor.selectMatchAria' | transloco"
                 (dragstart)="onMatchDragStart(match.id, $event)"
                 (click)="onMatchTap(match.id)"
                 (keydown.enter)="onMatchTap(match.id)"
@@ -175,7 +170,7 @@
                         {{ officialLabel(official) }}
                         <button
                           type="button"
-                          aria-label="Retirer cet officiel"
+                          [attr.aria-label]="'admin.schedule.editor.removeOfficialAria' | transloco"
                           (click)="
                             onRemoveOfficial(official.id, match.id); $event.stopPropagation()
                           "
@@ -186,7 +181,7 @@
                     }
                     @if (hasReferees()) {
                       <ap-select
-                        label="Ajouter un arbitre"
+                        [label]="'admin.schedule.editor.addRefereeLabel' | transloco"
                         [hideLabel]="true"
                         [options]="refereeOptions(match)"
                         [resetAfterSelect]="true"
@@ -196,7 +191,7 @@
                     }
                     @if (teamsCanReferee()) {
                       <ap-select
-                        label="Ajouter une équipe arbitre"
+                        [label]="'admin.schedule.editor.addRefereeingTeamLabel' | transloco"
                         [hideLabel]="true"
                         [options]="refereeingTeamOptions(match)"
                         [resetAfterSelect]="true"
@@ -212,12 +207,12 @@
             <div class="schedule-page__editor">
               <div class="schedule-page__grid-block">
                 <div class="schedule-page__grid-nav">
-                  <span>Terrains</span>
+                  <span>{{ 'admin.schedule.editor.fieldsHeading' | transloco }}</span>
                   <div class="schedule-page__grid-nav-buttons">
                     <button
                       type="button"
                       class="ap-touch-target"
-                      aria-label="Terrains précédents"
+                      [attr.aria-label]="'admin.schedule.editor.prevFieldsAria' | transloco"
                       (click)="scrollGrid('left')"
                     >
                       ‹
@@ -225,7 +220,7 @@
                     <button
                       type="button"
                       class="ap-touch-target"
-                      aria-label="Terrains suivants"
+                      [attr.aria-label]="'admin.schedule.editor.nextFieldsAria' | transloco"
                       (click)="scrollGrid('right')"
                     >
                       ›
@@ -263,7 +258,7 @@
                               class="schedule-page__slot-empty"
                               role="button"
                               tabindex="0"
-                              aria-label="Déplacer le match sélectionné vers ce créneau"
+                              [attr.aria-label]="'admin.schedule.editor.moveHereAria' | transloco"
                               (click)="onSlotTap(slot.id)"
                               (keydown.enter)="onSlotTap(slot.id)"
                               (keydown.space)="onSlotTap(slot.id); $event.preventDefault()"
@@ -278,7 +273,7 @@
                                   deleteTimeSlot(field.id, slot.id); $event.stopPropagation()
                                 "
                               >
-                                Supprimer le créneau
+                                {{ 'admin.schedule.editor.deleteSlot' | transloco }}
                               </button>
                             </div>
                           }
@@ -287,24 +282,24 @@
 
                       <div class="schedule-page__inline-form">
                         <ap-text-field
-                          label="Début"
+                          [label]="'admin.schedule.editor.startLabel' | transloco"
                           type="datetime-local"
                           [value]="draftFor(field.id).start"
                           (valueChange)="onSlotDraftChange(field.id, 'start', $event)"
                         />
                         <ap-text-field
-                          label="Fin"
+                          [label]="'admin.schedule.editor.endLabel' | transloco"
                           type="datetime-local"
                           [value]="draftFor(field.id).end"
                           (valueChange)="onSlotDraftChange(field.id, 'end', $event)"
                         />
                         <ap-text-field
-                          label="Libellé"
+                          [label]="'admin.schedule.editor.labelLabel' | transloco"
                           [value]="draftFor(field.id).label"
                           (valueChange)="onSlotDraftChange(field.id, 'label', $event)"
                         />
                         <ap-button type="button" variant="ghost" (click)="addTimeSlot(field.id)">
-                          + Créneau
+                          {{ 'admin.schedule.editor.addSlot' | transloco }}
                         </ap-button>
                       </div>
                     </div>

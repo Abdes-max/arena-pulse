@@ -2,7 +2,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AssetUrlService } from 'api-client';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Button, Select, SelectOption, TextField } from 'design-system';
+import { LanguageService } from 'design-tokens';
 import { AuthService } from '../../core/auth.service';
 import { CompetitionFormatsService } from '../../core/competition-formats.service';
 import {
@@ -15,7 +17,7 @@ import {
 import { ScheduleService } from '../../core/schedule.service';
 import { ScoresService } from '../../core/scores.service';
 import { TournamentsService } from '../../core/tournaments.service';
-import { groupMatchesByPhaseSection, roundLabel } from 'shared-models';
+import { groupMatchesByPhaseSection, roundLabel, RoundLabelLang } from 'shared-models';
 
 interface ScoreDraft {
   home: string;
@@ -40,7 +42,7 @@ interface ScoreSection {
 
 @Component({
   selector: 'app-scores-page',
-  imports: [Button, Select, TextField],
+  imports: [Button, Select, TextField, TranslocoPipe],
   templateUrl: './scores.page.html',
   styleUrl: './scores.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -53,6 +55,8 @@ export class ScoresPage {
   private readonly scheduleService = inject(ScheduleService);
   private readonly scoresService = inject(ScoresService);
   private readonly assetUrl = inject(AssetUrlService);
+  private readonly languageService = inject(LanguageService);
+  private readonly transloco = inject(TranslocoService);
 
   protected readonly organization = computed(() => this.authService.organizations()[0] ?? null);
   protected readonly tournamentId = this.route.snapshot.paramMap.get('tournamentId')!;
@@ -88,15 +92,25 @@ export class ScoresPage {
       .sort((a, b) => a.position - b.position),
   );
   protected readonly phaseTypeOptions = computed<SelectOption[]>(() => {
+    const lang = this.languageService.language();
     const options: SelectOption[] = [];
     if (this.groupStagePhase() || this.knockoutPhases().length > 0) {
-      options.push({ value: 'ALL', label: 'Tous' });
+      options.push({
+        value: 'ALL',
+        label: this.transloco.translate('admin.scores.allOption', {}, lang),
+      });
     }
     if (this.groupStagePhase()) {
-      options.push({ value: 'GROUP_STAGE', label: 'Poules' });
+      options.push({
+        value: 'GROUP_STAGE',
+        label: this.transloco.translate('admin.structure.typeGroupStage', {}, lang),
+      });
     }
     if (this.knockoutPhases().length > 0) {
-      options.push({ value: 'KNOCKOUT', label: 'Éliminations directes' });
+      options.push({
+        value: 'KNOCKOUT',
+        label: this.transloco.translate('admin.scores.knockoutOption', {}, lang),
+      });
     }
     return options;
   });
@@ -140,6 +154,12 @@ export class ScoresPage {
   // tier (its own name as a sub-heading) so "Quart de finale" from LDC and
   // EP don't collapse into one ambiguous list.
   protected readonly matchesByRoundSection = computed<ScoreSection[]>(() => {
+    // LanguageService.language() is typed Signal<string> (it aliases
+    // TranslocoService.activeLang directly, see language.service.ts) --
+    // narrowed here since the app only ever sets it to one of the 6
+    // RoundLabelLang-compatible codes (LanguageService.setLanguage only
+    // accepts LanguageCode, same 6 values).
+    const lang = this.languageService.language() as RoundLabelLang;
     const phases = this.activePhases();
     const matches = this.matches();
     const groupPhase = phases.find((phase) => phase.type === 'GROUP_STAGE') ?? null;
@@ -152,7 +172,7 @@ export class ScoresPage {
       const poolMatches = matches.filter(
         (match) => this.phaseForMatch(match)?.id === groupPhase.id,
       );
-      for (const section of groupMatchesByPhaseSection(groupPhase, poolMatches)) {
+      for (const section of groupMatchesByPhaseSection(groupPhase, poolMatches, lang)) {
         sections.push({
           label: section.label,
           subgroups: [{ label: null, matches: this.sortByTime(section.matches) }],
@@ -188,7 +208,7 @@ export class ScoresPage {
           }
         }
         if (subgroups.length > 0) {
-          sections.push({ label: roundLabel(fromEnd), subgroups });
+          sections.push({ label: roundLabel(fromEnd, lang), subgroups });
         }
       }
 
@@ -203,7 +223,10 @@ export class ScoresPage {
         }))
         .filter((subgroup) => subgroup.matches.length > 0);
       if (thirdPlaceSubgroups.length > 0) {
-        sections.push({ label: 'Pour la 3e place', subgroups: thirdPlaceSubgroups });
+        sections.push({
+          label: this.transloco.translate('admin.scores.thirdPlace', {}, lang),
+          subgroups: thirdPlaceSubgroups,
+        });
       }
     }
 
@@ -259,7 +282,7 @@ export class ScoresPage {
         await this.loadPhases();
       }
     } catch {
-      this.errorMessage.set('Impossible de charger les catégories.');
+      this.errorMessage.set('admin.scores.errors.loadCategories');
     } finally {
       this.loading.set(false);
     }
@@ -289,7 +312,7 @@ export class ScoresPage {
         await this.onPhaseSelected();
       }
     } catch {
-      this.errorMessage.set('Impossible de charger les phases.');
+      this.errorMessage.set('admin.scores.errors.loadPhases');
     }
   }
 
@@ -320,7 +343,7 @@ export class ScoresPage {
       // not scoreable yet, see the template's pendingOpponents() guard.
       this.matches.set(results.flat());
     } catch {
-      this.errorMessage.set('Impossible de charger les matchs.');
+      this.errorMessage.set('admin.scores.errors.loadMatches');
     }
   }
 
@@ -361,11 +384,16 @@ export class ScoresPage {
   }
 
   protected formatSlotTime(startTime: string): string {
-    return new Date(startTime).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' });
+    return new Date(startTime).toLocaleString(this.languageService.language(), {
+      dateStyle: 'short',
+      timeStyle: 'short',
+    });
   }
 
   protected matchTimeLabel(match: Match): string {
-    return match.timeSlot ? this.formatSlotTime(match.timeSlot.startTime) : 'Sans créneau';
+    return match.timeSlot
+      ? this.formatSlotTime(match.timeSlot.startTime)
+      : this.transloco.translate('admin.scores.noSlot', {}, this.languageService.language());
   }
 
   protected draftFor(match: Match): ScoreDraft {
@@ -414,9 +442,7 @@ export class ScoresPage {
     }
     const draft = this.draftFor(match);
     if (draft.home === '' || draft.away === '') {
-      this.errorMessage.set(
-        'Renseignez les deux scores (domicile et extérieur) avant d’enregistrer.',
-      );
+      this.errorMessage.set('admin.scores.errors.enterBothScores');
       return;
     }
     const hasPenalty = draft.homePenalty !== '' || draft.awayPenalty !== '';
@@ -438,8 +464,8 @@ export class ScoresPage {
     } catch (error) {
       this.errorMessage.set(
         error instanceof HttpErrorResponse && error.status === 409
-          ? 'Ce match est déclaré forfait — annulez le forfait avant de saisir un score.'
-          : "Impossible d'enregistrer ce score, vérifiez les valeurs saisies.",
+          ? 'admin.scores.errors.matchForfeited'
+          : 'admin.scores.errors.saveScoreGeneric',
       );
     }
   }
@@ -463,8 +489,8 @@ export class ScoresPage {
       this.errorMessage.set(
         error instanceof HttpErrorResponse && error.status === 400
           ? ((error.error as { message?: string })?.message ??
-              'Une séance de tirs au but est requise pour valider ce match nul.')
-          : 'Impossible de valider ce score.',
+              'admin.scores.errors.penaltyShootoutRequired')
+          : 'admin.scores.errors.validateGeneric',
       );
     }
   }
@@ -484,7 +510,7 @@ export class ScoresPage {
       this.replaceMatch(updated);
       this.clearDraft(match.id);
     } catch {
-      this.errorMessage.set('Impossible d’effacer ce score.');
+      this.errorMessage.set('admin.scores.errors.clearScore');
     }
   }
 
@@ -502,7 +528,7 @@ export class ScoresPage {
       );
       this.replaceMatch(updated);
     } catch {
-      this.errorMessage.set('Impossible d’annuler ce forfait.');
+      this.errorMessage.set('admin.scores.errors.undoForfeit');
     }
   }
 
