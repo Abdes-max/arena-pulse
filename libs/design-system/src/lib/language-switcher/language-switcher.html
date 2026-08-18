@@ -25,7 +25,11 @@
 </button>
 
 @if (open()) {
-  <ul class="ap-language-switcher__panel" role="listbox" [attr.aria-label]="'Langue: ' + currentLabel()">
+  <ul
+    class="ap-language-switcher__panel"
+    role="listbox"
+    [attr.aria-label]="'Langue: ' + currentLabel()"
+  >
     @for (option of languages(); track option.code) {
       <li
         class="ap-language-switcher__option"

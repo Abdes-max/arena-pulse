@@ -20,7 +20,13 @@ import {
   TournamentCard,
   TournamentMarquee,
 } from 'design-system';
-import { LanguageCode, LanguageService, SUPPORTED_LANGUAGES, ThemeMode, ThemeService } from 'design-tokens';
+import {
+  LanguageCode,
+  LanguageService,
+  SUPPORTED_LANGUAGES,
+  ThemeMode,
+  ThemeService,
+} from 'design-tokens';
 import { PublicTournamentSummary } from 'shared-models';
 import { environment } from '../../../environments/environment';
 

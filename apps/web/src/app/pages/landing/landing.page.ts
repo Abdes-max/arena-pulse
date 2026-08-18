@@ -10,7 +10,13 @@ import {
   TournamentCard,
   TournamentMarquee,
 } from 'design-system';
-import { LanguageCode, LanguageService, SUPPORTED_LANGUAGES, ThemeMode, ThemeService } from 'design-tokens';
+import {
+  LanguageCode,
+  LanguageService,
+  SUPPORTED_LANGUAGES,
+  ThemeMode,
+  ThemeService,
+} from 'design-tokens';
 import { PublicSport, PublicTournamentSummary } from 'shared-models';
 import { AuthService } from '../../admin/core/auth.service';
 

@@ -38,7 +38,8 @@ export class LanguageSwitcher {
 
   protected readonly open = signal(false);
   protected readonly currentLabel = computed(
-    () => this.languages().find((option) => option.code === this.language())?.label ?? this.language(),
+    () =>
+      this.languages().find((option) => option.code === this.language())?.label ?? this.language(),
   );
 
   private readonly host = inject(ElementRef<HTMLElement>);

@@ -52,7 +52,10 @@ describe('LanguageService', () => {
       imports: [
         TranslocoTestingModule.forRoot({
           langs: TRANSLATIONS,
-          translocoConfig: { availableLangs: ['fr', 'en', 'es', 'de', 'it', 'pt'], defaultLang: 'fr' },
+          translocoConfig: {
+            availableLangs: ['fr', 'en', 'es', 'de', 'it', 'pt'],
+            defaultLang: 'fr',
+          },
           preloadLangs: true,
         }),
       ],

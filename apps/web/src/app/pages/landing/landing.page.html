@@ -12,7 +12,9 @@
   <nav class="landing-page__nav">
     <ap-logo />
     <div class="landing-page__nav-links">
-      <a class="landing-page__nav-link" href="#fonctionnalites">{{ 'landing.nav.features' | transloco }}</a>
+      <a class="landing-page__nav-link" href="#fonctionnalites">{{
+        'landing.nav.features' | transloco
+      }}</a>
       <a class="landing-page__nav-link" href="#sports">{{ 'landing.nav.sports' | transloco }}</a>
       <a class="landing-page__nav-link" href="#tournois">{{ 'landing.nav.events' | transloco }}</a>
       <a class="landing-page__nav-link" href="#tarifs">{{ 'landing.nav.pricing' | transloco }}</a>
@@ -33,7 +35,9 @@
             {{ 'landing.nav.logout' | transloco }}
           </button>
         } @else {
-          <a class="landing-page__nav-login" routerLink="/login">{{ 'landing.nav.login' | transloco }}</a>
+          <a class="landing-page__nav-login" routerLink="/login">{{
+            'landing.nav.login' | transloco
+          }}</a>
         }
       </div>
       <button
@@ -59,18 +63,21 @@
 
   @if (mobileMenuOpen()) {
     <div class="landing-page__mobile-menu" id="landing-mobile-menu">
-      <a class="landing-page__mobile-menu-link" href="#fonctionnalites" (click)="closeMobileMenu()"
+      <a
+        class="landing-page__mobile-menu-link"
+        href="#fonctionnalites"
+        (click)="closeMobileMenu()"
         >{{ 'landing.nav.features' | transloco }}</a
       >
-      <a class="landing-page__mobile-menu-link" href="#sports" (click)="closeMobileMenu()"
-        >{{ 'landing.nav.sports' | transloco }}</a
-      >
-      <a class="landing-page__mobile-menu-link" href="#tournois" (click)="closeMobileMenu()"
-        >{{ 'landing.nav.events' | transloco }}</a
-      >
-      <a class="landing-page__mobile-menu-link" href="#tarifs" (click)="closeMobileMenu()"
-        >{{ 'landing.nav.pricing' | transloco }}</a
-      >
+      <a class="landing-page__mobile-menu-link" href="#sports" (click)="closeMobileMenu()">{{
+        'landing.nav.sports' | transloco
+      }}</a>
+      <a class="landing-page__mobile-menu-link" href="#tournois" (click)="closeMobileMenu()">{{
+        'landing.nav.events' | transloco
+      }}</a>
+      <a class="landing-page__mobile-menu-link" href="#tarifs" (click)="closeMobileMenu()">{{
+        'landing.nav.pricing' | transloco
+      }}</a>
 
       <div class="landing-page__mobile-menu-toggle">
         <ap-language-switcher
@@ -92,7 +99,10 @@
           {{ 'landing.nav.logout' | transloco }}
         </button>
       } @else {
-        <a class="landing-page__mobile-menu-login" routerLink="/login" (click)="closeMobileMenu()"
+        <a
+          class="landing-page__mobile-menu-login"
+          routerLink="/login"
+          (click)="closeMobileMenu()"
           >{{ 'landing.nav.login' | transloco }}</a
         >
       }
@@ -154,7 +164,9 @@
       {{ 'landing.hero.subtitle' | transloco }}
     </p>
     <div class="landing-page__hero-ctas">
-      <a class="landing-page__cta" routerLink="/register">{{ 'landing.hero.ctaCreate' | transloco }}</a>
+      <a class="landing-page__cta" routerLink="/register">{{
+        'landing.hero.ctaCreate' | transloco
+      }}</a>
       @if (tournaments().length > 0) {
         <a class="landing-page__cta-ghost" [routerLink]="['/', tournaments()[0].slug]">
           {{ 'landing.hero.ctaExample' | transloco }}
@@ -263,7 +275,9 @@
           <span class="landing-page__feature-mock-bar" style="width: 60%"></span>
         </div>
       </div>
-      <span class="landing-page__feature-tag">{{ 'landing.features.bracket.tag' | transloco }}</span>
+      <span class="landing-page__feature-tag">{{
+        'landing.features.bracket.tag' | transloco
+      }}</span>
       <h3>{{ 'landing.features.bracket.title' | transloco }}</h3>
       <p>
         {{ 'landing.features.bracket.desc' | transloco }}
@@ -285,7 +299,9 @@
           {{ 'landing.features.schedule.mockRow3' | transloco }}
         </div>
       </div>
-      <span class="landing-page__feature-tag">{{ 'landing.features.schedule.tag' | transloco }}</span>
+      <span class="landing-page__feature-tag">{{
+        'landing.features.schedule.tag' | transloco
+      }}</span>
       <h3>{{ 'landing.features.schedule.title' | transloco }}</h3>
       <p>
         {{ 'landing.features.schedule.desc' | transloco }}
@@ -305,7 +321,9 @@
           <span class="landing-page__feature-mock-bar" style="width: 40%"></span>
         </div>
       </div>
-      <span class="landing-page__feature-tag">{{ 'landing.features.publicSite.tag' | transloco }}</span>
+      <span class="landing-page__feature-tag">{{
+        'landing.features.publicSite.tag' | transloco
+      }}</span>
       <h3>{{ 'landing.features.publicSite.title' | transloco }}</h3>
       <p>
         {{ 'landing.features.publicSite.desc' | transloco }}
@@ -489,9 +507,13 @@
   </p>
   <div class="landing-page__pricing-grid">
     <article class="landing-page__pricing-tier">
-      <span class="landing-page__pricing-tier-tag">{{ 'landing.pricing.free.tag' | transloco }}</span>
+      <span class="landing-page__pricing-tier-tag">{{
+        'landing.pricing.free.tag' | transloco
+      }}</span>
       <p class="landing-page__pricing-tier-price">{{ 'landing.pricing.free.price' | transloco }}</p>
-      <p class="landing-page__pricing-tier-unit">{{ 'landing.pricing.perPublication' | transloco }}</p>
+      <p class="landing-page__pricing-tier-unit">
+        {{ 'landing.pricing.perPublication' | transloco }}
+      </p>
       <p class="landing-page__pricing-tier-desc">
         {{ 'landing.pricing.free.desc' | transloco }}
       </p>
@@ -545,8 +567,12 @@
       <span class="landing-page__pricing-tier-tag">{{
         'landing.pricing.standard.tag' | transloco
       }}</span>
-      <p class="landing-page__pricing-tier-price">{{ 'landing.pricing.standard.price' | transloco }}</p>
-      <p class="landing-page__pricing-tier-unit">{{ 'landing.pricing.perPublication' | transloco }}</p>
+      <p class="landing-page__pricing-tier-price">
+        {{ 'landing.pricing.standard.price' | transloco }}
+      </p>
+      <p class="landing-page__pricing-tier-unit">
+        {{ 'landing.pricing.perPublication' | transloco }}
+      </p>
       <p class="landing-page__pricing-tier-desc">
         {{ 'landing.pricing.standard.desc' | transloco }}
       </p>
@@ -572,9 +598,15 @@
     </article>
 
     <article class="landing-page__pricing-tier" data-accent="ember">
-      <span class="landing-page__pricing-tier-tag">{{ 'landing.pricing.large.tag' | transloco }}</span>
-      <p class="landing-page__pricing-tier-price">{{ 'landing.pricing.large.price' | transloco }}</p>
-      <p class="landing-page__pricing-tier-unit">{{ 'landing.pricing.perPublication' | transloco }}</p>
+      <span class="landing-page__pricing-tier-tag">{{
+        'landing.pricing.large.tag' | transloco
+      }}</span>
+      <p class="landing-page__pricing-tier-price">
+        {{ 'landing.pricing.large.price' | transloco }}
+      </p>
+      <p class="landing-page__pricing-tier-unit">
+        {{ 'landing.pricing.perPublication' | transloco }}
+      </p>
       <p class="landing-page__pricing-tier-desc">
         {{ 'landing.pricing.large.desc' | transloco }}
       </p>
