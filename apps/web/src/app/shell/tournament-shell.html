@@ -54,23 +54,33 @@
       </p>
     </div>
 
-    <nav class="tournament-shell__nav">
+    <nav class="tournament-shell__nav" #nav>
       <a
         routerLink="."
         [routerLinkActiveOptions]="{ exact: true }"
         routerLinkActive="tournament-shell__nav-link--active"
+        (click)="centerTab($event)"
       >
         {{ 'shell.nav.tournament' | transloco }}
       </a>
-      <a routerLink="team" routerLinkActive="tournament-shell__nav-link--active">{{
-        'shell.nav.teams' | transloco
-      }}</a>
-      <a routerLink="standings" routerLinkActive="tournament-shell__nav-link--active">{{
-        'shell.nav.standings' | transloco
-      }}</a>
-      <a routerLink="schedule" routerLinkActive="tournament-shell__nav-link--active">{{
-        'shell.nav.schedule' | transloco
-      }}</a>
+      <a
+        routerLink="team"
+        routerLinkActive="tournament-shell__nav-link--active"
+        (click)="centerTab($event)"
+        >{{ 'shell.nav.teams' | transloco }}</a
+      >
+      <a
+        routerLink="standings"
+        routerLinkActive="tournament-shell__nav-link--active"
+        (click)="centerTab($event)"
+        >{{ 'shell.nav.standings' | transloco }}</a
+      >
+      <a
+        routerLink="schedule"
+        routerLinkActive="tournament-shell__nav-link--active"
+        (click)="centerTab($event)"
+        >{{ 'shell.nav.schedule' | transloco }}</a
+      >
     </nav>
   </header>
 

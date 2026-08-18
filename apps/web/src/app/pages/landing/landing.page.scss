@@ -196,10 +196,20 @@
   }
 
   .landing-page__mobile-menu-toggle {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ap-space-3);
     margin: var(--ap-space-3) 0;
   }
 
   .landing-page__mobile-menu-login {
+    // border-box: without it, an <a> (content-box by default, unlike
+    // <button> which most browsers already give border-box to natively)
+    // ends up wider than its 100% width once padding+border are added on
+    // top, overflowing the menu's right edge -- "Mon espace"/"Connexion"
+    // showed this, "Se déconnecter" (a real <button>) didn't.
+    box-sizing: border-box;
     width: 100%;
     padding: var(--ap-space-3) var(--ap-space-4);
     margin-top: var(--ap-space-2);
