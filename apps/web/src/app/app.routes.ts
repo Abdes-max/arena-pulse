@@ -179,6 +179,11 @@ export const routes: Routes = [
           import('./admin/pages/standings/standings.page').then((m) => m.StandingsPage),
       },
       {
+        path: 'tournaments/:tournamentId/export',
+        loadComponent: () =>
+          import('./admin/pages/print-export/print-export.page').then((m) => m.PrintExportPage),
+      },
+      {
         path: 'tournaments/:tournamentId/registrations',
         loadComponent: () =>
           import('./admin/pages/registrations/registration-list.page').then(

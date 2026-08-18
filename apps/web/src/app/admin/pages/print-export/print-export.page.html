@@ -1,0 +1,159 @@
+<div class="print-export-page__toolbar no-print">
+  <a [routerLink]="['/admin/tournaments', tournamentId]">{{
+    'admin.printExport.back' | transloco
+  }}</a>
+  <ap-button type="button" [disabled]="loading()" (click)="print()">
+    {{ 'admin.printExport.print' | transloco }}
+  </ap-button>
+</div>
+
+<main class="print-export-page">
+  @if (loading()) {
+    <p>{{ 'admin.printExport.loading' | transloco }}</p>
+  } @else {
+    @if (errorMessage(); as message) {
+      <p class="print-export-page__error" role="alert">{{ message | transloco }}</p>
+    }
+
+    <h1>{{ tournamentName() }}</h1>
+
+    @if (categoryExports().length === 0) {
+      <p>{{ 'admin.printExport.noCategories' | transloco }}</p>
+    }
+
+    @for (entry of categoryExports(); track entry.category.id) {
+      <section class="print-export-page__category">
+        <h2>{{ entry.category.name }}</h2>
+
+        <h3>{{ 'admin.printExport.scheduleTitle' | transloco }}</h3>
+        @if (entry.scheduleDays.length === 0 && entry.scheduleUnscheduled.length === 0) {
+          <p>{{ 'admin.printExport.noSchedule' | transloco }}</p>
+        } @else {
+          @for (day of entry.scheduleDays; track day.label) {
+            <h4>{{ day.label }}</h4>
+            <table class="print-export-page__table">
+              <thead>
+                <tr>
+                  <th>{{ 'admin.printExport.time' | transloco }}</th>
+                  <th>{{ 'admin.printExport.field' | transloco }}</th>
+                  <th>{{ 'admin.standings.table.team' | transloco }}</th>
+                  <th></th>
+                  <th>{{ 'admin.standings.table.team' | transloco }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (match of day.matches; track match.id) {
+                  <tr>
+                    <td>{{ match.timeSlot ? formatTime(match.timeSlot.startTime) : '—' }}</td>
+                    <td>{{ match.timeSlot?.field?.name ?? '—' }}</td>
+                    <td>{{ teamLabel(match.homeTeam, match.homeSourceLabel) }}</td>
+                    <td class="print-export-page__score">
+                      {{ scoreLabel(match) ?? ('admin.printExport.vs' | transloco) }}
+                    </td>
+                    <td>{{ teamLabel(match.awayTeam, match.awaySourceLabel) }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+
+          @if (entry.scheduleUnscheduled.length > 0) {
+            <h4>{{ 'admin.printExport.unscheduled' | transloco }}</h4>
+            <table class="print-export-page__table">
+              <tbody>
+                @for (match of entry.scheduleUnscheduled; track match.id) {
+                  <tr>
+                    <td>{{ teamLabel(match.homeTeam, match.homeSourceLabel) }}</td>
+                    <td class="print-export-page__score">
+                      {{ scoreLabel(match) ?? ('admin.printExport.vs' | transloco) }}
+                    </td>
+                    <td>{{ teamLabel(match.awayTeam, match.awaySourceLabel) }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+        }
+
+        <h3>{{ 'admin.printExport.standingsTitle' | transloco }}</h3>
+        @if (entry.standingsGroups.length === 0) {
+          <p>{{ 'admin.printExport.noStandings' | transloco }}</p>
+        } @else {
+          @for (group of entry.standingsGroups; track group.groupName) {
+            <h4>{{ group.groupName }}</h4>
+            <table class="print-export-page__table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>{{ 'admin.standings.table.team' | transloco }}</th>
+                  <th [title]="'admin.standings.table.playedFull' | transloco">
+                    {{ 'admin.standings.table.played' | transloco }}
+                  </th>
+                  <th [title]="'admin.standings.table.wonFull' | transloco">
+                    {{ 'admin.standings.table.won' | transloco }}
+                  </th>
+                  <th [title]="'admin.standings.table.drawnFull' | transloco">
+                    {{ 'admin.standings.table.drawn' | transloco }}
+                  </th>
+                  <th [title]="'admin.standings.table.lostFull' | transloco">
+                    {{ 'admin.standings.table.lost' | transloco }}
+                  </th>
+                  <th [title]="'admin.standings.table.goalsForFull' | transloco">
+                    {{ 'admin.standings.table.goalsFor' | transloco }}
+                  </th>
+                  <th [title]="'admin.standings.table.goalsAgainstFull' | transloco">
+                    {{ 'admin.standings.table.goalsAgainst' | transloco }}
+                  </th>
+                  <th [title]="'admin.standings.table.diffFull' | transloco">
+                    {{ 'admin.standings.table.diff' | transloco }}
+                  </th>
+                  <th [title]="'admin.standings.table.pointsFull' | transloco">
+                    {{ 'admin.standings.table.points' | transloco }}
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of group.standings.rows; track row.teamId) {
+                  <tr>
+                    <td>{{ row.position }}</td>
+                    <td>{{ row.teamName }}</td>
+                    <td>{{ row.played }}</td>
+                    <td>{{ row.won }}</td>
+                    <td>{{ row.drawn }}</td>
+                    <td>{{ row.lost }}</td>
+                    <td>{{ row.goalsFor }}</td>
+                    <td>{{ row.goalsAgainst }}</td>
+                    <td>{{ row.goalDifference }}</td>
+                    <td>{{ row.points }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+        }
+
+        <h3>{{ 'admin.printExport.bracketTitle' | transloco }}</h3>
+        @if (entry.bracketSections.length === 0) {
+          <p>{{ 'admin.printExport.noBracket' | transloco }}</p>
+        } @else {
+          @for (section of entry.bracketSections; track section.label) {
+            <h4>{{ section.label }}</h4>
+            <table class="print-export-page__table">
+              <tbody>
+                @for (match of section.matches; track match.id) {
+                  <tr>
+                    <td>{{ teamLabel(match.homeTeam, match.homeSourceLabel) }}</td>
+                    <td class="print-export-page__score">
+                      {{ scoreLabel(match) ?? ('admin.printExport.vs' | transloco) }}
+                    </td>
+                    <td>{{ teamLabel(match.awayTeam, match.awaySourceLabel) }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+        }
+      </section>
+    }
+  }
+</main>

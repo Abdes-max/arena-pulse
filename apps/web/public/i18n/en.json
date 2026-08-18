@@ -362,7 +362,8 @@
       "qrCode": "QR code",
       "qrCodeDialogTitle": "Tournament QR code",
       "downloadQrCode": "Download",
-      "close": "Close"
+      "close": "Close",
+      "exportPdf": "Export PDF"
     },
     "auth": {
       "login": {
@@ -1086,6 +1087,25 @@
       "backToSubscription": "Back to subscription",
       "notFoundTitle": "Organization not found",
       "backToTournaments": "Back to tournaments"
+    },
+    "printExport": {
+      "back": "Back",
+      "print": "Print / Save as PDF",
+      "loading": "Loading export…",
+      "noCategories": "No categories.",
+      "scheduleTitle": "Schedule",
+      "noSchedule": "No matches scheduled.",
+      "unscheduled": "Unscheduled",
+      "standingsTitle": "Standings",
+      "noStandings": "No standings available.",
+      "bracketTitle": "Knockout bracket",
+      "noBracket": "No knockout bracket.",
+      "vs": "vs",
+      "time": "Time",
+      "field": "Field",
+      "errors": {
+        "load": "Unable to load the export."
+      }
     }
   }
 }
