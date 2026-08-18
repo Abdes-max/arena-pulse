@@ -541,6 +541,109 @@
         "addAdminGeneric": "Dieser Administrator konnte nicht hinzugefügt werden.",
         "removeAdmin": "Dieser Administrator konnte nicht entfernt werden."
       }
+    },
+    "teamList": {
+      "title": "Teams",
+      "loading": "Wird geladen…",
+      "addTitle": "Team hinzufügen",
+      "editTitle": "Team bearbeiten",
+      "nameLabel": "Teamname",
+      "categoryLabel": "Kategorie",
+      "divisionLabel": "Division",
+      "chooseCategoryOption": "Kategorie wählen",
+      "noDivisionOption": "Keine Division",
+      "managerLabel": "Verantwortliche Person",
+      "managerEmailLabel": "E-Mail der verantwortlichen Person",
+      "managerPhoneLabel": "Telefon der verantwortlichen Person",
+      "save": "Speichern",
+      "add": "Team hinzufügen",
+      "cancel": "Abbrechen",
+      "export": "Exportieren",
+      "deleteSelected": "Auswahl löschen",
+      "empty": "Noch keine Teams.",
+      "table": {
+        "logo": "Logo",
+        "name": "Name",
+        "category": "Kategorie",
+        "division": "Division",
+        "manager": "Verantwortliche Person",
+        "actions": "Aktionen"
+      },
+      "logoChange": "Ändern",
+      "logoAdd": "Hinzufügen",
+      "logoRemove": "Entfernen",
+      "edit": "Bearbeiten",
+      "players": "Spieler",
+      "delete": "Löschen",
+      "captain": "(Kapitän/in)",
+      "removePlayer": "Entfernen",
+      "firstNameLabel": "Vorname",
+      "lastNameLabel": "Nachname",
+      "addPlayer": "Spieler hinzufügen",
+      "importTitle": "Teams importieren (CSV)",
+      "importHint": "Spalten: Name;Kategorie;Division;Verantwortliche Person;E-Mail;Telefon;Logo (alle optional außer Name und Kategorie). Kategorie und Division müssen bereits existieren. Das Logo kann eine http(s)-URL sein (wird heruntergeladen und gespeichert) oder ein bereits bekannter Pfad /uploads/team-logos/… (z. B. erneuter Import eines vorherigen Exports).",
+      "importPlaceholder": "name;kategorie;division;verantwortliche_person;email;telefon;logo",
+      "import": "Importieren",
+      "importedCount": "{{count}} Team(s) importiert.",
+      "lineError": "Zeile {{line}}: {{message}}",
+      "errors": {
+        "load": "Teams konnten nicht geladen werden.",
+        "save": "Dieses Team konnte nicht gespeichert werden (Name bereits vergeben?).",
+        "remove": "Dieses Team konnte nicht gelöscht werden.",
+        "logoInvalid": "Ungültiges Dateiformat oder ungültige Größe (PNG, JPEG oder WebP, maximal 2 MB).",
+        "logoUpload": "Dieses Logo konnte nicht hochgeladen werden, bitte versuchen Sie es erneut.",
+        "logoRemove": "Dieses Logo konnte nicht entfernt werden.",
+        "deleteSelected": "Die ausgewählten Teams konnten nicht gelöscht werden.",
+        "import": "Diese Datei konnte nicht importiert werden.",
+        "export": "Die Teams konnten nicht exportiert werden.",
+        "loadPlayers": "Die Spieler dieses Teams konnten nicht geladen werden.",
+        "addPlayer": "Dieser Spieler konnte nicht hinzugefügt werden.",
+        "removePlayer": "Dieser Spieler konnte nicht entfernt werden."
+      }
+    },
+    "refereeList": {
+      "title": "Schiedsrichter",
+      "teamsCanReferee": "Teams können als Schiedsrichter fungieren",
+      "addTitle": "Schiedsrichter hinzufügen",
+      "editTitle": "Schiedsrichter bearbeiten",
+      "firstNameLabel": "Vorname",
+      "lastNameLabel": "Nachname",
+      "emailLabel": "E-Mail",
+      "phoneLabel": "Telefon",
+      "save": "Speichern",
+      "add": "Hinzufügen",
+      "cancel": "Abbrechen",
+      "empty": "Fügen Sie Schiedsrichter hinzu. Verwenden Sie anschließend die Spielplanseite, um sie den Spielen zuzuweisen.",
+      "edit": "Bearbeiten",
+      "remove": "Entfernen",
+      "errors": {
+        "load": "Schiedsrichter konnten nicht geladen werden.",
+        "toggleSetting": "Diese Einstellung konnte nicht aktualisiert werden.",
+        "save": "Dieser Schiedsrichter konnte nicht gespeichert werden.",
+        "remove": "Dieser Schiedsrichter konnte nicht entfernt werden."
+      }
+    },
+    "registrationList": {
+      "title": "Anmeldungen und Zahlungen",
+      "loading": "Wird geladen…",
+      "empty": "Noch keine Anmeldungen für dieses Turnier.",
+      "table": {
+        "team": "Team",
+        "category": "Kategorie",
+        "manager": "Verantwortliche Person",
+        "amount": "Betrag",
+        "status": "Status",
+        "registeredAt": "Angemeldet am"
+      },
+      "free": "Kostenlos",
+      "status": {
+        "paid": "Bezahlt",
+        "pending": "Zahlung ausstehend",
+        "cancelled": "Storniert"
+      },
+      "errors": {
+        "load": "Anmeldungen konnten nicht geladen werden."
+      }
     }
   }
 }

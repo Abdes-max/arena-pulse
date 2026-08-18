@@ -635,6 +635,109 @@
         "addAdminGeneric": "Unable to add this administrator.",
         "removeAdmin": "Unable to remove this administrator."
       }
+    },
+    "teamList": {
+      "title": "Teams",
+      "loading": "Loading…",
+      "addTitle": "Add a team",
+      "editTitle": "Edit team",
+      "nameLabel": "Team name",
+      "categoryLabel": "Category",
+      "divisionLabel": "Division",
+      "chooseCategoryOption": "Choose a category",
+      "noDivisionOption": "No division",
+      "managerLabel": "Manager",
+      "managerEmailLabel": "Manager's email",
+      "managerPhoneLabel": "Manager's phone",
+      "save": "Save",
+      "add": "Add team",
+      "cancel": "Cancel",
+      "export": "Export",
+      "deleteSelected": "Delete selection",
+      "empty": "No teams yet.",
+      "table": {
+        "logo": "Logo",
+        "name": "Name",
+        "category": "Category",
+        "division": "Division",
+        "manager": "Manager",
+        "actions": "Actions"
+      },
+      "logoChange": "Change",
+      "logoAdd": "Add",
+      "logoRemove": "Remove",
+      "edit": "Edit",
+      "players": "Players",
+      "delete": "Delete",
+      "captain": "(captain)",
+      "removePlayer": "Remove",
+      "firstNameLabel": "First name",
+      "lastNameLabel": "Last name",
+      "addPlayer": "Add a player",
+      "importTitle": "Import teams (CSV)",
+      "importHint": "Columns: name;category;division;manager;manager_email;manager_phone;logo (all optional except name and category). The category and division must already exist. The logo can be an http(s) URL (downloaded and saved) or an already-known /uploads/team-logos/… path (e.g. re-importing a previous export).",
+      "importPlaceholder": "name;category;division;manager;manager_email;manager_phone;logo",
+      "import": "Import",
+      "importedCount": "{{count}} team(s) imported.",
+      "lineError": "Line {{line}}: {{message}}",
+      "errors": {
+        "load": "Unable to load teams.",
+        "save": "Unable to save this team (name already used?).",
+        "remove": "Unable to delete this team.",
+        "logoInvalid": "Invalid file format or size (PNG, JPEG, or WebP, 2 MB maximum).",
+        "logoUpload": "Unable to upload this logo, please try again.",
+        "logoRemove": "Unable to remove this logo.",
+        "deleteSelected": "Unable to delete the selected teams.",
+        "import": "Unable to import this file.",
+        "export": "Unable to export teams.",
+        "loadPlayers": "Unable to load this team's players.",
+        "addPlayer": "Unable to add this player.",
+        "removePlayer": "Unable to remove this player."
+      }
+    },
+    "refereeList": {
+      "title": "Referees",
+      "teamsCanReferee": "Teams can act as referees",
+      "addTitle": "Add a referee",
+      "editTitle": "Edit referee",
+      "firstNameLabel": "First name",
+      "lastNameLabel": "Last name",
+      "emailLabel": "Email",
+      "phoneLabel": "Phone",
+      "save": "Save",
+      "add": "Add",
+      "cancel": "Cancel",
+      "empty": "Add referees. Then use the schedule page to assign referees to matches.",
+      "edit": "Edit",
+      "remove": "Remove",
+      "errors": {
+        "load": "Unable to load referees.",
+        "toggleSetting": "Unable to update this setting.",
+        "save": "Unable to save this referee.",
+        "remove": "Unable to remove this referee."
+      }
+    },
+    "registrationList": {
+      "title": "Registrations and payments",
+      "loading": "Loading…",
+      "empty": "No registrations for this tournament yet.",
+      "table": {
+        "team": "Team",
+        "category": "Category",
+        "manager": "Manager",
+        "amount": "Amount",
+        "status": "Status",
+        "registeredAt": "Registered on"
+      },
+      "free": "Free",
+      "status": {
+        "paid": "Paid",
+        "pending": "Awaiting payment",
+        "cancelled": "Cancelled"
+      },
+      "errors": {
+        "load": "Unable to load registrations."
+      }
     }
   }
 }

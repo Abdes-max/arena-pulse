@@ -2,7 +2,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AssetUrlService } from 'api-client';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Button, Select, SelectOption, TextField } from 'design-system';
+import { LanguageService } from 'design-tokens';
 import { AuthService } from '../../core/auth.service';
 import { Category, Player, Team, TeamImportResult } from '../../core/models';
 import { TeamsService } from '../../core/teams.service';
@@ -10,7 +12,7 @@ import { TournamentsService } from '../../core/tournaments.service';
 
 @Component({
   selector: 'app-team-list-page',
-  imports: [Button, Select, TextField],
+  imports: [Button, Select, TextField, TranslocoPipe],
   templateUrl: './team-list.page.html',
   styleUrl: './team-list.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -21,6 +23,8 @@ export class TeamListPage {
   private readonly teamsService = inject(TeamsService);
   private readonly tournamentsService = inject(TournamentsService);
   private readonly assetUrl = inject(AssetUrlService);
+  private readonly languageService = inject(LanguageService);
+  private readonly transloco = inject(TranslocoService);
 
   protected readonly organization = computed(() => this.authService.organizations()[0] ?? null);
   protected readonly tournamentId = this.route.snapshot.paramMap.get('tournamentId')!;
@@ -36,17 +40,27 @@ export class TeamListPage {
     return category?.divisions ?? [];
   });
 
-  protected readonly categoryOptions = computed<SelectOption[]>(() => [
-    { value: '', label: 'Choisir une catégorie', disabled: true },
-    ...this.categories().map((category) => ({ value: category.id, label: category.name })),
-  ]);
-  protected readonly divisionOptions = computed<SelectOption[]>(() => [
-    { value: '', label: 'Aucune division' },
-    ...this.divisionsForSelectedCategory().map((division) => ({
-      value: division.id,
-      label: division.name,
-    })),
-  ]);
+  protected readonly categoryOptions = computed<SelectOption[]>(() => {
+    const lang = this.languageService.language();
+    return [
+      {
+        value: '',
+        label: this.transloco.translate('admin.teamList.chooseCategoryOption', {}, lang),
+        disabled: true,
+      },
+      ...this.categories().map((category) => ({ value: category.id, label: category.name })),
+    ];
+  });
+  protected readonly divisionOptions = computed<SelectOption[]>(() => {
+    const lang = this.languageService.language();
+    return [
+      { value: '', label: this.transloco.translate('admin.teamList.noDivisionOption', {}, lang) },
+      ...this.divisionsForSelectedCategory().map((division) => ({
+        value: division.id,
+        label: division.name,
+      })),
+    ];
+  });
 
   protected readonly editingTeamId = signal<string | null>(null);
   protected readonly formName = signal('');
@@ -81,7 +95,7 @@ export class TeamListPage {
         await this.tournamentsService.listCategories(organizationId, this.tournamentId),
       );
     } catch {
-      this.errorMessage.set('Impossible de charger les équipes.');
+      this.errorMessage.set('admin.teamList.errors.load');
     } finally {
       this.loading.set(false);
     }
@@ -169,7 +183,7 @@ export class TeamListPage {
       }
       this.cancelEdit();
     } catch {
-      this.errorMessage.set("Impossible d'enregistrer cette équipe (nom déjà utilisé ?).");
+      this.errorMessage.set('admin.teamList.errors.save');
     }
   }
 
@@ -182,7 +196,7 @@ export class TeamListPage {
       await this.teamsService.deleteTeam(organizationId, this.tournamentId, team.id);
       this.teams.update((teams) => teams.filter((t) => t.id !== team.id));
     } catch {
-      this.errorMessage.set('Impossible de supprimer cette équipe.');
+      this.errorMessage.set('admin.teamList.errors.remove');
     }
   }
 
@@ -209,8 +223,8 @@ export class TeamListPage {
     } catch (error) {
       this.errorMessage.set(
         error instanceof HttpErrorResponse && error.status === 400
-          ? 'Format ou taille de fichier invalide (PNG, JPEG ou WebP, 2 Mo maximum).'
-          : "Impossible d'envoyer ce logo, réessayez.",
+          ? 'admin.teamList.errors.logoInvalid'
+          : 'admin.teamList.errors.logoUpload',
       );
     }
   }
@@ -228,7 +242,7 @@ export class TeamListPage {
       );
       this.teams.update((teams) => teams.map((t) => (t.id === updated.id ? updated : t)));
     } catch {
-      this.errorMessage.set('Impossible de retirer ce logo.');
+      this.errorMessage.set('admin.teamList.errors.logoRemove');
     }
   }
 
@@ -260,7 +274,7 @@ export class TeamListPage {
       this.teams.update((teams) => teams.filter((t) => !teamIds.includes(t.id)));
       this.selectedTeamIds.set(new Set());
     } catch {
-      this.errorMessage.set('Impossible de supprimer les équipes sélectionnées.');
+      this.errorMessage.set('admin.teamList.errors.deleteSelected');
     }
   }
 
@@ -293,7 +307,7 @@ export class TeamListPage {
       this.importResult.set(result);
       this.teams.update((teams) => [...teams, ...result.created]);
     } catch {
-      this.errorMessage.set("Impossible d'importer ce fichier.");
+      this.errorMessage.set('admin.teamList.errors.import');
     }
   }
 
@@ -312,7 +326,7 @@ export class TeamListPage {
       link.click();
       URL.revokeObjectURL(url);
     } catch {
-      this.errorMessage.set("Impossible d'exporter les équipes.");
+      this.errorMessage.set('admin.teamList.errors.export');
     }
   }
 
@@ -331,7 +345,7 @@ export class TeamListPage {
         await this.teamsService.listPlayers(organizationId, this.tournamentId, team.id),
       );
     } catch {
-      this.errorMessage.set('Impossible de charger les joueurs de cette équipe.');
+      this.errorMessage.set('admin.teamList.errors.loadPlayers');
     }
   }
 
@@ -359,7 +373,7 @@ export class TeamListPage {
       this.newPlayerFirstName.set('');
       this.newPlayerLastName.set('');
     } catch {
-      this.errorMessage.set("Impossible d'ajouter ce joueur.");
+      this.errorMessage.set('admin.teamList.errors.addPlayer');
     }
   }
 
@@ -372,7 +386,7 @@ export class TeamListPage {
       await this.teamsService.removePlayer(organizationId, this.tournamentId, team.id, player.id);
       this.players.update((players) => players.filter((p) => p.id !== player.id));
     } catch {
-      this.errorMessage.set('Impossible de retirer ce joueur.');
+      this.errorMessage.set('admin.teamList.errors.removePlayer');
     }
   }
 }

@@ -1,66 +1,70 @@
 <main class="team-list-page">
-  <h1>Équipes</h1>
+  <h1>{{ 'admin.teamList.title' | transloco }}</h1>
 
   @if (loading()) {
-    <p>Chargement…</p>
+    <p>{{ 'admin.teamList.loading' | transloco }}</p>
   } @else {
     @if (errorMessage(); as message) {
-      <p class="team-list-page__error" role="alert">{{ message }}</p>
+      <p class="team-list-page__error" role="alert">{{ message | transloco }}</p>
     }
 
     <section class="team-list-page__section">
-      <h2>{{ editingTeamId() ? "Modifier l'équipe" : 'Ajouter une équipe' }}</h2>
+      <h2>
+        {{ (editingTeamId() ? 'admin.teamList.editTitle' : 'admin.teamList.addTitle') | transloco }}
+      </h2>
       <form class="team-list-page__form" (submit)="onFormSubmit($event)">
         <ap-text-field
-          label="Nom de l'équipe"
+          [label]="'admin.teamList.nameLabel' | transloco"
           [hideLabel]="true"
-          placeholder="Nom de l'équipe"
+          [placeholder]="'admin.teamList.nameLabel' | transloco"
           [value]="formName()"
           (valueChange)="formName.set($event)"
         />
         <ap-select
-          label="Catégorie"
+          [label]="'admin.teamList.categoryLabel' | transloco"
           [hideLabel]="true"
           [options]="categoryOptions()"
           [value]="formCategoryId()"
           (valueChange)="onFormCategoryChange($event)"
         />
         <ap-select
-          label="Division"
+          [label]="'admin.teamList.divisionLabel' | transloco"
           [hideLabel]="true"
           [options]="divisionOptions()"
           [value]="formDivisionId()"
           (valueChange)="formDivisionId.set($event)"
         />
         <ap-text-field
-          label="Responsable"
+          [label]="'admin.teamList.managerLabel' | transloco"
           [hideLabel]="true"
-          placeholder="Responsable"
+          [placeholder]="'admin.teamList.managerLabel' | transloco"
           [value]="formManagerName()"
           (valueChange)="formManagerName.set($event)"
         />
         <ap-text-field
-          label="Email du responsable"
+          [label]="'admin.teamList.managerEmailLabel' | transloco"
           [hideLabel]="true"
           type="email"
-          placeholder="Email du responsable"
+          [placeholder]="'admin.teamList.managerEmailLabel' | transloco"
           [value]="formManagerEmail()"
           (valueChange)="formManagerEmail.set($event)"
         />
         <ap-text-field
-          label="Téléphone du responsable"
+          [label]="'admin.teamList.managerPhoneLabel' | transloco"
           [hideLabel]="true"
           type="tel"
-          placeholder="Téléphone du responsable"
+          [placeholder]="'admin.teamList.managerPhoneLabel' | transloco"
           [value]="formManagerPhone()"
           (valueChange)="formManagerPhone.set($event)"
         />
         <div class="team-list-page__form-actions">
           <ap-button type="submit">{{
-            editingTeamId() ? 'Enregistrer' : "Ajouter l'équipe"
+            (editingTeamId() ? 'admin.teamList.save' : 'admin.teamList.add') | transloco
           }}</ap-button>
           @if (editingTeamId()) {
-            <ap-button type="button" variant="ghost" (click)="cancelEdit()">Annuler</ap-button>
+            <ap-button type="button" variant="ghost" (click)="cancelEdit()">{{
+              'admin.teamList.cancel' | transloco
+            }}</ap-button>
           }
         </div>
       </form>
@@ -68,30 +72,32 @@
 
     <section class="team-list-page__section">
       <div class="team-list-page__toolbar">
-        <ap-button type="button" variant="ghost" (click)="exportCsv()">Exporter</ap-button>
+        <ap-button type="button" variant="ghost" (click)="exportCsv()">{{
+          'admin.teamList.export' | transloco
+        }}</ap-button>
         <ap-button
           type="button"
           variant="ghost"
           [disabled]="selectedTeamIds().size === 0"
           (click)="deleteSelected()"
         >
-          Supprimer la sélection
+          {{ 'admin.teamList.deleteSelected' | transloco }}
         </ap-button>
       </div>
 
       @if (teams().length === 0) {
-        <p>Aucune équipe pour l'instant.</p>
+        <p>{{ 'admin.teamList.empty' | transloco }}</p>
       } @else {
         <table class="team-list-page__table">
           <thead>
             <tr>
               <th scope="col"></th>
-              <th scope="col">Logo</th>
-              <th scope="col">Nom</th>
-              <th scope="col">Catégorie</th>
-              <th scope="col">Division</th>
-              <th scope="col">Responsable</th>
-              <th scope="col">Actions</th>
+              <th scope="col">{{ 'admin.teamList.table.logo' | transloco }}</th>
+              <th scope="col">{{ 'admin.teamList.table.name' | transloco }}</th>
+              <th scope="col">{{ 'admin.teamList.table.category' | transloco }}</th>
+              <th scope="col">{{ 'admin.teamList.table.division' | transloco }}</th>
+              <th scope="col">{{ 'admin.teamList.table.manager' | transloco }}</th>
+              <th scope="col">{{ 'admin.teamList.table.actions' | transloco }}</th>
             </tr>
           </thead>
           <tbody>
@@ -112,7 +118,10 @@
                       <span class="team-list-page__logo-placeholder" aria-hidden="true"></span>
                     }
                     <label class="team-list-page__logo-upload">
-                      {{ team.logoUrl ? 'Changer' : 'Ajouter' }}
+                      {{
+                        (team.logoUrl ? 'admin.teamList.logoChange' : 'admin.teamList.logoAdd')
+                          | transloco
+                      }}
                       <input
                         type="file"
                         accept="image/png,image/jpeg,image/webp"
@@ -125,7 +134,7 @@
                         class="team-list-page__logo-remove"
                         (click)="removeLogo(team)"
                       >
-                        Retirer
+                        {{ 'admin.teamList.logoRemove' | transloco }}
                       </button>
                     }
                   </span>
@@ -143,13 +152,13 @@
                 <td class="team-list-page__cell team-list-page__actions">
                   <span class="team-list-page__actions-inner">
                     <ap-button type="button" variant="ghost" (click)="startEdit(team)">
-                      Modifier
+                      {{ 'admin.teamList.edit' | transloco }}
                     </ap-button>
                     <ap-button type="button" variant="ghost" (click)="togglePlayers(team)">
-                      Joueurs
+                      {{ 'admin.teamList.players' | transloco }}
                     </ap-button>
                     <ap-button type="button" variant="ghost" (click)="removeTeam(team)">
-                      Supprimer
+                      {{ 'admin.teamList.delete' | transloco }}
                     </ap-button>
                   </span>
                 </td>
@@ -163,35 +172,35 @@
                         <li>
                           {{ player.firstName }} {{ player.lastName }}
                           @if (player.isCaptain) {
-                            <strong>(capitaine)</strong>
+                            <strong>{{ 'admin.teamList.captain' | transloco }}</strong>
                           }
                           <ap-button
                             type="button"
                             variant="ghost"
                             (click)="removePlayer(team, player)"
                           >
-                            Retirer
+                            {{ 'admin.teamList.removePlayer' | transloco }}
                           </ap-button>
                         </li>
                       }
                     </ul>
                     <div class="team-list-page__inline-form">
                       <ap-text-field
-                        label="Prénom"
+                        [label]="'admin.teamList.firstNameLabel' | transloco"
                         [hideLabel]="true"
-                        placeholder="Prénom"
+                        [placeholder]="'admin.teamList.firstNameLabel' | transloco"
                         [value]="newPlayerFirstName()"
                         (valueChange)="onNewPlayerFirstNameChange($event)"
                       />
                       <ap-text-field
-                        label="Nom"
+                        [label]="'admin.teamList.lastNameLabel' | transloco"
                         [hideLabel]="true"
-                        placeholder="Nom"
+                        [placeholder]="'admin.teamList.lastNameLabel' | transloco"
                         [value]="newPlayerLastName()"
                         (valueChange)="onNewPlayerLastNameChange($event)"
                       />
                       <ap-button type="button" variant="ghost" (click)="addPlayer(team)">
-                        Ajouter un joueur
+                        {{ 'admin.teamList.addPlayer' | transloco }}
                       </ap-button>
                     </div>
                   </td>
@@ -204,35 +213,44 @@
     </section>
 
     <section class="team-list-page__section">
-      <h2>Importer des équipes (CSV)</h2>
+      <h2>{{ 'admin.teamList.importTitle' | transloco }}</h2>
       <p class="team-list-page__hint">
-        Colonnes : nom;catégorie;division;responsable;email_responsable;telephone_responsable;logo
-        (toutes optionnelles sauf nom et catégorie). La catégorie et la division doivent déjà
-        exister. Le logo peut être une URL http(s) (téléchargée et enregistrée) ou un chemin
-        /uploads/team-logos/… déjà connu (ex. réimport d'un export précédent).
+        {{ 'admin.teamList.importHint' | transloco }}
       </p>
       <input type="file" accept=".csv,text/csv" (change)="onImportFileSelected($event)" />
       <textarea
         rows="5"
-        placeholder="nom;categorie;division;responsable;email_responsable;telephone_responsable;logo"
+        [placeholder]="'admin.teamList.importPlaceholder' | transloco"
         [value]="importCsv()"
         (input)="onImportCsvChange($event)"
       ></textarea>
-      <ap-button type="button" (click)="runImport()">Importer</ap-button>
+      <ap-button type="button" (click)="runImport()">{{
+        'admin.teamList.import' | transloco
+      }}</ap-button>
 
       @if (importResult(); as result) {
-        <p>{{ result.created.length }} équipe(s) importée(s).</p>
+        <p>{{ 'admin.teamList.importedCount' | transloco: { count: result.created.length } }}</p>
         @if (result.errors.length > 0) {
           <ul class="team-list-page__import-errors">
             @for (error of result.errors; track error.line) {
-              <li>Ligne {{ error.line }} : {{ error.message }}</li>
+              <li>
+                {{
+                  'admin.teamList.lineError'
+                    | transloco: { line: error.line, message: error.message }
+                }}
+              </li>
             }
           </ul>
         }
         @if (result.warnings.length > 0) {
           <ul class="team-list-page__import-warnings">
             @for (warning of result.warnings; track warning.line) {
-              <li>Ligne {{ warning.line }} : {{ warning.message }}</li>
+              <li>
+                {{
+                  'admin.teamList.lineError'
+                    | transloco: { line: warning.line, message: warning.message }
+                }}
+              </li>
             }
           </ul>
         }

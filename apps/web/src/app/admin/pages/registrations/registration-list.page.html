@@ -1,22 +1,22 @@
 <main class="registration-list-page">
-  <h1>Inscriptions et paiements</h1>
+  <h1>{{ 'admin.registrationList.title' | transloco }}</h1>
 
   @if (loading()) {
-    <p>Chargement…</p>
+    <p>{{ 'admin.registrationList.loading' | transloco }}</p>
   } @else if (errorMessage(); as message) {
-    <p class="registration-list-page__error" role="alert">{{ message }}</p>
+    <p class="registration-list-page__error" role="alert">{{ message | transloco }}</p>
   } @else if (registrations().length === 0) {
-    <p>Aucune inscription pour ce tournoi pour le moment.</p>
+    <p>{{ 'admin.registrationList.empty' | transloco }}</p>
   } @else {
     <table class="registration-list-page__table">
       <thead>
         <tr>
-          <th>Équipe</th>
-          <th>Catégorie</th>
-          <th>Responsable</th>
-          <th>Montant</th>
-          <th>Statut</th>
-          <th>Inscrite le</th>
+          <th>{{ 'admin.registrationList.table.team' | transloco }}</th>
+          <th>{{ 'admin.registrationList.table.category' | transloco }}</th>
+          <th>{{ 'admin.registrationList.table.manager' | transloco }}</th>
+          <th>{{ 'admin.registrationList.table.amount' | transloco }}</th>
+          <th>{{ 'admin.registrationList.table.status' | transloco }}</th>
+          <th>{{ 'admin.registrationList.table.registeredAt' | transloco }}</th>
         </tr>
       </thead>
       <tbody>
@@ -39,11 +39,11 @@
             <td class="registration-list-page__cell registration-list-page__cell--status">
               <ap-badge
                 [status]="statusBadge[registration.status]"
-                [label]="statusLabel[registration.status]"
+                [label]="statusLabel(registration.status)"
               />
             </td>
             <td class="registration-list-page__cell registration-list-page__cell--date">
-              {{ registration.createdAt | date: 'short' }}
+              {{ formatRegisteredAt(registration.createdAt) }}
             </td>
           </tr>
         }
