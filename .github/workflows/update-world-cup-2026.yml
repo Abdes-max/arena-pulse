@@ -1,0 +1,36 @@
+# Manual, one-off: updates the existing "Coupe du Monde FIFA 2026" showcase
+# tournament in production with the fields added since it was first seeded
+# (description/rules/practicalInfo, logo) -- see apps/api/prisma/
+# update-world-cup-2026.ts for the details.
+#
+# Runs inside the `api` service (not `migrate`, unlike
+# seed-world-cup-2026.yml) -- this script talks to the uploads volume
+# directly (copying the World Cup emblem already uploaded to the "U11 Super
+# league" tournament), and only `api` has that volume mounted
+# (docker-compose.prod.yml). `api`'s runtime image still has the compiled
+# dist/prisma/*.js scripts (same dist/ as `migrate`'s build stage, just
+# copied into the pruned runtime image), so this doesn't need a rebuild.
+name: Update World Cup 2026 example tournament
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  update:
+    name: Update on Hostinger VPS
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Run update-world-cup-2026.ts inside the api image
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          timeout: 90s
+          command_timeout: 2m
+          script: |
+            set -euo pipefail
+            cd "${{ secrets.DEPLOY_PATH }}"
+            docker compose -f infra/deployment/docker-compose.prod.yml --env-file infra/deployment/.env run --rm -e LOGO_COPY_FROM_NAME="U11 Super league" api node dist/prisma/update-world-cup-2026.js
