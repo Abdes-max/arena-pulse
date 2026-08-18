@@ -1,0 +1,5 @@
+@if (svgMarkup(); as svg) {
+  <div class="ap-qr-code" [style.width.px]="size()" [style.height.px]="size()" [innerHTML]="svg"></div>
+} @else if (failed()) {
+  <div class="ap-qr-code ap-qr-code--failed" [style.width.px]="size()" [style.height.px]="size()"></div>
+}

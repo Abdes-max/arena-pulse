@@ -131,3 +131,72 @@
   // .ap-sr-only, screen-reader-only), nothing to its right to space out.
   vertical-align: -2px;
 }
+
+// No design-system modal component exists yet (checked before building
+// this) -- a plain fixed-position backdrop + centered panel is simplest for
+// a single, one-off use case like this rather than introducing a whole new
+// shared component for it. The backdrop is a sibling of the dialog panel
+// below, not its parent (see the template's own comment on why) -- each
+// positions itself independently against the viewport instead of the panel
+// being centered by its parent's flex layout.
+.tournament-submenu__qr-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  padding: 0;
+  border: none;
+  background: rgb(0 0 0 / 50%);
+  cursor: pointer;
+}
+
+.tournament-submenu__qr-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 101;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ap-space-4);
+  padding: var(--ap-space-6);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-lg);
+  max-width: 320px;
+  width: calc(100% - var(--ap-space-8));
+}
+
+.tournament-submenu__qr-title {
+  margin: 0;
+  font-family: var(--ap-font-heading);
+  font-size: 1.1rem;
+  color: var(--ap-color-fg);
+  text-align: center;
+}
+
+// The QR code is always black-on-white (see ap-qr-code's own doc comment
+// on why) -- a light padded frame keeps it legible even against a dark
+// theme's own --ap-color-surface, which could otherwise sit flush against
+// the code's white background with no visual separation.
+.tournament-submenu__qr-code {
+  padding: var(--ap-space-3);
+  background: #fff;
+  border-radius: var(--ap-radius-md);
+}
+
+.tournament-submenu__qr-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-3);
+}
+
+.tournament-submenu__qr-download {
+  padding: var(--ap-space-2) var(--ap-space-4);
+  border-radius: var(--ap-radius-md);
+  background: var(--ap-color-primary);
+  color: var(--ap-color-on-primary);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+}

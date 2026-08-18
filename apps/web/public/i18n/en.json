@@ -358,7 +358,11 @@
       "schedule": "Schedule",
       "scores": "Scores",
       "standings": "Standings",
-      "publicLink": "Public link"
+      "publicLink": "Public link",
+      "qrCode": "QR code",
+      "qrCodeDialogTitle": "Tournament QR code",
+      "downloadQrCode": "Download",
+      "close": "Close"
     },
     "auth": {
       "login": {

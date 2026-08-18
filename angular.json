@@ -33,7 +33,13 @@
             "styles": ["apps/web/src/styles.scss"],
             "stylePreprocessorOptions": {
               "includePaths": ["libs/design-tokens/src/styles"]
-            }
+            },
+            // ap-qr-code (design-system) depends on the `qrcode` npm
+            // package, which still ships as CommonJS -- acknowledged here
+            // rather than left as a build warning. No tree-shaking loss in
+            // practice: it's a small, self-contained module with no further
+            // CJS dependencies of its own to cascade the same warning from.
+            "allowedCommonJsDependencies": ["qrcode"]
           },
           "configurations": {
             "production": {

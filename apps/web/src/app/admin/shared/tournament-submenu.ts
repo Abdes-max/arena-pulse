@@ -6,13 +6,14 @@ import {
   computed,
   inject,
   input,
+  signal,
   viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { filter } from 'rxjs';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { Button } from 'design-system';
+import { Button, QrCode } from 'design-system';
 
 /**
  * The tab-style sub-navigation for a single tournament's admin pages
@@ -22,15 +23,16 @@ import { Button } from 'design-system';
  * through the tournament form each time. Plain routerLink anchors (same
  * compact underline/pill treatment as the public site's own tournament nav)
  * rather than a row of `ap-button`s, which took up more horizontal space
- * than seven tabs can afford. The "Lien public" button on the right is the
- * one exception -- how the organizer jumps to what a visitor actually sees
- * for this tournament -- but icon-only (`.ap-sr-only` text for screen
- * readers) since even that one button crowded the row on a phone, where
- * seven scrollable tabs already compete for width.
+ * than seven tabs can afford. The "Lien public" and QR code buttons on the
+ * right are the exception -- how the organizer jumps to (or hands someone
+ * a scannable way into) what a visitor actually sees for this tournament --
+ * but icon-only (`.ap-sr-only` text for screen readers) since even those
+ * two buttons crowded the row on a phone, where seven scrollable tabs
+ * already compete for width.
  */
 @Component({
   selector: 'app-tournament-submenu',
-  imports: [RouterLink, RouterLinkActive, Button, TranslocoPipe],
+  imports: [RouterLink, RouterLinkActive, Button, TranslocoPipe, QrCode],
   templateUrl: './tournament-submenu.html',
   styleUrl: './tournament-submenu.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -52,6 +54,26 @@ export class TournamentSubmenu {
     const slug = this.slug();
     return slug && this.published() ? `/${slug}` : null;
   });
+
+  // The QR code needs a full, scannable URL -- unlike publicUrl above,
+  // which is only ever bound to an <a href> (resolved relative to the
+  // current page by the browser itself, so a path-only value is fine
+  // there), a code scanned by some other device has no "current page" to
+  // resolve a relative path against.
+  protected readonly publicAbsoluteUrl = computed(() => {
+    const path = this.publicUrl();
+    return path ? `${window.location.origin}${path}` : null;
+  });
+
+  protected readonly qrDialogOpen = signal(false);
+
+  protected openQrDialog(): void {
+    this.qrDialogOpen.set(true);
+  }
+
+  protected closeQrDialog(): void {
+    this.qrDialogOpen.set(false);
+  }
 
   private readonly nav = viewChild.required<ElementRef<HTMLElement>>('nav');
   private readonly router = inject(Router);

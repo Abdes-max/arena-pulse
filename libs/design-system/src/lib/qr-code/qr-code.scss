@@ -1,0 +1,18 @@
+:host {
+  display: inline-block;
+}
+
+.ap-qr-code {
+  display: block;
+  border-radius: var(--ap-radius-md);
+  overflow: hidden;
+  // The library's generated SVG already carries width/height attributes
+  // matching `size()` (see qr-code.ts) -- content injected via [innerHTML]
+  // bypasses Angular's view encapsulation entirely, so styling it directly
+  // from here isn't possible without ::ng-deep; sizing it at generation
+  // time avoids needing that.
+}
+
+.ap-qr-code--failed {
+  background: var(--ap-color-signal-soft);
+}
