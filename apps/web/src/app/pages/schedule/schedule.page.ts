@@ -8,12 +8,14 @@ import {
 } from '@angular/core';
 import { MatchCard, MatchCardTeam, MatchCardVariant, Tabs, TextField } from 'design-system';
 import { AssetUrlService, PublicApiService } from 'api-client';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { LanguageService } from 'design-tokens';
 import { TournamentContextService } from '../../core/tournament-context.service';
-import { Category, CompetitionPhase, Match, roundLabel } from 'shared-models';
+import { Category, CompetitionPhase, Match, RoundLabelLang, roundLabel } from 'shared-models';
 
 @Component({
   selector: 'app-schedule-page',
-  imports: [MatchCard, Tabs, TextField],
+  imports: [MatchCard, Tabs, TextField, TranslocoPipe],
   templateUrl: './schedule.page.html',
   styleUrl: './schedule.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -22,6 +24,8 @@ export class SchedulePage {
   private readonly api = inject(PublicApiService);
   private readonly context = inject(TournamentContextService);
   private readonly assetUrl = inject(AssetUrlService);
+  private readonly languageService = inject(LanguageService);
+  private readonly transloco = inject(TranslocoService);
 
   protected readonly loading = signal(true);
   protected readonly categories = signal<Category[]>([]);
@@ -46,7 +50,7 @@ export class SchedulePage {
       // shown on screen whenever a match falls near local midnight.
       const key = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
       const entry = days.get(key) ?? {
-        label: date.toLocaleDateString('fr-FR', {
+        label: date.toLocaleDateString(this.languageService.language(), {
           weekday: 'long',
           day: 'numeric',
           month: 'long',
@@ -180,7 +184,10 @@ export class SchedulePage {
   }
 
   protected formatKickoff(startTime: string): string {
-    return new Date(startTime).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' });
+    return new Date(startTime).toLocaleString(this.languageService.language(), {
+      dateStyle: 'short',
+      timeStyle: 'short',
+    });
   }
 
   protected teamCardInput(
@@ -193,13 +200,14 @@ export class SchedulePage {
   }
 
   protected competitionLabel(match: Match): string {
+    const lang = this.languageService.language() as RoundLabelLang;
     if (match.isThirdPlaceMatch) {
-      return 'Pour la 3e place';
+      return this.transloco.translate('home.competition.thirdPlace', {}, lang);
     }
     const totalRounds = this.selectedPhaseTotalRounds();
     if (match.knockoutBracketId && totalRounds !== null) {
-      return roundLabel(totalRounds - match.round);
+      return roundLabel(totalRounds - match.round, lang);
     }
-    return `Round ${match.round}`;
+    return this.transloco.translate('home.competition.round', { round: match.round }, lang);
   }
 }

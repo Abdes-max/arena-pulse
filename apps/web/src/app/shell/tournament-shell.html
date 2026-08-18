@@ -1,27 +1,36 @@
 @if (loading()) {
-  <p class="tournament-shell__status">Chargement…</p>
+  <p class="tournament-shell__status">{{ 'shell.loading' | transloco }}</p>
 } @else if (errorMessage(); as message) {
   <p class="tournament-shell__status tournament-shell__status--error" role="alert">
-    {{ message }}
+    {{ message | transloco }}
   </p>
 } @else if (tournament(); as t) {
-  <a class="skip-link" href="#main-content" (click)="focusMainContent($event)"
-    >Aller au contenu principal</a
-  >
+  <a class="skip-link" href="#main-content" (click)="focusMainContent($event)">{{
+    'shell.skipLink' | transloco
+  }}</a>
 
   <header class="tournament-shell__hero">
     <div class="tournament-shell__hero-inner">
       <div class="tournament-shell__sport-row">
         <div class="tournament-shell__sport-group">
-          <a class="tournament-shell__back" routerLink="/" aria-label="Rechercher un autre tournoi">
+          <a
+            class="tournament-shell__back"
+            routerLink="/"
+            [attr.aria-label]="'shell.backAria' | transloco"
+          >
             <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
               <path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
             </svg>
-            <span>Autres tournois</span>
+            <span>{{ 'shell.back' | transloco }}</span>
           </a>
           <p class="tournament-shell__sport">{{ t.sportName }}</p>
         </div>
         <div class="tournament-shell__actions">
+          <ap-language-switcher
+            [language]="language()"
+            [languages]="languages"
+            (languageChange)="onLanguageChange($event)"
+          />
           <ap-share-button [title]="t.name" [text]="shareText()" [url]="shareUrl()" />
           <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
         </div>
@@ -39,7 +48,7 @@
         @if (t.venues.length > 0) {
           <span>
             {{ t.venues.length }}
-            {{ t.venues.length > 1 ? 'lieux' : 'lieu' }}
+            {{ (t.venues.length > 1 ? 'shell.venues' : 'shell.venue') | transloco }}
           </span>
         }
       </p>
@@ -51,11 +60,17 @@
         [routerLinkActiveOptions]="{ exact: true }"
         routerLinkActive="tournament-shell__nav-link--active"
       >
-        Tournoi
+        {{ 'shell.nav.tournament' | transloco }}
       </a>
-      <a routerLink="team" routerLinkActive="tournament-shell__nav-link--active">Équipes</a>
-      <a routerLink="standings" routerLinkActive="tournament-shell__nav-link--active">Classement</a>
-      <a routerLink="schedule" routerLinkActive="tournament-shell__nav-link--active">Calendrier</a>
+      <a routerLink="team" routerLinkActive="tournament-shell__nav-link--active">{{
+        'shell.nav.teams' | transloco
+      }}</a>
+      <a routerLink="standings" routerLinkActive="tournament-shell__nav-link--active">{{
+        'shell.nav.standings' | transloco
+      }}</a>
+      <a routerLink="schedule" routerLinkActive="tournament-shell__nav-link--active">{{
+        'shell.nav.schedule' | transloco
+      }}</a>
     </nav>
   </header>
 

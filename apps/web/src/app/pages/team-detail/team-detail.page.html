@@ -1,7 +1,7 @@
 @if (loading()) {
-  <p>Chargement…</p>
+  <p>{{ 'shell.loading' | transloco }}</p>
 } @else if (errorMessage(); as message) {
-  <p class="team-detail-page__error" role="alert">{{ message }}</p>
+  <p class="team-detail-page__error" role="alert">{{ message | transloco }}</p>
 } @else if (team(); as t) {
   <div class="team-detail-page__header">
     @if (assetUrl.resolve(t.logoUrl); as logo) {
@@ -18,36 +18,44 @@
 
   @if (t.standing; as standing) {
     <section class="team-detail-page__section">
-      <h3>Classement de poule</h3>
+      <h3>{{ 'teamDetail.groupStanding' | transloco }}</h3>
       <div class="team-detail-page__stats">
         <div class="team-detail-page__stat">
           <span class="team-detail-page__stat-value">{{ standing.position }}</span>
-          <span class="team-detail-page__stat-label">Position</span>
+          <span class="team-detail-page__stat-label">{{ 'teamDetail.position' | transloco }}</span>
         </div>
         <div class="team-detail-page__stat">
           <span class="team-detail-page__stat-value">{{ standing.played }}</span>
-          <span class="team-detail-page__stat-label">Joués</span>
+          <span class="team-detail-page__stat-label">{{
+            'standings.table.playedFull' | transloco
+          }}</span>
         </div>
         <div class="team-detail-page__stat">
           <span class="team-detail-page__stat-value"
             >{{ standing.won }} / {{ standing.drawn }} / {{ standing.lost }}</span
           >
-          <span class="team-detail-page__stat-label">V / N / D</span>
+          <span class="team-detail-page__stat-label">{{ 'teamDetail.wdl' | transloco }}</span>
         </div>
         <div class="team-detail-page__stat">
           <span class="team-detail-page__stat-value"
             >{{ standing.goalsFor }} - {{ standing.goalsAgainst }}</span
           >
-          <span class="team-detail-page__stat-label">Buts ({{ standing.goalDifference }})</span>
+          <span class="team-detail-page__stat-label"
+            >{{ 'teamDetail.goals' | transloco }} ({{ standing.goalDifference }})</span
+          >
         </div>
         <div class="team-detail-page__stat team-detail-page__stat--highlight">
           <span class="team-detail-page__stat-value">{{ standing.points }}</span>
-          <span class="team-detail-page__stat-label">Points</span>
+          <span class="team-detail-page__stat-label">{{
+            'standings.table.pointsFull' | transloco
+          }}</span>
         </div>
         <div class="team-detail-page__stat">
           <span class="team-detail-page__stat-value">{{ standing.rating | number: '1.0-0' }}</span>
           <span class="team-detail-page__stat-label"
-            >Rating{{ standing.isProvisional ? ' (provisoire)' : '' }}</span
+            >Rating{{
+              standing.isProvisional ? ' (' + ('standings.provisional' | transloco) + ')' : ''
+            }}</span
           >
         </div>
       </div>
@@ -56,7 +64,7 @@
 
   @if (upcomingMatches().length > 0) {
     <section class="team-detail-page__section">
-      <h3>À venir</h3>
+      <h3>{{ 'teamDetail.upcoming' | transloco }}</h3>
       <div class="team-detail-page__matches">
         @for (match of upcomingMatches(); track match.id) {
           <ap-match-card
@@ -74,12 +82,14 @@
 
   @if (playedMatches().length > 0) {
     <section class="team-detail-page__section">
-      <h3>Joués</h3>
+      <h3>{{ 'standings.table.playedFull' | transloco }}</h3>
       <div class="team-detail-page__matches">
         @for (match of playedMatches(); track match.id) {
           @if (match.status === 'FORFEITED') {
             <p class="team-detail-page__forfeit">
-              Forfait : {{ match.forfeitedTeam?.name }} ({{ competitionLabel(match) }})
+              {{ 'schedule.forfeit' | transloco }}: {{ match.forfeitedTeam?.name }} ({{
+                competitionLabel(match)
+              }})
             </p>
           } @else {
             <ap-match-card
@@ -98,6 +108,6 @@
   }
 
   @if (upcomingMatches().length === 0 && playedMatches().length === 0) {
-    <p class="team-detail-page__empty">Aucun match planifié pour cette équipe.</p>
+    <p class="team-detail-page__empty">{{ 'teamDetail.noMatches' | transloco }}</p>
   }
 }

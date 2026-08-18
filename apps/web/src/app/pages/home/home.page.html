@@ -1,14 +1,14 @@
 @if (tournament(); as t) {
   @if (t.description) {
     <section class="home-page__section">
-      <h2>Description</h2>
+      <h2>{{ 'home.sections.description' | transloco }}</h2>
       <p class="home-page__text">{{ t.description }}</p>
     </section>
   }
 
   @if (upcomingMatches().length > 0) {
     <section class="home-page__section">
-      <h2>Prochains matchs</h2>
+      <h2>{{ 'home.sections.upcomingMatches' | transloco }}</h2>
       <div class="home-page__upcoming">
         @for (match of upcomingMatches(); track match.id; let first = $first) {
           <ap-match-card
@@ -26,7 +26,7 @@
 
   @if (categories().length > 0) {
     <section class="home-page__section">
-      <h2>Catégories</h2>
+      <h2>{{ 'home.sections.categories' | transloco }}</h2>
       <ul class="home-page__categories">
         @for (category of categories(); track category.id) {
           <li>{{ category.name }}</li>
@@ -37,14 +37,14 @@
 
   @if (t.rules) {
     <section class="home-page__section">
-      <h2>Règlement</h2>
+      <h2>{{ 'home.sections.rules' | transloco }}</h2>
       <p class="home-page__text">{{ t.rules }}</p>
     </section>
   }
 
   @if (t.venues.length > 0 || t.practicalInfo) {
     <section class="home-page__section">
-      <h2>Infos pratiques</h2>
+      <h2>{{ 'home.sections.practicalInfo' | transloco }}</h2>
       @if (t.practicalInfo) {
         <p class="home-page__text">{{ t.practicalInfo }}</p>
       }
@@ -84,7 +84,7 @@
 
   @if (t.sponsors.length > 0) {
     <section class="home-page__section">
-      <h2>Sponsors</h2>
+      <h2>{{ 'home.sections.sponsors' | transloco }}</h2>
       <div class="home-page__sponsors">
         @for (sponsor of t.sponsors; track sponsor.id) {
           @if (sponsor.linkUrl) {
@@ -109,5 +109,5 @@
     </section>
   }
 } @else {
-  <p>Chargement…</p>
+  <p>{{ 'shell.loading' | transloco }}</p>
 }

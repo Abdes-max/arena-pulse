@@ -2,12 +2,14 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { RouterLink } from '@angular/router';
 import { Tabs, TextField } from 'design-system';
 import { AssetUrlService, PublicApiService } from 'api-client';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { LanguageService } from 'design-tokens';
 import { TournamentContextService } from '../../core/tournament-context.service';
 import { Category, PublicTeam } from 'shared-models';
 
 @Component({
   selector: 'app-team-search-page',
-  imports: [RouterLink, Tabs, TextField],
+  imports: [RouterLink, Tabs, TextField, TranslocoPipe],
   templateUrl: './team-search.page.html',
   styleUrl: './team-search.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -16,6 +18,9 @@ export class TeamSearchPage {
   private readonly api = inject(PublicApiService);
   private readonly context = inject(TournamentContextService);
   protected readonly assetUrl = inject(AssetUrlService);
+  private readonly languageService = inject(LanguageService);
+  private readonly transloco = inject(TranslocoService);
+  protected readonly language = this.languageService.language;
 
   protected readonly loading = signal(true);
   protected readonly categories = signal<Category[]>([]);
@@ -50,7 +55,7 @@ export class TeamSearchPage {
   }
 
   protected readonly categoryOptions = computed(() => [
-    { value: '', label: 'Toutes' },
+    { value: '', label: this.transloco.translate('teamSearch.allCategories', {}, this.language()) },
     ...this.categories().map((category) => ({ value: category.id, label: category.name })),
   ]);
 

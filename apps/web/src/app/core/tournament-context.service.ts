@@ -16,6 +16,8 @@ export class TournamentContextService implements OnDestroy {
   readonly slug = signal('');
   readonly tournament = signal<PublicTournament | null>(null);
   readonly loading = signal(true);
+  // Holds a Transloco *key*, not the translated text -- resolved in the
+  // template (`| transloco`) so it stays reactive to a language switch.
   readonly errorMessage = signal<string | null>(null);
 
   /**
@@ -37,7 +39,7 @@ export class TournamentContextService implements OnDestroy {
       this.stream.connect(`${environment.apiUrl}/public/tournaments/${slug}/events`);
     } catch {
       this.tournament.set(null);
-      this.errorMessage.set("Ce tournoi n'existe pas ou n'est pas publié.");
+      this.errorMessage.set('shell.error.notFound');
     } finally {
       this.loading.set(false);
     }

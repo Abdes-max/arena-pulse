@@ -17,15 +17,17 @@ import {
   Tabs,
 } from 'design-system';
 import { AssetUrlService, PublicApiService } from 'api-client';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { LanguageService } from 'design-tokens';
 import { TournamentContextService } from '../../core/tournament-context.service';
 import {
   BracketView,
   Category,
   CompetitionPhase,
-  FinalRankingRow,
   Match,
   Qualification,
   QualificationTierColor,
+  RoundLabelLang,
   Standings,
   buildBracketView,
   computeFinalRanking,
@@ -76,7 +78,7 @@ interface PagerDragState {
 
 @Component({
   selector: 'app-standings-page',
-  imports: [Badge, BracketMatch, MatchCard, DecimalPipe, Tabs],
+  imports: [Badge, BracketMatch, MatchCard, DecimalPipe, Tabs, TranslocoPipe],
   templateUrl: './standings.page.html',
   styleUrl: './standings.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -86,6 +88,9 @@ export class StandingsPage {
   private readonly context = inject(TournamentContextService);
   private readonly assetUrl = inject(AssetUrlService);
   private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
+  private readonly languageService = inject(LanguageService);
+  private readonly transloco = inject(TranslocoService);
+  protected readonly language = this.languageService.language;
 
   protected readonly loading = signal(true);
   protected readonly categories = signal<Category[]>([]);
@@ -94,8 +99,28 @@ export class StandingsPage {
   protected readonly selectedTab = signal<string>('');
 
   protected readonly groupStandingsByPhase = signal<Map<string, GroupStandings[]>>(new Map());
-  protected readonly bracketByPhase = signal<Map<string, BracketView>>(new Map());
-  protected readonly finalRanking = signal<FinalRankingRow[]>([]);
+  // Raw fetched data, kept separate from its presentation -- bracketByPhase/
+  // finalRanking below are *computed* from this plus the active language, so
+  // a language switch re-labels an already-loaded bracket/ranking locally
+  // (buildBracketView/computeFinalRanking are pure formatting, no network
+  // call) instead of re-fetching from the API just to get new round names.
+  private readonly bracketRawByPhase = signal<
+    Map<string, { matches: Match[]; totalRounds: number }>
+  >(new Map());
+  private readonly finalRankingRaw = signal<{ phase: CompetitionPhase; matches: Match[] }[]>([]);
+
+  protected readonly bracketByPhase = computed(() => {
+    const lang = this.language() as RoundLabelLang;
+    const map = new Map<string, BracketView>();
+    for (const [phaseId, raw] of this.bracketRawByPhase()) {
+      map.set(phaseId, buildBracketView(raw.matches, raw.totalRounds, lang));
+    }
+    return map;
+  });
+
+  protected readonly finalRanking = computed(() =>
+    computeFinalRanking(this.finalRankingRaw(), this.language() as RoundLabelLang),
+  );
 
   // Round-pager position for the mobile-width bracket view below (one per
   // bracket phase) -- mirrors apps/mobile's own standings.page, kept
@@ -139,7 +164,14 @@ export class StandingsPage {
   protected readonly tabs = computed(() => [
     ...this.groupStagePhases().map((phase) => ({ value: phase.id, label: phase.name })),
     ...this.knockoutPhases().map((phase) => ({ value: phase.id, label: phase.name })),
-    ...(this.knockoutPhases().length > 0 ? [{ value: 'final', label: 'Classement final' }] : []),
+    ...(this.knockoutPhases().length > 0
+      ? [
+          {
+            value: 'final',
+            label: this.transloco.translate('standings.finalRankingTab', {}, this.language()),
+          },
+        ]
+      : []),
   ]);
 
   // Quick-jump row above the connected bracket tree, and also this bracket's
@@ -160,12 +192,17 @@ export class StandingsPage {
     // value differs from the currently bound one, so toggling accordion
     // focus back off needs its own option rather than relying on a
     // click-to-deselect gesture on the same tab.
-    const options = [{ value: '', label: 'Vue complète' }];
+    const options = [
+      { value: '', label: this.transloco.translate('standings.fullView', {}, this.language()) },
+    ];
     options.push(
       ...bracket.rounds.map((round) => ({ value: String(round.round), label: round.label })),
     );
     if (bracket.thirdPlaceMatch) {
-      options.push({ value: 'third', label: 'Pour la 3e place' });
+      options.push({
+        value: 'third',
+        label: this.transloco.translate('home.competition.thirdPlace', {}, this.language()),
+      });
     }
     return options;
   });
@@ -269,14 +306,14 @@ export class StandingsPage {
     }
     this.groupStandingsByPhase.set(groupStandings);
 
-    const bracketByPhase = new Map<string, BracketView>();
+    const bracketRawByPhase = new Map<string, { matches: Match[]; totalRounds: number }>();
     const knockoutPhases = phases.filter((p) => p.type === 'KNOCKOUT' && p.knockoutBracket);
     for (const phase of knockoutPhases) {
       const matches = await this.api.listBracketMatches(slug, phase.knockoutBracket!.id);
       const totalRounds = Math.log2(phase.knockoutBracket!.size);
-      bracketByPhase.set(phase.id, buildBracketView(matches, totalRounds));
+      bracketRawByPhase.set(phase.id, { matches, totalRounds });
     }
-    this.bracketByPhase.set(bracketByPhase);
+    this.bracketRawByPhase.set(bracketRawByPhase);
     this.pageIndexByPhase.set({});
 
     if (knockoutPhases.length > 0) {
@@ -286,9 +323,9 @@ export class StandingsPage {
           matches: await this.api.listBracketMatches(slug, phase.knockoutBracket!.id),
         })),
       );
-      this.finalRanking.set(computeFinalRanking(allBracketMatches));
+      this.finalRankingRaw.set(allBracketMatches);
     } else {
-      this.finalRanking.set([]);
+      this.finalRankingRaw.set([]);
     }
 
     const tabs = this.tabs();
@@ -362,7 +399,7 @@ export class StandingsPage {
     if (bracket.thirdPlaceMatch && pages.length > 0) {
       pages[pages.length - 1].cards.push({
         match: bracket.thirdPlaceMatch,
-        cardLabel: 'Pour la 3e place',
+        cardLabel: this.transloco.translate('home.competition.thirdPlace', {}, this.language()),
       });
     }
     return pages;
@@ -468,7 +505,10 @@ export class StandingsPage {
   }
 
   protected formatKickoff(startTime: string): string {
-    return new Date(startTime).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' });
+    return new Date(startTime).toLocaleString(this.language(), {
+      dateStyle: 'short',
+      timeStyle: 'short',
+    });
   }
 
   protected teamCardInput(

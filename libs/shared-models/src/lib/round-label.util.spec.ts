@@ -128,4 +128,45 @@ describe('round-label.util', () => {
       expect(sections[1].matches.map((m) => m.id)).toEqual(['third']);
     });
   });
+
+  describe('lang parameter', () => {
+    it('names rounds in English using the "Round of N" (team-count) convention', () => {
+      expect(roundLabel(0, 'en')).toBe('Final');
+      expect(roundLabel(1, 'en')).toBe('Semi-final');
+      expect(roundLabel(2, 'en')).toBe('Quarter-final');
+      expect(roundLabel(3, 'en')).toBe('Round of 16');
+      expect(roundLabel(6, 'en')).toBe('Round of 128');
+      // Beyond the named table: fromEnd=7 -> 2^(7+1) = 256 teams.
+      expect(roundLabel(7, 'en')).toBe('Round of 256');
+    });
+
+    it('names rounds in German using compound words', () => {
+      expect(roundLabel(1, 'de')).toBe('Halbfinale');
+      expect(roundLabel(2, 'de')).toBe('Viertelfinale');
+      expect(roundLabel(3, 'de')).toBe('Achtelfinale');
+    });
+
+    it('names rounds in Spanish/Italian/Portuguese with the Romance "de final" pattern', () => {
+      expect(roundLabel(2, 'es')).toBe('Cuartos de final');
+      expect(roundLabel(2, 'it')).toBe('Quarti di finale');
+      expect(roundLabel(2, 'pt')).toBe('Quartos de final');
+    });
+
+    it('defaults to French when no lang is given, unchanged from before this parameter existed', () => {
+      expect(roundLabel(2)).toBe('Quart de finale');
+      expect(roundLabelPlural(2)).toBe('Quarts de finale');
+      expect(eliminatedAtLabel(2)).toBe('Quart de finaliste éliminé');
+    });
+
+    it('translates the group-stage section label', () => {
+      const phase: Pick<CompetitionPhase, 'type' | 'knockoutBracket'> = {
+        type: 'GROUP_STAGE',
+        knockoutBracket: null,
+      };
+      const matches = [match({ id: 'a', round: 1 })];
+      expect(groupMatchesByPhaseSection(phase, matches, 'en')).toEqual([
+        { label: 'Group stage', matches },
+      ]);
+    });
+  });
 });

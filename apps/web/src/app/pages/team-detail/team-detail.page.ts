@@ -10,12 +10,14 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { MatchCard, MatchCardTeam, MatchCardVariant } from 'design-system';
 import { AssetUrlService, PublicApiService } from 'api-client';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { LanguageService } from 'design-tokens';
 import { TournamentContextService } from '../../core/tournament-context.service';
-import { PublicTeamDetail, roundLabel } from 'shared-models';
+import { PublicTeamDetail, RoundLabelLang, roundLabel } from 'shared-models';
 
 @Component({
   selector: 'app-team-detail-page',
-  imports: [DecimalPipe, MatchCard],
+  imports: [DecimalPipe, MatchCard, TranslocoPipe],
   templateUrl: './team-detail.page.html',
   styleUrl: './team-detail.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,8 +27,13 @@ export class TeamDetailPage {
   private readonly api = inject(PublicApiService);
   private readonly context = inject(TournamentContextService);
   protected readonly assetUrl = inject(AssetUrlService);
+  private readonly languageService = inject(LanguageService);
+  private readonly transloco = inject(TranslocoService);
+  protected readonly language = this.languageService.language;
 
   protected readonly loading = signal(true);
+  // A Transloco *key*, not the translated text -- see tournament-shell.ts's
+  // identical errorMessage for why (stays reactive to a language switch).
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly team = signal<PublicTeamDetail | null>(null);
 
@@ -56,7 +63,7 @@ export class TeamDetailPage {
     try {
       this.team.set(await this.api.getTeam(slug, teamId));
     } catch {
-      this.errorMessage.set('Impossible de charger cette équipe.');
+      this.errorMessage.set('teamDetail.loadError');
     } finally {
       this.loading.set(false);
     }
@@ -78,16 +85,20 @@ export class TeamDetailPage {
   }
 
   protected formatKickoff(startTime: string): string {
-    return new Date(startTime).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' });
+    return new Date(startTime).toLocaleString(this.language(), {
+      dateStyle: 'short',
+      timeStyle: 'short',
+    });
   }
 
   protected competitionLabel(match: PublicTeamDetail['matches'][number]): string {
+    const lang = this.language() as RoundLabelLang;
     if (match.isThirdPlaceMatch) {
-      return 'Pour la 3e place';
+      return this.transloco.translate('home.competition.thirdPlace', {}, lang);
     }
     if (match.knockoutBracketId && match.knockoutTotalRounds !== null) {
-      return roundLabel(match.knockoutTotalRounds - match.round);
+      return roundLabel(match.knockoutTotalRounds - match.round, lang);
     }
-    return `Poule — round ${match.round}`;
+    return this.transloco.translate('teamDetail.poolRound', { round: match.round }, lang);
   }
 }
