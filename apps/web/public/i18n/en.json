@@ -529,7 +529,12 @@
         "title": "Publication payment",
         "loading": "Loading…",
         "never": "This tournament has never been published.",
-        "table": { "date": "Date", "teams": "Teams", "amount": "Amount", "status": "Status" },
+        "table": {
+          "date": "Date",
+          "teams": "Teams",
+          "amount": "Amount",
+          "status": "Status"
+        },
         "paid": "Paid",
         "pending": "Pending",
         "print": "Print"
@@ -737,6 +742,138 @@
       },
       "errors": {
         "load": "Unable to load registrations."
+      }
+    },
+    "structure": {
+      "title": "Competition structure",
+      "loading": "Loading…",
+      "addCategoryFirst": "Add a category first on the tournament page.",
+      "categoryLabel": "Category",
+      "doubleRoundRobinLabel": "Home and away matches",
+      "typeGroupStage": "Pools",
+      "typeKnockout": "Knockout",
+      "rankingMatchLabel": "Third-place match",
+      "removeLabel": "Remove",
+      "deleteLabel": "Delete",
+      "saveLabel": "Save",
+      "targetPhaseLabel": "Target phase",
+      "positionLabel": "Position",
+      "preset": {
+        "title": "Tournament Mode",
+        "formatLabel": "Format",
+        "format": {
+          "poolsOnly": "Pools only (league)",
+          "poolsAndKnockout": "Pools + knockout",
+          "knockoutOnly": "Knockout only"
+        },
+        "intro": {
+          "poolsOnly": "Sets up a pool-based league (round-robin), with no knockout final phase, from the teams already created in this category.",
+          "knockoutOnly": "Sets up a knockout bracket directly from the teams already created in this category, with no pool stage.",
+          "poolsAndKnockout": "Sets up both the pools and the knockout bracket at once, from the teams already created in this category."
+        },
+        "unassignedAvailable": "{{count}} unassigned team(s) available here.",
+        "noUnassigned": "No unassigned teams yet — add some first on the Teams page.",
+        "poolsTitle": "Pools",
+        "teamCountLabel": "Number of teams",
+        "poolCountLabel": "Number of pools",
+        "multiTierLabel": "Qualify to several competitions",
+        "bestOfPositionLabel": "Include the best-ranked teams at one position",
+        "qualifiersPerPoolLabel": "Qualifiers per pool",
+        "tierNameLabel": "Tier name",
+        "tierNamePlaceholder": "Tier name (e.g. Champions League)",
+        "addTier": "Add a tier",
+        "bestCountLabel": "Number of best-ranked teams",
+        "bestOfPositionHint": "The {{count}} best teams ranked {{position}}th in their pool, compared against each other, join the first tier's bracket.",
+        "knockoutNameLabel": "Bracket name",
+        "knockoutNamePlaceholder": "Final bracket",
+        "tierBracketSize": "{{name}}: {{size}} teams.",
+        "defaultTierName": "Final bracket",
+        "defaultTierNameIndexed": "Tier {{index}}",
+        "tierSummaryItem": "{{name}} ({{size}} teams)",
+        "successPoolsOnly": "Structure generated: {{poolCount}} pools. Head to the Schedule page to plan the pool matches.",
+        "successKnockoutOnly": "Structure generated: {{tiersSummary}}. Head to the Schedule page to plan the bracket matches.",
+        "successMixed": "Structure generated: {{poolCount}} pools, {{tiersSummary}}. Head to the Schedule page to plan the pool and knockout matches.",
+        "errors": {
+          "knockoutNotPowerOfTwo": "For a knockout-only bracket, the number of teams must be a power of 2 (2, 4, 8, 16…) — {{teamCount}} team(s) doesn't work.",
+          "unassignedMismatch": "{{found}} unassigned team(s) found in this category, {{expected}} expected.",
+          "poolsExceedTeams": "The number of pools can't exceed the number of teams.",
+          "tooManyQualifiersForSmallestPool": "With {{teamCount}} teams split into {{poolCount}} pools, the smallest pool only has {{smallestPoolSize}} team(s) — impossible to qualify {{totalQualifiers}} in total across the tiers.",
+          "bestOfPositionExceedsPools": "Unable to qualify {{bestCount}} best-ranked team(s) at position {{bestPosition}}: there are only {{poolCount}} pool(s).",
+          "bestOfPositionOverlapsDirect": "Position {{bestPosition}} for the best-ranked teams overlaps the direct qualifiers (positions 1 to {{totalQualifiers}}) — choose a strictly higher position.",
+          "bestOfPositionNotInSmallestPool": "Position {{bestPosition}} doesn't exist in every pool — the smallest pool only has {{smallestPoolSize}} team(s).",
+          "tierBracketNotPowerOfTwo": "Tier \"{{tierName}}\": {{poolCount}} pool(s) × {{qualifiers}} qualifier(s) = {{bracketSize}} qualified team(s) — this number must be a power of 2 (2, 4, 8, 16…) to form a knockout bracket.",
+          "tierBracketNotPowerOfTwoWithBest": "Tier \"{{tierName}}\": {{poolCount}} pool(s) × {{qualifiers}} qualifier(s) + {{bestCount}} best-ranked team(s) = {{bracketSize}} qualified team(s) — this number must be a power of 2 (2, 4, 8, 16…) to form a knockout bracket.",
+          "generic": "Unable to generate the structure."
+        }
+      },
+      "addPhase": {
+        "title": "Add a phase",
+        "nameLabel": "Phase name",
+        "namePlaceholder": "Phase name (e.g. Pool stage)",
+        "typeLabel": "Phase type",
+        "add": "Add the phase"
+      },
+      "phase": {
+        "removePhase": "Delete phase",
+        "standingRule": {
+          "title": "Points scale",
+          "hint": "Applies to every pool in this phase.",
+          "winLabel": "Win",
+          "drawLabel": "Draw",
+          "lossLabel": "Loss",
+          "supplementaryLabel": "Supplementary standing (fair play)",
+          "penaltyShootoutLabel": "Penalty shootout on a tie",
+          "tieBreakHint": "Tie-break criteria: {{order}}"
+        },
+        "qualification": {
+          "title": "Qualification rules",
+          "hint": "Applies to every pool in this phase.",
+          "ruleRow": "Positions {{from}}–{{to}} → {{target}}",
+          "fromLabel": "From",
+          "toLabel": "To",
+          "addRule": "Add the rule"
+        },
+        "crossGroup": {
+          "title": "Best-ranked teams across pools",
+          "hint": "Compares teams at the same position across every pool in this phase (e.g. the 8 best 3rd-placed teams) and qualifies the best ones to a target phase.",
+          "ruleRow": "{{count}} best {{position}}(th) → {{target}}",
+          "positionPlaceholder": "Position (e.g. 3)",
+          "bestCountLabel": "Number of best-ranked teams",
+          "addRule": "Add the rule"
+        },
+        "group": {
+          "chooseTeamLabel": "Choose a team",
+          "addTeam": "Add the team to the pool",
+          "newGroupLabel": "New pool",
+          "newGroupPlaceholder": "New pool (e.g. Pool A)",
+          "addGroup": "Add a pool"
+        },
+        "bracket": {
+          "teamsCount": "{{size}} teams",
+          "removeBracket": "Delete bracket",
+          "nameLabel": "Bracket name",
+          "namePlaceholder": "Bracket name (e.g. Champions League)",
+          "sizeLabel": "Bracket size",
+          "create": "Create the bracket"
+        }
+      },
+      "errors": {
+        "loadCategories": "Unable to load categories.",
+        "loadStructure": "Unable to load this category's structure.",
+        "addPhase": "Unable to add this phase (name already used?).",
+        "toggleSetting": "Unable to update this setting.",
+        "removePhase": "Unable to delete this phase.",
+        "addGroup": "Unable to add this pool (name already used?).",
+        "removeGroup": "Unable to delete this pool.",
+        "saveStandingRule": "Unable to save the points scale.",
+        "assignTeam": "Unable to assign this team to the pool.",
+        "unassignTeam": "Unable to remove this team from the pool.",
+        "addQualificationRule": "Unable to add this qualification rule.",
+        "removeQualificationRule": "Unable to delete this qualification rule.",
+        "addCrossGroupRule": "Unable to add this best-ranked-teams rule.",
+        "removeCrossGroupRule": "Unable to delete this rule.",
+        "createBracket": "Unable to create this bracket.",
+        "removeBracket": "Unable to delete this bracket."
       }
     }
   }

@@ -435,7 +435,12 @@
         "title": "Pagamento di pubblicazione",
         "loading": "Caricamento…",
         "never": "Questo torneo non è mai stato pubblicato.",
-        "table": { "date": "Data", "teams": "Squadre", "amount": "Importo", "status": "Stato" },
+        "table": {
+          "date": "Data",
+          "teams": "Squadre",
+          "amount": "Importo",
+          "status": "Stato"
+        },
         "paid": "Pagato",
         "pending": "In attesa",
         "print": "Stampa"
@@ -643,6 +648,138 @@
       },
       "errors": {
         "load": "Impossibile caricare le iscrizioni."
+      }
+    },
+    "structure": {
+      "title": "Struttura della competizione",
+      "loading": "Caricamento…",
+      "addCategoryFirst": "Aggiungi prima una categoria nella pagina del torneo.",
+      "categoryLabel": "Categoria",
+      "doubleRoundRobinLabel": "Andata e ritorno",
+      "typeGroupStage": "Gironi",
+      "typeKnockout": "Eliminazione diretta",
+      "rankingMatchLabel": "Finale per il 3° posto",
+      "removeLabel": "Rimuovi",
+      "deleteLabel": "Elimina",
+      "saveLabel": "Salva",
+      "targetPhaseLabel": "Fase di destinazione",
+      "positionLabel": "Posizione",
+      "preset": {
+        "title": "Modalità Torneo",
+        "formatLabel": "Formato",
+        "format": {
+          "poolsOnly": "Solo gironi (campionato)",
+          "poolsAndKnockout": "Gironi + eliminazione diretta",
+          "knockoutOnly": "Solo eliminazione diretta"
+        },
+        "intro": {
+          "poolsOnly": "Imposta un campionato a gironi (girone all'italiana), senza fase finale a eliminazione diretta, a partire dalle squadre già create in questa categoria.",
+          "knockoutOnly": "Imposta direttamente un tabellone a eliminazione diretta a partire dalle squadre già create in questa categoria, senza fase a gironi.",
+          "poolsAndKnockout": "Imposta contemporaneamente i gironi e il tabellone a eliminazione diretta, a partire dalle squadre già create in questa categoria."
+        },
+        "unassignedAvailable": "{{count}} squadra/e non assegnata/e disponibile/i qui.",
+        "noUnassigned": "Nessuna squadra non assegnata per ora — aggiungine prima nella pagina Squadre.",
+        "poolsTitle": "Gironi",
+        "teamCountLabel": "Numero di squadre",
+        "poolCountLabel": "Numero di gironi",
+        "multiTierLabel": "Qualificare verso più competizioni",
+        "bestOfPositionLabel": "Includere le migliori classificate a una posizione",
+        "qualifiersPerPoolLabel": "Qualificate per girone",
+        "tierNameLabel": "Nome del livello",
+        "tierNamePlaceholder": "Nome del livello (es. Champions League)",
+        "addTier": "Aggiungi un livello",
+        "bestCountLabel": "Numero di migliori classificate",
+        "bestOfPositionHint": "Le {{count}} migliori squadre classificate {{position}}ª nel proprio girone, confrontate tra loro, si uniscono al tabellone del primo livello.",
+        "knockoutNameLabel": "Nome del tabellone",
+        "knockoutNamePlaceholder": "Tabellone finale",
+        "tierBracketSize": "{{name}}: {{size}} squadre.",
+        "defaultTierName": "Tabellone finale",
+        "defaultTierNameIndexed": "Livello {{index}}",
+        "tierSummaryItem": "{{name}} ({{size}} squadre)",
+        "successPoolsOnly": "Struttura generata: {{poolCount}} gironi. Vai alla pagina Calendario per pianificare le partite dei gironi.",
+        "successKnockoutOnly": "Struttura generata: {{tiersSummary}}. Vai alla pagina Calendario per pianificare le partite del tabellone.",
+        "successMixed": "Struttura generata: {{poolCount}} gironi, {{tiersSummary}}. Vai alla pagina Calendario per pianificare le partite dei gironi e dell'eliminazione diretta.",
+        "errors": {
+          "knockoutNotPowerOfTwo": "Per un tabellone a sola eliminazione diretta, il numero di squadre deve essere una potenza di 2 (2, 4, 8, 16…) — {{teamCount}} squadra/e non va bene.",
+          "unassignedMismatch": "Trovate {{found}} squadra/e non assegnata/e in questa categoria, {{expected}} attesa/e.",
+          "poolsExceedTeams": "Il numero di gironi non può superare il numero di squadre.",
+          "tooManyQualifiersForSmallestPool": "Con {{teamCount}} squadre suddivise in {{poolCount}} gironi, il girone più piccolo conta solo {{smallestPoolSize}} squadra/e — impossibile qualificarne {{totalQualifiers}} in totale sommando i livelli.",
+          "bestOfPositionExceedsPools": "Impossibile qualificare {{bestCount}} migliore/i classificata/e alla posizione {{bestPosition}}: ci sono solo {{poolCount}} girone/i.",
+          "bestOfPositionOverlapsDirect": "La posizione {{bestPosition}} delle migliori classificate si sovrappone alle qualificate dirette (posizioni 1-{{totalQualifiers}}) — scegli una posizione strettamente superiore.",
+          "bestOfPositionNotInSmallestPool": "La posizione {{bestPosition}} non esiste in tutti i gironi — il girone più piccolo conta solo {{smallestPoolSize}} squadra/e.",
+          "tierBracketNotPowerOfTwo": "Livello \"{{tierName}}\": {{poolCount}} girone/i × {{qualifiers}} qualificata/e = {{bracketSize}} squadra/e qualificata/e — questo numero deve essere una potenza di 2 (2, 4, 8, 16…) per formare un tabellone a eliminazione diretta.",
+          "tierBracketNotPowerOfTwoWithBest": "Livello \"{{tierName}}\": {{poolCount}} girone/i × {{qualifiers}} qualificata/e + {{bestCount}} migliore/i classificata/e = {{bracketSize}} squadra/e qualificata/e — questo numero deve essere una potenza di 2 (2, 4, 8, 16…) per formare un tabellone a eliminazione diretta.",
+          "generic": "Impossibile generare la struttura."
+        }
+      },
+      "addPhase": {
+        "title": "Aggiungi una fase",
+        "nameLabel": "Nome della fase",
+        "namePlaceholder": "Nome della fase (es. Fase a gironi)",
+        "typeLabel": "Tipo di fase",
+        "add": "Aggiungi la fase"
+      },
+      "phase": {
+        "removePhase": "Elimina la fase",
+        "standingRule": {
+          "title": "Sistema di punteggio",
+          "hint": "Si applica a tutti i gironi di questa fase.",
+          "winLabel": "Vittoria",
+          "drawLabel": "Pareggio",
+          "lossLabel": "Sconfitta",
+          "supplementaryLabel": "Classifica supplementare (fair play)",
+          "penaltyShootoutLabel": "Rigori in caso di parità",
+          "tieBreakHint": "Criteri di spareggio: {{order}}"
+        },
+        "qualification": {
+          "title": "Regole di qualificazione",
+          "hint": "Si applica a tutti i gironi di questa fase.",
+          "ruleRow": "Posizioni {{from}}–{{to}} → {{target}}",
+          "fromLabel": "Da",
+          "toLabel": "A",
+          "addRule": "Aggiungi la regola"
+        },
+        "crossGroup": {
+          "title": "Migliori classificate tra i gironi",
+          "hint": "Confronta le squadre nella stessa posizione tra tutti i gironi di questa fase (es. le 8 migliori terze) e qualifica le migliori verso una fase di destinazione.",
+          "ruleRow": "{{count}} migliore/i {{position}}ª → {{target}}",
+          "positionPlaceholder": "Posizione (es. 3)",
+          "bestCountLabel": "Numero di migliori",
+          "addRule": "Aggiungi la regola"
+        },
+        "group": {
+          "chooseTeamLabel": "Scegli una squadra",
+          "addTeam": "Aggiungi la squadra al girone",
+          "newGroupLabel": "Nuovo girone",
+          "newGroupPlaceholder": "Nuovo girone (es. Girone A)",
+          "addGroup": "Aggiungi un girone"
+        },
+        "bracket": {
+          "teamsCount": "{{size}} squadre",
+          "removeBracket": "Elimina il tabellone",
+          "nameLabel": "Nome del tabellone",
+          "namePlaceholder": "Nome del tabellone (es. Champions League)",
+          "sizeLabel": "Dimensione del tabellone",
+          "create": "Crea il tabellone"
+        }
+      },
+      "errors": {
+        "loadCategories": "Impossibile caricare le categorie.",
+        "loadStructure": "Impossibile caricare la struttura di questa categoria.",
+        "addPhase": "Impossibile aggiungere questa fase (nome già utilizzato?).",
+        "toggleSetting": "Impossibile aggiornare questa impostazione.",
+        "removePhase": "Impossibile eliminare questa fase.",
+        "addGroup": "Impossibile aggiungere questo girone (nome già utilizzato?).",
+        "removeGroup": "Impossibile eliminare questo girone.",
+        "saveStandingRule": "Impossibile salvare il sistema di punteggio.",
+        "assignTeam": "Impossibile assegnare questa squadra al girone.",
+        "unassignTeam": "Impossibile rimuovere questa squadra dal girone.",
+        "addQualificationRule": "Impossibile aggiungere questa regola di qualificazione.",
+        "removeQualificationRule": "Impossibile eliminare questa regola di qualificazione.",
+        "addCrossGroupRule": "Impossibile aggiungere questa regola delle migliori classificate.",
+        "removeCrossGroupRule": "Impossibile eliminare questa regola.",
+        "createBracket": "Impossibile creare questo tabellone.",
+        "removeBracket": "Impossibile eliminare questo tabellone."
       }
     }
   }
