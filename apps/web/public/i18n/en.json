@@ -1025,6 +1025,62 @@
         "saveTieChoice": "Unable to save this choice.",
         "resetTieChoice": "Unable to reset this tie-break."
       }
+    },
+    "subscription": {
+      "title": "Annual subscription",
+      "intro": "Publishing a tournament is billed by tier based on team count (free up to 8 teams, €25 for 9 to 48 teams, €80 beyond). The annual subscription replaces this per-publication fee: €200 per year, unlimited publications for the whole organization.",
+      "loading": "Loading…",
+      "adminOnly": "Only an organization admin can manage the subscription.",
+      "status": {
+        "active": {
+          "badgeLabel": "Subscription active",
+          "body": "All tournament publications are free until {{date}}.",
+          "note": "Renewal is manual: come back to this page after that date to subscribe again. Tournaments published while the subscription is active remain published after it expires."
+        },
+        "pendingPayment": {
+          "badgeLabel": "Payment pending",
+          "body": "A subscription is being confirmed. If the payment was abandoned, you can start a new payment.",
+          "retryButton": "Retry payment — €200"
+        },
+        "none": {
+          "body": "No active subscription for this organization.",
+          "subscribeButton": "Subscribe — €200 / year"
+        }
+      },
+      "history": {
+        "title": "Payment history",
+        "loading": "Loading…",
+        "empty": "No payments recorded yet.",
+        "table": {
+          "date": "Date",
+          "amount": "Amount",
+          "status": "Status"
+        },
+        "paidBadge": "Paid",
+        "pendingBadge": "Pending",
+        "print": "Print"
+      },
+      "receipt": {
+        "title": "Receipt — TournArena annual subscription",
+        "organization": "Organization",
+        "paidAt": "Payment date",
+        "amount": "Amount",
+        "period": "Coverage period"
+      },
+      "errors": {
+        "loadStatus": "Could not load the subscription status.",
+        "subscribe": "Could not subscribe, please try again."
+      }
+    },
+    "subscriptionSuccess": {
+      "verifying": "Verifying payment…",
+      "activeTitle": "Subscription active",
+      "activeBody": "All tournament publications for your organization are now free until {{date}}.",
+      "pendingTitle": "Payment being confirmed",
+      "pendingBody": "The subscription will be activated as soon as the payment is confirmed. You can reload this page in a moment.",
+      "backToSubscription": "Back to subscription",
+      "notFoundTitle": "Organization not found",
+      "backToTournaments": "Back to tournaments"
     }
   }
 }

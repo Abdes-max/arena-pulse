@@ -1025,6 +1025,62 @@
         "saveTieChoice": "Impossible d'enregistrer ce choix.",
         "resetTieChoice": "Impossible de réinitialiser ce départage."
       }
+    },
+    "subscription": {
+      "title": "Abonnement annuel",
+      "intro": "Publier un tournoi est facturé par palier selon le nombre d'équipes (gratuit jusqu'à 8 équipes, 25 € de 9 à 48 équipes, 80 € au-delà). L'abonnement annuel remplace ce paiement à l'unité : 200 € par an, publications illimitées pour toute l'organisation.",
+      "loading": "Chargement…",
+      "adminOnly": "Seul un administrateur de l'organisation peut gérer l'abonnement.",
+      "status": {
+        "active": {
+          "badgeLabel": "Abonnement actif",
+          "body": "Toutes les publications de tournois sont gratuites jusqu'au {{date}}.",
+          "note": "Le renouvellement est manuel : revenez sur cette page après cette date pour souscrire un nouvel abonnement. Les tournois publiés pendant que l'abonnement est actif restent publiés après son expiration."
+        },
+        "pendingPayment": {
+          "badgeLabel": "Paiement en attente",
+          "body": "Une souscription est en cours de confirmation. Si le paiement a été abandonné, vous pouvez relancer un nouveau paiement.",
+          "retryButton": "Relancer le paiement — 200 €"
+        },
+        "none": {
+          "body": "Aucun abonnement actif pour cette organisation.",
+          "subscribeButton": "Souscrire — 200 € / an"
+        }
+      },
+      "history": {
+        "title": "Historique des paiements",
+        "loading": "Chargement…",
+        "empty": "Aucun paiement enregistré pour le moment.",
+        "table": {
+          "date": "Date",
+          "amount": "Montant",
+          "status": "Statut"
+        },
+        "paidBadge": "Payé",
+        "pendingBadge": "En attente",
+        "print": "Imprimer"
+      },
+      "receipt": {
+        "title": "Reçu — Abonnement annuel TournArena",
+        "organization": "Organisation",
+        "paidAt": "Date de paiement",
+        "amount": "Montant",
+        "period": "Période couverte"
+      },
+      "errors": {
+        "loadStatus": "Impossible de charger l'état de l'abonnement.",
+        "subscribe": "Impossible de souscrire à l'abonnement, réessayez."
+      }
+    },
+    "subscriptionSuccess": {
+      "verifying": "Vérification du paiement…",
+      "activeTitle": "Abonnement actif",
+      "activeBody": "Toutes les publications de tournois de votre organisation sont désormais gratuites jusqu'au {{date}}.",
+      "pendingTitle": "Paiement en cours de confirmation",
+      "pendingBody": "L'activation de l'abonnement sera confirmée dès que le paiement sera validé. Vous pouvez recharger cette page dans quelques instants.",
+      "backToSubscription": "Retour à l'abonnement",
+      "notFoundTitle": "Organisation introuvable",
+      "backToTournaments": "Retour aux tournois"
     }
   }
 }
