@@ -418,6 +418,129 @@
       "backToTournament": "Voltar ao torneio",
       "notFoundTitle": "Torneio não encontrado",
       "backToTournaments": "Voltar aos torneios"
+    },
+    "tournamentForm": {
+      "loading": "A carregar…",
+      "createTitle": "Criar um torneio",
+      "generalTitle": "Geral",
+      "cancelledPayment": "Pagamento cancelado: o torneio não foi publicado.",
+      "lifecycle": {
+        "unarchive": "Desarquivar",
+        "unpublish": "Despublicar",
+        "publish": "Publicar",
+        "archive": "Arquivar",
+        "duplicate": "Duplicar"
+      },
+      "payment": {
+        "title": "Pagamento de publicação",
+        "loading": "A carregar…",
+        "never": "Este torneio nunca foi publicado.",
+        "table": { "date": "Data", "teams": "Equipas", "amount": "Montante", "status": "Estado" },
+        "paid": "Pago",
+        "pending": "Pendente",
+        "print": "Imprimir"
+      },
+      "logo": {
+        "title": "Logótipo",
+        "change": "Alterar",
+        "add": "Adicionar um logótipo",
+        "remove": "Remover"
+      },
+      "form": {
+        "nameLabel": "Nome do torneio",
+        "sportLabel": "Desporto",
+        "chooseSport": "Escolher um desporto",
+        "isOnlineLabel": "Torneio online (esport)",
+        "themeLabel": "Tema do site público",
+        "save": "Guardar",
+        "create": "Criar o torneio"
+      },
+      "categories": {
+        "title": "Categorias e divisões",
+        "remove": "Eliminar",
+        "feeLabel": "Taxa de inscrição (cêntimos, vazio = grátis)",
+        "saveFee": "Guardar taxa",
+        "removeDivision": "Remover",
+        "newDivisionLabel": "Nova divisão",
+        "addDivision": "Adicionar",
+        "newCategoryLabel": "Nova categoria",
+        "newCategoryPlaceholder": "Nova categoria (ex. U10)",
+        "newFeeLabel": "Taxa (cêntimos, opcional)",
+        "addCategory": "Adicionar uma categoria"
+      },
+      "venues": {
+        "title": "Locais e campos",
+        "remove": "Eliminar",
+        "removeField": "Remover",
+        "newFieldLabel": "Novo campo",
+        "addField": "Adicionar",
+        "newVenueLabel": "Novo local",
+        "newVenuePlaceholder": "Novo local (ex. Estádio municipal)",
+        "addVenue": "Adicionar um local"
+      },
+      "admins": {
+        "title": "Administradores do torneio",
+        "remove": "Remover",
+        "emailLabel": "Email do colaborador",
+        "presetFull": "Administrador completo",
+        "presetReferee": "Árbitro (apenas resultados)",
+        "add": "Adicionar como administrador"
+      },
+      "description": {
+        "title": "Descrição",
+        "placeholder": "Apresente a sua competição aos visitantes do site público…",
+        "save": "Guardar"
+      },
+      "rules": {
+        "title": "Regulamento",
+        "placeholder": "Regulamento da competição…",
+        "save": "Guardar"
+      },
+      "practicalInfo": {
+        "title": "Informações práticas",
+        "placeholder": "Estacionamento, restauração, acesso… (os locais são geridos em «Locais e campos»)",
+        "save": "Guardar"
+      },
+      "sponsors": {
+        "title": "Patrocinadores",
+        "remove": "Eliminar",
+        "removeLogo": "Remover o logótipo",
+        "nameLabel": "Nome do patrocinador",
+        "linkLabel": "Link (opcional)",
+        "add": "Adicionar"
+      },
+      "receipt": {
+        "title": "Recibo — Publicação de torneio TournArena",
+        "tournament": "Torneio",
+        "paidAt": "Data de pagamento",
+        "teams": "Equipas envolvidas",
+        "amount": "Montante"
+      },
+      "errors": {
+        "loadData": "Não foi possível carregar os dados do torneio.",
+        "save": "Não foi possível guardar o torneio.",
+        "actionNotAllowed": "Esta ação não é possível no estado atual do torneio.",
+        "generic": "Ocorreu um erro, tente novamente.",
+        "duplicate": "Não foi possível duplicar este torneio.",
+        "logoInvalid": "Formato ou tamanho de ficheiro inválido (PNG, JPEG ou WebP, 2 MB máximo).",
+        "logoUpload": "Não foi possível enviar este logótipo, tente novamente.",
+        "logoRemove": "Não foi possível remover este logótipo.",
+        "saveSection": "Não foi possível guardar esta secção.",
+        "addSponsor": "Não foi possível adicionar este patrocinador.",
+        "removeSponsor": "Não foi possível eliminar este patrocinador.",
+        "addCategory": "Não foi possível adicionar esta categoria (nome já utilizado?).",
+        "saveCategoryFee": "Não foi possível guardar a taxa desta categoria.",
+        "removeCategory": "Não foi possível eliminar esta categoria.",
+        "addDivision": "Não foi possível adicionar esta divisão (nome já utilizado?).",
+        "removeDivision": "Não foi possível eliminar esta divisão.",
+        "addVenue": "Não foi possível adicionar este local (nome já utilizado?).",
+        "removeVenue": "Não foi possível eliminar este local.",
+        "addField": "Não foi possível adicionar este campo (nome já utilizado?).",
+        "removeField": "Não foi possível eliminar este campo.",
+        "addAdminNotMember": "Esta pessoa deve primeiro ser membro da organização.",
+        "addAdminGeneric": "Não foi possível adicionar este administrador.",
+        "removeAdmin": "Não foi possível remover este administrador."
+      }
     }
   }
 }

@@ -418,6 +418,129 @@
       "backToTournament": "Zurück zum Turnier",
       "notFoundTitle": "Turnier nicht gefunden",
       "backToTournaments": "Zurück zu den Turnieren"
+    },
+    "tournamentForm": {
+      "loading": "Wird geladen…",
+      "createTitle": "Turnier erstellen",
+      "generalTitle": "Allgemein",
+      "cancelledPayment": "Zahlung abgebrochen: Das Turnier wurde nicht veröffentlicht.",
+      "lifecycle": {
+        "unarchive": "Aus dem Archiv holen",
+        "unpublish": "Veröffentlichung zurückziehen",
+        "publish": "Veröffentlichen",
+        "archive": "Archivieren",
+        "duplicate": "Duplizieren"
+      },
+      "payment": {
+        "title": "Veröffentlichungszahlung",
+        "loading": "Wird geladen…",
+        "never": "Dieses Turnier wurde noch nie veröffentlicht.",
+        "table": { "date": "Datum", "teams": "Teams", "amount": "Betrag", "status": "Status" },
+        "paid": "Bezahlt",
+        "pending": "Ausstehend",
+        "print": "Drucken"
+      },
+      "logo": {
+        "title": "Logo",
+        "change": "Ändern",
+        "add": "Logo hinzufügen",
+        "remove": "Entfernen"
+      },
+      "form": {
+        "nameLabel": "Turniername",
+        "sportLabel": "Sportart",
+        "chooseSport": "Sportart wählen",
+        "isOnlineLabel": "Online-Turnier (E-Sport)",
+        "themeLabel": "Design der öffentlichen Seite",
+        "save": "Speichern",
+        "create": "Turnier erstellen"
+      },
+      "categories": {
+        "title": "Kategorien und Divisionen",
+        "remove": "Löschen",
+        "feeLabel": "Startgebühr (Cent, leer = kostenlos)",
+        "saveFee": "Gebühr speichern",
+        "removeDivision": "Entfernen",
+        "newDivisionLabel": "Neue Division",
+        "addDivision": "Hinzufügen",
+        "newCategoryLabel": "Neue Kategorie",
+        "newCategoryPlaceholder": "Neue Kategorie (z. B. U10)",
+        "newFeeLabel": "Gebühr (Cent, optional)",
+        "addCategory": "Kategorie hinzufügen"
+      },
+      "venues": {
+        "title": "Austragungsorte und Felder",
+        "remove": "Löschen",
+        "removeField": "Entfernen",
+        "newFieldLabel": "Neues Feld",
+        "addField": "Hinzufügen",
+        "newVenueLabel": "Neuer Austragungsort",
+        "newVenuePlaceholder": "Neuer Austragungsort (z. B. Städtisches Stadion)",
+        "addVenue": "Austragungsort hinzufügen"
+      },
+      "admins": {
+        "title": "Turnieradministratoren",
+        "remove": "Entfernen",
+        "emailLabel": "E-Mail des Mitarbeiters",
+        "presetFull": "Vollständiger Administrator",
+        "presetReferee": "Schiedsrichter (nur Ergebnisse)",
+        "add": "Als Administrator hinzufügen"
+      },
+      "description": {
+        "title": "Beschreibung",
+        "placeholder": "Stellen Sie Ihren Wettbewerb den Besuchern der öffentlichen Seite vor…",
+        "save": "Speichern"
+      },
+      "rules": {
+        "title": "Reglement",
+        "placeholder": "Reglement des Wettbewerbs…",
+        "save": "Speichern"
+      },
+      "practicalInfo": {
+        "title": "Praktische Informationen",
+        "placeholder": "Parken, Verpflegung, Anfahrt… (Austragungsorte werden unter „Austragungsorte und Felder“ verwaltet)",
+        "save": "Speichern"
+      },
+      "sponsors": {
+        "title": "Sponsoren",
+        "remove": "Löschen",
+        "removeLogo": "Logo entfernen",
+        "nameLabel": "Name des Sponsors",
+        "linkLabel": "Link (optional)",
+        "add": "Hinzufügen"
+      },
+      "receipt": {
+        "title": "Quittung — TournArena-Turnierveröffentlichung",
+        "tournament": "Turnier",
+        "paidAt": "Zahlungsdatum",
+        "teams": "Betroffene Teams",
+        "amount": "Betrag"
+      },
+      "errors": {
+        "loadData": "Turnierdaten konnten nicht geladen werden.",
+        "save": "Das Turnier konnte nicht gespeichert werden.",
+        "actionNotAllowed": "Diese Aktion ist im aktuellen Status des Turniers nicht möglich.",
+        "generic": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut.",
+        "duplicate": "Dieses Turnier konnte nicht dupliziert werden.",
+        "logoInvalid": "Ungültiges Dateiformat oder ungültige Größe (PNG, JPEG oder WebP, maximal 2 MB).",
+        "logoUpload": "Dieses Logo konnte nicht hochgeladen werden, bitte versuchen Sie es erneut.",
+        "logoRemove": "Dieses Logo konnte nicht entfernt werden.",
+        "saveSection": "Dieser Abschnitt konnte nicht gespeichert werden.",
+        "addSponsor": "Dieser Sponsor konnte nicht hinzugefügt werden.",
+        "removeSponsor": "Dieser Sponsor konnte nicht gelöscht werden.",
+        "addCategory": "Diese Kategorie konnte nicht hinzugefügt werden (Name bereits vergeben?).",
+        "saveCategoryFee": "Die Gebühr dieser Kategorie konnte nicht gespeichert werden.",
+        "removeCategory": "Diese Kategorie konnte nicht gelöscht werden.",
+        "addDivision": "Diese Division konnte nicht hinzugefügt werden (Name bereits vergeben?).",
+        "removeDivision": "Diese Division konnte nicht gelöscht werden.",
+        "addVenue": "Dieser Austragungsort konnte nicht hinzugefügt werden (Name bereits vergeben?).",
+        "removeVenue": "Dieser Austragungsort konnte nicht gelöscht werden.",
+        "addField": "Dieses Feld konnte nicht hinzugefügt werden (Name bereits vergeben?).",
+        "removeField": "Dieses Feld konnte nicht gelöscht werden.",
+        "addAdminNotMember": "Diese Person muss zuerst Mitglied der Organisation sein.",
+        "addAdminGeneric": "Dieser Administrator konnte nicht hinzugefügt werden.",
+        "removeAdmin": "Dieser Administrator konnte nicht entfernt werden."
+      }
     }
   }
 }

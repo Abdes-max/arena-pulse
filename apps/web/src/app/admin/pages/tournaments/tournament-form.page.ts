@@ -11,8 +11,9 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AssetUrlService } from 'api-client';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Badge, BadgeStatus, Button, Select, SelectOption, TextField } from 'design-system';
-import { ThemeService } from 'design-tokens';
+import { LanguageService, ThemeService } from 'design-tokens';
 import { AuthService } from '../../core/auth.service';
 import {
   Category,
@@ -39,9 +40,19 @@ const STATUS_TO_BADGE: Record<TournamentStatus, BadgeStatus> = {
   ARCHIVED: 'archived',
 };
 
+// Reuses the same admin.tournamentList.status.* keys as TournamentListPage
+// -- same statuses, same wording, no reason to duplicate the strings under
+// a second namespace.
+const STATUS_LABEL_KEYS: Record<TournamentStatus, string> = {
+  DRAFT: 'admin.tournamentList.status.draft',
+  PUBLISHED: 'admin.tournamentList.status.published',
+  UNPUBLISHED: 'admin.tournamentList.status.unpublished',
+  ARCHIVED: 'admin.tournamentList.status.archived',
+};
+
 @Component({
   selector: 'app-tournament-form-page',
-  imports: [ReactiveFormsModule, Button, TextField, Select, Badge],
+  imports: [ReactiveFormsModule, Button, TextField, Select, Badge, TranslocoPipe],
   templateUrl: './tournament-form.page.html',
   styleUrl: './tournament-form.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -56,6 +67,8 @@ export class TournamentFormPage {
   private readonly sponsorsService = inject(SponsorsService);
   private readonly authService = inject(AuthService);
   private readonly themeService = inject(ThemeService);
+  private readonly languageService = inject(LanguageService);
+  private readonly transloco = inject(TranslocoService);
   private readonly assetUrl = inject(AssetUrlService);
 
   protected readonly organization = computed(() => this.authService.organizations()[0] ?? null);
@@ -71,10 +84,17 @@ export class TournamentFormPage {
   protected readonly errorMessage = signal<string | null>(null);
 
   protected readonly sports = signal<Sport[]>([]);
-  protected readonly sportOptions = computed<SelectOption[]>(() => [
-    { value: '', label: 'Choisir un sport', disabled: true },
-    ...this.sports().map((sport) => ({ value: sport.id, label: sport.name })),
-  ]);
+  protected readonly sportOptions = computed<SelectOption[]>(() => {
+    const lang = this.languageService.language();
+    return [
+      {
+        value: '',
+        label: this.transloco.translate('admin.tournamentForm.form.chooseSport', {}, lang),
+        disabled: true,
+      },
+      ...this.sports().map((sport) => ({ value: sport.id, label: sport.name })),
+    ];
+  });
   protected readonly themeOptions: SelectOption[] = [
     { value: 'INK_SIGNAL', label: 'Ink & Signal' },
     { value: 'PULSE_EMBER', label: 'Pulse Ember' },
@@ -91,6 +111,10 @@ export class TournamentFormPage {
   protected readonly printingOrder = signal<PublicationOrder | null>(null);
 
   protected readonly isArchived = computed(() => this.tournament()?.status === 'ARCHIVED');
+
+  protected statusLabel(status: TournamentStatus): string {
+    return this.transloco.translate(STATUS_LABEL_KEYS[status], {}, this.languageService.language());
+  }
 
   protected readonly form = this.formBuilder.nonNullable.group({
     name: ['', Validators.required],
@@ -124,7 +148,7 @@ export class TournamentFormPage {
       void this.load();
     });
     if (this.route.snapshot.queryParamMap.get('publishCancelled')) {
-      this.errorMessage.set("Paiement annulé : le tournoi n'a pas été publié.");
+      this.errorMessage.set('admin.tournamentForm.cancelledPayment');
     }
 
     // Applies the selected public theme across the whole admin app as soon
@@ -163,7 +187,7 @@ export class TournamentFormPage {
         await this.loadTournament();
       }
     } catch {
-      this.errorMessage.set('Impossible de charger les données du tournoi.');
+      this.errorMessage.set('admin.tournamentForm.errors.loadData');
     } finally {
       this.loading.set(false);
     }
@@ -256,7 +280,7 @@ export class TournamentFormPage {
         await this.router.navigate(['/admin/tournaments', created.id]);
       }
     } catch {
-      this.errorMessage.set("Impossible d'enregistrer le tournoi.");
+      this.errorMessage.set('admin.tournamentForm.errors.save');
     } finally {
       this.submitting.set(false);
     }
@@ -280,8 +304,8 @@ export class TournamentFormPage {
     } catch (error) {
       this.errorMessage.set(
         error instanceof HttpErrorResponse && error.status === 409
-          ? "Cette action n'est pas possible dans l'état actuel du tournoi."
-          : 'Une erreur est survenue, réessayez.',
+          ? 'admin.tournamentForm.errors.actionNotAllowed'
+          : 'admin.tournamentForm.errors.generic',
       );
     }
   }
@@ -314,7 +338,7 @@ export class TournamentFormPage {
       const clone = await this.tournamentsService.duplicate(organizationId, tournamentId);
       await this.router.navigate(['/admin/tournaments', clone.id]);
     } catch {
-      this.errorMessage.set('Impossible de dupliquer ce tournoi.');
+      this.errorMessage.set('admin.tournamentForm.errors.duplicate');
     }
   }
 
@@ -338,8 +362,8 @@ export class TournamentFormPage {
     } catch (error) {
       this.errorMessage.set(
         error instanceof HttpErrorResponse && error.status === 400
-          ? 'Format ou taille de fichier invalide (PNG, JPEG ou WebP, 2 Mo maximum).'
-          : "Impossible d'envoyer ce logo, réessayez.",
+          ? 'admin.tournamentForm.errors.logoInvalid'
+          : 'admin.tournamentForm.errors.logoUpload',
       );
     }
   }
@@ -353,7 +377,7 @@ export class TournamentFormPage {
     try {
       this.tournament.set(await this.tournamentsService.removeLogo(organizationId, tournamentId));
     } catch {
-      this.errorMessage.set('Impossible de retirer ce logo.');
+      this.errorMessage.set('admin.tournamentForm.errors.logoRemove');
     }
   }
 
@@ -397,7 +421,7 @@ export class TournamentFormPage {
         }),
       );
     } catch {
-      this.errorMessage.set("Impossible d'enregistrer cette section.");
+      this.errorMessage.set('admin.tournamentForm.errors.saveSection');
     }
   }
 
@@ -426,7 +450,7 @@ export class TournamentFormPage {
       this.newSponsorName.set('');
       this.newSponsorLinkUrl.set('');
     } catch {
-      this.errorMessage.set("Impossible d'ajouter ce sponsor.");
+      this.errorMessage.set('admin.tournamentForm.errors.addSponsor');
     }
   }
 
@@ -440,7 +464,7 @@ export class TournamentFormPage {
       await this.sponsorsService.remove(organizationId, tournamentId, sponsor.id);
       this.sponsors.update((sponsors) => sponsors.filter((s) => s.id !== sponsor.id));
     } catch {
-      this.errorMessage.set('Impossible de supprimer ce sponsor.');
+      this.errorMessage.set('admin.tournamentForm.errors.removeSponsor');
     }
   }
 
@@ -464,8 +488,8 @@ export class TournamentFormPage {
     } catch (error) {
       this.errorMessage.set(
         error instanceof HttpErrorResponse && error.status === 400
-          ? 'Format ou taille de fichier invalide (PNG, JPEG ou WebP, 2 Mo maximum).'
-          : "Impossible d'envoyer ce logo, réessayez.",
+          ? 'admin.tournamentForm.errors.logoInvalid'
+          : 'admin.tournamentForm.errors.logoUpload',
       );
     }
   }
@@ -484,7 +508,7 @@ export class TournamentFormPage {
       );
       this.sponsors.update((sponsors) => sponsors.map((s) => (s.id === updated.id ? updated : s)));
     } catch {
-      this.errorMessage.set('Impossible de retirer ce logo.');
+      this.errorMessage.set('admin.tournamentForm.errors.logoRemove');
     }
   }
 
@@ -502,8 +526,8 @@ export class TournamentFormPage {
     } catch (error) {
       this.errorMessage.set(
         error instanceof HttpErrorResponse && error.status === 409
-          ? "Cette action n'est pas possible dans l'état actuel du tournoi."
-          : 'Une erreur est survenue, réessayez.',
+          ? 'admin.tournamentForm.errors.actionNotAllowed'
+          : 'admin.tournamentForm.errors.generic',
       );
     }
   }
@@ -536,7 +560,7 @@ export class TournamentFormPage {
       this.newCategoryName.set('');
       this.newCategoryFeeCents.set('');
     } catch {
-      this.errorMessage.set("Impossible d'ajouter cette catégorie (nom déjà utilisé ?).");
+      this.errorMessage.set('admin.tournamentForm.errors.addCategory');
     }
   }
 
@@ -566,7 +590,7 @@ export class TournamentFormPage {
         categories.map((c) => (c.id === category.id ? updated : c)),
       );
     } catch {
-      this.errorMessage.set("Impossible d'enregistrer le tarif de cette catégorie.");
+      this.errorMessage.set('admin.tournamentForm.errors.saveCategoryFee');
     }
   }
 
@@ -580,7 +604,7 @@ export class TournamentFormPage {
       await this.tournamentsService.deleteCategory(organizationId, tournamentId, category.id);
       this.categories.update((categories) => categories.filter((c) => c.id !== category.id));
     } catch {
-      this.errorMessage.set('Impossible de supprimer cette catégorie.');
+      this.errorMessage.set('admin.tournamentForm.errors.removeCategory');
     }
   }
 
@@ -613,7 +637,7 @@ export class TournamentFormPage {
       );
       this.newDivisionNameByCategory.update((names) => ({ ...names, [category.id]: '' }));
     } catch {
-      this.errorMessage.set("Impossible d'ajouter cette division (nom déjà utilisé ?).");
+      this.errorMessage.set('admin.tournamentForm.errors.addDivision');
     }
   }
 
@@ -633,7 +657,7 @@ export class TournamentFormPage {
         ),
       );
     } catch {
-      this.errorMessage.set('Impossible de supprimer cette division.');
+      this.errorMessage.set('admin.tournamentForm.errors.removeDivision');
     }
   }
 
@@ -655,7 +679,7 @@ export class TournamentFormPage {
       this.venues.update((venues) => [...venues, venue]);
       this.newVenueName.set('');
     } catch {
-      this.errorMessage.set("Impossible d'ajouter ce site (nom déjà utilisé ?).");
+      this.errorMessage.set('admin.tournamentForm.errors.addVenue');
     }
   }
 
@@ -669,7 +693,7 @@ export class TournamentFormPage {
       await this.tournamentsService.deleteVenue(organizationId, tournamentId, venue.id);
       this.venues.update((venues) => venues.filter((v) => v.id !== venue.id));
     } catch {
-      this.errorMessage.set('Impossible de supprimer ce site.');
+      this.errorMessage.set('admin.tournamentForm.errors.removeVenue');
     }
   }
 
@@ -700,7 +724,7 @@ export class TournamentFormPage {
       );
       this.newFieldNameByVenue.update((names) => ({ ...names, [venue.id]: '' }));
     } catch {
-      this.errorMessage.set("Impossible d'ajouter ce terrain (nom déjà utilisé ?).");
+      this.errorMessage.set('admin.tournamentForm.errors.addField');
     }
   }
 
@@ -718,7 +742,7 @@ export class TournamentFormPage {
         ),
       );
     } catch {
-      this.errorMessage.set('Impossible de supprimer ce terrain.');
+      this.errorMessage.set('admin.tournamentForm.errors.removeField');
     }
   }
 
@@ -761,8 +785,8 @@ export class TournamentFormPage {
     } catch (error) {
       this.errorMessage.set(
         error instanceof HttpErrorResponse && error.status === 404
-          ? "Cette personne doit d'abord être membre de l'organisation."
-          : "Impossible d'ajouter cet administrateur.",
+          ? 'admin.tournamentForm.errors.addAdminNotMember'
+          : 'admin.tournamentForm.errors.addAdminGeneric',
       );
     }
   }
@@ -783,7 +807,7 @@ export class TournamentFormPage {
         administrators.filter((a) => a.id !== administrator.id),
       );
     } catch {
-      this.errorMessage.set('Impossible de retirer cet administrateur.');
+      this.errorMessage.set('admin.tournamentForm.errors.removeAdmin');
     }
   }
 
@@ -804,7 +828,7 @@ export class TournamentFormPage {
     if (!iso) {
       return '—';
     }
-    return new Date(iso).toLocaleDateString('fr-FR', {
+    return new Date(iso).toLocaleDateString(this.languageService.language(), {
       day: 'numeric',
       month: 'long',
       year: 'numeric',
@@ -812,7 +836,7 @@ export class TournamentFormPage {
   }
 
   protected formatAmount(amountCents: number, currency: string): string {
-    return new Intl.NumberFormat('fr-FR', {
+    return new Intl.NumberFormat(this.languageService.language(), {
       style: 'currency',
       currency: currency.toUpperCase(),
     }).format(amountCents / 100);
