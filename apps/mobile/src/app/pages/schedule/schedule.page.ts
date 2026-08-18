@@ -59,8 +59,14 @@ export class SchedulePage {
 
   protected readonly matchesByDay = computed(() => {
     const days = new Map<string, { label: string; matches: Match[] }>();
+    // Matches with no time slot yet (e.g. a knockout round not yet
+    // scheduled) used to be silently dropped here instead of shown -- same
+    // fix as public-web's schedule.page.ts, which surfaces these under
+    // their own "Non planifié" section rather than hiding them.
+    const unscheduled: Match[] = [];
     for (const match of this.filteredMatches()) {
       if (!match.timeSlot) {
+        unscheduled.push(match);
         continue;
       }
       const date = new Date(match.timeSlot.startTime);
@@ -74,7 +80,7 @@ export class SchedulePage {
       entry.matches.push(match);
       days.set(key, entry);
     }
-    return [...days.values()];
+    return { days: [...days.values()], unscheduled };
   });
 
   constructor() {
