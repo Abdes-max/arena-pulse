@@ -18,6 +18,17 @@ body {
   margin: 0;
 }
 
+// Global, not scoped to any one page's own stylesheet, since every print
+// flow in the admin (subscription/publication receipts, print-export.page)
+// lives inside AppShell's <main class="app-shell__content"> -- the header
+// (nav + tournament-submenu + QR/public-link buttons) above it is chrome
+// that never belongs on a printed page, for any of them.
+@media print {
+  .app-shell__header {
+    display: none;
+  }
+}
+
 // Skip-link (docs/design/accessibility-guidelines.md) -- used by both shells
 // (public tournament + /admin) so a keyboard/screen-reader user can jump
 // straight past the header nav to <main id="main-content">. Off-screen

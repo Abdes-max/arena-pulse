@@ -1,0 +1,124 @@
+// Same max-width/padding treatment as standings.page.scss/schedule.page.scss
+// -- consistent with the rest of the admin, and readable as a normal page
+// before the organizer ever hits "Imprimer".
+.print-export-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: var(--ap-space-6);
+  color: var(--ap-color-fg);
+  font-family: var(--ap-font-body);
+}
+
+.print-export-page__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-4);
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: var(--ap-space-4) var(--ap-space-6) 0;
+
+  a {
+    color: var(--ap-color-muted);
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover {
+      color: var(--ap-color-fg);
+    }
+  }
+}
+
+.print-export-page__error {
+  color: var(--ap-color-error);
+  font-size: 0.9rem;
+}
+
+.print-export-page__category {
+  margin-top: var(--ap-space-8);
+
+  // Keeps a category's heading from stranding itself at the bottom of a
+  // printed page, orphaned from its own content -- browsers respect this on
+  // block-level elements even though it isn't universally supported.
+  break-inside: avoid-page;
+
+  h2 {
+    padding-bottom: var(--ap-space-2);
+    border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+  }
+
+  h3 {
+    margin-top: var(--ap-space-6);
+    font-size: 1rem;
+  }
+
+  h4 {
+    margin-top: var(--ap-space-4);
+    font-size: 0.9rem;
+    color: var(--ap-color-muted);
+  }
+}
+
+// Same dense table treatment as standings.page.scss's own
+// .standings-page__table, minus the horizontal-scroll wrapper -- a printed
+// page has no scrollbar to offer, so the table must simply fit (it does:
+// this one carries far fewer columns, no logos/badges/rating).
+.print-export-page__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  margin-top: var(--ap-space-2);
+
+  // Avoids a table splitting a single match/standing row across a page
+  // break -- doesn't stop the *table* itself from spanning several pages,
+  // just keeps each row intact.
+  tr {
+    break-inside: avoid;
+  }
+
+  th,
+  td {
+    padding: var(--ap-space-1) var(--ap-space-2);
+    text-align: left;
+    border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+  }
+
+  th {
+    font-weight: 600;
+    color: var(--ap-color-muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+}
+
+.print-export-page__score {
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+@media print {
+  .print-export-page {
+    max-width: none;
+    padding: 0;
+  }
+
+  // Screen-only spacing/border rely on --ap-color-* tokens tuned for
+  // on-screen contrast (including dark mode) -- printers render color
+  // inconsistently and organizers are printing on plain paper, so this
+  // strips the coloring back to plain black-on-white rather than trusting
+  // whatever the active theme happens to be.
+  h1,
+  h2,
+  h3,
+  h4,
+  th {
+    color: #000;
+  }
+
+  .print-export-page__table th,
+  .print-export-page__table td {
+    border-bottom-color: #000;
+  }
+}

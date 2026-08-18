@@ -268,7 +268,8 @@
       "qrCode": "Código QR",
       "qrCodeDialogTitle": "Código QR do torneio",
       "downloadQrCode": "Descarregar",
-      "close": "Fechar"
+      "close": "Fechar",
+      "exportPdf": "Exportar PDF"
     },
     "auth": {
       "login": {
@@ -992,6 +993,25 @@
       "backToSubscription": "Voltar à assinatura",
       "notFoundTitle": "Organização não encontrada",
       "backToTournaments": "Voltar aos torneios"
+    },
+    "printExport": {
+      "back": "Voltar",
+      "print": "Imprimir / Guardar como PDF",
+      "loading": "A carregar a exportação…",
+      "noCategories": "Sem categorias.",
+      "scheduleTitle": "Calendário",
+      "noSchedule": "Nenhum jogo agendado.",
+      "unscheduled": "Por agendar",
+      "standingsTitle": "Classificações",
+      "noStandings": "Nenhuma classificação disponível.",
+      "bracketTitle": "Quadro eliminatório",
+      "noBracket": "Nenhum quadro eliminatório.",
+      "vs": "vs",
+      "time": "Hora",
+      "field": "Campo",
+      "errors": {
+        "load": "Não foi possível carregar a exportação."
+      }
     }
   }
 }
