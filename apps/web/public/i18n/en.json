@@ -255,7 +255,6 @@
       "notFound": "This tournament doesn't exist or isn't published."
     },
     "skipLink": "Skip to main content",
-    "back": "Other tournaments",
     "backAria": "Search for another tournament",
     "venue": "venue",
     "venues": "venues",
@@ -265,7 +264,8 @@
       "teams": "Teams",
       "standings": "Standings",
       "schedule": "Schedule"
-    }
+    },
+    "menu": "Menu"
   },
   "home": {
     "sections": {
@@ -363,7 +363,8 @@
       "qrCodeDialogTitle": "Tournament QR code",
       "downloadQrCode": "Download",
       "close": "Close",
-      "exportPdf": "Export PDF"
+      "exportPdf": "Export PDF",
+      "share": "Share"
     },
     "auth": {
       "login": {

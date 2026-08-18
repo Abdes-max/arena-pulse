@@ -7,6 +7,7 @@ import {
   computed,
   effect,
   inject,
+  signal,
   viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -86,6 +87,21 @@ export class TournamentShell {
   protected readonly mode = this.themeService.mode;
   protected readonly language = this.languageService.language;
   protected readonly languages = SUPPORTED_LANGUAGES;
+
+  // Mobile-only hamburger (< 720px, same breakpoint/pattern as the admin
+  // shell's own AppShell -- see apps/web/src/app/admin/shell/app-shell.ts):
+  // the language switcher, share button and theme toggle move from the
+  // header row into this slide-down panel instead of crowding the row next
+  // to the sport name/back button.
+  protected readonly mobileMenuOpen = signal(false);
+
+  protected toggleMobileMenu(): void {
+    this.mobileMenuOpen.update((open) => !open);
+  }
+
+  protected closeMobileMenu(): void {
+    this.mobileMenuOpen.set(false);
+  }
 
   protected logoUrl(url: string | null | undefined): string | null {
     return this.assetUrl.resolve(url ?? null);

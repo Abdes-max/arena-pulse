@@ -17,14 +17,18 @@
             class="tournament-shell__back"
             routerLink="/"
             [attr.aria-label]="'shell.backAria' | transloco"
+            [title]="'shell.backAria' | transloco"
           >
-            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
               <path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
             </svg>
-            <span>{{ 'shell.back' | transloco }}</span>
           </a>
           <p class="tournament-shell__sport">{{ t.sportName }}</p>
         </div>
+
+        <!-- Desktop-inline controls -- hidden under the mobile breakpoint in
+             favor of the hamburger + panel below (same duplicate-markup
+             pattern as the admin shell's own AppShell). -->
         <div class="tournament-shell__actions">
           <ap-language-switcher
             [language]="language()"
@@ -34,7 +38,38 @@
           <ap-share-button [title]="t.name" [text]="shareText()" [url]="shareUrl()" />
           <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
         </div>
+
+        <button
+          type="button"
+          class="tournament-shell__menu-toggle"
+          (click)="toggleMobileMenu()"
+          [attr.aria-expanded]="mobileMenuOpen()"
+          aria-controls="tournament-shell-mobile-menu"
+          [attr.aria-label]="'shell.menu' | transloco"
+        >
+          @if (mobileMenuOpen()) {
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M4 4 L16 16 M16 4 L4 16" />
+            </svg>
+          } @else {
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M3 5 L17 5 M3 10 L17 10 M3 15 L17 15" />
+            </svg>
+          }
+        </button>
       </div>
+
+      @if (mobileMenuOpen()) {
+        <div class="tournament-shell__mobile-menu" id="tournament-shell-mobile-menu">
+          <ap-language-switcher
+            [language]="language()"
+            [languages]="languages"
+            (languageChange)="onLanguageChange($event)"
+          />
+          <ap-share-button [title]="t.name" [text]="shareText()" [url]="shareUrl()" />
+          <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
+        </div>
+      }
       <div class="tournament-shell__title-row">
         @if (logoUrl(t.logoUrl); as logo) {
           <img class="tournament-shell__logo" [src]="logo" alt="" />

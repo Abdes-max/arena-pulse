@@ -67,19 +67,77 @@
 
 // Leaves the tournament's own site (routerLink="/") back to the directory --
 // visitors arriving from a shared link have no other way back to browse
-// other tournaments otherwise.
+// other tournaments otherwise. Icon-only circular button rather than a text
+// link ("Autres tournois") -- bigger, unambiguous tap target and a border
+// gives it visibility against the header instead of reading as plain text.
 .tournament-shell__back {
   display: inline-flex;
   align-items: center;
-  gap: var(--ap-space-1);
+  justify-content: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: 50%;
   color: var(--ap-color-muted);
-  font-size: 0.85rem;
-  font-weight: 600;
   text-decoration: none;
-  transition: color var(--ap-motion-fast) var(--ap-easing-standard);
+  transition:
+    color var(--ap-motion-fast) var(--ap-easing-standard),
+    border-color var(--ap-motion-fast) var(--ap-easing-standard);
 
   &:hover {
     color: var(--ap-color-fg);
+    border-color: var(--ap-color-fg);
+  }
+}
+
+// Hidden by default (desktop) -- shown only under the mobile breakpoint
+// below, same pattern as the admin shell's own hamburger toggle
+// (apps/web/src/app/admin/shell/app-shell.scss's .app-shell__nav-toggle).
+.tournament-shell__menu-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  background: transparent;
+  color: var(--ap-color-fg);
+  cursor: pointer;
+
+  svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+  }
+}
+
+.tournament-shell__mobile-menu {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .tournament-shell__actions {
+    display: none;
+  }
+
+  .tournament-shell__menu-toggle {
+    display: inline-flex;
+  }
+
+  .tournament-shell__mobile-menu {
+    display: flex;
+    align-items: center;
+    gap: var(--ap-space-3);
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: var(--ap-space-3) var(--ap-space-6) 0;
   }
 }
 
