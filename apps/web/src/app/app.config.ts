@@ -16,6 +16,7 @@ import { routes } from './app.routes';
 import { authInterceptor } from './admin/core/auth.interceptor';
 import { AuthService } from './admin/core/auth.service';
 import { GlobalErrorHandler } from './core/global-error-handler';
+import { languageInterceptor } from './core/language.interceptor';
 import { playerAuthInterceptor } from './core/player-auth.interceptor';
 import { PlayerAuthService } from './core/player-auth.service';
 import { superAdminAuthInterceptor } from './super-admin/core/super-admin-auth.interceptor';
@@ -41,7 +42,12 @@ export const appConfig: ApplicationConfig = {
     // super-admin-scoped-request.ts) — a no-op otherwise, so all three are
     // safe to register unconditionally together.
     provideHttpClient(
-      withInterceptors([authInterceptor, playerAuthInterceptor, superAdminAuthInterceptor]),
+      withInterceptors([
+        authInterceptor,
+        playerAuthInterceptor,
+        superAdminAuthInterceptor,
+        languageInterceptor,
+      ]),
     ),
     provideApiClient({ apiUrl: environment.apiUrl }),
     // resolveInitialLanguage() (not a hardcoded 'fr') so the very first

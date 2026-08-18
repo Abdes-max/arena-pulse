@@ -17,6 +17,8 @@ import { OrganizationRoleGuard } from './guards/organization-role.guard';
 import { InvitationsService } from './invitations.service';
 import type { AuthenticatedUser } from '../auth/strategies/jwt.strategy';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { MailLang } from '../mail/decorators/mail-lang.decorator';
+import type { MailLanguage } from '../mail/mail-language';
 
 @ApiTags('organizations')
 @UseGuards(OrganizationRoleGuard)
@@ -30,8 +32,9 @@ export class OrganizationInvitationsController {
     @Param('organizationId') organizationId: string,
     @CurrentUser() user: AuthenticatedUser,
     @Body() dto: InviteMemberDto,
+    @MailLang() lang: MailLanguage,
   ) {
-    return this.invitationsService.invite(organizationId, user.id, dto);
+    return this.invitationsService.invite(organizationId, user.id, dto, lang);
   }
 
   @Get()

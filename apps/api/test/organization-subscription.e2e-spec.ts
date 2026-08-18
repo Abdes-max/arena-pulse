@@ -155,6 +155,7 @@ describe('Organization annual subscription (e2e)', () => {
       20000,
       'eur',
       expect.any(Date),
+      'fr',
     );
   });
 

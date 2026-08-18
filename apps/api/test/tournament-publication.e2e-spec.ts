@@ -189,6 +189,7 @@ describe('Paid tournament publication (e2e)', () => {
       'Coupe Payante',
       1000,
       'eur',
+      'fr',
     );
 
     // A retried webhook delivery is a silent no-op, not a second charge.

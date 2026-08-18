@@ -11,6 +11,7 @@ import {
   OrganizationRole,
   OrganizationSubscriptionStatus,
 } from '../../generated/prisma/client';
+import { DEFAULT_MAIL_LANGUAGE, MailLanguage } from '../mail/mail-language';
 import { MailService } from '../mail/mail.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { StripeService } from '../payments/stripe.service';
@@ -284,6 +285,7 @@ export class OrganizationsService {
   async confirmSubscriptionPayment(
     organizationId: string,
     stripeCheckoutSessionId: string,
+    lang: MailLanguage = DEFAULT_MAIL_LANGUAGE,
   ) {
     const subscription = await this.prisma.organizationSubscription.findUnique({
       where: { stripeCheckoutSessionId },
@@ -297,7 +299,7 @@ export class OrganizationsService {
         stripeCheckoutSessionId,
       );
       if (session.payment_status === 'paid') {
-        await this.applyPaidSubscriptionSession(session);
+        await this.applyPaidSubscriptionSession(session, lang);
       }
     }
     return this.getSubscriptionStatus(organizationId);
@@ -306,10 +308,16 @@ export class OrganizationsService {
   /**
    * Shared by the webhook handler and confirmSubscriptionPayment above --
    * same "mark active + email the receipt" side effects regardless of which
-   * one first learns the session is genuinely paid.
+   * one first learns the session is genuinely paid. `lang` defaults to
+   * French for the webhook path (no triggering browser request to read a
+   * language from, see [[i18n-emails-transactionnels]]) -- in practice
+   * confirmSubscriptionPayment usually wins the race anyway (it's called
+   * directly by the organizer's browser landing on /subscription/success),
+   * so the webhook-wins-first case is the rare fallback, not the norm.
    */
   private async applyPaidSubscriptionSession(
     session: Stripe.Checkout.Session,
+    lang: MailLanguage = DEFAULT_MAIL_LANGUAGE,
   ): Promise<void> {
     const subscription = await this.prisma.organizationSubscription.findUnique({
       where: { stripeCheckoutSessionId: session.id },
@@ -341,7 +349,7 @@ export class OrganizationsService {
       },
     });
 
-    await this.sendSubscriptionReceipt(updated);
+    await this.sendSubscriptionReceipt(updated, lang);
   }
 
   /**
@@ -349,12 +357,15 @@ export class OrganizationsService {
    * InvitationsService.invite's mail try/catch): the subscription is
    * already ACTIVE regardless of whether the receipt email makes it out.
    */
-  private async sendSubscriptionReceipt(subscription: {
-    organizationId: string;
-    amountCents: number;
-    currency: string;
-    expiresAt: Date | null;
-  }): Promise<void> {
+  private async sendSubscriptionReceipt(
+    subscription: {
+      organizationId: string;
+      amountCents: number;
+      currency: string;
+      expiresAt: Date | null;
+    },
+    lang: MailLanguage,
+  ): Promise<void> {
     const organization = await this.prisma.organization.findUnique({
       where: { id: subscription.organizationId },
     });
@@ -370,6 +381,7 @@ export class OrganizationsService {
           subscription.amountCents,
           subscription.currency,
           subscription.expiresAt,
+          lang,
         );
       } catch (error) {
         this.logger.warn(

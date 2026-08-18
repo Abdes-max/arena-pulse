@@ -127,6 +127,7 @@ describe('InvitationsService', () => {
         'new@example.com',
         'Ada Tournaments',
         expect.stringContaining('http://localhost:4300/accept-invitation/'),
+        'fr',
       );
     });
 

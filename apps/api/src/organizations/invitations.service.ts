@@ -12,6 +12,7 @@ import { InvitationStatus } from '../../generated/prisma/client';
 import type { AuthenticatedUser } from '../auth/strategies/jwt.strategy';
 import { PasswordService } from '../auth/password.service';
 import { TokenService } from '../auth/token.service';
+import { DEFAULT_MAIL_LANGUAGE, MailLanguage } from '../mail/mail-language';
 import { MailService } from '../mail/mail.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { AcceptInvitationDto } from './dto/accept-invitation.dto';
@@ -35,6 +36,7 @@ export class InvitationsService {
     organizationId: string,
     invitedByUserId: string,
     dto: InviteMemberDto,
+    lang: MailLanguage = DEFAULT_MAIL_LANGUAGE,
   ) {
     const existingMember = await this.prisma.organizationMember.findFirst({
       where: { organizationId, user: { email: dto.email } },
@@ -78,6 +80,7 @@ export class InvitationsService {
         dto.email,
         organization.name,
         this.buildInviteUrl(token),
+        lang,
       );
     } catch (error) {
       // The invitation itself is valid regardless of whether the email made

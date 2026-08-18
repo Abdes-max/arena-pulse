@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { OrganizationRole } from '../../generated/prisma/client';
+import { DEFAULT_MAIL_LANGUAGE, MailLanguage } from '../mail/mail-language';
 import { MailService } from '../mail/mail.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { LoginDto } from './dto/login.dto';
@@ -44,7 +45,10 @@ export class AuthService {
     private readonly configService: ConfigService,
   ) {}
 
-  async register(dto: RegisterDto): Promise<{
+  async register(
+    dto: RegisterDto,
+    lang: MailLanguage = DEFAULT_MAIL_LANGUAGE,
+  ): Promise<{
     status: 'PENDING_EMAIL_VERIFICATION';
     email: string;
   }> {
@@ -95,6 +99,7 @@ export class AuthService {
         user.email,
         user.firstName,
         this.buildVerifyEmailUrl(verificationToken),
+        lang,
       );
     } catch (error) {
       this.logger.warn(
@@ -106,6 +111,7 @@ export class AuthService {
         user.email,
         user.firstName,
         organization.name,
+        lang,
       );
     } catch (error) {
       this.logger.warn(
@@ -180,7 +186,10 @@ export class AuthService {
    * account instead of erroring, since re-requesting a link for a verified
    * account isn't a meaningful error state for the caller.
    */
-  async resendVerificationEmail(email: string): Promise<void> {
+  async resendVerificationEmail(
+    email: string,
+    lang: MailLanguage = DEFAULT_MAIL_LANGUAGE,
+  ): Promise<void> {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user || user.emailVerifiedAt) {
       return;
@@ -202,6 +211,7 @@ export class AuthService {
         user.email,
         user.firstName,
         this.buildVerifyEmailUrl(verificationToken),
+        lang,
       );
     } catch (error) {
       this.logger.warn(
