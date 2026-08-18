@@ -8,6 +8,8 @@ import {
 } from '@angular/core';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import { provideApiClient } from 'api-client';
+import { provideTransloco } from '@jsverse/transloco';
+import { SUPPORTED_LANGUAGES, TranslocoHttpLoader, resolveInitialLanguage } from 'design-tokens';
 
 import { environment } from '../environments/environment';
 import { routes } from './app.routes';
@@ -42,6 +44,31 @@ export const appConfig: ApplicationConfig = {
       withInterceptors([authInterceptor, playerAuthInterceptor, superAdminAuthInterceptor]),
     ),
     provideApiClient({ apiUrl: environment.apiUrl }),
+    // resolveInitialLanguage() (not a hardcoded 'fr') so the very first
+    // render already shows the right language -- persisted choice, else
+    // detected navigator.language, else fr -- instead of booting in fr and
+    // immediately switching, which would fetch (and briefly flash) two
+    // translation files instead of one. See LanguageService for the
+    // reactive side of this (setLanguage() switches + persists later).
+    provideTransloco({
+      config: {
+        availableLangs: SUPPORTED_LANGUAGES.map((language) => language.code),
+        defaultLang: resolveInitialLanguage(),
+        fallbackLang: 'fr',
+        reRenderOnLangChange: true,
+        prodMode: environment.production,
+        // false by default -- a *missing* key (as opposed to a failed
+        // language load) otherwise renders as the raw key string instead of
+        // silently resolving from fallbackLang. Needed for legal.terms/
+        // legal.privacy's section* keys, deliberately only translated in
+        // fr/en for this lot (see terms.page.ts) -- without this, opening
+        // those pages in es/de/it/pt showed literal "legal.terms.section1.title"
+        // text instead of the French fallback the "translation coming soon"
+        // banner promises.
+        missingHandler: { useFallbackTranslation: true },
+      },
+      loader: TranslocoHttpLoader,
+    }),
     // Restores an organizer's session from the httpOnly refresh cookie on a
     // hard reload. Runs for every visitor, including anonymous public-site
     // traffic (harmless 401, caught silently in AuthService.silentRefresh).

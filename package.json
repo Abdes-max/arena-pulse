@@ -49,6 +49,7 @@
     "@capacitor/local-notifications": "^8.2.1",
     "@capacitor/share": "^8.0.1",
     "@ionic/angular": "^8.8.16",
+    "@jsverse/transloco": "^8.4.0",
     "ionicons": "^8.1.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"

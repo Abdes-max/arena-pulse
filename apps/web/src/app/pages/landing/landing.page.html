@@ -12,21 +12,32 @@
   <nav class="landing-page__nav">
     <ap-logo />
     <div class="landing-page__nav-links">
-      <a class="landing-page__nav-link" href="#fonctionnalites">Fonctionnalités</a>
-      <a class="landing-page__nav-link" href="#sports">Sports</a>
-      <a class="landing-page__nav-link" href="#tournois">Événements</a>
-      <a class="landing-page__nav-link" href="#tarifs">Tarifs</a>
+      <a class="landing-page__nav-link" href="#fonctionnalites">{{
+        'landing.nav.features' | transloco
+      }}</a>
+      <a class="landing-page__nav-link" href="#sports">{{ 'landing.nav.sports' | transloco }}</a>
+      <a class="landing-page__nav-link" href="#tournois">{{ 'landing.nav.events' | transloco }}</a>
+      <a class="landing-page__nav-link" href="#tarifs">{{ 'landing.nav.pricing' | transloco }}</a>
     </div>
     <div class="landing-page__nav-end">
       <div class="landing-page__nav-end-links">
+        <ap-language-switcher
+          [language]="language()"
+          [languages]="languages"
+          (languageChange)="onLanguageChange($event)"
+        />
         <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
         @if (authService.isAuthenticated()) {
-          <a class="landing-page__nav-login" routerLink="/admin/tournaments">Mon espace</a>
+          <a class="landing-page__nav-login" routerLink="/admin/tournaments">{{
+            'landing.nav.myAccount' | transloco
+          }}</a>
           <button type="button" class="landing-page__nav-login" (click)="logout()">
-            Se déconnecter
+            {{ 'landing.nav.logout' | transloco }}
           </button>
         } @else {
-          <a class="landing-page__nav-login" routerLink="/login">Connexion</a>
+          <a class="landing-page__nav-login" routerLink="/login">{{
+            'landing.nav.login' | transloco
+          }}</a>
         }
       </div>
       <button
@@ -35,7 +46,7 @@
         (click)="toggleMobileMenu()"
         [attr.aria-expanded]="mobileMenuOpen()"
         aria-controls="landing-mobile-menu"
-        aria-label="Menu"
+        [attr.aria-label]="'landing.nav.menu' | transloco"
       >
         @if (mobileMenuOpen()) {
           <svg viewBox="0 0 20 20" aria-hidden="true">
@@ -52,20 +63,28 @@
 
   @if (mobileMenuOpen()) {
     <div class="landing-page__mobile-menu" id="landing-mobile-menu">
-      <a class="landing-page__mobile-menu-link" href="#fonctionnalites" (click)="closeMobileMenu()"
-        >Fonctionnalités</a
+      <a
+        class="landing-page__mobile-menu-link"
+        href="#fonctionnalites"
+        (click)="closeMobileMenu()"
+        >{{ 'landing.nav.features' | transloco }}</a
       >
-      <a class="landing-page__mobile-menu-link" href="#sports" (click)="closeMobileMenu()"
-        >Sports</a
-      >
-      <a class="landing-page__mobile-menu-link" href="#tournois" (click)="closeMobileMenu()"
-        >Événements</a
-      >
-      <a class="landing-page__mobile-menu-link" href="#tarifs" (click)="closeMobileMenu()"
-        >Tarifs</a
-      >
+      <a class="landing-page__mobile-menu-link" href="#sports" (click)="closeMobileMenu()">{{
+        'landing.nav.sports' | transloco
+      }}</a>
+      <a class="landing-page__mobile-menu-link" href="#tournois" (click)="closeMobileMenu()">{{
+        'landing.nav.events' | transloco
+      }}</a>
+      <a class="landing-page__mobile-menu-link" href="#tarifs" (click)="closeMobileMenu()">{{
+        'landing.nav.pricing' | transloco
+      }}</a>
 
       <div class="landing-page__mobile-menu-toggle">
+        <ap-language-switcher
+          [language]="language()"
+          [languages]="languages"
+          (languageChange)="onLanguageChange($event)"
+        />
         <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
       </div>
 
@@ -74,14 +93,17 @@
           class="landing-page__mobile-menu-login"
           routerLink="/admin/tournaments"
           (click)="closeMobileMenu()"
-          >Mon espace</a
+          >{{ 'landing.nav.myAccount' | transloco }}</a
         >
         <button type="button" class="landing-page__mobile-menu-login" (click)="logout()">
-          Se déconnecter
+          {{ 'landing.nav.logout' | transloco }}
         </button>
       } @else {
-        <a class="landing-page__mobile-menu-login" routerLink="/login" (click)="closeMobileMenu()"
-          >Connexion</a
+        <a
+          class="landing-page__mobile-menu-login"
+          routerLink="/login"
+          (click)="closeMobileMenu()"
+          >{{ 'landing.nav.login' | transloco }}</a
         >
       }
     </div>
@@ -129,22 +151,25 @@
     <p class="landing-page__eyebrow">
       <span class="landing-page__eyebrow-dot" aria-hidden="true"></span>
       @if (tournaments().length > 0) {
-        {{ tournaments().length }} événements sportifs publiés
+        {{ 'landing.eyebrow.count' | transloco: { count: tournaments().length } }}
       } @else {
-        TournArena
+        {{ 'landing.eyebrow.brand' | transloco }}
       }
     </p>
-    <h1>Organisez tournois et championnats <em>suivis en direct par tout le monde.</em></h1>
+    <h1>
+      {{ 'landing.hero.titleMain' | transloco }}
+      <em>{{ 'landing.hero.titleEmphasis' | transloco }}</em>
+    </h1>
     <p class="landing-page__subtitle">
-      Poules, tableaux à élimination, calendrier, arbitrage et classements — et un site public
-      généré automatiquement pour chacune de vos compétitions, mis à jour à la seconde où un score
-      est saisi.
+      {{ 'landing.hero.subtitle' | transloco }}
     </p>
     <div class="landing-page__hero-ctas">
-      <a class="landing-page__cta" routerLink="/register">Créer mon tournoi</a>
+      <a class="landing-page__cta" routerLink="/register">{{
+        'landing.hero.ctaCreate' | transloco
+      }}</a>
       @if (tournaments().length > 0) {
         <a class="landing-page__cta-ghost" [routerLink]="['/', tournaments()[0].slug]">
-          Voir un exemple en direct
+          {{ 'landing.hero.ctaExample' | transloco }}
         </a>
       }
     </div>
@@ -152,8 +177,12 @@
     <!-- href="#" -- pas encore publiée sur l'un ou l'autre store, voir la
          section stores plus bas pour le detail. -->
     <div class="landing-page__hero-stores">
-      <a href="#"><img src="badge-app-store.png" alt="Télécharger sur l'App Store" /></a>
-      <a href="#"><img src="badge-google-play.png" alt="Disponible sur Google Play" /></a>
+      <a href="#"
+        ><img src="badge-app-store.png" [attr.alt]="'landing.hero.storeApple' | transloco"
+      /></a>
+      <a href="#"
+        ><img src="badge-google-play.png" [attr.alt]="'landing.hero.storeGoogle' | transloco"
+      /></a>
     </div>
   </div>
 
@@ -161,7 +190,7 @@
     <div class="landing-page__marquee">
       <p class="landing-page__marquee-label">
         <span class="landing-page__marquee-pulse" aria-hidden="true"></span>
-        En ce moment sur TournArena
+        {{ 'landing.marquee.label' | transloco }}
       </p>
       <ap-tournament-marquee
         [tournaments]="marqueeTournaments()"
@@ -173,18 +202,18 @@
 
 @if (tournaments().length > 0) {
   <section id="tournois" class="landing-page__tournaments">
-    <h2>Compétitions en cours</h2>
+    <h2>{{ 'landing.tournaments.title' | transloco }}</h2>
     <ap-text-field
       class="landing-page__tournaments-search"
       type="search"
-      label="Rechercher un tournoi"
+      [label]="'landing.tournaments.searchLabel' | transloco"
       [hideLabel]="true"
-      placeholder="Rechercher un tournoi…"
+      [placeholder]="'landing.tournaments.searchPlaceholder' | transloco"
       [value]="query()"
       (valueChange)="onQueryChange($event)"
     />
     @if (filteredTournaments().length === 0) {
-      <p class="landing-page__tournaments-empty">Aucun tournoi trouvé.</p>
+      <p class="landing-page__tournaments-empty">{{ 'landing.tournaments.empty' | transloco }}</p>
     } @else {
       <div class="landing-page__tournaments-grid">
         @for (t of filteredTournaments(); track t.id) {
@@ -206,17 +235,16 @@
 }
 
 <section id="fonctionnalites" class="landing-page__features">
-  <h2>Tout ce qu'il faut pour piloter une compétition, rien de superflu</h2>
+  <h2>{{ 'landing.features.title' | transloco }}</h2>
   <p class="landing-page__features-lead">
-    Quatre outils qui se parlent — un changement de score met à jour poules, tableaux et calendrier
-    au même instant.
+    {{ 'landing.features.lead' | transloco }}
   </p>
   <div class="landing-page__feature-grid">
     <article class="landing-page__feature" data-accent="signal">
       <div class="landing-page__feature-mock" aria-hidden="true">
         <div class="landing-page__feature-mock-row">
           <span class="landing-page__feature-mock-dot"></span>
-          Poule A — U13
+          {{ 'landing.features.pools.mockRow' | transloco }}
         </div>
         <div class="landing-page__feature-mock-row">
           <span class="landing-page__feature-mock-bar" style="width: 78%"></span>
@@ -227,11 +255,10 @@
           <span class="landing-page__feature-mock-bar landing-page__feature-mock-bar--track"></span>
         </div>
       </div>
-      <span class="landing-page__feature-tag">Classements</span>
-      <h3>Poules et classements</h3>
+      <span class="landing-page__feature-tag">{{ 'landing.features.pools.tag' | transloco }}</span>
+      <h3>{{ 'landing.features.pools.title' | transloco }}</h3>
       <p>
-        Qualifications calculées automatiquement à chaque score saisi, aucune feuille de calcul à
-        tenir à jour.
+        {{ 'landing.features.pools.desc' | transloco }}
       </p>
     </article>
 
@@ -239,7 +266,7 @@
       <div class="landing-page__feature-mock" aria-hidden="true">
         <div class="landing-page__feature-mock-row">
           <span class="landing-page__feature-mock-dot"></span>
-          Quart de finale
+          {{ 'landing.features.bracket.mockRow' | transloco }}
         </div>
         <div class="landing-page__feature-mock-row">
           <span class="landing-page__feature-mock-bar" style="width: 60%"></span>
@@ -248,11 +275,12 @@
           <span class="landing-page__feature-mock-bar" style="width: 60%"></span>
         </div>
       </div>
-      <span class="landing-page__feature-tag">Élimination directe</span>
-      <h3>Tableaux à élimination</h3>
+      <span class="landing-page__feature-tag">{{
+        'landing.features.bracket.tag' | transloco
+      }}</span>
+      <h3>{{ 'landing.features.bracket.title' | transloco }}</h3>
       <p>
-        Générés depuis les équipes qualifiées, avec avancement automatique des vainqueurs à chaque
-        tour.
+        {{ 'landing.features.bracket.desc' | transloco }}
       </p>
     </article>
 
@@ -260,21 +288,23 @@
       <div class="landing-page__feature-mock" aria-hidden="true">
         <div class="landing-page__feature-mock-row">
           <span class="landing-page__feature-mock-dot"></span>
-          Terrain 2 · 14:00
+          {{ 'landing.features.schedule.mockRow1' | transloco }}
         </div>
         <div class="landing-page__feature-mock-row">
           <span class="landing-page__feature-mock-dot"></span>
-          Terrain 2 · 14:45
+          {{ 'landing.features.schedule.mockRow2' | transloco }}
         </div>
         <div class="landing-page__feature-mock-row">
           <span class="landing-page__feature-mock-dot"></span>
-          Terrain 1 · 15:30
+          {{ 'landing.features.schedule.mockRow3' | transloco }}
         </div>
       </div>
-      <span class="landing-page__feature-tag">Planification</span>
-      <h3>Calendrier et arbitrage</h3>
+      <span class="landing-page__feature-tag">{{
+        'landing.features.schedule.tag' | transloco
+      }}</span>
+      <h3>{{ 'landing.features.schedule.title' | transloco }}</h3>
       <p>
-        Matchs planifiés sur vos terrains et créneaux, arbitres assignés, forfaits gérés en un clic.
+        {{ 'landing.features.schedule.desc' | transloco }}
       </p>
     </article>
 
@@ -282,7 +312,7 @@
       <div class="landing-page__feature-mock" aria-hidden="true">
         <div class="landing-page__feature-mock-row">
           <span class="landing-page__feature-mock-dot"></span>
-          Site public généré
+          {{ 'landing.features.publicSite.mockRow' | transloco }}
         </div>
         <div class="landing-page__feature-mock-row">
           <span class="landing-page__feature-mock-bar" style="width: 90%"></span>
@@ -291,21 +321,21 @@
           <span class="landing-page__feature-mock-bar" style="width: 40%"></span>
         </div>
       </div>
-      <span class="landing-page__feature-tag">Temps réel</span>
-      <h3>Site public par tournoi</h3>
+      <span class="landing-page__feature-tag">{{
+        'landing.features.publicSite.tag' | transloco
+      }}</span>
+      <h3>{{ 'landing.features.publicSite.title' | transloco }}</h3>
       <p>
-        Équipes, calendrier, classements et résultats en direct — un lien à partager, rien à
-        configurer.
+        {{ 'landing.features.publicSite.desc' | transloco }}
       </p>
     </article>
   </div>
 </section>
 
 <section id="sports" class="landing-page__sports">
-  <h2>Un moteur, tous les sports</h2>
+  <h2>{{ 'landing.sports.title' | transloco }}</h2>
   <p class="landing-page__sports-lead">
-    Ballon rond ou raquette, en salle ou en ligne — TournArena s'adapte au format de votre
-    discipline, pas l'inverse.
+    {{ 'landing.sports.lead' | transloco }}
   </p>
   <div class="landing-page__sport-grid">
     @for (sport of sports(); track sport.id; let i = $index) {
@@ -464,62 +494,68 @@
           }
         </span>
         <h3>{{ sport.name }}</h3>
-        <p>{{ sportDescription(sport.name) }}</p>
+        <p>{{ sportDescriptionKey(sport.name) | transloco }}</p>
       </a>
     }
   </div>
 </section>
 
 <section id="tarifs" class="landing-page__pricing">
-  <h2>Une tarification qui suit la taille de votre compétition</h2>
+  <h2>{{ 'landing.pricing.title' | transloco }}</h2>
   <p class="landing-page__pricing-lead">
-    La création d'un tournoi et sa préparation sont toujours gratuites — le tarif ne s'applique
-    qu'au moment de la publication, selon le nombre d'équipes inscrites.
+    {{ 'landing.pricing.lead' | transloco }}
   </p>
   <div class="landing-page__pricing-grid">
     <article class="landing-page__pricing-tier">
-      <span class="landing-page__pricing-tier-tag">Découverte</span>
-      <p class="landing-page__pricing-tier-price">Gratuit</p>
-      <p class="landing-page__pricing-tier-unit">par publication</p>
-      <p class="landing-page__pricing-tier-desc">
-        Parfait pour un petit tournoi jusqu'à 8 équipes, avec toutes les fonctionnalités de
-        TournArena.
+      <span class="landing-page__pricing-tier-tag">{{
+        'landing.pricing.free.tag' | transloco
+      }}</span>
+      <p class="landing-page__pricing-tier-price">{{ 'landing.pricing.free.price' | transloco }}</p>
+      <p class="landing-page__pricing-tier-unit">
+        {{ 'landing.pricing.perPublication' | transloco }}
       </p>
-      <a class="landing-page__pricing-tier-cta" routerLink="/register">Commencer gratuitement</a>
-      <p class="landing-page__pricing-tier-features-label">Fonctionnalités clés</p>
+      <p class="landing-page__pricing-tier-desc">
+        {{ 'landing.pricing.free.desc' | transloco }}
+      </p>
+      <a class="landing-page__pricing-tier-cta" routerLink="/register">{{
+        'landing.pricing.free.cta' | transloco
+      }}</a>
+      <p class="landing-page__pricing-tier-features-label">
+        {{ 'landing.pricing.free.featuresLabel' | transloco }}
+      </p>
       <ul class="landing-page__pricing-tier-features">
         <li>
-          Jusqu'à 8 équipes
+          {{ 'landing.pricing.free.feature1' | transloco }}
           <span
             class="landing-page__pricing-tier-info"
-            title="Nombre d'équipes inscrites au moment de la publication."
+            [attr.title]="'landing.pricing.free.feature1Info' | transloco"
             aria-hidden="true"
             >ⓘ</span
           >
         </li>
         <li>
-          Poules, tableaux et classements automatiques
+          {{ 'landing.pricing.free.feature2' | transloco }}
           <span
             class="landing-page__pricing-tier-info"
-            title="Qualifications et tableaux recalculés à chaque score saisi."
+            [attr.title]="'landing.pricing.free.feature2Info' | transloco"
             aria-hidden="true"
             >ⓘ</span
           >
         </li>
         <li>
-          Calendrier et arbitrage
+          {{ 'landing.pricing.free.feature3' | transloco }}
           <span
             class="landing-page__pricing-tier-info"
-            title="Terrains, créneaux et arbitres assignés à vos matchs."
+            [attr.title]="'landing.pricing.free.feature3Info' | transloco"
             aria-hidden="true"
             >ⓘ</span
           >
         </li>
         <li>
-          Site public en direct
+          {{ 'landing.pricing.free.feature4' | transloco }}
           <span
             class="landing-page__pricing-tier-info"
-            title="Un lien à partager, mis à jour à chaque score."
+            [attr.title]="'landing.pricing.free.feature4Info' | transloco"
             aria-hidden="true"
             >ⓘ</span
           >
@@ -528,25 +564,32 @@
     </article>
 
     <article class="landing-page__pricing-tier" data-accent="signal">
-      <span class="landing-page__pricing-tier-tag">Le plus courant</span>
-      <p class="landing-page__pricing-tier-price">25&nbsp;€</p>
-      <p class="landing-page__pricing-tier-unit">par publication</p>
+      <span class="landing-page__pricing-tier-tag">{{
+        'landing.pricing.standard.tag' | transloco
+      }}</span>
+      <p class="landing-page__pricing-tier-price">
+        {{ 'landing.pricing.standard.price' | transloco }}
+      </p>
+      <p class="landing-page__pricing-tier-unit">
+        {{ 'landing.pricing.perPublication' | transloco }}
+      </p>
       <p class="landing-page__pricing-tier-desc">
-        Pour un tournoi ou championnat jusqu'à 48 équipes, sans rien changer à votre façon de
-        travailler.
+        {{ 'landing.pricing.standard.desc' | transloco }}
       </p>
       <a
         class="landing-page__pricing-tier-cta landing-page__pricing-tier-cta--fill"
         routerLink="/register"
-        >Commencer</a
+        >{{ 'landing.pricing.standard.cta' | transloco }}</a
       >
-      <p class="landing-page__pricing-tier-features-label">Tout dans Découverte, plus</p>
+      <p class="landing-page__pricing-tier-features-label">
+        {{ 'landing.pricing.standard.featuresLabel' | transloco }}
+      </p>
       <ul class="landing-page__pricing-tier-features">
         <li>
-          Jusqu'à 48 équipes
+          {{ 'landing.pricing.standard.feature1' | transloco }}
           <span
             class="landing-page__pricing-tier-info"
-            title="Nombre d'équipes inscrites au moment de la publication."
+            [attr.title]="'landing.pricing.standard.feature1Info' | transloco"
             aria-hidden="true"
             >ⓘ</span
           >
@@ -555,24 +598,32 @@
     </article>
 
     <article class="landing-page__pricing-tier" data-accent="ember">
-      <span class="landing-page__pricing-tier-tag">Grand format</span>
-      <p class="landing-page__pricing-tier-price">80&nbsp;€</p>
-      <p class="landing-page__pricing-tier-unit">par publication</p>
+      <span class="landing-page__pricing-tier-tag">{{
+        'landing.pricing.large.tag' | transloco
+      }}</span>
+      <p class="landing-page__pricing-tier-price">
+        {{ 'landing.pricing.large.price' | transloco }}
+      </p>
+      <p class="landing-page__pricing-tier-unit">
+        {{ 'landing.pricing.perPublication' | transloco }}
+      </p>
       <p class="landing-page__pricing-tier-desc">
-        Pour un tournoi ou une ligue avec des équipes illimitées, sans surcoût supplémentaire.
+        {{ 'landing.pricing.large.desc' | transloco }}
       </p>
       <a
         class="landing-page__pricing-tier-cta landing-page__pricing-tier-cta--fill"
         routerLink="/register"
-        >Commencer</a
+        >{{ 'landing.pricing.large.cta' | transloco }}</a
       >
-      <p class="landing-page__pricing-tier-features-label">Tout dans Le plus courant, plus</p>
+      <p class="landing-page__pricing-tier-features-label">
+        {{ 'landing.pricing.large.featuresLabel' | transloco }}
+      </p>
       <ul class="landing-page__pricing-tier-features">
         <li>
-          Équipes illimitées
+          {{ 'landing.pricing.large.feature1' | transloco }}
           <span
             class="landing-page__pricing-tier-info"
-            title="Au-delà de 48 équipes, aucun palier supérieur."
+            [attr.title]="'landing.pricing.large.feature1Info' | transloco"
             aria-hidden="true"
             >ⓘ</span
           >
@@ -581,34 +632,39 @@
     </article>
 
     <article class="landing-page__pricing-tier" data-accent="signal-fill">
-      <span class="landing-page__pricing-tier-tag">Meilleure valeur</span>
-      <p class="landing-page__pricing-tier-price">200&nbsp;€</p>
-      <p class="landing-page__pricing-tier-unit">par an</p>
+      <span class="landing-page__pricing-tier-tag">{{
+        'landing.pricing.subscription.tag' | transloco
+      }}</span>
+      <p class="landing-page__pricing-tier-price">
+        {{ 'landing.pricing.subscription.price' | transloco }}
+      </p>
+      <p class="landing-page__pricing-tier-unit">{{ 'landing.pricing.perYear' | transloco }}</p>
       <p class="landing-page__pricing-tier-desc">
-        Plusieurs tournois par an&nbsp;? Un abonnement par organisation couvre toutes vos
-        publications pendant un an.
+        {{ 'landing.pricing.subscription.desc' | transloco }}
       </p>
       <a
         class="landing-page__pricing-tier-cta landing-page__pricing-tier-cta--fill"
         routerLink="/register"
-        >Commencer</a
+        >{{ 'landing.pricing.subscription.cta' | transloco }}</a
       >
-      <p class="landing-page__pricing-tier-features-label">Tout dans Grand format, plus</p>
+      <p class="landing-page__pricing-tier-features-label">
+        {{ 'landing.pricing.subscription.featuresLabel' | transloco }}
+      </p>
       <ul class="landing-page__pricing-tier-features">
         <li>
-          Publications illimitées pendant un an
+          {{ 'landing.pricing.subscription.feature1' | transloco }}
           <span
             class="landing-page__pricing-tier-info"
-            title="Toute l'organisation, quel que soit le nombre d'équipes de chaque tournoi."
+            [attr.title]="'landing.pricing.subscription.feature1Info' | transloco"
             aria-hidden="true"
             >ⓘ</span
           >
         </li>
         <li>
-          Renouvellement manuel
+          {{ 'landing.pricing.subscription.feature2' | transloco }}
           <span
             class="landing-page__pricing-tier-info"
-            title="Pas de reconduction automatique ni de prélèvement surprise."
+            [attr.title]="'landing.pricing.subscription.feature2Info' | transloco"
             aria-hidden="true"
             >ⓘ</span
           >
@@ -619,9 +675,9 @@
 </section>
 
 <section class="landing-page__stores">
-  <h2>Disponible partout où vos joueurs regardent</h2>
+  <h2>{{ 'landing.stores.title' | transloco }}</h2>
   <p>
-    Suivi en direct, notifications de vos équipes favorites — l'app TournArena sur iOS et Android.
+    {{ 'landing.stores.desc' | transloco }}
   </p>
   <!--
     href="#" -- TournArena n'est pour l'instant publiée que sur TestFlight
@@ -630,24 +686,28 @@
     fiches une fois publiées.
   -->
   <div class="landing-page__store-badges">
-    <a href="#"><img src="badge-app-store.png" alt="Télécharger sur l'App Store" /></a>
-    <a href="#"><img src="badge-google-play.png" alt="Disponible sur Google Play" /></a>
+    <a href="#"
+      ><img src="badge-app-store.png" [attr.alt]="'landing.hero.storeApple' | transloco"
+    /></a>
+    <a href="#"
+      ><img src="badge-google-play.png" [attr.alt]="'landing.hero.storeGoogle' | transloco"
+    /></a>
   </div>
 </section>
 
 <footer class="landing-page__final-cta">
-  <h2>Prêt à organiser votre prochain tournoi ou championnat ?</h2>
-  <a class="landing-page__cta" routerLink="/register">Créer mon tournoi</a>
+  <h2>{{ 'landing.finalCta.title' | transloco }}</h2>
+  <a class="landing-page__cta" routerLink="/register">{{ 'landing.hero.ctaCreate' | transloco }}</a>
 </footer>
 
 <footer class="landing-page__footer">
   <div class="landing-page__footer-top">
     <ap-logo class="landing-page__footer-brand" />
     <nav class="landing-page__footer-links">
-      <a routerLink="/contact">Contact</a>
-      <a routerLink="/terms">Conditions d'utilisation</a>
-      <a routerLink="/privacy">Politique de confidentialité</a>
+      <a routerLink="/contact">{{ 'landing.footer.contact' | transloco }}</a>
+      <a routerLink="/terms">{{ 'landing.footer.terms' | transloco }}</a>
+      <a routerLink="/privacy">{{ 'landing.footer.privacy' | transloco }}</a>
     </nav>
   </div>
-  <p class="landing-page__footer-copyright">© 2026 TournArena. Tous droits réservés.</p>
+  <p class="landing-page__footer-copyright">{{ 'landing.footer.copyright' | transloco }}</p>
 </footer>

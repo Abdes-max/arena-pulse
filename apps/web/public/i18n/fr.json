@@ -1,0 +1,252 @@
+{
+  "landing": {
+    "nav": {
+      "features": "Fonctionnalités",
+      "sports": "Sports",
+      "events": "Événements",
+      "pricing": "Tarifs",
+      "myAccount": "Mon espace",
+      "logout": "Se déconnecter",
+      "login": "Connexion",
+      "menu": "Menu"
+    },
+    "eyebrow": {
+      "brand": "TournArena",
+      "count": "{{count}} événements sportifs publiés"
+    },
+    "hero": {
+      "titleMain": "Organisez tournois et championnats",
+      "titleEmphasis": "suivis en direct par tout le monde.",
+      "subtitle": "Poules, tableaux à élimination, calendrier, arbitrage et classements — et un site public généré automatiquement pour chacune de vos compétitions, mis à jour à la seconde où un score est saisi.",
+      "ctaCreate": "Créer mon tournoi",
+      "ctaExample": "Voir un exemple en direct",
+      "storeApple": "Télécharger sur l'App Store",
+      "storeGoogle": "Disponible sur Google Play"
+    },
+    "marquee": {
+      "label": "En ce moment sur TournArena"
+    },
+    "tournaments": {
+      "title": "Compétitions en cours",
+      "searchLabel": "Rechercher un tournoi",
+      "searchPlaceholder": "Rechercher un tournoi…",
+      "empty": "Aucun tournoi trouvé."
+    },
+    "features": {
+      "title": "Tout ce qu'il faut pour piloter une compétition, rien de superflu",
+      "lead": "Quatre outils qui se parlent — un changement de score met à jour poules, tableaux et calendrier au même instant.",
+      "pools": {
+        "mockRow": "Poule A — U13",
+        "tag": "Classements",
+        "title": "Poules et classements",
+        "desc": "Qualifications calculées automatiquement à chaque score saisi, aucune feuille de calcul à tenir à jour."
+      },
+      "bracket": {
+        "mockRow": "Quart de finale",
+        "tag": "Élimination directe",
+        "title": "Tableaux à élimination",
+        "desc": "Générés depuis les équipes qualifiées, avec avancement automatique des vainqueurs à chaque tour."
+      },
+      "schedule": {
+        "mockRow1": "Terrain 2 · 14:00",
+        "mockRow2": "Terrain 2 · 14:45",
+        "mockRow3": "Terrain 1 · 15:30",
+        "tag": "Planification",
+        "title": "Calendrier et arbitrage",
+        "desc": "Matchs planifiés sur vos terrains et créneaux, arbitres assignés, forfaits gérés en un clic."
+      },
+      "publicSite": {
+        "mockRow": "Site public généré",
+        "tag": "Temps réel",
+        "title": "Site public par tournoi",
+        "desc": "Équipes, calendrier, classements et résultats en direct — un lien à partager, rien à configurer."
+      }
+    },
+    "sports": {
+      "title": "Un moteur, tous les sports",
+      "lead": "Ballon rond ou raquette, en salle ou en ligne — TournArena s'adapte au format de votre discipline, pas l'inverse.",
+      "description": {
+        "football": "Poules puis phase finale, tirs au but en cas d'égalité — le format classique, entièrement automatisé.",
+        "basketball": "Championnat ou play-offs, prolongations gérées match par match, classement recalculé à chaque panier.",
+        "volleyball": "Sets comptés, tableaux à élimination directe pour les phases finales de vos ligues.",
+        "handball": "Poules et tableaux croisés, jusqu'aux demi-finales et à la petite finale si vous la jouez.",
+        "rugby": "Championnat toutes rondes ou tournoi à élimination — classements par bonus, à votre façon.",
+        "tennis": "Tableaux à élimination directe, têtes de série et byes gérés automatiquement à chaque tour.",
+        "badminton": "Simples, doubles, plusieurs catégories d'âge dans un même tournoi — chacune son propre tableau.",
+        "futsal": "Le même moteur que le foot à onze, calibré pour vos formats en salle.",
+        "esport": "Tournois en ligne ou LAN, un site public en direct pour suivre chaque match comme les autres sports.",
+        "default": "Poules, championnat ou élimination directe — votre format, vos règles."
+      }
+    },
+    "pricing": {
+      "title": "Une tarification qui suit la taille de votre compétition",
+      "lead": "La création d'un tournoi et sa préparation sont toujours gratuites — le tarif ne s'applique qu'au moment de la publication, selon le nombre d'équipes inscrites.",
+      "perPublication": "par publication",
+      "perYear": "par an",
+      "free": {
+        "tag": "Découverte",
+        "price": "Gratuit",
+        "desc": "Parfait pour un petit tournoi jusqu'à 8 équipes, avec toutes les fonctionnalités de TournArena.",
+        "cta": "Commencer gratuitement",
+        "featuresLabel": "Fonctionnalités clés",
+        "feature1": "Jusqu'à 8 équipes",
+        "feature1Info": "Nombre d'équipes inscrites au moment de la publication.",
+        "feature2": "Poules, tableaux et classements automatiques",
+        "feature2Info": "Qualifications et tableaux recalculés à chaque score saisi.",
+        "feature3": "Calendrier et arbitrage",
+        "feature3Info": "Terrains, créneaux et arbitres assignés à vos matchs.",
+        "feature4": "Site public en direct",
+        "feature4Info": "Un lien à partager, mis à jour à chaque score."
+      },
+      "standard": {
+        "tag": "Le plus courant",
+        "price": "25 €",
+        "desc": "Pour un tournoi ou championnat jusqu'à 48 équipes, sans rien changer à votre façon de travailler.",
+        "cta": "Commencer",
+        "featuresLabel": "Tout dans Découverte, plus",
+        "feature1": "Jusqu'à 48 équipes",
+        "feature1Info": "Nombre d'équipes inscrites au moment de la publication."
+      },
+      "large": {
+        "tag": "Grand format",
+        "price": "80 €",
+        "desc": "Pour un tournoi ou une ligue avec des équipes illimitées, sans surcoût supplémentaire.",
+        "cta": "Commencer",
+        "featuresLabel": "Tout dans Le plus courant, plus",
+        "feature1": "Équipes illimitées",
+        "feature1Info": "Au-delà de 48 équipes, aucun palier supérieur."
+      },
+      "subscription": {
+        "tag": "Meilleure valeur",
+        "price": "200 €",
+        "desc": "Plusieurs tournois par an ? Un abonnement par organisation couvre toutes vos publications pendant un an.",
+        "cta": "Commencer",
+        "featuresLabel": "Tout dans Grand format, plus",
+        "feature1": "Publications illimitées pendant un an",
+        "feature1Info": "Toute l'organisation, quel que soit le nombre d'équipes de chaque tournoi.",
+        "feature2": "Renouvellement manuel",
+        "feature2Info": "Pas de reconduction automatique ni de prélèvement surprise."
+      }
+    },
+    "stores": {
+      "title": "Disponible partout où vos joueurs regardent",
+      "desc": "Suivi en direct, notifications de vos équipes favorites — l'app TournArena sur iOS et Android."
+    },
+    "finalCta": {
+      "title": "Prêt à organiser votre prochain tournoi ou championnat ?"
+    },
+    "footer": {
+      "contact": "Contact",
+      "terms": "Conditions d'utilisation",
+      "privacy": "Politique de confidentialité",
+      "copyright": "© 2026 TournArena. Tous droits réservés."
+    }
+  },
+  "legal": {
+    "back": "← Retour",
+    "contactLinkText": "formulaire de contact",
+    "translationPending": "Cette page n'est pour l'instant disponible qu'en français et en anglais. La traduction dans les autres langues arrive bientôt.",
+    "terms": {
+      "title": "Conditions d'utilisation",
+      "updated": "Dernière mise à jour : 16 août 2026",
+      "section1": {
+        "title": "1. Objet",
+        "body": "Les présentes conditions d'utilisation régissent l'accès et l'usage de TournArena (ci-après « le Service »), une plateforme permettant à des organisateurs de créer et publier des tournois et championnats sportifs, et à des joueurs et équipes de s'y inscrire et d'en suivre les résultats."
+      },
+      "section2": {
+        "title": "2. Éditeur",
+        "before": "TournArena est édité par l'équipe TournArena. Pour toute question relative aux présentes conditions, vous pouvez nous contacter via notre",
+        "after": "."
+      },
+      "section3": {
+        "title": "3. Création de compte",
+        "body": "La création d'un compte organisateur nécessite une adresse email valide, vérifiée avant toute utilisation du Service. Vous êtes responsable de la confidentialité de vos identifiants et de toute activité effectuée depuis votre compte."
+      },
+      "section4": {
+        "title": "4. Contenus publiés",
+        "body": "L'organisateur est seul responsable des contenus qu'il publie sur le Service (nom et règlement du tournoi, équipes, logos, résultats, classements). TournArena se réserve le droit de suspendre la publication d'un tournoi dont le contenu serait manifestement illicite, sans préjudice d'autres recours."
+      },
+      "section5": {
+        "title": "5. Tarifs et paiement",
+        "body": "L'utilisation de certaines fonctionnalités (publication d'un tournoi, abonnement annuel) est payante, aux conditions décrites sur notre page Tarifs. Les paiements sont traités par notre prestataire Stripe ; TournArena ne stocke aucune donnée de carte bancaire. Sauf erreur technique de notre part, les sommes réglées ne sont pas remboursables une fois le service rendu (tournoi publié, période d'abonnement entamée)."
+      },
+      "section6": {
+        "title": "6. Propriété intellectuelle",
+        "body": "La marque TournArena, son logo et l'ensemble des éléments graphiques et logiciels du Service sont la propriété de TournArena et ne peuvent être reproduits sans autorisation."
+      },
+      "section7": {
+        "title": "7. Disponibilité et évolution du Service",
+        "body": "TournArena met en œuvre des moyens raisonnables pour assurer la disponibilité du Service, sans garantie de continuité absolue. Le Service peut évoluer, être temporairement suspendu pour maintenance, ou voir certaines fonctionnalités modifiées."
+      },
+      "section8": {
+        "title": "8. Responsabilité",
+        "body": "TournArena ne saurait être tenu responsable des litiges sportifs, disciplinaires ou contractuels entre organisateurs, équipes et joueurs, le Service n'étant qu'un outil de gestion et de publication mis à leur disposition."
+      },
+      "section9": {
+        "title": "9. Résiliation",
+        "body": "Vous pouvez cesser d'utiliser le Service à tout moment. TournArena peut suspendre ou résilier un compte en cas de non-respect des présentes conditions."
+      },
+      "section10": {
+        "title": "10. Modification des conditions",
+        "body": "TournArena peut modifier les présentes conditions ; la version en vigueur est celle publiée sur cette page, accompagnée de sa date de dernière mise à jour."
+      },
+      "section11": {
+        "title": "11. Droit applicable",
+        "body": "Les présentes conditions sont soumises au droit français. Tout litige relève de la compétence des tribunaux français, à défaut de résolution amiable."
+      }
+    },
+    "privacy": {
+      "title": "Politique de confidentialité",
+      "updated": "Dernière mise à jour : 16 août 2026",
+      "section1": {
+        "title": "1. Préambule",
+        "body": "Cette politique explique quelles données personnelles TournArena collecte, pourquoi, et quels sont vos droits, conformément au Règlement général sur la protection des données (RGPD)."
+      },
+      "section2": {
+        "title": "2. Responsable du traitement",
+        "before": "L'équipe TournArena est responsable du traitement des données décrites ici. Pour toute question ou pour exercer vos droits, utilisez notre",
+        "after": "."
+      },
+      "section3": {
+        "title": "3. Données collectées",
+        "item1": "Données de compte : nom, prénom, adresse email, mot de passe (chiffré).",
+        "item2": "Données liées aux tournois : nom des équipes, résultats, calendriers publiés par les organisateurs.",
+        "item3": "Données de paiement : traitées directement par notre prestataire Stripe — TournArena ne stocke jamais de numéro de carte bancaire.",
+        "item4": "Correspondance : messages envoyés via le formulaire de contact."
+      },
+      "section4": {
+        "title": "4. Finalités",
+        "body": "Ces données sont utilisées pour créer et sécuriser votre compte, faire fonctionner les tournois publiés, traiter les paiements, vous contacter en réponse à vos messages, et améliorer le Service."
+      },
+      "section5": {
+        "title": "5. Base légale",
+        "body": "Le traitement repose sur l'exécution du contrat qui vous lie à TournArena (création de compte, publication de tournois, paiement) et, pour le formulaire de contact, sur votre consentement exprès à nous écrire."
+      },
+      "section6": {
+        "title": "6. Destinataires des données",
+        "body": "Vos données peuvent être transmises à nos prestataires techniques strictement nécessaires au fonctionnement du Service : hébergeur, prestataire d'envoi d'emails transactionnels (Brevo), prestataire de paiement (Stripe). Aucune donnée n'est vendue à des tiers."
+      },
+      "section7": {
+        "title": "7. Durée de conservation",
+        "body": "Les données de compte sont conservées tant que le compte est actif, puis supprimées ou anonymisées dans un délai raisonnable après sa clôture, sous réserve des obligations légales de conservation (notamment comptables)."
+      },
+      "section8": {
+        "title": "8. Sécurité",
+        "body": "Les mots de passe sont stockés sous forme hachée, les échanges avec le Service sont chiffrés (HTTPS), et l'accès aux données est limité à ce qui est nécessaire au fonctionnement du Service."
+      },
+      "section9": {
+        "title": "9. Vos droits",
+        "before": "Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, d'effacement, de limitation, d'opposition et de portabilité de vos données. Vous pouvez exercer ces droits via notre",
+        "after": ", et introduire une réclamation auprès de la CNIL si vous estimez que vos droits ne sont pas respectés."
+      },
+      "section10": {
+        "title": "10. Cookies",
+        "body": "TournArena utilise uniquement des cookies techniques strictement nécessaires au fonctionnement du Service (maintien de votre session). Aucun cookie publicitaire ou de mesure d'audience tiers n'est déposé."
+      },
+      "section11": {
+        "title": "11. Modification de cette politique",
+        "body": "Cette politique peut être mise à jour ; la version applicable est celle publiée sur cette page, accompagnée de sa date de dernière mise à jour."
+      }
+    }
+  }
+}

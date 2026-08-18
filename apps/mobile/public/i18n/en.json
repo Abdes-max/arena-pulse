@@ -1,0 +1,44 @@
+{
+  "tournamentEntry": {
+    "settingsAria": "Settings",
+    "back": "Back",
+    "shareText": "Discover TournArena, the app to follow your competitions.",
+    "hero": {
+      "title": "Follow a competition",
+      "hint": "Pools, knockout brackets, schedule and live standings.",
+      "ctaViewEvents": "See events",
+      "ctaViewExample": "See an example",
+      "marqueeLabel": "Happening now"
+    },
+    "published": {
+      "title": "Published events",
+      "searchLabel": "Search an event",
+      "searchPlaceholder": "Search an event…",
+      "empty": "No event found."
+    },
+    "settings": {
+      "title": "Settings",
+      "closeAria": "Close settings",
+      "language": "Language",
+      "account": {
+        "sectionTitle": "Account",
+        "login": "Log in",
+        "createTournament": "Create a tournament"
+      },
+      "general": {
+        "sectionTitle": "General",
+        "rate": "Rate the app",
+        "rateBadge": "Coming soon",
+        "share": "Share the app",
+        "contact": "Contact us",
+        "pricing": "Pricing"
+      },
+      "legal": {
+        "sectionTitle": "Legal",
+        "privacy": "Privacy policy",
+        "terms": "Terms of use"
+      },
+      "copyright": "© 2026 TournArena. All rights reserved."
+    }
+  }
+}

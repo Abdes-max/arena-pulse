@@ -1,0 +1,87 @@
+:host {
+  position: relative;
+  display: inline-block;
+}
+
+.ap-language-switcher__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ap-space-1);
+  padding: var(--ap-space-2) var(--ap-space-3);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  background: none;
+  color: inherit;
+  font-family: var(--ap-font-body);
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition:
+    background-color var(--ap-motion-fast) var(--ap-easing-standard),
+    border-color var(--ap-motion-fast) var(--ap-easing-standard);
+
+  &:hover {
+    border-color: var(--ap-color-signal);
+    color: var(--ap-color-signal);
+  }
+
+  &:focus-visible {
+    outline: var(--ap-border-width-strong) solid var(--ap-color-focus);
+    outline-offset: 2px;
+  }
+}
+
+.ap-language-switcher__code {
+  letter-spacing: var(--ap-tracking-tight);
+}
+
+.ap-language-switcher__chevron {
+  color: var(--ap-color-muted);
+}
+
+// Floating panel -- position: absolute (not fixed): the switcher only ever
+// sits in a normal-flow toolbar (landing/legal nav, settings row), never
+// inside an overflow:hidden ancestor the way the settings-overlay's own
+// cards do, so this doesn't need the fixed-position workaround those use.
+.ap-language-switcher__panel {
+  position: absolute;
+  top: calc(100% + var(--ap-space-2));
+  right: 0;
+  z-index: 30;
+  min-width: 9rem;
+  margin: 0;
+  padding: var(--ap-space-1);
+  list-style: none;
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  box-shadow: var(--ap-shadow-md);
+}
+
+.ap-language-switcher__option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-2);
+  padding: var(--ap-space-2) var(--ap-space-3);
+  border-radius: var(--ap-radius-sm);
+  font-size: 0.85rem;
+  color: var(--ap-color-fg);
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--ap-color-signal-soft);
+    color: var(--ap-color-signal);
+    outline: none;
+  }
+
+  svg {
+    flex: 0 0 auto;
+    color: var(--ap-color-signal);
+  }
+}
+
+.ap-language-switcher__option[aria-selected='true'] {
+  font-weight: 700;
+}

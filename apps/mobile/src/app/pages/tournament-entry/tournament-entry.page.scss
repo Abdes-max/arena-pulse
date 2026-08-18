@@ -127,6 +127,31 @@
   margin: 0 0 var(--ap-space-2) var(--ap-space-1);
 }
 
+// Standalone row for the language switcher -- reuses .settings-row (icon
+// sizing, label flex/font, hover tint) but deliberately isn't one of the
+// .settings-card rows below (see the template comment above it): those
+// cards use overflow: hidden to clip shared row borders to their own
+// rounded corners, which would also silently clip ap-language-switcher's
+// own dropdown panel (position: absolute) the moment it opened near a
+// card's bottom edge. Own background/border/radius/shadow instead, matching
+// .settings-card's own so it still reads as part of the same visual family.
+// Compound selector for border-bottom (a *shorthand* `border` here would
+// otherwise need to out-order .settings-row's own `border-bottom`
+// longhand in the cascade, which is fragile) -- (0,2,0) beats .settings-row
+// alone regardless of source order, same reasoning as the icon/trailing
+// overrides above.
+.tournament-entry-page__settings-row.tournament-entry-page__settings-language {
+  margin-bottom: var(--ap-space-6);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-lg);
+  box-shadow: var(--ap-shadow-sm);
+
+  ap-language-switcher {
+    flex: 0 0 auto;
+  }
+}
+
 // Groups a section's rows into one rounded card (background: surface, same
 // token ap-tournament-card/ap-tournament-marquee already use for their own
 // cards) rather than a flat full-bleed list -- overflow: hidden clips the
