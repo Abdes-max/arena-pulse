@@ -1,5 +1,6 @@
+import { ViewportScroller } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AssetUrlService, PublicApiService } from 'api-client';
 import { TranslocoPipe } from '@jsverse/transloco';
 import {
@@ -64,6 +65,8 @@ export class LandingPage {
   private readonly languageService = inject(LanguageService);
   private readonly api = inject(PublicApiService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+  private readonly viewportScroller = inject(ViewportScroller);
   private readonly assetUrl = inject(AssetUrlService);
   protected readonly authService = inject(AuthService);
 
@@ -101,8 +104,44 @@ export class LandingPage {
   );
 
   constructor() {
-    void this.api.listTournaments(50).then((tournaments) => this.tournaments.set(tournaments));
-    void this.api.listSports().then((sports) => this.sports.set(sports));
+    const tournamentsLoaded = this.api
+      .listTournaments(50)
+      .then((tournaments) => this.tournaments.set(tournaments));
+    const sportsLoaded = this.api.listSports().then((sports) => this.sports.set(sports));
+
+    // withInMemoryScrolling's anchorScrolling (app.config.ts) scrolls to the
+    // URL's fragment on NavigationEnd, which fires immediately -- long
+    // before these two API calls resolve. #tarifs sits below both the
+    // tournaments and sports sections, whose height depends entirely on
+    // what comes back (empty tournaments()/sports() render nothing), so a
+    // visitor opening a direct link to /#tarifs (e.g. the mobile app's
+    // Paramètres > Tarifs row) landed short of the real section: the page
+    // was scrolled to where #tarifs would be in the *empty* layout, then
+    // grew taller underneath the viewport once data arrived. How far short
+    // depended on how tall the tournaments/sports grids render at that
+    // viewport's width (a different number of cards per row on phone vs.
+    // tablet vs. desktop) -- which is exactly why this looked like landing
+    // in a different section altogether depending on the device, even
+    // though it's the same one root cause everywhere.
+    void Promise.all([tournamentsLoaded, sportsLoaded]).then(() => {
+      const fragment = this.route.snapshot.fragment;
+      if (!fragment) {
+        return;
+      }
+      const scrollToFragment = () => this.viewportScroller.scrollToAnchor(fragment);
+      // Double rAF: one frame to let Angular flush the signal updates above
+      // into the DOM, a second to make sure that layout has actually been
+      // committed before scrolling against it -- a single frame can still
+      // catch the browser mid-reflow, especially on slower mobile devices.
+      requestAnimationFrame(() => requestAnimationFrame(scrollToFragment));
+      // Images (tournament/sport logos) can shift the layout again once
+      // *they* finish loading, later than the frame above -- re-correct
+      // once more after the whole page (images included) has settled, if
+      // it hasn't already by then.
+      if (document.readyState !== 'complete') {
+        window.addEventListener('load', scrollToFragment, { once: true });
+      }
+    });
   }
 
   protected logoUrl(url: string | null): string | null {
