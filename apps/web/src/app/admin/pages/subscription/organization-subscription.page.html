@@ -1,56 +1,57 @@
 <main class="subscription-page">
   <div class="subscription-page__no-print">
-    <h1>Abonnement annuel</h1>
+    <h1>{{ 'admin.subscription.title' | transloco }}</h1>
     <p class="subscription-page__intro">
-      Publier un tournoi est facturé par palier selon le nombre d'équipes (gratuit jusqu'à 8
-      équipes, 25&nbsp;€ de 9 à 48 équipes, 80&nbsp;€ au-delà). L'abonnement annuel remplace ce
-      paiement à l'unité&nbsp;: 200&nbsp;€ par an, publications illimitées pour toute
-      l'organisation.
+      {{ 'admin.subscription.intro' | transloco }}
     </p>
 
     @if (loading()) {
-      <p>Chargement…</p>
+      <p>{{ 'admin.subscription.loading' | transloco }}</p>
     } @else {
       @if (errorMessage(); as message) {
-        <p class="subscription-page__error" role="alert">{{ message }}</p>
+        <p class="subscription-page__error" role="alert">{{ message | transloco }}</p>
       }
 
       @if (!isAdmin()) {
-        <p>Seul un administrateur de l'organisation peut gérer l'abonnement.</p>
+        <p>{{ 'admin.subscription.adminOnly' | transloco }}</p>
       } @else if (status(); as s) {
         @switch (s.status) {
           @case ('ACTIVE') {
             <section class="subscription-page__card subscription-page__card--active">
-              <ap-badge status="published" label="Abonnement actif" />
+              <ap-badge
+                status="published"
+                [label]="'admin.subscription.status.active.badgeLabel' | transloco"
+              />
               <p>
-                Toutes les publications de tournois sont gratuites jusqu'au
-                <strong>{{ formatDate(s.expiresAt) }}</strong
-                >.
+                {{
+                  'admin.subscription.status.active.body'
+                    | transloco: { date: formatDate(s.expiresAt) }
+                }}
               </p>
               <p class="subscription-page__note">
-                Le renouvellement est manuel&nbsp;: revenez sur cette page après cette date pour
-                souscrire un nouvel abonnement. Les tournois publiés pendant que l'abonnement est
-                actif restent publiés après son expiration.
+                {{ 'admin.subscription.status.active.note' | transloco }}
               </p>
             </section>
           }
           @case ('PENDING_PAYMENT') {
             <section class="subscription-page__card">
-              <ap-badge status="unpublished" label="Paiement en attente" />
+              <ap-badge
+                status="unpublished"
+                [label]="'admin.subscription.status.pendingPayment.badgeLabel' | transloco"
+              />
               <p>
-                Une souscription est en cours de confirmation. Si le paiement a été abandonné, vous
-                pouvez relancer un nouveau paiement.
+                {{ 'admin.subscription.status.pendingPayment.body' | transloco }}
               </p>
               <ap-button type="button" [disabled]="subscribing()" (click)="subscribe()">
-                Relancer le paiement — 200&nbsp;€
+                {{ 'admin.subscription.status.pendingPayment.retryButton' | transloco }}
               </ap-button>
             </section>
           }
           @case ('NONE') {
             <section class="subscription-page__card">
-              <p>Aucun abonnement actif pour cette organisation.</p>
+              <p>{{ 'admin.subscription.status.none.body' | transloco }}</p>
               <ap-button type="button" [disabled]="subscribing()" (click)="subscribe()">
-                Souscrire — 200&nbsp;€ / an
+                {{ 'admin.subscription.status.none.subscribeButton' | transloco }}
               </ap-button>
             </section>
           }
@@ -59,19 +60,21 @@
 
       @if (isAdmin()) {
         <section class="subscription-page__history">
-          <h2>Historique des paiements</h2>
+          <h2>{{ 'admin.subscription.history.title' | transloco }}</h2>
           @if (historyLoading()) {
-            <p>Chargement…</p>
+            <p>{{ 'admin.subscription.history.loading' | transloco }}</p>
           } @else if (history().length === 0) {
-            <p class="subscription-page__note">Aucun paiement enregistré pour le moment.</p>
+            <p class="subscription-page__note">
+              {{ 'admin.subscription.history.empty' | transloco }}
+            </p>
           } @else {
             <div class="subscription-page__table-scroll">
               <table class="subscription-page__table">
                 <thead>
                   <tr>
-                    <th>Date</th>
-                    <th>Montant</th>
-                    <th>Statut</th>
+                    <th>{{ 'admin.subscription.history.table.date' | transloco }}</th>
+                    <th>{{ 'admin.subscription.history.table.amount' | transloco }}</th>
+                    <th>{{ 'admin.subscription.history.table.status' | transloco }}</th>
                     <th></th>
                   </tr>
                 </thead>
@@ -82,9 +85,15 @@
                       <td>{{ formatAmount(entry.amountCents, entry.currency) }}</td>
                       <td>
                         @if (entry.status === 'ACTIVE') {
-                          <ap-badge status="published" label="Payé" />
+                          <ap-badge
+                            status="published"
+                            [label]="'admin.subscription.history.paidBadge' | transloco"
+                          />
                         } @else {
-                          <ap-badge status="unpublished" label="En attente" />
+                          <ap-badge
+                            status="unpublished"
+                            [label]="'admin.subscription.history.pendingBadge' | transloco"
+                          />
                         }
                       </td>
                       <td>
@@ -94,7 +103,7 @@
                             class="subscription-page__print-btn"
                             (click)="printReceipt(entry)"
                           >
-                            Imprimer
+                            {{ 'admin.subscription.history.print' | transloco }}
                           </button>
                         }
                       </td>
@@ -111,15 +120,15 @@
 
   @if (printingEntry(); as entry) {
     <section class="subscription-page__print-only subscription-page__receipt">
-      <h1>Reçu — Abonnement annuel TournArena</h1>
+      <h1>{{ 'admin.subscription.receipt.title' | transloco }}</h1>
       <dl>
-        <dt>Organisation</dt>
+        <dt>{{ 'admin.subscription.receipt.organization' | transloco }}</dt>
         <dd>{{ organization()?.name }}</dd>
-        <dt>Date de paiement</dt>
+        <dt>{{ 'admin.subscription.receipt.paidAt' | transloco }}</dt>
         <dd>{{ formatDate(entry.paidAt ?? entry.createdAt) }}</dd>
-        <dt>Montant</dt>
+        <dt>{{ 'admin.subscription.receipt.amount' | transloco }}</dt>
         <dd>{{ formatAmount(entry.amountCents, entry.currency) }}</dd>
-        <dt>Période couverte</dt>
+        <dt>{{ 'admin.subscription.receipt.period' | transloco }}</dt>
         <dd>{{ formatDate(entry.startsAt) }} — {{ formatDate(entry.expiresAt) }}</dd>
       </dl>
     </section>

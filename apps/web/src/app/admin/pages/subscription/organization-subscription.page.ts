@@ -6,15 +6,16 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { Badge, Button } from 'design-system';
-import { DEFAULT_THEME, ThemeService } from 'design-tokens';
+import { DEFAULT_THEME, LanguageService, ThemeService } from 'design-tokens';
 import { AuthService } from '../../core/auth.service';
 import { OrganizationSubscriptionStatus, SubscriptionHistoryEntry } from '../../core/models';
 import { OrganizationsService } from '../../core/organizations.service';
 
 @Component({
   selector: 'app-organization-subscription-page',
-  imports: [Badge, Button],
+  imports: [Badge, Button, TranslocoPipe],
   templateUrl: './organization-subscription.page.html',
   styleUrl: './organization-subscription.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,6 +24,7 @@ export class OrganizationSubscriptionPage {
   private readonly organizationsService = inject(OrganizationsService);
   private readonly themeService = inject(ThemeService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly languageService = inject(LanguageService);
   protected readonly authService = inject(AuthService);
 
   protected readonly organization = computed(() => this.authService.organizations()[0] ?? null);
@@ -59,7 +61,7 @@ export class OrganizationSubscriptionPage {
     try {
       this.status.set(await this.organizationsService.getSubscriptionStatus(organizationId));
     } catch {
-      this.errorMessage.set("Impossible de charger l'état de l'abonnement.");
+      this.errorMessage.set('admin.subscription.errors.loadStatus');
     } finally {
       this.loading.set(false);
     }
@@ -99,7 +101,7 @@ export class OrganizationSubscriptionPage {
       this.status.set(result);
       void this.loadHistory();
     } catch {
-      this.errorMessage.set("Impossible de souscrire à l'abonnement, réessayez.");
+      this.errorMessage.set('admin.subscription.errors.subscribe');
     } finally {
       this.subscribing.set(false);
     }
@@ -122,7 +124,7 @@ export class OrganizationSubscriptionPage {
     if (!iso) {
       return '—';
     }
-    return new Date(iso).toLocaleDateString('fr-FR', {
+    return new Date(iso).toLocaleDateString(this.languageService.language(), {
       day: 'numeric',
       month: 'long',
       year: 'numeric',
@@ -130,7 +132,7 @@ export class OrganizationSubscriptionPage {
   }
 
   protected formatAmount(amountCents: number, currency: string): string {
-    return new Intl.NumberFormat('fr-FR', {
+    return new Intl.NumberFormat(this.languageService.language(), {
       style: 'currency',
       currency: currency.toUpperCase(),
     }).format(amountCents / 100);

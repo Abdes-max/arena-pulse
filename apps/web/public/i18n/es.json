@@ -931,6 +931,62 @@
         "saveTieChoice": "No se ha podido guardar esta elección.",
         "resetTieChoice": "No se ha podido reiniciar este desempate."
       }
+    },
+    "subscription": {
+      "title": "Suscripción anual",
+      "intro": "Publicar un torneo se factura por nivel según el número de equipos (gratis hasta 8 equipos, 25 € de 9 a 48 equipos, 80 € más allá). La suscripción anual reemplaza este pago por publicación: 200 € al año, publicaciones ilimitadas para toda la organización.",
+      "loading": "Cargando…",
+      "adminOnly": "Solo un administrador de la organización puede gestionar la suscripción.",
+      "status": {
+        "active": {
+          "badgeLabel": "Suscripción activa",
+          "body": "Todas las publicaciones de torneos son gratuitas hasta el {{date}}.",
+          "note": "La renovación es manual: vuelve a esta página después de esa fecha para suscribirte de nuevo. Los torneos publicados mientras la suscripción está activa siguen publicados después de que expire."
+        },
+        "pendingPayment": {
+          "badgeLabel": "Pago pendiente",
+          "body": "Se está confirmando una suscripción. Si el pago se abandonó, puedes iniciar un nuevo pago.",
+          "retryButton": "Reintentar el pago — 200 €"
+        },
+        "none": {
+          "body": "No hay ninguna suscripción activa para esta organización.",
+          "subscribeButton": "Suscribirse — 200 € / año"
+        }
+      },
+      "history": {
+        "title": "Historial de pagos",
+        "loading": "Cargando…",
+        "empty": "Todavía no hay pagos registrados.",
+        "table": {
+          "date": "Fecha",
+          "amount": "Importe",
+          "status": "Estado"
+        },
+        "paidBadge": "Pagado",
+        "pendingBadge": "Pendiente",
+        "print": "Imprimir"
+      },
+      "receipt": {
+        "title": "Recibo — Suscripción anual TournArena",
+        "organization": "Organización",
+        "paidAt": "Fecha de pago",
+        "amount": "Importe",
+        "period": "Periodo cubierto"
+      },
+      "errors": {
+        "loadStatus": "No se pudo cargar el estado de la suscripción.",
+        "subscribe": "No se pudo suscribir, inténtalo de nuevo."
+      }
+    },
+    "subscriptionSuccess": {
+      "verifying": "Verificando el pago…",
+      "activeTitle": "Suscripción activa",
+      "activeBody": "Todas las publicaciones de torneos de tu organización son ahora gratuitas hasta el {{date}}.",
+      "pendingTitle": "Pago en confirmación",
+      "pendingBody": "La suscripción se activará en cuanto se confirme el pago. Puedes recargar esta página dentro de unos instantes.",
+      "backToSubscription": "Volver a la suscripción",
+      "notFoundTitle": "Organización no encontrada",
+      "backToTournaments": "Volver a los torneos"
     }
   }
 }

@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { TranslocoPipe } from '@jsverse/transloco';
+import { LanguageService } from 'design-tokens';
 import { AuthService } from '../../core/auth.service';
 import { OrganizationSubscriptionStatus } from '../../core/models';
 import { OrganizationsService } from '../../core/organizations.service';
@@ -16,7 +18,7 @@ const POLL_INTERVAL_MS = 2000;
 
 @Component({
   selector: 'app-organization-subscription-success-page',
-  imports: [RouterLink],
+  imports: [RouterLink, TranslocoPipe],
   templateUrl: './organization-subscription-success.page.html',
   styleUrl: './organization-subscription-success.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,6 +27,7 @@ export class OrganizationSubscriptionSuccessPage {
   private readonly route = inject(ActivatedRoute);
   private readonly authService = inject(AuthService);
   private readonly organizationsService = inject(OrganizationsService);
+  private readonly languageService = inject(LanguageService);
 
   protected readonly organization = computed(() => this.authService.organizations()[0] ?? null);
 
@@ -72,7 +75,7 @@ export class OrganizationSubscriptionSuccessPage {
   }
 
   protected formatDate(iso: string): string {
-    return new Date(iso).toLocaleDateString('fr-FR', {
+    return new Date(iso).toLocaleDateString(this.languageService.language(), {
       day: 'numeric',
       month: 'long',
       year: 'numeric',

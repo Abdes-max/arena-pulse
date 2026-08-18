@@ -1,24 +1,25 @@
 <main class="subscription-success-page">
   @if (loading()) {
-    <p>Vérification du paiement…</p>
+    <p>{{ 'admin.subscriptionSuccess.verifying' | transloco }}</p>
   } @else if (status(); as s) {
     @if (s.status === 'ACTIVE') {
-      <h1>Abonnement actif</h1>
+      <h1>{{ 'admin.subscriptionSuccess.activeTitle' | transloco }}</h1>
       <p>
-        Toutes les publications de tournois de votre organisation sont désormais gratuites jusqu'au
-        <strong>{{ formatDate(s.expiresAt) }}</strong
-        >.
+        {{ 'admin.subscriptionSuccess.activeBody' | transloco: { date: formatDate(s.expiresAt) } }}
       </p>
     } @else {
-      <h1>Paiement en cours de confirmation</h1>
+      <h1>{{ 'admin.subscriptionSuccess.pendingTitle' | transloco }}</h1>
       <p>
-        L'activation de l'abonnement sera confirmée dès que le paiement sera validé. Vous pouvez
-        recharger cette page dans quelques instants.
+        {{ 'admin.subscriptionSuccess.pendingBody' | transloco }}
       </p>
     }
-    <a routerLink="/admin/organization/subscription">Retour à l'abonnement</a>
+    <a routerLink="/admin/organization/subscription">{{
+      'admin.subscriptionSuccess.backToSubscription' | transloco
+    }}</a>
   } @else {
-    <h1>Organisation introuvable</h1>
-    <a routerLink="/admin/tournaments">Retour aux tournois</a>
+    <h1>{{ 'admin.subscriptionSuccess.notFoundTitle' | transloco }}</h1>
+    <a routerLink="/admin/tournaments">{{
+      'admin.subscriptionSuccess.backToTournaments' | transloco
+    }}</a>
   }
 </main>

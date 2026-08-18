@@ -931,6 +931,62 @@
         "saveTieChoice": "Não foi possível guardar esta escolha.",
         "resetTieChoice": "Não foi possível repor este desempate."
       }
+    },
+    "subscription": {
+      "title": "Assinatura anual",
+      "intro": "A publicação de um torneio é cobrada por escalão de acordo com o número de equipas (grátis até 8 equipas, 25 € de 9 a 48 equipas, 80 € além disso). A assinatura anual substitui esse pagamento por publicação: 200 € por ano, publicações ilimitadas para toda a organização.",
+      "loading": "A carregar…",
+      "adminOnly": "Apenas um administrador da organização pode gerir a assinatura.",
+      "status": {
+        "active": {
+          "badgeLabel": "Assinatura ativa",
+          "body": "Todas as publicações de torneios são gratuitas até {{date}}.",
+          "note": "A renovação é manual: volte a esta página após essa data para assinar novamente. Os torneios publicados enquanto a assinatura está ativa permanecem publicados após a sua expiração."
+        },
+        "pendingPayment": {
+          "badgeLabel": "Pagamento pendente",
+          "body": "Uma assinatura está a ser confirmada. Se o pagamento foi abandonado, pode iniciar um novo pagamento.",
+          "retryButton": "Repetir o pagamento — 200 €"
+        },
+        "none": {
+          "body": "Nenhuma assinatura ativa para esta organização.",
+          "subscribeButton": "Assinar — 200 € / ano"
+        }
+      },
+      "history": {
+        "title": "Histórico de pagamentos",
+        "loading": "A carregar…",
+        "empty": "Ainda não há pagamentos registados.",
+        "table": {
+          "date": "Data",
+          "amount": "Valor",
+          "status": "Estado"
+        },
+        "paidBadge": "Pago",
+        "pendingBadge": "Pendente",
+        "print": "Imprimir"
+      },
+      "receipt": {
+        "title": "Recibo — Assinatura anual TournArena",
+        "organization": "Organização",
+        "paidAt": "Data de pagamento",
+        "amount": "Valor",
+        "period": "Período coberto"
+      },
+      "errors": {
+        "loadStatus": "Não foi possível carregar o estado da assinatura.",
+        "subscribe": "Não foi possível assinar, tente novamente."
+      }
+    },
+    "subscriptionSuccess": {
+      "verifying": "A verificar o pagamento…",
+      "activeTitle": "Assinatura ativa",
+      "activeBody": "Todas as publicações de torneios da sua organização estão agora gratuitas até {{date}}.",
+      "pendingTitle": "Pagamento em confirmação",
+      "pendingBody": "A assinatura será ativada assim que o pagamento for confirmado. Pode recarregar esta página dentro de instantes.",
+      "backToSubscription": "Voltar à assinatura",
+      "notFoundTitle": "Organização não encontrada",
+      "backToTournaments": "Voltar aos torneios"
     }
   }
 }
