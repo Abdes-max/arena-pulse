@@ -529,7 +529,12 @@
         "title": "Paiement de publication",
         "loading": "Chargement…",
         "never": "Ce tournoi n'a jamais été publié.",
-        "table": { "date": "Date", "teams": "Équipes", "amount": "Montant", "status": "Statut" },
+        "table": {
+          "date": "Date",
+          "teams": "Équipes",
+          "amount": "Montant",
+          "status": "Statut"
+        },
         "paid": "Payé",
         "pending": "En attente",
         "print": "Imprimer"
@@ -737,6 +742,138 @@
       },
       "errors": {
         "load": "Impossible de charger les inscriptions."
+      }
+    },
+    "structure": {
+      "title": "Structure de compétition",
+      "loading": "Chargement…",
+      "addCategoryFirst": "Ajoutez d'abord une catégorie sur la page du tournoi.",
+      "categoryLabel": "Catégorie",
+      "doubleRoundRobinLabel": "Matchs aller-retour",
+      "typeGroupStage": "Poules",
+      "typeKnockout": "Élimination directe",
+      "rankingMatchLabel": "Petite finale",
+      "removeLabel": "Retirer",
+      "deleteLabel": "Supprimer",
+      "saveLabel": "Enregistrer",
+      "targetPhaseLabel": "Phase cible",
+      "positionLabel": "Position",
+      "preset": {
+        "title": "Mode Tournoi",
+        "formatLabel": "Format",
+        "format": {
+          "poolsOnly": "Poules seulement (championnat)",
+          "poolsAndKnockout": "Poules + élimination directe",
+          "knockoutOnly": "Élimination directe seulement"
+        },
+        "intro": {
+          "poolsOnly": "Met en place un championnat en poules (round-robin), sans phase finale à élimination directe, à partir des équipes déjà créées dans cette catégorie.",
+          "knockoutOnly": "Met en place directement un tableau à élimination directe à partir des équipes déjà créées dans cette catégorie, sans phase de classement en poules.",
+          "poolsAndKnockout": "Met en place d'un coup les poules et le tableau à élimination directe, à partir des équipes déjà créées dans cette catégorie."
+        },
+        "unassignedAvailable": "{{count}} équipe(s) non assignée(s) disponible(s) ici.",
+        "noUnassigned": "Aucune équipe non assignée pour l'instant — ajoutez-en d'abord sur la page Équipes.",
+        "poolsTitle": "Poules",
+        "teamCountLabel": "Nombre d'équipes",
+        "poolCountLabel": "Nombre de poules",
+        "multiTierLabel": "Qualifier vers plusieurs compétitions",
+        "bestOfPositionLabel": "Inclure les meilleurs classés à une position",
+        "qualifiersPerPoolLabel": "Qualifiés par poule",
+        "tierNameLabel": "Nom du palier",
+        "tierNamePlaceholder": "Nom du palier (ex. Ligue des Champions)",
+        "addTier": "Ajouter un palier",
+        "bestCountLabel": "Nombre de meilleurs classés",
+        "bestOfPositionHint": "Les {{count}} meilleures équipes classées {{position}}ᵉ de leur poule, comparées entre elles, rejoignent le tableau du premier palier.",
+        "knockoutNameLabel": "Nom du tableau",
+        "knockoutNamePlaceholder": "Tableau final",
+        "tierBracketSize": "{{name}} : {{size}} équipes.",
+        "defaultTierName": "Tableau final",
+        "defaultTierNameIndexed": "Palier {{index}}",
+        "tierSummaryItem": "{{name}} ({{size}} équipes)",
+        "successPoolsOnly": "Structure générée : {{poolCount}} poules. Rendez-vous sur la page Calendrier pour planifier les matchs des poules.",
+        "successKnockoutOnly": "Structure générée : {{tiersSummary}}. Rendez-vous sur la page Calendrier pour planifier les matchs du tableau.",
+        "successMixed": "Structure générée : {{poolCount}} poules, {{tiersSummary}}. Rendez-vous sur la page Calendrier pour planifier les matchs des poules et de l'élimination directe.",
+        "errors": {
+          "knockoutNotPowerOfTwo": "Pour un tableau à élimination directe seule, le nombre d'équipes doit être une puissance de 2 (2, 4, 8, 16…) — {{teamCount}} équipe(s) ne convient pas.",
+          "unassignedMismatch": "{{found}} équipe(s) non assignée(s) trouvée(s) dans cette catégorie, {{expected}} attendue(s).",
+          "poolsExceedTeams": "Le nombre de poules ne peut pas dépasser le nombre d'équipes.",
+          "tooManyQualifiersForSmallestPool": "Avec {{teamCount}} équipes réparties en {{poolCount}} poules, la plus petite poule ne compte que {{smallestPoolSize}} équipe(s) — impossible d'en qualifier {{totalQualifiers}} au total en cumulant les paliers.",
+          "bestOfPositionExceedsPools": "Impossible de qualifier {{bestCount}} meilleur(s) classé(s) à la position {{bestPosition}} : il n'y a que {{poolCount}} poule(s).",
+          "bestOfPositionOverlapsDirect": "La position {{bestPosition}} des meilleurs classés chevauche les qualifiés directs (positions 1 à {{totalQualifiers}}) — choisissez une position strictement supérieure.",
+          "bestOfPositionNotInSmallestPool": "La position {{bestPosition}} n'existe pas dans toutes les poules — la plus petite poule ne compte que {{smallestPoolSize}} équipe(s).",
+          "tierBracketNotPowerOfTwo": "Palier \"{{tierName}}\" : {{poolCount}} poule(s) × {{qualifiers}} qualifié(s) = {{bracketSize}} équipe(s) qualifiée(s) — ce nombre doit être une puissance de 2 (2, 4, 8, 16…) pour former un tableau à élimination directe.",
+          "tierBracketNotPowerOfTwoWithBest": "Palier \"{{tierName}}\" : {{poolCount}} poule(s) × {{qualifiers}} qualifié(s) + {{bestCount}} meilleur(s) classé(s) = {{bracketSize}} équipe(s) qualifiée(s) — ce nombre doit être une puissance de 2 (2, 4, 8, 16…) pour former un tableau à élimination directe.",
+          "generic": "Impossible de générer la structure."
+        }
+      },
+      "addPhase": {
+        "title": "Ajouter une phase",
+        "nameLabel": "Nom de la phase",
+        "namePlaceholder": "Nom de la phase (ex. Phase de poules)",
+        "typeLabel": "Type de phase",
+        "add": "Ajouter la phase"
+      },
+      "phase": {
+        "removePhase": "Supprimer la phase",
+        "standingRule": {
+          "title": "Barème de points",
+          "hint": "S’applique à toutes les poules de cette phase.",
+          "winLabel": "Victoire",
+          "drawLabel": "Nul",
+          "lossLabel": "Défaite",
+          "supplementaryLabel": "Classement additionnel (fair-play)",
+          "penaltyShootoutLabel": "Tirs au but en cas d'égalité",
+          "tieBreakHint": "Critères de départage : {{order}}"
+        },
+        "qualification": {
+          "title": "Règles de qualification",
+          "hint": "S’applique à toutes les poules de cette phase.",
+          "ruleRow": "Positions {{from}}–{{to}} → {{target}}",
+          "fromLabel": "De",
+          "toLabel": "À",
+          "addRule": "Ajouter la règle"
+        },
+        "crossGroup": {
+          "title": "Meilleurs classés inter-poules",
+          "hint": "Compare les équipes à une même position entre toutes les poules de cette phase (ex. les 8 meilleurs 3èmes) et qualifie les meilleures vers une phase cible.",
+          "ruleRow": "{{count}} meilleur(s) {{position}}ᵉ → {{target}}",
+          "positionPlaceholder": "Position (ex. 3)",
+          "bestCountLabel": "Nombre de meilleurs",
+          "addRule": "Ajouter la règle"
+        },
+        "group": {
+          "chooseTeamLabel": "Choisir une équipe",
+          "addTeam": "Ajouter l'équipe à la poule",
+          "newGroupLabel": "Nouvelle poule",
+          "newGroupPlaceholder": "Nouvelle poule (ex. Poule A)",
+          "addGroup": "Ajouter une poule"
+        },
+        "bracket": {
+          "teamsCount": "{{size}} équipes",
+          "removeBracket": "Supprimer le tableau",
+          "nameLabel": "Nom du tableau",
+          "namePlaceholder": "Nom du tableau (ex. Champions League)",
+          "sizeLabel": "Taille du tableau",
+          "create": "Créer le tableau"
+        }
+      },
+      "errors": {
+        "loadCategories": "Impossible de charger les catégories.",
+        "loadStructure": "Impossible de charger la structure de cette catégorie.",
+        "addPhase": "Impossible d'ajouter cette phase (nom déjà utilisé ?).",
+        "toggleSetting": "Impossible de modifier ce réglage.",
+        "removePhase": "Impossible de supprimer cette phase.",
+        "addGroup": "Impossible d'ajouter cette poule (nom déjà utilisé ?).",
+        "removeGroup": "Impossible de supprimer cette poule.",
+        "saveStandingRule": "Impossible d’enregistrer le barème de points.",
+        "assignTeam": "Impossible d'affecter cette équipe à la poule.",
+        "unassignTeam": "Impossible de retirer cette équipe de la poule.",
+        "addQualificationRule": "Impossible d'ajouter cette règle de qualification.",
+        "removeQualificationRule": "Impossible de supprimer cette règle de qualification.",
+        "addCrossGroupRule": "Impossible d'ajouter cette règle de meilleurs classés.",
+        "removeCrossGroupRule": "Impossible de supprimer cette règle.",
+        "createBracket": "Impossible de créer ce tableau.",
+        "removeBracket": "Impossible de supprimer ce tableau."
       }
     }
   }

@@ -435,7 +435,12 @@
         "title": "Pagamento de publicação",
         "loading": "A carregar…",
         "never": "Este torneio nunca foi publicado.",
-        "table": { "date": "Data", "teams": "Equipas", "amount": "Montante", "status": "Estado" },
+        "table": {
+          "date": "Data",
+          "teams": "Equipas",
+          "amount": "Montante",
+          "status": "Estado"
+        },
         "paid": "Pago",
         "pending": "Pendente",
         "print": "Imprimir"
@@ -643,6 +648,138 @@
       },
       "errors": {
         "load": "Não foi possível carregar as inscrições."
+      }
+    },
+    "structure": {
+      "title": "Estrutura da competição",
+      "loading": "A carregar…",
+      "addCategoryFirst": "Adicione primeiro uma categoria na página do torneio.",
+      "categoryLabel": "Categoria",
+      "doubleRoundRobinLabel": "Jogos de ida e volta",
+      "typeGroupStage": "Grupos",
+      "typeKnockout": "Eliminação direta",
+      "rankingMatchLabel": "Jogo pelo 3.º lugar",
+      "removeLabel": "Remover",
+      "deleteLabel": "Eliminar",
+      "saveLabel": "Guardar",
+      "targetPhaseLabel": "Fase de destino",
+      "positionLabel": "Posição",
+      "preset": {
+        "title": "Modo Torneio",
+        "formatLabel": "Formato",
+        "format": {
+          "poolsOnly": "Apenas grupos (liga)",
+          "poolsAndKnockout": "Grupos + eliminação direta",
+          "knockoutOnly": "Apenas eliminação direta"
+        },
+        "intro": {
+          "poolsOnly": "Configura uma liga por grupos (todos contra todos), sem fase final de eliminação direta, a partir das equipas já criadas nesta categoria.",
+          "knockoutOnly": "Configura diretamente um quadro de eliminação direta a partir das equipas já criadas nesta categoria, sem fase de grupos.",
+          "poolsAndKnockout": "Configura de uma vez os grupos e o quadro de eliminação direta, a partir das equipas já criadas nesta categoria."
+        },
+        "unassignedAvailable": "{{count}} equipa(s) não atribuída(s) disponível(is) aqui.",
+        "noUnassigned": "Ainda não há equipas por atribuir — adicione algumas primeiro na página Equipas.",
+        "poolsTitle": "Grupos",
+        "teamCountLabel": "Número de equipas",
+        "poolCountLabel": "Número de grupos",
+        "multiTierLabel": "Qualificar para várias competições",
+        "bestOfPositionLabel": "Incluir as melhores classificadas numa posição",
+        "qualifiersPerPoolLabel": "Qualificadas por grupo",
+        "tierNameLabel": "Nome do nível",
+        "tierNamePlaceholder": "Nome do nível (ex. Liga dos Campeões)",
+        "addTier": "Adicionar um nível",
+        "bestCountLabel": "Número de melhores classificadas",
+        "bestOfPositionHint": "As {{count}} melhores equipas classificadas em {{position}}.º no seu grupo, comparadas entre si, juntam-se ao quadro do primeiro nível.",
+        "knockoutNameLabel": "Nome do quadro",
+        "knockoutNamePlaceholder": "Quadro final",
+        "tierBracketSize": "{{name}}: {{size}} equipas.",
+        "defaultTierName": "Quadro final",
+        "defaultTierNameIndexed": "Nível {{index}}",
+        "tierSummaryItem": "{{name}} ({{size}} equipas)",
+        "successPoolsOnly": "Estrutura gerada: {{poolCount}} grupos. Vá à página Calendário para planear os jogos dos grupos.",
+        "successKnockoutOnly": "Estrutura gerada: {{tiersSummary}}. Vá à página Calendário para planear os jogos do quadro.",
+        "successMixed": "Estrutura gerada: {{poolCount}} grupos, {{tiersSummary}}. Vá à página Calendário para planear os jogos dos grupos e da eliminação direta.",
+        "errors": {
+          "knockoutNotPowerOfTwo": "Para um quadro de apenas eliminação direta, o número de equipas deve ser uma potência de 2 (2, 4, 8, 16…) — {{teamCount}} equipa(s) não é válido.",
+          "unassignedMismatch": "Encontrada(s) {{found}} equipa(s) não atribuída(s) nesta categoria, esperava(m)-se {{expected}}.",
+          "poolsExceedTeams": "O número de grupos não pode exceder o número de equipas.",
+          "tooManyQualifiersForSmallestPool": "Com {{teamCount}} equipas divididas em {{poolCount}} grupos, o grupo mais pequeno tem apenas {{smallestPoolSize}} equipa(s) — impossível qualificar {{totalQualifiers}} no total somando os níveis.",
+          "bestOfPositionExceedsPools": "Não é possível qualificar {{bestCount}} melhor(es) classificada(s) na posição {{bestPosition}}: só há {{poolCount}} grupo(s).",
+          "bestOfPositionOverlapsDirect": "A posição {{bestPosition}} das melhores classificadas sobrepõe-se às qualificadas diretas (posições 1 a {{totalQualifiers}}) — escolha uma posição estritamente superior.",
+          "bestOfPositionNotInSmallestPool": "A posição {{bestPosition}} não existe em todos os grupos — o grupo mais pequeno tem apenas {{smallestPoolSize}} equipa(s).",
+          "tierBracketNotPowerOfTwo": "Nível «{{tierName}}»: {{poolCount}} grupo(s) × {{qualifiers}} qualificada(s) = {{bracketSize}} equipa(s) qualificada(s) — este número deve ser uma potência de 2 (2, 4, 8, 16…) para formar um quadro de eliminação direta.",
+          "tierBracketNotPowerOfTwoWithBest": "Nível «{{tierName}}»: {{poolCount}} grupo(s) × {{qualifiers}} qualificada(s) + {{bestCount}} melhor(es) classificada(s) = {{bracketSize}} equipa(s) qualificada(s) — este número deve ser uma potência de 2 (2, 4, 8, 16…) para formar um quadro de eliminação direta.",
+          "generic": "Não foi possível gerar a estrutura."
+        }
+      },
+      "addPhase": {
+        "title": "Adicionar uma fase",
+        "nameLabel": "Nome da fase",
+        "namePlaceholder": "Nome da fase (ex. Fase de grupos)",
+        "typeLabel": "Tipo de fase",
+        "add": "Adicionar a fase"
+      },
+      "phase": {
+        "removePhase": "Eliminar a fase",
+        "standingRule": {
+          "title": "Tabela de pontos",
+          "hint": "Aplica-se a todos os grupos desta fase.",
+          "winLabel": "Vitória",
+          "drawLabel": "Empate",
+          "lossLabel": "Derrota",
+          "supplementaryLabel": "Classificação suplementar (fair play)",
+          "penaltyShootoutLabel": "Grandes penalidades em caso de empate",
+          "tieBreakHint": "Critérios de desempate: {{order}}"
+        },
+        "qualification": {
+          "title": "Regras de qualificação",
+          "hint": "Aplica-se a todos os grupos desta fase.",
+          "ruleRow": "Posições {{from}}–{{to}} → {{target}}",
+          "fromLabel": "De",
+          "toLabel": "Até",
+          "addRule": "Adicionar a regra"
+        },
+        "crossGroup": {
+          "title": "Melhores classificadas entre grupos",
+          "hint": "Compara as equipas na mesma posição entre todos os grupos desta fase (ex. as 8 melhores 3.as) e qualifica as melhores para uma fase de destino.",
+          "ruleRow": "{{count}} melhor(es) {{position}}.º → {{target}}",
+          "positionPlaceholder": "Posição (ex. 3)",
+          "bestCountLabel": "Número de melhores",
+          "addRule": "Adicionar a regra"
+        },
+        "group": {
+          "chooseTeamLabel": "Escolher uma equipa",
+          "addTeam": "Adicionar a equipa ao grupo",
+          "newGroupLabel": "Novo grupo",
+          "newGroupPlaceholder": "Novo grupo (ex. Grupo A)",
+          "addGroup": "Adicionar um grupo"
+        },
+        "bracket": {
+          "teamsCount": "{{size}} equipas",
+          "removeBracket": "Eliminar o quadro",
+          "nameLabel": "Nome do quadro",
+          "namePlaceholder": "Nome do quadro (ex. Champions League)",
+          "sizeLabel": "Tamanho do quadro",
+          "create": "Criar o quadro"
+        }
+      },
+      "errors": {
+        "loadCategories": "Não foi possível carregar as categorias.",
+        "loadStructure": "Não foi possível carregar a estrutura desta categoria.",
+        "addPhase": "Não foi possível adicionar esta fase (nome já utilizado?).",
+        "toggleSetting": "Não foi possível atualizar esta definição.",
+        "removePhase": "Não foi possível eliminar esta fase.",
+        "addGroup": "Não foi possível adicionar este grupo (nome já utilizado?).",
+        "removeGroup": "Não foi possível eliminar este grupo.",
+        "saveStandingRule": "Não foi possível guardar a tabela de pontos.",
+        "assignTeam": "Não foi possível atribuir esta equipa ao grupo.",
+        "unassignTeam": "Não foi possível remover esta equipa do grupo.",
+        "addQualificationRule": "Não foi possível adicionar esta regra de qualificação.",
+        "removeQualificationRule": "Não foi possível eliminar esta regra de qualificação.",
+        "addCrossGroupRule": "Não foi possível adicionar esta regra de melhores classificadas.",
+        "removeCrossGroupRule": "Não foi possível eliminar esta regra.",
+        "createBracket": "Não foi possível criar este quadro.",
+        "removeBracket": "Não foi possível eliminar este quadro."
       }
     }
   }

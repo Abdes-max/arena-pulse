@@ -1,7 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Button, Select, SelectOption, Tabs, TabOption, TextField } from 'design-system';
+import { LanguageService } from 'design-tokens';
 import { AuthService } from '../../core/auth.service';
 import {
   CompetitionFormatsService,
@@ -39,7 +41,7 @@ interface QualificationRuleGroup {
 
 @Component({
   selector: 'app-structure-page',
-  imports: [Button, Select, Tabs, TextField],
+  imports: [Button, Select, Tabs, TextField, TranslocoPipe],
   templateUrl: './structure.page.html',
   styleUrl: './structure.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -50,6 +52,8 @@ export class StructurePage {
   private readonly tournamentsService = inject(TournamentsService);
   private readonly teamsService = inject(TeamsService);
   private readonly competitionFormatsService = inject(CompetitionFormatsService);
+  private readonly languageService = inject(LanguageService);
+  private readonly transloco = inject(TranslocoService);
 
   protected readonly organization = computed(() => this.authService.organizations()[0] ?? null);
   protected readonly tournamentId = this.route.snapshot.paramMap.get('tournamentId')!;
@@ -113,11 +117,16 @@ export class StructurePage {
   // phases/pools/brackets/qualification rules only -- no calendar; that's
   // generated separately on the Calendrier page once the organizer is ready.
   protected readonly presetFormat = signal<StructurePresetFormat>('POOLS_AND_KNOCKOUT');
-  protected readonly presetFormatOptions: TabOption[] = [
-    { value: 'POOLS_ONLY', label: 'Poules seulement (championnat)' },
-    { value: 'POOLS_AND_KNOCKOUT', label: 'Poules + élimination directe' },
-    { value: 'KNOCKOUT_ONLY', label: 'Élimination directe seulement' },
-  ];
+  protected readonly presetFormatOptions = computed<TabOption[]>(() => {
+    const lang = this.languageService.language();
+    const t = (key: string) =>
+      this.transloco.translate(`admin.structure.preset.format.${key}`, {}, lang);
+    return [
+      { value: 'POOLS_ONLY', label: t('poolsOnly') },
+      { value: 'POOLS_AND_KNOCKOUT', label: t('poolsAndKnockout') },
+      { value: 'KNOCKOUT_ONLY', label: t('knockoutOnly') },
+    ];
+  });
   protected readonly presetTeamCount = signal('');
   protected readonly presetPoolCount = signal('');
   // Only used in KNOCKOUT_ONLY -- the single bracket's name (no tier list in
@@ -138,7 +147,7 @@ export class StructurePage {
   protected readonly presetMultiTierEnabled = signal(false);
   protected readonly presetTiers = signal<
     { name: string; qualifiersPerPool: string; hasRankingMatch: boolean }[]
-  >([{ name: 'Tableau final', qualifiersPerPool: '', hasRankingMatch: false }]);
+  >([{ name: this.defaultTierName(), qualifiersPerPool: '', hasRankingMatch: false }]);
 
   // "Inclure les meilleurs classés à une position" -- best-of-position
   // candidates join the first tier's bracket alongside its direct qualifiers.
@@ -158,7 +167,7 @@ export class StructurePage {
       }
       return [
         {
-          name: this.presetKnockoutName().trim() || 'Tableau final',
+          name: this.presetKnockoutName().trim() || this.defaultTierName(),
           size: teamCount,
         },
       ];
@@ -173,37 +182,57 @@ export class StructurePage {
     const bestCount = this.presetBestOfPositionEnabled()
       ? Number(this.presetBestOfPositionBestCount()) || 0
       : 0;
+    const lang = this.languageService.language();
     return this.presetTiers().map((tier, index) => ({
-      name: tier.name.trim() || `Palier ${index + 1}`,
+      name:
+        tier.name.trim() ||
+        this.transloco.translate(
+          'admin.structure.preset.defaultTierNameIndexed',
+          { index: index + 1 },
+          lang,
+        ),
       size: poolCount * (Number(tier.qualifiersPerPool) || 0) + (index === 0 ? bestCount : 0),
     }));
   });
 
+  // A Transloco *key*, not the translated string itself -- resolved in the
+  // template (| transloco) instead of here so it stays reactive to a
+  // language switch instead of freezing whatever was active at read time.
   protected readonly presetIntroText = computed(() => {
     switch (this.presetFormat()) {
       case 'POOLS_ONLY':
-        return 'Met en place un championnat en poules (round-robin), sans phase finale à élimination directe, à partir des équipes déjà créées dans cette catégorie.';
+        return 'admin.structure.preset.intro.poolsOnly';
       case 'KNOCKOUT_ONLY':
-        return 'Met en place directement un tableau à élimination directe à partir des équipes déjà créées dans cette catégorie, sans phase de classement en poules.';
+        return 'admin.structure.preset.intro.knockoutOnly';
       default:
-        return "Met en place d'un coup les poules et le tableau à élimination directe, à partir des équipes déjà créées dans cette catégorie.";
+        return 'admin.structure.preset.intro.poolsAndKnockout';
     }
   });
 
   // Client-side mirror of structure-presets.service.ts's validation -- lets
   // the organizer fix an impossible combination before submitting, instead
-  // of round-tripping to the API to find out.
+  // of round-tripping to the API to find out. Unlike presetIntroText above,
+  // this resolves eagerly (not a Transloco key) since it's already read
+  // reactively inside a computed() that depends on languageService.language()
+  // via the `t`/`tp` helpers below, so a language switch still re-renders it.
   protected readonly presetValidationError = computed<string | null>(() => {
+    const lang = this.languageService.language();
+    const t = (key: string, params?: Record<string, unknown>) =>
+      this.transloco.translate(`admin.structure.preset.errors.${key}`, params, lang);
+
     if (this.presetFormat() === 'KNOCKOUT_ONLY') {
       const teamCount = Number(this.presetTeamCount());
       if (!teamCount) {
         return null;
       }
       if (!(teamCount >= 2 && (teamCount & (teamCount - 1)) === 0)) {
-        return `Pour un tableau à élimination directe seule, le nombre d'équipes doit être une puissance de 2 (2, 4, 8, 16…) — ${teamCount} équipe(s) ne convient pas.`;
+        return t('knockoutNotPowerOfTwo', { teamCount });
       }
       if (this.unassignedTeams().length !== teamCount) {
-        return `${this.unassignedTeams().length} équipe(s) non assignée(s) trouvée(s) dans cette catégorie, ${teamCount} attendue(s).`;
+        return t('unassignedMismatch', {
+          found: this.unassignedTeams().length,
+          expected: teamCount,
+        });
       }
       return null;
     }
@@ -214,12 +243,15 @@ export class StructurePage {
       return null;
     }
     if (poolCount > teamCount) {
-      return 'Le nombre de poules ne peut pas dépasser le nombre d’équipes.';
+      return t('poolsExceedTeams');
     }
 
     if (this.presetFormat() === 'POOLS_ONLY') {
       if (this.unassignedTeams().length !== teamCount) {
-        return `${this.unassignedTeams().length} équipe(s) non assignée(s) trouvée(s) dans cette catégorie, ${teamCount} attendue(s).`;
+        return t('unassignedMismatch', {
+          found: this.unassignedTeams().length,
+          expected: teamCount,
+        });
       }
       return null;
     }
@@ -231,7 +263,12 @@ export class StructurePage {
     const smallestPoolSize = Math.floor(teamCount / poolCount);
     const totalDirectQualifiersPerPool = this.presetTiersTotalQualifiersPerPool();
     if (totalDirectQualifiersPerPool > smallestPoolSize) {
-      return `Avec ${teamCount} équipes réparties en ${poolCount} poules, la plus petite poule ne compte que ${smallestPoolSize} équipe(s) — impossible d'en qualifier ${totalDirectQualifiersPerPool} au total en cumulant les paliers.`;
+      return t('tooManyQualifiersForSmallestPool', {
+        teamCount,
+        poolCount,
+        smallestPoolSize,
+        totalQualifiers: totalDirectQualifiersPerPool,
+      });
     }
 
     const bestOfPositionEnabled = this.presetBestOfPositionEnabled();
@@ -239,13 +276,16 @@ export class StructurePage {
     const bestCount = Number(this.presetBestOfPositionBestCount());
     if (bestOfPositionEnabled && bestPosition && bestCount) {
       if (bestCount > poolCount) {
-        return `Impossible de qualifier ${bestCount} meilleur(s) classé(s) à la position ${bestPosition} : il n'y a que ${poolCount} poule(s).`;
+        return t('bestOfPositionExceedsPools', { bestCount, bestPosition, poolCount });
       }
       if (bestPosition <= totalDirectQualifiersPerPool) {
-        return `La position ${bestPosition} des meilleurs classés chevauche les qualifiés directs (positions 1 à ${totalDirectQualifiersPerPool}) — choisissez une position strictement supérieure.`;
+        return t('bestOfPositionOverlapsDirect', {
+          bestPosition,
+          totalQualifiers: totalDirectQualifiersPerPool,
+        });
       }
       if (bestPosition > smallestPoolSize) {
-        return `La position ${bestPosition} n'existe pas dans toutes les poules — la plus petite poule ne compte que ${smallestPoolSize} équipe(s).`;
+        return t('bestOfPositionNotInSmallestPool', { bestPosition, smallestPoolSize });
       }
     }
 
@@ -254,15 +294,27 @@ export class StructurePage {
       const bracketBestCount = index === 0 && bestOfPositionEnabled ? bestCount || 0 : 0;
       const bracketSize = poolCount * qualifiers + bracketBestCount;
       if (!(bracketSize >= 2 && (bracketSize & (bracketSize - 1)) === 0)) {
-        const detail = bracketBestCount
-          ? `${poolCount} poule(s) × ${qualifiers} qualifié(s) + ${bracketBestCount} meilleur(s) classé(s)`
-          : `${poolCount} poule(s) × ${qualifiers} qualifié(s)`;
-        return `Palier "${tier.name.trim() || `Palier ${index + 1}`}" : ${detail} = ${bracketSize} équipe(s) qualifiée(s) — ce nombre doit être une puissance de 2 (2, 4, 8, 16…) pour former un tableau à élimination directe.`;
+        const tierName =
+          tier.name.trim() ||
+          this.transloco.translate(
+            'admin.structure.preset.defaultTierNameIndexed',
+            { index: index + 1 },
+            lang,
+          );
+        return bracketBestCount
+          ? t('tierBracketNotPowerOfTwoWithBest', {
+              tierName,
+              poolCount,
+              qualifiers,
+              bestCount: bracketBestCount,
+              bracketSize,
+            })
+          : t('tierBracketNotPowerOfTwo', { tierName, poolCount, qualifiers, bracketSize });
       }
     }
 
     if (this.unassignedTeams().length !== teamCount) {
-      return `${this.unassignedTeams().length} équipe(s) non assignée(s) trouvée(s) dans cette catégorie, ${teamCount} attendue(s).`;
+      return t('unassignedMismatch', { found: this.unassignedTeams().length, expected: teamCount });
     }
     return null;
   });
@@ -292,17 +344,43 @@ export class StructurePage {
   protected readonly categoryOptions = computed<SelectOption[]>(() =>
     this.categories().map((category) => ({ value: category.id, label: category.name })),
   );
-  protected readonly phaseTypeOptions: SelectOption[] = [
-    { value: 'GROUP_STAGE', label: 'Poules' },
-    { value: 'KNOCKOUT', label: 'Élimination directe' },
-  ];
+  protected readonly phaseTypeOptions = computed<SelectOption[]>(() => {
+    const lang = this.languageService.language();
+    return [
+      {
+        value: 'GROUP_STAGE',
+        label: this.transloco.translate('admin.structure.typeGroupStage', {}, lang),
+      },
+      {
+        value: 'KNOCKOUT',
+        label: this.transloco.translate('admin.structure.typeKnockout', {}, lang),
+      },
+    ];
+  });
   protected readonly unassignedTeamOptions = computed<SelectOption[]>(() => [
-    { value: '', label: 'Choisir une équipe', disabled: true },
+    {
+      value: '',
+      label: this.transloco.translate(
+        'admin.structure.phase.group.chooseTeamLabel',
+        {},
+        this.languageService.language(),
+      ),
+      disabled: true,
+    },
     ...this.unassignedTeams().map((team) => ({ value: team.id, label: team.name })),
   ]);
 
   constructor() {
     void this.loadCategories();
+  }
+
+  /** Localized default tier name -- used both as the initial/reset presetTiers()[0].name and as the fallback in presetTierBracketSizes() below when a tier's own name is left blank. */
+  private defaultTierName(): string {
+    return this.transloco.translate(
+      'admin.structure.preset.defaultTierName',
+      {},
+      this.languageService.language(),
+    );
   }
 
   protected teamsForGroup(groupId: string): Team[] {
@@ -327,7 +405,7 @@ export class StructurePage {
         await this.loadCategoryData();
       }
     } catch {
-      this.errorMessage.set('Impossible de charger les catégories.');
+      this.errorMessage.set('admin.structure.errors.loadCategories');
     } finally {
       this.loading.set(false);
     }
@@ -348,7 +426,7 @@ export class StructurePage {
     this.presetKnockoutHasRankingMatch.set(false);
     this.presetMultiTierEnabled.set(false);
     this.presetTiers.set([
-      { name: 'Tableau final', qualifiersPerPool: '', hasRankingMatch: false },
+      { name: this.defaultTierName(), qualifiersPerPool: '', hasRankingMatch: false },
     ]);
     this.presetBestOfPositionEnabled.set(false);
     this.presetBestOfPositionPosition.set('');
@@ -385,7 +463,7 @@ export class StructurePage {
       }
       await this.loadPhaseRules(phases);
     } catch {
-      this.errorMessage.set('Impossible de charger la structure de cette catégorie.');
+      this.errorMessage.set('admin.structure.errors.loadStructure');
     }
   }
 
@@ -504,7 +582,7 @@ export class StructurePage {
       this.newPhaseName.set('');
       this.newPhaseDoubleRoundRobin.set(false);
     } catch {
-      this.errorMessage.set("Impossible d'ajouter cette phase (nom déjà utilisé ?).");
+      this.errorMessage.set('admin.structure.errors.addPhase');
     }
   }
 
@@ -524,7 +602,7 @@ export class StructurePage {
       );
       this.phases.update((phases) => phases.map((p) => (p.id === phase.id ? updated : p)));
     } catch {
-      this.errorMessage.set('Impossible de modifier ce réglage.');
+      this.errorMessage.set('admin.structure.errors.toggleSetting');
     }
   }
 
@@ -561,7 +639,7 @@ export class StructurePage {
 
       this.phases.set(remaining);
     } catch {
-      this.errorMessage.set('Impossible de supprimer cette phase.');
+      this.errorMessage.set('admin.structure.errors.removePhase');
     }
   }
 
@@ -592,7 +670,7 @@ export class StructurePage {
       this.newGroupNameByPhase.update((names) => ({ ...names, [phase.id]: '' }));
       await this.applyPhaseRulesToGroup(phase.id, group.id);
     } catch {
-      this.errorMessage.set("Impossible d'ajouter cette poule (nom déjà utilisé ?).");
+      this.errorMessage.set('admin.structure.errors.addGroup');
     }
   }
 
@@ -665,7 +743,7 @@ export class StructurePage {
         return new Map(map).set(phase.id, [...ruleGroups]);
       });
     } catch {
-      this.errorMessage.set('Impossible de supprimer cette poule.');
+      this.errorMessage.set('admin.structure.errors.removeGroup');
     }
   }
 
@@ -727,7 +805,7 @@ export class StructurePage {
       );
       this.phaseStandingRule.update((map) => new Map(map).set(phase.id, updated[0]));
     } catch {
-      this.errorMessage.set('Impossible d’enregistrer le barème de points.');
+      this.errorMessage.set('admin.structure.errors.saveStandingRule');
     }
   }
 
@@ -755,7 +833,7 @@ export class StructurePage {
       this.teams.update((teams) => teams.map((t) => (t.id === updated.id ? updated : t)));
       this.onNewTeamIdToAssignChange(groupId, '');
     } catch {
-      this.errorMessage.set("Impossible d'affecter cette équipe à la poule.");
+      this.errorMessage.set('admin.structure.errors.assignTeam');
     }
   }
 
@@ -773,7 +851,7 @@ export class StructurePage {
       );
       this.teams.update((teams) => teams.map((t) => (t.id === updated.id ? updated : t)));
     } catch {
-      this.errorMessage.set('Impossible de retirer cette équipe de la poule.');
+      this.errorMessage.set('admin.structure.errors.unassignTeam');
     }
   }
 
@@ -813,7 +891,15 @@ export class StructurePage {
 
   protected targetPhaseOptions(currentPhaseId: string): SelectOption[] {
     return [
-      { value: '', label: 'Phase cible', disabled: true },
+      {
+        value: '',
+        label: this.transloco.translate(
+          'admin.structure.targetPhaseLabel',
+          {},
+          this.languageService.language(),
+        ),
+        disabled: true,
+      },
       ...this.otherPhases(currentPhaseId).map((target) => ({
         value: target.id,
         label: target.name,
@@ -860,7 +946,7 @@ export class StructurePage {
         return next;
       });
     } catch {
-      this.errorMessage.set("Impossible d'ajouter cette règle de qualification.");
+      this.errorMessage.set('admin.structure.errors.addQualificationRule');
     }
   }
 
@@ -892,7 +978,7 @@ export class StructurePage {
         return next;
       });
     } catch {
-      this.errorMessage.set('Impossible de supprimer cette règle de qualification.');
+      this.errorMessage.set('admin.structure.errors.removeQualificationRule');
     }
   }
 
@@ -955,7 +1041,7 @@ export class StructurePage {
         [phase.id]: { position: '', bestCount: '', targetPhaseId: '' },
       }));
     } catch {
-      this.errorMessage.set("Impossible d'ajouter cette règle de meilleurs classés.");
+      this.errorMessage.set('admin.structure.errors.addCrossGroupRule');
     }
   }
 
@@ -982,7 +1068,7 @@ export class StructurePage {
         return next;
       });
     } catch {
-      this.errorMessage.set('Impossible de supprimer cette règle.');
+      this.errorMessage.set('admin.structure.errors.removeCrossGroupRule');
     }
   }
 
@@ -1038,7 +1124,7 @@ export class StructurePage {
         phases.map((p) => (p.id === phase.id ? { ...p, knockoutBracket: bracket } : p)),
       );
     } catch {
-      this.errorMessage.set('Impossible de créer ce tableau.');
+      this.errorMessage.set('admin.structure.errors.createBracket');
     }
   }
 
@@ -1058,7 +1144,7 @@ export class StructurePage {
         phases.map((p) => (p.id === phase.id ? { ...p, knockoutBracket: null } : p)),
       );
     } catch {
-      this.errorMessage.set('Impossible de supprimer ce tableau.');
+      this.errorMessage.set('admin.structure.errors.removeBracket');
     }
   }
 
@@ -1103,7 +1189,7 @@ export class StructurePage {
         phases.map((p) => (p.id === phase.id ? { ...p, knockoutBracket: updated } : p)),
       );
     } catch {
-      this.errorMessage.set('Impossible de modifier ce réglage.');
+      this.errorMessage.set('admin.structure.errors.toggleSetting');
     }
   }
 
@@ -1155,7 +1241,7 @@ export class StructurePage {
     } else {
       // Collapse back to a single tier -- keep its qualifiersPerPool/
       // hasRankingMatch values (still shown), but restore the default name.
-      this.presetTiers.update((tiers) => [{ ...tiers[0], name: 'Tableau final' }]);
+      this.presetTiers.update((tiers) => [{ ...tiers[0], name: this.defaultTierName() }]);
     }
   }
 
@@ -1252,15 +1338,28 @@ export class StructurePage {
         },
       );
       this.resetPresetForm();
+      const lang = this.languageService.language();
       const tiersSummary = result.tiers
-        .map((tier) => `${tier.name} (${tier.bracketSize} équipes)`)
+        .map((tier) =>
+          this.transloco.translate(
+            'admin.structure.preset.tierSummaryItem',
+            { name: tier.name, size: tier.bracketSize },
+            lang,
+          ),
+        )
         .join(', ');
-      this.presetSuccessMessage.set(
+      const successKey =
         format === 'POOLS_ONLY'
-          ? `Structure générée : ${poolCount} poules. Rendez-vous sur la page Calendrier pour planifier les matchs des poules.`
+          ? 'successPoolsOnly'
           : format === 'KNOCKOUT_ONLY'
-            ? `Structure générée : ${tiersSummary}. Rendez-vous sur la page Calendrier pour planifier les matchs du tableau.`
-            : `Structure générée : ${poolCount} poules, ${tiersSummary}. Rendez-vous sur la page Calendrier pour planifier les matchs des poules et de l'élimination directe.`,
+            ? 'successKnockoutOnly'
+            : 'successMixed';
+      this.presetSuccessMessage.set(
+        this.transloco.translate(
+          `admin.structure.preset.${successKey}`,
+          { poolCount, tiersSummary },
+          lang,
+        ),
       );
       await this.loadCategoryData();
     } catch (error) {
@@ -1268,7 +1367,11 @@ export class StructurePage {
         error instanceof HttpErrorResponse &&
           typeof (error.error as { message?: unknown })?.message === 'string'
           ? (error.error as { message: string }).message
-          : 'Impossible de générer la structure.',
+          : this.transloco.translate(
+              'admin.structure.preset.errors.generic',
+              {},
+              this.languageService.language(),
+            ),
       );
     } finally {
       this.presetSubmitting.set(false);

@@ -435,7 +435,12 @@
         "title": "Veröffentlichungszahlung",
         "loading": "Wird geladen…",
         "never": "Dieses Turnier wurde noch nie veröffentlicht.",
-        "table": { "date": "Datum", "teams": "Teams", "amount": "Betrag", "status": "Status" },
+        "table": {
+          "date": "Datum",
+          "teams": "Teams",
+          "amount": "Betrag",
+          "status": "Status"
+        },
         "paid": "Bezahlt",
         "pending": "Ausstehend",
         "print": "Drucken"
@@ -643,6 +648,138 @@
       },
       "errors": {
         "load": "Anmeldungen konnten nicht geladen werden."
+      }
+    },
+    "structure": {
+      "title": "Wettbewerbsstruktur",
+      "loading": "Wird geladen…",
+      "addCategoryFirst": "Fügen Sie zuerst eine Kategorie auf der Turnierseite hinzu.",
+      "categoryLabel": "Kategorie",
+      "doubleRoundRobinLabel": "Hin- und Rückspiele",
+      "typeGroupStage": "Gruppen",
+      "typeKnockout": "K.-o.-Runde",
+      "rankingMatchLabel": "Spiel um Platz 3",
+      "removeLabel": "Entfernen",
+      "deleteLabel": "Löschen",
+      "saveLabel": "Speichern",
+      "targetPhaseLabel": "Zielphase",
+      "positionLabel": "Position",
+      "preset": {
+        "title": "Turniermodus",
+        "formatLabel": "Format",
+        "format": {
+          "poolsOnly": "Nur Gruppen (Liga)",
+          "poolsAndKnockout": "Gruppen + K.-o.-Runde",
+          "knockoutOnly": "Nur K.-o.-Runde"
+        },
+        "intro": {
+          "poolsOnly": "Richtet eine Gruppenliga (Jeder-gegen-Jeden) ohne K.-o.-Endphase ein, basierend auf den bereits in dieser Kategorie erstellten Teams.",
+          "knockoutOnly": "Richtet direkt einen K.-o.-Turnierbaum ein, basierend auf den bereits in dieser Kategorie erstellten Teams, ohne Gruppenphase.",
+          "poolsAndKnockout": "Richtet auf einmal die Gruppen und den K.-o.-Turnierbaum ein, basierend auf den bereits in dieser Kategorie erstellten Teams."
+        },
+        "unassignedAvailable": "{{count}} nicht zugewiesene(s) Team(s) hier verfügbar.",
+        "noUnassigned": "Noch keine nicht zugewiesenen Teams — fügen Sie zuerst welche auf der Teams-Seite hinzu.",
+        "poolsTitle": "Gruppen",
+        "teamCountLabel": "Anzahl der Teams",
+        "poolCountLabel": "Anzahl der Gruppen",
+        "multiTierLabel": "Für mehrere Wettbewerbe qualifizieren",
+        "bestOfPositionLabel": "Die bestplatzierten Teams an einer Position einbeziehen",
+        "qualifiersPerPoolLabel": "Qualifikanten pro Gruppe",
+        "tierNameLabel": "Name der Stufe",
+        "tierNamePlaceholder": "Name der Stufe (z. B. Champions League)",
+        "addTier": "Stufe hinzufügen",
+        "bestCountLabel": "Anzahl der bestplatzierten Teams",
+        "bestOfPositionHint": "Die {{count}} besten Teams auf Platz {{position}} ihrer Gruppe, untereinander verglichen, kommen in den Turnierbaum der ersten Stufe.",
+        "knockoutNameLabel": "Name des Turnierbaums",
+        "knockoutNamePlaceholder": "Finalrunde",
+        "tierBracketSize": "{{name}}: {{size}} Teams.",
+        "defaultTierName": "Finalrunde",
+        "defaultTierNameIndexed": "Stufe {{index}}",
+        "tierSummaryItem": "{{name}} ({{size}} Teams)",
+        "successPoolsOnly": "Struktur erstellt: {{poolCount}} Gruppen. Gehen Sie zur Spielplanseite, um die Gruppenspiele zu planen.",
+        "successKnockoutOnly": "Struktur erstellt: {{tiersSummary}}. Gehen Sie zur Spielplanseite, um die Turnierbaumspiele zu planen.",
+        "successMixed": "Struktur erstellt: {{poolCount}} Gruppen, {{tiersSummary}}. Gehen Sie zur Spielplanseite, um die Gruppen- und K.-o.-Spiele zu planen.",
+        "errors": {
+          "knockoutNotPowerOfTwo": "Für einen reinen K.-o.-Turnierbaum muss die Anzahl der Teams eine Zweierpotenz sein (2, 4, 8, 16…) — {{teamCount}} Team(s) passt nicht.",
+          "unassignedMismatch": "{{found}} nicht zugewiesene(s) Team(s) in dieser Kategorie gefunden, {{expected}} erwartet.",
+          "poolsExceedTeams": "Die Anzahl der Gruppen darf die Anzahl der Teams nicht überschreiten.",
+          "tooManyQualifiersForSmallestPool": "Bei {{teamCount}} Teams, aufgeteilt in {{poolCount}} Gruppen, hat die kleinste Gruppe nur {{smallestPoolSize}} Team(s) — es ist unmöglich, insgesamt {{totalQualifiers}} über alle Stufen hinweg zu qualifizieren.",
+          "bestOfPositionExceedsPools": "Es können nicht {{bestCount}} bestplatzierte(s) Team(s) auf Position {{bestPosition}} qualifiziert werden: Es gibt nur {{poolCount}} Gruppe(n).",
+          "bestOfPositionOverlapsDirect": "Position {{bestPosition}} der bestplatzierten Teams überschneidet sich mit den direkten Qualifikanten (Positionen 1 bis {{totalQualifiers}}) — wählen Sie eine strikt höhere Position.",
+          "bestOfPositionNotInSmallestPool": "Position {{bestPosition}} existiert nicht in jeder Gruppe — die kleinste Gruppe hat nur {{smallestPoolSize}} Team(s).",
+          "tierBracketNotPowerOfTwo": "Stufe „{{tierName}}“: {{poolCount}} Gruppe(n) × {{qualifiers}} Qualifikant(en) = {{bracketSize}} qualifizierte(s) Team(s) — diese Zahl muss eine Zweierpotenz sein (2, 4, 8, 16…), um einen K.-o.-Turnierbaum zu bilden.",
+          "tierBracketNotPowerOfTwoWithBest": "Stufe „{{tierName}}“: {{poolCount}} Gruppe(n) × {{qualifiers}} Qualifikant(en) + {{bestCount}} bestplatzierte(s) Team(s) = {{bracketSize}} qualifizierte(s) Team(s) — diese Zahl muss eine Zweierpotenz sein (2, 4, 8, 16…), um einen K.-o.-Turnierbaum zu bilden.",
+          "generic": "Die Struktur konnte nicht erstellt werden."
+        }
+      },
+      "addPhase": {
+        "title": "Phase hinzufügen",
+        "nameLabel": "Name der Phase",
+        "namePlaceholder": "Name der Phase (z. B. Gruppenphase)",
+        "typeLabel": "Phasentyp",
+        "add": "Phase hinzufügen"
+      },
+      "phase": {
+        "removePhase": "Phase löschen",
+        "standingRule": {
+          "title": "Punkteschema",
+          "hint": "Gilt für alle Gruppen dieser Phase.",
+          "winLabel": "Sieg",
+          "drawLabel": "Unentschieden",
+          "lossLabel": "Niederlage",
+          "supplementaryLabel": "Zusätzliche Wertung (Fair Play)",
+          "penaltyShootoutLabel": "Elfmeterschießen bei Gleichstand",
+          "tieBreakHint": "Tiebreak-Kriterien: {{order}}"
+        },
+        "qualification": {
+          "title": "Qualifikationsregeln",
+          "hint": "Gilt für alle Gruppen dieser Phase.",
+          "ruleRow": "Positionen {{from}}–{{to}} → {{target}}",
+          "fromLabel": "Von",
+          "toLabel": "Bis",
+          "addRule": "Regel hinzufügen"
+        },
+        "crossGroup": {
+          "title": "Bestplatzierte über Gruppen hinweg",
+          "hint": "Vergleicht Teams auf derselben Position über alle Gruppen dieser Phase hinweg (z. B. die 8 besten Dritten) und qualifiziert die besten für eine Zielphase.",
+          "ruleRow": "{{count}} beste(r/s) {{position}}. → {{target}}",
+          "positionPlaceholder": "Position (z. B. 3)",
+          "bestCountLabel": "Anzahl der besten Teams",
+          "addRule": "Regel hinzufügen"
+        },
+        "group": {
+          "chooseTeamLabel": "Team auswählen",
+          "addTeam": "Team zur Gruppe hinzufügen",
+          "newGroupLabel": "Neue Gruppe",
+          "newGroupPlaceholder": "Neue Gruppe (z. B. Gruppe A)",
+          "addGroup": "Gruppe hinzufügen"
+        },
+        "bracket": {
+          "teamsCount": "{{size}} Teams",
+          "removeBracket": "Turnierbaum löschen",
+          "nameLabel": "Name des Turnierbaums",
+          "namePlaceholder": "Name des Turnierbaums (z. B. Champions League)",
+          "sizeLabel": "Größe des Turnierbaums",
+          "create": "Turnierbaum erstellen"
+        }
+      },
+      "errors": {
+        "loadCategories": "Kategorien konnten nicht geladen werden.",
+        "loadStructure": "Die Struktur dieser Kategorie konnte nicht geladen werden.",
+        "addPhase": "Diese Phase konnte nicht hinzugefügt werden (Name bereits vergeben?).",
+        "toggleSetting": "Diese Einstellung konnte nicht aktualisiert werden.",
+        "removePhase": "Diese Phase konnte nicht gelöscht werden.",
+        "addGroup": "Diese Gruppe konnte nicht hinzugefügt werden (Name bereits vergeben?).",
+        "removeGroup": "Diese Gruppe konnte nicht gelöscht werden.",
+        "saveStandingRule": "Das Punkteschema konnte nicht gespeichert werden.",
+        "assignTeam": "Dieses Team konnte der Gruppe nicht zugewiesen werden.",
+        "unassignTeam": "Dieses Team konnte nicht aus der Gruppe entfernt werden.",
+        "addQualificationRule": "Diese Qualifikationsregel konnte nicht hinzugefügt werden.",
+        "removeQualificationRule": "Diese Qualifikationsregel konnte nicht gelöscht werden.",
+        "addCrossGroupRule": "Diese Regel für Bestplatzierte konnte nicht hinzugefügt werden.",
+        "removeCrossGroupRule": "Diese Regel konnte nicht gelöscht werden.",
+        "createBracket": "Dieser Turnierbaum konnte nicht erstellt werden.",
+        "removeBracket": "Dieser Turnierbaum konnte nicht gelöscht werden."
       }
     }
   }
