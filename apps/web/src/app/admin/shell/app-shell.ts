@@ -17,8 +17,15 @@ import {
 } from '@angular/router';
 import { filter, map, startWith } from 'rxjs';
 import { AssetUrlService } from 'api-client';
-import { Button, Logo, ThemeModeToggle } from 'design-system';
-import { ThemeMode, ThemeService } from 'design-tokens';
+import { TranslocoPipe } from '@jsverse/transloco';
+import { Button, LanguageSwitcher, Logo, ThemeModeToggle } from 'design-system';
+import {
+  LanguageCode,
+  LanguageService,
+  SUPPORTED_LANGUAGES,
+  ThemeMode,
+  ThemeService,
+} from 'design-tokens';
 import { AuthService } from '../core/auth.service';
 import { TournamentSubmenu } from '../shared/tournament-submenu';
 import { THEME_MAP } from '../core/theme-map';
@@ -31,9 +38,11 @@ import { TournamentsService } from '../core/tournaments.service';
     RouterLinkActive,
     RouterOutlet,
     Button,
+    LanguageSwitcher,
     Logo,
     ThemeModeToggle,
     TournamentSubmenu,
+    TranslocoPipe,
   ],
   templateUrl: './app-shell.html',
   styleUrl: './app-shell.scss',
@@ -44,10 +53,13 @@ export class AppShell {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly themeService = inject(ThemeService);
+  private readonly languageService = inject(LanguageService);
   private readonly tournamentsService = inject(TournamentsService);
   private readonly assetUrl = inject(AssetUrlService);
 
   protected readonly mode = this.themeService.mode;
+  protected readonly language = this.languageService.language;
+  protected readonly languages = SUPPORTED_LANGUAGES;
   private readonly organizationId = computed(() => this.authService.organizations()[0]?.id ?? null);
   // Public slug for the "Lien public" link next to the submenu tabs --
   // fetched alongside the theme below (null hides the button, e.g. while
@@ -138,6 +150,10 @@ export class AppShell {
 
   protected onModeChange(next: ThemeMode): void {
     this.themeService.setMode(document.documentElement, next);
+  }
+
+  protected onLanguageChange(code: string): void {
+    this.languageService.setLanguage(code as LanguageCode);
   }
 
   protected toggleMobileMenu(): void {

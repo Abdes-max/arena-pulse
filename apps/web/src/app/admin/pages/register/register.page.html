@@ -3,48 +3,66 @@
     @case ('form') {
       <form class="register-page__card" [formGroup]="form" (ngSubmit)="submit()">
         <ap-logo class="register-page__brand" />
-        <h1>Inscrivez-vous</h1>
+        <h1>{{ 'admin.auth.register.title' | transloco }}</h1>
         <ap-text-field
-          label="Nom de l'organisation"
+          [label]="'admin.auth.register.orgNameLabel' | transloco"
           formControlName="organizationName"
           autocomplete="organization"
         />
-        <ap-text-field label="Prénom" formControlName="firstName" autocomplete="given-name" />
-        <ap-text-field label="Nom" formControlName="lastName" autocomplete="family-name" />
-        <ap-text-field label="Email" type="email" formControlName="email" autocomplete="email" />
         <ap-text-field
-          label="Mot de passe"
+          [label]="'admin.auth.register.firstNameLabel' | transloco"
+          formControlName="firstName"
+          autocomplete="given-name"
+        />
+        <ap-text-field
+          [label]="'admin.auth.register.lastNameLabel' | transloco"
+          formControlName="lastName"
+          autocomplete="family-name"
+        />
+        <ap-text-field
+          [label]="'admin.auth.register.emailLabel' | transloco"
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+        />
+        <ap-text-field
+          [label]="'admin.auth.register.passwordLabel' | transloco"
           type="password"
           formControlName="password"
           autocomplete="new-password"
         />
         @if (errorMessage(); as message) {
-          <p class="register-page__error" role="alert">{{ message }}</p>
+          <p class="register-page__error" role="alert">{{ message | transloco }}</p>
         }
-        <ap-button type="submit" [disabled]="submitting()">Créer mon organisation</ap-button>
+        <ap-button type="submit" [disabled]="submitting()">{{
+          'admin.auth.register.submit' | transloco
+        }}</ap-button>
         <p class="register-page__footer">
-          Déjà un compte ? <a routerLink="/login">Se connecter</a>
+          {{ 'admin.auth.register.alreadyAccount' | transloco }}
+          <a routerLink="/login">{{ 'admin.auth.register.login' | transloco }}</a>
         </p>
       </form>
     }
     @case ('sent') {
       <div class="register-page__card">
         <ap-logo class="register-page__brand" />
-        <h1>Vérifiez votre boîte mail</h1>
+        <h1>{{ 'admin.auth.register.sentTitle' | transloco }}</h1>
         <p>
-          Un email de confirmation a été envoyé à <strong>{{ registeredEmail() }}</strong
-          >. Cliquez sur le lien qu'il contient pour activer votre compte.
+          {{ 'admin.auth.register.sentBody' | transloco: { email: registeredEmail() } }}
         </p>
         @if (resent()) {
-          <p class="register-page__hint">Email renvoyé.</p>
+          <p class="register-page__hint">{{ 'admin.auth.register.resent' | transloco }}</p>
         }
         @if (errorMessage(); as message) {
-          <p class="register-page__error" role="alert">{{ message }}</p>
+          <p class="register-page__error" role="alert">{{ message | transloco }}</p>
         }
         <ap-button type="button" [disabled]="submitting()" (click)="resendVerification()">
-          Renvoyer l'email
+          {{ 'admin.auth.register.resend' | transloco }}
         </ap-button>
-        <p class="register-page__footer">Déjà vérifié ? <a routerLink="/login">Se connecter</a></p>
+        <p class="register-page__footer">
+          {{ 'admin.auth.register.alreadyVerified' | transloco }}
+          <a routerLink="/login">{{ 'admin.auth.register.login' | transloco }}</a>
+        </p>
       </div>
     }
   }

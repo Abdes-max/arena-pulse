@@ -243,5 +243,112 @@
     "searchLabel": "Cerca una squadra",
     "searchPlaceholder": "Cerca una squadra…",
     "noTeams": "Nessuna squadra trovata."
+  },
+  "admin": {
+    "shell": {
+      "skipLink": "Vai al contenuto principale",
+      "nav": {
+        "tournaments": "Tornei",
+        "collaborators": "Collaboratori",
+        "subscription": "Abbonamento"
+      },
+      "logout": "Disconnetti",
+      "menu": "Menu"
+    },
+    "submenu": {
+      "general": "Generale",
+      "teams": "Squadre",
+      "referees": "Arbitri",
+      "structure": "Struttura",
+      "schedule": "Calendario",
+      "scores": "Risultati",
+      "standings": "Classifica",
+      "publicLink": "Link pubblico"
+    },
+    "auth": {
+      "login": {
+        "title": "Accedi",
+        "emailLabel": "Email",
+        "passwordLabel": "Password",
+        "submit": "Accedi",
+        "resend": "Invia di nuovo l'email di verifica",
+        "resent": "Email inviata di nuovo.",
+        "noAccount": "Non hai ancora un account?",
+        "createOrg": "Crea un'organizzazione",
+        "errorVerify": "Verifica la tua email prima di accedere.",
+        "errorCredentials": "Email o password errati.",
+        "errorGeneric": "Si è verificato un errore, riprova."
+      },
+      "register": {
+        "title": "Registrati",
+        "orgNameLabel": "Nome dell'organizzazione",
+        "firstNameLabel": "Nome",
+        "lastNameLabel": "Cognome",
+        "emailLabel": "Email",
+        "passwordLabel": "Password",
+        "submit": "Crea la mia organizzazione",
+        "alreadyAccount": "Hai già un account?",
+        "login": "Accedi",
+        "sentTitle": "Controlla la tua posta",
+        "sentBody": "Un'email di conferma è stata inviata a {{email}}. Fai clic sul link contenuto per attivare il tuo account.",
+        "resend": "Invia di nuovo l'email",
+        "resent": "Email inviata di nuovo.",
+        "alreadyVerified": "Già verificato?",
+        "errorConflict": "Esiste già un account con questa email.",
+        "errorGeneric": "Si è verificato un errore, riprova."
+      },
+      "verifyEmail": {
+        "loading": "Verifica della tua email…",
+        "success": "Email verificata, accesso in corso…",
+        "errorTitle": "Link non valido",
+        "errorExpired": "Questo link di verifica non è valido, è scaduto o è già stato utilizzato.",
+        "errorGeneric": "Si è verificato un errore, riprova.",
+        "createNew": "Crea un nuovo account",
+        "login": "Accedi"
+      },
+      "acceptInvitation": {
+        "loading": "Caricamento dell'invito…",
+        "errorTitle": "Invito non trovato",
+        "errorBody": "Questo link di invito non è valido, è scaduto o è già stato utilizzato.",
+        "join": "Unisciti a {{organization}}",
+        "createAccountBody": "Crea il tuo account per accettare l'invito ({{email}}).",
+        "firstNameLabel": "Nome",
+        "lastNameLabel": "Cognome",
+        "passwordLabel": "Password",
+        "accept": "Accetta l'invito",
+        "loginRequiredBody": "Accedi con l'account {{email}} per accettare questo invito.",
+        "login": "Accedi",
+        "readyBody": "Hai effettuato l'accesso come {{email}}.",
+        "errorGeneric": "Si è verificato un errore, riprova."
+      }
+    },
+    "collaborators": {
+      "title": "Collaboratori",
+      "loading": "Caricamento…",
+      "membersTitle": "Membri",
+      "table": {
+        "name": "Nome",
+        "email": "Email",
+        "role": "Ruolo",
+        "actions": "Azioni"
+      },
+      "roleAdmin": "Amministratore",
+      "roleMember": "Collaboratore",
+      "remove": "Rimuovi",
+      "pendingTitle": "Inviti in sospeso",
+      "pendingEmpty": "Nessun invito in sospeso.",
+      "revoke": "Revoca",
+      "inviteTitle": "Invita un collaboratore",
+      "emailLabel": "Email",
+      "roleLabel": "Ruolo",
+      "invite": "Invita",
+      "errorLoad": "Impossibile caricare i collaboratori.",
+      "errorInviteConflict": "Questa persona è già membro o ha già un invito in sospeso.",
+      "errorInviteGeneric": "Impossibile invitare questa persona, riprova.",
+      "errorRoleLastAdmin": "Impossibile modificare questo ruolo: è l'ultimo amministratore dell'organizzazione.",
+      "errorRoleGeneric": "Impossibile modificare questo ruolo, riprova.",
+      "errorRemoveLastAdmin": "Impossibile rimuovere questo collaboratore: è l'ultimo amministratore dell'organizzazione.",
+      "errorRemoveGeneric": "Impossibile rimuovere questo collaboratore, riprova."
+    }
   }
 }

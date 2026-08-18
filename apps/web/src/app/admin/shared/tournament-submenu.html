@@ -14,49 +14,49 @@
       routerLinkActive="tournament-submenu__link--active"
       (click)="centerTab($event)"
     >
-      Général
+      {{ 'admin.submenu.general' | transloco }}
     </a>
     <a
       [routerLink]="['/admin/tournaments', tournamentId(), 'teams']"
       routerLinkActive="tournament-submenu__link--active"
       (click)="centerTab($event)"
     >
-      Équipes
+      {{ 'admin.submenu.teams' | transloco }}
     </a>
     <a
       [routerLink]="['/admin/tournaments', tournamentId(), 'referees']"
       routerLinkActive="tournament-submenu__link--active"
       (click)="centerTab($event)"
     >
-      Arbitres
+      {{ 'admin.submenu.referees' | transloco }}
     </a>
     <a
       [routerLink]="['/admin/tournaments', tournamentId(), 'structure']"
       routerLinkActive="tournament-submenu__link--active"
       (click)="centerTab($event)"
     >
-      Structure
+      {{ 'admin.submenu.structure' | transloco }}
     </a>
     <a
       [routerLink]="['/admin/tournaments', tournamentId(), 'schedule']"
       routerLinkActive="tournament-submenu__link--active"
       (click)="centerTab($event)"
     >
-      Calendrier
+      {{ 'admin.submenu.schedule' | transloco }}
     </a>
     <a
       [routerLink]="['/admin/tournaments', tournamentId(), 'scores']"
       routerLinkActive="tournament-submenu__link--active"
       (click)="centerTab($event)"
     >
-      Scores
+      {{ 'admin.submenu.scores' | transloco }}
     </a>
     <a
       [routerLink]="['/admin/tournaments', tournamentId(), 'standings']"
       routerLinkActive="tournament-submenu__link--active"
       (click)="centerTab($event)"
     >
-      Classement
+      {{ 'admin.submenu.standings' | transloco }}
     </a>
   </nav>
 
@@ -89,7 +89,7 @@
           stroke-linejoin="round"
         />
       </svg>
-      <span class="ap-sr-only">Lien public</span>
+      <span class="ap-sr-only">{{ 'admin.submenu.publicLink' | transloco }}</span>
     </ap-button>
   }
 </div>

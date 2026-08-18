@@ -8,20 +8,16 @@ import {
   signal,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Button, Select, SelectOption, TextField } from 'design-system';
-import { DEFAULT_THEME, ThemeService } from 'design-tokens';
+import { DEFAULT_THEME, LanguageService, ThemeService } from 'design-tokens';
 import { AuthService } from '../../core/auth.service';
 import { OrganizationMember, OrganizationRole, PendingInvitation } from '../../core/models';
 import { OrganizationsService } from '../../core/organizations.service';
 
-const ROLE_OPTIONS: SelectOption[] = [
-  { value: 'ORG_MEMBER', label: 'Collaborateur' },
-  { value: 'ORG_ADMIN', label: 'Administrateur' },
-];
-
 @Component({
   selector: 'app-collaborators-page',
-  imports: [ReactiveFormsModule, Button, Select, TextField],
+  imports: [ReactiveFormsModule, Button, Select, TextField, TranslocoPipe],
   templateUrl: './collaborators.page.html',
   styleUrl: './collaborators.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,13 +26,31 @@ export class CollaboratorsPage {
   private readonly formBuilder = inject(FormBuilder);
   private readonly organizationsService = inject(OrganizationsService);
   private readonly themeService = inject(ThemeService);
+  private readonly languageService = inject(LanguageService);
+  private readonly transloco = inject(TranslocoService);
   private readonly destroyRef = inject(DestroyRef);
   protected readonly authService = inject(AuthService);
 
   protected readonly organization = computed(() => this.authService.organizations()[0] ?? null);
   protected readonly isAdmin = computed(() => this.organization()?.role === 'ORG_ADMIN');
 
-  protected readonly roleOptions = ROLE_OPTIONS;
+  // Recomputed on every language switch (reads the active language signal),
+  // same reasoning as ap-share-button's [text] input elsewhere in this app --
+  // ap-select's [options] is a plain input, not template markup, so there's
+  // no `| transloco` pipe to bind these labels through.
+  protected readonly roleOptions = computed<SelectOption[]>(() => {
+    const lang = this.languageService.language();
+    return [
+      {
+        value: 'ORG_MEMBER',
+        label: this.transloco.translate('admin.collaborators.roleMember', {}, lang),
+      },
+      {
+        value: 'ORG_ADMIN',
+        label: this.transloco.translate('admin.collaborators.roleAdmin', {}, lang),
+      },
+    ];
+  });
   protected readonly members = signal<OrganizationMember[]>([]);
   protected readonly pendingInvitations = signal<PendingInvitation[]>([]);
   protected readonly loading = signal(true);
@@ -79,7 +93,7 @@ export class CollaboratorsPage {
       this.members.set(members);
       this.pendingInvitations.set(pending);
     } catch {
-      this.errorMessage.set('Impossible de charger les collaborateurs.');
+      this.errorMessage.set('admin.collaborators.errorLoad');
     } finally {
       this.loading.set(false);
     }
@@ -100,8 +114,8 @@ export class CollaboratorsPage {
     } catch (error) {
       this.errorMessage.set(
         error instanceof HttpErrorResponse && error.status === 409
-          ? 'Cette personne est déjà membre ou a déjà une invitation en attente.'
-          : "Impossible d'inviter cette personne, réessayez.",
+          ? 'admin.collaborators.errorInviteConflict'
+          : 'admin.collaborators.errorInviteGeneric',
       );
     } finally {
       this.inviting.set(false);
@@ -125,8 +139,8 @@ export class CollaboratorsPage {
     } catch (error) {
       this.errorMessage.set(
         error instanceof HttpErrorResponse && error.status === 409
-          ? "Impossible de modifier ce rôle : c'est le dernier administrateur de l'organisation."
-          : 'Impossible de modifier ce rôle, réessayez.',
+          ? 'admin.collaborators.errorRoleLastAdmin'
+          : 'admin.collaborators.errorRoleGeneric',
       );
     }
   }
@@ -142,8 +156,8 @@ export class CollaboratorsPage {
     } catch (error) {
       this.errorMessage.set(
         error instanceof HttpErrorResponse && error.status === 409
-          ? "Impossible de retirer ce collaborateur : c'est le dernier administrateur de l'organisation."
-          : 'Impossible de retirer ce collaborateur, réessayez.',
+          ? 'admin.collaborators.errorRemoveLastAdmin'
+          : 'admin.collaborators.errorRemoveGeneric',
       );
     }
   }

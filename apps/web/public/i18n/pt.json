@@ -243,5 +243,112 @@
     "searchLabel": "Procurar uma equipa",
     "searchPlaceholder": "Procurar uma equipa…",
     "noTeams": "Nenhuma equipa encontrada."
+  },
+  "admin": {
+    "shell": {
+      "skipLink": "Ir para o conteúdo principal",
+      "nav": {
+        "tournaments": "Torneios",
+        "collaborators": "Colaboradores",
+        "subscription": "Assinatura"
+      },
+      "logout": "Terminar sessão",
+      "menu": "Menu"
+    },
+    "submenu": {
+      "general": "Geral",
+      "teams": "Equipas",
+      "referees": "Árbitros",
+      "structure": "Estrutura",
+      "schedule": "Calendário",
+      "scores": "Resultados",
+      "standings": "Classificação",
+      "publicLink": "Link público"
+    },
+    "auth": {
+      "login": {
+        "title": "Inicie sessão",
+        "emailLabel": "Email",
+        "passwordLabel": "Palavra-passe",
+        "submit": "Iniciar sessão",
+        "resend": "Reenviar o email de verificação",
+        "resent": "Email reenviado.",
+        "noAccount": "Ainda não tem conta?",
+        "createOrg": "Criar uma organização",
+        "errorVerify": "Verifique o seu email antes de iniciar sessão.",
+        "errorCredentials": "Email ou palavra-passe incorretos.",
+        "errorGeneric": "Ocorreu um erro, tente novamente."
+      },
+      "register": {
+        "title": "Registe-se",
+        "orgNameLabel": "Nome da organização",
+        "firstNameLabel": "Nome próprio",
+        "lastNameLabel": "Apelido",
+        "emailLabel": "Email",
+        "passwordLabel": "Palavra-passe",
+        "submit": "Criar a minha organização",
+        "alreadyAccount": "Já tem conta?",
+        "login": "Iniciar sessão",
+        "sentTitle": "Verifique a sua caixa de correio",
+        "sentBody": "Foi enviado um email de confirmação para {{email}}. Clique na ligação que contém para ativar a sua conta.",
+        "resend": "Reenviar o email",
+        "resent": "Email reenviado.",
+        "alreadyVerified": "Já verificou?",
+        "errorConflict": "Já existe uma conta com este email.",
+        "errorGeneric": "Ocorreu um erro, tente novamente."
+      },
+      "verifyEmail": {
+        "loading": "A verificar o seu email…",
+        "success": "Email verificado, a iniciar sessão…",
+        "errorTitle": "Ligação inválida",
+        "errorExpired": "Esta ligação de verificação é inválida, expirou ou já foi utilizada.",
+        "errorGeneric": "Ocorreu um erro, tente novamente.",
+        "createNew": "Criar uma nova conta",
+        "login": "Iniciar sessão"
+      },
+      "acceptInvitation": {
+        "loading": "A carregar o convite…",
+        "errorTitle": "Convite não encontrado",
+        "errorBody": "Esta ligação de convite é inválida, expirou ou já foi utilizada.",
+        "join": "Juntar-se a {{organization}}",
+        "createAccountBody": "Crie a sua conta para aceitar o convite ({{email}}).",
+        "firstNameLabel": "Nome próprio",
+        "lastNameLabel": "Apelido",
+        "passwordLabel": "Palavra-passe",
+        "accept": "Aceitar o convite",
+        "loginRequiredBody": "Inicie sessão com a conta {{email}} para aceitar este convite.",
+        "login": "Iniciar sessão",
+        "readyBody": "Sessão iniciada como {{email}}.",
+        "errorGeneric": "Ocorreu um erro, tente novamente."
+      }
+    },
+    "collaborators": {
+      "title": "Colaboradores",
+      "loading": "A carregar…",
+      "membersTitle": "Membros",
+      "table": {
+        "name": "Nome",
+        "email": "Email",
+        "role": "Função",
+        "actions": "Ações"
+      },
+      "roleAdmin": "Administrador",
+      "roleMember": "Colaborador",
+      "remove": "Remover",
+      "pendingTitle": "Convites pendentes",
+      "pendingEmpty": "Nenhum convite pendente.",
+      "revoke": "Revogar",
+      "inviteTitle": "Convidar um colaborador",
+      "emailLabel": "Email",
+      "roleLabel": "Função",
+      "invite": "Convidar",
+      "errorLoad": "Não foi possível carregar os colaboradores.",
+      "errorInviteConflict": "Esta pessoa já é membro ou já tem um convite pendente.",
+      "errorInviteGeneric": "Não foi possível convidar esta pessoa, tente novamente.",
+      "errorRoleLastAdmin": "Não é possível alterar esta função: é o último administrador da organização.",
+      "errorRoleGeneric": "Não foi possível alterar esta função, tente novamente.",
+      "errorRemoveLastAdmin": "Não é possível remover este colaborador: é o último administrador da organização.",
+      "errorRemoveGeneric": "Não foi possível remover este colaborador, tente novamente."
+    }
   }
 }

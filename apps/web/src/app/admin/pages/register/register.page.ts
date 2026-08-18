@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { Button, Logo, TextField } from 'design-system';
 import { AuthService } from '../../core/auth.service';
 
@@ -9,7 +10,7 @@ type PageState = 'form' | 'sent';
 
 @Component({
   selector: 'app-register-page',
-  imports: [ReactiveFormsModule, RouterLink, Button, Logo, TextField],
+  imports: [ReactiveFormsModule, RouterLink, Button, Logo, TextField, TranslocoPipe],
   templateUrl: './register.page.html',
   styleUrl: './register.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -44,9 +45,9 @@ export class RegisterPage {
       this.state.set('sent');
     } catch (error) {
       if (error instanceof HttpErrorResponse && error.status === 409) {
-        this.errorMessage.set('Un compte existe déjà avec cet email.');
+        this.errorMessage.set('admin.auth.register.errorConflict');
       } else {
-        this.errorMessage.set('Une erreur est survenue, réessayez.');
+        this.errorMessage.set('admin.auth.register.errorGeneric');
       }
     } finally {
       this.submitting.set(false);
@@ -63,7 +64,7 @@ export class RegisterPage {
       await this.authService.resendVerification(email);
       this.resent.set(true);
     } catch {
-      this.errorMessage.set('Une erreur est survenue, réessayez.');
+      this.errorMessage.set('admin.auth.register.errorGeneric');
     } finally {
       this.submitting.set(false);
     }

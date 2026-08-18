@@ -11,6 +11,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { filter } from 'rxjs';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { Button } from 'design-system';
 
 /**
@@ -29,7 +30,7 @@ import { Button } from 'design-system';
  */
 @Component({
   selector: 'app-tournament-submenu',
-  imports: [RouterLink, RouterLinkActive, Button],
+  imports: [RouterLink, RouterLinkActive, Button, TranslocoPipe],
   templateUrl: './tournament-submenu.html',
   styleUrl: './tournament-submenu.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { Button, TextField } from 'design-system';
 import { AuthService } from '../../core/auth.service';
 import { InvitationsService } from '../../core/invitations.service';
@@ -10,7 +11,7 @@ type PageState = 'loading' | 'error' | 'new-account' | 'log-in-required' | 'read
 
 @Component({
   selector: 'app-accept-invitation-page',
-  imports: [ReactiveFormsModule, Button, TextField],
+  imports: [ReactiveFormsModule, Button, TextField, TranslocoPipe],
   templateUrl: './accept-invitation.page.html',
   styleUrl: './accept-invitation.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -68,7 +69,7 @@ export class AcceptInvitationPage {
       }
       await this.router.navigateByUrl('/admin/tournaments');
     } catch {
-      this.errorMessage.set('Une erreur est survenue, réessayez.');
+      this.errorMessage.set('admin.auth.acceptInvitation.errorGeneric');
     } finally {
       this.submitting.set(false);
     }
@@ -82,7 +83,7 @@ export class AcceptInvitationPage {
       await this.authService.loadProfile();
       await this.router.navigateByUrl('/admin/tournaments');
     } catch {
-      this.errorMessage.set('Une erreur est survenue, réessayez.');
+      this.errorMessage.set('admin.auth.acceptInvitation.errorGeneric');
     } finally {
       this.submitting.set(false);
     }

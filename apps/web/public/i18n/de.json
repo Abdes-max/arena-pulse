@@ -243,5 +243,112 @@
     "searchLabel": "Team suchen",
     "searchPlaceholder": "Team suchen…",
     "noTeams": "Kein Team gefunden."
+  },
+  "admin": {
+    "shell": {
+      "skipLink": "Zum Hauptinhalt springen",
+      "nav": {
+        "tournaments": "Turniere",
+        "collaborators": "Mitarbeiter",
+        "subscription": "Abonnement"
+      },
+      "logout": "Abmelden",
+      "menu": "Menü"
+    },
+    "submenu": {
+      "general": "Allgemein",
+      "teams": "Teams",
+      "referees": "Schiedsrichter",
+      "structure": "Struktur",
+      "schedule": "Spielplan",
+      "scores": "Ergebnisse",
+      "standings": "Tabelle",
+      "publicLink": "Öffentlicher Link"
+    },
+    "auth": {
+      "login": {
+        "title": "Anmelden",
+        "emailLabel": "E-Mail",
+        "passwordLabel": "Passwort",
+        "submit": "Anmelden",
+        "resend": "Bestätigungs-E-Mail erneut senden",
+        "resent": "E-Mail erneut gesendet.",
+        "noAccount": "Noch kein Konto?",
+        "createOrg": "Organisation erstellen",
+        "errorVerify": "Bestätigen Sie Ihre E-Mail, bevor Sie sich anmelden.",
+        "errorCredentials": "Falsche E-Mail oder falsches Passwort.",
+        "errorGeneric": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut."
+      },
+      "register": {
+        "title": "Registrieren",
+        "orgNameLabel": "Name der Organisation",
+        "firstNameLabel": "Vorname",
+        "lastNameLabel": "Nachname",
+        "emailLabel": "E-Mail",
+        "passwordLabel": "Passwort",
+        "submit": "Meine Organisation erstellen",
+        "alreadyAccount": "Bereits ein Konto?",
+        "login": "Anmelden",
+        "sentTitle": "Prüfen Sie Ihren Posteingang",
+        "sentBody": "Eine Bestätigungs-E-Mail wurde an {{email}} gesendet. Klicken Sie auf den enthaltenen Link, um Ihr Konto zu aktivieren.",
+        "resend": "E-Mail erneut senden",
+        "resent": "E-Mail erneut gesendet.",
+        "alreadyVerified": "Bereits bestätigt?",
+        "errorConflict": "Für diese E-Mail existiert bereits ein Konto.",
+        "errorGeneric": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut."
+      },
+      "verifyEmail": {
+        "loading": "E-Mail wird bestätigt…",
+        "success": "E-Mail bestätigt, Anmeldung läuft…",
+        "errorTitle": "Ungültiger Link",
+        "errorExpired": "Dieser Bestätigungslink ist ungültig, abgelaufen oder wurde bereits verwendet.",
+        "errorGeneric": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut.",
+        "createNew": "Neues Konto erstellen",
+        "login": "Anmelden"
+      },
+      "acceptInvitation": {
+        "loading": "Einladung wird geladen…",
+        "errorTitle": "Einladung nicht gefunden",
+        "errorBody": "Dieser Einladungslink ist ungültig, abgelaufen oder wurde bereits verwendet.",
+        "join": "{{organization}} beitreten",
+        "createAccountBody": "Erstellen Sie Ihr Konto, um die Einladung anzunehmen ({{email}}).",
+        "firstNameLabel": "Vorname",
+        "lastNameLabel": "Nachname",
+        "passwordLabel": "Passwort",
+        "accept": "Einladung annehmen",
+        "loginRequiredBody": "Melden Sie sich mit dem Konto {{email}} an, um diese Einladung anzunehmen.",
+        "login": "Anmelden",
+        "readyBody": "Sie sind angemeldet als {{email}}.",
+        "errorGeneric": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut."
+      }
+    },
+    "collaborators": {
+      "title": "Mitarbeiter",
+      "loading": "Wird geladen…",
+      "membersTitle": "Mitglieder",
+      "table": {
+        "name": "Name",
+        "email": "E-Mail",
+        "role": "Rolle",
+        "actions": "Aktionen"
+      },
+      "roleAdmin": "Administrator",
+      "roleMember": "Mitarbeiter",
+      "remove": "Entfernen",
+      "pendingTitle": "Ausstehende Einladungen",
+      "pendingEmpty": "Keine ausstehenden Einladungen.",
+      "revoke": "Widerrufen",
+      "inviteTitle": "Mitarbeiter einladen",
+      "emailLabel": "E-Mail",
+      "roleLabel": "Rolle",
+      "invite": "Einladen",
+      "errorLoad": "Mitarbeiter konnten nicht geladen werden.",
+      "errorInviteConflict": "Diese Person ist bereits Mitglied oder hat bereits eine ausstehende Einladung.",
+      "errorInviteGeneric": "Diese Person konnte nicht eingeladen werden, bitte versuchen Sie es erneut.",
+      "errorRoleLastAdmin": "Diese Rolle kann nicht geändert werden: Dies ist der letzte Administrator der Organisation.",
+      "errorRoleGeneric": "Diese Rolle konnte nicht geändert werden, bitte versuchen Sie es erneut.",
+      "errorRemoveLastAdmin": "Dieser Mitarbeiter kann nicht entfernt werden: Dies ist der letzte Administrator der Organisation.",
+      "errorRemoveGeneric": "Dieser Mitarbeiter konnte nicht entfernt werden, bitte versuchen Sie es erneut."
+    }
   }
 }
