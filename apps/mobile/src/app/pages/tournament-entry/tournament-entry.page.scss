@@ -78,6 +78,15 @@
   justify-content: center;
   flex: 0 0 auto;
   padding: var(--ap-space-4);
+  // .settings-overlay is a plain fixed div, not an ion-header/ion-toolbar --
+  // unlike the hero above it (which gets iOS's notch/status-bar safe area
+  // for free through Ionic's own CSS, see the template's comment on why
+  // it's an ion-header at all), this row never got that treatment, so its
+  // close button/title sat flush against the physical top edge, colliding
+  // with the status bar clock on notched devices. env() resolves to 0 on
+  // devices without a safe area (e.g. Android, older iPhones), so this is a
+  // no-op there rather than adding unwanted extra space.
+  padding-top: calc(var(--ap-space-4) + env(safe-area-inset-top));
   border-bottom: var(--ap-border-width) solid var(--ap-color-border);
 }
 
