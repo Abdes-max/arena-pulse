@@ -27,6 +27,7 @@
 @if (open()) {
   <ul
     class="ap-language-switcher__panel"
+    [class.ap-language-switcher__panel--left]="openLeft()"
     role="listbox"
     [attr.aria-label]="'Langue: ' + currentLabel()"
   >
