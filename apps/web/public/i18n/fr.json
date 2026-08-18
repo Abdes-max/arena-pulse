@@ -337,5 +337,112 @@
     "searchLabel": "Rechercher une équipe",
     "searchPlaceholder": "Rechercher une équipe…",
     "noTeams": "Aucune équipe trouvée."
+  },
+  "admin": {
+    "shell": {
+      "skipLink": "Aller au contenu principal",
+      "nav": {
+        "tournaments": "Tournois",
+        "collaborators": "Collaborateurs",
+        "subscription": "Abonnement"
+      },
+      "logout": "Se déconnecter",
+      "menu": "Menu"
+    },
+    "submenu": {
+      "general": "Général",
+      "teams": "Équipes",
+      "referees": "Arbitres",
+      "structure": "Structure",
+      "schedule": "Calendrier",
+      "scores": "Scores",
+      "standings": "Classement",
+      "publicLink": "Lien public"
+    },
+    "auth": {
+      "login": {
+        "title": "Connectez-vous",
+        "emailLabel": "Email",
+        "passwordLabel": "Mot de passe",
+        "submit": "Se connecter",
+        "resend": "Renvoyer l'email de vérification",
+        "resent": "Email renvoyé.",
+        "noAccount": "Pas encore de compte ?",
+        "createOrg": "Créer une organisation",
+        "errorVerify": "Vérifiez votre email avant de vous connecter.",
+        "errorCredentials": "Email ou mot de passe incorrect.",
+        "errorGeneric": "Une erreur est survenue, réessayez."
+      },
+      "register": {
+        "title": "Inscrivez-vous",
+        "orgNameLabel": "Nom de l'organisation",
+        "firstNameLabel": "Prénom",
+        "lastNameLabel": "Nom",
+        "emailLabel": "Email",
+        "passwordLabel": "Mot de passe",
+        "submit": "Créer mon organisation",
+        "alreadyAccount": "Déjà un compte ?",
+        "login": "Se connecter",
+        "sentTitle": "Vérifiez votre boîte mail",
+        "sentBody": "Un email de confirmation a été envoyé à {{email}}. Cliquez sur le lien qu'il contient pour activer votre compte.",
+        "resend": "Renvoyer l'email",
+        "resent": "Email renvoyé.",
+        "alreadyVerified": "Déjà vérifié ?",
+        "errorConflict": "Un compte existe déjà avec cet email.",
+        "errorGeneric": "Une erreur est survenue, réessayez."
+      },
+      "verifyEmail": {
+        "loading": "Vérification de votre email…",
+        "success": "Email vérifié, connexion en cours…",
+        "errorTitle": "Lien invalide",
+        "errorExpired": "Ce lien de vérification est invalide, expiré ou déjà utilisé.",
+        "errorGeneric": "Une erreur est survenue, réessayez.",
+        "createNew": "Créer un nouveau compte",
+        "login": "Se connecter"
+      },
+      "acceptInvitation": {
+        "loading": "Chargement de l'invitation…",
+        "errorTitle": "Invitation introuvable",
+        "errorBody": "Ce lien d'invitation est invalide, expiré ou déjà utilisé.",
+        "join": "Rejoindre {{organization}}",
+        "createAccountBody": "Créez votre compte pour accepter l'invitation ({{email}}).",
+        "firstNameLabel": "Prénom",
+        "lastNameLabel": "Nom",
+        "passwordLabel": "Mot de passe",
+        "accept": "Accepter l'invitation",
+        "loginRequiredBody": "Connectez-vous avec le compte {{email}} pour accepter cette invitation.",
+        "login": "Se connecter",
+        "readyBody": "Vous êtes connecté·e en tant que {{email}}.",
+        "errorGeneric": "Une erreur est survenue, réessayez."
+      }
+    },
+    "collaborators": {
+      "title": "Collaborateurs",
+      "loading": "Chargement…",
+      "membersTitle": "Membres",
+      "table": {
+        "name": "Nom",
+        "email": "Email",
+        "role": "Rôle",
+        "actions": "Actions"
+      },
+      "roleAdmin": "Administrateur",
+      "roleMember": "Collaborateur",
+      "remove": "Retirer",
+      "pendingTitle": "Invitations en attente",
+      "pendingEmpty": "Aucune invitation en attente.",
+      "revoke": "Révoquer",
+      "inviteTitle": "Inviter un collaborateur",
+      "emailLabel": "Email",
+      "roleLabel": "Rôle",
+      "invite": "Inviter",
+      "errorLoad": "Impossible de charger les collaborateurs.",
+      "errorInviteConflict": "Cette personne est déjà membre ou a déjà une invitation en attente.",
+      "errorInviteGeneric": "Impossible d'inviter cette personne, réessayez.",
+      "errorRoleLastAdmin": "Impossible de modifier ce rôle : c'est le dernier administrateur de l'organisation.",
+      "errorRoleGeneric": "Impossible de modifier ce rôle, réessayez.",
+      "errorRemoveLastAdmin": "Impossible de retirer ce collaborateur : c'est le dernier administrateur de l'organisation.",
+      "errorRemoveGeneric": "Impossible de retirer ce collaborateur, réessayez."
+    }
   }
 }

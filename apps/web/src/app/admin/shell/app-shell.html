@@ -1,7 +1,7 @@
 <div class="app-shell">
-  <a class="skip-link" href="#main-content" (click)="focusMainContent($event)"
-    >Aller au contenu principal</a
-  >
+  <a class="skip-link" href="#main-content" (click)="focusMainContent($event)">{{
+    'admin.shell.skipLink' | transloco
+  }}</a>
 
   <header class="app-shell__header">
     <div class="app-shell__topbar">
@@ -10,20 +10,29 @@
           <ap-logo />
         }
         <nav class="app-shell__nav">
-          <a routerLink="/admin/tournaments" routerLinkActive="app-shell__link--active">Tournois</a>
-          <a routerLink="/admin/collaborators" routerLinkActive="app-shell__link--active"
-            >Collaborateurs</a
-          >
+          <a routerLink="/admin/tournaments" routerLinkActive="app-shell__link--active">{{
+            'admin.shell.nav.tournaments' | transloco
+          }}</a>
+          <a routerLink="/admin/collaborators" routerLinkActive="app-shell__link--active">{{
+            'admin.shell.nav.collaborators' | transloco
+          }}</a>
           <a
             routerLink="/admin/organization/subscription"
             routerLinkActive="app-shell__link--active"
-            >Abonnement</a
+            >{{ 'admin.shell.nav.subscription' | transloco }}</a
           >
         </nav>
       </div>
       <div class="app-shell__controls">
+        <ap-language-switcher
+          [language]="language()"
+          [languages]="languages"
+          (languageChange)="onLanguageChange($event)"
+        />
         <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
-        <ap-button type="button" variant="ghost" (click)="logout()">Se déconnecter</ap-button>
+        <ap-button type="button" variant="ghost" (click)="logout()">{{
+          'admin.shell.logout' | transloco
+        }}</ap-button>
       </div>
       <button
         type="button"
@@ -31,7 +40,7 @@
         (click)="toggleMobileMenu()"
         [attr.aria-expanded]="mobileMenuOpen()"
         aria-controls="app-shell-mobile-menu"
-        aria-label="Menu"
+        [attr.aria-label]="'admin.shell.menu' | transloco"
       >
         @if (mobileMenuOpen()) {
           <svg viewBox="0 0 20 20" aria-hidden="true">
@@ -52,25 +61,32 @@
           routerLink="/admin/tournaments"
           routerLinkActive="app-shell__link--active"
           (click)="closeMobileMenu()"
-          >Tournois</a
+          >{{ 'admin.shell.nav.tournaments' | transloco }}</a
         >
         <a
           class="app-shell__mobile-menu-link"
           routerLink="/admin/collaborators"
           routerLinkActive="app-shell__link--active"
           (click)="closeMobileMenu()"
-          >Collaborateurs</a
+          >{{ 'admin.shell.nav.collaborators' | transloco }}</a
         >
         <a
           class="app-shell__mobile-menu-link"
           routerLink="/admin/organization/subscription"
           routerLinkActive="app-shell__link--active"
           (click)="closeMobileMenu()"
-          >Abonnement</a
+          >{{ 'admin.shell.nav.subscription' | transloco }}</a
         >
         <div class="app-shell__mobile-menu-controls">
+          <ap-language-switcher
+            [language]="language()"
+            [languages]="languages"
+            (languageChange)="onLanguageChange($event)"
+          />
           <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
-          <ap-button type="button" variant="ghost" (click)="logout()">Se déconnecter</ap-button>
+          <ap-button type="button" variant="ghost" (click)="logout()">{{
+            'admin.shell.logout' | transloco
+          }}</ap-button>
         </div>
       </div>
     }

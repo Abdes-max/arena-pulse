@@ -3,18 +3,18 @@
     <ap-logo class="verify-email-page__brand" />
     @switch (state()) {
       @case ('loading') {
-        <p>Vérification de votre email…</p>
+        <p>{{ 'admin.auth.verifyEmail.loading' | transloco }}</p>
       }
       @case ('success') {
-        <p>Email vérifié, connexion en cours…</p>
+        <p>{{ 'admin.auth.verifyEmail.success' | transloco }}</p>
       }
       @case ('error') {
-        <h1>Lien invalide</h1>
-        <p>{{ errorMessage() }}</p>
+        <h1>{{ 'admin.auth.verifyEmail.errorTitle' | transloco }}</h1>
+        <p>{{ errorMessage() | transloco }}</p>
         <p class="verify-email-page__footer">
-          <a routerLink="/register">Créer un nouveau compte</a>
+          <a routerLink="/register">{{ 'admin.auth.verifyEmail.createNew' | transloco }}</a>
           ·
-          <a routerLink="/login">Se connecter</a>
+          <a routerLink="/login">{{ 'admin.auth.verifyEmail.login' | transloco }}</a>
         </p>
       }
     }

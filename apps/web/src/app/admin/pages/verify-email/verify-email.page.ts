@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { Logo } from 'design-system';
 import { AuthService } from '../../core/auth.service';
 
@@ -8,7 +9,7 @@ type PageState = 'loading' | 'success' | 'error';
 
 @Component({
   selector: 'app-verify-email-page',
-  imports: [RouterLink, Logo],
+  imports: [RouterLink, Logo, TranslocoPipe],
   templateUrl: './verify-email.page.html',
   styleUrl: './verify-email.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,9 +35,9 @@ export class VerifyEmailPage {
       await this.router.navigateByUrl('/admin/tournaments');
     } catch (error) {
       if (error instanceof HttpErrorResponse && error.status === 404) {
-        this.errorMessage.set('Ce lien de vérification est invalide, expiré ou déjà utilisé.');
+        this.errorMessage.set('admin.auth.verifyEmail.errorExpired');
       } else {
-        this.errorMessage.set('Une erreur est survenue, réessayez.');
+        this.errorMessage.set('admin.auth.verifyEmail.errorGeneric');
       }
       this.state.set('error');
     }

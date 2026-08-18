@@ -2,12 +2,13 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { Button, Logo, TextField } from 'design-system';
 import { AuthService } from '../../core/auth.service';
 
 @Component({
   selector: 'app-login-page',
-  imports: [ReactiveFormsModule, RouterLink, Button, Logo, TextField],
+  imports: [ReactiveFormsModule, RouterLink, Button, Logo, TextField, TranslocoPipe],
   templateUrl: './login.page.html',
   styleUrl: './login.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -43,10 +44,10 @@ export class LoginPage {
       await this.router.navigateByUrl(returnUrl);
     } catch (error) {
       if (error instanceof HttpErrorResponse && error.status === 403) {
-        this.errorMessage.set('Vérifiez votre email avant de vous connecter.');
+        this.errorMessage.set('admin.auth.login.errorVerify');
         this.needsVerification.set(true);
       } else {
-        this.errorMessage.set('Email ou mot de passe incorrect.');
+        this.errorMessage.set('admin.auth.login.errorCredentials');
       }
     } finally {
       this.submitting.set(false);
@@ -63,7 +64,7 @@ export class LoginPage {
       await this.authService.resendVerification(email);
       this.resent.set(true);
     } catch {
-      this.errorMessage.set('Une erreur est survenue, réessayez.');
+      this.errorMessage.set('admin.auth.login.errorGeneric');
     } finally {
       this.submitting.set(false);
     }

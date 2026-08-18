@@ -2,46 +2,82 @@
   <div class="accept-invitation-page__card">
     @switch (state()) {
       @case ('loading') {
-        <p>Chargement de l'invitation…</p>
+        <p>{{ 'admin.auth.acceptInvitation.loading' | transloco }}</p>
       }
       @case ('error') {
-        <h1>Invitation introuvable</h1>
-        <p>Ce lien d'invitation est invalide, expiré ou déjà utilisé.</p>
+        <h1>{{ 'admin.auth.acceptInvitation.errorTitle' | transloco }}</h1>
+        <p>{{ 'admin.auth.acceptInvitation.errorBody' | transloco }}</p>
       }
       @case ('new-account') {
-        <h1>Rejoindre {{ invitation()?.organizationName }}</h1>
-        <p>Créez votre compte pour accepter l'invitation ({{ invitation()?.email }}).</p>
+        <h1>
+          {{
+            'admin.auth.acceptInvitation.join'
+              | transloco: { organization: invitation()?.organizationName }
+          }}
+        </h1>
+        <p>
+          {{
+            'admin.auth.acceptInvitation.createAccountBody'
+              | transloco: { email: invitation()?.email }
+          }}
+        </p>
         <form [formGroup]="form" (ngSubmit)="submitNewAccount()">
-          <ap-text-field label="Prénom" formControlName="firstName" autocomplete="given-name" />
-          <ap-text-field label="Nom" formControlName="lastName" autocomplete="family-name" />
           <ap-text-field
-            label="Mot de passe"
+            [label]="'admin.auth.acceptInvitation.firstNameLabel' | transloco"
+            formControlName="firstName"
+            autocomplete="given-name"
+          />
+          <ap-text-field
+            [label]="'admin.auth.acceptInvitation.lastNameLabel' | transloco"
+            formControlName="lastName"
+            autocomplete="family-name"
+          />
+          <ap-text-field
+            [label]="'admin.auth.acceptInvitation.passwordLabel' | transloco"
             type="password"
             formControlName="password"
             autocomplete="new-password"
           />
           @if (errorMessage(); as message) {
-            <p class="accept-invitation-page__error" role="alert">{{ message }}</p>
+            <p class="accept-invitation-page__error" role="alert">{{ message | transloco }}</p>
           }
-          <ap-button type="submit" [disabled]="submitting()">Accepter l'invitation</ap-button>
+          <ap-button type="submit" [disabled]="submitting()">{{
+            'admin.auth.acceptInvitation.accept' | transloco
+          }}</ap-button>
         </form>
       }
       @case ('log-in-required') {
-        <h1>Rejoindre {{ invitation()?.organizationName }}</h1>
+        <h1>
+          {{
+            'admin.auth.acceptInvitation.join'
+              | transloco: { organization: invitation()?.organizationName }
+          }}
+        </h1>
         <p>
-          Connectez-vous avec le compte <strong>{{ invitation()?.email }}</strong> pour accepter
-          cette invitation.
+          {{
+            'admin.auth.acceptInvitation.loginRequiredBody'
+              | transloco: { email: invitation()?.email }
+          }}
         </p>
-        <ap-button type="button" (click)="goToLogin()">Se connecter</ap-button>
+        <ap-button type="button" (click)="goToLogin()">{{
+          'admin.auth.acceptInvitation.login' | transloco
+        }}</ap-button>
       }
       @case ('ready-to-accept') {
-        <h1>Rejoindre {{ invitation()?.organizationName }}</h1>
-        <p>Vous êtes connecté·e en tant que {{ invitation()?.email }}.</p>
+        <h1>
+          {{
+            'admin.auth.acceptInvitation.join'
+              | transloco: { organization: invitation()?.organizationName }
+          }}
+        </h1>
+        <p>
+          {{ 'admin.auth.acceptInvitation.readyBody' | transloco: { email: invitation()?.email } }}
+        </p>
         @if (errorMessage(); as message) {
-          <p class="accept-invitation-page__error" role="alert">{{ message }}</p>
+          <p class="accept-invitation-page__error" role="alert">{{ message | transloco }}</p>
         }
         <ap-button type="button" [disabled]="submitting()" (click)="acceptAsCurrentUser()">
-          Accepter l'invitation
+          {{ 'admin.auth.acceptInvitation.accept' | transloco }}
         </ap-button>
       }
     }

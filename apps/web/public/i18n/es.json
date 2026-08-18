@@ -243,5 +243,112 @@
     "searchLabel": "Buscar un equipo",
     "searchPlaceholder": "Buscar un equipo…",
     "noTeams": "No se encontró ningún equipo."
+  },
+  "admin": {
+    "shell": {
+      "skipLink": "Ir al contenido principal",
+      "nav": {
+        "tournaments": "Torneos",
+        "collaborators": "Colaboradores",
+        "subscription": "Suscripción"
+      },
+      "logout": "Cerrar sesión",
+      "menu": "Menú"
+    },
+    "submenu": {
+      "general": "General",
+      "teams": "Equipos",
+      "referees": "Árbitros",
+      "structure": "Estructura",
+      "schedule": "Calendario",
+      "scores": "Resultados",
+      "standings": "Clasificación",
+      "publicLink": "Enlace público"
+    },
+    "auth": {
+      "login": {
+        "title": "Inicia sesión",
+        "emailLabel": "Email",
+        "passwordLabel": "Contraseña",
+        "submit": "Iniciar sesión",
+        "resend": "Reenviar el email de verificación",
+        "resent": "Email reenviado.",
+        "noAccount": "¿Aún no tienes cuenta?",
+        "createOrg": "Crear una organización",
+        "errorVerify": "Verifica tu email antes de iniciar sesión.",
+        "errorCredentials": "Email o contraseña incorrectos.",
+        "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo."
+      },
+      "register": {
+        "title": "Regístrate",
+        "orgNameLabel": "Nombre de la organización",
+        "firstNameLabel": "Nombre",
+        "lastNameLabel": "Apellido",
+        "emailLabel": "Email",
+        "passwordLabel": "Contraseña",
+        "submit": "Crear mi organización",
+        "alreadyAccount": "¿Ya tienes una cuenta?",
+        "login": "Iniciar sesión",
+        "sentTitle": "Revisa tu correo",
+        "sentBody": "Se ha enviado un email de confirmación a {{email}}. Haz clic en el enlace que contiene para activar tu cuenta.",
+        "resend": "Reenviar el email",
+        "resent": "Email reenviado.",
+        "alreadyVerified": "¿Ya verificado?",
+        "errorConflict": "Ya existe una cuenta con este email.",
+        "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo."
+      },
+      "verifyEmail": {
+        "loading": "Verificando tu email…",
+        "success": "Email verificado, iniciando sesión…",
+        "errorTitle": "Enlace no válido",
+        "errorExpired": "Este enlace de verificación no es válido, ha caducado o ya se ha usado.",
+        "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo.",
+        "createNew": "Crear una nueva cuenta",
+        "login": "Iniciar sesión"
+      },
+      "acceptInvitation": {
+        "loading": "Cargando la invitación…",
+        "errorTitle": "Invitación no encontrada",
+        "errorBody": "Este enlace de invitación no es válido, ha caducado o ya se ha usado.",
+        "join": "Unirse a {{organization}}",
+        "createAccountBody": "Crea tu cuenta para aceptar la invitación ({{email}}).",
+        "firstNameLabel": "Nombre",
+        "lastNameLabel": "Apellido",
+        "passwordLabel": "Contraseña",
+        "accept": "Aceptar la invitación",
+        "loginRequiredBody": "Inicia sesión con la cuenta {{email}} para aceptar esta invitación.",
+        "login": "Iniciar sesión",
+        "readyBody": "Has iniciado sesión como {{email}}.",
+        "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo."
+      }
+    },
+    "collaborators": {
+      "title": "Colaboradores",
+      "loading": "Cargando…",
+      "membersTitle": "Miembros",
+      "table": {
+        "name": "Nombre",
+        "email": "Email",
+        "role": "Rol",
+        "actions": "Acciones"
+      },
+      "roleAdmin": "Administrador",
+      "roleMember": "Colaborador",
+      "remove": "Quitar",
+      "pendingTitle": "Invitaciones pendientes",
+      "pendingEmpty": "No hay invitaciones pendientes.",
+      "revoke": "Revocar",
+      "inviteTitle": "Invitar a un colaborador",
+      "emailLabel": "Email",
+      "roleLabel": "Rol",
+      "invite": "Invitar",
+      "errorLoad": "No se han podido cargar los colaboradores.",
+      "errorInviteConflict": "Esta persona ya es miembro o ya tiene una invitación pendiente.",
+      "errorInviteGeneric": "No se ha podido invitar a esta persona, inténtalo de nuevo.",
+      "errorRoleLastAdmin": "No se puede cambiar este rol: es el último administrador de la organización.",
+      "errorRoleGeneric": "No se ha podido cambiar este rol, inténtalo de nuevo.",
+      "errorRemoveLastAdmin": "No se puede quitar a este colaborador: es el último administrador de la organización.",
+      "errorRemoveGeneric": "No se ha podido quitar a este colaborador, inténtalo de nuevo."
+    }
   }
 }

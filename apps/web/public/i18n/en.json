@@ -337,5 +337,112 @@
     "searchLabel": "Search a team",
     "searchPlaceholder": "Search a team…",
     "noTeams": "No team found."
+  },
+  "admin": {
+    "shell": {
+      "skipLink": "Skip to main content",
+      "nav": {
+        "tournaments": "Tournaments",
+        "collaborators": "Collaborators",
+        "subscription": "Subscription"
+      },
+      "logout": "Log out",
+      "menu": "Menu"
+    },
+    "submenu": {
+      "general": "General",
+      "teams": "Teams",
+      "referees": "Referees",
+      "structure": "Structure",
+      "schedule": "Schedule",
+      "scores": "Scores",
+      "standings": "Standings",
+      "publicLink": "Public link"
+    },
+    "auth": {
+      "login": {
+        "title": "Sign in",
+        "emailLabel": "Email",
+        "passwordLabel": "Password",
+        "submit": "Sign in",
+        "resend": "Resend verification email",
+        "resent": "Email resent.",
+        "noAccount": "Don't have an account yet?",
+        "createOrg": "Create an organization",
+        "errorVerify": "Verify your email before signing in.",
+        "errorCredentials": "Incorrect email or password.",
+        "errorGeneric": "Something went wrong, please try again."
+      },
+      "register": {
+        "title": "Sign up",
+        "orgNameLabel": "Organization name",
+        "firstNameLabel": "First name",
+        "lastNameLabel": "Last name",
+        "emailLabel": "Email",
+        "passwordLabel": "Password",
+        "submit": "Create my organization",
+        "alreadyAccount": "Already have an account?",
+        "login": "Sign in",
+        "sentTitle": "Check your inbox",
+        "sentBody": "A confirmation email was sent to {{email}}. Click the link inside to activate your account.",
+        "resend": "Resend email",
+        "resent": "Email resent.",
+        "alreadyVerified": "Already verified?",
+        "errorConflict": "An account already exists with this email.",
+        "errorGeneric": "Something went wrong, please try again."
+      },
+      "verifyEmail": {
+        "loading": "Verifying your email…",
+        "success": "Email verified, signing you in…",
+        "errorTitle": "Invalid link",
+        "errorExpired": "This verification link is invalid, expired, or already used.",
+        "errorGeneric": "Something went wrong, please try again.",
+        "createNew": "Create a new account",
+        "login": "Sign in"
+      },
+      "acceptInvitation": {
+        "loading": "Loading invitation…",
+        "errorTitle": "Invitation not found",
+        "errorBody": "This invitation link is invalid, expired, or already used.",
+        "join": "Join {{organization}}",
+        "createAccountBody": "Create your account to accept the invitation ({{email}}).",
+        "firstNameLabel": "First name",
+        "lastNameLabel": "Last name",
+        "passwordLabel": "Password",
+        "accept": "Accept invitation",
+        "loginRequiredBody": "Sign in with the account {{email}} to accept this invitation.",
+        "login": "Sign in",
+        "readyBody": "You are signed in as {{email}}.",
+        "errorGeneric": "Something went wrong, please try again."
+      }
+    },
+    "collaborators": {
+      "title": "Collaborators",
+      "loading": "Loading…",
+      "membersTitle": "Members",
+      "table": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "actions": "Actions"
+      },
+      "roleAdmin": "Administrator",
+      "roleMember": "Collaborator",
+      "remove": "Remove",
+      "pendingTitle": "Pending invitations",
+      "pendingEmpty": "No pending invitations.",
+      "revoke": "Revoke",
+      "inviteTitle": "Invite a collaborator",
+      "emailLabel": "Email",
+      "roleLabel": "Role",
+      "invite": "Invite",
+      "errorLoad": "Unable to load collaborators.",
+      "errorInviteConflict": "This person is already a member or already has a pending invitation.",
+      "errorInviteGeneric": "Unable to invite this person, please try again.",
+      "errorRoleLastAdmin": "Unable to change this role: this is the organization's last administrator.",
+      "errorRoleGeneric": "Unable to change this role, please try again.",
+      "errorRemoveLastAdmin": "Unable to remove this collaborator: this is the organization's last administrator.",
+      "errorRemoveGeneric": "Unable to remove this collaborator, please try again."
+    }
   }
 }
