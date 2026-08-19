@@ -1,13 +1,20 @@
-# Manual, one-click production deploy: SSHes into the VPS and re-runs the
-# exact same commands documented in infra/deployment/README.md's "Mettre à
-# jour" section (git pull + docker compose up -d --build). Deliberately
-# does not push/pull pre-built GHCR images here -- the `migrate` service
-# needs the `build` Dockerfile stage (has the Prisma CLI), which the
-# docker-publish job in ci.yml never pushes to GHCR (only the pruned
-# `runtime` stage is published) -- see docs/architecture/adr/0004-deployment-strategy.md.
+# SSHes into the VPS and re-runs the exact same commands documented in
+# infra/deployment/README.md's "Mettre à jour" section (git pull + docker
+# compose up -d --build). Deliberately does not push/pull pre-built GHCR
+# images here -- the `migrate` service needs the `build` Dockerfile stage
+# (has the Prisma CLI), which the docker-publish job in ci.yml never pushes
+# to GHCR (only the pruned `runtime` stage is published) -- see
+# docs/architecture/adr/0004-deployment-strategy.md.
+#
+# Runs automatically on every push to master -- same "merge = deployed"
+# model as deploy-android.yml/deploy-ios.yml. workflow_dispatch is kept for
+# a manual re-run (e.g. retrying a transient SSH timeout without an empty
+# commit, see the timeout note below).
 name: Deploy to production
 
 on:
+  push:
+    branches: [master]
   workflow_dispatch: {}
 
 jobs:

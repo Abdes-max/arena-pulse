@@ -26,7 +26,8 @@ plateformes — rien à refaire ici sur ce plan.
 
 ## Décision
 
-1. **`.github/workflows/deploy-android.yml`** (`workflow_dispatch`, `runs-on: ubuntu-latest`) :
+1. **`.github/workflows/deploy-android.yml`** (`push` vers `master` + `workflow_dispatch`,
+   `runs-on: ubuntu-latest`) :
    build Angular → `npx cap add android && npx cap sync android` (le dossier `android/` n'est
    jamais commité, régénéré à chaque run) → patch du `versionCode`/`versionName` généré par le
    template Capacitor (toujours `1`/`"1.0"`, il n'y a pas de fichier commité à incrémenter d'un run
@@ -41,6 +42,25 @@ tournarena-upload`, validité 25 ans, format PKCS12 (mot de passe unique pour le
    `keytool` ignore silencieusement un `-keypass` distinct sur ce format). Contrairement à iOS, pas
    de certificat à faire signer par un tiers : Google gère la clé d'app réelle via **Play App
    Signing**, ce keystore ne sert qu'à l'upload initial.
+
+## Déploiement automatique sur merge + promotion manuelle (ajouté après coup, 2026-08-19)
+
+**`deploy-android.yml` se déclenche désormais aussi sur `push` vers `master`** (en plus de
+`workflow_dispatch`, gardé pour un re-run manuel), même modèle que `deploy-prod.yml`/
+`deploy-ios.yml` : chaque merge de PR construit, signe et envoie automatiquement une nouvelle
+release sur la piste **interne** — jamais directement en production. C'est délibérément la même
+piste de test qu'auparavant, juste déclenchée sans action humaine plutôt qu'à la demande.
+
+**`.github/workflows/promote-android-production.yml`** + **`infra/scripts/promote-android-release.mjs`** :
+promeut vers la piste production la release déjà testée sur la piste interne — jamais un nouveau
+build. Utilise directement l'API Play Developer Publishing (mêmes secrets que `deploy-android.yml`
+ci-dessus, aucun nouveau secret) : ouvre un edit, lit les `versionCodes` de la release interne
+demandée (ou la plus récente), les republie sur la piste `production` (déploiement complet ou
+progressif via `userFraction` si `rollout_fraction` < 1), commit l'edit. Délibérément **pas** de
+dépendance à `googleapis` (gros paquet pour une poignée d'appels REST) — authentification par JWT
+RS256 signé à la main avec le module `crypto` natif de Node, échangé contre un jeton OAuth2 via le
+flux `urn:ietf:params:oauth:grant-type:jwt-bearer`, même logique que le module `crypto`/ES256 de
+`infra/scripts/submit-ios-app-store.mjs` côté iOS.
 
 ## Reste à faire (porteur de projet — pas automatisable)
 
@@ -105,6 +125,6 @@ projet, secret régénéré).
 ## Réversibilité
 
 Le workflow est indépendant de tout service tiers de build mobile. Remplacer
-`r0adkll/upload-google-play` par un appel direct à l'API Play Developer Publishing, ou le
-déclenchement manuel par un déclenchement automatique sur tag/release, n'affecte aucun autre
-composant du produit.
+`r0adkll/upload-google-play` par un appel direct à l'API Play Developer Publishing, ou revenir à un
+déclenchement purement manuel (retirer le trigger `push`), n'affecte aucun autre composant du
+produit.

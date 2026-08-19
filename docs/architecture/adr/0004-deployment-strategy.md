@@ -63,6 +63,21 @@ externe sans que le porteur de projet ne le décide et ne le crée lui-même.
 - `nginx-unprivileged` plutôt que l'image `nginx` par défaut : cohérent avec le narratif déjà
   posé par `feat/030-security-hardening` (non-root partout où c'est possible).
 
+## Déploiement automatique sur merge (ajouté après coup, 2026-08-19)
+
+**`.github/workflows/deploy-prod.yml`** (créé après cette PR, jamais documenté par une ADR
+dédiée — la baseline générique ci-dessus n'implique pas encore une cible réelle) exécute la mise à
+jour manuelle décrite dans `infra/deployment/README.md` ("Mettre à jour" : `git pull` + `docker
+compose up -d --build`) via SSH vers le VPS. Il se déclenche désormais aussi sur `push` vers
+`master` (en plus de `workflow_dispatch`, gardé pour un re-run manuel) — chaque merge de PR
+redéploie automatiquement le VPS de production, même modèle "merge = déployé" que
+`deploy-android.yml`/`deploy-ios.yml` (`docs/architecture/adr/0009-android-distribution.md`,
+`docs/architecture/adr/0008-ios-distribution.md`), qui déploient respectivement vers la piste
+interne Play Console et TestFlight sur le même événement. Web et API n'ont pas d'équivalent
+"piste de test" séparé de la production (contrairement au mobile) — le déploiement automatique va
+donc directement sur le VPS réel, cohérent avec le fait que `ci.yml` (lint/build/test/e2e) doit
+déjà être vert avant qu'une PR ne soit mergeable.
+
 ## Conséquences
 
 - **`apps/mobile` n'est pas concerné** par cette PR — c'est une app Ionic/Capacitor distribuée via
