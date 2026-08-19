@@ -254,6 +254,11 @@
       "section11": {
         "title": "11. Changes to this policy",
         "body": "This policy may be updated; the applicable version is the one published on this page, along with its last-updated date."
+      },
+      "section12": {
+        "title": "12. Deleting your account",
+        "before": "You can request deletion of your TournArena account and associated data (name, email, password) at any time via our",
+        "after": ". We process your request within 30 days at most. Data related to tournaments you have published may be retained beyond that if still needed for ongoing tournaments to function, as may billing data whose retention is required by law."
       }
     }
   },
