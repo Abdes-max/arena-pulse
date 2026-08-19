@@ -1,10 +1,16 @@
-# Manual, one-click Android release: builds apps/mobile, generates the
-# Android native project fresh (android/ is gitignored -- see
-# apps/mobile's .gitignore, same convention as ios/ -- nothing native is
-# committed, it's regenerated from capacitor.config.ts + the web build on
-# every run), signs a release App Bundle, then uploads to the Play
-# Console's internal testing track (Play Console's equivalent of
+# Builds apps/mobile, generates the Android native project fresh (android/
+# is gitignored -- see apps/mobile's .gitignore, same convention as ios/ --
+# nothing native is committed, it's regenerated from capacitor.config.ts +
+# the web build on every run), signs a release App Bundle, then uploads to
+# the Play Console's internal testing track (Play Console's equivalent of
 # TestFlight) via the Play Developer Publishing API.
+#
+# Runs automatically on every push to master (same "merge = deployed to
+# test" model as deploy-prod.yml/deploy-ios.yml) -- this is the testing
+# track only, never production. Promoting a version_code that passed
+# internal testing to the Play Store's production track is a deliberate,
+# separate manual step: promote-android-production.yml
+# (workflow_dispatch-only, see docs/architecture/adr/0009-android-distribution.md).
 #
 # Cannot run successfully until the one-time Google Play Console setup is
 # done and its secrets are added to this repo -- see
@@ -24,6 +30,8 @@
 name: Deploy Android to Play Console (internal track)
 
 on:
+  push:
+    branches: [master]
   workflow_dispatch:
     inputs:
       version_code:

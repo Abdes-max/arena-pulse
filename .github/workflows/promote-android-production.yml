@@ -1,0 +1,49 @@
+# Manual, one-click Android production release: promotes an
+# already-uploaded, already-tested release from the internal testing track
+# to production via the Play Developer Publishing API -- never rebuilds or
+# re-uploads a binary. Run "Deploy Android to Play Console (internal track)"
+# first, test the result on a device (see the internal-testing link in Play
+# Console -> Tester et publier -> Tests internes -> Testeurs), and only then
+# run this workflow to promote that exact build.
+#
+# Requires the same 5 secrets as deploy-android.yml (see its own header
+# comment) -- no new secrets needed, this only calls a different part of the
+# same Play Developer API using the same service account.
+name: Promote Android release to production
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_code:
+        description: >-
+          versionCode to promote from the internal track. Leave empty to
+          promote whatever is currently the most recent internal release.
+        required: false
+      rollout_fraction:
+        description: >-
+          Fraction of users to roll out to (0-1]. 1 = full rollout
+          immediately. Use a smaller value (e.g. 0.1) for a staged rollout,
+          then re-run with a higher value later to increase it.
+        required: false
+        default: '1.0'
+
+jobs:
+  promote:
+    name: Promote internal -> production
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - name: Promote the release
+        env:
+          GOOGLE_PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          PACKAGE_NAME: com.arenapulse.mobile
+          SOURCE_TRACK: internal
+          TARGET_TRACK: production
+          VERSION_CODE: ${{ inputs.version_code }}
+          ROLLOUT_FRACTION: ${{ inputs.rollout_fraction }}
+        run: node infra/scripts/promote-android-release.mjs

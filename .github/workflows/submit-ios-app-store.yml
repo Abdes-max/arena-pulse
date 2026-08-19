@@ -1,0 +1,68 @@
+# Manual, one-click iOS App Store submission: attaches an already-uploaded,
+# already-tested TestFlight build to an App Store version and submits it
+# for Apple review -- never archives or uploads a fresh build. Run "Deploy
+# iOS to TestFlight" first, test the result via TestFlight, and only then
+# run this workflow to submit that exact build for review.
+#
+# Requires the app's store listing (screenshots, description, age rating,
+# App Privacy answers, etc.) to already be complete in App Store Connect --
+# Apple rejects an incomplete version at submission time, this workflow
+# does not fill that in for you.
+#
+# Requires the same App Store Connect API secrets as deploy-ios.yml (see its
+# own header comment) -- no new secrets needed, this only calls a different
+# part of the same App Store Connect API using the same API key.
+name: Submit iOS build to App Store review
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_string:
+        description: >-
+          Marketing version to submit, e.g. "1.0". Must match an existing
+          App Store Connect version in an editable state, or a new one is
+          created.
+        required: true
+      build_number:
+        description: >-
+          CFBundleVersion of the TestFlight build to submit. Leave empty to
+          use the most recently processed build.
+        required: false
+      release_notes:
+        description: >-
+          "What's New" text for the en-US localization. Leave empty to
+          leave the version's existing release notes untouched.
+        required: false
+      release_type:
+        description: >-
+          MANUAL (default) keeps release as a separate step after Apple's
+          approval; AFTER_APPROVAL publishes immediately once approved.
+        required: false
+        default: MANUAL
+        type: choice
+        options:
+          - MANUAL
+          - AFTER_APPROVAL
+
+jobs:
+  submit:
+    name: Attach build and submit for review
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - name: Submit for review
+        env:
+          APP_STORE_CONNECT_API_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          BUNDLE_ID: com.arenapulse.mobile
+          VERSION_STRING: ${{ inputs.version_string }}
+          BUILD_NUMBER: ${{ inputs.build_number }}
+          RELEASE_NOTES: ${{ inputs.release_notes }}
+          RELEASE_TYPE: ${{ inputs.release_type }}
+        run: node infra/scripts/submit-ios-app-store.mjs

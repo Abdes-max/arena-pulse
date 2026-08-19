@@ -1,10 +1,18 @@
-# Manual, one-click iOS release: builds apps/mobile, generates the iOS
-# native project fresh (ios/ is gitignored -- see apps/mobile's .gitignore,
-# same convention as android/ -- nothing native is committed, it's
-# regenerated from capacitor.config.ts + the web build on every run),
-# archives and signs it, then uploads straight to TestFlight via
-# xcodebuild's built-in "destination: upload" export (Xcode 13+ -- no
-# Fastlane/altool dependency needed).
+# Builds apps/mobile, generates the iOS native project fresh (ios/ is
+# gitignored -- see apps/mobile's .gitignore, same convention as android/ --
+# nothing native is committed, it's regenerated from capacitor.config.ts +
+# the web build on every run), archives and signs it, then uploads straight
+# to TestFlight via xcodebuild's built-in "destination: upload" export
+# (Xcode 13+ -- no Fastlane/altool dependency needed).
+#
+# Runs automatically on every push to master (same "merge = deployed to
+# test" model as deploy-prod.yml/deploy-android.yml) -- this is TestFlight
+# only, never the public App Store. Submitting a build that passed
+# TestFlight for App Store review is a deliberate, separate manual step:
+# submit-ios-app-store.yml (workflow_dispatch-only, see
+# docs/architecture/adr/0008-ios-distribution.md). Runs on macos-latest, the
+# most expensive CI runner class in this repo -- accepted as the cost of
+# testing every merge on a real device before it can reach a real store.
 #
 # Cannot run successfully until the one-time Apple Developer Program +
 # App Store Connect setup is done and its secrets are added to this repo --
@@ -21,6 +29,8 @@
 name: Deploy iOS to TestFlight
 
 on:
+  push:
+    branches: [master]
   workflow_dispatch:
     inputs:
       build_number:

@@ -44,20 +44,45 @@ cette PR :
    lui-même, pas spécifiques au déploiement, donc codés en dur plutôt que sourcés depuis `.env`.
 4. **`@capacitor/ios`** ajouté aux devDependencies racine (même version majeure que
    `@capacitor/android`/`@capacitor/core`).
-5. **`.github/workflows/deploy-ios.yml`** (`workflow_dispatch`, `runs-on: macos-latest`) :
+5. **`.github/workflows/deploy-ios.yml`** (`push` vers `master` + `workflow_dispatch`,
+   `runs-on: macos-latest`) :
    build Angular → `npx cap add ios && npx cap sync ios` (le dossier `ios/` n'est jamais commité,
    régénéré à chaque run comme `android/` en local) → import du certificat de distribution et du
    profil de provisioning depuis des secrets GitHub dans un trousseau éphémère → `xcodebuild
-   archive` (signature manuelle) → `xcodebuild -exportArchive` avec `destination: upload`
+archive` (signature manuelle) → `xcodebuild -exportArchive` avec `destination: upload`
    (Xcode 13+) authentifié par une clé API App Store Connect, qui envoie directement le build sur
    TestFlight — pas de dépendance Fastlane/altool.
+
+## Déploiement automatique sur merge + soumission manuelle (ajouté après coup, 2026-08-19)
+
+**`deploy-ios.yml` se déclenche désormais aussi sur `push` vers `master`** (en plus de
+`workflow_dispatch`, gardé pour un re-run manuel), même modèle que `deploy-prod.yml`/
+`deploy-android.yml` : chaque merge de PR archive, signe et envoie automatiquement un nouveau build
+sur TestFlight — jamais directement en revue App Store. Accepté malgré le coût `macos-latest` (le
+runner le plus cher de ce dépôt) : c'est le prix pour que chaque merge soit testable sur un vrai
+appareil avant toute soumission publique.
+
+**`.github/workflows/submit-ios-app-store.yml`** + **`infra/scripts/submit-ios-app-store.mjs`** :
+soumet à la revue Apple le build TestFlight déjà testé — jamais un nouvel archive. Utilise l'App
+Store Connect API (mêmes secrets que `deploy-ios.yml` ci-dessus, aucun nouveau secret) : recherche
+l'app par bundle ID, trouve le build demandé (ou le plus récent traité), crée/réutilise une version
+App Store dans un état modifiable, y attache le build, pose éventuellement les notes de version
+(« Quoi de neuf »), puis crée une soumission de revue. Mêmes choix que `deploy-ios.yml` : aucune
+dépendance Fastlane, signature JWT ES256 faite à la main avec le module `crypto` natif de Node
+plutôt qu'une bibliothèque tierce.
+
+**Échoue volontairement fort, jamais en silence**, si la fiche App Store (captures d'écran,
+description, classification d'âge, réponses App Privacy…) n'est pas déjà complète dans App Store
+Connect — Apple refuse une version incomplète à la soumission, ce script ne remplit pas cette fiche
+à la place de l'organisateur. De même si la version demandée existe déjà dans un état non modifiable
+(déjà soumise/en revue/publiée) — pas de tentative de resoumission silencieuse.
 
 ## Notes pratiques (vécues sur le premier run réel, absentes du plan initial)
 
 - **`@capacitor/ios` 8.x génère un projet Swift Package Manager par défaut, pas CocoaPods** — pas
   de `App.xcworkspace` à la racine, seulement `App.xcodeproj` (le `project.xcworkspace` visible
   dedans est un détail interne d'Xcode). `deploy-ios.yml` archive donc avec `-project
-  App.xcodeproj`, pas `-workspace`. Si un jour le template Capacitor repasse à CocoaPods (ou que le
+App.xcodeproj`, pas `-workspace`. Si un jour le template Capacitor repasse à CocoaPods (ou que le
   projet a un `Podfile`), il faudra inverser ce choix.
 - **Le Team ID n'est pas nécessaire à chercher séparément** : il apparaît directement dans le sujet
   du certificat de distribution (`openssl x509 -inform DER -in distribution.cer -noout -subject`,
@@ -70,9 +95,9 @@ cette PR :
   découvert au 3e build réel** : cette réponse n'est pas mémorisée d'un build à l'autre — chaque
   nouvel upload arrive dans App Store Connect avec `usesNonExemptEncryption` à `null` ("Missing
   Compliance"), et reste invisible pour tout testeur TestFlight tant que quelqu'un ne la
-  re-confirme pas manuellement pour *ce build précis*, même si le traitement Apple est terminé
+  re-confirme pas manuellement pour _ce build précis_, même si le traitement Apple est terminé
   (`processingState: VALID`). `deploy-ios.yml` déclare maintenant `ITSAppUsesNonExemptEncryption =
-  false` directement dans `Info.plist` à chaque run (étape "Declare export compliance") — plus
+false` directement dans `Info.plist` à chaque run (étape "Declare export compliance") — plus
   besoin d'y repenser pour les prochains builds.
 - **TestFlight, piste interne — deux pièges à la première utilisation** :
   1. Un groupe de test interne n'existe pas par défaut, il faut le créer explicitement
@@ -128,5 +153,5 @@ cette PR :
 ## Réversibilité
 
 Le workflow est indépendant de tout service tiers de build mobile (pas de compte Codemagic/Bitrise
-à défaire) — remplacer la signature manuelle par `fastlane match`, ou le déclenchement manuel par
-un déclenchement automatique sur tag/release, n'affecte aucun autre composant du produit.
+à défaire) — remplacer la signature manuelle par `fastlane match`, ou revenir à un déclenchement
+purement manuel (retirer le trigger `push`), n'affecte aucun autre composant du produit.
