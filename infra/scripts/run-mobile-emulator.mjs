@@ -209,6 +209,31 @@ async function main() {
     if (run('npx', ['cap', 'sync', 'android'], { cwd: mobileDir }).status !== 0) {
       throw new Error('cap sync failed');
     }
+    // Same reasoning as deploy-android.yml's equivalent step -- source art
+    // lives in apps/mobile/resources/, android/ is gitignored/regenerated
+    // above, so the real icon/splash never survive a `cap add android`
+    // without regenerating them from that source every time too.
+    if (
+      run(
+        'npx',
+        [
+          'capacitor-assets',
+          'generate',
+          '--android',
+          '--iconBackgroundColor',
+          '#1e293b',
+          '--iconBackgroundColorDark',
+          '#1e293b',
+          '--splashBackgroundColor',
+          '#1e293b',
+          '--splashBackgroundColorDark',
+          '#1e293b',
+        ],
+        { cwd: mobileDir },
+      ).status !== 0
+    ) {
+      throw new Error('capacitor-assets generate failed');
+    }
 
     const gradlew = path.join(androidDir, isWin ? 'gradlew.bat' : 'gradlew');
     if (run(gradlew, ['assembleDebug'], { cwd: androidDir }).status !== 0) {
