@@ -103,6 +103,24 @@ export class TournamentsController {
     return this.tournamentsService.removeLogo(organizationId, tournamentId);
   }
 
+  // Read by the admin UI to gate logos/thème/QR code/export PDF (grey out +
+  // upgrade prompt) before the organizer even attempts the action -- the
+  // services themselves still reject each gated write server-side
+  // (assertPremiumFeaturesUnlocked), this just avoids a round-trip 403 for
+  // the common case of a still-free tournament.
+  @RequireOrgRole(OrganizationRole.ORG_MEMBER)
+  @Get(':tournamentId/premium-features')
+  async getPremiumFeatures(
+    @Param('organizationId') organizationId: string,
+    @Param('tournamentId') tournamentId: string,
+  ) {
+    const unlocked = await this.tournamentsService.hasPremiumFeatures(
+      organizationId,
+      tournamentId,
+    );
+    return { unlocked, freeMaxTeams: this.tournamentsService.freeMaxTeams() };
+  }
+
   @RequireOrgRole(OrganizationRole.ORG_MEMBER)
   @Get(':tournamentId/publication-orders')
   listPublicationOrders(

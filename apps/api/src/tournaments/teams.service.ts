@@ -220,6 +220,10 @@ export class TeamsService {
       organizationId,
       tournamentId,
     );
+    await this.tournamentsService.assertPremiumFeaturesUnlocked(
+      organizationId,
+      tournamentId,
+    );
     const team = await this.getOrThrow(tournamentId, teamId);
 
     const logoUrl = await this.saveLogoBuffer(
@@ -381,6 +385,15 @@ export class TeamsService {
       organizationId,
       tournamentId,
     );
+    // Checked once up front (not per-row via assertPremiumFeaturesUnlocked,
+    // which would throw and abort the whole import on the first logo
+    // column) -- a locked tournament still imports every team, it just
+    // skips each row's logo with a warning, same non-fatal posture as an
+    // unreachable logo URL (resolveImportLogoUrl).
+    const premiumUnlocked = await this.tournamentsService.hasPremiumFeatures(
+      organizationId,
+      tournamentId,
+    );
     const { rows, errors } = parseTeamsCsv(csv);
     const created: ReturnType<TeamsService['toSummary']>[] = [];
     const warnings: { line: number; message: string }[] = [];
@@ -437,7 +450,12 @@ export class TeamsService {
       // Only attempted once the team (and its id, needed for the stored
       // filename) exists -- a failed fetch just leaves logoUrl null and
       // surfaces a warning, it never undoes the team creation above.
-      if (row.logoUrl) {
+      if (row.logoUrl && !premiumUnlocked) {
+        warnings.push({
+          line: row.line,
+          message: `Logo ignoré (${row.logoUrl}) : réservé aux tournois de plus de ${this.tournamentsService.freeMaxTeams()} équipes ou à un abonnement annuel actif.`,
+        });
+      } else if (row.logoUrl) {
         const { logoUrl, warning } = await this.resolveImportLogoUrl(
           team.id,
           row.logoUrl,

@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   Logger,
   NotFoundException,
@@ -11,6 +12,7 @@ import { promises as fs } from 'fs';
 import { join } from 'path';
 import type Stripe from 'stripe';
 import {
+  PublicTheme,
   Sport,
   Tournament,
   TournamentPublicationOrderStatus,
@@ -54,6 +56,20 @@ export class TournamentsService {
 
   async create(organizationId: string, dto: CreateTournamentDto) {
     await this.assertSportExists(dto.sportId);
+    // A brand-new tournament always has 0 teams, so hasPremiumFeatures'
+    // team-count check would never apply here -- checked directly against
+    // the organization's subscription instead. Choosing the default theme
+    // is always free (see assertPremiumFeaturesUnlocked's own comment on
+    // why this only gates *changing* it).
+    if (dto.theme && dto.theme !== PublicTheme.INK_SIGNAL) {
+      const hasActiveSubscription =
+        await this.organizationsService.hasActiveSubscription(organizationId);
+      if (!hasActiveSubscription) {
+        throw new ForbiddenException(
+          `Le choix du thème est réservé aux tournois de plus de ${this.freeMaxTeams()} équipes ou à une organisation avec un abonnement annuel actif. Créez d'abord le tournoi avec le thème par défaut, puis ajoutez vos équipes.`,
+        );
+      }
+    }
     const tournament = await this.prisma.tournament.create({
       data: {
         organizationId,
@@ -94,6 +110,9 @@ export class TournamentsService {
     this.assertEditable(tournament);
     if (dto.sportId) {
       await this.assertSportExists(dto.sportId);
+    }
+    if (dto.theme && dto.theme !== PublicTheme.INK_SIGNAL) {
+      await this.assertPremiumFeaturesUnlocked(organizationId, tournamentId);
     }
 
     const updated = await this.prisma.tournament.update({
@@ -502,6 +521,7 @@ export class TournamentsService {
       organizationId,
       tournamentId,
     );
+    await this.assertPremiumFeaturesUnlocked(organizationId, tournamentId);
 
     const logoUrl = await this.saveLogoBuffer(
       tournamentId,
@@ -689,12 +709,7 @@ export class TournamentsService {
    * (8 / 48 teams) matching the product decision, but stay configurable.
    */
   private computePublicationFeeCents(teamsCount: number): number {
-    const freeMaxTeams = Number(
-      this.configService.get<string>(
-        'TOURNAMENT_PUBLICATION_TIER_FREE_MAX_TEAMS',
-        '8',
-      ),
-    );
+    const freeMaxTeams = this.freeMaxTeams();
     const midMaxTeams = Number(
       this.configService.get<string>(
         'TOURNAMENT_PUBLICATION_TIER_MID_MAX_TEAMS',
@@ -718,6 +733,53 @@ export class TournamentsService {
         '0',
       ),
     );
+  }
+
+  /** Public so TeamsService can compose its own premium-gating messages with the same boundary. */
+  freeMaxTeams(): number {
+    return Number(
+      this.configService.get<string>(
+        'TOURNAMENT_PUBLICATION_TIER_FREE_MAX_TEAMS',
+        '8',
+      ),
+    );
+  }
+
+  /**
+   * Team logos, tournament logo, custom theme, QR code and PDF export are
+   * premium touches reserved for tournaments past the free publication tier
+   * (see docs/product/pull-request-plan.md) -- unlocked once the
+   * tournament's *current* team count crosses the same
+   * TOURNAMENT_PUBLICATION_TIER_FREE_MAX_TEAMS boundary already used to
+   * price publication itself (computePublicationFeeCents), or
+   * unconditionally for an organization holding an active annual
+   * subscription (which already covers every publication regardless of
+   * team count). Live-checked, not "has this tournament's publication
+   * actually been paid for" -- an organizer sees these unlock the moment
+   * their roster crosses the threshold, even before publishing, and they'd
+   * stay unlocked on an already-published tournament even if teams are
+   * later removed (no reason to claw back access retroactively).
+   */
+  async hasPremiumFeatures(
+    organizationId: string,
+    tournamentId: string,
+  ): Promise<boolean> {
+    const [teamsCount, hasActiveSubscription] = await Promise.all([
+      this.prisma.team.count({ where: { tournamentId } }),
+      this.organizationsService.hasActiveSubscription(organizationId),
+    ]);
+    return hasActiveSubscription || teamsCount > this.freeMaxTeams();
+  }
+
+  async assertPremiumFeaturesUnlocked(
+    organizationId: string,
+    tournamentId: string,
+  ): Promise<void> {
+    if (!(await this.hasPremiumFeatures(organizationId, tournamentId))) {
+      throw new ForbiddenException(
+        `Cette fonctionnalité est réservée aux tournois de plus de ${this.freeMaxTeams()} équipes ou à une organisation avec un abonnement annuel actif.`,
+      );
+    }
   }
 
   private async setStatus(tournamentId: string, status: TournamentStatus) {

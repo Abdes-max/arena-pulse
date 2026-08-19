@@ -27,6 +27,7 @@ import {
   TournamentStatus,
   Venue,
 } from '../../core/models';
+import { OrganizationsService } from '../../core/organizations.service';
 import { PermissionsService } from '../../core/permissions.service';
 import { SponsorsService } from '../../core/sponsors.service';
 import { SportsService } from '../../core/sports.service';
@@ -62,6 +63,7 @@ export class TournamentFormPage {
   private readonly router = inject(Router);
   private readonly formBuilder = inject(FormBuilder);
   private readonly tournamentsService = inject(TournamentsService);
+  private readonly organizationsService = inject(OrganizationsService);
   private readonly sportsService = inject(SportsService);
   private readonly permissionsService = inject(PermissionsService);
   private readonly sponsorsService = inject(SponsorsService);
@@ -95,11 +97,19 @@ export class TournamentFormPage {
       ...this.sports().map((sport) => ({ value: sport.id, label: sport.name })),
     ];
   });
-  protected readonly themeOptions: SelectOption[] = [
-    { value: 'INK_SIGNAL', label: 'Ink & Signal' },
-    { value: 'PULSE_EMBER', label: 'Pulse Ember' },
-    { value: 'NEON_COURT', label: 'Neon Court' },
-  ];
+  // Choosing a non-default theme is a premium touch (see
+  // TournamentsService.assertPremiumFeaturesUnlocked, apps/api) -- the
+  // default itself always stays selectable, the other two disable
+  // themselves in the <ap-select> once locked rather than disappearing, so
+  // the organizer still sees what's on offer.
+  protected readonly themeOptions = computed<SelectOption[]>(() => {
+    const locked = !this.premiumUnlocked();
+    return [
+      { value: 'INK_SIGNAL', label: 'Ink & Signal' },
+      { value: 'PULSE_EMBER', label: 'Pulse Ember', disabled: locked },
+      { value: 'NEON_COURT', label: 'Neon Court', disabled: locked },
+    ];
+  });
   protected readonly permissions = signal<Permission[]>([]);
   protected readonly tournament = signal<TournamentDetail | null>(null);
   protected readonly categories = signal<Category[]>([]);
@@ -111,6 +121,14 @@ export class TournamentFormPage {
   protected readonly printingOrder = signal<PublicationOrder | null>(null);
 
   protected readonly isArchived = computed(() => this.tournament()?.status === 'ARCHIVED');
+
+  // Custom theme + tournament logo are premium touches (see
+  // TournamentsService.assertPremiumFeaturesUnlocked, apps/api) --
+  // optimistically true until the check resolves (see tournament-submenu.ts's
+  // own comment on the same tradeoff: this is a UX nicety, the actual gate
+  // is enforced server-side either way).
+  protected readonly premiumUnlocked = signal(true);
+  protected readonly freeMaxTeams = signal(8);
 
   protected statusLabel(status: TournamentStatus): string {
     return this.transloco.translate(STATUS_LABEL_KEYS[status], {}, this.languageService.language());
@@ -186,10 +204,38 @@ export class TournamentFormPage {
       if (this.isEditMode()) {
         await this.loadTournament();
       }
+      void this.loadPremiumFeatures();
     } catch {
       this.errorMessage.set('admin.tournamentForm.errors.loadData');
     } finally {
       this.loading.set(false);
+    }
+  }
+
+  // A brand-new tournament (create mode, no tournamentId yet) always has 0
+  // teams -- checked against the organization's subscription directly
+  // instead of the per-tournament endpoint, same reasoning as
+  // TournamentsService.create()'s own theme guard on the API side.
+  private async loadPremiumFeatures(): Promise<void> {
+    const organizationId = this.organization()?.id;
+    if (!organizationId) {
+      return;
+    }
+    try {
+      const tournamentId = this.tournamentId();
+      if (tournamentId) {
+        const status = await this.tournamentsService.getPremiumFeatures(
+          organizationId,
+          tournamentId,
+        );
+        this.premiumUnlocked.set(status.unlocked);
+        this.freeMaxTeams.set(status.freeMaxTeams);
+      } else {
+        const subscription = await this.organizationsService.getSubscriptionStatus(organizationId);
+        this.premiumUnlocked.set(subscription.status === 'ACTIVE');
+      }
+    } catch {
+      // Read-only status check -- see tournament-submenu.ts's own comment.
     }
   }
 
@@ -360,12 +406,20 @@ export class TournamentFormPage {
         await this.tournamentsService.uploadLogo(organizationId, tournamentId, file),
       );
     } catch (error) {
-      this.errorMessage.set(
-        error instanceof HttpErrorResponse && error.status === 400
-          ? 'admin.tournamentForm.errors.logoInvalid'
-          : 'admin.tournamentForm.errors.logoUpload',
-      );
+      this.errorMessage.set(this.logoUploadErrorKey(error));
     }
+  }
+
+  private logoUploadErrorKey(error: unknown): string {
+    if (error instanceof HttpErrorResponse) {
+      if (error.status === 403) {
+        return 'admin.tournamentForm.errors.logoPremiumLocked';
+      }
+      if (error.status === 400) {
+        return 'admin.tournamentForm.errors.logoInvalid';
+      }
+    }
+    return 'admin.tournamentForm.errors.logoUpload';
   }
 
   protected async removeLogo(): Promise<void> {

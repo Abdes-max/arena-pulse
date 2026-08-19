@@ -73,6 +73,24 @@
   }
 }
 
+.tournament-form-page__logo-upload--locked {
+  color: var(--ap-color-muted);
+  cursor: not-allowed;
+
+  input {
+    cursor: not-allowed;
+  }
+}
+
+// Same premium-lock explanatory note under the logo uploader and the theme
+// select -- see TournamentsService.assertPremiumFeaturesUnlocked (apps/api)
+// for the rule itself.
+.tournament-form-page__premium-hint {
+  margin: var(--ap-space-1) 0 0;
+  font-size: 0.8rem;
+  color: var(--ap-color-muted);
+}
+
 .tournament-form-page__logo-remove {
   background: none;
   border: none;

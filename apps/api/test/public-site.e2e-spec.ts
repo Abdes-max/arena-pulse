@@ -1,6 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { App } from 'supertest/types';
+import { OrganizationSubscriptionStatus } from '../generated/prisma/client';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { createTestApp } from './utils/bootstrap-app';
 import { resetDatabase } from './utils/reset-database';
@@ -385,6 +386,23 @@ describe('Public tournament site (e2e)', () => {
     const tournamentId = (tournamentRes.body as { id: string }).id;
     const slug = (tournamentRes.body as { slug: string }).slug;
     expect(tournamentRes.body).toMatchObject({ theme: 'INK_SIGNAL' });
+
+    // Choosing a non-default theme is a premium feature (see
+    // TournamentsService.assertPremiumFeaturesUnlocked) -- this tournament
+    // has 0 teams, so an active subscription is granted directly in the DB
+    // to unlock it. Not what this test is about (theme propagation to the
+    // public site), so bypassing the real Stripe checkout flow here.
+    await prisma.organizationSubscription.create({
+      data: {
+        organizationId,
+        status: OrganizationSubscriptionStatus.ACTIVE,
+        startsAt: new Date(),
+        expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+        amountCents: 20000,
+        currency: 'eur',
+        paidAt: new Date(),
+      },
+    });
 
     await auth(request(app.getHttpServer()).patch(`${base}/${tournamentId}`))
       .send({ theme: 'PULSE_EMBER' })

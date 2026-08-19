@@ -100,6 +100,24 @@
   }
 }
 
+// Team logos are a premium touch (see
+// TournamentsService.assertPremiumFeaturesUnlocked, apps/api) -- greyed out
+// rather than hidden while locked, `title` on the label explains why.
+.team-list-page__logo-upload--locked {
+  color: var(--ap-color-muted);
+  cursor: not-allowed;
+
+  input {
+    cursor: not-allowed;
+  }
+}
+
+.team-list-page__premium-hint {
+  margin: 0 0 var(--ap-space-3);
+  font-size: 0.85rem;
+  color: var(--ap-color-muted);
+}
+
 .team-list-page__logo-remove {
   background: none;
   border: none;

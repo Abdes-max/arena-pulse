@@ -125,7 +125,14 @@
           <button
             type="button"
             class="tournament-submenu__share-menu-item"
+            [class.tournament-submenu__share-menu-item--locked]="!premiumUnlocked()"
             role="menuitem"
+            [disabled]="!premiumUnlocked()"
+            [attr.title]="
+              premiumUnlocked()
+                ? null
+                : ('admin.submenu.premiumLocked' | transloco: { count: freeMaxTeams() })
+            "
             (click)="openQrDialogFromMenu()"
           >
             <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
@@ -162,17 +169,28 @@
               <rect x="12.75" y="12.75" width="1.5" height="1.5" fill="currentColor" />
             </svg>
             {{ 'admin.submenu.qrCode' | transloco }}
+            @if (!premiumUnlocked()) {
+              <span class="tournament-submenu__share-menu-item-lock" aria-hidden="true">🔒</span>
+            }
           </button>
         }
         <!-- Unlike the two items above, this doesn't depend on publicUrl()
              -- it reads through the admin API (organization-scoped), so it
              works even before the tournament is published. Always offered,
-             not gated behind publication status. -->
+             not gated behind publication status (only behind the premium
+             team-count/subscription check below). -->
         <a
           class="tournament-submenu__share-menu-item"
+          [class.tournament-submenu__share-menu-item--locked]="!premiumUnlocked()"
           role="menuitem"
+          [attr.aria-disabled]="!premiumUnlocked()"
+          [attr.title]="
+            premiumUnlocked()
+              ? null
+              : ('admin.submenu.premiumLocked' | transloco: { count: freeMaxTeams() })
+          "
           [routerLink]="['/admin/tournaments', tournamentId(), 'export']"
-          (click)="closeShareMenu()"
+          (click)="onExportPdfClick($event)"
         >
           <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <path
@@ -195,6 +213,9 @@
             />
           </svg>
           {{ 'admin.submenu.exportPdf' | transloco }}
+          @if (!premiumUnlocked()) {
+            <span class="tournament-submenu__share-menu-item-lock" aria-hidden="true">🔒</span>
+          }
         </a>
       </div>
     }

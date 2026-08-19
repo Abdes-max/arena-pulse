@@ -7,6 +7,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import type Stripe from 'stripe';
 import {
+  PublicTheme,
   TournamentPublicationOrderStatus,
   TournamentStatus,
 } from '../../generated/prisma/client';
@@ -181,6 +182,49 @@ describe('TournamentsService', () => {
       }[][];
       expect(calls[0][0].data.slug).toMatch(/^coupe-de-printemps-[0-9a-f]{8}$/);
     });
+
+    it('allows the default theme even without a subscription -- a brand-new tournament always has 0 teams', async () => {
+      prisma.sport.findUnique.mockResolvedValue(SPORT);
+      prisma.tournament.create.mockResolvedValue(tournamentFixture());
+
+      await expect(
+        service.create('org-1', {
+          name: 'Coupe',
+          sportId: SPORT.id,
+          theme: PublicTheme.INK_SIGNAL,
+        }),
+      ).resolves.toBeDefined();
+    });
+
+    it('rejects a non-default theme without an active subscription', async () => {
+      prisma.sport.findUnique.mockResolvedValue(SPORT);
+      organizationsService.hasActiveSubscription.mockResolvedValue(false);
+
+      await expect(
+        service.create('org-1', {
+          name: 'Coupe',
+          sportId: SPORT.id,
+          theme: PublicTheme.PULSE_EMBER,
+        }),
+      ).rejects.toBeInstanceOf(ForbiddenException);
+      expect(prisma.tournament.create).not.toHaveBeenCalled();
+    });
+
+    it('allows a non-default theme with an active annual subscription', async () => {
+      prisma.sport.findUnique.mockResolvedValue(SPORT);
+      organizationsService.hasActiveSubscription.mockResolvedValue(true);
+      prisma.tournament.create.mockResolvedValue(
+        tournamentFixture({ theme: PublicTheme.PULSE_EMBER }),
+      );
+
+      await expect(
+        service.create('org-1', {
+          name: 'Coupe',
+          sportId: SPORT.id,
+          theme: PublicTheme.PULSE_EMBER,
+        }),
+      ).resolves.toBeDefined();
+    });
   });
 
   describe('update / editability', () => {
@@ -203,6 +247,98 @@ describe('TournamentsService', () => {
       await expect(
         service.getDetail('org-1', 'tournament-1'),
       ).rejects.toBeInstanceOf(NotFoundException);
+    });
+
+    it('rejects changing to a non-default theme while locked (under the free team-count threshold, no subscription)', async () => {
+      prisma.tournament.findUnique.mockResolvedValue(tournamentFixture());
+      prisma.team.count.mockResolvedValue(2);
+      organizationsService.hasActiveSubscription.mockResolvedValue(false);
+
+      await expect(
+        service.update('org-1', 'tournament-1', {
+          theme: PublicTheme.NEON_COURT,
+        }),
+      ).rejects.toBeInstanceOf(ForbiddenException);
+      expect(prisma.tournament.update).not.toHaveBeenCalled();
+    });
+
+    it('allows reverting to the default theme even while locked', async () => {
+      prisma.tournament.findUnique.mockResolvedValue(
+        tournamentFixture({ theme: PublicTheme.NEON_COURT }),
+      );
+      prisma.team.count.mockResolvedValue(2);
+      organizationsService.hasActiveSubscription.mockResolvedValue(false);
+      prisma.tournament.update.mockResolvedValue(
+        tournamentFixture({ theme: PublicTheme.INK_SIGNAL }),
+      );
+
+      await expect(
+        service.update('org-1', 'tournament-1', {
+          theme: PublicTheme.INK_SIGNAL,
+        }),
+      ).resolves.toBeDefined();
+    });
+
+    it('allows a non-default theme once unlocked by team count', async () => {
+      prisma.tournament.findUnique.mockResolvedValue(tournamentFixture());
+      prisma.team.count.mockResolvedValue(9);
+      organizationsService.hasActiveSubscription.mockResolvedValue(false);
+      prisma.tournament.update.mockResolvedValue(
+        tournamentFixture({ theme: PublicTheme.PULSE_EMBER }),
+      );
+
+      await expect(
+        service.update('org-1', 'tournament-1', {
+          theme: PublicTheme.PULSE_EMBER,
+        }),
+      ).resolves.toBeDefined();
+    });
+  });
+
+  describe('hasPremiumFeatures / assertPremiumFeaturesUnlocked', () => {
+    it('is locked at exactly the free-tier max team count with no active subscription', async () => {
+      prisma.team.count.mockResolvedValue(8);
+      organizationsService.hasActiveSubscription.mockResolvedValue(false);
+
+      await expect(
+        service.hasPremiumFeatures('org-1', 'tournament-1'),
+      ).resolves.toBe(false);
+    });
+
+    it('unlocks once team count exceeds the free-tier max', async () => {
+      prisma.team.count.mockResolvedValue(9);
+      organizationsService.hasActiveSubscription.mockResolvedValue(false);
+
+      await expect(
+        service.hasPremiumFeatures('org-1', 'tournament-1'),
+      ).resolves.toBe(true);
+    });
+
+    it('unlocks regardless of team count once the organization holds an active subscription', async () => {
+      prisma.team.count.mockResolvedValue(0);
+      organizationsService.hasActiveSubscription.mockResolvedValue(true);
+
+      await expect(
+        service.hasPremiumFeatures('org-1', 'tournament-1'),
+      ).resolves.toBe(true);
+    });
+
+    it('assertPremiumFeaturesUnlocked throws ForbiddenException while locked', async () => {
+      prisma.team.count.mockResolvedValue(3);
+      organizationsService.hasActiveSubscription.mockResolvedValue(false);
+
+      await expect(
+        service.assertPremiumFeaturesUnlocked('org-1', 'tournament-1'),
+      ).rejects.toBeInstanceOf(ForbiddenException);
+    });
+
+    it('assertPremiumFeaturesUnlocked resolves silently once unlocked', async () => {
+      prisma.team.count.mockResolvedValue(20);
+      organizationsService.hasActiveSubscription.mockResolvedValue(false);
+
+      await expect(
+        service.assertPremiumFeaturesUnlocked('org-1', 'tournament-1'),
+      ).resolves.toBeUndefined();
     });
   });
 

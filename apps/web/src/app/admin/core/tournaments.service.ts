@@ -48,6 +48,17 @@ export interface PublishPendingPayment {
 
 export type PublishTournamentResult = TournamentDetail | PublishPendingPayment;
 
+// Logos (tournoi/équipe), thème personnalisé, QR code et export PDF sont
+// réservés aux tournois passé le palier gratuit de publication -- voir
+// TournamentsService.hasPremiumFeatures (apps/api). `freeMaxTeams` est
+// renvoyé par l'API plutôt que dupliqué ici, pour que le message affiché
+// reste toujours cohérent avec la valeur réellement configurée côté serveur
+// (TOURNAMENT_PUBLICATION_TIER_FREE_MAX_TEAMS).
+export interface PremiumFeaturesStatus {
+  unlocked: boolean;
+  freeMaxTeams: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class TournamentsService {
   private readonly http = inject(HttpClient);
@@ -100,6 +111,14 @@ export class TournamentsService {
   removeLogo(organizationId: string, tournamentId: string): Promise<TournamentDetail> {
     return firstValueFrom(
       this.http.delete<TournamentDetail>(`${this.base(organizationId)}/${tournamentId}/logo`),
+    );
+  }
+
+  getPremiumFeatures(organizationId: string, tournamentId: string): Promise<PremiumFeaturesStatus> {
+    return firstValueFrom(
+      this.http.get<PremiumFeaturesStatus>(
+        `${this.base(organizationId)}/${tournamentId}/premium-features`,
+      ),
     );
   }
 

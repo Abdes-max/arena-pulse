@@ -86,7 +86,7 @@
       "free": {
         "tag": "Starter",
         "price": "Free",
-        "desc": "Perfect for a small tournament of up to 8 teams, with every TournArena feature included.",
+        "desc": "Perfect for a small tournament up to 8 teams, with everything you need to run a competition.",
         "cta": "Start for free",
         "featuresLabel": "Key features",
         "feature1": "Up to 8 teams",
@@ -105,7 +105,9 @@
         "cta": "Get started",
         "featuresLabel": "Everything in Starter, plus",
         "feature1": "Up to 48 teams",
-        "feature1Info": "Number of teams registered at the time of publication."
+        "feature1Info": "Number of teams registered at the time of publication.",
+        "feature2": "Logos, custom theme, QR code and PDF export",
+        "feature2Info": "Tournament logo, team logos, custom visual theme, QR code, and PDF export of the schedule, standings and knockout bracket."
       },
       "large": {
         "tag": "Large format",
@@ -364,7 +366,8 @@
       "downloadQrCode": "Download",
       "close": "Close",
       "exportPdf": "Export PDF",
-      "share": "Share"
+      "share": "Share",
+      "premiumLocked": "Reserved for tournaments with more than {{count}} teams, or an active annual subscription."
     },
     "auth": {
       "login": {
@@ -550,7 +553,8 @@
         "title": "Logo",
         "change": "Change",
         "add": "Add a logo",
-        "remove": "Remove"
+        "remove": "Remove",
+        "premiumHint": "The tournament logo is reserved for tournaments with more than {{count}} teams, or an active annual subscription."
       },
       "form": {
         "nameLabel": "Tournament name",
@@ -559,7 +563,8 @@
         "isOnlineLabel": "Online tournament (esport)",
         "themeLabel": "Public site theme",
         "save": "Save",
-        "create": "Create the tournament"
+        "create": "Create the tournament",
+        "themePremiumHint": "Choosing a theme is reserved for tournaments with more than {{count}} teams, or an active annual subscription."
       },
       "categories": {
         "title": "Categories and divisions",
@@ -645,7 +650,8 @@
         "removeField": "Unable to delete this field.",
         "addAdminNotMember": "This person must first be a member of the organization.",
         "addAdminGeneric": "Unable to add this administrator.",
-        "removeAdmin": "Unable to remove this administrator."
+        "removeAdmin": "Unable to remove this administrator.",
+        "logoPremiumLocked": "Reserved for tournaments with more than {{count}} teams, or an active annual subscription."
       }
     },
     "teamList": {
@@ -704,8 +710,10 @@
         "export": "Unable to export teams.",
         "loadPlayers": "Unable to load this team's players.",
         "addPlayer": "Unable to add this player.",
-        "removePlayer": "Unable to remove this player."
-      }
+        "removePlayer": "Unable to remove this player.",
+        "logoPremiumLocked": "Reserved for tournaments with more than {{count}} teams, or an active annual subscription."
+      },
+      "logoPremiumHint": "Team logos are reserved for tournaments with more than {{count}} teams, or an active annual subscription."
     },
     "refereeList": {
       "title": "Referees",

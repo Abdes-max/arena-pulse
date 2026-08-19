@@ -86,7 +86,7 @@
       "free": {
         "tag": "Einstieg",
         "price": "Kostenlos",
-        "desc": "Perfekt für ein kleines Turnier mit bis zu 8 Teams, mit allen Funktionen von TournArena.",
+        "desc": "Perfekt für ein kleines Turnier mit bis zu 8 Teams, mit allem Nötigen für einen Wettbewerb.",
         "cta": "Kostenlos starten",
         "featuresLabel": "Wichtigste Funktionen",
         "feature1": "Bis zu 8 Teams",
@@ -105,7 +105,9 @@
         "cta": "Loslegen",
         "featuresLabel": "Alles aus Einstieg, plus",
         "feature1": "Bis zu 48 Teams",
-        "feature1Info": "Anzahl der zum Zeitpunkt der Veröffentlichung angemeldeten Teams."
+        "feature1Info": "Anzahl der zum Zeitpunkt der Veröffentlichung angemeldeten Teams.",
+        "feature2": "Logos, individuelles Design, QR-Code und PDF-Export",
+        "feature2Info": "Turnierlogo, Teamlogos, individuelle Designwahl, QR-Code und PDF-Export von Spielplan, Tabellen und K.-o.-Runde."
       },
       "large": {
         "tag": "Großformat",
@@ -270,7 +272,8 @@
       "downloadQrCode": "Herunterladen",
       "close": "Schließen",
       "exportPdf": "PDF exportieren",
-      "share": "Teilen"
+      "share": "Teilen",
+      "premiumLocked": "Nur für Turniere mit mehr als {{count}} Teams oder mit aktivem Jahresabonnement."
     },
     "auth": {
       "login": {
@@ -456,7 +459,8 @@
         "title": "Logo",
         "change": "Ändern",
         "add": "Logo hinzufügen",
-        "remove": "Entfernen"
+        "remove": "Entfernen",
+        "premiumHint": "Das Turnierlogo ist nur für Turniere mit mehr als {{count}} Teams oder mit aktivem Jahresabonnement verfügbar."
       },
       "form": {
         "nameLabel": "Turniername",
@@ -465,7 +469,8 @@
         "isOnlineLabel": "Online-Turnier (E-Sport)",
         "themeLabel": "Design der öffentlichen Seite",
         "save": "Speichern",
-        "create": "Turnier erstellen"
+        "create": "Turnier erstellen",
+        "themePremiumHint": "Die Themenwahl ist nur für Turniere mit mehr als {{count}} Teams oder mit aktivem Jahresabonnement verfügbar."
       },
       "categories": {
         "title": "Kategorien und Divisionen",
@@ -551,7 +556,8 @@
         "removeField": "Dieses Feld konnte nicht gelöscht werden.",
         "addAdminNotMember": "Diese Person muss zuerst Mitglied der Organisation sein.",
         "addAdminGeneric": "Dieser Administrator konnte nicht hinzugefügt werden.",
-        "removeAdmin": "Dieser Administrator konnte nicht entfernt werden."
+        "removeAdmin": "Dieser Administrator konnte nicht entfernt werden.",
+        "logoPremiumLocked": "Nur für Turniere mit mehr als {{count}} Teams oder mit aktivem Jahresabonnement."
       }
     },
     "teamList": {
@@ -610,8 +616,10 @@
         "export": "Die Teams konnten nicht exportiert werden.",
         "loadPlayers": "Die Spieler dieses Teams konnten nicht geladen werden.",
         "addPlayer": "Dieser Spieler konnte nicht hinzugefügt werden.",
-        "removePlayer": "Dieser Spieler konnte nicht entfernt werden."
-      }
+        "removePlayer": "Dieser Spieler konnte nicht entfernt werden.",
+        "logoPremiumLocked": "Nur für Turniere mit mehr als {{count}} Teams oder mit aktivem Jahresabonnement."
+      },
+      "logoPremiumHint": "Team-Logos sind nur für Turniere mit mehr als {{count}} Teams oder mit aktivem Jahresabonnement verfügbar."
     },
     "refereeList": {
       "title": "Schiedsrichter",

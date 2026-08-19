@@ -199,6 +199,24 @@
   }
 }
 
+// Premium (QR code/export PDF, see tournament-submenu.ts's own doc comment
+// on hasPremiumFeatures) below the team-count threshold and no active
+// subscription -- item stays visible (so the organizer sees what unlocking
+// gets them) but reads as inert, its own `title` attribute explaining why.
+.tournament-submenu__share-menu-item--locked {
+  color: var(--ap-color-muted);
+  cursor: not-allowed;
+
+  &:hover {
+    background: transparent;
+  }
+}
+
+.tournament-submenu__share-menu-item-lock {
+  margin-left: auto;
+  font-size: 0.75rem;
+}
+
 // No design-system modal component exists yet (checked before building
 // this) -- a plain fixed-position backdrop + centered panel is simplest for
 // a single, one-off use case like this rather than introducing a whole new

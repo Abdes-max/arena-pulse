@@ -85,6 +85,12 @@
         </ap-button>
       </div>
 
+      @if (!premiumUnlocked()) {
+        <p class="team-list-page__premium-hint">
+          {{ 'admin.teamList.logoPremiumHint' | transloco: { count: freeMaxTeams() } }}
+        </p>
+      }
+
       @if (teams().length === 0) {
         <p>{{ 'admin.teamList.empty' | transloco }}</p>
       } @else {
@@ -117,7 +123,16 @@
                     } @else {
                       <span class="team-list-page__logo-placeholder" aria-hidden="true"></span>
                     }
-                    <label class="team-list-page__logo-upload">
+                    <label
+                      class="team-list-page__logo-upload"
+                      [class.team-list-page__logo-upload--locked]="!premiumUnlocked()"
+                      [attr.title]="
+                        premiumUnlocked()
+                          ? null
+                          : ('admin.teamList.logoPremiumHint'
+                            | transloco: { count: freeMaxTeams() })
+                      "
+                    >
                       {{
                         (team.logoUrl ? 'admin.teamList.logoChange' : 'admin.teamList.logoAdd')
                           | transloco
@@ -125,6 +140,7 @@
                       <input
                         type="file"
                         accept="image/png,image/jpeg,image/webp"
+                        [disabled]="!premiumUnlocked()"
                         (change)="onLogoFileSelected(team, $event)"
                       />
                     </label>
