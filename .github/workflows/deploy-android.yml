@@ -61,6 +61,19 @@ jobs:
           npx cap add android
           npx cap sync android
 
+      # Source art lives in apps/mobile/resources/ (icon.png, icon-foreground.png,
+      # icon-background.png, splash.png -- the TournArena mark, see
+      # docs/design/logo.md), committed to git since android/ itself isn't.
+      # Must run after cap sync above (needs the native project's resource
+      # folders to already exist) and produces plain files in android/app/src/main/res/,
+      # not something cap sync itself would regenerate.
+      - name: Generate app icon and splash screen
+        working-directory: apps/mobile
+        run: |
+          npx capacitor-assets generate --android \
+            --iconBackgroundColor '#1e293b' --iconBackgroundColorDark '#1e293b' \
+            --splashBackgroundColor '#1e293b' --splashBackgroundColorDark '#1e293b'
+
       # Capacitor's template always starts a freshly-generated build.gradle
       # at versionCode 1 / versionName "1.0" -- there is no committed file
       # to bump between runs (android/ is gitignored, see header comment),

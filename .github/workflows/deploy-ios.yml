@@ -53,6 +53,19 @@ jobs:
           npx cap add ios
           npx cap sync ios
 
+      # Source art lives in apps/mobile/resources/ (icon.png, icon-foreground.png,
+      # icon-background.png, splash.png -- the TournArena mark, see
+      # docs/design/logo.md), committed to git since ios/ itself isn't. Must
+      # run after cap sync above (needs ios/App/App/Assets.xcassets to
+      # already exist) -- same reasoning as deploy-android.yml's equivalent
+      # step.
+      - name: Generate app icon and splash screen
+        working-directory: apps/mobile
+        run: |
+          npx capacitor-assets generate --ios \
+            --iconBackgroundColor '#1e293b' --iconBackgroundColorDark '#1e293b' \
+            --splashBackgroundColor '#1e293b' --splashBackgroundColorDark '#1e293b'
+
       - name: Import signing certificate and provisioning profile
         env:
           CERTIFICATE_BASE64: ${{ secrets.IOS_DIST_CERTIFICATE_P12_BASE64 }}

@@ -22,15 +22,16 @@ Contrairement à un accent d'UI (ex. la pastille de l'onglet actif dans l'admin,
 
 ## Assets
 
-| Fichier                                                         | Rôle                                                                                    |
-| --------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| `libs/design-system/src/lib/logo/`                              | Composant `ap-logo` (Angular) — source de vérité pour toute intégration dans le produit |
-| `apps/web/public/favicon.svg`, `apps/mobile/public/favicon.svg` | Favicon vectoriel                                                                       |
-| `apps/web/public/favicon.ico`, `apps/mobile/public/favicon.ico` | Favicon multi-résolution (16/32/48) pour les navigateurs sans support SVG               |
-| `apps/mobile/android/app/src/main/res/mipmap-*`                 | Icône native Android (écran d'accueil) — legacy + adaptative                            |
-| `docs/design/brand/mark-on-light.svg`                           | Symbole seul, fond clair                                                                |
-| `docs/design/brand/mark-on-dark.svg`                            | Symbole seul, variante inversée pour fond sombre                                        |
-| `docs/design/brand/preview.html`                                | Aperçu autonome (voir plus haut)                                                        |
+| Fichier                                                                                     | Rôle                                                                                                                    |
+| ------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `libs/design-system/src/lib/logo/`                                                          | Composant `ap-logo` (Angular) — source de vérité pour toute intégration dans le produit                                 |
+| `apps/web/public/favicon.svg`, `apps/mobile/public/favicon.svg`                             | Favicon vectoriel                                                                                                       |
+| `apps/web/public/favicon.ico`, `apps/mobile/public/favicon.ico`                             | Favicon multi-résolution (16/32/48) pour les navigateurs sans support SVG                                               |
+| `apps/mobile/resources/{icon,icon-foreground,icon-background,splash}.png`                   | Source de vérité pour l'icône et l'écran de démarrage natifs (Android + iOS) — voir ci-dessous                          |
+| `apps/mobile/android/app/src/main/res/mipmap-*`, `apps/mobile/ios/App/App/Assets.xcassets/` | Icône/splash natifs **générés**, pas la source — recréés à chaque build (`android/`/`ios/` gitignored, voir ci-dessous) |
+| `docs/design/brand/mark-on-light.svg`                                                       | Symbole seul, fond clair                                                                                                |
+| `docs/design/brand/mark-on-dark.svg`                                                        | Symbole seul, variante inversée pour fond sombre                                                                        |
+| `docs/design/brand/preview.html`                                                            | Aperçu autonome (voir plus haut)                                                                                        |
 
 ## Utiliser `ap-logo`
 
@@ -55,17 +56,25 @@ Aucun usage actuel de `variant="on-dark"` dans le produit (tous ces emplacements
 
 Laisser au moins la largeur du point signal libre autour du symbole — pas de texte ni de bord de carte collé dessus (voir `preview.html`).
 
-## Icônes rastérisées : comment elles ont été générées
+## Icônes rastérisées : comment elles sont générées
 
-Aucun outil de rastérisation dédié (ImageMagick, Inkscape, sharp…) n'était disponible dans cet environnement. `favicon.ico` et l'icône native Android ont été produits en réutilisant Playwright (déjà présent pour les tests e2e) pour capturer le symbole en PNG dans un Chromium headless, à chaque taille requise :
+**Historique** : une première version (favicon + icône Android) avait été produite à la main, ponctuellement, sans script conservé dans le repo — perdue à la session suivante puisque `apps/mobile/android/` est gitignored (voir plus bas). Depuis, tout le pipeline a été rendu reproductible et committé.
 
-- `favicon.ico` (web + mobile) : 16/32/48 px, symbole complet (fond + chevron + point), assemblés à la main dans un conteneur `.ico` multi-résolution (le format ICO autorise des entrées PNG brutes, pas seulement du bitmap).
-- Icône native Android (`apps/mobile/android/app/src/main/res/mipmap-*`) : `ic_launcher.png`/`ic_launcher_round.png` (symbole complet, 48/72/96/144/192 px selon la densité) pour les appareils pré-Android 8 ; `ic_launcher_foreground.png` (chevron + point seuls, fond transparent, 108/162/216/324/432 px) pour l'icône adaptative (Android 8+, `mipmap-anydpi-v26/ic_launcher.xml`) — le fond de cette dernière est la couleur unie `#1e293b` (`values/ic_launcher_background.xml`), pas une image.
+**Source de vérité** : `apps/mobile/resources/` (committé, contrairement à `android/`/`ios/`) —
 
-Scripts non conservés dans le repo (ponctuels) — à refaire de la même façon si le symbole change.
+- `icon.png` (1024×1024) : symbole complet sur fond plein `#1e293b`, sans arrondi appliqué à la main (l'OS applique son propre masque — cercle/squircle/carré arrondi selon la plateforme). Alimente l'icône iOS (App Store + écran d'accueil) et l'icône Android legacy (pré-Android 8).
+- `icon-foreground.png` (1024×1024, fond transparent) : chevron + point seuls, réduits pour tenir dans la "safe zone" des icônes adaptatives Android (~60 % du canevas).
+- `icon-background.png` (1024×1024) : fond plein `#1e293b` seul, composé par l'OS derrière `icon-foreground.png` (icône adaptative Android 8+).
+- `splash.png` (2732×2732) : fond `#1e293b`, symbole seul centré en petit (pas de wordmark) — écran de démarrage.
 
-**Icône native : un rebuild de l'app est nécessaire pour la voir.** Contrairement au favicon (servi dynamiquement, un rechargement de page suffit), l'icône de l'écran d'accueil est compilée dans l'APK — recompiler et réinstaller (`npx cap sync android` puis lancer depuis Android Studio ou `npx cap run android`) pour qu'elle apparaisse sur le téléphone.
+Ces 4 PNG ont été produits avec Playwright (même technique que l'ancienne version, mais scriptée et rejouable), à partir de la géométrie exacte de `logo.html`/`logo.scss` (chevron + point, mêmes couleurs).
 
-**`apps/mobile/android/` est dans `.gitignore`** (convention Capacitor standard — le projet natif est régénéré, pas versionné). Cette mise à jour de l'icône n'est donc appliquée que sur la machine où elle a été faite ; elle ne sera pas dans un commit/PR et ne survivra pas à une régénération du dossier (`npx cap add android` depuis zéro). Si le dossier existe déjà sur une autre machine (ou en CI), il faut relancer la même génération (ou copier `mipmap-*` et `values/ic_launcher_background.xml` depuis cette machine) après tout `npx cap add android` frais.
+**Génération des assets natifs** : `@capacitor/assets` (`npx capacitor-assets generate --android`/`--ios`, avec les couleurs de fond `#1e293b` passées en options puisque `icon.png`/`splash.png` n'ont pas de canal alpha exploitable pour ça) lit `apps/mobile/resources/` et écrit toutes les tailles/densités requises dans `android/app/src/main/res/` et `ios/App/App/Assets.xcassets/`. Câblé à trois endroits, toujours **après** `cap sync` (qui doit avoir créé les dossiers de ressources natifs avant) :
 
-L'écran de démarrage (`apps/mobile/android/app/src/main/res/drawable*/splash.png`) n'a pas été touché — hors scope de cette demande, mais même limite d'outillage si besoin de le refaire un jour.
+- `.github/workflows/deploy-android.yml`
+- `.github/workflows/deploy-ios.yml`
+- `infra/scripts/run-mobile-emulator.mjs` (émulateur local)
+
+— un run de production ou un test local régénère donc toujours l'icône à jour, jamais un ancien artefact caché.
+
+**`apps/mobile/android/` et `ios/` restent dans `.gitignore`** (convention Capacitor standard) — mais ce n'est plus un problème : contrairement à l'ancienne version manuelle, l'icône n'est plus perdue à la régénération du dossier, elle est recréée à l'identique à chaque fois à partir de `resources/`. Changer le symbole se fait uniquement en régénérant les 4 PNG source (même script Playwright) et en committant le résultat — rien à refaire à la main côté Android/iOS.
