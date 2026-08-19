@@ -79,6 +79,10 @@ jobs:
   e2e:
     name: End-to-end (Playwright)
     runs-on: ubuntu-latest
+    # Safety net for the hang below (and any other future one) -- without
+    # this, a stuck step runs until GitHub's own 360-minute job default,
+    # silently burning CI minutes instead of failing loudly.
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
@@ -87,7 +91,17 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build:libs
+      # `--with-deps` runs `apt-get install` under the hood. GitHub-hosted
+      # ubuntu-latest runners ship `needrestart`, which (since a recent
+      # image update) prompts interactively about restarting services --
+      # apt then hangs forever waiting on input that never comes, observed
+      # here hanging two separate runs for 20+ minutes each until manually
+      # cancelled. NEEDRESTART_MODE=a (automatic, no prompt) plus the usual
+      # DEBIAN_FRONTEND=noninteractive fixes it at the source.
       - run: npx playwright install --with-deps chromium
+        env:
+          DEBIAN_FRONTEND: noninteractive
+          NEEDRESTART_MODE: a
       - run: npm run e2e
 
   secrets-scan:
