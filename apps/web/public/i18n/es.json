@@ -86,7 +86,7 @@
       "free": {
         "tag": "Descubrimiento",
         "price": "Gratis",
-        "desc": "Perfecto para un torneo pequeño de hasta 8 equipos, con todas las funciones de TournArena.",
+        "desc": "Perfecto para un torneo pequeño de hasta 8 equipos, con lo esencial para organizar una competición.",
         "cta": "Empezar gratis",
         "featuresLabel": "Funciones clave",
         "feature1": "Hasta 8 equipos",
@@ -105,7 +105,9 @@
         "cta": "Empezar",
         "featuresLabel": "Todo lo de Descubrimiento, más",
         "feature1": "Hasta 48 equipos",
-        "feature1Info": "Número de equipos inscritos en el momento de la publicación."
+        "feature1Info": "Número de equipos inscritos en el momento de la publicación.",
+        "feature2": "Logos, tema personalizado, código QR y exportación PDF",
+        "feature2Info": "Logo del torneo, logos de equipo, elección de tema visual, código QR y exportación PDF del calendario, las clasificaciones y el cuadro de eliminación directa."
       },
       "large": {
         "tag": "Gran formato",
@@ -270,7 +272,8 @@
       "downloadQrCode": "Descargar",
       "close": "Cerrar",
       "exportPdf": "Exportar PDF",
-      "share": "Compartir"
+      "share": "Compartir",
+      "premiumLocked": "Reservado a torneos con más de {{count}} equipos o con una suscripción anual activa."
     },
     "auth": {
       "login": {
@@ -456,7 +459,8 @@
         "title": "Logo",
         "change": "Cambiar",
         "add": "Añadir un logo",
-        "remove": "Quitar"
+        "remove": "Quitar",
+        "premiumHint": "El logo del torneo está reservado a torneos con más de {{count}} equipos o con una suscripción anual activa."
       },
       "form": {
         "nameLabel": "Nombre del torneo",
@@ -465,7 +469,8 @@
         "isOnlineLabel": "Torneo en línea (esport)",
         "themeLabel": "Tema del sitio público",
         "save": "Guardar",
-        "create": "Crear el torneo"
+        "create": "Crear el torneo",
+        "themePremiumHint": "La elección de tema está reservada a torneos con más de {{count}} equipos o con una suscripción anual activa."
       },
       "categories": {
         "title": "Categorías y divisiones",
@@ -551,7 +556,8 @@
         "removeField": "No se ha podido eliminar esta pista.",
         "addAdminNotMember": "Esta persona debe ser antes miembro de la organización.",
         "addAdminGeneric": "No se ha podido añadir a este administrador.",
-        "removeAdmin": "No se ha podido retirar a este administrador."
+        "removeAdmin": "No se ha podido retirar a este administrador.",
+        "logoPremiumLocked": "Reservado a torneos con más de {{count}} equipos o con una suscripción anual activa."
       }
     },
     "teamList": {
@@ -610,8 +616,10 @@
         "export": "No se han podido exportar los equipos.",
         "loadPlayers": "No se han podido cargar los jugadores de este equipo.",
         "addPlayer": "No se ha podido añadir este jugador.",
-        "removePlayer": "No se ha podido quitar este jugador."
-      }
+        "removePlayer": "No se ha podido quitar este jugador.",
+        "logoPremiumLocked": "Reservado a torneos con más de {{count}} equipos o con una suscripción anual activa."
+      },
+      "logoPremiumHint": "Los logos de equipo están reservados a torneos con más de {{count}} equipos o con una suscripción anual activa."
     },
     "refereeList": {
       "title": "Árbitros",

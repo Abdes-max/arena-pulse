@@ -32,6 +32,13 @@ export class TeamListPage {
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly teams = signal<Team[]>([]);
+
+  // Team logos are a premium touch (see
+  // TournamentsService.assertPremiumFeaturesUnlocked, apps/api) --
+  // optimistically true until the check resolves, see tournament-submenu.ts's
+  // own comment on the same tradeoff.
+  protected readonly premiumUnlocked = signal(true);
+  protected readonly freeMaxTeams = signal(8);
   protected readonly categories = signal<Category[]>([]);
   protected readonly selectedTeamIds = signal<Set<string>>(new Set());
 
@@ -94,10 +101,24 @@ export class TeamListPage {
       this.categories.set(
         await this.tournamentsService.listCategories(organizationId, this.tournamentId),
       );
+      void this.loadPremiumFeatures(organizationId);
     } catch {
       this.errorMessage.set('admin.teamList.errors.load');
     } finally {
       this.loading.set(false);
+    }
+  }
+
+  private async loadPremiumFeatures(organizationId: string): Promise<void> {
+    try {
+      const status = await this.tournamentsService.getPremiumFeatures(
+        organizationId,
+        this.tournamentId,
+      );
+      this.premiumUnlocked.set(status.unlocked);
+      this.freeMaxTeams.set(status.freeMaxTeams);
+    } catch {
+      // Read-only status check -- see tournament-submenu.ts's own comment.
     }
   }
 
@@ -221,11 +242,15 @@ export class TeamListPage {
       );
       this.teams.update((teams) => teams.map((t) => (t.id === updated.id ? updated : t)));
     } catch (error) {
-      this.errorMessage.set(
-        error instanceof HttpErrorResponse && error.status === 400
-          ? 'admin.teamList.errors.logoInvalid'
-          : 'admin.teamList.errors.logoUpload',
-      );
+      let key = 'admin.teamList.errors.logoUpload';
+      if (error instanceof HttpErrorResponse) {
+        if (error.status === 403) {
+          key = 'admin.teamList.errors.logoPremiumLocked';
+        } else if (error.status === 400) {
+          key = 'admin.teamList.errors.logoInvalid';
+        }
+      }
+      this.errorMessage.set(key);
     }
   }
 

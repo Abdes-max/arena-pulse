@@ -86,7 +86,7 @@
       "free": {
         "tag": "Scoperta",
         "price": "Gratis",
-        "desc": "Perfetto per un piccolo torneo fino a 8 squadre, con tutte le funzionalità di TournArena.",
+        "desc": "Perfetto per un piccolo torneo fino a 8 squadre, con l'essenziale per organizzare una competizione.",
         "cta": "Inizia gratis",
         "featuresLabel": "Funzionalità principali",
         "feature1": "Fino a 8 squadre",
@@ -105,7 +105,9 @@
         "cta": "Inizia",
         "featuresLabel": "Tutto ciò che c'è in Scoperta, più",
         "feature1": "Fino a 48 squadre",
-        "feature1Info": "Numero di squadre iscritte al momento della pubblicazione."
+        "feature1Info": "Numero di squadre iscritte al momento della pubblicazione.",
+        "feature2": "Loghi, tema personalizzato, codice QR ed esportazione PDF",
+        "feature2Info": "Logo del torneo, loghi delle squadre, scelta del tema visivo, codice QR ed esportazione PDF di calendario, classifiche e tabellone a eliminazione diretta."
       },
       "large": {
         "tag": "Grande formato",
@@ -270,7 +272,8 @@
       "downloadQrCode": "Scarica",
       "close": "Chiudi",
       "exportPdf": "Esporta PDF",
-      "share": "Condividi"
+      "share": "Condividi",
+      "premiumLocked": "Riservato ai tornei con più di {{count}} squadre o con un abbonamento annuale attivo."
     },
     "auth": {
       "login": {
@@ -456,7 +459,8 @@
         "title": "Logo",
         "change": "Cambia",
         "add": "Aggiungi un logo",
-        "remove": "Rimuovi"
+        "remove": "Rimuovi",
+        "premiumHint": "Il logo del torneo è riservato ai tornei con più di {{count}} squadre o con un abbonamento annuale attivo."
       },
       "form": {
         "nameLabel": "Nome del torneo",
@@ -465,7 +469,8 @@
         "isOnlineLabel": "Torneo online (esport)",
         "themeLabel": "Tema del sito pubblico",
         "save": "Salva",
-        "create": "Crea il torneo"
+        "create": "Crea il torneo",
+        "themePremiumHint": "La scelta del tema è riservata ai tornei con più di {{count}} squadre o con un abbonamento annuale attivo."
       },
       "categories": {
         "title": "Categorie e divisioni",
@@ -551,7 +556,8 @@
         "removeField": "Impossibile eliminare questo campo.",
         "addAdminNotMember": "Questa persona deve prima essere membro dell'organizzazione.",
         "addAdminGeneric": "Impossibile aggiungere questo amministratore.",
-        "removeAdmin": "Impossibile rimuovere questo amministratore."
+        "removeAdmin": "Impossibile rimuovere questo amministratore.",
+        "logoPremiumLocked": "Riservato ai tornei con più di {{count}} squadre o con un abbonamento annuale attivo."
       }
     },
     "teamList": {
@@ -610,8 +616,10 @@
         "export": "Impossibile esportare le squadre.",
         "loadPlayers": "Impossibile caricare i giocatori di questa squadra.",
         "addPlayer": "Impossibile aggiungere questo giocatore.",
-        "removePlayer": "Impossibile rimuovere questo giocatore."
-      }
+        "removePlayer": "Impossibile rimuovere questo giocatore.",
+        "logoPremiumLocked": "Riservato ai tornei con più di {{count}} squadre o con un abbonamento annuale attivo."
+      },
+      "logoPremiumHint": "I loghi delle squadre sono riservati ai tornei con più di {{count}} squadre o con un abbonamento annuale attivo."
     },
     "refereeList": {
       "title": "Arbitri",

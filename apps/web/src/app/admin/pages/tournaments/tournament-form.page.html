@@ -110,7 +110,10 @@
             } @else {
               <span class="tournament-form-page__logo-placeholder" aria-hidden="true"></span>
             }
-            <label class="tournament-form-page__logo-upload">
+            <label
+              class="tournament-form-page__logo-upload"
+              [class.tournament-form-page__logo-upload--locked]="!premiumUnlocked()"
+            >
               {{
                 (t.logoUrl ? 'admin.tournamentForm.logo.change' : 'admin.tournamentForm.logo.add')
                   | transloco
@@ -118,6 +121,7 @@
               <input
                 type="file"
                 accept="image/png,image/jpeg,image/webp"
+                [disabled]="!premiumUnlocked()"
                 (change)="onLogoFileSelected($event)"
               />
             </label>
@@ -131,6 +135,11 @@
               </button>
             }
           </div>
+          @if (!premiumUnlocked()) {
+            <p class="tournament-form-page__premium-hint">
+              {{ 'admin.tournamentForm.logo.premiumHint' | transloco: { count: freeMaxTeams() } }}
+            </p>
+          }
         </section>
       }
 
@@ -150,9 +159,16 @@
         </label>
         <ap-select
           [label]="'admin.tournamentForm.form.themeLabel' | transloco"
-          [options]="themeOptions"
+          [options]="themeOptions()"
           formControlName="theme"
         />
+        @if (!premiumUnlocked()) {
+          <p class="tournament-form-page__premium-hint">
+            {{
+              'admin.tournamentForm.form.themePremiumHint' | transloco: { count: freeMaxTeams() }
+            }}
+          </p>
+        }
         <ap-button type="submit" [disabled]="submitting() || isArchived()">
           {{
             (isEditMode() ? 'admin.tournamentForm.form.save' : 'admin.tournamentForm.form.create')

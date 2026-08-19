@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -62,6 +63,9 @@ describe('TeamsService', () => {
   let tournamentsService: {
     assertTournamentIsEditable: jest.Mock;
     assertTournamentExists: jest.Mock;
+    assertPremiumFeaturesUnlocked: jest.Mock;
+    hasPremiumFeatures: jest.Mock;
+    freeMaxTeams: jest.Mock;
   };
   let categoriesService: { assertCategoryExists: jest.Mock };
   let divisionsService: { assertDivisionExists: jest.Mock };
@@ -88,6 +92,11 @@ describe('TeamsService', () => {
       assertTournamentExists: jest
         .fn()
         .mockResolvedValue({ id: 'tournament-1' }),
+      // Unlocked by default -- individual premium-gating tests below
+      // override this to exercise the locked path.
+      assertPremiumFeaturesUnlocked: jest.fn().mockResolvedValue(undefined),
+      hasPremiumFeatures: jest.fn().mockResolvedValue(true),
+      freeMaxTeams: jest.fn().mockReturnValue(8),
     };
     categoriesService = {
       assertCategoryExists: jest.fn().mockResolvedValue(category),
@@ -347,6 +356,17 @@ describe('TeamsService', () => {
       } as Express.Multer.File;
     }
 
+    it('rejects while premium features are locked, without touching the filesystem', async () => {
+      tournamentsService.assertPremiumFeaturesUnlocked.mockRejectedValue(
+        new ForbiddenException('Cette fonctionnalité est réservée...'),
+      );
+
+      await expect(
+        service.uploadLogo('org-1', 'tournament-1', 'team-1', pngFile()),
+      ).rejects.toBeInstanceOf(ForbiddenException);
+      expect(fsMock.writeFile).not.toHaveBeenCalled();
+    });
+
     it('rejects an unsupported mimetype without touching the filesystem', async () => {
       prisma.team.findUnique.mockResolvedValue(teamRow);
 
@@ -523,6 +543,38 @@ describe('TeamsService', () => {
           }) as unknown,
         }),
       );
+    });
+
+    it('skips the logo column with a warning while premium features are locked, but still creates the team', async () => {
+      tournamentsService.hasPremiumFeatures.mockResolvedValue(false);
+      const csv =
+        'nom;categorie;division;responsable;email_responsable;telephone_responsable;logo\n' +
+        'Les Aigles;U10;;;;;/uploads/team-logos/existing.png';
+
+      prisma.category.findFirst.mockResolvedValue({
+        id: 'category-1',
+        name: 'U10',
+      });
+      prisma.team.findFirst.mockResolvedValue(null);
+      prisma.team.create.mockResolvedValue({
+        id: 'team-1',
+        name: 'Les Aigles',
+        categoryId: 'category-1',
+        divisionId: null,
+        logoUrl: null,
+        position: 0,
+      });
+
+      const result = await service.importFromCsv('org-1', 'tournament-1', csv);
+
+      expect(result.created).toHaveLength(1);
+      expect(result.warnings).toEqual([
+        {
+          line: 2,
+          message: expect.stringContaining('réservé') as unknown,
+        },
+      ]);
+      expect(prisma.team.update).not.toHaveBeenCalled();
     });
 
     it('references an existing /uploads/team-logos path as-is, without fetching', async () => {
