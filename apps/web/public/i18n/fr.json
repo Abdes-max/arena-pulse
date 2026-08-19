@@ -254,6 +254,11 @@
       "section11": {
         "title": "11. Modification de cette politique",
         "body": "Cette politique peut être mise à jour ; la version applicable est celle publiée sur cette page, accompagnée de sa date de dernière mise à jour."
+      },
+      "section12": {
+        "title": "12. Suppression de votre compte",
+        "before": "Vous pouvez demander la suppression de votre compte TournArena et des données associées (nom, email, mot de passe) à tout moment via notre",
+        "after": ". Nous traitons votre demande sous 30 jours maximum. Les données des tournois que vous avez publiés peuvent être conservées au-delà si elles restent nécessaires au bon fonctionnement de tournois en cours, de même que les données de facturation dont la conservation est requise par la loi."
       }
     }
   },
