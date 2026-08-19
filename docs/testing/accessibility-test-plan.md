@@ -30,9 +30,10 @@ Pas d'intégration CI d'axe-core à ce stade (pas de suite e2e Playwright dédi�
 
 Repris de `docs/design/accessibility-guidelines.md` :
 
-- Contraste texte normal ≥ 4.5:1, UI/bordures ≥ 3:1, sur les 3 thèmes (Ink & Signal, Pulse Ember,
-  Neon Court) × 2 modes (clair/sombre) — vérifié pour chaque token de couleur affecté par ce
-  document (`_ink-signal.scss`, `_pulse-ember.scss`, `_neon-court.scss`).
+- Contraste texte normal ≥ 4.5:1, UI/bordures ≥ 3:1, sur les 5 thèmes (Ink & Signal, Pulse Ember,
+  Neon Court, Fresh Pitch, Crimson Charge) × 2 modes (clair/sombre) — vérifié pour chaque token de
+  couleur affecté par ce document (`_ink-signal.scss`, `_pulse-ember.scss`, `_neon-court.scss`,
+  `_fresh-pitch.scss`, `_crimson-charge.scss`).
 - Aucune information de statut (direct, qualification, victoire/défaite) portée par la couleur
   seule — toujours doublée d'un texte.
 - Cibles tactiles ≥ 44×44px, espacement ≥ 8px.

@@ -5,7 +5,7 @@ Mission §15. Implémenté dans `feat/004-design-system-foundation` (`libs/desig
 ## Où
 
 - `libs/design-tokens/src/styles/_base.scss` — tokens communs aux 3 directions (spacing, radii de base, ombres, opacité, motion, breakpoints, z-index) sous `:root`.
-- `libs/design-tokens/src/styles/_ink-signal.scss`, `_pulse-ember.scss`, `_neon-court.scss` — tokens de couleur et de typographie propres à chaque direction, scopés par `[data-theme="…"]` et `[data-theme="…"][data-mode="dark"]`.
+- `libs/design-tokens/src/styles/_ink-signal.scss`, `_pulse-ember.scss`, `_neon-court.scss`, `_fresh-pitch.scss`, `_crimson-charge.scss` — tokens de couleur et de typographie propres à chaque direction, scopés par `[data-theme="…"]` et `[data-theme="…"][data-mode="dark"]`.
 - `libs/design-tokens/src/styles/index.scss` — point d'entrée unique (`@forward` des 4 fichiers ci-dessus).
 - `libs/design-tokens/src/lib/theme.types.ts` — types `ThemeName`/`ThemeMode`, liste `THEMES`, valeurs par défaut.
 - `libs/design-tokens/src/lib/theme.service.ts` — `ThemeService` (Angular, signals) pour appliquer `data-theme`/`data-mode` sur un élément DOM.
@@ -30,18 +30,18 @@ Puis un élément (idéalement le conteneur racine de la surface concernée — 
 
 ## Tokens disponibles (noms CSS)
 
-| Catégorie | Variables |
-| --- | --- |
-| Couleurs de surface | `--ap-color-bg`, `--ap-color-surface`, `--ap-color-fg`, `--ap-color-muted`, `--ap-color-border` |
-| Couleurs de marque | `--ap-color-primary`, `--ap-color-on-primary`, `--ap-color-signal`, `--ap-color-signal-soft` |
-| Résultats sportifs (jamais confondus avec les couleurs système) | `--ap-color-win`, `--ap-color-loss`, `--ap-color-draw` |
-| Statuts système | `--ap-color-success`, `--ap-color-info`, `--ap-color-warning`, `--ap-color-error`, `--ap-color-on-error` |
-| Typographie | `--ap-font-heading`, `--ap-font-body`, `--ap-tracking-tight`, `--ap-title-case` |
-| Formes | `--ap-radius-sm`, `--ap-radius-md`, `--ap-radius-lg` |
-| Espacement (commun) | `--ap-space-1` … `--ap-space-24` |
-| Ombres (communes) | `--ap-shadow-sm`, `--ap-shadow-md`, `--ap-shadow-lg` |
-| Mouvement (commun, respecte `prefers-reduced-motion`) | `--ap-motion-fast`, `--ap-motion-base`, `--ap-motion-emotional`, `--ap-easing-standard` |
-| Z-index (commun) | `--ap-z-base` … `--ap-z-slideshow` |
+| Catégorie                                                       | Variables                                                                                                |
+| --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Couleurs de surface                                             | `--ap-color-bg`, `--ap-color-surface`, `--ap-color-fg`, `--ap-color-muted`, `--ap-color-border`          |
+| Couleurs de marque                                              | `--ap-color-primary`, `--ap-color-on-primary`, `--ap-color-signal`, `--ap-color-signal-soft`             |
+| Résultats sportifs (jamais confondus avec les couleurs système) | `--ap-color-win`, `--ap-color-loss`, `--ap-color-draw`                                                   |
+| Statuts système                                                 | `--ap-color-success`, `--ap-color-info`, `--ap-color-warning`, `--ap-color-error`, `--ap-color-on-error` |
+| Typographie                                                     | `--ap-font-heading`, `--ap-font-body`, `--ap-tracking-tight`, `--ap-title-case`                          |
+| Formes                                                          | `--ap-radius-sm`, `--ap-radius-md`, `--ap-radius-lg`                                                     |
+| Espacement (commun)                                             | `--ap-space-1` … `--ap-space-24`                                                                         |
+| Ombres (communes)                                               | `--ap-shadow-sm`, `--ap-shadow-md`, `--ap-shadow-lg`                                                     |
+| Mouvement (commun, respecte `prefers-reduced-motion`)           | `--ap-motion-fast`, `--ap-motion-base`, `--ap-motion-emotional`, `--ap-easing-standard`                  |
+| Z-index (commun)                                                | `--ap-z-base` … `--ap-z-slideshow`                                                                       |
 
 ## Ce qui n'est pas encore fait
 

@@ -60,6 +60,12 @@
         "tag": "Echtzeit",
         "title": "Öffentliche Website pro Turnier",
         "desc": "Teams, Spielplan, Tabellen und Live-Ergebnisse — ein Link zum Teilen, nichts zu konfigurieren."
+      },
+      "branding": {
+        "mockRow": "Turnier-Design",
+        "tag": "Personalisierung",
+        "title": "Logo, Design und Teilen",
+        "desc": "Turnierlogo, 5 auswählbare visuelle Designs, QR-Code und PDF-Export von Spielplan und Tabellen — Ihr Turnier, in Ihrer Farbe."
       }
     },
     "sports": {
@@ -558,6 +564,12 @@
         "addAdminGeneric": "Dieser Administrator konnte nicht hinzugefügt werden.",
         "removeAdmin": "Dieser Administrator konnte nicht entfernt werden.",
         "logoPremiumLocked": "Nur für Turniere mit mehr als {{count}} Teams oder mit aktivem Jahresabonnement."
+      },
+      "personalization": {
+        "title": "Personalisierung",
+        "open": "Logo und Design bearbeiten",
+        "close": "Schließen",
+        "premiumHint": "Logo und Designauswahl sind Turnieren mit mehr als {{count}} Teams oder einem aktiven Abonnement des 25-€-Plans vorbehalten. Bei weniger als {{count}} Teams müssen Sie upgraden, um sie freizuschalten."
       }
     },
     "teamList": {

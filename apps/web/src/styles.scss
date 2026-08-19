@@ -2,7 +2,8 @@
 
 // public-web renders one tournament's public site at a time. Its `[data-theme]`
 // is set at runtime from that tournament's PublicPageConfiguration.theme
-// (ink-signal | pulse-ember | neon-court) — see libs/design-tokens ThemeService.
+// (ink-signal | pulse-ember | neon-court | fresh-pitch | crimson-charge) —
+// see libs/design-tokens ThemeService.
 // The value below is only a development-time default.
 :root {
   color-scheme: light dark;

@@ -60,6 +60,12 @@
         "tag": "Real-time",
         "title": "A public site for every tournament",
         "desc": "Teams, schedule, standings and live results — one link to share, nothing to configure."
+      },
+      "branding": {
+        "mockRow": "Tournament theme",
+        "tag": "Personalization",
+        "title": "Logo, theme and sharing",
+        "desc": "Tournament logo, 5 visual themes to choose from, QR code and PDF export of the schedule and standings — your competition, in your colors."
       }
     },
     "sports": {
@@ -652,6 +658,12 @@
         "addAdminGeneric": "Unable to add this administrator.",
         "removeAdmin": "Unable to remove this administrator.",
         "logoPremiumLocked": "Reserved for tournaments with more than {{count}} teams, or an active annual subscription."
+      },
+      "personalization": {
+        "title": "Personalization",
+        "open": "Edit logo and theme",
+        "close": "Close",
+        "premiumHint": "The logo and theme selection are reserved for tournaments with more than {{count}} teams, or an active subscription to the €25 plan. Under {{count}} teams, upgrade to unlock them."
       }
     },
     "teamList": {

@@ -8,7 +8,13 @@ import { z } from 'zod';
 export const matchRecapSchema = z.object({
   tournamentName: z.string(),
   venueName: z.string().nullable(),
-  theme: z.enum(['INK_SIGNAL', 'PULSE_EMBER', 'NEON_COURT']),
+  theme: z.enum([
+    'INK_SIGNAL',
+    'PULSE_EMBER',
+    'NEON_COURT',
+    'FRESH_PITCH',
+    'CRIMSON_CHARGE',
+  ]),
   homeTeamName: z.string(),
   awayTeamName: z.string(),
   homeScore: z.number().int().nonnegative(),

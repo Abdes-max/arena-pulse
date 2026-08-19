@@ -6,4 +6,6 @@ export const THEME_MAP: Record<PublicTheme, ThemeName> = {
   INK_SIGNAL: 'ink-signal',
   PULSE_EMBER: 'pulse-ember',
   NEON_COURT: 'neon-court',
+  FRESH_PITCH: 'fresh-pitch',
+  CRIMSON_CHARGE: 'crimson-charge',
 };

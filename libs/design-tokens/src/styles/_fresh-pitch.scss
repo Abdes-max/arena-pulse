@@ -1,0 +1,78 @@
+// Fresh Pitch — thème de tournoi sélectionnable par l'organisateur
+// (site public + diaporama uniquement). Voir docs/design/visual-language.md
+// (Direction D). Ajouté après les 3 directions d'origine -- même modèle,
+// juste une nouvelle valeur d'énumération + un nouveau jeu de tokens
+// (visual-language.md l'anticipait explicitement).
+
+[data-theme='fresh-pitch'] {
+  --ap-font-heading: 'Outfit', -apple-system, 'Segoe UI', sans-serif;
+  --ap-font-body: 'Manrope', -apple-system, 'Segoe UI', sans-serif;
+  --ap-radius-sm: 8px;
+  --ap-radius-md: 12px;
+  --ap-radius-lg: 16px;
+  --ap-tracking-tight: -0.005em;
+  --ap-title-case: none;
+
+  --ap-color-bg: #f6fbf6;
+  --ap-color-surface: #ffffff;
+  --ap-color-fg: #17301f;
+  --ap-color-muted: #5f7768;
+  --ap-color-border: #dbe9de;
+
+  // Tailwind green-700 -- dark enough for white --ap-color-on-primary to
+  // clear WCAG AA (~5:1), same "known-good anchor" approach as reusing
+  // green-600/red-600 for --ap-color-win/error below rather than inventing
+  // new hues nobody has already contrast-checked.
+  --ap-color-primary: #15803d;
+  --ap-color-on-primary: #ffffff;
+  --ap-color-signal: #ea9a1a;
+  --ap-color-signal-soft: #fdf0d9;
+  // Darkened signal for use *as text/border* (docs/design/accessibility-guidelines.md:
+  // WCAG AA) -- same darkening move already applied to the amber signal in
+  // Pulse Ember (#f5b700 → #896600), the raw gold fails 4.5:1 as small text
+  // against this theme's pale background.
+  --ap-color-signal-text: #8a5e10;
+  --ap-color-on-signal: #1a1207;
+
+  // win/success reuse Ink & Signal's already-darkened #12823b (its own doc
+  // comment: #16a34a only reaches 3.15:1 here, fails AA as small bold
+  // badge text) -- deliberately a *different* green from --ap-color-primary
+  // above so a qualification badge doesn't visually fuse with ordinary
+  // primary-colored chrome, even though both stay in the same family (the
+  // whole point of this theme is "green reads as growth/success").
+  --ap-color-win: #12823b;
+  --ap-color-loss: #5f7768;
+  --ap-color-draw: #b45309;
+
+  --ap-color-success: #16a34a;
+  --ap-color-info: #2563eb;
+  --ap-color-warning: #a35905;
+  --ap-color-error: #dc2626;
+  --ap-color-on-error: #ffffff;
+
+  &[data-mode='dark'] {
+    --ap-color-bg: #0d1a12;
+    --ap-color-surface: #16261b;
+    --ap-color-fg: #e3f3e7;
+    --ap-color-muted: #9dc0ab;
+    --ap-color-border: #223a2b;
+
+    --ap-color-primary: #4ade80;
+    --ap-color-on-primary: #0d1a12;
+    --ap-color-signal: #fbbf24;
+    --ap-color-signal-soft: #3a2f12;
+    // Signal already passes both thresholds against this theme's dark
+    // background -- no darkening needed here, unlike light mode.
+    --ap-color-signal-text: var(--ap-color-signal);
+    --ap-color-on-signal: var(--ap-color-bg);
+
+    --ap-color-win: #4ade80;
+    --ap-color-loss: #9dc0ab;
+    --ap-color-draw: #fbbf24;
+
+    --ap-color-success: #4ade80;
+    --ap-color-info: #60a5fa;
+    --ap-color-warning: #fbbf24;
+    --ap-color-error: #f87171;
+  }
+}
