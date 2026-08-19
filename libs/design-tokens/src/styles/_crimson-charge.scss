@@ -1,0 +1,82 @@
+// Crimson Charge — thème de tournoi sélectionnable par l'organisateur
+// (site public + diaporama uniquement). Voir docs/design/visual-language.md
+// (Direction E). Ajouté après les 3 directions d'origine -- même modèle,
+// juste une nouvelle valeur d'énumération + un nouveau jeu de tokens
+// (visual-language.md l'anticipait explicitement).
+
+[data-theme='crimson-charge'] {
+  --ap-font-heading: 'Anton', Impact, 'Arial Black', sans-serif;
+  --ap-font-body: 'Work Sans', -apple-system, 'Segoe UI', sans-serif;
+  --ap-radius-sm: 4px;
+  --ap-radius-md: 6px;
+  --ap-radius-lg: 8px;
+  --ap-tracking-tight: 0.02em;
+  --ap-title-case: uppercase;
+
+  --ap-color-bg: #fff8f7;
+  --ap-color-surface: #ffffff;
+  --ap-color-fg: #2a1414;
+  --ap-color-muted: #8a6360;
+  --ap-color-border: #f3dcd9;
+
+  // A deep crimson (rose-800), not the brighter --ap-color-error below --
+  // both are technically "red family" but kept clearly distinguishable in
+  // depth/brightness on purpose: with the brand's own primary *and* the
+  // error state both red, an organizer's "styled with brand color" button
+  // could otherwise read as "this is broken". Neon Court flagged the
+  // equivalent risk for its own violet/magenta; this is this theme's
+  // version of that same discipline.
+  --ap-color-primary: #9f1239;
+  --ap-color-on-primary: #ffffff;
+  --ap-color-signal: #eab308;
+  --ap-color-signal-soft: #fef3c7;
+  // Darkened signal for use *as text/border* (docs/design/accessibility-guidelines.md:
+  // WCAG AA) -- same darkening move already applied to the gold/amber
+  // signal in Pulse Ember and Fresh Pitch.
+  --ap-color-signal-text: #8a5f08;
+  --ap-color-on-signal: #2a1a05;
+
+  --ap-color-win: #12823b;
+  --ap-color-loss: #8a6360;
+  --ap-color-draw: #b45309;
+
+  --ap-color-success: #16a34a;
+  --ap-color-info: #2563eb;
+  --ap-color-warning: #a35905;
+  // Standard bright red -- see --ap-color-primary's own comment on why this
+  // stays visibly lighter/more saturated than the deep crimson brand color.
+  --ap-color-error: #dc2626;
+  --ap-color-on-error: #ffffff;
+
+  &[data-mode='dark'] {
+    --ap-color-bg: #1a0e0e;
+    --ap-color-surface: #2a1615;
+    --ap-color-fg: #f7e6e3;
+    --ap-color-muted: #d1a6a0;
+    --ap-color-border: #40201d;
+
+    --ap-color-primary: #f43f5e;
+    --ap-color-on-primary: #1a0e0e;
+    --ap-color-signal: #fbbf24;
+    --ap-color-signal-soft: #3a2f12;
+    // Signal already passes both thresholds against this theme's dark
+    // background -- no darkening needed here, unlike light mode.
+    --ap-color-signal-text: var(--ap-color-signal);
+    --ap-color-on-signal: var(--ap-color-bg);
+
+    --ap-color-win: #4ade80;
+    --ap-color-loss: #d1a6a0;
+    --ap-color-draw: #fbbf24;
+
+    --ap-color-success: #4ade80;
+    --ap-color-info: #60a5fa;
+    --ap-color-warning: #fbbf24;
+    // Kept visibly brighter than --ap-color-primary's own dark-mode rose
+    // (#f43f5e) for the same reason as light mode -- error and brand color
+    // both being "red" must still read as two different signals.
+    // --ap-color-on-error itself isn't redefined here, same as all 3
+    // original themes' own dark-mode blocks -- stays white (light mode's
+    // value) throughout.
+    --ap-color-error: #ff6b6b;
+  }
+}

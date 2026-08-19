@@ -60,6 +60,12 @@
         "tag": "Tempo real",
         "title": "Site público por torneio",
         "desc": "Equipas, calendário, classificações e resultados ao vivo — um link para partilhar, nada para configurar."
+      },
+      "branding": {
+        "mockRow": "Tema do torneio",
+        "tag": "Personalização",
+        "title": "Logótipo, tema e partilha",
+        "desc": "Logótipo do torneio, 5 temas visuais à escolha, código QR e exportação PDF do calendário e classificações — a sua competição, na sua cor."
       }
     },
     "sports": {
@@ -558,6 +564,12 @@
         "addAdminGeneric": "Não foi possível adicionar este administrador.",
         "removeAdmin": "Não foi possível remover este administrador.",
         "logoPremiumLocked": "Reservado a torneios com mais de {{count}} equipas ou com uma subscrição anual ativa."
+      },
+      "personalization": {
+        "title": "Personalização",
+        "open": "Editar logótipo e tema",
+        "close": "Fechar",
+        "premiumHint": "O logótipo e a escolha do tema são reservados a torneios com mais de {{count}} equipas, ou a uma subscrição ativa do plano de 25 €. Com menos de {{count}} equipas, atualize o plano para os desbloquear."
       }
     },
     "teamList": {

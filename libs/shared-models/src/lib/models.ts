@@ -1,7 +1,8 @@
 export type TournamentStatus = 'DRAFT' | 'PUBLISHED' | 'UNPUBLISHED' | 'ARCHIVED';
 
 /** Visual theme of this tournament's public site + slideshow, chosen by its organizer. */
-export type PublicTheme = 'INK_SIGNAL' | 'PULSE_EMBER' | 'NEON_COURT';
+export type PublicTheme =
+  'INK_SIGNAL' | 'PULSE_EMBER' | 'NEON_COURT' | 'FRESH_PITCH' | 'CRIMSON_CHARGE';
 
 // Sport catalog is global, not per-organization -- publicly readable (the
 // landing page's "Sports" nav dropdown lists these for a logged-out

@@ -41,6 +41,18 @@ const STATUS_TO_BADGE: Record<TournamentStatus, BadgeStatus> = {
   ARCHIVED: 'archived',
 };
 
+// Theme brand names are proper nouns, deliberately left untranslated (same
+// call as everywhere else these 5 names appear -- landing page, docs).
+// INK_SIGNAL is always free; the other four are gated by
+// TournamentsService.assertPremiumFeaturesUnlocked (apps/api).
+const THEME_CHOICES: readonly { value: PublicTheme; label: string }[] = [
+  { value: 'INK_SIGNAL', label: 'Ink & Signal' },
+  { value: 'PULSE_EMBER', label: 'Pulse Ember' },
+  { value: 'NEON_COURT', label: 'Neon Court' },
+  { value: 'FRESH_PITCH', label: 'Fresh Pitch' },
+  { value: 'CRIMSON_CHARGE', label: 'Crimson Charge' },
+];
+
 // Reuses the same admin.tournamentList.status.* keys as TournamentListPage
 // -- same statuses, same wording, no reason to duplicate the strings under
 // a second namespace.
@@ -99,17 +111,31 @@ export class TournamentFormPage {
   });
   // Choosing a non-default theme is a premium touch (see
   // TournamentsService.assertPremiumFeaturesUnlocked, apps/api) -- the
-  // default itself always stays selectable, the other two disable
-  // themselves in the <ap-select> once locked rather than disappearing, so
-  // the organizer still sees what's on offer.
-  protected readonly themeOptions = computed<SelectOption[]>(() => {
+  // default itself always stays selectable, the other four disable
+  // themselves in the "Personnalisation" panel's theme grid once locked
+  // rather than disappearing, so the organizer still sees what's on offer
+  // (and exactly which plan unlocks it, via the persistent hint below the
+  // grid) instead of it looking like the feature doesn't exist.
+  protected readonly themeChoices = computed(() => {
     const locked = !this.premiumUnlocked();
-    return [
-      { value: 'INK_SIGNAL', label: 'Ink & Signal' },
-      { value: 'PULSE_EMBER', label: 'Pulse Ember', disabled: locked },
-      { value: 'NEON_COURT', label: 'Neon Court', disabled: locked },
-    ];
+    return THEME_CHOICES.map((theme) => ({
+      ...theme,
+      cssName: THEME_MAP[theme.value],
+      locked: locked && theme.value !== 'INK_SIGNAL',
+    }));
   });
+
+  protected readonly currentThemeLabel = computed(() => {
+    const value = this.selectedTheme();
+    return THEME_CHOICES.find((theme) => theme.value === value)?.label ?? value;
+  });
+
+  // Logo + theme used to be two separate controls (a file input and an
+  // <ap-select>); now both live behind a single "Personnalisation" trigger
+  // that opens this panel, so the organizer previews the actual theme
+  // palettes (via each card's own [data-theme] attribute, see the .scss)
+  // side by side instead of picking a name off a dropdown blind.
+  protected readonly personalizationOpen = signal(false);
   protected readonly permissions = signal<Permission[]>([]);
   protected readonly tournament = signal<TournamentDetail | null>(null);
   protected readonly categories = signal<Category[]>([]);
@@ -160,6 +186,15 @@ export class TournamentFormPage {
   protected readonly newSponsorName = signal('');
   protected readonly newSponsorLinkUrl = signal('');
 
+  // Exposed as a field (rather than a constructor-local const) so the
+  // "Personnalisation" panel's theme grid can highlight the currently
+  // selected card via themeChoices()/currentThemeLabel() above, in addition
+  // to the constructor's own use below (applying it live to the admin
+  // shell).
+  protected readonly selectedTheme = toSignal(this.form.controls.theme.valueChanges, {
+    initialValue: this.form.controls.theme.value,
+  });
+
   constructor() {
     effect(() => {
       this.tournamentId();
@@ -176,11 +211,8 @@ export class TournamentFormPage {
     // Calendrier, Scores, Classement) as well as Tournois/Collaborateurs,
     // and resetThemeGuard restores it (instead of the fixed product
     // identity) the next time /admin is entered from outside.
-    const selectedTheme = toSignal(this.form.controls.theme.valueChanges, {
-      initialValue: this.form.controls.theme.value,
-    });
     effect(() => {
-      this.themeService.setAdminTheme(document.documentElement, THEME_MAP[selectedTheme()]);
+      this.themeService.setAdminTheme(document.documentElement, THEME_MAP[this.selectedTheme()]);
     });
   }
 
@@ -390,6 +422,21 @@ export class TournamentFormPage {
 
   protected logoUrl(url: string | null | undefined): string | null {
     return this.assetUrl.resolve(url ?? null);
+  }
+
+  protected openPersonalization(): void {
+    this.personalizationOpen.set(true);
+  }
+
+  protected closePersonalization(): void {
+    this.personalizationOpen.set(false);
+  }
+
+  protected selectTheme(choice: { value: PublicTheme; locked: boolean }): void {
+    if (choice.locked) {
+      return;
+    }
+    this.form.controls.theme.setValue(choice.value);
   }
 
   protected async onLogoFileSelected(event: Event): Promise<void> {

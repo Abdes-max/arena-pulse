@@ -103,44 +103,137 @@
 
       @if (isEditMode() && tournament(); as t) {
         <section class="tournament-form-page__section">
-          <h2>{{ 'admin.tournamentForm.logo.title' | transloco }}</h2>
-          <div class="tournament-form-page__logo-row">
+          <h2>{{ 'admin.tournamentForm.personalization.title' | transloco }}</h2>
+          <button
+            type="button"
+            class="tournament-form-page__personalization-trigger"
+            (click)="openPersonalization()"
+          >
             @if (logoUrl(t.logoUrl); as logo) {
               <img class="tournament-form-page__logo" [src]="logo" alt="" />
             } @else {
               <span class="tournament-form-page__logo-placeholder" aria-hidden="true"></span>
             }
-            <label
-              class="tournament-form-page__logo-upload"
-              [class.tournament-form-page__logo-upload--locked]="!premiumUnlocked()"
-            >
-              {{
-                (t.logoUrl ? 'admin.tournamentForm.logo.change' : 'admin.tournamentForm.logo.add')
-                  | transloco
-              }}
-              <input
-                type="file"
-                accept="image/png,image/jpeg,image/webp"
-                [disabled]="!premiumUnlocked()"
-                (change)="onLogoFileSelected($event)"
-              />
-            </label>
-            @if (t.logoUrl) {
-              <button
-                type="button"
-                class="tournament-form-page__logo-remove"
-                (click)="removeLogo()"
+            <span class="tournament-form-page__personalization-trigger-text">
+              <strong>{{ 'admin.tournamentForm.personalization.open' | transloco }}</strong>
+              <span class="tournament-form-page__personalization-trigger-hint">
+                {{ currentThemeLabel() }}
+              </span>
+            </span>
+          </button>
+        </section>
+      }
+
+      @if (personalizationOpen() && tournament(); as t) {
+        <!-- Same backdrop-button-sibling modal pattern as
+             tournament-submenu.html's own QR dialog (see that file's
+             comment for why a sibling <button>, not a parent). -->
+        <button
+          type="button"
+          class="tournament-form-page__personalization-backdrop"
+          (click)="closePersonalization()"
+          [attr.aria-label]="'admin.tournamentForm.personalization.close' | transloco"
+        ></button>
+        <div
+          class="tournament-form-page__personalization-dialog"
+          role="dialog"
+          aria-modal="true"
+          [attr.aria-label]="'admin.tournamentForm.personalization.title' | transloco"
+        >
+          <h2 class="tournament-form-page__personalization-title">
+            {{ 'admin.tournamentForm.personalization.title' | transloco }}
+          </h2>
+
+          <section class="tournament-form-page__personalization-section">
+            <h3>{{ 'admin.tournamentForm.logo.title' | transloco }}</h3>
+            <div class="tournament-form-page__logo-row">
+              @if (logoUrl(t.logoUrl); as logo) {
+                <img class="tournament-form-page__logo" [src]="logo" alt="" />
+              } @else {
+                <span class="tournament-form-page__logo-placeholder" aria-hidden="true"></span>
+              }
+              <label
+                class="tournament-form-page__logo-upload"
+                [class.tournament-form-page__logo-upload--locked]="!premiumUnlocked()"
               >
-                {{ 'admin.tournamentForm.logo.remove' | transloco }}
-              </button>
-            }
-          </div>
+                {{
+                  (t.logoUrl ? 'admin.tournamentForm.logo.change' : 'admin.tournamentForm.logo.add')
+                    | transloco
+                }}
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  [disabled]="!premiumUnlocked()"
+                  (change)="onLogoFileSelected($event)"
+                />
+              </label>
+              @if (t.logoUrl) {
+                <button
+                  type="button"
+                  class="tournament-form-page__logo-remove"
+                  (click)="removeLogo()"
+                >
+                  {{ 'admin.tournamentForm.logo.remove' | transloco }}
+                </button>
+              }
+            </div>
+          </section>
+
+          <section class="tournament-form-page__personalization-section">
+            <h3>{{ 'admin.tournamentForm.form.themeLabel' | transloco }}</h3>
+            <div class="tournament-form-page__theme-grid">
+              @for (choice of themeChoices(); track choice.value) {
+                <button
+                  type="button"
+                  class="tournament-form-page__theme-card"
+                  [attr.data-theme]="choice.cssName"
+                  [class.tournament-form-page__theme-card--selected]="
+                    choice.value === selectedTheme()
+                  "
+                  [class.tournament-form-page__theme-card--locked]="choice.locked"
+                  [disabled]="choice.locked"
+                  [attr.title]="
+                    choice.locked
+                      ? ('admin.tournamentForm.personalization.premiumHint'
+                        | transloco: { count: freeMaxTeams() })
+                      : null
+                  "
+                  (click)="selectTheme(choice)"
+                >
+                  <span class="tournament-form-page__theme-preview">
+                    <span class="tournament-form-page__theme-preview-bar"></span>
+                    <span class="tournament-form-page__theme-preview-body">
+                      <span class="tournament-form-page__theme-preview-primary"></span>
+                      <span class="tournament-form-page__theme-preview-signal"></span>
+                    </span>
+                  </span>
+                  <span class="tournament-form-page__theme-card-footer">
+                    <span class="tournament-form-page__theme-radio" aria-hidden="true"></span>
+                    <span class="tournament-form-page__theme-name">{{ choice.label }}</span>
+                    @if (choice.locked) {
+                      <span class="tournament-form-page__theme-lock" aria-hidden="true">🔒</span>
+                    }
+                  </span>
+                </button>
+              }
+            </div>
+          </section>
+
           @if (!premiumUnlocked()) {
             <p class="tournament-form-page__premium-hint">
-              {{ 'admin.tournamentForm.logo.premiumHint' | transloco: { count: freeMaxTeams() } }}
+              {{
+                'admin.tournamentForm.personalization.premiumHint'
+                  | transloco: { count: freeMaxTeams() }
+              }}
             </p>
           }
-        </section>
+
+          <div class="tournament-form-page__personalization-actions">
+            <ap-button type="button" variant="ghost" size="sm" (click)="closePersonalization()">
+              {{ 'admin.tournamentForm.personalization.close' | transloco }}
+            </ap-button>
+          </div>
+        </div>
       }
 
       <form class="tournament-form-page__form" [formGroup]="form" (ngSubmit)="submit()">
@@ -157,18 +250,6 @@
           <input type="checkbox" formControlName="isOnline" />
           {{ 'admin.tournamentForm.form.isOnlineLabel' | transloco }}
         </label>
-        <ap-select
-          [label]="'admin.tournamentForm.form.themeLabel' | transloco"
-          [options]="themeOptions()"
-          formControlName="theme"
-        />
-        @if (!premiumUnlocked()) {
-          <p class="tournament-form-page__premium-hint">
-            {{
-              'admin.tournamentForm.form.themePremiumHint' | transloco: { count: freeMaxTeams() }
-            }}
-          </p>
-        }
         <ap-button type="submit" [disabled]="submitting() || isArchived()">
           {{
             (isEditMode() ? 'admin.tournamentForm.form.save' : 'admin.tournamentForm.form.create')

@@ -4,10 +4,13 @@
 //   @forward '../../../libs/design-tokens/src/styles/index';
 //
 // Applies `--ap-*` custom properties scoped by [data-theme] and [data-mode].
-// Set data-theme="ink-signal|pulse-ember|neon-court" and data-mode="light|dark"
-// on a container element (typically <html> or <body>) to activate a theme.
+// Set data-theme="ink-signal|pulse-ember|neon-court|fresh-pitch|crimson-charge"
+// and data-mode="light|dark" on a container element (typically <html> or
+// <body>) to activate a theme.
 
 @forward 'base';
 @forward 'ink-signal';
 @forward 'pulse-ember';
 @forward 'neon-court';
+@forward 'fresh-pitch';
+@forward 'crimson-charge';

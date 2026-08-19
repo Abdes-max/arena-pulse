@@ -106,6 +106,199 @@
   }
 }
 
+// Opens the "Personnalisation" dialog below -- reuses the same __logo/
+// __logo-placeholder sizing as the dialog's own logo row so the thumbnail
+// doesn't jump size between the two.
+.tournament-form-page__personalization-trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-3);
+  padding: var(--ap-space-3);
+  background: var(--ap-color-bg);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  max-width: 360px;
+  font: inherit;
+
+  &:hover {
+    border-color: var(--ap-color-primary);
+  }
+}
+
+.tournament-form-page__personalization-trigger-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.9rem;
+  color: var(--ap-color-fg);
+}
+
+.tournament-form-page__personalization-trigger-hint {
+  font-size: 0.8rem;
+  color: var(--ap-color-muted);
+}
+
+// Same backdrop-button-sibling modal pattern as tournament-submenu.scss's
+// own .tournament-submenu__qr-backdrop/-dialog (see that file's comment on
+// why a real sibling <button>, not a parent, is used to close it).
+.tournament-form-page__personalization-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  padding: 0;
+  border: none;
+  background: rgb(0 0 0 / 50%);
+  cursor: pointer;
+}
+
+.tournament-form-page__personalization-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 101;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-4);
+  padding: var(--ap-space-6);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-lg);
+  max-width: 560px;
+  width: calc(100% - var(--ap-space-8));
+  max-height: calc(100vh - var(--ap-space-8));
+  overflow-y: auto;
+}
+
+.tournament-form-page__personalization-title {
+  margin: 0;
+  font-family: var(--ap-font-heading);
+  font-size: 1.2rem;
+  color: var(--ap-color-fg);
+}
+
+.tournament-form-page__personalization-section h3 {
+  margin: 0 0 var(--ap-space-2);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ap-color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.tournament-form-page__theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--ap-space-3);
+}
+
+// Each card carries its OWN [data-theme] attribute so the mini preview
+// below renders with that theme's actual light-mode tokens (--ap-color-bg/
+// -surface/-primary/-signal, see libs/design-tokens/src/styles/_*.scss) --
+// same [data-theme]-scoping mechanism the document root uses, just applied
+// to a handful of cards at once instead of the whole page, so a real theme
+// preview never needs to duplicate hex values here.
+.tournament-form-page__theme-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+  padding: var(--ap-space-2);
+  background: var(--ap-color-bg);
+  border: 2px solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+
+  &:hover:not(:disabled) {
+    border-color: var(--ap-color-primary);
+  }
+}
+
+.tournament-form-page__theme-card--selected {
+  border-color: var(--ap-color-primary);
+  box-shadow: 0 0 0 1px var(--ap-color-primary);
+}
+
+.tournament-form-page__theme-card--locked {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.tournament-form-page__theme-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--ap-space-2);
+  background: var(--ap-color-bg);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-sm);
+}
+
+.tournament-form-page__theme-preview-bar {
+  height: 6px;
+  width: 60%;
+  border-radius: 3px;
+  background: var(--ap-color-border);
+}
+
+.tournament-form-page__theme-preview-body {
+  display: flex;
+  gap: 4px;
+}
+
+.tournament-form-page__theme-preview-primary,
+.tournament-form-page__theme-preview-signal {
+  height: 18px;
+  flex: 1;
+  border-radius: 3px;
+}
+
+.tournament-form-page__theme-preview-primary {
+  background: var(--ap-color-primary);
+}
+
+.tournament-form-page__theme-preview-signal {
+  background: var(--ap-color-signal);
+}
+
+.tournament-form-page__theme-card-footer {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+}
+
+.tournament-form-page__theme-radio {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid var(--ap-color-border);
+  flex: none;
+}
+
+.tournament-form-page__theme-card--selected .tournament-form-page__theme-radio {
+  border-color: var(--ap-color-primary);
+  background: radial-gradient(circle, var(--ap-color-primary) 0 40%, transparent 44%);
+}
+
+.tournament-form-page__theme-name {
+  font-size: 0.85rem;
+  color: var(--ap-color-fg);
+  flex: 1;
+}
+
+.tournament-form-page__theme-lock {
+  font-size: 0.8rem;
+}
+
+.tournament-form-page__personalization-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
 .tournament-form-page__checkbox-label {
   display: flex;
   flex-direction: row;

@@ -9,7 +9,8 @@ export interface QualificationTierColor {
    * Row background wash -- the tournament's own theme accent
    * (--ap-color-signal), never a hardcoded hue, so it still matches
    * whichever theme the organizer picked (ink-signal/pulse-ember/
-   * neon-court) the same way the previous single-tier highlight
+   * neon-court/fresh-pitch/crimson-charge) the same way the previous
+   * single-tier highlight
    * (--ap-color-signal-soft) did. Only the mix ratio (how strong the tint
    * is) varies per tier -- the color itself never changes.
    */
