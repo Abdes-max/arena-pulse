@@ -2,10 +2,15 @@
 
 ## Statut
 
-Accepté pour la partie code (workflow CI) — le compte Google Play Console n'est pas encore créé,
-donc `deploy-android.yml` ne peut pas encore tourner avec succès. Voir "Reste à faire (porteur de
-projet)" ci-dessous. Fait suite à `docs/architecture/adr/0008-ios-distribution.md`, qui laissait
-explicitement Android hors périmètre.
+Accepté et opérationnel — `deploy-android.yml` a tourné avec succès pour la première fois le
+2026-08-19 (build signé + upload vers la piste interne de Play Console). Le compte Google Play
+Console a été créé par le porteur de projet, le projet Google Cloud `tournarena-play-deploy` et son
+compte de service (`tournarena-play-deploy@tournarena-play-deploy.iam.gserviceaccount.com`, rôle
+Administrateur sur l'app TournArena dans Play Console) ont été mis en place, et les 5 secrets requis
+sont configurés dans GitHub Actions. Fait suite à `docs/architecture/adr/0008-ios-distribution.md`,
+qui laissait explicitement Android hors périmètre. La section "Reste à faire (porteur de projet)"
+ci-dessous documente le cheminement suivi, désormais complété — conservée pour référence si le
+processus doit être refait (nouveau compte, nouvelle machine, secret perdu).
 
 ## Contexte
 
@@ -32,12 +37,16 @@ plateformes — rien à refaire ici sur ce plan.
    même catégorie d'action tierce établie que `docker/build-push-action` déjà utilisée dans
    `ci.yml`.
 2. **Keystore de upload déjà généré** (`keytool`, local, aucun compte requis) — `alias
-   tournarena-upload`, validité 25 ans, format PKCS12 (mot de passe unique pour le store et la clé,
+tournarena-upload`, validité 25 ans, format PKCS12 (mot de passe unique pour le store et la clé,
    `keytool` ignore silencieusement un `-keypass` distinct sur ce format). Contrairement à iOS, pas
    de certificat à faire signer par un tiers : Google gère la clé d'app réelle via **Play App
    Signing**, ce keystore ne sert qu'à l'upload initial.
 
 ## Reste à faire (porteur de projet — pas automatisable)
+
+**Tout ce qui suit a été complété le 2026-08-19** (le workflow tourne avec succès) — section
+conservée telle quelle pour référence si le processus doit être refait un jour (compte perdu, autre
+projet, secret régénéré).
 
 1. **Compte Google Play Console** (25 $, paiement unique, pas d'abonnement contrairement à Apple)
    sur [play.google.com/console/signup](https://play.google.com/console/signup) — compte Google
@@ -46,19 +55,32 @@ plateformes — rien à refaire ici sur ce plan.
 2. Créer l'app dans Play Console (**Créer une application**) — nom "TournArena", nom de package
    **`com.arenapulse.mobile`** (doit correspondre exactement à `capacitor.config.ts` ; **immuable
    une fois le premier artefact envoyé**, comme le Bundle ID iOS).
-3. **Setup → API access** : lier/créer un projet Google Cloud, créer un compte de service, lui
-   accorder l'accès dans Play Console (rôle avec permission "Release apps to testing tracks"
-   suffit), télécharger la clé JSON.
-4. Compléter les formulaires obligatoires avant toute piste de test : **Data safety** (équivalent
-   du questionnaire App Privacy d'Apple — doit refléter comptes joueurs et paiements Stripe,
-   `docs/architecture/adr/0005-player-registration-and-payments.md`), classification de contenu,
-   audience cible, politique de confidentialité (même URL que pour iOS).
+3. **Compte de service : la page "Setup → API access" documentée par Google ne s'est jamais affichée
+   dans Play Console pour ce compte** (recherchée exhaustivement : Accueil, Utilisateurs et
+   autorisations, Paramètres, Compte de développeur, Tester et publier, Paramètres avancés — absente
+   partout, y compris après vérification d'identité complète). Plusieurs guides tiers à jour (2026 :
+   RevenueCat, AppsFlyer, Codemagic, Adjust) confirment que ce n'est plus le chemin à suivre. **Chemin
+   qui fonctionne réellement** : créer le compte de service directement dans
+   [Google Cloud Console](https://console.cloud.google.com/iam-admin/serviceaccounts) (un projet GCP
+   dédié, ex. `tournarena-play-deploy` ; activer l'API "Google Play Android Developer API" ; créer le
+   compte de service ; onglet Clés → Créer une clé → JSON), puis dans Play Console → **Utilisateurs et
+   autorisations → Inviter de nouveaux utilisateurs**, coller l'adresse e-mail du compte de service
+   (`<nom>@<projet>.iam.gserviceaccount.com`) et lui accorder le rôle **Administrateur** (ou, plus
+   fin, la permission "Release apps to testing tracks" sur l'app) — comme pour un utilisateur humain.
+4. Compléter les formulaires obligatoires avant toute piste de test **au-delà de la piste interne**
+   (déjà franchie) : **Data safety** (équivalent du questionnaire App Privacy d'Apple — doit refléter
+   comptes joueurs et paiements Stripe, `docs/architecture/adr/0005-player-registration-and-payments.md`),
+   classification de contenu, audience cible, politique de confidentialité (même URL que pour iOS) —
+   **non encore fait**, à traiter avant de passer en test ouvert/fermé ou en production.
 5. Encoder le keystore en base64 et ajouter les 5 secrets GitHub — liste exacte en en-tête de
-   `deploy-android.yml`.
+   `deploy-android.yml`. Le premier keystore généré (par un travail antérieur) n'existait plus sur la
+   machine au moment de reprendre ce chantier ; un nouveau a été régénéré (`keytool`, PKCS12, alias
+   `tournarena-upload`, validité 25 ans) — sans conséquence, puisque Google gère la clé d'app réelle
+   via Play App Signing (voir plus haut) et ce keystore ne sert qu'à l'upload initial.
 6. Lancer manuellement le workflow (onglet Actions → "Deploy Android to Play Console (internal
-   track)").
+   track)") — premier run réussi le 2026-08-19.
 7. Ajouter des testeurs internes dans Play Console une fois le premier build en `draft` sur la
-   piste interne.
+   piste interne — pas encore fait.
 
 ## Justification
 
