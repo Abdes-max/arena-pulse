@@ -191,16 +191,38 @@ jobs:
           API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
           API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
         run: |
-          set -euo pipefail
+          set -uo pipefail
           mkdir -p ~/private_keys
           echo -n "$API_KEY_BASE64" | base64 --decode -o ~/private_keys/AuthKey_"$API_KEY_ID".p8
+
+          set +e
           xcodebuild -exportArchive \
             -archivePath "$RUNNER_TEMP/App.xcarchive" \
             -exportPath "$RUNNER_TEMP/export" \
             -exportOptionsPlist "$RUNNER_TEMP/ExportOptions.plist" \
             -authenticationKeyPath ~/private_keys/AuthKey_"$API_KEY_ID".p8 \
             -authenticationKeyID "$API_KEY_ID" \
-            -authenticationKeyIssuerID "$API_ISSUER_ID"
+            -authenticationKeyIssuerID "$API_ISSUER_ID" 2>&1 | tee "$RUNNER_TEMP/export.log"
+          status="${PIPESTATUS[0]}"
+          set -e
+
+          if [ "$status" -ne 0 ]; then
+            # The upload itself can fully succeed on Apple's side (binary
+            # received, build number registered) while this step still gets
+            # reported as failed -- e.g. a run cancelled/interrupted while
+            # waiting on Apple's post-upload processing response, after the
+            # transfer already completed. A retry of that same run then
+            # correctly gets rejected by Apple as a duplicate, which is not
+            # a real failure: the build is already on TestFlight, exactly
+            # the outcome this step exists to produce. Treat that one
+            # specific, unambiguous signature as success; anything else
+            # still fails the step for real.
+            if grep -q "Redundant Binary Upload\|code = 90189" "$RUNNER_TEMP/export.log"; then
+              echo "::warning::Apple already has this exact build number on TestFlight (redundant upload) -- treating as success, nothing to re-upload."
+              exit 0
+            fi
+            exit "$status"
+          fi
 
       - name: Clean up keychain
         if: always()

@@ -111,6 +111,16 @@ false` directement dans `Info.plist` à chaque run (étape "Declare export compl
      d'enregistrer ("Impossible d'enregistrer vos modifications") tant que les informations de
      contact "Beta App Review" (nom/email/téléphone) ne sont pas remplies, même si on ne touche
      que la description.
+- **Upload interrompu après coup réussi (rencontré le 2026-08-19, premier run automatique sur
+  merge)** : un run annulé manuellement pendant `xcodebuild -exportArchive` peut être coupé
+  _après_ que le binaire ait fini de monter vers Apple (observé en pleine attente de la réponse
+  d'analyse post-upload) — le build est donc bien enregistré côté App Store Connect malgré le run
+  marqué en échec. Relancer ce même run échoue alors "normalement" avec l'erreur Apple 90189
+  (`Redundant Binary Upload`), puisque ce build existe déjà — pas un vrai problème, mais qui restait
+  rouge indéfiniment sans intervention manuelle (bump du build number) à chaque occurrence. L'étape
+  "Export & upload to TestFlight" de `deploy-ios.yml` détecte maintenant spécifiquement cette seule
+  signature d'erreur et la traite comme un succès (le build est déjà là, exactement le résultat visé)
+  — toute autre erreur continue de faire échouer le step normalement.
 
 ## Reste à faire (porteur de projet — pas automatisable)
 
