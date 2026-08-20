@@ -95,7 +95,11 @@
   .app-shell__mobile-menu {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    // Right-aligned rather than hugging the left edge -- reads as
+    // "attached to the hamburger toggle above it" (top-right of the
+    // topbar), same treatment as the public site's own mobile menu
+    // (tournament-shell.scss's .tournament-shell__mobile-menu).
+    align-items: flex-end;
     gap: var(--ap-space-1);
     padding: 0 var(--ap-space-6) var(--ap-space-4);
   }

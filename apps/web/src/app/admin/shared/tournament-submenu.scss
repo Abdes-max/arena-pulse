@@ -23,22 +23,33 @@
 .tournament-submenu__identity {
   display: flex;
   align-items: center;
-  gap: var(--ap-space-2);
+  gap: var(--ap-space-3);
   max-width: 1000px;
   margin: 0 auto;
   padding: var(--ap-space-3) var(--ap-space-6) 0;
 }
 
+// Same size as the public site's own tournament-shell logo (feat/180,
+// apps/web/src/app/shell/tournament-shell.scss's .tournament-shell__logo)
+// -- previously 24px here vs. 48px there, an inconsistency between the two
+// surfaces for what's the same piece of branding.
 .tournament-submenu__logo {
-  width: 24px;
-  height: 24px;
-  border-radius: var(--ap-radius-sm);
+  width: 48px;
+  height: 48px;
+  border-radius: var(--ap-radius-md);
   object-fit: cover;
   flex: none;
 }
 
+// Same treatment as the public site's own <h1> (tournament-shell.scss) --
+// font family, size scale and weight all match, so the tournament's name
+// reads at the same visual weight whether an organizer or a visitor is
+// looking at it.
 .tournament-submenu__name {
-  font-weight: 600;
+  font-family: var(--ap-font-heading);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  letter-spacing: var(--ap-tracking-tight);
+  text-transform: var(--ap-title-case);
   color: var(--ap-color-fg);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -256,6 +267,15 @@
   margin: 0;
   font-family: var(--ap-font-heading);
   font-size: 1.1rem;
+  color: var(--ap-color-fg);
+  text-align: center;
+}
+
+// Sits right above the code -- so the tournament it belongs to is legible
+// even once printed or screenshotted on its own, away from this dialog.
+.tournament-submenu__qr-tournament-name {
+  margin: calc(var(--ap-space-4) * -1) 0 0;
+  font-weight: 700;
   color: var(--ap-color-fg);
   text-align: center;
 }
