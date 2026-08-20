@@ -1,4 +1,4 @@
-import { IsISO8601, IsOptional, IsString } from 'class-validator';
+import { IsISO8601, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class UpdateTimeSlotDto {
   @IsOptional()
@@ -11,5 +11,6 @@ export class UpdateTimeSlotDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(100)
   label?: string;
 }

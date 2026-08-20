@@ -3,6 +3,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Button, Logo, TextField } from 'design-system';
 import { SuperAdminAuthService } from '../../core/super-admin-auth.service';
+import { isSafeReturnUrl } from '../../../core/safe-return-url.util';
 
 @Component({
   selector: 'app-super-admin-login-page',
@@ -34,8 +35,10 @@ export class SuperAdminLoginPage {
     try {
       const { email, password } = this.form.getRawValue();
       await this.authService.login(email, password);
-      const returnUrl =
-        this.route.snapshot.queryParamMap.get('returnUrl') ?? '/super-admin/dashboard';
+      const requestedReturnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+      const returnUrl = isSafeReturnUrl(requestedReturnUrl)
+        ? requestedReturnUrl
+        : '/super-admin/dashboard';
       await this.router.navigateByUrl(returnUrl);
     } catch {
       this.errorMessage.set('Email ou mot de passe incorrect.');

@@ -4,6 +4,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Button, TextField } from 'design-system';
 import { PlayerAuthService } from '../../../core/player-auth.service';
+import { isSafeReturnUrl } from '../../../core/safe-return-url.util';
 
 @Component({
   selector: 'app-player-register-page',
@@ -36,7 +37,8 @@ export class PlayerRegisterPage {
     this.errorMessage.set(null);
     try {
       await this.playerAuthService.register(this.form.getRawValue());
-      const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/';
+      const requestedReturnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+      const returnUrl = isSafeReturnUrl(requestedReturnUrl) ? requestedReturnUrl : '/';
       await this.router.navigateByUrl(returnUrl);
     } catch (error) {
       if (error instanceof HttpErrorResponse && error.status === 409) {

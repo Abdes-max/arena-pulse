@@ -28,6 +28,15 @@ const fsMock = fs as unknown as {
   unlink: jest.Mock;
 };
 
+// Real PNG magic bytes (feat/178: uploads are now verified against their
+// actual content, not just the declared mimetype) followed by filler --
+// no need for a structurally valid PNG, saveLogoBuffer only checks the
+// 8-byte signature. Shared by uploadLogo (multipart) and importFromCsv
+// (fetched URL) tests below.
+const PNG_MAGIC_BYTES = Buffer.from([
+  0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
+]);
+
 // resolveImportLogoUrl's SSRF guard resolves the hostname via dns.lookup
 // before fetching -- mocked so tests don't depend on real network/DNS, and
 // so a test can simulate an attacker pointing the CSV's logo column at a
@@ -364,7 +373,7 @@ describe('TeamsService', () => {
       return {
         mimetype: 'image/png',
         size: 1024,
-        buffer: Buffer.from('fake-png'),
+        buffer: Buffer.concat([PNG_MAGIC_BYTES, Buffer.from('fake-png')]),
         ...overrides,
       } as Express.Multer.File;
     }
@@ -389,6 +398,23 @@ describe('TeamsService', () => {
           'tournament-1',
           'team-1',
           pngFile({ mimetype: 'image/svg+xml' }),
+        ),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(fsMock.writeFile).not.toHaveBeenCalled();
+    });
+
+    it('rejects a file whose content does not match its declared mimetype', async () => {
+      prisma.team.findUnique.mockResolvedValue(teamRow);
+
+      await expect(
+        service.uploadLogo(
+          'org-1',
+          'tournament-1',
+          'team-1',
+          // Declares PNG but the bytes are plain text -- a renamed file
+          // with a spoofed Content-Type, exactly what the magic-bytes check
+          // is meant to catch.
+          pngFile({ buffer: Buffer.from('not-actually-a-png') }),
         ),
       ).rejects.toBeInstanceOf(BadRequestException);
       expect(fsMock.writeFile).not.toHaveBeenCalled();
@@ -657,7 +683,16 @@ describe('TeamsService', () => {
         ok: true,
         status: 200,
         headers: { get: () => 'image/png' },
-        arrayBuffer: () => Promise.resolve(Buffer.from('fake-png').buffer),
+        arrayBuffer: () =>
+          Promise.resolve(
+            // .buffer alone would return Node's shared pool ArrayBuffer
+            // (larger than the data, with a nonzero byteOffset) -- copying
+            // through Uint8Array.from gives an ArrayBuffer sized exactly to
+            // the bytes, matching what a real fetch() response provides.
+            Uint8Array.from(
+              Buffer.concat([PNG_MAGIC_BYTES, Buffer.from('fake-png')]),
+            ).buffer,
+          ),
       });
       global.fetch = fetchMock;
 

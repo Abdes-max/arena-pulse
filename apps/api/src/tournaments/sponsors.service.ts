@@ -8,6 +8,7 @@ import { randomUUID } from 'crypto';
 import { promises as fs } from 'fs';
 import { join } from 'path';
 import { TournamentSponsor } from '../../generated/prisma/client';
+import { matchesImageMagicBytes } from '../common/utils/image-magic-bytes.util';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateSponsorDto } from './dto/create-sponsor.dto';
 import { UpdateSponsorDto } from './dto/update-sponsor.dto';
@@ -169,6 +170,11 @@ export class SponsorsService {
     }
     if (sizeBytes > SPONSOR_LOGO_MAX_SIZE_BYTES) {
       throw new BadRequestException('Le logo ne doit pas dépasser 2 Mo.');
+    }
+    if (!matchesImageMagicBytes(buffer, mimetype)) {
+      throw new BadRequestException(
+        "Le contenu du fichier ne correspond pas au format d'image déclaré.",
+      );
     }
 
     const logosDir = join(this.uploadsDir(), 'sponsor-logos');

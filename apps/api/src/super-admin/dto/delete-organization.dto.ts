@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsString, MaxLength } from 'class-validator';
 
 export class DeleteOrganizationDto {
   // Must equal 'SUPPRIMER' (case/whitespace-insensitive) -- see
@@ -6,5 +6,6 @@ export class DeleteOrganizationDto {
   // typed-confirmation gate as the self-deletion flows (feat/171/173),
   // checked server-side too, not just a disabled button client-side.
   @IsString()
+  @MaxLength(50)
   confirmation!: string;
 }

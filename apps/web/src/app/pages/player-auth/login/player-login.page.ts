@@ -3,6 +3,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Button, TextField } from 'design-system';
 import { PlayerAuthService } from '../../../core/player-auth.service';
+import { isSafeReturnUrl } from '../../../core/safe-return-url.util';
 
 @Component({
   selector: 'app-player-login-page',
@@ -34,7 +35,8 @@ export class PlayerLoginPage {
     try {
       const { email, password } = this.form.getRawValue();
       await this.playerAuthService.login(email, password);
-      const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/';
+      const requestedReturnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+      const returnUrl = isSafeReturnUrl(requestedReturnUrl) ? requestedReturnUrl : '/';
       await this.router.navigateByUrl(returnUrl);
     } catch {
       this.errorMessage.set('Email ou mot de passe incorrect.');

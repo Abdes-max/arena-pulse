@@ -1,4 +1,4 @@
-import { IsOptional, IsString, MinLength } from 'class-validator';
+import { IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 
 /**
  * Fields are only required when the invited email has no existing account
@@ -10,15 +10,18 @@ export class AcceptInvitationDto {
   @IsOptional()
   @IsString()
   @MinLength(10)
+  @MaxLength(128)
   password?: string;
 
   @IsOptional()
   @IsString()
   @MinLength(1)
+  @MaxLength(100)
   firstName?: string;
 
   @IsOptional()
   @IsString()
   @MinLength(1)
+  @MaxLength(100)
   lastName?: string;
 }

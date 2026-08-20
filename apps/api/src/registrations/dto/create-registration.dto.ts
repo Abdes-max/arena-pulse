@@ -6,6 +6,7 @@ import {
   IsOptional,
   IsString,
   Min,
+  MaxLength,
   MinLength,
   ValidateNested,
 } from 'class-validator';
@@ -13,10 +14,12 @@ import {
 export class RegistrationPlayerDto {
   @IsString()
   @MinLength(1)
+  @MaxLength(100)
   firstName!: string;
 
   @IsString()
   @MinLength(1)
+  @MaxLength(100)
   lastName!: string;
 
   @IsOptional()
@@ -28,13 +31,16 @@ export class RegistrationPlayerDto {
 export class CreateRegistrationDto {
   @IsString()
   @MinLength(1)
+  @MaxLength(200)
   teamName!: string;
 
   @IsEmail()
+  @MaxLength(254)
   managerEmail!: string;
 
   @IsOptional()
   @IsString()
+  @MaxLength(30)
   managerPhone?: string;
 
   @ValidateNested({ each: true })

@@ -145,10 +145,16 @@ describe('Organizations (e2e)', () => {
     // creates a brand new account used to return the refresh token in the
     // plain JSON body -- it must now only ever be readable via the httpOnly
     // cookie, same as login/register.
-    expect(extractRefreshCookie(acceptNewAccountRes)).toContain('refresh_token=');
+    expect(extractRefreshCookie(acceptNewAccountRes)).toContain(
+      'refresh_token=',
+    );
     expect(acceptNewAccountRes.body).not.toHaveProperty('refreshToken');
-    expect(acceptNewAccountRes.body).not.toHaveProperty('refreshTokenExpiresAt');
-    expect((acceptNewAccountRes.body as AuthResponseBody).accessToken).toBeDefined();
+    expect(acceptNewAccountRes.body).not.toHaveProperty(
+      'refreshTokenExpiresAt',
+    );
+    expect(
+      (acceptNewAccountRes.body as AuthResponseBody).accessToken,
+    ).toBeDefined();
 
     const membersRes = await request(app.getHttpServer())
       .get(`/api/v1/organizations/${organizationId}/members`)
