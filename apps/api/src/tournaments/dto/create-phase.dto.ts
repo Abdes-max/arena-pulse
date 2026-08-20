@@ -5,6 +5,7 @@ import {
   IsOptional,
   IsString,
   Min,
+  MaxLength,
   MinLength,
 } from 'class-validator';
 import { CompetitionPhaseType } from '../../../generated/prisma/client';
@@ -12,6 +13,7 @@ import { CompetitionPhaseType } from '../../../generated/prisma/client';
 export class CreatePhaseDto {
   @IsString()
   @MinLength(1)
+  @MaxLength(200)
   name!: string;
 
   @IsEnum(CompetitionPhaseType)

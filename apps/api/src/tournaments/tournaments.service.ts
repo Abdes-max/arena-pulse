@@ -18,6 +18,7 @@ import {
   TournamentPublicationOrderStatus,
   TournamentStatus,
 } from '../../generated/prisma/client';
+import { matchesImageMagicBytes } from '../common/utils/image-magic-bytes.util';
 import { DEFAULT_MAIL_LANGUAGE, MailLanguage } from '../mail/mail-language';
 import { MailService } from '../mail/mail.service';
 import { OrganizationsService } from '../organizations/organizations.service';
@@ -568,6 +569,11 @@ export class TournamentsService {
     }
     if (sizeBytes > TOURNAMENT_LOGO_MAX_SIZE_BYTES) {
       throw new BadRequestException('Le logo ne doit pas dépasser 2 Mo.');
+    }
+    if (!matchesImageMagicBytes(buffer, mimetype)) {
+      throw new BadRequestException(
+        "Le contenu du fichier ne correspond pas au format d'image déclaré.",
+      );
     }
 
     const logosDir = join(this.uploadsDir(), 'tournament-logos');

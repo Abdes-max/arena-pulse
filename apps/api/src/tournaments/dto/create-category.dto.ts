@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsString,
   Min,
+  MaxLength,
   MinLength,
 } from 'class-validator';
 
@@ -12,6 +13,7 @@ const SUPPORTED_CURRENCIES = ['eur', 'usd', 'gbp', 'chf', 'cad'];
 export class CreateCategoryDto {
   @IsString()
   @MinLength(1)
+  @MaxLength(200)
   name!: string;
 
   @IsOptional()

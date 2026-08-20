@@ -1,4 +1,4 @@
-import { IsISO8601, IsOptional, IsString } from 'class-validator';
+import { IsISO8601, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class CreateTimeSlotDto {
   @IsISO8601()
@@ -9,5 +9,6 @@ export class CreateTimeSlotDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(100)
   label?: string;
 }

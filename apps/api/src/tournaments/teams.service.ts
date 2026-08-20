@@ -11,6 +11,7 @@ import { promises as fs } from 'fs';
 import { isIPv4, isIPv6 } from 'net';
 import { join } from 'path';
 import { Category, Division, Group, Team } from '../../generated/prisma/client';
+import { matchesImageMagicBytes } from '../common/utils/image-magic-bytes.util';
 import { PrismaService } from '../prisma/prisma.service';
 import { CategoriesService } from './categories.service';
 import { DivisionsService } from './divisions.service';
@@ -335,6 +336,11 @@ export class TeamsService {
     }
     if (sizeBytes > TEAM_LOGO_MAX_SIZE_BYTES) {
       throw new BadRequestException('Le logo ne doit pas dépasser 2 Mo.');
+    }
+    if (!matchesImageMagicBytes(buffer, mimetype)) {
+      throw new BadRequestException(
+        "Le contenu du fichier ne correspond pas au format d'image déclaré.",
+      );
     }
 
     const logosDir = join(this.uploadsDir(), 'team-logos');

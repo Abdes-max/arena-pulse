@@ -5,6 +5,7 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  MaxLength,
   MinLength,
 } from 'class-validator';
 import { PublicTheme } from '../../../generated/prisma/client';
@@ -12,6 +13,7 @@ import { PublicTheme } from '../../../generated/prisma/client';
 export class CreateTournamentDto {
   @IsString()
   @MinLength(1)
+  @MaxLength(200)
   name!: string;
 
   @IsUUID()

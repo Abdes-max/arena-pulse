@@ -5,6 +5,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Button, Logo, TextField } from 'design-system';
 import { AuthService } from '../../core/auth.service';
+import { isSafeReturnUrl } from '../../../core/safe-return-url.util';
 
 @Component({
   selector: 'app-login-page',
@@ -40,7 +41,10 @@ export class LoginPage {
     try {
       const { email, password } = this.form.getRawValue();
       await this.authService.login(email, password);
-      const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') ?? '/admin/tournaments';
+      const requestedReturnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+      const returnUrl = isSafeReturnUrl(requestedReturnUrl)
+        ? requestedReturnUrl
+        : '/admin/tournaments';
       await this.router.navigateByUrl(returnUrl);
     } catch (error) {
       if (error instanceof HttpErrorResponse && error.status === 403) {

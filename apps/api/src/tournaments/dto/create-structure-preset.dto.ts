@@ -7,6 +7,7 @@ import {
   IsOptional,
   IsString,
   Min,
+  MaxLength,
   MinLength,
   ValidateIf,
   ValidateNested,
@@ -29,6 +30,7 @@ export enum StructurePresetFormat {
 export class StructurePresetTierDto {
   @IsString()
   @MinLength(1)
+  @MaxLength(200)
   name!: string;
 
   @IsInt()
@@ -90,6 +92,7 @@ export class CreateStructurePresetDto {
   @ValidateIf((dto: CreateStructurePresetDto) => dto.knockoutName !== undefined)
   @IsString()
   @MinLength(1)
+  @MaxLength(200)
   knockoutName?: string;
 
   // KNOCKOUT_ONLY's single bracket has no tiers array to carry
