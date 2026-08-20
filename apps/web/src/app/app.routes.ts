@@ -120,6 +120,13 @@ export const routes: Routes = [
             (m) => m.SuperAdminPaymentsPage,
           ),
       },
+      {
+        path: 'account',
+        loadComponent: () =>
+          import('./super-admin/pages/account/super-admin-account.page').then(
+            (m) => m.SuperAdminAccountPage,
+          ),
+      },
     ],
   },
   {
@@ -201,6 +208,11 @@ export const routes: Routes = [
         path: 'collaborators',
         loadComponent: () =>
           import('./admin/pages/collaborators/collaborators.page').then((m) => m.CollaboratorsPage),
+      },
+      {
+        path: 'account',
+        loadComponent: () =>
+          import('./admin/pages/account/account.page').then((m) => m.AccountPage),
       },
       {
         path: 'organization/subscription',

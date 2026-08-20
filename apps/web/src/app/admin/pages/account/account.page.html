@@ -1,0 +1,46 @@
+<main class="account-page">
+  <h1>{{ 'admin.account.title' | transloco }}</h1>
+
+  @if (user(); as u) {
+    <section class="account-page__identity">
+      <h2>{{ 'admin.account.identityTitle' | transloco }}</h2>
+      <p>
+        {{ u.firstName }} {{ u.lastName }}<br />
+        {{ u.email }}
+      </p>
+    </section>
+  }
+
+  <section class="account-page__danger-zone">
+    <h2>{{ 'admin.account.dangerZoneTitle' | transloco }}</h2>
+
+    @if (!dangerZoneOpen()) {
+      <p>{{ 'admin.account.dangerZoneIntro' | transloco }}</p>
+      <ap-button type="button" variant="secondary" (click)="openDangerZone()">{{
+        'admin.account.deleteReveal' | transloco
+      }}</ap-button>
+    } @else {
+      <p class="account-page__warning">{{ 'admin.account.deleteWarning' | transloco }}</p>
+
+      <form class="account-page__delete-form" [formGroup]="deleteForm" (ngSubmit)="deleteAccount()">
+        <ap-text-field
+          [label]="'admin.account.passwordLabel' | transloco"
+          type="password"
+          formControlName="password"
+          autocomplete="current-password"
+        />
+        @if (displayedError(); as message) {
+          <p class="account-page__error" role="alert">{{ message }}</p>
+        }
+        <div class="account-page__delete-actions">
+          <ap-button type="button" variant="ghost" (click)="cancelDeletion()">{{
+            'admin.account.cancel' | transloco
+          }}</ap-button>
+          <ap-button type="submit" variant="primary" [disabled]="deleting()">{{
+            (deleting() ? 'admin.account.deleting' : 'admin.account.deleteConfirm') | transloco
+          }}</ap-button>
+        </div>
+      </form>
+    }
+  </section>
+</main>

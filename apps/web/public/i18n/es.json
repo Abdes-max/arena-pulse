@@ -259,7 +259,8 @@
       "nav": {
         "tournaments": "Torneos",
         "collaborators": "Colaboradores",
-        "subscription": "Suscripción"
+        "subscription": "Suscripción",
+        "account": "Cuenta"
       },
       "logout": "Cerrar sesión",
       "menu": "Menú"
@@ -365,6 +366,20 @@
       "errorRoleGeneric": "No se ha podido cambiar este rol, inténtalo de nuevo.",
       "errorRemoveLastAdmin": "No se puede quitar a este colaborador: es el último administrador de la organización.",
       "errorRemoveGeneric": "No se ha podido quitar a este colaborador, inténtalo de nuevo."
+    },
+    "account": {
+      "title": "Mi cuenta",
+      "identityTitle": "Identidad",
+      "dangerZoneTitle": "Zona de peligro",
+      "dangerZoneIntro": "Elimina permanentemente tu cuenta y todos los datos asociados.",
+      "deleteReveal": "Eliminar mi cuenta",
+      "deleteWarning": "Esta acción es irreversible. Tu cuenta se eliminará de inmediato. Si eres la única persona administradora de una organización, esta se eliminará junto con todos sus torneos, equipos y datos.",
+      "passwordLabel": "Contraseña",
+      "cancel": "Cancelar",
+      "deleteConfirm": "Confirmar eliminación",
+      "deleting": "Eliminando…",
+      "errorWrongPassword": "Contraseña incorrecta.",
+      "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo."
     },
     "tournamentList": {
       "title": "Torneos",

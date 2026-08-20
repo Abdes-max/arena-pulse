@@ -116,6 +116,17 @@ export class AuthService {
     }
   }
 
+  /** Permanent, immediate deletion (see AuthService.deleteAccount server-side) -- the caller is expected to redirect away right after this resolves. */
+  async deleteAccount(password: string): Promise<void> {
+    await firstValueFrom(
+      this.http.delete(`${environment.apiUrl}/auth/me`, {
+        body: { password },
+        withCredentials: true,
+      }),
+    );
+    this.clearSession();
+  }
+
   async loadProfile(): Promise<void> {
     const me = await firstValueFrom(
       this.http.get<MeResponse>(`${environment.apiUrl}/auth/me`, { withCredentials: true }),

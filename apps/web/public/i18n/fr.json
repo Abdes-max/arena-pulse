@@ -358,7 +358,8 @@
       "nav": {
         "tournaments": "Tournois",
         "collaborators": "Collaborateurs",
-        "subscription": "Abonnement"
+        "subscription": "Abonnement",
+        "account": "Mon compte"
       },
       "logout": "Se déconnecter",
       "menu": "Menu"
@@ -464,6 +465,20 @@
       "errorRoleGeneric": "Impossible de modifier ce rôle, réessayez.",
       "errorRemoveLastAdmin": "Impossible de retirer ce collaborateur : c'est le dernier administrateur de l'organisation.",
       "errorRemoveGeneric": "Impossible de retirer ce collaborateur, réessayez."
+    },
+    "account": {
+      "title": "Mon compte",
+      "identityTitle": "Identité",
+      "dangerZoneTitle": "Zone de danger",
+      "dangerZoneIntro": "Supprimez définitivement votre compte et toutes les données associées.",
+      "deleteReveal": "Supprimer mon compte",
+      "deleteWarning": "Cette action est irréversible. Votre compte sera supprimé immédiatement. Si vous êtes la seule personne administratrice d'une organisation, celle-ci sera supprimée avec tous ses tournois, équipes et données.",
+      "passwordLabel": "Mot de passe",
+      "cancel": "Annuler",
+      "deleteConfirm": "Confirmer la suppression",
+      "deleting": "Suppression…",
+      "errorWrongPassword": "Mot de passe incorrect.",
+      "errorGeneric": "Une erreur est survenue, réessayez."
     },
     "tournamentList": {
       "title": "Tournois",

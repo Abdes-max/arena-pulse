@@ -169,13 +169,18 @@ model Invitation {
   role           OrganizationRole
   tokenHash      String           @unique
   status         InvitationStatus @default(PENDING)
-  invitedById    String
+  // Nullable + SetNull (feat/171): lets the inviting User be deleted (account
+  // deletion) without blocking on this FK -- same rationale/pattern as
+  // MatchScore.validatedBy/recordedBy below. A pending invitation stays
+  // valid for its recipient even if the person who sent it deletes their
+  // account; only the "invited by" attribution is lost.
+  invitedById    String?
   createdAt      DateTime         @default(now())
   expiresAt      DateTime
   acceptedAt     DateTime?
 
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  invitedBy    User         @relation("InvitedBy", fields: [invitedById], references: [id])
+  invitedBy    User?        @relation("InvitedBy", fields: [invitedById], references: [id], onDelete: SetNull)
 
   @@index([organizationId])
   @@index([email])
