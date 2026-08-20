@@ -34,11 +34,14 @@
   display: flex;
   align-items: center;
   gap: var(--ap-space-3);
+  // Breathing room from the back-button/sport row above -- previously 0,
+  // so the two rows sat flush against each other ("collé").
+  margin-top: var(--ap-space-4);
 }
 
 .tournament-shell__logo {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   border-radius: var(--ap-radius-md);
   object-fit: cover;
   flex: none;
@@ -134,10 +137,16 @@
   .tournament-shell__mobile-menu {
     display: flex;
     align-items: center;
+    // Right-aligned rather than hugging the left edge under the hamburger
+    // it dropped from -- reads more naturally as "attached to the toggle
+    // button above it" than as a left-aligned block unrelated to it.
+    justify-content: flex-end;
     gap: var(--ap-space-3);
     max-width: 1100px;
     margin: 0 auto;
-    padding: var(--ap-space-3) var(--ap-space-6) 0;
+    // Bottom padding (was 0) so this row doesn't sit flush against the
+    // logo/title row directly below it ("collé").
+    padding: var(--ap-space-3) var(--ap-space-6);
   }
 }
 

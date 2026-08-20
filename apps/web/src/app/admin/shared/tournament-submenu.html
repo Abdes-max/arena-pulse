@@ -245,6 +245,12 @@
     <h2 class="tournament-submenu__qr-title">
       {{ 'admin.submenu.qrCodeDialogTitle' | transloco }}
     </h2>
+    <!-- The dialog title above is generic ("Code QR") -- printed or
+         screenshotted on its own, the code needs to say which tournament
+         it points to. -->
+    @if (name(); as tournamentName) {
+      <p class="tournament-submenu__qr-tournament-name">{{ tournamentName }}</p>
+    }
     <ap-qr-code class="tournament-submenu__qr-code" [value]="url" [size]="220" #qr />
     <div class="tournament-submenu__qr-actions">
       @if (qr.dataUrl(); as downloadUrl) {
