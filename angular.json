@@ -55,7 +55,23 @@
                   "maximumError": "20kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              // Fix urgent (feat/179): the default critical-CSS optimization
+              // ships the main stylesheet as
+              // <link media="print" onload="this.media='all'"> -- an inline
+              // event-handler attribute that Caddyfile's script-src 'self'
+              // CSP (feat/175) blocks outright, since it has no
+              // 'unsafe-inline'/hash/nonce. With the handler blocked, the
+              // link never flips off media="print" and the whole site fell
+              // back to unstyled browser defaults. Disabling inlineCritical
+              // makes styles.css a plain blocking <link rel="stylesheet">
+              // instead -- no inline script involved, CSP-safe -- at the
+              // cost of the (here negligible) render-blocking optimization.
+              "optimization": {
+                "styles": {
+                  "inlineCritical": false
+                }
+              }
             },
             "development": {
               "optimization": false,
