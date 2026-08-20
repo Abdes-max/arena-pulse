@@ -10,6 +10,19 @@
 # model as deploy-android.yml/deploy-ios.yml. workflow_dispatch is kept for
 # a manual re-run (e.g. retrying a transient SSH timeout without an empty
 # commit, see the timeout note below).
+#
+# `caddy` has no `build:` in docker-compose.prod.yml (fixed `caddy:2-alpine`
+# image) and its Caddyfile is a read-only bind-mount, not baked into an
+# image -- `docker compose up -d` only recreates a container when the
+# *service definition* changes (image tag, env, volumes...), never just
+# because a bind-mounted file's contents changed on disk. Found the hard way
+# right after shipping security headers (feat/175): `up -d --build` reported
+# success and the deploy looked fine, but Caddy kept serving the old config
+# from before the container was last created, silently making the new
+# headers a no-op in production. `caddy reload` re-parses and hot-swaps the
+# Caddyfile without dropping in-flight connections -- cheap enough to run
+# unconditionally on every deploy rather than only when the Caddyfile
+# happens to have changed.
 name: Deploy to production
 
 on:
@@ -41,4 +54,5 @@ jobs:
             git fetch origin master
             git reset --hard origin/master
             docker compose -f infra/deployment/docker-compose.prod.yml --env-file infra/deployment/.env up -d --build
+            docker compose -f infra/deployment/docker-compose.prod.yml --env-file infra/deployment/.env exec caddy caddy reload --config /etc/caddy/Caddyfile
             docker image prune -f
