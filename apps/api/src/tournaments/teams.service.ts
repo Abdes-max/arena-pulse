@@ -6,7 +6,9 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'crypto';
+import { promises as dnsPromises } from 'dns';
 import { promises as fs } from 'fs';
+import { isIPv4, isIPv6 } from 'net';
 import { join } from 'path';
 import { Category, Division, Group, Team } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
@@ -35,6 +37,73 @@ const TEAM_LOGO_ALLOWED_MIME_TYPES: Record<string, string> = {
   'image/webp': 'webp',
 };
 const TEAM_LOGO_MAX_SIZE_BYTES = 2 * 1024 * 1024;
+// Bounds resolveImportLogoUrl's redirect-following loop -- a URL that keeps
+// redirecting past this is treated as unreachable, not fetched forever.
+const MAX_LOGO_FETCH_REDIRECTS = 5;
+
+function ipv4ToInt(ip: string): number {
+  return (
+    ip.split('.').reduce((acc, octet) => (acc << 8) + Number(octet), 0) >>> 0
+  );
+}
+
+// CIDR ranges that must never be reachable from resolveImportLogoUrl's
+// server-side fetch: loopback, private/carrier-grade-NAT, link-local
+// (includes the 169.254.169.254 cloud metadata endpoint), and the various
+// IANA-reserved/documentation ranges. Denylist, not allowlist -- deliberate,
+// since the whole point is letting organizers point at arbitrary public
+// image hosts.
+const RESERVED_IPV4_RANGES: [string, number][] = [
+  ['0.0.0.0', 8],
+  ['10.0.0.0', 8],
+  ['100.64.0.0', 10],
+  ['127.0.0.0', 8],
+  ['169.254.0.0', 16],
+  ['172.16.0.0', 12],
+  ['192.0.0.0', 24],
+  ['192.0.2.0', 24],
+  ['192.168.0.0', 16],
+  ['198.18.0.0', 15],
+  ['198.51.100.0', 24],
+  ['203.0.113.0', 24],
+  ['224.0.0.0', 4],
+  ['240.0.0.0', 4],
+];
+
+function isReservedIpv4(ip: string): boolean {
+  const int = ipv4ToInt(ip);
+  return RESERVED_IPV4_RANGES.some(([base, prefix]) => {
+    const mask = prefix === 0 ? 0 : (~0 << (32 - prefix)) >>> 0;
+    return (int & mask) === (ipv4ToInt(base) & mask);
+  });
+}
+
+/** SSRF guard for resolveImportLogoUrl -- fails closed on anything not recognizably a public IPv4/IPv6 address. */
+function isReservedOrUnroutableIp(ip: string): boolean {
+  if (isIPv4(ip)) {
+    return isReservedIpv4(ip);
+  }
+  if (isIPv6(ip)) {
+    const normalized = ip.toLowerCase();
+    if (normalized === '::1' || normalized === '::') {
+      return true;
+    }
+    // fe80::/10 (link-local) and fc00::/7 (unique local, covers fc.. and fd..).
+    if (
+      normalized.startsWith('fe80:') ||
+      normalized.startsWith('fc') ||
+      normalized.startsWith('fd')
+    ) {
+      return true;
+    }
+    const mapped = /^::ffff:(\d+\.\d+\.\d+\.\d+)$/.exec(normalized);
+    if (mapped) {
+      return isReservedIpv4(mapped[1]);
+    }
+    return false;
+  }
+  return true;
+}
 
 @Injectable()
 export class TeamsService {
@@ -301,9 +370,7 @@ export class TeamsService {
       };
     }
     try {
-      const response = await fetch(rawLogoUrl, {
-        signal: AbortSignal.timeout(10_000),
-      });
+      const response = await this.fetchLogoSafely(rawLogoUrl);
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
@@ -317,13 +384,55 @@ export class TeamsService {
         buffer.byteLength,
       );
       return { logoUrl };
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
+    } catch {
+      // Deliberately generic -- the raw error (network detail, DNS
+      // resolution, connection refused...) would otherwise let a CSV import
+      // be used as a network scan oracle against internal/private hosts.
       return {
         logoUrl: null,
-        warning: `Logo non récupéré (${rawLogoUrl}) : ${message}.`,
+        warning: `Logo introuvable ou inaccessible (${rawLogoUrl}).`,
       };
     }
+  }
+
+  /**
+   * SSRF-guarded fetch for the import flow above: resolves the hostname of
+   * every URL (including each redirect hop, followed manually) and rejects
+   * anything landing on a private/loopback/link-local/reserved address --
+   * otherwise an organizer's CSV import could be used to probe or read from
+   * internal services (e.g. a cloud metadata endpoint) from the server.
+   * Does not defend against DNS rebinding between this lookup and the
+   * actual fetch a moment later -- an acceptable trade-off here given the
+   * native fetch API has no hook to pin the resolved address, and the
+   * realistic attack this closes (pointing at an internal/metadata IP
+   * directly, per the audit finding) doesn't need rebinding to begin with.
+   */
+  private async fetchLogoSafely(rawUrl: string): Promise<Response> {
+    let currentUrl = rawUrl;
+    for (let hop = 0; hop <= MAX_LOGO_FETCH_REDIRECTS; hop++) {
+      const url = new URL(currentUrl);
+      if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+        throw new Error('Protocole non autorisé.');
+      }
+      const { address } = await dnsPromises.lookup(url.hostname);
+      if (isReservedOrUnroutableIp(address)) {
+        throw new Error('Hôte non autorisé.');
+      }
+      const response = await fetch(url, {
+        signal: AbortSignal.timeout(10_000),
+        redirect: 'manual',
+      });
+      if (response.status >= 300 && response.status < 400) {
+        const location = response.headers.get('location');
+        if (!location) {
+          throw new Error('Redirection sans en-tête Location.');
+        }
+        currentUrl = new URL(location, url).toString();
+        continue;
+      }
+      return response;
+    }
+    throw new Error('Trop de redirections.');
   }
 
   async removeLogo(

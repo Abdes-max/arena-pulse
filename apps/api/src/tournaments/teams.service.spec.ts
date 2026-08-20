@@ -28,6 +28,19 @@ const fsMock = fs as unknown as {
   unlink: jest.Mock;
 };
 
+// resolveImportLogoUrl's SSRF guard resolves the hostname via dns.lookup
+// before fetching -- mocked so tests don't depend on real network/DNS, and
+// so a test can simulate an attacker pointing the CSV's logo column at a
+// private/reserved address by overriding this per-test.
+jest.mock('dns', () => ({
+  promises: {
+    lookup: jest.fn().mockResolvedValue({ address: '93.184.216.34' }),
+  },
+}));
+const dnsMock = jest.requireMock('dns') as unknown as {
+  promises: { lookup: jest.Mock };
+};
+
 type PrismaMock = {
   team: {
     findFirst: jest.Mock;
@@ -642,6 +655,7 @@ describe('TeamsService', () => {
       );
       const fetchMock = jest.fn().mockResolvedValue({
         ok: true,
+        status: 200,
         headers: { get: () => 'image/png' },
         arrayBuffer: () => Promise.resolve(Buffer.from('fake-png').buffer),
       });
@@ -650,7 +664,9 @@ describe('TeamsService', () => {
       const result = await service.importFromCsv('org-1', 'tournament-1', csv);
 
       expect(fetchMock).toHaveBeenCalledWith(
-        'https://example.com/logo.png',
+        expect.objectContaining({
+          href: 'https://example.com/logo.png',
+        }) as unknown,
         expect.anything(),
       );
       expect(fsMock.writeFile).toHaveBeenCalledTimes(1);
@@ -698,6 +714,48 @@ describe('TeamsService', () => {
           ) as unknown,
         },
       ]);
+    });
+
+    it('refuses a logo URL resolving to a private/reserved address (SSRF guard) without leaking the reason', async () => {
+      const csv =
+        'nom;categorie;division;responsable;email_responsable;telephone_responsable;logo\n' +
+        'Les Aigles;U10;;;;;http://internal.example/secrets.png';
+
+      prisma.category.findFirst.mockResolvedValue({
+        id: 'category-1',
+        name: 'U10',
+      });
+      prisma.team.findFirst.mockResolvedValue(null);
+      prisma.team.create.mockResolvedValue({
+        id: 'team-1',
+        name: 'Les Aigles',
+        categoryId: 'category-1',
+        divisionId: null,
+        logoUrl: null,
+        position: 0,
+      });
+      // Cloud metadata endpoint address -- the exact scenario from the
+      // security audit finding this guard closes.
+      dnsMock.promises.lookup.mockResolvedValueOnce({
+        address: '169.254.169.254',
+      });
+      const fetchMock = jest.fn();
+      global.fetch = fetchMock;
+
+      const result = await service.importFromCsv('org-1', 'tournament-1', csv);
+
+      expect(fetchMock).not.toHaveBeenCalled();
+      expect(prisma.team.update).not.toHaveBeenCalled();
+      expect(result.warnings).toEqual([
+        {
+          line: 2,
+          message: expect.stringContaining(
+            'http://internal.example/secrets.png',
+          ) as unknown,
+        },
+      ]);
+      // No raw error detail (e.g. "Hôte non autorisé") is exposed to the client.
+      expect(result.warnings[0].message).not.toContain('non autorisé');
     });
   });
 
