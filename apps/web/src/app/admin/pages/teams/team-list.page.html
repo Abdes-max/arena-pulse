@@ -75,15 +75,29 @@
         <ap-button type="button" variant="ghost" (click)="exportCsv()">{{
           'admin.teamList.export' | transloco
         }}</ap-button>
-        <ap-button
-          type="button"
-          variant="ghost"
-          [disabled]="selectedTeamIds().size === 0"
-          (click)="deleteSelected()"
-        >
-          {{ 'admin.teamList.deleteSelected' | transloco }}
-        </ap-button>
+        @if (!confirmingBulkDelete()) {
+          <ap-button
+            type="button"
+            variant="ghost"
+            [disabled]="selectedTeamIds().size === 0"
+            (click)="requestDeleteSelected()"
+          >
+            {{ 'admin.teamList.deleteSelected' | transloco }}
+          </ap-button>
+        }
       </div>
+
+      @if (confirmingBulkDelete()) {
+        <ap-type-to-confirm
+          [label]="'admin.teamList.typeToConfirmLabel' | transloco"
+          [confirmLabel]="'admin.teamList.confirmDelete' | transloco"
+          [pendingLabel]="'admin.teamList.deleting' | transloco"
+          [cancelLabel]="'admin.teamList.cancel' | transloco"
+          [pending]="bulkDeleting()"
+          (confirm)="confirmDeleteSelected()"
+          (cancelled)="cancelDeleteSelected()"
+        />
+      }
 
       @if (!premiumUnlocked()) {
         <p class="team-list-page__premium-hint">
@@ -166,17 +180,29 @@
                   {{ team.managerName ?? '—' }}
                 </td>
                 <td class="team-list-page__cell team-list-page__actions">
-                  <span class="team-list-page__actions-inner">
-                    <ap-button type="button" variant="ghost" (click)="startEdit(team)">
-                      {{ 'admin.teamList.edit' | transloco }}
-                    </ap-button>
-                    <ap-button type="button" variant="ghost" (click)="togglePlayers(team)">
-                      {{ 'admin.teamList.players' | transloco }}
-                    </ap-button>
-                    <ap-button type="button" variant="ghost" (click)="removeTeam(team)">
-                      {{ 'admin.teamList.delete' | transloco }}
-                    </ap-button>
-                  </span>
+                  @if (confirmingTeamId() === team.id) {
+                    <ap-type-to-confirm
+                      [label]="'admin.teamList.typeToConfirmLabel' | transloco"
+                      [confirmLabel]="'admin.teamList.confirmDelete' | transloco"
+                      [pendingLabel]="'admin.teamList.deleting' | transloco"
+                      [cancelLabel]="'admin.teamList.cancel' | transloco"
+                      [pending]="deletingTeamId() === team.id"
+                      (confirm)="confirmDeleteTeam(team)"
+                      (cancelled)="cancelDeleteTeam()"
+                    />
+                  } @else {
+                    <span class="team-list-page__actions-inner">
+                      <ap-button type="button" variant="ghost" (click)="startEdit(team)">
+                        {{ 'admin.teamList.edit' | transloco }}
+                      </ap-button>
+                      <ap-button type="button" variant="ghost" (click)="togglePlayers(team)">
+                        {{ 'admin.teamList.players' | transloco }}
+                      </ap-button>
+                      <ap-button type="button" variant="ghost" (click)="requestDeleteTeam(team)">
+                        {{ 'admin.teamList.delete' | transloco }}
+                      </ap-button>
+                    </span>
+                  }
                 </td>
               </tr>
               @if (expandedTeamId() === team.id) {

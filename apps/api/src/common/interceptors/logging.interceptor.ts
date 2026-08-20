@@ -8,6 +8,23 @@ import {
 import { Request, Response } from 'express';
 import { Observable, tap } from 'rxjs';
 
+// Routes that carry a single-use secret token as a URL path segment
+// (email-verification links, invitation links) -- these end up in browser
+// history, proxy access logs, and now our own app logs, all as plain text
+// unless redacted. `[^/?]+` grabs exactly the token segment and stops at
+// the next `/` (e.g. the `/accept` suffix on invitation-accept) or `?`.
+const TOKEN_URL_PATTERNS: RegExp[] = [
+  /(\/auth\/verify-email\/)[^/?]+/,
+  /(\/invitations\/)[^/?]+/,
+];
+
+function redactSensitiveTokens(url: string): string {
+  return TOKEN_URL_PATTERNS.reduce(
+    (redacted, pattern) => redacted.replace(pattern, '$1[REDACTED]'),
+    url,
+  );
+}
+
 /**
  * Logs one line per request (method, path, status, duration, requestId).
  * Skips the health-check endpoint by default -- an orchestrator polling it
@@ -63,10 +80,11 @@ export class LoggingInterceptor implements NestInterceptor {
     requestId: string,
   ): void {
     const durationMs = Date.now() - start;
+    const safeUrl = redactSensitiveTokens(url);
     this.logger.log({
-      message: `${method} ${url} ${statusCode} ${durationMs}ms`,
+      message: `${method} ${safeUrl} ${statusCode} ${durationMs}ms`,
       method,
-      url,
+      url: safeUrl,
       statusCode,
       durationMs,
       requestId,

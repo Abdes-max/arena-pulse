@@ -81,14 +81,26 @@
               @if (referee.email) {
                 ({{ referee.email }})
               }
-              <span class="referee-list-page__actions">
-                <ap-button type="button" variant="ghost" (click)="startEdit(referee)">
-                  {{ 'admin.refereeList.edit' | transloco }}
-                </ap-button>
-                <ap-button type="button" variant="ghost" (click)="removeReferee(referee)">
-                  {{ 'admin.refereeList.remove' | transloco }}
-                </ap-button>
-              </span>
+              @if (confirmingRefereeId() === referee.id) {
+                <ap-type-to-confirm
+                  [label]="'admin.refereeList.typeToConfirmLabel' | transloco"
+                  [confirmLabel]="'admin.refereeList.confirmDelete' | transloco"
+                  [pendingLabel]="'admin.refereeList.deleting' | transloco"
+                  [cancelLabel]="'admin.refereeList.cancel' | transloco"
+                  [pending]="deletingRefereeId() === referee.id"
+                  (confirm)="confirmDeleteReferee(referee)"
+                  (cancelled)="cancelDeleteReferee()"
+                />
+              } @else {
+                <span class="referee-list-page__actions">
+                  <ap-button type="button" variant="ghost" (click)="startEdit(referee)">
+                    {{ 'admin.refereeList.edit' | transloco }}
+                  </ap-button>
+                  <ap-button type="button" variant="ghost" (click)="requestDeleteReferee(referee)">
+                    {{ 'admin.refereeList.remove' | transloco }}
+                  </ap-button>
+                </span>
+              }
             </li>
           }
         </ul>

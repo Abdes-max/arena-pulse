@@ -706,6 +706,9 @@
       "cancel": "Annuler",
       "export": "Exporter",
       "deleteSelected": "Supprimer la sélection",
+      "typeToConfirmLabel": "Tapez SUPPRIMER pour confirmer",
+      "confirmDelete": "Confirmer la suppression",
+      "deleting": "Suppression…",
       "empty": "Aucune équipe pour l'instant.",
       "table": {
         "logo": "Logo",
@@ -764,6 +767,9 @@
       "empty": "Ajoutez des arbitres. Utilisez ensuite la page du calendrier pour assigner les arbitres aux matchs.",
       "edit": "Modifier",
       "remove": "Retirer",
+      "typeToConfirmLabel": "Tapez SUPPRIMER pour confirmer",
+      "confirmDelete": "Confirmer la suppression",
+      "deleting": "Suppression…",
       "errors": {
         "load": "Impossible de charger les arbitres.",
         "toggleSetting": "Impossible de mettre à jour ce réglage.",

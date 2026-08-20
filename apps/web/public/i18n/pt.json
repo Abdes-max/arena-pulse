@@ -604,6 +604,9 @@
       "cancel": "Cancelar",
       "export": "Exportar",
       "deleteSelected": "Eliminar a seleção",
+      "typeToConfirmLabel": "Digite SUPPRIMER para confirmar",
+      "confirmDelete": "Confirmar exclusão",
+      "deleting": "A excluir…",
       "empty": "Ainda não há equipas.",
       "table": {
         "logo": "Logótipo",
@@ -662,6 +665,9 @@
       "empty": "Adicione árbitros. Depois utilize a página do calendário para os atribuir aos jogos.",
       "edit": "Editar",
       "remove": "Remover",
+      "typeToConfirmLabel": "Digite SUPPRIMER para confirmar",
+      "confirmDelete": "Confirmar exclusão",
+      "deleting": "A excluir…",
       "errors": {
         "load": "Não foi possível carregar os árbitros.",
         "toggleSetting": "Não foi possível atualizar esta definição.",

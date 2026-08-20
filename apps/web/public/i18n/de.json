@@ -604,6 +604,9 @@
       "cancel": "Abbrechen",
       "export": "Exportieren",
       "deleteSelected": "Auswahl löschen",
+      "typeToConfirmLabel": "Geben Sie SUPPRIMER ein, um zu bestätigen",
+      "confirmDelete": "Löschung bestätigen",
+      "deleting": "Wird gelöscht…",
       "empty": "Noch keine Teams.",
       "table": {
         "logo": "Logo",
@@ -662,6 +665,9 @@
       "empty": "Fügen Sie Schiedsrichter hinzu. Verwenden Sie anschließend die Spielplanseite, um sie den Spielen zuzuweisen.",
       "edit": "Bearbeiten",
       "remove": "Entfernen",
+      "typeToConfirmLabel": "Geben Sie SUPPRIMER ein, um zu bestätigen",
+      "confirmDelete": "Löschung bestätigen",
+      "deleting": "Wird gelöscht…",
       "errors": {
         "load": "Schiedsrichter konnten nicht geladen werden.",
         "toggleSetting": "Diese Einstellung konnte nicht aktualisiert werden.",

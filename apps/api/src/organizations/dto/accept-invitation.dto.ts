@@ -9,7 +9,7 @@ import { IsOptional, IsString, MinLength } from 'class-validator';
 export class AcceptInvitationDto {
   @IsOptional()
   @IsString()
-  @MinLength(8)
+  @MinLength(10)
   password?: string;
 
   @IsOptional()

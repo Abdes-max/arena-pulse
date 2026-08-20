@@ -706,6 +706,9 @@
       "cancel": "Cancel",
       "export": "Export",
       "deleteSelected": "Delete selection",
+      "typeToConfirmLabel": "Type SUPPRIMER to confirm",
+      "confirmDelete": "Confirm deletion",
+      "deleting": "Deleting…",
       "empty": "No teams yet.",
       "table": {
         "logo": "Logo",
@@ -764,6 +767,9 @@
       "empty": "Add referees. Then use the schedule page to assign referees to matches.",
       "edit": "Edit",
       "remove": "Remove",
+      "typeToConfirmLabel": "Type SUPPRIMER to confirm",
+      "confirmDelete": "Confirm deletion",
+      "deleting": "Deleting…",
       "errors": {
         "load": "Unable to load referees.",
         "toggleSetting": "Unable to update this setting.",
