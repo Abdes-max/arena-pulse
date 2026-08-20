@@ -77,6 +77,22 @@ Connect — Apple refuse une version incomplète à la soumission, ce script ne 
 à la place de l'organisateur. De même si la version demandée existe déjà dans un état non modifiable
 (déjà soumise/en revue/publiée) — pas de tentative de resoumission silencieuse.
 
+## Bouton de suppression de compte self-service (ajouté après coup, 2026-08-20)
+
+L'App Privacy questionnaire d'App Store Connect exige, pour toute app avec comptes utilisateurs,
+soit un mécanisme de suppression de compte **dans l'app**, soit une URL décrivant comment en
+demander une hors de l'app — déclarée jusqu'ici comme pointant vers `docs/privacy` (page
+`/privacy`, section 12), qui ne décrivait qu'un formulaire de contact traité manuellement sous 30
+jours maximum.
+
+`feat/171-delete-account` (PR #169) ajoute un vrai bouton self-service — organisateurs et
+administrateurs peuvent désormais supprimer leur compte immédiatement depuis « Mon compte », sans
+passer par le formulaire. La page `/privacy` (section 12) et les CGU `/terms` (section 9) ont été
+mises à jour en conséquence ; le formulaire de contact reste décrit comme parcours de repli pour
+les comptes qui n'ont pas ce bouton (comptes joueur, ou accès compte perdu). Aucune modification
+nécessaire côté App Store Connect elle-même — la fiche déclarée continue de pointer vers la même
+URL `/privacy`, dont le contenu reflète maintenant le nouveau parcours.
+
 ## Notes pratiques (vécues sur le premier run réel, absentes du plan initial)
 
 - **`@capacitor/ios` 8.x génère un projet Swift Package Manager par défaut, pas CocoaPods** — pas
