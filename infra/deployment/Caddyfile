@@ -10,6 +10,29 @@
 {$DOMAIN} {
 	encode gzip
 
+	# Security headers (audit finding, feat/175) -- applied here rather than
+	# in web's nginx since Caddy is the single TLS-terminating edge for the
+	# whole domain (SPA assets AND the /api/ requests nginx proxies through
+	# to the api service), so this is the one place that covers both without
+	# duplicating the same headers in two config files.
+	#
+	# CSP is scoped to what the SPA actually loads: 'self' for
+	# scripts/connect (Angular bundles + same-origin API, no inline
+	# scripts) and 'unsafe-inline' only on style-src (Angular's default
+	# ViewEncapsulation injects component styles via <style> tags -- using
+	# nonces/hashes instead would need a build-time CSP generator, out of
+	# scope here). Stripe Checkout is a full-page redirect
+	# (organizations.service.ts's checkoutUrl), never embedded, so it needs
+	# no CSP allowance. frame-ancestors 'none' covers clickjacking on its
+	# own; X-Frame-Options is kept alongside for browsers that predate CSP2
+	# frame-ancestors support.
+	header {
+		X-Frame-Options "DENY"
+		X-Content-Type-Options "nosniff"
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		Content-Security-Policy "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; img-src 'self' data:; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src 'self'; connect-src 'self'"
+	}
+
 	# web's own nginx (infra/docker/web.nginx.conf) already serves the SPA
 	# and reverse-proxies /api/ to the api service on a single origin --
 	# Caddy only needs to front that one service, not know about /api/ itself.
