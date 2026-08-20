@@ -73,14 +73,14 @@ describe('Account deletion (e2e)', () => {
     await app.close();
   });
 
-  it('rejects an incorrect password', async () => {
+  it('rejects an invalid confirmation', async () => {
     const { accessToken } = await registerOrganizer(app);
 
     await request(app.getHttpServer())
       .delete('/api/v1/auth/me')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({ password: 'wrong-password' })
-      .expect(401);
+      .send({ confirmation: 'nope' })
+      .expect(400);
   });
 
   it('deletes a sole-member account, clears the session, and blocks future logins', async () => {
@@ -89,7 +89,7 @@ describe('Account deletion (e2e)', () => {
     await request(app.getHttpServer())
       .delete('/api/v1/auth/me')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({ password: PASSWORD })
+      .send({ confirmation: 'SUPPRIMER' })
       .expect(204);
 
     await request(app.getHttpServer())
@@ -112,7 +112,7 @@ describe('Account deletion (e2e)', () => {
     await request(app.getHttpServer())
       .delete('/api/v1/auth/me')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({ password: PASSWORD })
+      .send({ confirmation: 'SUPPRIMER' })
       .expect(204);
 
     const organization = await prisma.organization.findUnique({
@@ -161,7 +161,7 @@ describe('Account deletion (e2e)', () => {
     await request(app.getHttpServer())
       .delete('/api/v1/auth/me')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({ password: PASSWORD })
+      .send({ confirmation: 'SUPPRIMER' })
       .expect(204);
 
     const organization = await prisma.organization.findUnique({
@@ -198,7 +198,7 @@ describe('Account deletion (e2e)', () => {
     await request(app.getHttpServer())
       .delete('/api/v1/auth/me')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({ password: PASSWORD })
+      .send({ confirmation: 'SUPPRIMER' })
       .expect(409);
   });
 });

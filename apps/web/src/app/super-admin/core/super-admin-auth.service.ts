@@ -80,10 +80,10 @@ export class SuperAdminAuthService {
   }
 
   /** Permanent, immediate deletion (see SuperAdminAuthService.deleteAccount server-side) -- the caller is expected to redirect away right after this resolves. */
-  async deleteAccount(password: string): Promise<void> {
+  async deleteAccount(confirmation: string): Promise<void> {
     await firstValueFrom(
       this.http.delete(`${environment.apiUrl}/super-admin-auth/me`, {
-        body: { password },
+        body: { confirmation },
         withCredentials: true,
       }),
     );

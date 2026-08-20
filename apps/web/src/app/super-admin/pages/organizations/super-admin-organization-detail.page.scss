@@ -43,3 +43,24 @@
   gap: var(--ap-space-2);
   font-size: 0.9rem;
 }
+
+.super-admin-organization-detail-page__danger-zone {
+  margin-top: var(--ap-space-6);
+  padding: var(--ap-space-5);
+  border: var(--ap-border-width) solid var(--ap-color-error);
+  border-radius: var(--ap-radius-md);
+
+  h2 {
+    font-size: 1.1rem;
+    margin: 0 0 var(--ap-space-3);
+  }
+
+  p {
+    margin: 0 0 var(--ap-space-4);
+    color: var(--ap-color-muted);
+  }
+}
+
+.super-admin-organization-detail-page__warning {
+  color: var(--ap-color-error) !important;
+}

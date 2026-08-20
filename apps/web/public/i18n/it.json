@@ -374,11 +374,10 @@
       "dangerZoneIntro": "Elimina definitivamente il tuo account e tutti i dati associati.",
       "deleteReveal": "Elimina il mio account",
       "deleteWarning": "Questa azione è irreversibile. Il tuo account verrà eliminato immediatamente. Se sei l'unica persona amministratrice di un'organizzazione, questa verrà eliminata insieme a tutti i suoi tornei, squadre e dati.",
-      "passwordLabel": "Password",
+      "typeToConfirmLabel": "Digita SUPPRIMER per confermare",
       "cancel": "Annulla",
       "deleteConfirm": "Conferma eliminazione",
       "deleting": "Eliminazione…",
-      "errorWrongPassword": "Password errata.",
       "errorGeneric": "Si è verificato un errore, riprova."
     },
     "tournamentList": {

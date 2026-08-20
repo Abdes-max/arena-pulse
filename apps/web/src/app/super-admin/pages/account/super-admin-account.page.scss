@@ -40,20 +40,8 @@
   color: var(--ap-color-error) !important;
 }
 
-.super-admin-account-page__delete-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ap-space-4);
-  max-width: 320px;
-}
-
 .super-admin-account-page__error {
   margin: 0 !important;
   color: var(--ap-color-error);
   font-size: 0.9rem;
-}
-
-.super-admin-account-page__delete-actions {
-  display: flex;
-  gap: var(--ap-space-3);
 }

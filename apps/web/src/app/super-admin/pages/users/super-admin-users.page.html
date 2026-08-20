@@ -37,7 +37,7 @@
               }
             </td>
             <td>{{ formatDate(user.createdAt) }}</td>
-            <td>
+            <td class="super-admin-users-page__actions">
               @if (!user.emailVerifiedAt) {
                 <ap-button
                   type="button"
@@ -48,8 +48,27 @@
                   Vérifier l'email
                 </ap-button>
               }
+              @if (deletingUserId() !== user.id) {
+                <ap-button type="button" variant="ghost" (click)="startDeleting(user)">
+                  Supprimer
+                </ap-button>
+              }
             </td>
           </tr>
+          @if (deletingUserId() === user.id) {
+            <tr>
+              <td colspan="6" class="super-admin-users-page__delete-row">
+                @if (deleteErrorMessage(); as message) {
+                  <p class="super-admin-users-page__error" role="alert">{{ message }}</p>
+                }
+                <ap-type-to-confirm
+                  [pending]="deleting()"
+                  (confirm)="deleteUser(user)"
+                  (cancelled)="cancelDeleting()"
+                />
+              </td>
+            </tr>
+          }
         }
       </tbody>
     </table>

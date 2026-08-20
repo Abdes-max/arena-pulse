@@ -70,7 +70,11 @@ export interface SuperAdminTournamentDetail {
   sportName: string;
   status: string;
   createdAt: string;
-  teams: { id: string; name: string }[];
+  teams: {
+    id: string;
+    name: string;
+    players: { id: string; firstName: string; lastName: string }[];
+  }[];
   referees: { id: string; firstName: string; lastName: string; email: string | null }[];
   categories: { id: string; name: string }[];
   matches: {

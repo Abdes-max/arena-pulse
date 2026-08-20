@@ -117,10 +117,10 @@ export class AuthService {
   }
 
   /** Permanent, immediate deletion (see AuthService.deleteAccount server-side) -- the caller is expected to redirect away right after this resolves. */
-  async deleteAccount(password: string): Promise<void> {
+  async deleteAccount(confirmation: string): Promise<void> {
     await firstValueFrom(
       this.http.delete(`${environment.apiUrl}/auth/me`, {
-        body: { password },
+        body: { confirmation },
         withCredentials: true,
       }),
     );

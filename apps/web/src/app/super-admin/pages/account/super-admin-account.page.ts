@@ -1,28 +1,23 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Button, TextField } from 'design-system';
+import { Button, TypeToConfirm } from 'design-system';
 import { SuperAdminAuthService } from '../../core/super-admin-auth.service';
 
 @Component({
   selector: 'app-super-admin-account-page',
-  imports: [ReactiveFormsModule, Button, TextField],
+  imports: [Button, TypeToConfirm],
   templateUrl: './super-admin-account.page.html',
   styleUrl: './super-admin-account.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SuperAdminAccountPage {
-  private readonly formBuilder = inject(FormBuilder);
   private readonly superAdminAuthService = inject(SuperAdminAuthService);
   private readonly router = inject(Router);
 
   protected readonly superAdmin = this.superAdminAuthService.currentSuperAdmin;
 
   protected readonly dangerZoneOpen = signal(false);
-  protected readonly deleteForm = this.formBuilder.nonNullable.group({
-    password: ['', Validators.required],
-  });
   protected readonly deleting = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
 
@@ -32,24 +27,22 @@ export class SuperAdminAccountPage {
 
   protected cancelDeletion(): void {
     this.dangerZoneOpen.set(false);
-    this.deleteForm.reset({ password: '' });
     this.errorMessage.set(null);
   }
 
   protected async deleteAccount(): Promise<void> {
-    if (this.deleteForm.invalid || this.deleting()) {
+    if (this.deleting()) {
       return;
     }
     this.deleting.set(true);
     this.errorMessage.set(null);
     try {
-      const { password } = this.deleteForm.getRawValue();
-      await this.superAdminAuthService.deleteAccount(password);
+      // ap-type-to-confirm only emits (confirm) once the user has typed its
+      // confirmWord (default "SUPPRIMER") -- safe to send literally here.
+      await this.superAdminAuthService.deleteAccount('SUPPRIMER');
       await this.router.navigate(['/super-admin/login']);
     } catch (error) {
-      if (error instanceof HttpErrorResponse && error.status === 401) {
-        this.errorMessage.set('Mot de passe incorrect.');
-      } else if (error instanceof HttpErrorResponse && error.status === 409) {
+      if (error instanceof HttpErrorResponse && error.status === 409) {
         const body = error.error as { message?: string } | null;
         this.errorMessage.set(
           body?.message ?? 'Impossible de supprimer le dernier compte super-administrateur.',

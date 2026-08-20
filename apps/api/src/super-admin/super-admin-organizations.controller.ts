@@ -1,5 +1,7 @@
 import {
+  Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -12,6 +14,7 @@ import { Public } from '../auth/decorators/public.decorator';
 import { CurrentSuperAdmin } from '../super-admin-auth/decorators/current-super-admin.decorator';
 import { SuperAdminJwtAuthGuard } from '../super-admin-auth/guards/super-admin-jwt-auth.guard';
 import type { AuthenticatedSuperAdmin } from '../super-admin-auth/strategies/super-admin-jwt.strategy';
+import { DeleteOrganizationDto } from './dto/delete-organization.dto';
 import { SuperAdminOrganizationsService } from './super-admin-organizations.service';
 
 @ApiTags('super-admin')
@@ -49,5 +52,19 @@ export class SuperAdminOrganizationsController {
     @CurrentSuperAdmin() superAdmin: AuthenticatedSuperAdmin,
   ) {
     return this.organizationsService.reactivate(organizationId, superAdmin.id);
+  }
+
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete(':organizationId')
+  deleteOrganization(
+    @Param('organizationId') organizationId: string,
+    @Body() dto: DeleteOrganizationDto,
+    @CurrentSuperAdmin() superAdmin: AuthenticatedSuperAdmin,
+  ) {
+    return this.organizationsService.deleteOrganization(
+      organizationId,
+      superAdmin.id,
+      dto,
+    );
   }
 }

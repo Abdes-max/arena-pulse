@@ -374,11 +374,10 @@
       "dangerZoneIntro": "Löschen Sie Ihr Konto und alle zugehörigen Daten dauerhaft.",
       "deleteReveal": "Mein Konto löschen",
       "deleteWarning": "Diese Aktion ist unwiderruflich. Ihr Konto wird sofort gelöscht. Wenn Sie die einzige administrierende Person einer Organisation sind, wird diese zusammen mit allen Turnieren, Teams und Daten gelöscht.",
-      "passwordLabel": "Passwort",
+      "typeToConfirmLabel": "Geben Sie SUPPRIMER ein, um zu bestätigen",
       "cancel": "Abbrechen",
       "deleteConfirm": "Löschung bestätigen",
       "deleting": "Wird gelöscht…",
-      "errorWrongPassword": "Falsches Passwort.",
       "errorGeneric": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut."
     },
     "tournamentList": {

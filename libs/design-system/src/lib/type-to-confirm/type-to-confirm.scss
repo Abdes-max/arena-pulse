@@ -1,0 +1,15 @@
+:host {
+  display: block;
+}
+
+.ap-type-to-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-4);
+  max-width: 320px;
+}
+
+.ap-type-to-confirm__actions {
+  display: flex;
+  gap: var(--ap-space-3);
+}
