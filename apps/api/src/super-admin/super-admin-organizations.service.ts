@@ -1,16 +1,22 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { promises as fs } from 'fs';
+import { join } from 'path';
 import { OrganizationSubscriptionStatus } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { DeleteOrganizationDto } from './dto/delete-organization.dto';
 import { SuperAdminAuditLogService } from './super-admin-audit-log.service';
 
 @Injectable()
 export class SuperAdminOrganizationsService {
   constructor(
     private readonly prisma: PrismaService,
+    private readonly configService: ConfigService,
     private readonly auditLog: SuperAdminAuditLogService,
   ) {}
 
@@ -123,5 +129,105 @@ export class SuperAdminOrganizationsService {
       throw new NotFoundException('Organisation introuvable.');
     }
     return organization;
+  }
+
+  /**
+   * Deletes an organization and everything under it (tournaments, teams,
+   * players, registrations, subscriptions, invitations, etc. -- Prisma
+   * `onDelete: Cascade` already covers all of that, see
+   * apps/api/prisma/schema.prisma) -- unconditional, no "last admin" guard:
+   * unlike a self-service organizer deletion (AuthService.deleteAccount),
+   * the super-admin is deliberately deleting the whole organization, admins
+   * included, not sweeping one up as a side effect of removing a person.
+   *
+   * Public (not private) because SuperAdminUsersService.deleteUser calls
+   * this for every organization a deleted organizer was the sole member
+   * of, rather than duplicating the file-cleanup logic below a second time.
+   */
+  async deleteOrganizationCascade(
+    organizationId: string,
+    superAdminId: string,
+  ): Promise<void> {
+    const organization = await this.getOrganizationOrThrow(organizationId);
+    const [tournaments, teams, sponsors] = await Promise.all([
+      this.prisma.tournament.findMany({
+        where: { organizationId },
+        select: { logoUrl: true },
+      }),
+      this.prisma.team.findMany({
+        where: { tournament: { organizationId } },
+        select: { logoUrl: true },
+      }),
+      this.prisma.tournamentSponsor.findMany({
+        where: { tournament: { organizationId } },
+        select: { logoUrl: true },
+      }),
+    ]);
+    await this.prisma.organization.delete({ where: { id: organizationId } });
+    await Promise.all([
+      ...tournaments.map((t) =>
+        this.deleteLogoFile('tournament-logos', t.logoUrl),
+      ),
+      ...teams.map((t) => this.deleteLogoFile('team-logos', t.logoUrl)),
+      ...sponsors.map((s) => this.deleteLogoFile('sponsor-logos', s.logoUrl)),
+    ]);
+    await this.auditLog.record({
+      superAdminId,
+      action: 'DELETE_ORGANIZATION',
+      targetType: 'Organization',
+      targetId: organizationId,
+      note: organization.name,
+    });
+  }
+
+  async deleteOrganization(
+    organizationId: string,
+    superAdminId: string,
+    dto: DeleteOrganizationDto,
+  ): Promise<void> {
+    this.assertConfirmation(dto.confirmation);
+    await this.deleteOrganizationCascade(organizationId, superAdminId);
+  }
+
+  /**
+   * Requires literally typing "SUPPRIMER" (case/whitespace-insensitive),
+   * checked server-side too -- not just a disabled button client-side, same
+   * defense-in-depth level as the password it replaces on self-deletion
+   * (see AuthService.deleteAccount / SuperAdminAuthService.deleteAccount).
+   * Duplicated identically in the other super-admin delete methods below
+   * and in the tournaments/users services -- consistent with this
+   * codebase's existing style of small duplicated guards rather than a
+   * shared utility for a one-line check.
+   */
+  private assertConfirmation(confirmation: string): void {
+    if (confirmation.trim().toUpperCase() !== 'SUPPRIMER') {
+      throw new BadRequestException(
+        'Confirmation invalide : tapez SUPPRIMER pour confirmer.',
+      );
+    }
+  }
+
+  private uploadsDir(): string {
+    return this.configService.get<string>('UPLOADS_DIR', './uploads');
+  }
+
+  private async deleteLogoFile(
+    subdir: string,
+    logoUrl: string | null,
+  ): Promise<void> {
+    if (!logoUrl) {
+      return;
+    }
+    const filename = logoUrl.split('/').pop();
+    if (!filename) {
+      return;
+    }
+    try {
+      await fs.unlink(join(this.uploadsDir(), subdir, filename));
+    } catch (error) {
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+        throw error;
+      }
+    }
   }
 }

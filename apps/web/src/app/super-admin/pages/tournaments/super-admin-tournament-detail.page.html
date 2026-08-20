@@ -9,6 +9,11 @@
     <div class="super-admin-tournament-detail-page__header">
       <h1>{{ t.name }}</h1>
       <ap-badge [status]="statusBadge[t.status]" />
+      @if (!dangerZoneOpen()) {
+        <ap-button type="button" variant="ghost" (click)="openDangerZone()"
+          >Supprimer ce tournoi</ap-button
+        >
+      }
     </div>
     <p class="super-admin-tournament-detail-page__meta">
       <a [routerLink]="['/super-admin/organizations', t.organizationId]">{{
@@ -16,6 +21,20 @@
       }}</a>
       — {{ t.sportName }}
     </p>
+
+    @if (dangerZoneOpen()) {
+      <section class="super-admin-tournament-detail-page__danger-zone">
+        <p class="super-admin-tournament-detail-page__warning">
+          Cette action est irréversible : le tournoi, ses catégories, équipes, joueurs et matchs
+          seront supprimés immédiatement.
+        </p>
+        <ap-type-to-confirm
+          [pending]="deletingTournament()"
+          (confirm)="deleteTournament()"
+          (cancelled)="cancelTournamentDeletion()"
+        />
+      </section>
+    }
 
     <section class="super-admin-tournament-detail-page__section">
       <h2>Catégories</h2>
@@ -28,13 +47,75 @@
 
     <section class="super-admin-tournament-detail-page__section">
       <h2>Équipes ({{ t.teams.length }})</h2>
-      <ul
-        class="super-admin-tournament-detail-page__list super-admin-tournament-detail-page__list--grid"
-      >
-        @for (team of t.teams; track team.id) {
-          <li>{{ team.name }}</li>
-        }
-      </ul>
+      @if (rowErrorMessage(); as message) {
+        <p class="super-admin-tournament-detail-page__error" role="alert">{{ message }}</p>
+      }
+      @if (t.teams.length === 0) {
+        <p>Aucune équipe.</p>
+      } @else {
+        <ul class="super-admin-tournament-detail-page__teams">
+          @for (team of t.teams; track team.id) {
+            <li class="super-admin-tournament-detail-page__team">
+              <div class="super-admin-tournament-detail-page__team-row">
+                <button
+                  type="button"
+                  class="super-admin-tournament-detail-page__disclosure"
+                  [attr.aria-expanded]="expandedTeamId() === team.id"
+                  (click)="toggleTeam(team.id)"
+                >
+                  {{ expandedTeamId() === team.id ? '▾' : '▸' }} {{ team.name }} ({{
+                    team.players.length
+                  }})
+                </button>
+                @if (deletingTeamId() !== team.id) {
+                  <ap-button type="button" variant="ghost" (click)="startDeletingTeam(team.id)"
+                    >Supprimer l'équipe</ap-button
+                  >
+                }
+              </div>
+              @if (deletingTeamId() === team.id) {
+                <ap-type-to-confirm
+                  [pending]="deleting()"
+                  (confirm)="deleteTeam(team.id)"
+                  (cancelled)="cancelRowDeletion()"
+                />
+              }
+              @if (expandedTeamId() === team.id) {
+                @if (team.players.length === 0) {
+                  <p class="super-admin-tournament-detail-page__players-empty">
+                    Aucun·e joueur·euse.
+                  </p>
+                } @else {
+                  <ul class="super-admin-tournament-detail-page__players">
+                    @for (player of team.players; track player.id) {
+                      <li>
+                        <div class="super-admin-tournament-detail-page__team-row">
+                          <span>{{ player.firstName }} {{ player.lastName }}</span>
+                          @if (deletingPlayerId() !== player.id) {
+                            <ap-button
+                              type="button"
+                              variant="ghost"
+                              (click)="startDeletingPlayer(player.id)"
+                              >Supprimer</ap-button
+                            >
+                          }
+                        </div>
+                        @if (deletingPlayerId() === player.id) {
+                          <ap-type-to-confirm
+                            [pending]="deleting()"
+                            (confirm)="deletePlayer(team.id, player.id)"
+                            (cancelled)="cancelRowDeletion()"
+                          />
+                        }
+                      </li>
+                    }
+                  </ul>
+                }
+              }
+            </li>
+          }
+        </ul>
+      }
     </section>
 
     <section class="super-admin-tournament-detail-page__section">

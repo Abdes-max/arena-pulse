@@ -14,5 +14,6 @@ export * from './lib/share-button/share-button';
 export * from './lib/tabs/tabs';
 export * from './lib/text-field/text-field';
 export * from './lib/theme-mode-toggle/theme-mode-toggle';
+export * from './lib/type-to-confirm/type-to-confirm';
 export * from './lib/tournament-card/tournament-card';
 export * from './lib/tournament-marquee/tournament-marquee';

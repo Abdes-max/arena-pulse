@@ -49,5 +49,28 @@
         </ul>
       }
     </section>
+
+    <section class="super-admin-organization-detail-page__danger-zone">
+      <h2>Zone de danger</h2>
+      @if (!dangerZoneOpen()) {
+        <p>
+          Supprime définitivement cette organisation ({{ org.members.length }} membre(s),
+          {{ org.tournaments.length }} tournoi(s)) et toutes ses données.
+        </p>
+        <ap-button type="button" variant="secondary" (click)="openDangerZone()"
+          >Supprimer cette organisation</ap-button
+        >
+      } @else {
+        <p class="super-admin-organization-detail-page__warning">
+          Cette action est irréversible : l'organisation, ses membres, tournois, équipes et joueurs
+          seront supprimés immédiatement.
+        </p>
+        <ap-type-to-confirm
+          [pending]="deleting()"
+          (confirm)="deleteOrganization()"
+          (cancelled)="cancelDeletion()"
+        />
+      }
+    </section>
   }
 </main>

@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   UnauthorizedException,
@@ -133,29 +134,28 @@ export class SuperAdminAuthService {
 
   /**
    * Self-service account deletion (feat/171), mirroring
-   * AuthService.deleteAccount's shape (password re-confirmation, no other
-   * dependent rows to worry about -- SuperAdminRefreshToken/SuperAdminAuditLog
-   * both cascade). The one guard specific to this stack: unlike organizer
-   * accounts, SuperAdminAccount rows are never self-registered (see this
-   * class's top-of-file comment), so deleting the last one would leave the
-   * whole platform with nobody able to log into the super-admin dashboard --
+   * AuthService.deleteAccount's shape (no other dependent rows to worry
+   * about -- SuperAdminRefreshToken/SuperAdminAuditLog both cascade).
+   * Typed confirmation ("SUPPRIMER") replaces password re-entry (feat/173),
+   * checked server-side too, not just a disabled button client-side. The
+   * one guard specific to this stack: unlike organizer accounts,
+   * SuperAdminAccount rows are never self-registered (see this class's
+   * top-of-file comment), so deleting the last one would leave the whole
+   * platform with nobody able to log into the super-admin dashboard --
    * blocked the same way assertNotLastAdmin blocks the last org admin.
    */
   async deleteAccount(
     superAdminId: string,
     dto: DeleteSuperAdminAccountDto,
   ): Promise<void> {
-    const superAdmin = await this.prisma.superAdminAccount.findUniqueOrThrow({
+    if (dto.confirmation.trim().toUpperCase() !== 'SUPPRIMER') {
+      throw new BadRequestException(
+        'Confirmation invalide : tapez SUPPRIMER pour confirmer.',
+      );
+    }
+    await this.prisma.superAdminAccount.findUniqueOrThrow({
       where: { id: superAdminId },
     });
-    if (
-      !(await this.passwordService.verify(
-        superAdmin.passwordHash,
-        dto.password,
-      ))
-    ) {
-      throw new UnauthorizedException('Mot de passe incorrect.');
-    }
     const remainingAccounts = await this.prisma.superAdminAccount.count({
       where: { id: { not: superAdminId } },
     });

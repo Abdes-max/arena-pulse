@@ -30,3 +30,13 @@
     font-weight: 600;
   }
 }
+
+.super-admin-users-page__actions {
+  display: flex;
+  gap: var(--ap-space-2);
+  white-space: nowrap;
+}
+
+.super-admin-users-page__delete-row {
+  background: var(--ap-color-surface);
+}

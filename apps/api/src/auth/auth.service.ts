@@ -1,5 +1,6 @@
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   Injectable,
@@ -322,12 +323,14 @@ export class AuthService {
    * this account sent still works for its recipient.
    */
   async deleteAccount(userId: string, dto: DeleteAccountDto): Promise<void> {
-    const user = await this.prisma.user.findUniqueOrThrow({
-      where: { id: userId },
-    });
-    if (!(await this.passwordService.verify(user.passwordHash, dto.password))) {
-      throw new UnauthorizedException('Mot de passe incorrect.');
+    // Typed confirmation replaces password re-entry (feat/173) -- checked
+    // server-side too, not just a disabled button client-side.
+    if (dto.confirmation.trim().toUpperCase() !== 'SUPPRIMER') {
+      throw new BadRequestException(
+        'Confirmation invalide : tapez SUPPRIMER pour confirmer.',
+      );
     }
+    await this.prisma.user.findUniqueOrThrow({ where: { id: userId } });
     const soleOrganizationIds =
       await this.assertCanDeleteAccountAndGetSoleOrganizations(userId);
     await this.prisma.$transaction(async (tx) => {

@@ -1,0 +1,20 @@
+<div class="ap-type-to-confirm">
+  <ap-text-field
+    [label]="computedLabel()"
+    [value]="typedValue()"
+    (valueChange)="onTypedValueChange($event)"
+    autocomplete="off"
+  />
+  <div class="ap-type-to-confirm__actions">
+    <ap-button type="button" variant="ghost" [disabled]="pending()" (click)="cancelled.emit()">{{
+      cancelLabel()
+    }}</ap-button>
+    <ap-button
+      type="button"
+      variant="primary"
+      [disabled]="!matches() || pending()"
+      (click)="onConfirm()"
+      >{{ pending() ? pendingLabel() : confirmLabel() }}</ap-button
+    >
+  </div>
+</div>

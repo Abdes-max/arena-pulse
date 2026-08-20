@@ -476,11 +476,10 @@
       "dangerZoneIntro": "Supprimez définitivement votre compte et toutes les données associées.",
       "deleteReveal": "Supprimer mon compte",
       "deleteWarning": "Cette action est irréversible. Votre compte sera supprimé immédiatement. Si vous êtes la seule personne administratrice d'une organisation, celle-ci sera supprimée avec tous ses tournois, équipes et données.",
-      "passwordLabel": "Mot de passe",
+      "typeToConfirmLabel": "Tapez SUPPRIMER pour confirmer",
       "cancel": "Annuler",
       "deleteConfirm": "Confirmer la suppression",
       "deleting": "Suppression…",
-      "errorWrongPassword": "Mot de passe incorrect.",
       "errorGeneric": "Une erreur est survenue, réessayez."
     },
     "tournamentList": {

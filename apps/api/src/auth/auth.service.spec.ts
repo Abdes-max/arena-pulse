@@ -1,6 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   NotFoundException,
@@ -413,25 +414,17 @@ describe('AuthService', () => {
   });
 
   describe('deleteAccount', () => {
-    it('rejects an incorrect password without deleting anything', async () => {
-      const passwordService = new PasswordService();
-      prisma.user.findUniqueOrThrow.mockResolvedValue({
-        id: 'user-1',
-        passwordHash: await passwordService.hash('the-real-password'),
-      });
+    it('rejects an invalid confirmation without deleting anything', async () => {
+      prisma.user.findUniqueOrThrow.mockResolvedValue({ id: 'user-1' });
 
       await expect(
-        service.deleteAccount('user-1', { password: 'wrong-password' }),
-      ).rejects.toBeInstanceOf(UnauthorizedException);
+        service.deleteAccount('user-1', { confirmation: 'nope' }),
+      ).rejects.toBeInstanceOf(BadRequestException);
       expect(prisma.user.delete).not.toHaveBeenCalled();
     });
 
     it('rejects deletion when it would leave an organization with other members but no admin', async () => {
-      const passwordService = new PasswordService();
-      prisma.user.findUniqueOrThrow.mockResolvedValue({
-        id: 'user-1',
-        passwordHash: await passwordService.hash('the-real-password'),
-      });
+      prisma.user.findUniqueOrThrow.mockResolvedValue({ id: 'user-1' });
       prisma.organizationMember.findMany.mockResolvedValue([
         {
           userId: 'user-1',
@@ -447,19 +440,13 @@ describe('AuthService', () => {
       ]);
 
       await expect(
-        service.deleteAccount('user-1', {
-          password: 'the-real-password',
-        }),
+        service.deleteAccount('user-1', { confirmation: 'SUPPRIMER' }),
       ).rejects.toBeInstanceOf(ConflictException);
       expect(prisma.user.delete).not.toHaveBeenCalled();
     });
 
     it('allows deletion when another admin remains in the organization', async () => {
-      const passwordService = new PasswordService();
-      prisma.user.findUniqueOrThrow.mockResolvedValue({
-        id: 'user-1',
-        passwordHash: await passwordService.hash('the-real-password'),
-      });
+      prisma.user.findUniqueOrThrow.mockResolvedValue({ id: 'user-1' });
       prisma.organizationMember.findMany.mockResolvedValue([
         {
           userId: 'user-1',
@@ -475,9 +462,7 @@ describe('AuthService', () => {
       ]);
       prisma.user.delete.mockResolvedValue({ id: 'user-1' });
 
-      await service.deleteAccount('user-1', {
-        password: 'the-real-password',
-      });
+      await service.deleteAccount('user-1', { confirmation: 'SUPPRIMER' });
 
       expect(prisma.user.delete).toHaveBeenCalledWith({
         where: { id: 'user-1' },
@@ -487,11 +472,7 @@ describe('AuthService', () => {
     });
 
     it('deletes the organization (and everything under it) when the user is its sole member', async () => {
-      const passwordService = new PasswordService();
-      prisma.user.findUniqueOrThrow.mockResolvedValue({
-        id: 'user-1',
-        passwordHash: await passwordService.hash('the-real-password'),
-      });
+      prisma.user.findUniqueOrThrow.mockResolvedValue({ id: 'user-1' });
       prisma.organizationMember.findMany.mockResolvedValue([
         {
           userId: 'user-1',
@@ -506,9 +487,8 @@ describe('AuthService', () => {
       prisma.organization.delete.mockResolvedValue({ id: 'org-1' });
       prisma.user.delete.mockResolvedValue({ id: 'user-1' });
 
-      await service.deleteAccount('user-1', {
-        password: 'the-real-password',
-      });
+      // Case/whitespace-insensitive, checked as part of the same run.
+      await service.deleteAccount('user-1', { confirmation: '  supprimer  ' });
 
       expect(prisma.organization.delete).toHaveBeenCalledWith({
         where: { id: 'org-1' },

@@ -476,11 +476,10 @@
       "dangerZoneIntro": "Permanently delete your account and all associated data.",
       "deleteReveal": "Delete my account",
       "deleteWarning": "This action is irreversible. Your account will be deleted immediately. If you are the sole administrator of an organization, it will be deleted along with all its tournaments, teams, and data.",
-      "passwordLabel": "Password",
+      "typeToConfirmLabel": "Type SUPPRIMER to confirm",
       "cancel": "Cancel",
       "deleteConfirm": "Confirm deletion",
       "deleting": "Deleting…",
-      "errorWrongPassword": "Incorrect password.",
       "errorGeneric": "Something went wrong, please try again."
     },
     "tournamentList": {

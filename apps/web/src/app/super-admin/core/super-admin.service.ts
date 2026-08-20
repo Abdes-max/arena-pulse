@@ -43,12 +43,28 @@ export class SuperAdminService {
     );
   }
 
+  /** Deletes the organization and everything under it (tournaments, teams, players, etc.) -- unconditional, no "last admin" guard (see SuperAdminOrganizationsService.deleteOrganizationCascade server-side). */
+  deleteOrganization(organizationId: string, confirmation: string): Promise<void> {
+    return firstValueFrom(
+      this.http.delete<void>(`${this.base}/organizations/${organizationId}`, {
+        body: { confirmation },
+      }),
+    );
+  }
+
   listUsers(): Promise<SuperAdminUserRow[]> {
     return firstValueFrom(this.http.get<SuperAdminUserRow[]>(`${this.base}/users`));
   }
 
   verifyUserEmail(userId: string): Promise<void> {
     return firstValueFrom(this.http.post<void>(`${this.base}/users/${userId}/verify-email`, {}));
+  }
+
+  /** Cascades any organization this account is the sole member of; blocked (409) if it's the last admin of a multi-member organization. */
+  deleteUser(userId: string, confirmation: string): Promise<void> {
+    return firstValueFrom(
+      this.http.delete<void>(`${this.base}/users/${userId}`, { body: { confirmation } }),
+    );
   }
 
   listTournaments(): Promise<SuperAdminTournamentRow[]> {
@@ -58,6 +74,37 @@ export class SuperAdminService {
   getTournament(tournamentId: string): Promise<SuperAdminTournamentDetail> {
     return firstValueFrom(
       this.http.get<SuperAdminTournamentDetail>(`${this.base}/tournaments/${tournamentId}`),
+    );
+  }
+
+  deleteTournament(tournamentId: string, confirmation: string): Promise<void> {
+    return firstValueFrom(
+      this.http.delete<void>(`${this.base}/tournaments/${tournamentId}`, {
+        body: { confirmation },
+      }),
+    );
+  }
+
+  /** Cascades the team's players (Prisma onDelete: Cascade). */
+  deleteTeam(tournamentId: string, teamId: string, confirmation: string): Promise<void> {
+    return firstValueFrom(
+      this.http.delete<void>(`${this.base}/tournaments/${tournamentId}/teams/${teamId}`, {
+        body: { confirmation },
+      }),
+    );
+  }
+
+  deletePlayer(
+    tournamentId: string,
+    teamId: string,
+    playerId: string,
+    confirmation: string,
+  ): Promise<void> {
+    return firstValueFrom(
+      this.http.delete<void>(
+        `${this.base}/tournaments/${tournamentId}/teams/${teamId}/players/${playerId}`,
+        { body: { confirmation } },
+      ),
     );
   }
 
