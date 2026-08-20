@@ -24,7 +24,7 @@ export class RegisterPage {
     firstName: ['', Validators.required],
     lastName: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(8)]],
+    password: ['', [Validators.required, Validators.minLength(10)]],
   });
 
   protected readonly state = signal<PageState>('form');

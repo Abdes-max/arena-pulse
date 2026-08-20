@@ -33,7 +33,7 @@ export class AcceptInvitationPage {
   protected readonly form = this.formBuilder.nonNullable.group({
     firstName: ['', Validators.required],
     lastName: ['', Validators.required],
-    password: ['', [Validators.required, Validators.minLength(8)]],
+    password: ['', [Validators.required, Validators.minLength(10)]],
   });
 
   constructor() {

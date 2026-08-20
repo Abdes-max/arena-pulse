@@ -604,6 +604,9 @@
       "cancel": "Annulla",
       "export": "Esporta",
       "deleteSelected": "Elimina la selezione",
+      "typeToConfirmLabel": "Digita SUPPRIMER per confermare",
+      "confirmDelete": "Conferma eliminazione",
+      "deleting": "Eliminazione…",
       "empty": "Nessuna squadra per ora.",
       "table": {
         "logo": "Logo",
@@ -662,6 +665,9 @@
       "empty": "Aggiungi degli arbitri. Poi usa la pagina del calendario per assegnarli alle partite.",
       "edit": "Modifica",
       "remove": "Rimuovi",
+      "typeToConfirmLabel": "Digita SUPPRIMER per confermare",
+      "confirmDelete": "Conferma eliminazione",
+      "deleting": "Eliminazione…",
       "errors": {
         "load": "Impossibile caricare gli arbitri.",
         "toggleSetting": "Impossibile aggiornare questa impostazione.",

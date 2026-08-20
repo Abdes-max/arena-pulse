@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { ActivatedRoute } from '@angular/router';
 import { AssetUrlService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { Button, Select, SelectOption, TextField } from 'design-system';
+import { Button, Select, SelectOption, TextField, TypeToConfirm } from 'design-system';
 import { LanguageService } from 'design-tokens';
 import { AuthService } from '../../core/auth.service';
 import { Category, Player, Team, TeamImportResult } from '../../core/models';
@@ -12,7 +12,7 @@ import { TournamentsService } from '../../core/tournaments.service';
 
 @Component({
   selector: 'app-team-list-page',
-  imports: [Button, Select, TextField, TranslocoPipe],
+  imports: [Button, Select, TextField, TranslocoPipe, TypeToConfirm],
   templateUrl: './team-list.page.html',
   styleUrl: './team-list.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -79,6 +79,15 @@ export class TeamListPage {
 
   protected readonly importCsv = signal('');
   protected readonly importResult = signal<TeamImportResult | null>(null);
+
+  // Audit finding (securite-audit.md): deleting a team/player used to fire
+  // straight from the row button with no confirmation step at all -- reuses
+  // ap-type-to-confirm (feat/173) rather than a plain window.confirm, same
+  // as every other destructive action in the app.
+  protected readonly confirmingTeamId = signal<string | null>(null);
+  protected readonly deletingTeamId = signal<string | null>(null);
+  protected readonly confirmingBulkDelete = signal(false);
+  protected readonly bulkDeleting = signal(false);
 
   protected readonly expandedTeamId = signal<string | null>(null);
   protected readonly players = signal<Player[]>([]);
@@ -208,16 +217,28 @@ export class TeamListPage {
     }
   }
 
-  protected async removeTeam(team: Team): Promise<void> {
+  protected requestDeleteTeam(team: Team): void {
+    this.confirmingTeamId.set(team.id);
+  }
+
+  protected cancelDeleteTeam(): void {
+    this.confirmingTeamId.set(null);
+  }
+
+  protected async confirmDeleteTeam(team: Team): Promise<void> {
     const organizationId = this.organization()?.id;
     if (!organizationId) {
       return;
     }
+    this.deletingTeamId.set(team.id);
     try {
       await this.teamsService.deleteTeam(organizationId, this.tournamentId, team.id);
       this.teams.update((teams) => teams.filter((t) => t.id !== team.id));
+      this.confirmingTeamId.set(null);
     } catch {
       this.errorMessage.set('admin.teamList.errors.remove');
+    } finally {
+      this.deletingTeamId.set(null);
     }
   }
 
@@ -288,18 +309,32 @@ export class TeamListPage {
     return this.selectedTeamIds().has(teamId);
   }
 
-  protected async deleteSelected(): Promise<void> {
+  protected requestDeleteSelected(): void {
+    if (this.selectedTeamIds().size > 0) {
+      this.confirmingBulkDelete.set(true);
+    }
+  }
+
+  protected cancelDeleteSelected(): void {
+    this.confirmingBulkDelete.set(false);
+  }
+
+  protected async confirmDeleteSelected(): Promise<void> {
     const organizationId = this.organization()?.id;
     const teamIds = [...this.selectedTeamIds()];
     if (!organizationId || teamIds.length === 0) {
       return;
     }
+    this.bulkDeleting.set(true);
     try {
       await this.teamsService.bulkDeleteTeams(organizationId, this.tournamentId, teamIds);
       this.teams.update((teams) => teams.filter((t) => !teamIds.includes(t.id)));
       this.selectedTeamIds.set(new Set());
+      this.confirmingBulkDelete.set(false);
     } catch {
       this.errorMessage.set('admin.teamList.errors.deleteSelected');
+    } finally {
+      this.bulkDeleting.set(false);
     }
   }
 

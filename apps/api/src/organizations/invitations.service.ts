@@ -20,6 +20,22 @@ import { InviteMemberDto } from './dto/invite-member.dto';
 
 const INVITATION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
+export interface AcceptedExistingMember {
+  organization: { id: string; name: string; role: string };
+}
+
+// Explicit union (rather than letting TS infer it from the two `return`s
+// below) so InvitationsController can narrow on `'refreshToken' in result`
+// -- without this annotation, TS's inferred async return type doesn't
+// narrow cleanly via `in` and `result.refreshToken` stays `string |
+// undefined` even inside the guarded branch.
+export interface AcceptedNewAccount extends AcceptedExistingMember {
+  accessToken: string;
+  expiresIn: number;
+  refreshToken: string;
+  refreshTokenExpiresAt: Date;
+}
+
 @Injectable()
 export class InvitationsService {
   private readonly logger = new Logger(InvitationsService.name);
@@ -145,7 +161,7 @@ export class InvitationsService {
     token: string,
     currentUser: AuthenticatedUser | null,
     dto: AcceptInvitationDto,
-  ) {
+  ): Promise<AcceptedExistingMember | AcceptedNewAccount> {
     const invitation = await this.findValidPendingByToken(token);
     const existingUser = await this.prisma.user.findUnique({
       where: { email: invitation.email },

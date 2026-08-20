@@ -44,6 +44,15 @@ function getSentInviteToken(): string {
   return sentUrl.split('/accept-invitation/')[1];
 }
 
+function extractRefreshCookie(res: request.Response): string {
+  const raw = res.get('Set-Cookie');
+  const cookie = raw?.find((c) => c.startsWith('refresh_token='));
+  if (!cookie) {
+    throw new Error('No refresh_token cookie in response');
+  }
+  return cookie.split(';')[0];
+}
+
 async function registerOrganizer(
   app: INestApplication<App>,
   overrides: Partial<{ email: string; organizationName: string }> = {},
@@ -124,7 +133,7 @@ describe('Organizations (e2e)', () => {
     expect(lookup.requiresNewAccount).toBe(true);
     expect(lookup.email).toBe('referee@example.com');
 
-    await request(app.getHttpServer())
+    const acceptNewAccountRes = await request(app.getHttpServer())
       .post(`/api/v1/invitations/${token}/accept`)
       .send({
         password: 'another-strong-password',
@@ -132,6 +141,14 @@ describe('Organizations (e2e)', () => {
         lastName: 'Referee',
       })
       .expect(201);
+    // Audit finding (securite-audit.md): accepting an invitation that
+    // creates a brand new account used to return the refresh token in the
+    // plain JSON body -- it must now only ever be readable via the httpOnly
+    // cookie, same as login/register.
+    expect(extractRefreshCookie(acceptNewAccountRes)).toContain('refresh_token=');
+    expect(acceptNewAccountRes.body).not.toHaveProperty('refreshToken');
+    expect(acceptNewAccountRes.body).not.toHaveProperty('refreshTokenExpiresAt');
+    expect((acceptNewAccountRes.body as AuthResponseBody).accessToken).toBeDefined();
 
     const membersRes = await request(app.getHttpServer())
       .get(`/api/v1/organizations/${organizationId}/members`)

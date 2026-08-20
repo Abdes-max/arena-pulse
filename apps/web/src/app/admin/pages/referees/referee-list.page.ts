@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { Button, TextField } from 'design-system';
+import { Button, TextField, TypeToConfirm } from 'design-system';
 import { AuthService } from '../../core/auth.service';
 import { Referee, TournamentDetail } from '../../core/models';
 import { RefereesService } from '../../core/referees.service';
@@ -9,7 +9,7 @@ import { TournamentsService } from '../../core/tournaments.service';
 
 @Component({
   selector: 'app-referee-list-page',
-  imports: [Button, TextField, TranslocoPipe],
+  imports: [Button, TextField, TranslocoPipe, TypeToConfirm],
   templateUrl: './referee-list.page.html',
   styleUrl: './referee-list.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,6 +27,11 @@ export class RefereeListPage {
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly tournament = signal<TournamentDetail | null>(null);
   protected readonly referees = signal<Referee[]>([]);
+
+  // Audit finding (securite-audit.md): see team-list.page.ts's identical
+  // comment -- same ap-type-to-confirm reveal-on-click pattern.
+  protected readonly confirmingRefereeId = signal<string | null>(null);
+  protected readonly deletingRefereeId = signal<string | null>(null);
 
   protected readonly editingRefereeId = signal<string | null>(null);
   protected readonly formFirstName = signal('');
@@ -135,16 +140,28 @@ export class RefereeListPage {
     }
   }
 
-  protected async removeReferee(referee: Referee): Promise<void> {
+  protected requestDeleteReferee(referee: Referee): void {
+    this.confirmingRefereeId.set(referee.id);
+  }
+
+  protected cancelDeleteReferee(): void {
+    this.confirmingRefereeId.set(null);
+  }
+
+  protected async confirmDeleteReferee(referee: Referee): Promise<void> {
     const organizationId = this.organization()?.id;
     if (!organizationId) {
       return;
     }
+    this.deletingRefereeId.set(referee.id);
     try {
       await this.refereesService.deleteReferee(organizationId, this.tournamentId, referee.id);
       this.referees.update((referees) => referees.filter((r) => r.id !== referee.id));
+      this.confirmingRefereeId.set(null);
     } catch {
       this.errorMessage.set('admin.refereeList.errors.remove');
+    } finally {
+      this.deletingRefereeId.set(null);
     }
   }
 }
