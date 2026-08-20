@@ -192,7 +192,9 @@
       },
       "section9": {
         "title": "9. Termination",
-        "body": "You may stop using the Service at any time. TournArena may suspend or terminate an account in case of non-compliance with these terms."
+        "before": "You may stop using the Service at any time, including by deleting your own account (organizers and administrators) from your dashboard — see our",
+        "privacyLinkText": "privacy policy, section 12",
+        "after": ". TournArena may also suspend or terminate an account in case of non-compliance with these terms."
       },
       "section10": {
         "title": "10. Changes to these terms",
@@ -257,8 +259,9 @@
       },
       "section12": {
         "title": "12. Deleting your account",
-        "before": "You can request deletion of your TournArena account and associated data (name, email, password) at any time via our",
-        "after": ". We process your request within 30 days at most. Data related to tournaments you have published may be retained beyond that if still needed for ongoing tournaments to function, as may billing data whose retention is required by law."
+        "selfService": "If you are an organizer or administrator, you can delete your own account and its associated data (name, email, password) yourself, immediately and with no waiting period, from the \"My account\" section of your admin dashboard, after confirming with your password. If you are the sole member of an organization, that organization and all of its data (tournaments, teams, players) are deleted along with your account.",
+        "before": "For any other account type, or if you cannot access your account, you can request its deletion and associated data via our",
+        "after": ". We then process your request within 30 days at most. In all cases, data related to tournaments you have published may be retained beyond that if still needed for ongoing tournaments to function, as may billing data whose retention is required by law."
       }
     }
   },

@@ -47,7 +47,13 @@
     <p>{{ 'legal.terms.section8.body' | transloco }}</p>
 
     <h2>{{ 'legal.terms.section9.title' | transloco }}</h2>
-    <p>{{ 'legal.terms.section9.body' | transloco }}</p>
+    <p>
+      {{ 'legal.terms.section9.before' | transloco }}
+      <a routerLink="/privacy" fragment="suppression-compte">{{
+        'legal.terms.section9.privacyLinkText' | transloco
+      }}</a
+      >{{ 'legal.terms.section9.after' | transloco }}
+    </p>
 
     <h2>{{ 'legal.terms.section10.title' | transloco }}</h2>
     <p>{{ 'legal.terms.section10.body' | transloco }}</p>

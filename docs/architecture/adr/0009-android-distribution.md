@@ -62,6 +62,21 @@ RS256 signé à la main avec le module `crypto` natif de Node, échangé contre 
 flux `urn:ietf:params:oauth:grant-type:jwt-bearer`, même logique que le module `crypto`/ES256 de
 `infra/scripts/submit-ios-app-store.mjs` côté iOS.
 
+## Bouton de suppression de compte self-service (ajouté après coup, 2026-08-20)
+
+Le formulaire Data safety de Play Console exige une URL de suppression de compte/données pour
+toute app avec comptes utilisateurs — déclarée jusqu'ici comme pointant vers `docs/privacy` (page
+`/privacy`, section 12), qui ne décrivait qu'un formulaire de contact traité manuellement sous 30
+jours maximum.
+
+`feat/171-delete-account` (PR #169) ajoute un vrai bouton self-service — organisateurs et
+administrateurs peuvent désormais supprimer leur compte immédiatement depuis « Mon compte », sans
+passer par le formulaire. La page `/privacy` (section 12) et les CGU `/terms` (section 9) ont été
+mises à jour en conséquence ; le formulaire de contact reste décrit comme parcours de repli pour
+les comptes qui n'ont pas ce bouton (comptes joueur, ou accès compte perdu). Aucune modification
+nécessaire côté Play Console elle-même — la fiche Data safety continue de pointer vers la même URL
+`/privacy`, dont le contenu reflète maintenant le nouveau parcours.
+
 ## Reste à faire (porteur de projet — pas automatisable)
 
 **Tout ce qui suit a été complété le 2026-08-19** (le workflow tourne avec succès) — section

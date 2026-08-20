@@ -192,7 +192,9 @@
       },
       "section9": {
         "title": "9. Résiliation",
-        "body": "Vous pouvez cesser d'utiliser le Service à tout moment. TournArena peut suspendre ou résilier un compte en cas de non-respect des présentes conditions."
+        "before": "Vous pouvez cesser d'utiliser le Service à tout moment, y compris en supprimant vous-même votre compte (organisateurs et administrateurs) depuis votre espace — voir notre",
+        "privacyLinkText": "politique de confidentialité, section 12",
+        "after": ". TournArena peut également suspendre ou résilier un compte en cas de non-respect des présentes conditions."
       },
       "section10": {
         "title": "10. Modification des conditions",
@@ -257,8 +259,9 @@
       },
       "section12": {
         "title": "12. Suppression de votre compte",
-        "before": "Vous pouvez demander la suppression de votre compte TournArena et des données associées (nom, email, mot de passe) à tout moment via notre",
-        "after": ". Nous traitons votre demande sous 30 jours maximum. Les données des tournois que vous avez publiés peuvent être conservées au-delà si elles restent nécessaires au bon fonctionnement de tournois en cours, de même que les données de facturation dont la conservation est requise par la loi."
+        "selfService": "Si vous êtes organisateur·rice ou administrateur·rice, vous pouvez supprimer vous-même et immédiatement votre compte ainsi que les données associées (nom, email, mot de passe), sans délai d'attente, depuis la section « Mon compte » de votre espace d'administration, après confirmation par mot de passe. Si vous êtes la seule personne membre d'une organisation, celle-ci ainsi que l'ensemble de ses données (tournois, équipes, joueurs) sont supprimées avec votre compte.",
+        "before": "Pour tout autre type de compte, ou si vous ne pouvez pas accéder au vôtre, vous pouvez demander la suppression de votre compte et des données associées via notre",
+        "after": ". Nous traitons alors votre demande sous 30 jours maximum. Dans tous les cas, les données des tournois que vous avez publiés peuvent être conservées au-delà si elles restent nécessaires au bon fonctionnement de tournois en cours, de même que les données de facturation dont la conservation est requise par la loi."
       }
     }
   },
