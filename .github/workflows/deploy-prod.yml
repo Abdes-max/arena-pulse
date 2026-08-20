@@ -19,10 +19,18 @@
 # right after shipping security headers (feat/175): `up -d --build` reported
 # success and the deploy looked fine, but Caddy kept serving the old config
 # from before the container was last created, silently making the new
-# headers a no-op in production. `caddy reload` re-parses and hot-swaps the
-# Caddyfile without dropping in-flight connections -- cheap enough to run
-# unconditionally on every deploy rather than only when the Caddyfile
-# happens to have changed.
+# headers a no-op in production.
+#
+# Tried `caddy reload --config ...` first (hot-swap via the local admin API,
+# no dropped connections) in feat/176 -- it exited 0 and logged normal-looking
+# "using/adapted config" lines, but the live response still had none of the
+# new headers even after that deploy succeeded, so something about this
+# host's Caddy/admin-API setup makes it silently not take effect. Not worth
+# the extra investigation time for what is, at this project's scale, a
+# non-issue: `restart caddy` forces the container to re-exec `caddy run
+# --config /etc/caddy/Caddyfile` from scratch, which re-reads the bind-mounted
+# file unconditionally -- guaranteed correct, at the cost of a few seconds of
+# reconnects on the caddy hop (web/api are untouched, no downtime there).
 name: Deploy to production
 
 on:
@@ -54,5 +62,5 @@ jobs:
             git fetch origin master
             git reset --hard origin/master
             docker compose -f infra/deployment/docker-compose.prod.yml --env-file infra/deployment/.env up -d --build
-            docker compose -f infra/deployment/docker-compose.prod.yml --env-file infra/deployment/.env exec caddy caddy reload --config /etc/caddy/Caddyfile
+            docker compose -f infra/deployment/docker-compose.prod.yml --env-file infra/deployment/.env restart caddy
             docker image prune -f
