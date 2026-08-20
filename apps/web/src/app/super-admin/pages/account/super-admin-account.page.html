@@ -1,0 +1,51 @@
+<main class="super-admin-account-page">
+  <h1>Mon compte</h1>
+
+  @if (superAdmin(); as account) {
+    <section class="super-admin-account-page__identity">
+      <h2>Identité</h2>
+      <p>
+        {{ account.firstName }} {{ account.lastName }}<br />
+        {{ account.email }}
+      </p>
+    </section>
+  }
+
+  <section class="super-admin-account-page__danger-zone">
+    <h2>Zone de danger</h2>
+
+    @if (!dangerZoneOpen()) {
+      <p>Supprimez définitivement votre compte super-administrateur.</p>
+      <ap-button type="button" variant="secondary" (click)="openDangerZone()"
+        >Supprimer mon compte</ap-button
+      >
+    } @else {
+      <p class="super-admin-account-page__warning">
+        Cette action est irréversible. Votre compte sera supprimé immédiatement. Impossible si vous
+        êtes le dernier compte super-administrateur restant.
+      </p>
+
+      <form
+        class="super-admin-account-page__delete-form"
+        [formGroup]="deleteForm"
+        (ngSubmit)="deleteAccount()"
+      >
+        <ap-text-field
+          label="Mot de passe"
+          type="password"
+          formControlName="password"
+          autocomplete="current-password"
+        />
+        @if (errorMessage(); as message) {
+          <p class="super-admin-account-page__error" role="alert">{{ message }}</p>
+        }
+        <div class="super-admin-account-page__delete-actions">
+          <ap-button type="button" variant="ghost" (click)="cancelDeletion()">Annuler</ap-button>
+          <ap-button type="submit" variant="primary" [disabled]="deleting()">{{
+            deleting() ? 'Suppression…' : 'Confirmer la suppression'
+          }}</ap-button>
+        </div>
+      </form>
+    }
+  </section>
+</main>

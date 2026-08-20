@@ -21,6 +21,9 @@
             routerLinkActive="app-shell__link--active"
             >{{ 'admin.shell.nav.subscription' | transloco }}</a
           >
+          <a routerLink="/admin/account" routerLinkActive="app-shell__link--active">{{
+            'admin.shell.nav.account' | transloco
+          }}</a>
         </nav>
       </div>
       <div class="app-shell__controls">
@@ -76,6 +79,13 @@
           routerLinkActive="app-shell__link--active"
           (click)="closeMobileMenu()"
           >{{ 'admin.shell.nav.subscription' | transloco }}</a
+        >
+        <a
+          class="app-shell__mobile-menu-link"
+          routerLink="/admin/account"
+          routerLinkActive="app-shell__link--active"
+          (click)="closeMobileMenu()"
+          >{{ 'admin.shell.nav.account' | transloco }}</a
         >
         <div class="app-shell__mobile-menu-controls">
           <ap-language-switcher

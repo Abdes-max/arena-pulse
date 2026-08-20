@@ -1,0 +1,61 @@
+.account-page {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: var(--ap-space-6);
+  color: var(--ap-color-fg);
+  font-family: var(--ap-font-body);
+
+  h1 {
+    margin: 0 0 var(--ap-space-6);
+  }
+
+  section {
+    margin-bottom: var(--ap-space-8);
+  }
+
+  h2 {
+    margin: 0 0 var(--ap-space-3);
+    font-size: 1.05rem;
+  }
+}
+
+.account-page__identity p {
+  margin: 0;
+  color: var(--ap-color-muted);
+  line-height: 1.5;
+}
+
+// The first destructive-action zone in this app -- a visible border in the
+// error color signals "careful here" without needing a modal.
+.account-page__danger-zone {
+  padding: var(--ap-space-5);
+  border: var(--ap-border-width) solid var(--ap-color-error);
+  border-radius: var(--ap-radius-md);
+
+  p {
+    margin: 0 0 var(--ap-space-4);
+    color: var(--ap-color-muted);
+  }
+}
+
+.account-page__warning {
+  color: var(--ap-color-error) !important;
+}
+
+.account-page__delete-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-4);
+  max-width: 320px;
+}
+
+.account-page__error {
+  margin: 0 !important;
+  color: var(--ap-color-error);
+  font-size: 0.9rem;
+}
+
+.account-page__delete-actions {
+  display: flex;
+  gap: var(--ap-space-3);
+}

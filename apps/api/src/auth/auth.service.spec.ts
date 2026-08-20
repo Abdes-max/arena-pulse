@@ -19,9 +19,10 @@ type PrismaMock = {
     create: jest.Mock;
     update: jest.Mock;
     findUniqueOrThrow: jest.Mock;
+    delete: jest.Mock;
   };
-  organization: { create: jest.Mock };
-  organizationMember: { create: jest.Mock };
+  organization: { create: jest.Mock; delete: jest.Mock };
+  organizationMember: { create: jest.Mock; findMany: jest.Mock };
   refreshToken: {
     findUnique: jest.Mock;
     create: jest.Mock;
@@ -38,9 +39,10 @@ function createPrismaMock(): PrismaMock {
       create: jest.fn(),
       update: jest.fn(),
       findUniqueOrThrow: jest.fn(),
+      delete: jest.fn(),
     },
-    organization: { create: jest.fn() },
-    organizationMember: { create: jest.fn() },
+    organization: { create: jest.fn(), delete: jest.fn() },
+    organizationMember: { create: jest.fn(), findMany: jest.fn() },
     refreshToken: {
       findUnique: jest.fn(),
       create: jest.fn(),
@@ -407,6 +409,113 @@ describe('AuthService', () => {
         UnauthorizedException,
       );
       expect(prisma.refreshToken.updateMany).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('deleteAccount', () => {
+    it('rejects an incorrect password without deleting anything', async () => {
+      const passwordService = new PasswordService();
+      prisma.user.findUniqueOrThrow.mockResolvedValue({
+        id: 'user-1',
+        passwordHash: await passwordService.hash('the-real-password'),
+      });
+
+      await expect(
+        service.deleteAccount('user-1', { password: 'wrong-password' }),
+      ).rejects.toBeInstanceOf(UnauthorizedException);
+      expect(prisma.user.delete).not.toHaveBeenCalled();
+    });
+
+    it('rejects deletion when it would leave an organization with other members but no admin', async () => {
+      const passwordService = new PasswordService();
+      prisma.user.findUniqueOrThrow.mockResolvedValue({
+        id: 'user-1',
+        passwordHash: await passwordService.hash('the-real-password'),
+      });
+      prisma.organizationMember.findMany.mockResolvedValue([
+        {
+          userId: 'user-1',
+          role: OrganizationRole.ORG_ADMIN,
+          organization: {
+            name: 'Ada Tournaments',
+            members: [
+              { userId: 'user-1', role: OrganizationRole.ORG_ADMIN },
+              { userId: 'user-2', role: OrganizationRole.ORG_MEMBER },
+            ],
+          },
+        },
+      ]);
+
+      await expect(
+        service.deleteAccount('user-1', {
+          password: 'the-real-password',
+        }),
+      ).rejects.toBeInstanceOf(ConflictException);
+      expect(prisma.user.delete).not.toHaveBeenCalled();
+    });
+
+    it('allows deletion when another admin remains in the organization', async () => {
+      const passwordService = new PasswordService();
+      prisma.user.findUniqueOrThrow.mockResolvedValue({
+        id: 'user-1',
+        passwordHash: await passwordService.hash('the-real-password'),
+      });
+      prisma.organizationMember.findMany.mockResolvedValue([
+        {
+          userId: 'user-1',
+          role: OrganizationRole.ORG_ADMIN,
+          organization: {
+            name: 'Ada Tournaments',
+            members: [
+              { userId: 'user-1', role: OrganizationRole.ORG_ADMIN },
+              { userId: 'user-2', role: OrganizationRole.ORG_ADMIN },
+            ],
+          },
+        },
+      ]);
+      prisma.user.delete.mockResolvedValue({ id: 'user-1' });
+
+      await service.deleteAccount('user-1', {
+        password: 'the-real-password',
+      });
+
+      expect(prisma.user.delete).toHaveBeenCalledWith({
+        where: { id: 'user-1' },
+      });
+      // The organization has another admin, so it must be left untouched.
+      expect(prisma.organization.delete).not.toHaveBeenCalled();
+    });
+
+    it('deletes the organization (and everything under it) when the user is its sole member', async () => {
+      const passwordService = new PasswordService();
+      prisma.user.findUniqueOrThrow.mockResolvedValue({
+        id: 'user-1',
+        passwordHash: await passwordService.hash('the-real-password'),
+      });
+      prisma.organizationMember.findMany.mockResolvedValue([
+        {
+          userId: 'user-1',
+          organizationId: 'org-1',
+          role: OrganizationRole.ORG_ADMIN,
+          organization: {
+            name: 'Ada Tournaments',
+            members: [{ userId: 'user-1', role: OrganizationRole.ORG_ADMIN }],
+          },
+        },
+      ]);
+      prisma.organization.delete.mockResolvedValue({ id: 'org-1' });
+      prisma.user.delete.mockResolvedValue({ id: 'user-1' });
+
+      await service.deleteAccount('user-1', {
+        password: 'the-real-password',
+      });
+
+      expect(prisma.organization.delete).toHaveBeenCalledWith({
+        where: { id: 'org-1' },
+      });
+      expect(prisma.user.delete).toHaveBeenCalledWith({
+        where: { id: 'user-1' },
+      });
     });
   });
 });

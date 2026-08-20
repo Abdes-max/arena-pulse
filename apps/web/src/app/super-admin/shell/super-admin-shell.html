@@ -20,6 +20,9 @@
         <a routerLink="/super-admin/payments" routerLinkActive="super-admin-shell__link--active"
           >Paiements</a
         >
+        <a routerLink="/super-admin/account" routerLinkActive="super-admin-shell__link--active"
+          >Mon compte</a
+        >
       </nav>
       <ap-button type="button" variant="ghost" class="super-admin-shell__logout" (click)="logout()">
         Se déconnecter
@@ -80,6 +83,13 @@
           routerLinkActive="super-admin-shell__link--active"
           (click)="closeMobileMenu()"
           >Paiements</a
+        >
+        <a
+          class="super-admin-shell__mobile-menu-link"
+          routerLink="/super-admin/account"
+          routerLinkActive="super-admin-shell__link--active"
+          (click)="closeMobileMenu()"
+          >Mon compte</a
         >
         <ap-button type="button" variant="ghost" (click)="logout()">Se déconnecter</ap-button>
       </div>

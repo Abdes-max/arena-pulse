@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -15,6 +16,7 @@ import { Throttle } from '@nestjs/throttler';
 import type { CookieOptions, Request, Response } from 'express';
 import { Public } from '../auth/decorators/public.decorator';
 import { CurrentSuperAdmin } from './decorators/current-super-admin.decorator';
+import { DeleteSuperAdminAccountDto } from './dto/delete-super-admin-account.dto';
 import { SuperAdminLoginDto } from './dto/super-admin-login.dto';
 import { SuperAdminJwtAuthGuard } from './guards/super-admin-jwt-auth.guard';
 import { SuperAdminAuthService } from './super-admin-auth.service';
@@ -101,6 +103,21 @@ export class SuperAdminAuthController {
   @Get('me')
   me(@CurrentSuperAdmin() superAdmin: AuthenticatedSuperAdmin) {
     return this.superAdminAuthService.getProfile(superAdmin.id);
+  }
+
+  @Public()
+  @UseGuards(SuperAdminJwtAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete('me')
+  async deleteAccount(
+    @CurrentSuperAdmin() superAdmin: AuthenticatedSuperAdmin,
+    @Body() dto: DeleteSuperAdminAccountDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    await this.superAdminAuthService.deleteAccount(superAdmin.id, dto);
+    res.clearCookie(SUPER_ADMIN_REFRESH_TOKEN_COOKIE, {
+      path: SUPER_ADMIN_REFRESH_TOKEN_PATH,
+    });
   }
 
   private readRefreshCookie(req: Request): string | undefined {

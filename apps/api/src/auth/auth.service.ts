@@ -12,6 +12,7 @@ import { OrganizationRole } from '../../generated/prisma/client';
 import { DEFAULT_MAIL_LANGUAGE, MailLanguage } from '../mail/mail-language';
 import { MailService } from '../mail/mail.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { DeleteAccountDto } from './dto/delete-account.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { PasswordService } from './password.service';
@@ -297,6 +298,72 @@ export class AuthService {
         role: membership.role,
       })),
     };
+  }
+
+  /**
+   * Self-service account deletion (feat/171). Password re-confirmation is
+   * the only friction step -- the product has no 2FA, so this is the sole
+   * guard against an accidental click on a session left open.
+   *
+   * Every organization this user is the *sole* member of is deleted outright
+   * (Organization's `onDelete: Cascade` chain takes every tournament,
+   * category, match, registration, team, player, referee, sponsor,
+   * subscription and publication order down with it) -- with nobody left to
+   * manage it, there's no "ongoing tournament" left to justify retaining
+   * that data, unlike the multi-member case. For every other organization
+   * this user belongs to, only their own membership row disappears
+   * (`OrganizationMember`'s own `onDelete: Cascade` on the User row) and the
+   * organization/its data is untouched, unless doing so would leave it with
+   * members but no ORG_ADMIN -- that case is rejected up front instead,
+   * mirroring OrganizationsService.assertNotLastAdmin. RefreshTokens and
+   * TournamentAdministrator rows also cascade automatically from the User
+   * delete; sent Invitations lose their "invited by" attribution
+   * (`onDelete: SetNull`) rather than being deleted, so a pending invite
+   * this account sent still works for its recipient.
+   */
+  async deleteAccount(userId: string, dto: DeleteAccountDto): Promise<void> {
+    const user = await this.prisma.user.findUniqueOrThrow({
+      where: { id: userId },
+    });
+    if (!(await this.passwordService.verify(user.passwordHash, dto.password))) {
+      throw new UnauthorizedException('Mot de passe incorrect.');
+    }
+    const soleOrganizationIds =
+      await this.assertCanDeleteAccountAndGetSoleOrganizations(userId);
+    await this.prisma.$transaction(async (tx) => {
+      for (const organizationId of soleOrganizationIds) {
+        await tx.organization.delete({ where: { id: organizationId } });
+      }
+      await tx.user.delete({ where: { id: userId } });
+    });
+  }
+
+  private async assertCanDeleteAccountAndGetSoleOrganizations(
+    userId: string,
+  ): Promise<string[]> {
+    const memberships = await this.prisma.organizationMember.findMany({
+      where: { userId },
+      include: { organization: { include: { members: true } } },
+    });
+    const soleOrganizationIds: string[] = [];
+    for (const membership of memberships) {
+      const others = membership.organization.members.filter(
+        (member) => member.userId !== userId,
+      );
+      if (others.length === 0) {
+        soleOrganizationIds.push(membership.organizationId);
+        continue;
+      }
+      const hasOtherAdmin = others.some(
+        (member) => member.role === OrganizationRole.ORG_ADMIN,
+      );
+      if (!hasOtherAdmin) {
+        throw new ConflictException(
+          `Vous êtes la seule personne administratrice de « ${membership.organization.name} ». Promouvez un autre membre avant de supprimer votre compte.`,
+        );
+      }
+    }
+    return soleOrganizationIds;
   }
 
   private async issueTokenPair(

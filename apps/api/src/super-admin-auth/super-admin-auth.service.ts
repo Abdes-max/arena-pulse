@@ -1,8 +1,13 @@
 import { randomUUID } from 'node:crypto';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PasswordService } from '../auth/password.service';
 import { TokenService } from '../auth/token.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { DeleteSuperAdminAccountDto } from './dto/delete-super-admin-account.dto';
 import { SuperAdminLoginDto } from './dto/super-admin-login.dto';
 
 export interface SuperAdminSummary {
@@ -124,6 +129,44 @@ export class SuperAdminAuthService {
       where: { id: superAdminId },
     });
     return this.toSummary(superAdmin);
+  }
+
+  /**
+   * Self-service account deletion (feat/171), mirroring
+   * AuthService.deleteAccount's shape (password re-confirmation, no other
+   * dependent rows to worry about -- SuperAdminRefreshToken/SuperAdminAuditLog
+   * both cascade). The one guard specific to this stack: unlike organizer
+   * accounts, SuperAdminAccount rows are never self-registered (see this
+   * class's top-of-file comment), so deleting the last one would leave the
+   * whole platform with nobody able to log into the super-admin dashboard --
+   * blocked the same way assertNotLastAdmin blocks the last org admin.
+   */
+  async deleteAccount(
+    superAdminId: string,
+    dto: DeleteSuperAdminAccountDto,
+  ): Promise<void> {
+    const superAdmin = await this.prisma.superAdminAccount.findUniqueOrThrow({
+      where: { id: superAdminId },
+    });
+    if (
+      !(await this.passwordService.verify(
+        superAdmin.passwordHash,
+        dto.password,
+      ))
+    ) {
+      throw new UnauthorizedException('Mot de passe incorrect.');
+    }
+    const remainingAccounts = await this.prisma.superAdminAccount.count({
+      where: { id: { not: superAdminId } },
+    });
+    if (remainingAccounts === 0) {
+      throw new ConflictException(
+        'Impossible de supprimer le dernier compte super-administrateur.',
+      );
+    }
+    await this.prisma.superAdminAccount.delete({
+      where: { id: superAdminId },
+    });
   }
 
   private async issueTokenPair(
