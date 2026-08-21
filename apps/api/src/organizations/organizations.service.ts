@@ -252,6 +252,11 @@ export class OrganizationsService {
       successUrl: `${webUrl}/admin/organization/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
       cancelUrl: `${webUrl}/admin/organization/subscription?subscribeCancelled=1`,
       metadata: { organizationSubscriptionId: subscription.id },
+      // Lets an organizer enter a coupon code (e.g. a launch-offer
+      // percentage off) on Stripe's own checkout page -- see
+      // CreateCheckoutSessionParams.allowPromotionCodes for where that
+      // coupon actually gets created and managed.
+      allowPromotionCodes: true,
     });
 
     await this.prisma.organizationSubscription.update({
@@ -345,6 +350,15 @@ export class OrganizationsService {
         status: OrganizationSubscriptionStatus.ACTIVE,
         paidAt: new Date(),
         stripePaymentIntentId: paymentIntentId,
+        // subscription.amountCents (set at checkout-session creation, see
+        // subscribe() above) is the pre-discount sticker price -- with
+        // allowPromotionCodes now enabled, the amount actually charged can
+        // be lower. session.amount_total is Stripe's own post-discount
+        // total for this session, so it's what the receipt email and the
+        // payment-history screen (listSubscriptionHistory) should show,
+        // not the original ask. Falls back to the pre-discount value only
+        // in the defensive case Stripe ever omits it on a paid session.
+        amountCents: session.amount_total ?? subscription.amountCents,
         ...this.activePeriod(),
       },
     });

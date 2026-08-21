@@ -9,6 +9,15 @@ export interface CreateCheckoutSessionParams {
   successUrl: string;
   cancelUrl: string;
   metadata: Record<string, string>;
+  // Shows Stripe's own "Add promotion code" field on the hosted checkout
+  // page when true. The coupon and its customer-facing code (e.g. an
+  // "offre de lancement" percentage off) are created directly in the
+  // Stripe Dashboard -- Product catalog > Coupons, then > Promotion codes
+  // -- not modeled in this app at all: Stripe already handles validation,
+  // expiry and redemption limits, so there's nothing for our own DB to
+  // track. Left off (undefined/false) by default so existing callers keep
+  // today's behavior unchanged.
+  allowPromotionCodes?: boolean;
 }
 
 /**
@@ -43,6 +52,7 @@ export class StripeService {
       success_url: params.successUrl,
       cancel_url: params.cancelUrl,
       metadata: params.metadata,
+      allow_promotion_codes: params.allowPromotionCodes,
     });
   }
 
