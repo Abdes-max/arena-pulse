@@ -991,3 +991,16 @@ ap-tournament-marquee {
   color: var(--ap-color-muted);
   font-size: 0.8rem;
 }
+
+// Discreet studio credit -- same muted tone/size as the copyright line it
+// sits next to, not a promotional callout. The link itself is the only
+// thing that stands out, on hover, same treatment as the other footer links.
+.landing-page__footer-credit a {
+  color: var(--ap-color-muted);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--ap-color-fg);
+    text-decoration: underline;
+  }
+}
