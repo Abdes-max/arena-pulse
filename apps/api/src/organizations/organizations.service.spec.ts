@@ -292,7 +292,14 @@ describe('OrganizationsService', () => {
       const result = await paidService.subscribe('org-1');
 
       expect(stripeService.createCheckoutSession).toHaveBeenCalledWith(
-        expect.objectContaining({ amountCents: 20000, currency: 'eur' }),
+        expect.objectContaining({
+          amountCents: 20000,
+          currency: 'eur',
+          // Lets an organizer redeem a launch-offer coupon on Stripe's own
+          // checkout page -- see stripe.service.ts's
+          // CreateCheckoutSessionParams.allowPromotionCodes.
+          allowPromotionCodes: true,
+        }),
       );
       expect(result).toEqual({
         status: 'PENDING_PAYMENT',
@@ -520,6 +527,47 @@ describe('OrganizationsService', () => {
       );
       expect(prisma.organizationSubscription.update).toHaveBeenCalled();
       expect(result.status).toBe('ACTIVE');
+    });
+
+    it('confirmSubscriptionPayment records the actual (post-discount) amount Stripe charged, not the pre-discount ask', async () => {
+      prisma.organizationSubscription.findUnique.mockResolvedValue({
+        id: 'sub-1',
+        organizationId: 'org-1',
+        status: OrganizationSubscriptionStatus.PENDING_PAYMENT,
+        // Pre-discount price the row was created with at checkout-session
+        // creation time (subscribe()) -- a coupon redeemed on Stripe's
+        // checkout page means the actual charge, below, is lower.
+        amountCents: 20000,
+      });
+      stripeService.retrieveCheckoutSession.mockResolvedValue({
+        id: 'cs_test_subscription_123',
+        payment_status: 'paid',
+        payment_intent: 'pi_123',
+        // A 30%-off launch-offer coupon applied at checkout.
+        amount_total: 14000,
+      });
+      prisma.organizationSubscription.update.mockResolvedValue({
+        organizationId: 'org-1',
+        amountCents: 14000,
+        currency: 'eur',
+        expiresAt: new Date('2027-08-14'),
+      });
+      prisma.organizationMember.findMany.mockResolvedValue([]);
+      prisma.organizationSubscription.findFirst.mockResolvedValueOnce({
+        organizationId: 'org-1',
+        status: OrganizationSubscriptionStatus.ACTIVE,
+        startsAt: new Date('2026-08-14'),
+        expiresAt: new Date('2027-08-14'),
+      });
+
+      await service.confirmSubscriptionPayment(
+        'org-1',
+        'cs_test_subscription_123',
+      );
+
+      const [[updateCall]] = prisma.organizationSubscription.update.mock
+        .calls as [[{ data: { amountCents: number } }]];
+      expect(updateCall.data.amountCents).toBe(14000);
     });
 
     it('getSubscriptionStatus reports ACTIVE, then PENDING_PAYMENT, then NONE', async () => {
