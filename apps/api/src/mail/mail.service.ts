@@ -232,7 +232,9 @@ export class MailService {
   private readonly transporter: Transporter;
   private readonly from: string;
   private readonly contactRecipient: string;
+  private readonly keltoContactRecipient: string;
   private readonly logoUrl: string;
+  private readonly keltoLogoUrl: string;
 
   constructor(configService: ConfigService) {
     const port = configService.get<number>('SMTP_PORT', 1025);
@@ -266,6 +268,14 @@ export class MailService {
       'CONTACT_RECIPIENT_EMAIL',
       'contact@tournarena.com',
     );
+    // Kelto Studio's own contact form (sites/kelto-studio/) posts to the
+    // kelto/contact endpoint on this same api, but the destination mailbox
+    // is a different brand's inbox -- separate env var, separate default,
+    // rather than reusing CONTACT_RECIPIENT_EMAIL above.
+    this.keltoContactRecipient = configService.get<string>(
+      'KELTO_CONTACT_RECIPIENT_EMAIL',
+      'contact@kelto-studio.fr',
+    );
     // Inline <svg> in the header (previous approach) gets stripped by several
     // webmail HTML sanitizers (confirmed: Hostinger/Titan webmail drops it
     // entirely, leaving a blank header cell) -- a plain hosted <img> is the
@@ -278,6 +288,13 @@ export class MailService {
       'http://localhost:4300',
     );
     this.logoUrl = `${webUrl}/mail-logo.png`;
+    // Kelto Studio's own site (sites/kelto-studio/), not ADMIN_WEB_URL --
+    // this is a hosted <img> for wrapKeltoEmail below, same reasoning as
+    // this.logoUrl above (webmail sanitizers strip inline <svg>). The path
+    // is sites/kelto-studio/brand/kelto-mark-112.png, deployed by
+    // deploy-kelto.yml alongside the rest of that static site, hence
+    // reachable at this URL with no extra deploy step of its own.
+    this.keltoLogoUrl = `${configService.get<string>('KELTO_SITE_URL', 'https://kelto-studio.fr')}/brand/kelto-mark-112.png`;
   }
 
   async sendInvitationEmail(
@@ -423,6 +440,29 @@ export class MailService {
     });
   }
 
+  // kelto-studio.fr's own contact form (see kelto/kelto-contact.service.ts)
+  // -- same shape as sendContactMessage above, different destination
+  // mailbox and subject prefix so the two brands' messages aren't mixed in
+  // the same inbox thread.
+  async sendKeltoContactMessage(data: {
+    nom: string;
+    email: string;
+    typeDemandeLabel: string;
+    message: string;
+  }): Promise<void> {
+    await this.transporter.sendMail({
+      from: this.from,
+      to: this.keltoContactRecipient,
+      replyTo: `${data.nom} <${data.email}>`,
+      subject: `[Kelto Studio] ${data.typeDemandeLabel} — ${data.nom}`,
+      html: this.wrapKeltoEmail(`
+        <p><strong>De :</strong> ${this.escapeHtml(data.nom)} (${this.escapeHtml(data.email)})</p>
+        <p><strong>Type de demande :</strong> ${this.escapeHtml(data.typeDemandeLabel)}</p>
+        <p style="white-space: pre-wrap;">${this.escapeHtml(data.message)}</p>
+      `),
+    });
+  }
+
   // The 4 email templates above only ever interpolate values the product
   // itself generated (org/tournament names entered by an authenticated
   // organizer, amounts, dates) -- this one interpolates raw text typed by an
@@ -508,6 +548,60 @@ export class MailService {
                   <tr>
                     <td style="padding:16px 32px 24px;font-family:'Inter',-apple-system,'Segoe UI',sans-serif;color:#64748b;font-size:12px;">
                       ${footerTagline}
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </body>
+      </html>
+    `;
+  }
+
+  // Kelto Studio's own minimal email wrapper -- deliberately not a variant
+  // of wrapEmail above, which is hardcoded to the "Ink & Signal" TournArena
+  // identity (colors, wordmark markup, footer tagline). This is the only
+  // caller (sendKeltoContactMessage), always French (an internal
+  // notification to the studio's own inbox, no organizer/visitor language
+  // preference to honor), so no `lang` param. Same table-based layout and
+  // hosted-<img>-not-inline-<svg> reasoning as wrapEmail, for the same
+  // webmail-sanitizer-compatibility reasons.
+  private wrapKeltoEmail(bodyHtml: string): string {
+    return `
+      <!doctype html>
+      <html lang="fr">
+        <head>
+          <meta charset="utf-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+        </head>
+        <body style="margin:0;padding:0;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f4efe6;padding:32px 16px;">
+            <tr>
+              <td align="center">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:480px;background:#ffffff;border:1px solid #e6ddc9;border-radius:10px;overflow:hidden;">
+                  <tr>
+                    <td style="padding:24px 32px;border-bottom:1px solid #e6ddc9;">
+                      <table role="presentation" cellpadding="0" cellspacing="0">
+                        <tr>
+                          <td style="padding-right:10px;">
+                            <img src="${this.keltoLogoUrl}" width="28" height="28" alt="Kelto Studio" style="display:block;border:0;border-radius:6px;" />
+                          </td>
+                          <td style="font-family:'Avenir Next','Century Gothic',Futura,'Helvetica Neue',Arial,sans-serif;font-size:20px;font-weight:800;letter-spacing:-0.01em;color:#14161a;">
+                            Kelto Studio
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding:24px 32px;font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#14161a;font-size:15px;line-height:1.6;">
+                      ${bodyHtml}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding:16px 32px 24px;font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#8a8175;font-size:12px;">
+                      Message envoyé depuis le formulaire de contact de kelto-studio.fr.
                     </td>
                   </tr>
                 </table>

@@ -11,6 +11,7 @@ import { ContactModule } from './contact/contact.module';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 import { RequestIdMiddleware } from './common/middleware/request-id.middleware';
 import { HealthModule } from './health/health.module';
+import { KeltoContactModule } from './kelto/kelto-contact.module';
 import { MailModule } from './mail/mail.module';
 import { OrganizationsModule } from './organizations/organizations.module';
 import { PermissionsModule } from './permissions/permissions.module';
@@ -56,6 +57,7 @@ import { TournamentsModule } from './tournaments/tournaments.module';
     SuperAdminModule,
     MailModule,
     ContactModule,
+    KeltoContactModule,
     OrganizationsModule,
     SportsModule,
     PermissionsModule,

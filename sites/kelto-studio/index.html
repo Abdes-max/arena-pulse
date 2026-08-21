@@ -9,7 +9,7 @@
 <meta property="og:description" content="Des applications mobiles et web taillées pour ce que vous construisez. Une équipe d'artisans du logiciel français." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://kelto-studio.fr" />
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23e3a463'/%3E%3Cstop offset='1' stop-color='%23b8592f'/%3E%3C/linearGradient%3E%3CclipPath id='c'%3E%3Crect width='100' height='100' rx='24'/%3E%3C/clipPath%3E%3C/defs%3E%3Cg clip-path='url(%23c)'%3E%3Crect width='100' height='100' fill='url(%23g)'/%3E%3Cg stroke='%2314161a' stroke-width='17' stroke-linecap='round' stroke-linejoin='round' fill='none'%3E%3Cpath d='M30 22 L30 78'/%3E%3Cpath d='M30 52 L68 20'/%3E%3Cpath d='M30 50 L70 80'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E" />
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23e3a463'/%3E%3Cstop offset='1' stop-color='%23b8592f'/%3E%3C/linearGradient%3E%3CclipPath id='c'%3E%3Crect width='100' height='100' rx='24'/%3E%3C/clipPath%3E%3C/defs%3E%3Cg clip-path='url(%23c)'%3E%3Crect width='100' height='100' fill='url(%23g)'/%3E%3Cg transform='translate(50,50) scale(0.8) translate(-50,-50)'%3E%3Cg stroke='%2314161a' stroke-width='17' stroke-linecap='round' stroke-linejoin='round' fill='none'%3E%3Cpath d='M30 22 L30 78'/%3E%3Cpath d='M30 52 L68 20'/%3E%3Cpath d='M30 50 L70 80'/%3E%3C/g%3E%3C/g%3E%3C/g%3E%3C/svg%3E" />
 <style>
   :root {
     --ink: #14161a;
@@ -162,9 +162,107 @@
     color: var(--bronze-bright);
   }
 
+  /* Checkbox-driven mobile menu -- no JS on this page (see the Caddyfile's
+     CSP comment on why that's deliberate), so the toggle is a hidden
+     checkbox + <label> pair instead of a click handler. #nav-toggle and
+     .mobile-menu are both direct children of <header>, siblings of <nav>,
+     so `:checked ~ .mobile-menu` reaches across via the general sibling
+     combinator regardless of where inside <nav> the visible label sits. */
+  .nav-toggle-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .nav-toggle-btn {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    flex: none;
+    border: 1px solid var(--line-strong);
+    border-radius: 10px;
+    color: var(--parchment);
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .nav-toggle-btn:hover {
+    border-color: var(--bronze-bright);
+    color: var(--bronze-bright);
+  }
+
+  .nav-toggle-btn svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+  }
+
+  .nav-toggle-btn .icon-close {
+    display: none;
+  }
+
+  .mobile-menu {
+    display: none;
+  }
+
   @media (max-width: 720px) {
-    .nav-links {
+    /* "header" prefix, not just the bare class -- .btn's own unconditional
+       `display: inline-flex` (declared later in this stylesheet, in the
+       hero/CTA section) ties with .cta-nav on specificity, and a later
+       same-specificity rule wins regardless of which one sits inside a
+       media query. The extra type selector breaks that tie in our favor
+       without resorting to !important. */
+    header .nav-links,
+    header .cta-nav {
       display: none;
+    }
+
+    .nav-toggle-btn {
+      display: inline-flex;
+    }
+
+    .nav-toggle-input:checked ~ nav .nav-toggle-btn .icon-burger {
+      display: none;
+    }
+
+    .nav-toggle-input:checked ~ nav .nav-toggle-btn .icon-close {
+      display: block;
+    }
+
+    .nav-toggle-input:checked ~ .mobile-menu {
+      display: flex;
+    }
+
+    .mobile-menu {
+      flex-direction: column;
+      /* Right-aligned, hanging off the toggle button above it (top-right
+         of the bar) rather than the left edge -- same treatment as the
+         public TournArena header's own mobile menu. */
+      align-items: flex-end;
+      gap: 2px;
+      padding: 4px clamp(20px, 5vw, 56px) 20px;
+      border-top: 1px solid var(--line);
+    }
+
+    .mobile-menu a {
+      padding: 10px 0;
+      color: var(--parchment-dim);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .mobile-menu a:hover {
+      color: var(--bronze-bright);
+    }
+
+    .mobile-menu .btn {
+      margin-top: 10px;
     }
   }
 
@@ -191,7 +289,12 @@
 
   /* ---------- hero ---------- */
   .hero {
-    padding: clamp(64px, 10vw, 128px) 0 clamp(56px, 8vw, 96px);
+    /* padding-top/bottom only -- a 3-value shorthand here would also set
+       left/right padding to 0, clobbering .wrap's own horizontal padding
+       on this same element (class="wrap hero") and pulling the eyebrow/
+       heading/lede flush against the viewport edges on narrow screens. */
+    padding-top: clamp(64px, 10vw, 128px);
+    padding-bottom: clamp(56px, 8vw, 96px);
     display: grid;
     grid-template-columns: 1.15fr 0.85fr;
     gap: clamp(32px, 6vw, 64px);
@@ -629,6 +732,138 @@
     width: 20px;
     height: 20px;
   }
+
+  /* ---------- contact form (native <details> disclosure, no JS) ---------- */
+  .contact-disclosure {
+    margin: 4px 0 0;
+  }
+
+  .contact-disclosure summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 28px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    list-style: none;
+    background: linear-gradient(120deg, var(--bronze), var(--bronze-bright));
+    color: #14161a;
+    box-shadow: var(--shadow-bronze);
+    transition: transform 0.2s ease, border-radius 0.2s ease;
+  }
+
+  .contact-disclosure summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .contact-disclosure summary:hover {
+    transform: translateY(-2px);
+  }
+
+  .contact-disclosure[open] summary {
+    border-radius: 16px 16px 0 0;
+    transform: none;
+  }
+
+  /* display:grid lives on the [open] variant only -- an unconditional
+     `display: grid` here would be an *author* style, which always beats
+     the UA stylesheet's `display: none` on a closed <details>'s non-
+     <summary> children, defeating the native disclosure behavior and
+     showing the form even before the visitor clicks "Contactez-nous". */
+  .contact-disclosure[open] .contact-form {
+    position: relative;
+    margin-top: 0;
+    display: grid;
+    gap: 16px;
+    padding: 24px;
+    background: var(--ink-soft);
+    border: 1px solid var(--line);
+    border-top: none;
+    border-radius: 0 0 16px 16px;
+    max-width: 420px;
+  }
+
+  .form-row {
+    display: grid;
+    gap: 6px;
+  }
+
+  .form-row label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--parchment-dim);
+  }
+
+  .form-row input,
+  .form-row select,
+  .form-row textarea {
+    font: inherit;
+    color: var(--parchment);
+    background: var(--ink-softer);
+    border: 1px solid var(--line-strong);
+    border-radius: 10px;
+    padding: 11px 14px;
+  }
+
+  .form-row input:focus,
+  .form-row select:focus,
+  .form-row textarea:focus {
+    outline: none;
+    border-color: var(--bronze-bright);
+  }
+
+  .form-row textarea {
+    resize: vertical;
+    min-height: 96px;
+  }
+
+  /* Honeypot -- visually and audibly hidden (not display:none, which some
+     crawlers specifically skip), never reachable by keyboard. A real
+     visitor never sees or fills this; see kelto-contact.service.ts. */
+  .hp-field {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .form-alert {
+    display: none;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: rgba(224, 92, 74, 0.12);
+    border: 1px solid rgba(224, 92, 74, 0.4);
+    color: #f0a897;
+    font-size: 0.88rem;
+  }
+
+  /* Server-side redirect target on validation failure -- a plain :target
+     rule, no JS. Landing on #contact-erreur (inside the <form>, itself
+     inside <details>) also auto-expands the <details> and scrolls to it,
+     which is standard browser behavior with no extra code needed. */
+  #contact-erreur:target {
+    display: block;
+  }
+
+  .contact-form button[type='submit'] {
+    justify-self: start;
+  }
+
+  .contact-fallback {
+    margin-top: 14px;
+    font-size: 0.85rem;
+    color: var(--parchment-dim);
+  }
+
+  .contact-fallback a {
+    color: var(--bronze-bright);
+    text-decoration: underline;
+  }
 </style>
 </head>
 <body>
@@ -636,6 +871,7 @@
 <div class="field"></div>
 
 <header>
+  <input type="checkbox" id="nav-toggle" class="nav-toggle-input" />
   <nav class="wrap">
     <a href="#top" class="brand">
       <svg class="mark" viewBox="0 0 100 100" aria-hidden="true">
@@ -648,19 +884,25 @@
         </defs>
         <g clip-path="url(#navclip)">
           <rect width="100" height="100" fill="url(#navg)" />
-          <g stroke="#7a3f1e" stroke-opacity="0.5" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="translate(4,5)">
-            <path d="M30 22 L30 78" />
-            <path d="M30 52 L68 20" />
-            <path d="M30 50 L70 80" />
-          </g>
-          <g stroke="#14161a" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" fill="none">
-            <path d="M30 22 L30 78" />
-            <path d="M30 52 L68 20" />
-            <path d="M30 50 L70 80" />
-          </g>
-          <g stroke="#14161a" stroke-width="7" stroke-linecap="round" fill="none">
-            <path d="M74 28 L85 19" opacity="0.55" />
-            <path d="M81 35 L89 29" opacity="0.3" />
+          <!-- Scaled down and re-centered -- at full size the speed-line
+               tips sat right against the rounded-corner edge (cramped,
+               "rogné" look on a real device). This gives the K uniform
+               breathing room from the badge's border on every side. -->
+          <g transform="translate(50,50) scale(0.74) translate(-50,-50)">
+            <g stroke="#7a3f1e" stroke-opacity="0.5" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="translate(4,5)">
+              <path d="M30 22 L30 78" />
+              <path d="M30 52 L68 20" />
+              <path d="M30 50 L70 80" />
+            </g>
+            <g stroke="#14161a" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" fill="none">
+              <path d="M30 22 L30 78" />
+              <path d="M30 52 L68 20" />
+              <path d="M30 50 L70 80" />
+            </g>
+            <g stroke="#14161a" stroke-width="7" stroke-linecap="round" fill="none">
+              <path d="M74 28 L85 19" opacity="0.55" />
+              <path d="M81 35 L89 29" opacity="0.3" />
+            </g>
           </g>
         </g>
       </svg>
@@ -672,8 +914,23 @@
       <a href="#realisation">Réalisation</a>
       <a href="#contact">Contact</a>
     </div>
-    <a href="#contact" class="btn btn-ghost" style="padding:10px 22px;font-size:0.85rem;">Discutons</a>
+    <a href="#contact" class="btn btn-ghost cta-nav" style="padding:10px 22px;font-size:0.85rem;">Discutons</a>
+    <label for="nav-toggle" class="nav-toggle-btn" aria-label="Menu">
+      <svg class="icon-burger" viewBox="0 0 20 20" aria-hidden="true">
+        <path d="M3 5 L17 5 M3 10 L17 10 M3 15 L17 15" />
+      </svg>
+      <svg class="icon-close" viewBox="0 0 20 20" aria-hidden="true">
+        <path d="M4 4 L16 16 M16 4 L4 16" />
+      </svg>
+    </label>
   </nav>
+  <div class="mobile-menu wrap">
+    <a href="#services">Ateliers</a>
+    <a href="#approche">Méthode</a>
+    <a href="#realisation">Réalisation</a>
+    <a href="#contact">Contact</a>
+    <a href="#contact" class="btn btn-primary">Discutons</a>
+  </div>
 </header>
 
 <main id="top">
@@ -682,9 +939,9 @@
       <p class="eyebrow">Kelto Studio · Atelier d'applications</p>
       <h1>Des applications <em>taillées</em> pour ce que vous construisez.</h1>
       <p class="lede">
-        Nous concevons et développons des applications mobiles et web sur mesure — d'une idée
+        Kelto Studio conçoit et développe des applications mobiles et web sur mesure — d'une idée
         de coin de table à un produit que des milliers de personnes utilisent un dimanche matin.
-        Un atelier français, une approche artisanale, du premier croquis à la mise en production.
+        Un seul atelier, un seul interlocuteur, du premier croquis à la mise en production.
       </p>
       <div class="cta-row">
         <a href="#contact" class="btn btn-primary">Démarrer un projet</a>
@@ -703,19 +960,23 @@
         <rect x="18" y="18" width="224" height="224" rx="54" fill="none" stroke="rgba(244,239,230,0.12)" stroke-width="1" />
         <g clip-path="url(#heroclip)">
           <rect x="18" y="18" width="224" height="224" fill="url(#herog)" />
-          <g stroke="#7a3f1e" stroke-opacity="0.5" stroke-width="38" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="translate(9,11)">
-            <path d="M86 58 L86 198" />
-            <path d="M86 130 L166 60" />
-            <path d="M86 126 L172 200" />
-          </g>
-          <g stroke="#14161a" stroke-width="38" stroke-linecap="round" stroke-linejoin="round" fill="none">
-            <path d="M86 58 L86 198" />
-            <path d="M86 130 L166 60" />
-            <path d="M86 126 L172 200" />
-          </g>
-          <g stroke="#14161a" stroke-width="15" stroke-linecap="round" fill="none">
-            <path d="M176 78 L204 52" opacity="0.55" />
-            <path d="M194 96 L216 78" opacity="0.3" />
+          <!-- Same re-centering as the nav/footer mark, scaled around the
+               clip region's own center (130,130) -- see that comment. -->
+          <g transform="translate(130,130) scale(0.74) translate(-130,-130)">
+            <g stroke="#7a3f1e" stroke-opacity="0.5" stroke-width="38" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="translate(9,11)">
+              <path d="M86 58 L86 198" />
+              <path d="M86 130 L166 60" />
+              <path d="M86 126 L172 200" />
+            </g>
+            <g stroke="#14161a" stroke-width="38" stroke-linecap="round" stroke-linejoin="round" fill="none">
+              <path d="M86 58 L86 198" />
+              <path d="M86 130 L166 60" />
+              <path d="M86 126 L172 200" />
+            </g>
+            <g stroke="#14161a" stroke-width="15" stroke-linecap="round" fill="none">
+              <path d="M176 78 L204 52" opacity="0.55" />
+              <path d="M194 96 L216 78" opacity="0.3" />
+            </g>
           </g>
         </g>
       </svg>
@@ -728,8 +989,8 @@
     <p class="eyebrow">Ce que nous taillons</p>
     <h2 class="section-title">Trois façons d'entrer en matière</h2>
     <p class="section-lede">
-      Trois portes d'entrée, une seule mise en œuvre — chacune peut avancer seule ou
-      s'enchaîner avec les deux autres selon où en est votre projet.
+      Comme le triskèle qui nous sert d'enseigne, l'atelier tient sur trois branches — chacune
+      peut avancer seule ou s'enrouler avec les deux autres selon où en est votre projet.
     </p>
     <div class="services">
       <div class="service">
@@ -764,8 +1025,8 @@
     <h2 class="section-title">Un atelier, pas une agence</h2>
     <p class="section-lede">
       Kelto Studio est un atelier à taille humaine — des artisans du logiciel français, du
-      premier appel jusqu'à la mise en production. Peu d'intermédiaires, peu de couches
-      de gestion : ce que vous décidez un lundi peut être en ligne le vendredi.
+      premier appel jusqu'à la mise en production. Pas de passation d'équipe, pas de couches
+      de gestion de projet : ce que vous décidez un lundi peut être en ligne le vendredi.
     </p>
     <div class="approach">
       <div class="step">
@@ -838,7 +1099,45 @@
             Décrivez-le en quelques lignes — objectif, utilisateurs, échéance si vous en avez
             une. Réponse sous 48h ouvrées.
           </p>
-          <a class="btn btn-primary" href="mailto:bonjour@kelto-studio.fr">bonjour@kelto-studio.fr</a>
+          <details class="contact-disclosure">
+            <summary class="btn btn-primary">Contactez-nous</summary>
+            <form class="contact-form" method="post" action="https://tournarena.com/api/v1/kelto/contact">
+              <p id="contact-erreur" class="form-alert" role="alert">
+                Un champ est manquant ou invalide. Vérifiez le formulaire et réessayez, ou écrivez-nous
+                directement à contact@kelto-studio.fr.
+              </p>
+              <div class="form-row">
+                <label for="cf-nom">Nom</label>
+                <input id="cf-nom" name="nom" type="text" maxlength="120" autocomplete="name" required />
+              </div>
+              <div class="form-row">
+                <label for="cf-email">Email</label>
+                <input id="cf-email" name="email" type="email" maxlength="200" autocomplete="email" required />
+              </div>
+              <div class="form-row">
+                <label for="cf-type">Type de demande</label>
+                <select id="cf-type" name="typeDemande" required>
+                  <option value="" disabled selected>Choisissez...</option>
+                  <option value="projet_devis">Projet / devis</option>
+                  <option value="probleme">Problème rencontré</option>
+                  <option value="autre">Autre</option>
+                </select>
+              </div>
+              <div class="form-row">
+                <label for="cf-message">Message</label>
+                <textarea id="cf-message" name="message" rows="5" maxlength="5000" required></textarea>
+              </div>
+              <div class="hp-field" aria-hidden="true">
+                <label for="cf-site-web">Laissez ce champ vide</label>
+                <input id="cf-site-web" name="site_web" type="text" tabindex="-1" autocomplete="off" />
+              </div>
+              <button type="submit" class="btn btn-primary">Envoyer le message</button>
+            </form>
+          </details>
+          <p class="contact-fallback">
+            Vous préférez l'email ? Écrivez-nous directement à
+            <a href="mailto:contact@kelto-studio.fr">contact@kelto-studio.fr</a>.
+          </p>
         </div>
         <div class="contact-facts">
           <div class="fact">
@@ -867,29 +1166,30 @@
             </defs>
             <g clip-path="url(#footclip)">
               <rect width="100" height="100" fill="url(#footg)" />
-              <g stroke="#7a3f1e" stroke-opacity="0.5" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="translate(4,5)">
-                <path d="M30 22 L30 78" />
-                <path d="M30 52 L68 20" />
-                <path d="M30 50 L70 80" />
-              </g>
-              <g stroke="#14161a" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" fill="none">
-                <path d="M30 22 L30 78" />
-                <path d="M30 52 L68 20" />
-                <path d="M30 50 L70 80" />
-              </g>
-              <g stroke="#14161a" stroke-width="7" stroke-linecap="round" fill="none">
-                <path d="M74 28 L85 19" opacity="0.55" />
-                <path d="M81 35 L89 29" opacity="0.3" />
+              <g transform="translate(50,50) scale(0.74) translate(-50,-50)">
+                <g stroke="#7a3f1e" stroke-opacity="0.5" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="translate(4,5)">
+                  <path d="M30 22 L30 78" />
+                  <path d="M30 52 L68 20" />
+                  <path d="M30 50 L70 80" />
+                </g>
+                <g stroke="#14161a" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                  <path d="M30 22 L30 78" />
+                  <path d="M30 52 L68 20" />
+                  <path d="M30 50 L70 80" />
+                </g>
+                <g stroke="#14161a" stroke-width="7" stroke-linecap="round" fill="none">
+                  <path d="M74 28 L85 19" opacity="0.55" />
+                  <path d="M81 35 L89 29" opacity="0.3" />
+                </g>
               </g>
             </g>
           </svg>
           Kelto Studio
         </div>
-        <span>© 2026 Kelto Studio — Atelier français.</span>
+        <span>© 2026 Kelto — Atelier français.</span>
       </div>
     </div>
   </footer>
 </main>
-
 </body>
 </html>
