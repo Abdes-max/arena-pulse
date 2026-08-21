@@ -67,11 +67,18 @@ www.{$DOMAIN} {
 	# inline event-handler attributes to begin with (plain static HTML/CSS,
 	# no JS at all) -- see feat/179's postmortem on why that distinction
 	# matters for Angular's build output, which doesn't apply here.
+	#
+	# form-action allows https://tournarena.com in addition to 'self': the
+	# contact form is a real cross-origin <form method="post"> submission
+	# (no fetch/XHR, this page has no JS) targeting the kelto/contact
+	# endpoint on the TournArena api -- see apps/api/src/kelto/. Everything
+	# else about this CSP is unchanged; that endpoint is the only thing this
+	# page's markup ever submits to.
 	header {
 		X-Frame-Options "DENY"
 		X-Content-Type-Options "nosniff"
 		Strict-Transport-Security "max-age=31536000; includeSubDomains"
-		Content-Security-Policy "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; img-src 'self' data:; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'"
+		Content-Security-Policy "default-src 'self'; base-uri 'self'; form-action 'self' https://tournarena.com; frame-ancestors 'none'; object-src 'none'; img-src 'self' data:; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'"
 	}
 }
 
