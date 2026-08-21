@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kelto Studio — atelier d'applications</title>
+<meta name="description" content="Kelto Studio conçoit et développe des applications mobiles et web sur mesure. Des artisans du logiciel français, du premier croquis à la mise en production." />
+<meta property="og:title" content="Kelto Studio — atelier d'applications" />
+<meta property="og:description" content="Des applications mobiles et web taillées pour ce que vous construisez. Une équipe d'artisans du logiciel français." />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://kelto-studio.fr" />
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23e3a463'/%3E%3Cstop offset='1' stop-color='%23b8592f'/%3E%3C/linearGradient%3E%3CclipPath id='c'%3E%3Crect width='100' height='100' rx='24'/%3E%3C/clipPath%3E%3C/defs%3E%3Cg clip-path='url(%23c)'%3E%3Crect width='100' height='100' fill='url(%23g)'/%3E%3Cg stroke='%2314161a' stroke-width='17' stroke-linecap='round' stroke-linejoin='round' fill='none'%3E%3Cpath d='M30 22 L30 78'/%3E%3Cpath d='M30 52 L68 20'/%3E%3Cpath d='M30 50 L70 80'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E" />
+<style>
+  :root {
+    --ink: #14161a;
+    --ink-soft: #1b1e24;
+    --ink-softer: #24282f;
+    --parchment: #f4efe6;
+    --parchment-dim: #d9d2c4;
+    --bronze: #c08a4e;
+    --bronze-bright: #e3a463;
+    --moss: #6f9280;
+    --line: rgba(244, 239, 230, 0.14);
+    --line-strong: rgba(244, 239, 230, 0.28);
+    --font-display: "Avenir Next", "Century Gothic", Futura, "Helvetica Neue", Arial, sans-serif;
+    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --shadow-bronze: 0 20px 60px -20px rgba(192, 138, 78, 0.35);
+  }
+
+  :root[data-theme="light"] {
+    --ink: #f6f1e7;
+    --ink-soft: #ffffff;
+    --ink-softer: #eee6d6;
+    --parchment: #1a1c20;
+    --parchment-dim: #4a4640;
+    --line: rgba(20, 22, 26, 0.12);
+    --line-strong: rgba(20, 22, 26, 0.24);
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --ink: #f6f1e7;
+      --ink-soft: #ffffff;
+      --ink-softer: #eee6d6;
+      --parchment: #1a1c20;
+      --parchment-dim: #4a4640;
+      --line: rgba(20, 22, 26, 0.12);
+      --line-strong: rgba(20, 22, 26, 0.24);
+    }
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    background: var(--ink);
+    color: var(--parchment);
+    font-family: var(--font-body);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    * {
+      animation-duration: 0.001ms !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+
+  a {
+    color: inherit;
+  }
+
+  .wrap {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 clamp(20px, 5vw, 56px);
+  }
+
+  /* ---------- background texture ---------- */
+  .field {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(680px 480px at 82% -8%, rgba(192, 138, 78, 0.16), transparent 60%),
+      radial-gradient(600px 500px at -10% 30%, rgba(111, 146, 128, 0.12), transparent 60%),
+      var(--ink);
+  }
+
+  /* ---------- nav ---------- */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: blur(10px);
+    background: color-mix(in srgb, var(--ink) 78%, transparent);
+    border-bottom: 1px solid var(--line);
+  }
+
+  nav.wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 76px;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.15rem;
+    letter-spacing: 0.01em;
+    color: var(--parchment);
+  }
+
+  .brand .mark {
+    width: 34px;
+    height: 34px;
+    flex: none;
+  }
+
+  .brand small {
+    display: block;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--bronze-bright);
+    margin-top: 2px;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .nav-links a {
+    text-decoration: none;
+    color: var(--parchment-dim);
+    transition: color 0.2s ease;
+  }
+
+  .nav-links a:hover,
+  .nav-links a:focus-visible {
+    color: var(--bronze-bright);
+  }
+
+  @media (max-width: 720px) {
+    .nav-links {
+      display: none;
+    }
+  }
+
+  /* ---------- eyebrow / section labels ---------- */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--bronze-bright);
+    margin: 0 0 18px;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--bronze);
+  }
+
+  /* ---------- hero ---------- */
+  .hero {
+    padding: clamp(64px, 10vw, 128px) 0 clamp(56px, 8vw, 96px);
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: clamp(32px, 6vw, 64px);
+    align-items: center;
+  }
+
+  @media (max-width: 860px) {
+    .hero {
+      grid-template-columns: 1fr;
+    }
+    .hero-mark {
+      order: -1;
+      max-width: 220px;
+      margin: 0 auto;
+    }
+  }
+
+  .hero h1 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(2.6rem, 6vw, 4.4rem);
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+    margin: 0 0 22px;
+    text-wrap: balance;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    background: linear-gradient(100deg, var(--bronze-bright), var(--moss) 85%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .hero p.lede {
+    font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+    color: var(--parchment-dim);
+    max-width: 46ch;
+    margin: 0 0 34px;
+  }
+
+  .cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 15px 28px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  }
+
+  .btn-primary {
+    background: linear-gradient(120deg, var(--bronze), var(--bronze-bright));
+    color: #14161a;
+    box-shadow: var(--shadow-bronze);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+  }
+
+  .btn-ghost {
+    border: 1px solid var(--line-strong);
+    color: var(--parchment);
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--bronze-bright);
+    color: var(--bronze-bright);
+  }
+
+  .hero-mark svg {
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 30px 60px rgba(192, 138, 78, 0.25));
+  }
+
+  .float-slow {
+    animation: float 5s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+
+  /* ---------- band divider ---------- */
+  .torc {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--line-strong) 20%, var(--line-strong) 80%, transparent);
+  }
+
+  /* ---------- section shell ---------- */
+  section {
+    padding: clamp(64px, 9vw, 108px) 0;
+  }
+
+  h2.section-title {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.9rem, 3.4vw, 2.6rem);
+    letter-spacing: -0.01em;
+    margin: 0 0 16px;
+    max-width: 22ch;
+  }
+
+  p.section-lede {
+    color: var(--parchment-dim);
+    max-width: 58ch;
+    font-size: 1.05rem;
+    margin: 0 0 48px;
+  }
+
+  /* ---------- services (three-fold) ---------- */
+  .services {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  @media (max-width: 780px) {
+    .services {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .service {
+    background: var(--ink-soft);
+    padding: 40px 32px;
+    position: relative;
+  }
+
+  .service .num {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 0.85rem;
+    color: var(--bronze);
+    letter-spacing: 0.12em;
+  }
+
+  .service h3 {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    margin: 18px 0 12px;
+  }
+
+  .service p {
+    color: var(--parchment-dim);
+    font-size: 0.95rem;
+    margin: 0;
+  }
+
+  /* ---------- approach ---------- */
+  .approach {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 28px;
+  }
+
+  @media (max-width: 900px) {
+    .approach {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 540px) {
+    .approach {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .step {
+    border-top: 2px solid var(--bronze);
+    padding-top: 18px;
+  }
+
+  .step .step-label {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--bronze-bright);
+  }
+
+  .step h4 {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    margin: 10px 0 8px;
+  }
+
+  .step p {
+    color: var(--parchment-dim);
+    font-size: 0.9rem;
+    margin: 0;
+  }
+
+  /* ---------- case study ---------- */
+  .case {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(32px, 5vw, 64px);
+    align-items: center;
+    background: var(--ink-soft);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    padding: clamp(28px, 4vw, 56px);
+  }
+
+  @media (max-width: 860px) {
+    .case {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .case-copy .eyebrow {
+    margin-bottom: 14px;
+  }
+
+  .case-copy h3 {
+    font-family: var(--font-display);
+    font-size: clamp(1.6rem, 2.6vw, 2.1rem);
+    margin: 0 0 16px;
+  }
+
+  .case-copy p {
+    color: var(--parchment-dim);
+    margin: 0 0 24px;
+  }
+
+  .case-stats {
+    display: flex;
+    gap: 32px;
+    margin-bottom: 28px;
+  }
+
+  .case-stats div strong {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 1.7rem;
+    color: var(--bronze-bright);
+  }
+
+  .case-stats div span {
+    font-size: 0.78rem;
+    color: var(--parchment-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .case-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    text-decoration: none;
+    color: var(--bronze-bright);
+    border-bottom: 1px solid currentColor;
+    padding-bottom: 2px;
+  }
+
+  /* mock phone card for tournarena */
+  .mock {
+    background: #0e1730;
+    border-radius: 22px;
+    padding: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.6);
+    font-family: var(--font-body);
+  }
+
+  .mock-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .mock-badge {
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #f2b96b;
+    font-weight: 700;
+  }
+
+  .mock-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #4ee39a;
+    box-shadow: 0 0 0 3px rgba(78, 227, 154, 0.18);
+  }
+
+  .mock h5 {
+    font-family: var(--font-display);
+    color: #fff;
+    font-size: 1.4rem;
+    margin: 0 0 4px;
+    background: linear-gradient(95deg, #67d9c4, #f2b96b 70%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .mock-sub {
+    color: #8b93ab;
+    font-size: 0.82rem;
+    margin: 0 0 18px;
+  }
+
+  .mock-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.04);
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+    color: #d8dcec;
+  }
+
+  .mock-row strong {
+    color: #fff;
+  }
+
+  .mock-row .score {
+    font-family: var(--font-display);
+    font-weight: 800;
+    color: #f2b96b;
+  }
+
+  /* ---------- footer / contact ---------- */
+  footer {
+    border-top: 1px solid var(--line);
+    padding: clamp(48px, 7vw, 72px) 0 36px;
+  }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 40px;
+    margin-bottom: 56px;
+  }
+
+  @media (max-width: 760px) {
+    .contact-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .contact-grid h2 {
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 3.2vw, 2.4rem);
+    margin: 0 0 18px;
+    max-width: 16ch;
+  }
+
+  .contact-grid p {
+    color: var(--parchment-dim);
+    max-width: 42ch;
+    margin: 0 0 26px;
+  }
+
+  .contact-facts {
+    display: grid;
+    gap: 18px;
+    align-content: start;
+  }
+
+  .fact {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 18px 20px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+  }
+
+  .fact span.label {
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--bronze-bright);
+    font-weight: 700;
+  }
+
+  .fact span.value {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+  }
+
+  .foot-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-top: 28px;
+    border-top: 1px solid var(--line);
+    font-size: 0.8rem;
+    color: var(--parchment-dim);
+  }
+
+  .foot-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: var(--parchment);
+  }
+
+  .foot-brand svg {
+    width: 20px;
+    height: 20px;
+  }
+</style>
+</head>
+<body>
+
+<div class="field"></div>
+
+<header>
+  <nav class="wrap">
+    <a href="#top" class="brand">
+      <svg class="mark" viewBox="0 0 100 100" aria-hidden="true">
+        <defs>
+          <linearGradient id="navg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#e3a463" />
+            <stop offset="1" stop-color="#b8592f" />
+          </linearGradient>
+          <clipPath id="navclip"><rect x="0" y="0" width="100" height="100" rx="24" /></clipPath>
+        </defs>
+        <g clip-path="url(#navclip)">
+          <rect width="100" height="100" fill="url(#navg)" />
+          <g stroke="#7a3f1e" stroke-opacity="0.5" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="translate(4,5)">
+            <path d="M30 22 L30 78" />
+            <path d="M30 52 L68 20" />
+            <path d="M30 50 L70 80" />
+          </g>
+          <g stroke="#14161a" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" fill="none">
+            <path d="M30 22 L30 78" />
+            <path d="M30 52 L68 20" />
+            <path d="M30 50 L70 80" />
+          </g>
+          <g stroke="#14161a" stroke-width="7" stroke-linecap="round" fill="none">
+            <path d="M74 28 L85 19" opacity="0.55" />
+            <path d="M81 35 L89 29" opacity="0.3" />
+          </g>
+        </g>
+      </svg>
+      Kelto <small>Studio</small>
+    </a>
+    <div class="nav-links">
+      <a href="#services">Ateliers</a>
+      <a href="#approche">Méthode</a>
+      <a href="#realisation">Réalisation</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <a href="#contact" class="btn btn-ghost" style="padding:10px 22px;font-size:0.85rem;">Discutons</a>
+  </nav>
+</header>
+
+<main id="top">
+  <div class="wrap hero">
+    <div>
+      <p class="eyebrow">Kelto Studio · Atelier d'applications</p>
+      <h1>Des applications <em>taillées</em> pour ce que vous construisez.</h1>
+      <p class="lede">
+        Nous concevons et développons des applications mobiles et web sur mesure — d'une idée
+        de coin de table à un produit que des milliers de personnes utilisent un dimanche matin.
+        Un atelier français, une approche artisanale, du premier croquis à la mise en production.
+      </p>
+      <div class="cta-row">
+        <a href="#contact" class="btn btn-primary">Démarrer un projet</a>
+        <a href="#realisation" class="btn btn-ghost">Voir une réalisation ↓</a>
+      </div>
+    </div>
+    <div class="hero-mark">
+      <svg viewBox="0 0 260 260" aria-hidden="true" class="float-slow">
+        <defs>
+          <linearGradient id="herog" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#e3a463" />
+            <stop offset="1" stop-color="#b8592f" />
+          </linearGradient>
+          <clipPath id="heroclip"><rect x="18" y="18" width="224" height="224" rx="54" /></clipPath>
+        </defs>
+        <rect x="18" y="18" width="224" height="224" rx="54" fill="none" stroke="rgba(244,239,230,0.12)" stroke-width="1" />
+        <g clip-path="url(#heroclip)">
+          <rect x="18" y="18" width="224" height="224" fill="url(#herog)" />
+          <g stroke="#7a3f1e" stroke-opacity="0.5" stroke-width="38" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="translate(9,11)">
+            <path d="M86 58 L86 198" />
+            <path d="M86 130 L166 60" />
+            <path d="M86 126 L172 200" />
+          </g>
+          <g stroke="#14161a" stroke-width="38" stroke-linecap="round" stroke-linejoin="round" fill="none">
+            <path d="M86 58 L86 198" />
+            <path d="M86 130 L166 60" />
+            <path d="M86 126 L172 200" />
+          </g>
+          <g stroke="#14161a" stroke-width="15" stroke-linecap="round" fill="none">
+            <path d="M176 78 L204 52" opacity="0.55" />
+            <path d="M194 96 L216 78" opacity="0.3" />
+          </g>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <div class="torc"></div>
+
+  <section id="services" class="wrap">
+    <p class="eyebrow">Ce que nous taillons</p>
+    <h2 class="section-title">Trois façons d'entrer en matière</h2>
+    <p class="section-lede">
+      Trois portes d'entrée, une seule mise en œuvre — chacune peut avancer seule ou
+      s'enchaîner avec les deux autres selon où en est votre projet.
+    </p>
+    <div class="services">
+      <div class="service">
+        <span class="num">01 — Produit</span>
+        <h3>Applications mobiles &amp; web</h3>
+        <p>
+          Conception et développement de bout en bout : iOS, Android et web, du premier
+          prototype cliquable jusqu'au store. Une seule base de code pensée pour durer.
+        </p>
+      </div>
+      <div class="service">
+        <span class="num">02 — Identité</span>
+        <h3>Marque &amp; interface</h3>
+        <p>
+          Logo, système visuel, design system. Une identité qui tient sur une icône d'app
+          comme sur une affiche, cohérente du premier écran au dernier.
+        </p>
+      </div>
+      <div class="service">
+        <span class="num">03 — Suite</span>
+        <h3>Exploitation &amp; évolutions</h3>
+        <p>
+          Hébergement, monitoring, nouvelles fonctionnalités. Le produit continue de vivre
+          après la mise en ligne — c'est là que la plupart des choses se jouent vraiment.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section id="approche" class="wrap">
+    <p class="eyebrow">Méthode</p>
+    <h2 class="section-title">Un atelier, pas une agence</h2>
+    <p class="section-lede">
+      Kelto Studio est un atelier à taille humaine — des artisans du logiciel français, du
+      premier appel jusqu'à la mise en production. Peu d'intermédiaires, peu de couches
+      de gestion : ce que vous décidez un lundi peut être en ligne le vendredi.
+    </p>
+    <div class="approach">
+      <div class="step">
+        <span class="step-label">Semaine 1</span>
+        <h4>Cadrage</h4>
+        <p>On clarifie qui utilise le produit, pour faire quoi, et ce qui compte vraiment pour la V1.</p>
+      </div>
+      <div class="step">
+        <span class="step-label">Semaine 2–3</span>
+        <h4>Maquette</h4>
+        <p>Écrans cliquables, identité visuelle posée — on valide l'expérience avant d'écrire une ligne de code.</p>
+      </div>
+      <div class="step">
+        <span class="step-label">Selon le projet</span>
+        <h4>Développement</h4>
+        <p>Construction par lots livrables, testés et déployables à chaque étape — jamais une boîte noire.</p>
+      </div>
+      <div class="step">
+        <span class="step-label">Et après</span>
+        <h4>Mise en orbite</h4>
+        <p>Publication, suivi des premiers usages, ajustements. Le lancement est un début, pas une ligne d'arrivée.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="torc"></div>
+
+  <section id="realisation" class="wrap">
+    <p class="eyebrow">Réalisation</p>
+    <h2 class="section-title">TournArena</h2>
+    <p class="section-lede">Une application conçue et développée par Kelto Studio.</p>
+    <div class="case">
+      <div class="case-copy">
+        <h3>Organiser un tournoi ne devrait pas être un second travail.</h3>
+        <p>
+          TournArena gère poules, tableaux à élimination, calendrier, arbitrage et
+          classements — avec un site public généré automatiquement pour chaque
+          compétition, mis à jour à la seconde où un score est saisi. Applications iOS,
+          Android et web organisateur, une seule plateforme.
+        </p>
+        <div class="case-stats">
+          <div><strong>3</strong><span>Plateformes</span></div>
+          <div><strong>6</strong><span>Langues</span></div>
+          <div><strong>Live</strong><span>Classements en direct</span></div>
+        </div>
+        <a class="case-link" href="https://tournarena.com" target="_blank" rel="noopener">
+          Voir tournarena.com ↗
+        </a>
+      </div>
+      <div class="mock">
+        <div class="mock-top">
+          <span class="mock-badge">● En direct</span>
+          <span class="mock-dot"></span>
+        </div>
+        <h5>U11 Super League</h5>
+        <p class="mock-sub">Football · Vancouver · Poule A</p>
+        <div class="mock-row"><strong>Les Aigles</strong><span class="score">3 – 1</span></div>
+        <div class="mock-row"><strong>Faucons FC</strong><span class="score">2 – 2</span></div>
+        <div class="mock-row"><strong>Étoile Nord</strong><span class="score">à venir</span></div>
+      </div>
+    </div>
+  </section>
+
+  <footer id="contact">
+    <div class="wrap">
+      <div class="contact-grid">
+        <div>
+          <h2>Un projet en tête ?</h2>
+          <p>
+            Décrivez-le en quelques lignes — objectif, utilisateurs, échéance si vous en avez
+            une. Réponse sous 48h ouvrées.
+          </p>
+          <a class="btn btn-primary" href="mailto:bonjour@kelto-studio.fr">bonjour@kelto-studio.fr</a>
+        </div>
+        <div class="contact-facts">
+          <div class="fact">
+            <span class="label">Approche</span>
+            <span class="value">Artisanale</span>
+          </div>
+          <div class="fact">
+            <span class="label">Basé en</span>
+            <span class="value">France</span>
+          </div>
+          <div class="fact">
+            <span class="label">Domaine</span>
+            <span class="value">kelto-studio.fr</span>
+          </div>
+        </div>
+      </div>
+      <div class="foot-bottom">
+        <div class="foot-brand">
+          <svg viewBox="0 0 100 100" aria-hidden="true">
+            <defs>
+              <linearGradient id="footg" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#e3a463" />
+                <stop offset="1" stop-color="#b8592f" />
+              </linearGradient>
+              <clipPath id="footclip"><rect x="0" y="0" width="100" height="100" rx="24" /></clipPath>
+            </defs>
+            <g clip-path="url(#footclip)">
+              <rect width="100" height="100" fill="url(#footg)" />
+              <g stroke="#7a3f1e" stroke-opacity="0.5" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="translate(4,5)">
+                <path d="M30 22 L30 78" />
+                <path d="M30 52 L68 20" />
+                <path d="M30 50 L70 80" />
+              </g>
+              <g stroke="#14161a" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" fill="none">
+                <path d="M30 22 L30 78" />
+                <path d="M30 52 L68 20" />
+                <path d="M30 50 L70 80" />
+              </g>
+              <g stroke="#14161a" stroke-width="7" stroke-linecap="round" fill="none">
+                <path d="M74 28 L85 19" opacity="0.55" />
+                <path d="M81 35 L89 29" opacity="0.3" />
+              </g>
+            </g>
+          </svg>
+          Kelto Studio
+        </div>
+        <span>© 2026 Kelto Studio — Atelier français.</span>
+      </div>
+    </div>
+  </footer>
+</main>
+
+</body>
+</html>

@@ -13,6 +13,13 @@
 # *before* starting the stack, and make sure 80/443 are reachable from the
 # internet (see infra/deployment/Caddyfile). web itself is only published on
 # 127.0.0.1 (see below), for host-local smoke-testing, not public traffic.
+#
+# This same Caddy instance also fronts KELTO_DOMAIN (Kelto Studio's own
+# marketing site, sites/kelto-studio/ -- a different brand, no relation to
+# TournArena beyond sharing this VPS) as a second, independent site block.
+# Deployed separately by .github/workflows/deploy-kelto.yml, not by this
+# stack's own deploy-prod.yml -- see that workflow's and the Caddyfile's
+# comments for why.
 
 name: arena-pulse-prod
 
@@ -135,12 +142,28 @@ services:
     restart: unless-stopped
     environment:
       DOMAIN: ${DOMAIN:?DOMAIN must be set -- e.g. tournarena.com, with DNS already pointed at this host}
+      # Kelto Studio's own marketing site (sites/kelto-studio/), served
+      # static off this same Caddy instance -- optional, unlike DOMAIN
+      # above, since it's a second brand riding along on this host rather
+      # than the thing this stack exists for. Defaults to kelto-studio.fr
+      # so existing deploys keep working without touching .env, but only
+      # actually serves anything once that domain's DNS points here.
+      KELTO_DOMAIN: ${KELTO_DOMAIN:-kelto-studio.fr}
     ports:
       - '80:80'
       - '443:443'
       - '443:443/udp'
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      # A fixed host path, not ../../sites/kelto-studio (relative to *this*
+      # git checkout) -- deploy-kelto.yml syncs straight to this path over
+      # scp, independently of deploy-prod.yml's own `git reset --hard` on
+      # this checkout, so a Kelto-only deploy never has to touch (or wait
+      # on) whatever TournArena state happens to be mid-deploy here, and
+      # vice versa. Defaults to a sibling of DEPLOY_PATH so both still live
+      # under the same parent on a fresh host, without either deploy
+      # depending on the other's directory.
+      - ${KELTO_SITE_DIR:-/opt/kelto-studio}:/srv/kelto-studio:ro
       - caddy-data-prod:/data
       - caddy-config-prod:/config
     depends_on:
