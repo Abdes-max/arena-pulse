@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1080px; height: 1350px; overflow: hidden; }
+  body {
+    background:
+      radial-gradient(900px 700px at 85% -10%, rgba(56,189,248,0.16), transparent 60%),
+      radial-gradient(700px 600px at -10% 100%, rgba(245,185,66,0.10), transparent 55%),
+      #0b1220;
+    color: #e7ecf5;
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    padding: 72px 76px 56px;
+  }
+
+  .top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #38bdf8;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 28px;
+    height: 2px;
+    background: #38bdf8;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo .mark {
+    width: 44px;
+    height: 44px;
+    flex: none;
+  }
+
+  .logo .word {
+    font-family: 'Space Grotesk', -apple-system, 'Segoe UI', sans-serif;
+    font-weight: 700;
+    font-size: 30px;
+    letter-spacing: -0.02em;
+  }
+
+  .logo .word .tourn { color: #c7d2e5; }
+  .logo .word .arena { color: #38bdf8; }
+
+  .hero {
+    margin-top: 88px;
+  }
+
+  .hero .pct {
+    font-family: 'Space Grotesk', -apple-system, 'Segoe UI', sans-serif;
+    font-weight: 800;
+    font-size: 268px;
+    line-height: 0.85;
+    letter-spacing: -0.02em;
+    background: linear-gradient(100deg, #f5b942, #fbd28a 55%, #f5b942);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 24px 50px rgba(245, 185, 66, 0.25));
+  }
+
+  .hero .sub {
+    margin-top: 8px;
+    font-family: 'Space Grotesk', -apple-system, 'Segoe UI', sans-serif;
+    font-weight: 700;
+    font-size: 46px;
+    letter-spacing: -0.01em;
+    color: #e7ecf5;
+  }
+
+  .scarcity {
+    margin-top: 32px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    width: fit-content;
+    padding: 16px 28px;
+    border-radius: 999px;
+    background: rgba(56, 189, 248, 0.12);
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    font-weight: 700;
+    font-size: 25px;
+    color: #7dd3fc;
+  }
+
+  .scarcity .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #38bdf8;
+    box-shadow: 0 0 0 5px rgba(56, 189, 248, 0.18);
+  }
+
+  .argument {
+    margin-top: 64px;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    background: #141b2e;
+    border: 1px solid #1f2a44;
+    border-radius: 28px;
+    padding: 40px 44px;
+  }
+
+  .argument-copy {
+    flex: 1;
+  }
+
+  .argument-copy .label {
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin-bottom: 12px;
+  }
+
+  .argument-copy h2 {
+    font-family: 'Space Grotesk', -apple-system, 'Segoe UI', sans-serif;
+    font-size: 44px;
+    font-weight: 700;
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    margin-bottom: 14px;
+  }
+
+  .argument-copy p {
+    font-size: 24px;
+    line-height: 1.5;
+    color: #c7d2e5;
+    max-width: 30ch;
+  }
+
+  .mock {
+    flex: none;
+    width: 260px;
+    background: #0e1730;
+    border-radius: 20px;
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.6);
+  }
+
+  .mock-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .mock-badge {
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #f5b942;
+    font-weight: 700;
+  }
+
+  .mock-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #22c55e;
+    box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.18);
+  }
+
+  .mock-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 13px;
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.05);
+    margin-bottom: 8px;
+    font-size: 16px;
+    color: #d8dcec;
+  }
+
+  .mock-row strong { color: #fff; font-weight: 600; }
+  .mock-row .score {
+    font-family: 'Space Grotesk', -apple-system, 'Segoe UI', sans-serif;
+    font-weight: 800;
+    color: #f5b942;
+  }
+
+  .features {
+    margin-top: 32px;
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  .chip {
+    padding: 12px 20px;
+    border-radius: 999px;
+    background: rgba(231, 236, 245, 0.06);
+    border: 1px solid #1f2a44;
+    font-size: 20px;
+    font-weight: 600;
+    color: #c7d2e5;
+  }
+
+  .spacer { flex: 1; }
+
+  .bottom {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    padding: 24px 40px;
+    border-radius: 999px;
+    background: linear-gradient(120deg, #38bdf8, #7dd3fc);
+    color: #0b1220;
+    font-weight: 800;
+    font-size: 30px;
+    box-shadow: 0 20px 50px -18px rgba(56, 189, 248, 0.5);
+  }
+
+  .fine-print {
+    margin-top: 18px;
+    font-size: 17px;
+    color: #64748b;
+    max-width: 46ch;
+  }
+
+  .credit {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #94a3b8;
+  }
+
+  .credit img { width: 30px; height: 30px; border-radius: 8px; }
+</style>
+</head>
+<body>
+  <div class="top">
+    <span class="eyebrow">Offre de lancement</span>
+    <div class="logo">
+      <svg class="mark" viewBox="0 0 64 64" aria-hidden="true">
+        <rect x="2" y="2" width="60" height="60" rx="14" fill="#141b2e" stroke="#1f2a44" stroke-width="1.5" />
+        <path d="M22 16 L42 32 L22 48" fill="none" stroke="#e7ecf5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+        <circle cx="45" cy="32" r="10" fill="#38bdf8" opacity="0.22" />
+        <circle cx="45" cy="32" r="5.5" fill="#38bdf8" />
+      </svg>
+      <span class="word"><span class="tourn">Tourn</span><span class="arena">Arena</span></span>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="pct">-50%</div>
+    <div class="sub">sur l'abonnement annuel organisateur</div>
+  </div>
+
+  <div class="scarcity"><span class="dot"></span> Réservé aux 50 premiers organisateurs</div>
+
+  <div class="argument">
+    <div class="argument-copy">
+      <div class="label">L'argument qui compte</div>
+      <h2>Classements en direct.<br />Zéro rafraîchissement.</h2>
+      <p>Le score est saisi côté organisateur — le public le voit à l'instant, sur le site du tournoi.</p>
+    </div>
+    <div class="mock">
+      <div class="mock-top">
+        <span class="mock-badge">● En direct</span>
+        <span class="mock-dot"></span>
+      </div>
+      <div class="mock-row"><strong>Les Aigles</strong><span class="score">3 – 1</span></div>
+      <div class="mock-row"><strong>Faucons FC</strong><span class="score">2 – 2</span></div>
+      <div class="mock-row"><strong>Étoile Nord</strong><span class="score">à venir</span></div>
+    </div>
+  </div>
+
+  <div class="features">
+    <span class="chip">Poules &amp; élimination directe</span>
+    <span class="chip">Calendrier &amp; arbitrage</span>
+    <span class="chip">iOS · Android · Web</span>
+  </div>
+
+  <div class="spacer"></div>
+
+  <div class="bottom">
+    <div>
+      <div class="cta">tournarena.com</div>
+      <div class="fine-print">Offre limitée aux 50 premières organisations abonnées. Non cumulable.</div>
+    </div>
+    <div class="credit">
+      <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4NCiAgPGRlZnM+DQogICAgPGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+DQogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNlM2E0NjMiIC8+DQogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNiODU5MmYiIC8+DQogICAgPC9saW5lYXJHcmFkaWVudD4NCiAgICA8Y2xpcFBhdGggaWQ9ImMiPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiByeD0iMjQiIC8+PC9jbGlwUGF0aD4NCiAgPC9kZWZzPg0KICA8ZyBjbGlwLXBhdGg9InVybCgjYykiPg0KICAgIDxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSJ1cmwoI2cpIiAvPg0KICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDUwLDUwKSBzY2FsZSgwLjc0KSB0cmFuc2xhdGUoLTUwLC01MCkiPg0KICAgICAgPGcgc3Ryb2tlPSIjN2EzZjFlIiBzdHJva2Utb3BhY2l0eT0iMC41IiBzdHJva2Utd2lkdGg9IjE3IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGZpbGw9Im5vbmUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDQsNSkiPg0KICAgICAgICA8cGF0aCBkPSJNMzAgMjIgTDMwIDc4IiAvPg0KICAgICAgICA8cGF0aCBkPSJNMzAgNTIgTDY4IDIwIiAvPg0KICAgICAgICA8cGF0aCBkPSJNMzAgNTAgTDcwIDgwIiAvPg0KICAgICAgPC9nPg0KICAgICAgPGcgc3Ryb2tlPSIjMTQxNjFhIiBzdHJva2Utd2lkdGg9IjE3IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGZpbGw9Im5vbmUiPg0KICAgICAgICA8cGF0aCBkPSJNMzAgMjIgTDMwIDc4IiAvPg0KICAgICAgICA8cGF0aCBkPSJNMzAgNTIgTDY4IDIwIiAvPg0KICAgICAgICA8cGF0aCBkPSJNMzAgNTAgTDcwIDgwIiAvPg0KICAgICAgPC9nPg0KICAgICAgPGcgc3Ryb2tlPSIjMTQxNjFhIiBzdHJva2Utd2lkdGg9IjciIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgZmlsbD0ibm9uZSI+DQogICAgICAgIDxwYXRoIGQ9Ik03NCAyOCBMODUgMTkiIG9wYWNpdHk9IjAuNTUiIC8+DQogICAgICAgIDxwYXRoIGQ9Ik04MSAzNSBMODkgMjkiIG9wYWNpdHk9IjAuMyIgLz4NCiAgICAgIDwvZz4NCiAgICA8L2c+DQogIDwvZz4NCjwvc3ZnPg0K" alt="" />
+      Conçu par Kelto Studio
+    </div>
+  </div>
+</body>
+</html>
