@@ -46,3 +46,35 @@
 www.{$DOMAIN} {
 	redir https://{$DOMAIN}{uri} permanent
 }
+
+# Kelto Studio's own marketing site -- a separate brand/domain from
+# TournArena, but served off the same Caddy instance since it's a single
+# static page with no backend of its own (see sites/kelto-studio/). Caddy
+# auto-provisions its own Let's Encrypt certificate for this domain
+# independently of {$DOMAIN} above, the first time it's requested -- same
+# prerequisite as {$DOMAIN} itself: KELTO_DOMAIN's DNS (and www.KELTO_DOMAIN's)
+# must already point at this host, or the ACME HTTP-01 challenge fails. That
+# failure is scoped to this one site block though -- it doesn't affect
+# {$DOMAIN}'s own certificate or traffic.
+{$KELTO_DOMAIN} {
+	root * /srv/kelto-studio
+	file_server
+	encode gzip
+
+	# Same header set as {$DOMAIN} above, minus the Google Fonts allowances
+	# (this page ships no external fonts, style-src/font-src stay 'self'-only)
+	# and script-src stays empty-of-'unsafe-inline' since the page has no
+	# inline event-handler attributes to begin with (plain static HTML/CSS,
+	# no JS at all) -- see feat/179's postmortem on why that distinction
+	# matters for Angular's build output, which doesn't apply here.
+	header {
+		X-Frame-Options "DENY"
+		X-Content-Type-Options "nosniff"
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		Content-Security-Policy "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; img-src 'self' data:; font-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'"
+	}
+}
+
+www.{$KELTO_DOMAIN} {
+	redir https://{$KELTO_DOMAIN}{uri} permanent
+}

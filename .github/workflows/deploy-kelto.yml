@@ -1,0 +1,55 @@
+# Deploys sites/kelto-studio/ (Kelto Studio's own marketing site, a
+# different brand from TournArena) independently of deploy-prod.yml --
+# triggered only by changes under sites/kelto-studio/ or to this workflow
+# itself, never by TournArena-only changes, and vice versa: pushing here
+# never touches the TournArena stack (api/web/migrate/caddy config).
+#
+# Unlike deploy-prod.yml, this doesn't git-pull anything on the VPS -- it
+# scp's the static files straight from this workflow's own checkout to a
+# fixed host path (KELTO_SITE_DIR, see infra/deployment/.env.example),
+# which the prod Caddy instance already mounts read-only (see
+# docker-compose.prod.yml). Caddy's file_server reads straight off disk on
+# every request, so no reload/restart is needed after the copy -- new files
+# are live as soon as the scp finishes.
+name: Deploy Kelto Studio site
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - 'sites/kelto-studio/**'
+      - '.github/workflows/deploy-kelto.yml'
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    name: Sync sites/kelto-studio to the VPS
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      # First run on a fresh host: KELTO_SITE_DIR doesn't exist yet, and
+      # scp (unlike rsync --mkpath) won't create it -- same timeout
+      # headroom rationale as deploy-prod.yml's own ssh-action step.
+      - name: Ensure the target directory exists
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          timeout: 90s
+          script: mkdir -p "${{ secrets.KELTO_SITE_DIR || '/opt/kelto-studio' }}"
+
+      - name: Copy the static site to the VPS
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          source: 'sites/kelto-studio/*'
+          target: ${{ secrets.KELTO_SITE_DIR || '/opt/kelto-studio' }}
+          strip_components: 2
+          overwrite: true
