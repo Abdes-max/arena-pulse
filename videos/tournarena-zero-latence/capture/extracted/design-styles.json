@@ -1,0 +1,297 @@
+{
+  "typography": [
+    {
+      "role": "display",
+      "fontFamily": "Space Grotesk",
+      "fontSize": "52px",
+      "fontWeight": "700",
+      "lineHeight": "57.2px",
+      "letterSpacing": "-0.52px",
+      "color": "#E7ECF5",
+      "sampleText": "Organisez tournois et championnats suivis en direct par tout"
+    },
+    {
+      "role": "heading",
+      "fontFamily": "Space Grotesk",
+      "fontSize": "25.6px",
+      "fontWeight": "700",
+      "lineHeight": "normal",
+      "letterSpacing": "-0.256px",
+      "color": "#1E293B",
+      "sampleText": "Tout ce qu'il faut pour piloter une compétition, rien de sup"
+    },
+    {
+      "role": "heading-2",
+      "fontFamily": "Space Grotesk",
+      "fontSize": "24px",
+      "fontWeight": "700",
+      "lineHeight": "normal",
+      "letterSpacing": "normal",
+      "color": "#1E293B",
+      "sampleText": "Compétitions en cours"
+    },
+    {
+      "role": "heading-3",
+      "fontFamily": "Space Grotesk",
+      "fontSize": "16.8px",
+      "fontWeight": "700",
+      "lineHeight": "normal",
+      "letterSpacing": "normal",
+      "color": "#1E293B",
+      "sampleText": "Coupe du Monde FIFA 2026"
+    },
+    {
+      "role": "body",
+      "fontFamily": "Inter",
+      "fontSize": "16.8px",
+      "fontWeight": "400",
+      "lineHeight": "normal",
+      "letterSpacing": "normal",
+      "color": "#94A3B8",
+      "sampleText": "Poules, tableaux à élimination, calendrier, arbitrage et cla"
+    },
+    {
+      "role": "link",
+      "fontFamily": "Inter",
+      "fontSize": "16px",
+      "fontWeight": "600",
+      "lineHeight": "normal",
+      "letterSpacing": "normal",
+      "color": "#E7ECF5",
+      "sampleText": "Connexion"
+    },
+    {
+      "role": "label",
+      "fontFamily": "Inter",
+      "fontSize": "13.6px",
+      "fontWeight": "600",
+      "lineHeight": "normal",
+      "letterSpacing": "normal",
+      "color": "#1E293B",
+      "sampleText": "Rechercher un tournoi"
+    }
+  ],
+  "spacing": {
+    "observed": [
+      4,
+      8,
+      12,
+      16,
+      21,
+      24,
+      32,
+      64
+    ],
+    "baseUnit": 8
+  },
+  "radius": [
+    "6px",
+    "8px",
+    "10px",
+    "999px"
+  ],
+  "shadows": [],
+  "buttons": [
+    {
+      "label": "Créer mon tournoi Voir un exemple en dir",
+      "background": "transparent",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#E7ECF5",
+      "padding": "0px",
+      "borderRadius": "0px",
+      "border": "0px none rgb(231, 236, 245)",
+      "boxShadow": "none",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "height": "46px"
+    },
+    {
+      "label": "Créer mon tournoi",
+      "background": "#38BDF8",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#0B1220",
+      "padding": "12px 32px",
+      "borderRadius": "8px",
+      "border": "0px none rgb(11, 18, 32)",
+      "boxShadow": "none",
+      "fontSize": "16px",
+      "fontWeight": "700",
+      "height": "22px"
+    },
+    {
+      "label": "Voir un exemple en direct",
+      "background": "transparent",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#E7ECF5",
+      "padding": "12px 24px",
+      "borderRadius": "8px",
+      "border": "1px solid rgb(31, 42, 68)",
+      "boxShadow": "none",
+      "fontSize": "16px",
+      "fontWeight": "600",
+      "height": "20px"
+    },
+    {
+      "label": "Football11 juin – 19 juil.Coupe du Monde",
+      "background": "#141B2E",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#E7ECF5",
+      "padding": "12px",
+      "borderRadius": "10px",
+      "border": "",
+      "boxShadow": "none",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "height": "112.781px"
+    },
+    {
+      "label": "Commencer gratuitement",
+      "background": "transparent",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#1E293B",
+      "padding": "8px 12px",
+      "borderRadius": "8px",
+      "border": "1px solid rgb(226, 232, 240)",
+      "boxShadow": "none",
+      "fontSize": "14.4px",
+      "fontWeight": "600",
+      "height": "34px"
+    },
+    {
+      "label": "Commencer",
+      "background": "#0EA5C9",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#1E293B",
+      "padding": "8px 12px",
+      "borderRadius": "8px",
+      "border": "1px solid rgb(14, 165, 201)",
+      "boxShadow": "none",
+      "fontSize": "14.4px",
+      "fontWeight": "600",
+      "height": "17px"
+    }
+  ],
+  "cards": [
+    {
+      "label": "card",
+      "background": "#141B2E",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#E7ECF5",
+      "padding": "12px",
+      "borderRadius": "10px",
+      "border": "",
+      "boxShadow": "none",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "height": "112.781px"
+    },
+    {
+      "label": "card",
+      "background": "#FFFFFF",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#1E293B",
+      "padding": "16px",
+      "borderRadius": "10px",
+      "border": "",
+      "boxShadow": "none",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "height": "73px"
+    },
+    {
+      "label": "card",
+      "background": "transparent",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#1E293B",
+      "padding": "0px 32px 64px",
+      "borderRadius": "0px",
+      "border": "0px none rgb(30, 41, 59)",
+      "boxShadow": "none",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "height": "951.5px"
+    }
+  ],
+  "nav": {
+    "label": "navigation",
+    "background": "#0B1220",
+    "backgroundImage": "",
+    "backdropFilter": "",
+    "color": "#E7ECF5",
+    "padding": "0px 0px 64px",
+    "borderRadius": "0px",
+    "border": "0px none rgb(231, 236, 245)",
+    "boxShadow": "none",
+    "fontSize": "16px",
+    "fontWeight": "400",
+    "height": "726.844px"
+  },
+  "chips": [
+    {
+      "label": "Classements",
+      "background": "#E0F6FB",
+      "color": "#0A738D",
+      "padding": "3px 8px",
+      "borderRadius": "999px",
+      "border": "0px none rgb(10, 115, 141)",
+      "boxShadow": "none",
+      "fontSize": "10.56px",
+      "fontWeight": "700",
+      "height": "13px"
+    },
+    {
+      "label": "Élimination directe",
+      "background": "#FDF1DE",
+      "color": "#B45309",
+      "padding": "3px 8px",
+      "borderRadius": "999px",
+      "border": "0px none rgb(180, 83, 9)",
+      "boxShadow": "none",
+      "fontSize": "10.56px",
+      "fontWeight": "700",
+      "height": "13px"
+    },
+    {
+      "label": "Découverte",
+      "background": "#E2E8F0",
+      "color": "#1E293B",
+      "padding": "3px 8px",
+      "borderRadius": "999px",
+      "border": "0px none rgb(30, 41, 59)",
+      "boxShadow": "none",
+      "fontSize": "10.56px",
+      "fontWeight": "700",
+      "height": "13px"
+    },
+    {
+      "label": "Meilleure valeur",
+      "background": "#FFFFFF",
+      "color": "#1E293B",
+      "padding": "3px 8px",
+      "borderRadius": "999px",
+      "border": "0px none rgb(30, 41, 59)",
+      "boxShadow": "none",
+      "fontSize": "10.56px",
+      "fontWeight": "700",
+      "height": "13px"
+    }
+  ],
+  "statCells": [],
+  "tabs": [],
+  "backgrounds": [
+    {
+      "value": "radial-gradient(closest-side, rgb(18, 37, 54), rgba(0, 0, 0, 0)), radial-gradient(closest-side at 80% 20%, rgb(36, 29, 16), rgba(0, 0, 0, 0) 70%)",
+      "area": 1518420
+    }
+  ],
+  "glass": []
+}

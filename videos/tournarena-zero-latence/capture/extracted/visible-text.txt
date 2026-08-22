@@ -1,0 +1,127 @@
+[a] Fonctionnalités
+[a] Événements
+[a] Connexion
+[p] 3 événements sportifs publiés
+[h1] Organisez tournois et championnats
+[em] suivis en direct par tout le monde.
+[p] Poules, tableaux à élimination, calendrier, arbitrage et classements — et un site public généré automatiquement pour chacune de vos compétitions, mis à jour à la seconde où un score est saisi.
+[a] Créer mon tournoi
+[a] Voir un exemple en direct
+[p] En ce moment sur TournArena
+[span] Football
+[span] 11 juin – 19 juil.
+[span] Coupe du Monde FIFA 2026
+[span] Stades Canada-Mexique-États-Unis
+[span] Football
+[span] Monext Cup
+[span] Football
+[span] U11 Super league
+[span] Vancouver
+[span] Football
+[span] 11 juin – 19 juil.
+[span] Coupe du Monde FIFA 2026
+[span] Stades Canada-Mexique-États-Unis
+[span] Football
+[span] Monext Cup
+[span] Football
+[span] U11 Super league
+[span] Vancouver
+[h2] Compétitions en cours
+[label] Rechercher un tournoi
+[span] Football
+[span] Stades Canada-Mexique-États-Unis
+[h3] Coupe du Monde FIFA 2026
+[span] 11 juin 2026 – 19 juil. 2026
+[span] Football
+[h3] Monext Cup
+[span] Football
+[span] Vancouver
+[h3] U11 Super league
+[h2] Tout ce qu'il faut pour piloter une compétition, rien de superflu
+[p] Quatre outils qui se parlent — un changement de score met à jour poules, tableaux et calendrier au même instant.
+[div] Poule A — U13
+[span] Classements
+[h3] Poules et classements
+[p] Qualifications calculées automatiquement à chaque score saisi, aucune feuille de calcul à tenir à jour.
+[div] Quart de finale
+[span] Élimination directe
+[h3] Tableaux à élimination
+[p] Générés depuis les équipes qualifiées, avec avancement automatique des vainqueurs à chaque tour.
+[div] Terrain 2 · 14:00
+[div] Terrain 2 · 14:45
+[div] Terrain 1 · 15:30
+[span] Planification
+[h3] Calendrier et arbitrage
+[p] Matchs planifiés sur vos terrains et créneaux, arbitres assignés, forfaits gérés en un clic.
+[div] Site public généré
+[span] Temps réel
+[h3] Site public par tournoi
+[p] Équipes, calendrier, classements et résultats en direct — un lien à partager, rien à configurer.
+[div] Thème du tournoi
+[span] Personnalisation
+[h3] Logo, thème et partage
+[p] Logo du tournoi, 5 thèmes visuels au choix, QR code et export PDF du calendrier et des classements — l'image de votre compétition, à votre couleur.
+[h2] Un moteur, tous les sports
+[p] Ballon rond ou raquette, en salle ou en ligne — TournArena s'adapte au format de votre discipline, pas l'inverse.
+[h3] Badminton
+[p] Simples, doubles, plusieurs catégories d'âge dans un même tournoi — chacune son propre tableau.
+[h3] Basketball
+[p] Championnat ou play-offs, prolongations gérées match par match, classement recalculé à chaque panier.
+[h3] Esport
+[p] Tournois en ligne ou LAN, un site public en direct pour suivre chaque match comme les autres sports.
+[h3] Football
+[p] Poules puis phase finale, tirs au but en cas d'égalité — le format classique, entièrement automatisé.
+[h3] Futsal
+[p] Le même moteur que le foot à onze, calibré pour vos formats en salle.
+[h3] Handball
+[p] Poules et tableaux croisés, jusqu'aux demi-finales et à la petite finale si vous la jouez.
+[h3] Rugby
+[p] Championnat toutes rondes ou tournoi à élimination — classements par bonus, à votre façon.
+[h3] Tennis
+[p] Tableaux à élimination directe, têtes de série et byes gérés automatiquement à chaque tour.
+[h3] Volleyball
+[p] Sets comptés, tableaux à élimination directe pour les phases finales de vos ligues.
+[h2] Une tarification qui suit la taille de votre compétition
+[p] La création d'un tournoi et sa préparation sont toujours gratuites — le tarif ne s'applique qu'au moment de la publication, selon le nombre d'équipes inscrites.
+[span] Découverte
+[p] Gratuit
+[p] par publication
+[p] Parfait pour un petit tournoi jusqu'à 8 équipes, avec l'essentiel pour organiser une compétition.
+[a] Commencer gratuitement
+[p] Fonctionnalités clés
+[li] Jusqu'à 8 équipes
+[li] Poules, tableaux et classements automatiques
+[li] Calendrier et arbitrage
+[li] Site public en direct
+[span] Le plus courant
+[p] 25 €
+[p] par publication
+[p] Pour un tournoi ou championnat jusqu'à 48 équipes, sans rien changer à votre façon de travailler.
+[a] Commencer
+[p] Tout dans Découverte, plus
+[li] Jusqu'à 48 équipes
+[li] Logos, thème personnalisé, QR code et export PDF
+[span] Grand format
+[p] 80 €
+[p] par publication
+[p] Pour un tournoi ou une ligue avec des équipes illimitées, sans surcoût supplémentaire.
+[a] Commencer
+[p] Tout dans Le plus courant, plus
+[li] Équipes illimitées
+[span] Meilleure valeur
+[p] 200 €
+[p] par an
+[p] Plusieurs tournois par an ? Un abonnement par organisation couvre toutes vos publications pendant un an.
+[a] Commencer
+[p] Tout dans Grand format, plus
+[li] Publications illimitées pendant un an
+[li] Renouvellement manuel
+[h2] Disponible partout où vos joueurs regardent
+[p] Suivi en direct, notifications de vos équipes favorites — l'app TournArena sur iOS et Android.
+[h2] Prêt à organiser votre prochain tournoi ou championnat ?
+[a] Créer mon tournoi
+[a] Conditions d'utilisation
+[a] Politique de confidentialité
+[p] © 2026 TournArena. Tous droits réservés.
+[span] · Conçu par
+[a] Kelto Studio

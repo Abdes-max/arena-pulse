@@ -1,0 +1,260 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Barlow";
+      src: url("capture/assets/fonts/7cHpv4kjgoGqM7E_A8s52Hs.woff2") format("woff2");
+      font-weight: 400;
+      font-style: normal;
+      font-display: block;
+    }
+    @font-face {
+      font-family: "Barlow";
+      src: url("capture/assets/fonts/7cHqv4kjgoGqM7E3_-gs51os.woff2") format("woff2");
+      font-weight: 500;
+      font-style: normal;
+      font-display: block;
+    }
+
+    #root {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Barlow", sans-serif;
+    }
+
+    #root .out04-bg {
+      position: absolute;
+      inset: 0;
+      background: #0b1220;
+    }
+
+    #root .out04-stage {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #root .out04-lockup {
+      display: flex;
+      align-items: center;
+      gap: 2.4cqw;
+      transform: translateY(-6cqh) scale(0.7);
+    }
+
+    #root .out04-icon {
+      width: 11cqw;
+      height: 11cqw;
+      flex: none;
+    }
+
+    #root .out04-word {
+      font-weight: 700;
+      font-size: 8cqw;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+    }
+    #root .out04-word .out04-tourn { color: #c7d2e5; }
+    #root .out04-word .out04-arena { color: #38bdf8; }
+
+    #root .out04-satellite {
+      position: absolute;
+      border-radius: 50%;
+      background: #38bdf8;
+      opacity: 0;
+    }
+    #root .out04-sat1 { width: 1.4cqw; height: 1.4cqw; top: 22cqh; left: 30cqw; }
+    #root .out04-sat2 { width: 1cqw; height: 1cqw; top: 30cqh; left: 68cqw; }
+    #root .out04-sat3 { width: 1.8cqw; height: 1.8cqw; top: 44cqh; left: 22cqw; }
+    #root .out04-sat4 { width: 1.2cqw; height: 1.2cqw; top: 48cqh; left: 74cqw; }
+
+    #root .out04-url {
+      margin-top: 3.5cqh;
+      font-family: "Barlow", monospace;
+      font-weight: 500;
+      font-size: 3cqw;
+      letter-spacing: 0.04em;
+      color: #94a3b8;
+      opacity: 0;
+      transform: translateY(-4cqh) translateY(6cqh);
+    }
+
+    #root .out04-credit {
+      position: absolute;
+      bottom: 8cqh;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.2cqw;
+      font-weight: 500;
+      font-size: 1.9cqw;
+      color: #6f7e93;
+      opacity: 0;
+    }
+    #root .out04-credit img,
+    #root .out04-credit svg {
+      width: 3.2cqw;
+      height: 3.2cqw;
+      min-width: 22px;
+      min-height: 22px;
+      border-radius: 22%;
+    }
+  </style>
+
+  <div id="root" data-composition-id="04-outro" data-width="1080" data-height="1920" data-duration="3">
+    <div
+      class="clip out04-bg"
+      data-start="0"
+      data-duration="3"
+      data-track-index="0"
+    ></div>
+
+    <div
+      class="clip out04-sat out04-satellite out04-sat1"
+      id="out04-sat1"
+      data-start="0"
+      data-duration="3"
+      data-track-index="1"
+    ></div>
+    <div
+      class="clip out04-sat out04-satellite out04-sat2"
+      id="out04-sat2"
+      data-start="0"
+      data-duration="3"
+      data-track-index="2"
+    ></div>
+    <div
+      class="clip out04-sat out04-satellite out04-sat3"
+      id="out04-sat3"
+      data-start="0"
+      data-duration="3"
+      data-track-index="3"
+    ></div>
+    <div
+      class="clip out04-sat out04-satellite out04-sat4"
+      id="out04-sat4"
+      data-start="0"
+      data-duration="3"
+      data-track-index="4"
+    ></div>
+
+    <div
+      class="clip out04-stage"
+      data-start="0"
+      data-duration="3"
+      data-track-index="5"
+    >
+      <div id="out04-lockup" class="out04-lockup">
+        <svg class="out04-icon" viewBox="0 0 64 64" aria-hidden="true">
+          <rect x="2" y="2" width="60" height="60" rx="14" fill="#141b2e" stroke="#1f2a44" stroke-width="1.5" />
+          <path d="M22 16 L42 32 L22 48" fill="none" stroke="#e7ecf5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" />
+          <circle cx="45" cy="32" r="10" fill="#38bdf8" opacity="0.22" />
+          <circle cx="45" cy="32" r="5.5" fill="#38bdf8" />
+        </svg>
+        <div class="out04-word"><span class="out04-tourn">Tourn</span><span class="out04-arena">Arena</span></div>
+      </div>
+      <div id="out04-url" class="out04-url">tournarena.com</div>
+    </div>
+
+    <div
+      id="out04-credit"
+      class="clip out04-credit"
+      data-start="0"
+      data-duration="3"
+      data-track-index="6"
+    >
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <defs>
+          <linearGradient id="out04-kelto-g" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#e3a463" />
+            <stop offset="1" stop-color="#b8592f" />
+          </linearGradient>
+          <clipPath id="out04-kelto-c"><rect x="0" y="0" width="100" height="100" rx="24" /></clipPath>
+        </defs>
+        <g clip-path="url(#out04-kelto-c)">
+          <rect width="100" height="100" fill="url(#out04-kelto-g)" />
+          <g transform="translate(50,50) scale(0.74) translate(-50,-50)">
+            <g stroke="#7a3f1e" stroke-opacity="0.5" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="translate(4,5)">
+              <path d="M30 22 L30 78" />
+              <path d="M30 52 L68 20" />
+              <path d="M30 50 L70 80" />
+            </g>
+            <g stroke="#14161a" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" fill="none">
+              <path d="M30 22 L30 78" />
+              <path d="M30 52 L68 20" />
+              <path d="M30 50 L70 80" />
+            </g>
+            <g stroke="#14161a" stroke-width="7" stroke-linecap="round" fill="none">
+              <path d="M74 28 L85 19" opacity="0.55" />
+              <path d="M81 35 L89 29" opacity="0.3" />
+            </g>
+          </g>
+        </g>
+      </svg>
+      Conçu par Kelto Studio
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+
+      // Scene 1 (0.0-0.4s): the lockup is already centered at t=0, slightly
+      // small, with faint signal-blue satellite dots drifting loosely
+      // around it.
+      tl.set(".out04-satellite", { opacity: 0.7 }, 0.0);
+
+      // Scene 2 (0.4-1.6s): satellite dots drift further outward and fade
+      // to 0; the lockup settles to its final scale and shifts up-center.
+      tl.to(
+        "#out04-sat1",
+        { x: -30, y: -22, opacity: 0, duration: 1.1, ease: "power3.out" },
+        0.4,
+      );
+      tl.to(
+        "#out04-sat2",
+        { x: 34, y: -18, opacity: 0, duration: 1.1, ease: "power3.out" },
+        0.4,
+      );
+      tl.to(
+        "#out04-sat3",
+        { x: -36, y: 20, opacity: 0, duration: 1.1, ease: "power3.out" },
+        0.4,
+      );
+      tl.to(
+        "#out04-sat4",
+        { x: 30, y: 26, opacity: 0, duration: 1.1, ease: "power3.out" },
+        0.4,
+      );
+      tl.to(
+        "#out04-lockup",
+        { scale: 1, y: 0, duration: 1.0, ease: "power3.out" },
+        0.4,
+      );
+
+      // Scene 3 (1.6-3.0s): "tournarena.com" fades/wipes in beneath the
+      // lockup; the small Kelto Studio credit line fades in last, bottom
+      // edge. Holds static to the end.
+      tl.to(
+        "#out04-url",
+        { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
+        1.6,
+      );
+      tl.to(
+        "#out04-credit",
+        { opacity: 1, duration: 0.6, ease: "power3.out" },
+        2.1,
+      );
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["04-outro"] = tl;
+    })();
+  </script>
+</template>

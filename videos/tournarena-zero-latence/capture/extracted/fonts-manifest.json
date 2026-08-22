@@ -1,0 +1,482 @@
+{
+  "files": [
+    {
+      "file": "7cHpv4kjgoGqM7E_A8s52Hs.woff2",
+      "family": "Barlow",
+      "rawFamily": "Barlow",
+      "subfamily": "Regular",
+      "postscript": "Barlow-Regular",
+      "weight": 400,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "7cHpv4kjgoGqM7E_Ass52Hs.woff2",
+      "family": "Barlow",
+      "rawFamily": "Barlow",
+      "subfamily": "Regular",
+      "postscript": "Barlow-Regular",
+      "weight": 400,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "7cHpv4kjgoGqM7E_DMs5.woff2",
+      "family": "Barlow",
+      "rawFamily": "Barlow",
+      "subfamily": "Regular",
+      "postscript": "Barlow-Regular",
+      "weight": 400,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "7cHqv4kjgoGqM7E3_-gs51os.woff2",
+      "family": "Barlow",
+      "rawFamily": "Barlow Medium",
+      "subfamily": "Regular",
+      "postscript": "Barlow-Medium",
+      "weight": 500,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "7cHqv4kjgoGqM7E3_-gs6FospT4.woff2",
+      "family": "Barlow",
+      "rawFamily": "Barlow Medium",
+      "subfamily": "Regular",
+      "postscript": "Barlow-Medium",
+      "weight": 500,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "7cHqv4kjgoGqM7E3_-gs6VospT4.woff2",
+      "family": "Barlow",
+      "rawFamily": "Barlow Medium",
+      "subfamily": "Regular",
+      "postscript": "Barlow-Medium",
+      "weight": 500,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "cIf6MapbsEk7TDLdtEz1BwkWi6pgeL4.woff2",
+      "family": "Chakra Petch",
+      "rawFamily": "Chakra Petch",
+      "subfamily": "Regular",
+      "postscript": "ChakraPetch-Regular",
+      "weight": 400,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "cIf6MapbsEk7TDLdtEz1BwkWkapgeL4.woff2",
+      "family": "Chakra Petch",
+      "rawFamily": "Chakra Petch",
+      "subfamily": "Regular",
+      "postscript": "ChakraPetch-Regular",
+      "weight": 400,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "cIf6MapbsEk7TDLdtEz1BwkWkKpgeL4.woff2",
+      "family": "Chakra Petch",
+      "rawFamily": "Chakra Petch",
+      "subfamily": "Regular",
+      "postscript": "ChakraPetch-Regular",
+      "weight": 400,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "cIf6MapbsEk7TDLdtEz1BwkWn6pg.woff2",
+      "family": "Chakra Petch",
+      "rawFamily": "Chakra Petch",
+      "subfamily": "Regular",
+      "postscript": "ChakraPetch-Regular",
+      "weight": 400,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "cIflMapbsEk7TDLdtEz1BwkeNIh1SJ_F7AY.woff2",
+      "family": "Chakra Petch",
+      "rawFamily": "Chakra Petch Light",
+      "subfamily": "Regular",
+      "postscript": "ChakraPetch-Light",
+      "weight": 300,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "cIflMapbsEk7TDLdtEz1BwkeNIh1U5_F7AY.woff2",
+      "family": "Chakra Petch",
+      "rawFamily": "Chakra Petch Light",
+      "subfamily": "Regular",
+      "postscript": "ChakraPetch-Light",
+      "weight": 300,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "HTxwL3I-JCGChYJ8VI-L6OO_au7B46r2z3bWuQ.woff2",
+      "family": "Barlow Condensed",
+      "rawFamily": "Barlow Condensed",
+      "subfamily": "Bold",
+      "postscript": "BarlowCondensed-Bold",
+      "weight": 700,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "HTxwL3I-JCGChYJ8VI-L6OO_au7B46r2z3jWuZEC.woff2",
+      "family": "Barlow Condensed",
+      "rawFamily": "Barlow Condensed",
+      "subfamily": "Bold",
+      "postscript": "BarlowCondensed-Bold",
+      "weight": 700,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "HTxwL3I-JCGChYJ8VI-L6OO_au7B46r2z3nWuZEC.woff2",
+      "family": "Barlow Condensed",
+      "rawFamily": "Barlow Condensed",
+      "subfamily": "Bold",
+      "postscript": "BarlowCondensed-Bold",
+      "weight": 700,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "HTxwL3I-JCGChYJ8VI-L6OO_au7B4873z3bWuQ.woff2",
+      "family": "Barlow Condensed",
+      "rawFamily": "Barlow Condensed SemiBold",
+      "subfamily": "Regular",
+      "postscript": "BarlowCondensed-SemiBold",
+      "weight": 600,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "HTxwL3I-JCGChYJ8VI-L6OO_au7B4873z3jWuZEC.woff2",
+      "family": "Barlow Condensed",
+      "rawFamily": "Barlow Condensed SemiBold",
+      "subfamily": "Regular",
+      "postscript": "BarlowCondensed-SemiBold",
+      "weight": 600,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "HTxwL3I-JCGChYJ8VI-L6OO_au7B4873z3nWuZEC.woff2",
+      "family": "Barlow Condensed",
+      "rawFamily": "Barlow Condensed SemiBold",
+      "subfamily": "Regular",
+      "postscript": "BarlowCondensed-SemiBold",
+      "weight": 600,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa0ZL7SUc.woff2",
+      "family": "Inter",
+      "rawFamily": "Inter",
+      "subfamily": "Regular",
+      "postscript": "Inter-Regular",
+      "weight": 400,
+      "style": "normal",
+      "variationAxes": [
+        "wght"
+      ],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1pL7SUc.woff2",
+      "family": "Inter",
+      "rawFamily": "Inter",
+      "subfamily": "Regular",
+      "postscript": "Inter-Regular",
+      "weight": 400,
+      "style": "normal",
+      "variationAxes": [
+        "wght"
+      ],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa25L7SUc.woff2",
+      "family": "Inter",
+      "rawFamily": "Inter",
+      "subfamily": "Regular",
+      "postscript": "Inter-Regular",
+      "weight": 400,
+      "style": "normal",
+      "variationAxes": [
+        "wght"
+      ],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2JL7SUc.woff2",
+      "family": "Inter",
+      "rawFamily": "Inter",
+      "subfamily": "Regular",
+      "postscript": "Inter-Regular",
+      "weight": 400,
+      "style": "normal",
+      "variationAxes": [
+        "wght"
+      ],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2pL7SUc.woff2",
+      "family": "Inter",
+      "rawFamily": "Inter",
+      "subfamily": "Regular",
+      "postscript": "Inter-Regular",
+      "weight": 400,
+      "style": "normal",
+      "variationAxes": [
+        "wght"
+      ],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2ZL7SUc.woff2",
+      "family": "Inter",
+      "rawFamily": "Inter",
+      "subfamily": "Regular",
+      "postscript": "Inter-Regular",
+      "weight": 400,
+      "style": "normal",
+      "variationAxes": [
+        "wght"
+      ],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "V8mDoQDjQSkFtoMM3T6r8E7mPb54C-s0.woff2",
+      "family": "Space Grotesk",
+      "rawFamily": "Space Grotesk Light",
+      "subfamily": "Regular",
+      "postscript": "SpaceGrotesk-Light",
+      "weight": 300,
+      "style": "normal",
+      "variationAxes": [
+        "wght"
+      ],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "V8mDoQDjQSkFtoMM3T6r8E7mPb94C-s0.woff2",
+      "family": "Space Grotesk",
+      "rawFamily": "Space Grotesk Light",
+      "subfamily": "Regular",
+      "postscript": "SpaceGrotesk-Light",
+      "weight": 300,
+      "style": "normal",
+      "variationAxes": [
+        "wght"
+      ],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "V8mDoQDjQSkFtoMM3T6r8E7mPbF4Cw.woff2",
+      "family": "Space Grotesk",
+      "rawFamily": "Space Grotesk Light",
+      "subfamily": "Regular",
+      "postscript": "SpaceGrotesk-Light",
+      "weight": 300,
+      "style": "normal",
+      "variationAxes": [
+        "wght"
+      ],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "Z9XUDmZRWg6M1LvRYsHOwcmJrrg.woff2",
+      "family": "Russo One",
+      "rawFamily": "Russo One",
+      "subfamily": "Regular",
+      "postscript": "RussoOne-Regular",
+      "weight": 400,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "Z9XUDmZRWg6M1LvRYsHOy8mJrrg.woff2",
+      "family": "Russo One",
+      "rawFamily": "Russo One",
+      "subfamily": "Regular",
+      "postscript": "RussoOne-Regular",
+      "weight": 400,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true,
+      "isIcon": false
+    },
+    {
+      "file": "Z9XUDmZRWg6M1LvRYsHOz8mJ.woff2",
+      "family": "Russo One",
+      "rawFamily": "Russo One",
+      "subfamily": "Regular",
+      "postscript": "RussoOne-Regular",
+      "weight": 400,
+      "style": "normal",
+      "variationAxes": [],
+      "identified": true,
+      "isIcon": false
+    }
+  ],
+  "families": [
+    {
+      "family": "Barlow",
+      "weights": [
+        400,
+        500
+      ],
+      "variable": false,
+      "fileCount": 6,
+      "files": [
+        "7cHpv4kjgoGqM7E_A8s52Hs.woff2",
+        "7cHpv4kjgoGqM7E_Ass52Hs.woff2",
+        "7cHpv4kjgoGqM7E_DMs5.woff2",
+        "7cHqv4kjgoGqM7E3_-gs51os.woff2",
+        "7cHqv4kjgoGqM7E3_-gs6FospT4.woff2",
+        "7cHqv4kjgoGqM7E3_-gs6VospT4.woff2"
+      ]
+    },
+    {
+      "family": "Barlow Condensed",
+      "weights": [
+        600,
+        700
+      ],
+      "variable": false,
+      "fileCount": 6,
+      "files": [
+        "HTxwL3I-JCGChYJ8VI-L6OO_au7B46r2z3bWuQ.woff2",
+        "HTxwL3I-JCGChYJ8VI-L6OO_au7B46r2z3jWuZEC.woff2",
+        "HTxwL3I-JCGChYJ8VI-L6OO_au7B46r2z3nWuZEC.woff2",
+        "HTxwL3I-JCGChYJ8VI-L6OO_au7B4873z3bWuQ.woff2",
+        "HTxwL3I-JCGChYJ8VI-L6OO_au7B4873z3jWuZEC.woff2",
+        "HTxwL3I-JCGChYJ8VI-L6OO_au7B4873z3nWuZEC.woff2"
+      ]
+    },
+    {
+      "family": "Chakra Petch",
+      "weights": [
+        300,
+        400
+      ],
+      "variable": false,
+      "fileCount": 6,
+      "files": [
+        "cIf6MapbsEk7TDLdtEz1BwkWi6pgeL4.woff2",
+        "cIf6MapbsEk7TDLdtEz1BwkWkKpgeL4.woff2",
+        "cIf6MapbsEk7TDLdtEz1BwkWkapgeL4.woff2",
+        "cIf6MapbsEk7TDLdtEz1BwkWn6pg.woff2",
+        "cIflMapbsEk7TDLdtEz1BwkeNIh1SJ_F7AY.woff2",
+        "cIflMapbsEk7TDLdtEz1BwkeNIh1U5_F7AY.woff2"
+      ]
+    },
+    {
+      "family": "Inter",
+      "weights": [
+        400
+      ],
+      "variable": true,
+      "fileCount": 6,
+      "files": [
+        "UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa0ZL7SUc.woff2",
+        "UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1pL7SUc.woff2",
+        "UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa25L7SUc.woff2",
+        "UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2JL7SUc.woff2",
+        "UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2ZL7SUc.woff2",
+        "UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2pL7SUc.woff2"
+      ]
+    },
+    {
+      "family": "Russo One",
+      "weights": [
+        400
+      ],
+      "variable": false,
+      "fileCount": 3,
+      "files": [
+        "Z9XUDmZRWg6M1LvRYsHOwcmJrrg.woff2",
+        "Z9XUDmZRWg6M1LvRYsHOy8mJrrg.woff2",
+        "Z9XUDmZRWg6M1LvRYsHOz8mJ.woff2"
+      ]
+    },
+    {
+      "family": "Space Grotesk",
+      "weights": [
+        300
+      ],
+      "variable": true,
+      "fileCount": 3,
+      "files": [
+        "V8mDoQDjQSkFtoMM3T6r8E7mPb54C-s0.woff2",
+        "V8mDoQDjQSkFtoMM3T6r8E7mPb94C-s0.woff2",
+        "V8mDoQDjQSkFtoMM3T6r8E7mPbF4Cw.woff2"
+      ]
+    }
+  ],
+  "unidentified": [],
+  "meta": {
+    "generatedAt": "2026-08-21T22:45:44.904Z",
+    "tool": "fontkit"
+  }
+}
