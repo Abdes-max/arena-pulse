@@ -1,0 +1,281 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Barlow";
+      src: url("capture/assets/fonts/7cHpv4kjgoGqM7E_A8s52Hs.woff2") format("woff2");
+      font-weight: 400;
+      font-style: normal;
+      font-display: block;
+    }
+    @font-face {
+      font-family: "Barlow";
+      src: url("capture/assets/fonts/7cHqv4kjgoGqM7E3_-gs51os.woff2") format("woff2");
+      font-weight: 500;
+      font-style: normal;
+      font-display: block;
+    }
+
+    #root {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      font-family: "Barlow", sans-serif;
+    }
+
+    #root .cmp02-bg {
+      position: absolute;
+      inset: 0;
+      background: #0b1220;
+    }
+
+    #root .cmp02-glow-left,
+    #root .cmp02-glow-right {
+      position: absolute;
+      top: 30cqh;
+      width: 45cqw;
+      height: 45cqw;
+      border-radius: 50%;
+      background: radial-gradient(closest-side, rgba(56, 189, 248, 0.16), transparent 70%);
+      pointer-events: none;
+    }
+    #root .cmp02-glow-left { left: -8cqw; }
+    #root .cmp02-glow-right { right: -8cqw; top: 46cqh; }
+
+    #root .cmp02-kicker {
+      position: absolute;
+      top: 9cqh;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-weight: 700;
+      font-size: 5.5cqw;
+      letter-spacing: -0.03em;
+      text-transform: lowercase;
+      color: #e7ecf5;
+      opacity: 0;
+      transform: translateY(-14cqh);
+    }
+    #root .cmp02-kicker .cmp02-accent { color: #38bdf8; }
+
+    #root .cmp02-cards {
+      position: absolute;
+      top: 27cqh;
+      left: 0;
+      right: 0;
+      height: 40cqh;
+      display: flex;
+      gap: 2cqw;
+      padding: 0 4cqw;
+      perspective: 1400px;
+    }
+
+    #root .cmp02-card {
+      position: relative;
+      flex: 1;
+      background: #141b2e;
+      border: 1px solid #1f2a44;
+      border-radius: 4cqw;
+      padding: 3.5cqw;
+      opacity: 0;
+      transform-style: preserve-3d;
+    }
+    #root .cmp02-card-left {
+      transform: rotateY(14deg) scale(0.85);
+      box-shadow: 18px 24px 40px -20px rgba(0, 0, 0, 0.55);
+    }
+    #root .cmp02-card-right {
+      transform: rotateY(-14deg) scale(0.85);
+      box-shadow: -18px 24px 40px -20px rgba(0, 0, 0, 0.55);
+    }
+
+    #root .cmp02-label {
+      font-family: "Barlow", monospace;
+      font-weight: 500;
+      font-size: 1.6cqw;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 2.5cqh;
+    }
+
+    #root .cmp02-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 2cqw;
+      padding: 2.4cqw 2.6cqw;
+      font-size: 2.6cqw;
+      font-weight: 500;
+      color: #e7ecf5;
+    }
+    #root .cmp02-row .cmp02-score {
+      font-weight: 700;
+      color: #38bdf8;
+      font-size: 2.8cqw;
+    }
+    #root .cmp02-row.cmp02-editing {
+      outline: 2px solid #38bdf8;
+      outline-offset: 2px;
+    }
+
+    #root .cmp02-badge {
+      position: absolute;
+      top: -2cqh;
+      right: -3cqw;
+      display: flex;
+      align-items: center;
+      gap: 0.8cqw;
+      background: #0b1220;
+      border: 1px solid #1f2a44;
+      border-radius: 999px;
+      padding: 1cqw 2.2cqw;
+      font-family: "Barlow", monospace;
+      font-weight: 500;
+      font-size: 1.5cqw;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #7dd3fc;
+      opacity: 0;
+      transform: scale(0.4);
+    }
+    #root .cmp02-dot {
+      width: 0.9cqw;
+      height: 0.9cqw;
+      min-width: 8px;
+      min-height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.2);
+    }
+  </style>
+
+  <div id="root" data-composition-id="02-comparison" data-width="1080" data-height="1920" data-duration="6.5" data-layout-allow-overflow>
+    <div
+      class="clip cmp02-bg"
+      data-start="0"
+      data-duration="6.5"
+      data-track-index="0"
+    ></div>
+    <div
+      class="clip cmp02-glow-left"
+      data-start="0"
+      data-duration="6.5"
+      data-track-index="1"
+    ></div>
+    <div
+      class="clip cmp02-glow-right"
+      data-start="0"
+      data-duration="6.5"
+      data-track-index="2"
+    ></div>
+
+    <div
+      id="cmp02-kicker"
+      class="clip cmp02-kicker"
+      data-start="0"
+      data-duration="6.5"
+      data-track-index="3"
+    >
+      <span class="cmp02-accent">zéro</span> rafraîchissement
+    </div>
+
+    <div
+      class="clip cmp02-cards"
+      data-start="0"
+      data-duration="6.5"
+      data-track-index="4"
+      data-layout-allow-overflow
+    >
+      <div id="cmp02-card-l" class="cmp02-card cmp02-card-left">
+        <div class="cmp02-label">Organisateur</div>
+        <div class="cmp02-row cmp02-editing">
+          <span>Les Aigles</span><span class="cmp02-score">3 – 1</span>
+        </div>
+      </div>
+      <div id="cmp02-card-r" class="cmp02-card cmp02-card-right">
+        <div class="cmp02-label">Public</div>
+        <div class="cmp02-row">
+          <span>Les Aigles</span><span class="cmp02-score">3 – 1</span>
+        </div>
+        <div id="cmp02-badge" class="cmp02-badge" data-layout-allow-overflow>
+          <span class="cmp02-dot"></span>En direct
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script>
+    (function () {
+      const tl = gsap.timeline({ paused: true });
+
+      // Scene 1 (0.0-0.8s): kicker "zéro rafraîchissement" slides DOWN into
+      // place from just above.
+      tl.fromTo(
+        "#cmp02-kicker",
+        { opacity: 0, y: -56 },
+        { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" },
+        0.0,
+      );
+
+      // Scene 2 (0.8-2.3s): left card arrives from the left wing with a
+      // mirrored rotateY tilt (+tilt), scaling ~0.85->1.
+      tl.fromTo(
+        "#cmp02-card-l",
+        { opacity: 0, x: -40, rotateY: 14, scale: 0.85 },
+        { opacity: 1, x: 0, rotateY: 6, scale: 1, duration: 0.9, ease: "power3.out" },
+        0.8,
+      );
+
+      // Scene 3 (1.0-2.5s, ~0.2s behind): right card arrives from the right
+      // wing with the mirrored tilt (-tilt); the two entries overlap.
+      tl.fromTo(
+        "#cmp02-card-r",
+        { opacity: 0, x: 40, rotateY: -14, scale: 0.85 },
+        { opacity: 1, x: 0, rotateY: -6, scale: 1, duration: 0.9, ease: "power3.out" },
+        1.0,
+      );
+
+      // Scene 4 (2.5-3.2s): a small "En direct" pill badge lands at the
+      // right card's inner edge with a spring-pop (the one earned overshoot).
+      tl.fromTo(
+        "#cmp02-badge",
+        { opacity: 0, scale: 0.4 },
+        { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(2.4)" },
+        2.5,
+      );
+
+      // Scene 5 (3.2-6.0s): both cards hold, settled, with a gentle
+      // phase-opposed idle float (left sin(t), right sin(t+pi)) -- low
+      // amplitude, never synchronized.
+      tl.to(
+        "#cmp02-card-l",
+        {
+          y: -6,
+          duration: 1.6,
+          ease: "sine.inOut",
+          yoyo: true,
+          repeat: 1,
+        },
+        3.2,
+      );
+      tl.to(
+        "#cmp02-card-r",
+        {
+          y: 6,
+          duration: 1.6,
+          ease: "sine.inOut",
+          yoyo: true,
+          repeat: 1,
+        },
+        3.2,
+      );
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["02-comparison"] = tl;
+    })();
+  </script>
+</template>

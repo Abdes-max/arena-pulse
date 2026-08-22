@@ -1,0 +1,101 @@
+{
+  "summary": {
+    "webAnimations": 2,
+    "cssDeclarations": 48,
+    "scrollTargets": 0,
+    "cdpAnimations": 2,
+    "canvases": 0
+  },
+  "namedAnimations": [
+    "_ngcontent-ng-c1365405096_landing-page-pulse",
+    "_ngcontent-ng-c4110204161_ap-tournament-marquee-scroll"
+  ],
+  "scrollTriggeredElements": 0,
+  "representativeAnimations": [
+    {
+      "type": "CSSAnimation",
+      "playState": "running",
+      "animationName": "_ngcontent-ng-c1365405096_landing-page-pulse",
+      "targetSelector": "span.landing-page__marquee-pulse",
+      "targetRect": {
+        "x": 843.390625,
+        "y": 584.0625,
+        "width": 6,
+        "height": 6,
+        "top": 584.0625,
+        "right": 849.390625,
+        "bottom": 590.0625,
+        "left": 843.390625
+      },
+      "keyframes": [
+        {
+          "offset": 0,
+          "easing": "ease-in-out",
+          "composite": "auto",
+          "boxShadow": "rgb(36, 29, 16) 0px 0px 0px 0px",
+          "computedOffset": 0
+        },
+        {
+          "offset": 0.5,
+          "easing": "ease-in-out",
+          "composite": "auto",
+          "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 5px",
+          "computedOffset": 0.5
+        },
+        {
+          "offset": 1,
+          "easing": "ease-in-out",
+          "composite": "auto",
+          "boxShadow": "rgb(36, 29, 16) 0px 0px 0px 0px",
+          "computedOffset": 1
+        }
+      ],
+      "timing": {
+        "duration": 1800,
+        "delay": 0,
+        "iterations": null,
+        "easing": "linear",
+        "direction": "normal"
+      }
+    },
+    {
+      "type": "CSSAnimation",
+      "playState": "running",
+      "animationName": "_ngcontent-ng-c4110204161_ap-tournament-marquee-scroll",
+      "targetSelector": "div.ap-tournament-marquee__track",
+      "targetRect": {
+        "x": 238.188232421875,
+        "y": 606.0625,
+        "width": 1260,
+        "height": 112.78125,
+        "top": 606.0625,
+        "right": 1498.188232421875,
+        "bottom": 718.84375,
+        "left": 238.188232421875
+      },
+      "keyframes": [
+        {
+          "offset": 0,
+          "easing": "linear",
+          "composite": "auto",
+          "transform": "translate(0px)",
+          "computedOffset": 0
+        },
+        {
+          "offset": 1,
+          "easing": "linear",
+          "composite": "auto",
+          "transform": "translate(-50%)",
+          "computedOffset": 1
+        }
+      ],
+      "timing": {
+        "duration": 20000,
+        "delay": 0,
+        "iterations": null,
+        "easing": "linear",
+        "direction": "normal"
+      }
+    }
+  ]
+}
