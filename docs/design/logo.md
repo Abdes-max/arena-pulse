@@ -14,7 +14,7 @@ Deux traits suffisent à le rendre lisible même écrasé à 16 px (favicon).
 
 ## Le wordmark
 
-"TournArena" porte déjà sa coupure dans son écriture (la majuscule interne). La couleur suit cette coupure plutôt qu'un séparateur ou un slogan : **Tourn** en encre (`#1e293b`), **Arena** en signal (`#0a738d`). Police : Space Grotesk 700, tracking -0.02em — même police que les `<h1>` du produit.
+"TournArena" porte déjà sa coupure dans son écriture (la majuscule interne). La couleur suit cette coupure plutôt qu'un séparateur ou un slogan : **Tourn** en encre (`#1e293b`), **Arena** en signal (`#0a738d`). Police : Bricolage Grotesque 700, tracking -0.02em — même police que les `<h1>` du produit.
 
 ## Couleurs et typographie fixes, pas thématisées
 
