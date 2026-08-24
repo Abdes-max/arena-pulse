@@ -488,6 +488,8 @@
         "sportLabel": "Sportart",
         "chooseSport": "Sportart wählen",
         "isOnlineLabel": "Online-Turnier (E-Sport)",
+        "isListedLabel": "In der öffentlichen Suche sichtbar",
+        "isListedHint": "Ein privates Turnier bleibt über seinen direkten Link erreichbar, erscheint aber nicht in der TournArena-Veranstaltungssuche.",
         "themeLabel": "Design der öffentlichen Seite",
         "save": "Speichern",
         "create": "Turnier erstellen",

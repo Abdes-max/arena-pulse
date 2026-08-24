@@ -21,6 +21,7 @@ export interface CreateTournamentPayload {
   startDate?: string;
   endDate?: string;
   isOnline?: boolean;
+  isListed?: boolean;
   theme?: PublicTheme;
 }
 
@@ -31,6 +32,7 @@ export interface UpdateTournamentPayload {
   endDate?: string | null;
   isOnline?: boolean;
   teamsCanReferee?: boolean;
+  isListed?: boolean;
   theme?: PublicTheme;
   description?: string;
   rules?: string;

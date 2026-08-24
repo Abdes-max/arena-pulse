@@ -80,6 +80,7 @@ export class TournamentsService {
         startDate: dto.startDate ? new Date(dto.startDate) : undefined,
         endDate: dto.endDate ? new Date(dto.endDate) : undefined,
         isOnline: dto.isOnline ?? false,
+        isListed: dto.isListed ?? true,
         theme: dto.theme,
       },
       include: { sport: true },
@@ -135,6 +136,7 @@ export class TournamentsService {
             : undefined,
         isOnline: dto.isOnline,
         teamsCanReferee: dto.teamsCanReferee,
+        isListed: dto.isListed,
         theme: dto.theme,
         description: dto.description,
         rules: dto.rules,
@@ -435,6 +437,7 @@ export class TournamentsService {
           startDate: source.startDate,
           endDate: source.endDate,
           isOnline: source.isOnline,
+          isListed: source.isListed,
           theme: source.theme,
           status: TournamentStatus.DRAFT,
         },
@@ -606,15 +609,17 @@ export class TournamentsService {
   }
 
   /**
-   * Public directory: every PUBLISHED tournament across every organization
-   * (there is no per-organizer opt-out today — publishing already makes the
-   * tournament's own site reachable by anyone with the slug, this just makes
-   * it discoverable without one). Most recent first, capped well below
-   * "everything" so a homepage card list stays a list, not a dump.
+   * Public directory: every PUBLISHED *and* isListed tournament across every
+   * organization. isListed is the organizer's own opt-out of discoverability
+   * only — a tournament with isListed: false is still fully reachable by
+   * anyone who has its direct slug link (see getPublicBySlug below, which is
+   * not gated by this field), it just doesn't appear here. Most recent
+   * first, capped well below "everything" so a homepage card list stays a
+   * list, not a dump.
    */
   async listPublished(limit = 20) {
     const tournaments = await this.prisma.tournament.findMany({
-      where: { status: TournamentStatus.PUBLISHED },
+      where: { status: TournamentStatus.PUBLISHED, isListed: true },
       include: {
         sport: true,
         // Cards show one location line, not a venue-by-venue breakdown --
@@ -839,6 +844,7 @@ export class TournamentsService {
       archivedAt: tournament.archivedAt,
       updatedAt: tournament.updatedAt,
       teamsCanReferee: tournament.teamsCanReferee,
+      isListed: tournament.isListed,
       description: tournament.description,
       rules: tournament.rules,
       practicalInfo: tournament.practicalInfo,
