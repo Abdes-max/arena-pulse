@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Mentions légales - Kelto Studio</title>
+<meta name="robots" content="noindex" />
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23e3a463'/%3E%3Cstop offset='1' stop-color='%23b8592f'/%3E%3C/linearGradient%3E%3CclipPath id='c'%3E%3Crect width='100' height='100' rx='24'/%3E%3C/clipPath%3E%3C/defs%3E%3Cg clip-path='url(%23c)'%3E%3Crect width='100' height='100' fill='url(%23g)'/%3E%3Cg transform='translate(50,50) scale(0.8) translate(-50,-50)'%3E%3Cg stroke='%2314161a' stroke-width='17' stroke-linecap='round' stroke-linejoin='round' fill='none'%3E%3Cpath d='M30 22 L30 78'/%3E%3Cpath d='M30 52 L68 20'/%3E%3Cpath d='M30 50 L70 80'/%3E%3C/g%3E%3C/g%3E%3C/g%3E%3C/svg%3E" />
+<style>
+  :root {
+    --ink: #14161a;
+    --ink-soft: #1b1e24;
+    --parchment: #f4efe6;
+    --parchment-dim: #d9d2c4;
+    --bronze: #c08a4e;
+    --bronze-bright: #e3a463;
+    --line: rgba(244, 239, 230, 0.14);
+    --line-strong: rgba(244, 239, 230, 0.28);
+    --font-display: "Avenir Next", "Century Gothic", Futura, "Helvetica Neue", Arial, sans-serif;
+    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  :root[data-theme="light"] {
+    --ink: #f6f1e7;
+    --ink-soft: #ffffff;
+    --parchment: #1a1c20;
+    --parchment-dim: #4a4640;
+    --line: rgba(20, 22, 26, 0.12);
+    --line-strong: rgba(20, 22, 26, 0.24);
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --ink: #f6f1e7;
+      --ink-soft: #ffffff;
+      --parchment: #1a1c20;
+      --parchment-dim: #4a4640;
+      --line: rgba(20, 22, 26, 0.12);
+      --line-strong: rgba(20, 22, 26, 0.24);
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ink);
+    color: var(--parchment);
+    font-family: var(--font-body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: var(--bronze-bright); }
+
+  .wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: clamp(32px, 6vw, 72px) clamp(20px, 5vw, 56px) 96px;
+  }
+
+  .back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: var(--parchment-dim);
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 40px;
+  }
+
+  .back:hover { color: var(--bronze-bright); }
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+    margin: 0 0 8px;
+  }
+
+  .updated {
+    color: var(--parchment-dim);
+    font-size: 0.85rem;
+    margin: 0 0 40px;
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    margin: 40px 0 12px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+  }
+
+  h2:first-of-type { border-top: none; padding-top: 0; }
+
+  p, li { color: var(--parchment-dim); font-size: 0.95rem; }
+
+  .todo {
+    display: inline-block;
+    margin-top: 4px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: rgba(224, 92, 74, 0.14);
+    border: 1px solid rgba(224, 92, 74, 0.4);
+    color: #f0a897;
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="/">← Retour à l'accueil</a>
+    <h1>Mentions légales</h1>
+    <p class="updated">Brouillon à relire avant mise en ligne - non publié</p>
+
+    <h2>1. Éditeur du site</h2>
+    <p>
+      Le site kelto-studio.fr est édité par Kelto Studio.<br />
+      Forme juridique : <span class="todo">À COMPLÉTER</span><br />
+      SIRET : <span class="todo">À COMPLÉTER</span><br />
+      Siège social : <span class="todo">À COMPLÉTER</span><br />
+      Directeur de la publication : <span class="todo">À COMPLÉTER (nom du responsable)</span><br />
+      Contact : <a href="mailto:contact@kelto-studio.fr">contact@kelto-studio.fr</a>
+    </p>
+
+    <h2>2. Hébergement</h2>
+    <p>
+      Ce site est hébergé chez Hostinger. <span class="todo">À VÉRIFIER : raison sociale et adresse exactes de l'hébergeur au moment de la publication</span>.
+    </p>
+
+    <h2>3. Propriété intellectuelle</h2>
+    <p>
+      L'ensemble des contenus de ce site (textes, logo, identité visuelle) est la propriété
+      de Kelto Studio, sauf mention contraire. Toute reproduction, même partielle, est
+      soumise à autorisation préalable.
+    </p>
+
+    <h2>4. Liens hypertextes</h2>
+    <p>
+      Ce site peut contenir des liens vers des sites tiers (par exemple tournarena.com).
+      Kelto Studio n'est pas responsable du contenu de ces sites externes.
+    </p>
+
+    <h2>5. Droit applicable</h2>
+    <p>Les présentes mentions légales sont soumises au droit français.</p>
+
+    <h2>6. Contact</h2>
+    <p>
+      Pour toute question relative à ces mentions légales, contactez-nous à
+      <a href="mailto:contact@kelto-studio.fr">contact@kelto-studio.fr</a>.
+    </p>
+  </div>
+</body>
+</html>

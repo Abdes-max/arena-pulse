@@ -728,6 +728,20 @@
     color: var(--parchment);
   }
 
+  .foot-legal {
+    display: flex;
+    gap: 18px;
+  }
+
+  .foot-legal a {
+    text-decoration: none;
+    color: var(--parchment-dim);
+  }
+
+  .foot-legal a:hover {
+    color: var(--bronze-bright);
+  }
+
   .foot-brand svg {
     width: 20px;
     height: 20px;
@@ -1187,6 +1201,10 @@
           Kelto Studio
         </div>
         <span>© 2026 Kelto - Atelier français.</span>
+        <nav class="foot-legal">
+          <a href="/mentions-legales.html">Mentions légales</a>
+          <a href="/confidentialite.html">Confidentialité</a>
+        </nav>
       </div>
     </div>
   </footer>
