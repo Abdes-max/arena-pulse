@@ -3,13 +3,15 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Kelto Studio — atelier d'applications</title>
+<title>Kelto Studio - atelier d'applications</title>
 <meta name="description" content="Kelto Studio conçoit et développe des applications mobiles et web sur mesure. Des artisans du logiciel français, du premier croquis à la mise en production." />
-<meta property="og:title" content="Kelto Studio — atelier d'applications" />
+<meta property="og:title" content="Kelto Studio - atelier d'applications" />
 <meta property="og:description" content="Des applications mobiles et web taillées pour ce que vous construisez. Une équipe d'artisans du logiciel français." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://kelto-studio.fr" />
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23e3a463'/%3E%3Cstop offset='1' stop-color='%23b8592f'/%3E%3C/linearGradient%3E%3CclipPath id='c'%3E%3Crect width='100' height='100' rx='24'/%3E%3C/clipPath%3E%3C/defs%3E%3Cg clip-path='url(%23c)'%3E%3Crect width='100' height='100' fill='url(%23g)'/%3E%3Cg transform='translate(50,50) scale(0.8) translate(-50,-50)'%3E%3Cg stroke='%2314161a' stroke-width='17' stroke-linecap='round' stroke-linejoin='round' fill='none'%3E%3Cpath d='M30 22 L30 78'/%3E%3Cpath d='M30 52 L68 20'/%3E%3Cpath d='M30 50 L70 80'/%3E%3C/g%3E%3C/g%3E%3C/g%3E%3C/svg%3E" />
+<link rel="icon" type="image/svg+xml" href="/brand/favicon.svg" />
+<link rel="icon" type="image/png" sizes="32x32" href="/brand/favicon-32.png" />
+<link rel="apple-touch-icon" href="/brand/favicon-180.png" />
 <style>
   :root {
     --ink: #14161a;
@@ -376,7 +378,8 @@
     color: var(--bronze-bright);
   }
 
-  .hero-mark svg {
+  .hero-mark img {
+    display: block;
     width: 100%;
     height: auto;
     filter: drop-shadow(0 30px 60px rgba(192, 138, 78, 0.25));
@@ -728,7 +731,22 @@
     color: var(--parchment);
   }
 
-  .foot-brand svg {
+  .foot-legal {
+    display: flex;
+    gap: 18px;
+  }
+
+  .foot-legal a {
+    text-decoration: none;
+    color: var(--parchment-dim);
+  }
+
+  .foot-legal a:hover {
+    color: var(--bronze-bright);
+  }
+
+  .foot-brand img {
+    display: block;
     width: 20px;
     height: 20px;
   }
@@ -874,38 +892,7 @@
   <input type="checkbox" id="nav-toggle" class="nav-toggle-input" />
   <nav class="wrap">
     <a href="#top" class="brand">
-      <svg class="mark" viewBox="0 0 100 100" aria-hidden="true">
-        <defs>
-          <linearGradient id="navg" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#e3a463" />
-            <stop offset="1" stop-color="#b8592f" />
-          </linearGradient>
-          <clipPath id="navclip"><rect x="0" y="0" width="100" height="100" rx="24" /></clipPath>
-        </defs>
-        <g clip-path="url(#navclip)">
-          <rect width="100" height="100" fill="url(#navg)" />
-          <!-- Scaled down and re-centered -- at full size the speed-line
-               tips sat right against the rounded-corner edge (cramped,
-               "rogné" look on a real device). This gives the K uniform
-               breathing room from the badge's border on every side. -->
-          <g transform="translate(50,50) scale(0.74) translate(-50,-50)">
-            <g stroke="#7a3f1e" stroke-opacity="0.5" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="translate(4,5)">
-              <path d="M30 22 L30 78" />
-              <path d="M30 52 L68 20" />
-              <path d="M30 50 L70 80" />
-            </g>
-            <g stroke="#14161a" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" fill="none">
-              <path d="M30 22 L30 78" />
-              <path d="M30 52 L68 20" />
-              <path d="M30 50 L70 80" />
-            </g>
-            <g stroke="#14161a" stroke-width="7" stroke-linecap="round" fill="none">
-              <path d="M74 28 L85 19" opacity="0.55" />
-              <path d="M81 35 L89 29" opacity="0.3" />
-            </g>
-          </g>
-        </g>
-      </svg>
+      <img class="mark" src="/brand/kelto-mark.svg" alt="" width="34" height="34" />
       Kelto <small>Studio</small>
     </a>
     <div class="nav-links">
@@ -939,7 +926,7 @@
       <p class="eyebrow">Kelto Studio · Atelier d'applications</p>
       <h1>Des applications <em>taillées</em> pour ce que vous construisez.</h1>
       <p class="lede">
-        Kelto Studio conçoit et développe des applications mobiles et web sur mesure — d'une idée
+        Kelto Studio conçoit et développe des applications mobiles et web sur mesure - d'une idée
         de coin de table à un produit que des milliers de personnes utilisent un dimanche matin.
         Un seul atelier, un seul interlocuteur, du premier croquis à la mise en production.
       </p>
@@ -949,37 +936,7 @@
       </div>
     </div>
     <div class="hero-mark">
-      <svg viewBox="0 0 260 260" aria-hidden="true" class="float-slow">
-        <defs>
-          <linearGradient id="herog" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#e3a463" />
-            <stop offset="1" stop-color="#b8592f" />
-          </linearGradient>
-          <clipPath id="heroclip"><rect x="18" y="18" width="224" height="224" rx="54" /></clipPath>
-        </defs>
-        <rect x="18" y="18" width="224" height="224" rx="54" fill="none" stroke="rgba(244,239,230,0.12)" stroke-width="1" />
-        <g clip-path="url(#heroclip)">
-          <rect x="18" y="18" width="224" height="224" fill="url(#herog)" />
-          <!-- Same re-centering as the nav/footer mark, scaled around the
-               clip region's own center (130,130) -- see that comment. -->
-          <g transform="translate(130,130) scale(0.74) translate(-130,-130)">
-            <g stroke="#7a3f1e" stroke-opacity="0.5" stroke-width="38" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="translate(9,11)">
-              <path d="M86 58 L86 198" />
-              <path d="M86 130 L166 60" />
-              <path d="M86 126 L172 200" />
-            </g>
-            <g stroke="#14161a" stroke-width="38" stroke-linecap="round" stroke-linejoin="round" fill="none">
-              <path d="M86 58 L86 198" />
-              <path d="M86 130 L166 60" />
-              <path d="M86 126 L172 200" />
-            </g>
-            <g stroke="#14161a" stroke-width="15" stroke-linecap="round" fill="none">
-              <path d="M176 78 L204 52" opacity="0.55" />
-              <path d="M194 96 L216 78" opacity="0.3" />
-            </g>
-          </g>
-        </g>
-      </svg>
+      <img src="/brand/kelto-mark.svg" alt="Kelto Studio" class="float-slow" />
     </div>
   </div>
 
@@ -989,12 +946,12 @@
     <p class="eyebrow">Ce que nous taillons</p>
     <h2 class="section-title">Trois façons d'entrer en matière</h2>
     <p class="section-lede">
-      Comme le triskèle qui nous sert d'enseigne, l'atelier tient sur trois branches — chacune
+      Comme le triskèle qui nous sert d'enseigne, l'atelier tient sur trois branches - chacune
       peut avancer seule ou s'enrouler avec les deux autres selon où en est votre projet.
     </p>
     <div class="services">
       <div class="service">
-        <span class="num">01 — Produit</span>
+        <span class="num">01 - Produit</span>
         <h3>Applications mobiles &amp; web</h3>
         <p>
           Conception et développement de bout en bout : iOS, Android et web, du premier
@@ -1002,7 +959,7 @@
         </p>
       </div>
       <div class="service">
-        <span class="num">02 — Identité</span>
+        <span class="num">02 - Identité</span>
         <h3>Marque &amp; interface</h3>
         <p>
           Logo, système visuel, design system. Une identité qui tient sur une icône d'app
@@ -1010,11 +967,11 @@
         </p>
       </div>
       <div class="service">
-        <span class="num">03 — Suite</span>
+        <span class="num">03 - Suite</span>
         <h3>Exploitation &amp; évolutions</h3>
         <p>
           Hébergement, monitoring, nouvelles fonctionnalités. Le produit continue de vivre
-          après la mise en ligne — c'est là que la plupart des choses se jouent vraiment.
+          après la mise en ligne - c'est là que la plupart des choses se jouent vraiment.
         </p>
       </div>
     </div>
@@ -1024,7 +981,7 @@
     <p class="eyebrow">Méthode</p>
     <h2 class="section-title">Un atelier, pas une agence</h2>
     <p class="section-lede">
-      Kelto Studio est un atelier à taille humaine — des artisans du logiciel français, du
+      Kelto Studio est un atelier à taille humaine - des artisans du logiciel français, du
       premier appel jusqu'à la mise en production. Pas de passation d'équipe, pas de couches
       de gestion de projet : ce que vous décidez un lundi peut être en ligne le vendredi.
     </p>
@@ -1037,12 +994,12 @@
       <div class="step">
         <span class="step-label">Semaine 2–3</span>
         <h4>Maquette</h4>
-        <p>Écrans cliquables, identité visuelle posée — on valide l'expérience avant d'écrire une ligne de code.</p>
+        <p>Écrans cliquables, identité visuelle posée - on valide l'expérience avant d'écrire une ligne de code.</p>
       </div>
       <div class="step">
         <span class="step-label">Selon le projet</span>
         <h4>Développement</h4>
-        <p>Construction par lots livrables, testés et déployables à chaque étape — jamais une boîte noire.</p>
+        <p>Construction par lots livrables, testés et déployables à chaque étape - jamais une boîte noire.</p>
       </div>
       <div class="step">
         <span class="step-label">Et après</span>
@@ -1063,7 +1020,7 @@
         <h3>Organiser un tournoi ne devrait pas être un second travail.</h3>
         <p>
           TournArena gère poules, tableaux à élimination, calendrier, arbitrage et
-          classements — avec un site public généré automatiquement pour chaque
+          classements - avec un site public généré automatiquement pour chaque
           compétition, mis à jour à la seconde où un score est saisi. Applications iOS,
           Android et web organisateur, une seule plateforme.
         </p>
@@ -1096,7 +1053,7 @@
         <div>
           <h2>Un projet en tête ?</h2>
           <p>
-            Décrivez-le en quelques lignes — objectif, utilisateurs, échéance si vous en avez
+            Décrivez-le en quelques lignes - objectif, utilisateurs, échéance si vous en avez
             une. Réponse sous 48h ouvrées.
           </p>
           <details class="contact-disclosure">
@@ -1156,37 +1113,14 @@
       </div>
       <div class="foot-bottom">
         <div class="foot-brand">
-          <svg viewBox="0 0 100 100" aria-hidden="true">
-            <defs>
-              <linearGradient id="footg" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stop-color="#e3a463" />
-                <stop offset="1" stop-color="#b8592f" />
-              </linearGradient>
-              <clipPath id="footclip"><rect x="0" y="0" width="100" height="100" rx="24" /></clipPath>
-            </defs>
-            <g clip-path="url(#footclip)">
-              <rect width="100" height="100" fill="url(#footg)" />
-              <g transform="translate(50,50) scale(0.74) translate(-50,-50)">
-                <g stroke="#7a3f1e" stroke-opacity="0.5" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="translate(4,5)">
-                  <path d="M30 22 L30 78" />
-                  <path d="M30 52 L68 20" />
-                  <path d="M30 50 L70 80" />
-                </g>
-                <g stroke="#14161a" stroke-width="17" stroke-linecap="round" stroke-linejoin="round" fill="none">
-                  <path d="M30 22 L30 78" />
-                  <path d="M30 52 L68 20" />
-                  <path d="M30 50 L70 80" />
-                </g>
-                <g stroke="#14161a" stroke-width="7" stroke-linecap="round" fill="none">
-                  <path d="M74 28 L85 19" opacity="0.55" />
-                  <path d="M81 35 L89 29" opacity="0.3" />
-                </g>
-              </g>
-            </g>
-          </svg>
+          <img src="/brand/kelto-mark.svg" alt="" width="20" height="20" />
           Kelto Studio
         </div>
-        <span>© 2026 Kelto — Atelier français.</span>
+        <span>© 2026 Kelto - Atelier français.</span>
+        <nav class="foot-legal">
+          <a href="/mentions-legales.html">Mentions légales</a>
+          <a href="/confidentialite.html">Confidentialité</a>
+        </nav>
       </div>
     </div>
   </footer>

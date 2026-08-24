@@ -47,4 +47,4 @@ Puis un élément (idéalement le conteneur racine de la surface concernée — 
 
 - `charts` (palette catégorielle pour les visualisations) : reporté à la PR qui introduira les premiers graphiques (classements, statistiques).
 - Lecture dynamique réelle du thème d'un tournoi depuis l'API : prévue dans `feat/015-public-tournament-web`.
-- Polices exactes (Space Grotesk, Barlow Condensed, Russo One…) : les valeurs `--ap-font-*` référencent déjà les bons noms de police, mais leur chargement effectif (`@font-face` ou Google Fonts self-hosted) n'est pas encore mis en place — piles système utilisées comme repli pour l'instant.
+- Polices exactes (Bricolage Grotesque, Barlow Condensed, Russo One…) : les valeurs `--ap-font-*` référencent déjà les bons noms de police, chargées via Google Fonts (`<link>` dans `index.html` de `apps/web`/`apps/mobile`) — piles système utilisées comme repli en attendant qu'elles chargent.

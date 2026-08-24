@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Politique de confidentialité - Kelto Studio</title>
+<meta name="robots" content="noindex" />
+<link rel="icon" type="image/svg+xml" href="/brand/favicon.svg" />
+<link rel="icon" type="image/png" sizes="32x32" href="/brand/favicon-32.png" />
+<link rel="apple-touch-icon" href="/brand/favicon-180.png" />
+<style>
+  :root {
+    --ink: #14161a;
+    --ink-soft: #1b1e24;
+    --parchment: #f4efe6;
+    --parchment-dim: #d9d2c4;
+    --bronze: #c08a4e;
+    --bronze-bright: #e3a463;
+    --line: rgba(244, 239, 230, 0.14);
+    --line-strong: rgba(244, 239, 230, 0.28);
+    --font-display: "Avenir Next", "Century Gothic", Futura, "Helvetica Neue", Arial, sans-serif;
+    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  :root[data-theme="light"] {
+    --ink: #f6f1e7;
+    --ink-soft: #ffffff;
+    --parchment: #1a1c20;
+    --parchment-dim: #4a4640;
+    --line: rgba(20, 22, 26, 0.12);
+    --line-strong: rgba(20, 22, 26, 0.24);
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --ink: #f6f1e7;
+      --ink-soft: #ffffff;
+      --parchment: #1a1c20;
+      --parchment-dim: #4a4640;
+      --line: rgba(20, 22, 26, 0.12);
+      --line-strong: rgba(20, 22, 26, 0.24);
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ink);
+    color: var(--parchment);
+    font-family: var(--font-body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: var(--bronze-bright); }
+
+  .wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: clamp(32px, 6vw, 72px) clamp(20px, 5vw, 56px) 96px;
+  }
+
+  .back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: var(--parchment-dim);
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 40px;
+  }
+
+  .back:hover { color: var(--bronze-bright); }
+
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+    margin: 0 0 8px;
+  }
+
+  .updated {
+    color: var(--parchment-dim);
+    font-size: 0.85rem;
+    margin: 0 0 40px;
+  }
+
+  h2 {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    margin: 40px 0 12px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+  }
+
+  h2:first-of-type { border-top: none; padding-top: 0; }
+
+  p, li { color: var(--parchment-dim); font-size: 0.95rem; }
+
+  ul { padding-left: 20px; }
+  li { margin-bottom: 6px; }
+
+  .todo {
+    display: inline-block;
+    margin-top: 4px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: rgba(224, 92, 74, 0.14);
+    border: 1px solid rgba(224, 92, 74, 0.4);
+    color: #f0a897;
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <a class="back" href="/">← Retour à l'accueil</a>
+    <h1>Politique de confidentialité</h1>
+    <p class="updated">Brouillon à relire avant mise en ligne - non publié</p>
+
+    <h2>1. Préambule</h2>
+    <p>
+      Cette politique explique quelles données personnelles Kelto Studio collecte sur
+      kelto-studio.fr, pourquoi, et quels sont vos droits, conformément au Règlement
+      général sur la protection des données (RGPD).
+    </p>
+
+    <h2>2. Responsable du traitement</h2>
+    <p>
+      Kelto Studio est responsable du traitement des données décrites ici. Pour toute
+      question ou pour exercer vos droits, écrivez à
+      <a href="mailto:contact@kelto-studio.fr">contact@kelto-studio.fr</a>.
+    </p>
+
+    <h2>3. Données collectées</h2>
+    <p>Ce site ne dépose aucun cookie ni traceur : il ne contient aucun JavaScript.</p>
+    <p>La seule donnée collectée l'est via le formulaire de contact, si vous le remplissez :</p>
+    <ul>
+      <li>Nom</li>
+      <li>Adresse email</li>
+      <li>Type de demande (projet/devis, problème, autre)</li>
+      <li>Message</li>
+    </ul>
+
+    <h2>4. Finalité et base légale</h2>
+    <p>
+      Ces données servent uniquement à répondre à votre demande. La base légale est
+      l'intérêt légitime de Kelto Studio à traiter les demandes qui lui sont adressées,
+      et votre consentement implicite au moment où vous envoyez le formulaire.
+    </p>
+
+    <h2>5. Destinataires et conservation</h2>
+    <p>
+      Les données saisies dans le formulaire sont transmises par email à Kelto Studio via
+      notre prestataire d'envoi d'emails (SMTP) <span class="todo">À COMPLÉTER : nom du prestataire si vous souhaitez le citer</span>
+      - elles ne sont enregistrées dans aucune base de données sur ce site. Elles sont
+      conservées le temps nécessaire au traitement de votre demande, puis
+      <span class="todo">À COMPLÉTER : durée de conservation de votre choix, par ex. 3 ans à compter du dernier échange</span>.
+    </p>
+
+    <h2>6. Vos droits</h2>
+    <p>
+      Conformément au RGPD, vous disposez d'un droit d'accès, de rectification,
+      d'effacement, d'opposition et de portabilité de vos données. Pour l'exercer,
+      écrivez à <a href="mailto:contact@kelto-studio.fr">contact@kelto-studio.fr</a>.
+      Vous pouvez aussi introduire une réclamation auprès de la CNIL (cnil.fr).
+    </p>
+
+    <h2>7. Sécurité</h2>
+    <p>
+      Le formulaire de contact transite en HTTPS et intègre un champ anti-spam invisible
+      (honeypot) qui ne collecte aucune donnée sur les visiteurs légitimes.
+    </p>
+  </div>
+</body>
+</html>

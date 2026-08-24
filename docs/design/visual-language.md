@@ -41,8 +41,8 @@ Le cyan signal est la **seule** couleur vive du système — réservée aux badg
 
 ### Typographies
 
-- Titres/affichage : **Space Grotesk** (600-700) — caractère technique distinctif.
-- Interface/corps : **Inter** (400-600) — excellente lisibilité, chiffres tabulaires natifs, idéal pour scores/classements denses.
+- Titres/affichage : **Bricolage Grotesque** (600-700) — grotesque variable au caractère marqué, plus distinctif que les polices d'interface par défaut.
+- Interface/corps : **Hanken Grotesk** (400-600) — humaniste, très lisible, chiffres tabulaires natifs, idéal pour scores/classements denses.
 
 ### Formes
 
@@ -54,7 +54,7 @@ Fines lignes de grille en filigrane (évoquant un terrain vu du dessus, très ab
 
 ### Traitement des scores
 
-Chiffres en Inter Tabular, gros et froids par défaut ; le cyan signal n'apparaît que lors d'un changement récent (ex. score qui vient de bouger), avec une micro-animation de pulsation brève.
+Chiffres en Hanken Grotesk Tabular, gros et froids par défaut ; le cyan signal n'apparaît que lors d'un changement récent (ex. score qui vient de bouger), avec une micro-animation de pulsation brève.
 
 ### Traitement des classements
 

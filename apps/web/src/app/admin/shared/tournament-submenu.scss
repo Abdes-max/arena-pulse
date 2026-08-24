@@ -224,8 +224,11 @@
 }
 
 .tournament-submenu__share-menu-item-lock {
+  display: inline-flex;
+  flex: none;
   margin-left: auto;
-  font-size: 0.75rem;
+  width: 13px;
+  height: 13px;
 }
 
 // No design-system modal component exists yet (checked before building

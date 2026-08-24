@@ -395,10 +395,6 @@
   .landing-page__marquee-pulse {
     animation: none;
   }
-
-  .landing-page__feature:hover {
-    transform: none;
-  }
 }
 
 ap-tournament-marquee {
@@ -511,15 +507,13 @@ ap-tournament-marquee {
   background: var(--ap-color-surface);
   border: var(--ap-border-width) solid var(--ap-color-border);
   border-radius: var(--ap-radius-lg);
-  transition:
-    border-color var(--ap-motion-fast) var(--ap-easing-standard),
-    box-shadow var(--ap-motion-fast) var(--ap-easing-standard),
-    transform var(--ap-motion-fast) var(--ap-easing-standard);
+  transition: border-color var(--ap-motion-fast) var(--ap-easing-standard);
 
+  // No lift/shadow on hover: this <article> isn't itself clickable (only
+  // the mock content inside is decorative), so the hover reaction is
+  // limited to a border tint rather than implying it can be pressed.
   &:hover {
     border-color: var(--accent);
-    box-shadow: var(--ap-shadow-md);
-    transform: translateY(-3px);
   }
   // Accent pair (signal/ember), driven by custom properties instead of a
   // separate override selector per element that needs it.
@@ -754,15 +748,12 @@ ap-tournament-marquee {
   background: var(--ap-color-surface);
   border: var(--ap-border-width) solid var(--ap-color-border);
   border-radius: var(--ap-radius-lg);
-  transition:
-    border-color var(--ap-motion-fast) var(--ap-easing-standard),
-    box-shadow var(--ap-motion-fast) var(--ap-easing-standard),
-    transform var(--ap-motion-fast) var(--ap-easing-standard);
+  transition: border-color var(--ap-motion-fast) var(--ap-easing-standard);
 
+  // Same rationale as .landing-page__feature above: this <article> isn't
+  // itself clickable (only its inner CTA link is), so no lift/shadow.
   &:hover {
     border-color: var(--accent);
-    box-shadow: var(--ap-shadow-md);
-    transform: translateY(-3px);
   }
 
   --accent: var(--ap-color-muted);
