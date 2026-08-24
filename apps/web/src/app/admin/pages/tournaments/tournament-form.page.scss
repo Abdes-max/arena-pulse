@@ -291,7 +291,11 @@
 }
 
 .tournament-form-page__theme-lock {
-  font-size: 0.8rem;
+  display: inline-flex;
+  flex: none;
+  width: 13px;
+  height: 13px;
+  color: var(--ap-color-muted);
 }
 
 .tournament-form-page__personalization-actions {
