@@ -469,9 +469,7 @@ describe('Public tournament site (e2e)', () => {
       .expect(201);
     const unlistedId = (unlistedRes.body as { id: string }).id;
     const unlistedSlug = (unlistedRes.body as { slug: string }).slug;
-    await auth(
-      request(app.getHttpServer()).patch(`${base}/${unlistedId}`),
-    )
+    await auth(request(app.getHttpServer()).patch(`${base}/${unlistedId}`))
       .send({ isListed: false })
       .expect(200);
 
@@ -485,16 +483,15 @@ describe('Public tournament site (e2e)', () => {
     const listRes = await request(app.getHttpServer())
       .get('/api/v1/public/tournaments')
       .expect(200);
-    const slugsInDirectory = (listRes.body as { slug: string }[]).map(
-      (t) => t.slug,
-    );
+    const directoryItems = listRes.body as Record<string, unknown>[];
+    const slugsInDirectory = directoryItems.map((t) => t.slug);
     expect(slugsInDirectory).toContain(listedSlug);
     expect(slugsInDirectory).not.toContain(unlistedSlug);
     // isListed is an internal admin-only flag -- must never leak into the
     // public directory response.
-    expect(listRes.body).not.toEqual(
-      expect.arrayContaining([expect.objectContaining({ isListed: expect.anything() })]),
-    );
+    for (const item of directoryItems) {
+      expect(item).not.toHaveProperty('isListed');
+    }
 
     // Still fully reachable by its own direct link, per ADR 0006.
     await request(app.getHttpServer())
