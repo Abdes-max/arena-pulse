@@ -488,6 +488,8 @@
         "sportLabel": "Deporte",
         "chooseSport": "Elige un deporte",
         "isOnlineLabel": "Torneo en línea (esport)",
+        "isListedLabel": "Visible en la búsqueda pública",
+        "isListedHint": "Un torneo privado sigue siendo accesible mediante su enlace directo, pero no aparece en la búsqueda de eventos de TournArena.",
         "themeLabel": "Tema del sitio público",
         "save": "Guardar",
         "create": "Crear el torneo",

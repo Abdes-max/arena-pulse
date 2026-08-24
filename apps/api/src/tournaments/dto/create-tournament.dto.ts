@@ -31,6 +31,12 @@ export class CreateTournamentDto {
   @IsBoolean()
   isOnline?: boolean;
 
+  // Whether a published tournament appears in the public directory search
+  // -- see the doc comment on Tournament.isListed in schema.prisma.
+  @IsOptional()
+  @IsBoolean()
+  isListed?: boolean;
+
   @IsOptional()
   @IsEnum(PublicTheme)
   theme?: PublicTheme;

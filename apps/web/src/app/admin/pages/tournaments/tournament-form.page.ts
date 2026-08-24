@@ -164,6 +164,7 @@ export class TournamentFormPage {
     name: ['', Validators.required],
     sportId: ['', Validators.required],
     isOnline: [false],
+    isListed: [true],
     theme: ['INK_SIGNAL' as PublicTheme],
   });
 
@@ -283,6 +284,7 @@ export class TournamentFormPage {
       name: tournament.name,
       sportId: tournament.sportId,
       isOnline: tournament.isOnline,
+      isListed: tournament.isListed,
       theme: tournament.theme,
     });
     this.descriptionDraft.set(tournament.description ?? '');
@@ -334,7 +336,7 @@ export class TournamentFormPage {
     this.submitting.set(true);
     this.errorMessage.set(null);
     try {
-      const { name, sportId, isOnline, theme } = this.form.getRawValue();
+      const { name, sportId, isOnline, isListed, theme } = this.form.getRawValue();
       const tournamentId = this.tournamentId();
       if (this.isEditMode() && tournamentId) {
         const updated = await this.tournamentsService.updateTournament(
@@ -344,6 +346,7 @@ export class TournamentFormPage {
             name,
             sportId,
             isOnline,
+            isListed,
             theme,
           },
         );
@@ -353,6 +356,7 @@ export class TournamentFormPage {
           name,
           sportId,
           isOnline,
+          isListed,
           theme,
         });
         await this.router.navigate(['/admin/tournaments', created.id]);

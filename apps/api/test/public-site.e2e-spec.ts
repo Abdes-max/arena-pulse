@@ -417,4 +417,85 @@ describe('Public tournament site (e2e)', () => {
       .expect(200);
     expect(publicRes.body).toMatchObject({ theme: 'PULSE_EMBER' });
   });
+
+  it('excludes an unlisted tournament from the public directory while keeping it reachable by direct link', async () => {
+    const email = 'organizer@example.com';
+    const password = 'a-very-strong-password';
+    await request(app.getHttpServer())
+      .post('/api/v1/auth/register')
+      .send({
+        email,
+        password,
+        firstName: 'Ada',
+        lastName: 'Lovelace',
+        organizationName: 'Ada Tournaments',
+      })
+      .expect(201);
+    await prisma.user.update({
+      where: { email },
+      data: { emailVerifiedAt: new Date() },
+    });
+    const loginRes = await request(app.getHttpServer())
+      .post('/api/v1/auth/login')
+      .send({ email, password })
+      .expect(200);
+    const { accessToken } = loginRes.body as AuthResponseBody;
+    const meRes = await request(app.getHttpServer())
+      .get('/api/v1/auth/me')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .expect(200);
+    const organizationId = (meRes.body as { organizations: { id: string }[] })
+      .organizations[0].id;
+    const auth = (req: request.Test) =>
+      req.set('Authorization', `Bearer ${accessToken}`);
+    const base = `/api/v1/organizations/${organizationId}/tournaments`;
+
+    const sportRes = await auth(
+      request(app.getHttpServer()).get('/api/v1/sports'),
+    ).expect(200);
+    const sportId = (sportRes.body as { id: string }[])[0].id;
+
+    // A tournament created without isListed defaults to listed (true) --
+    // preserves the pre-existing behavior of every already-published
+    // tournament (see the schema comment on Tournament.isListed).
+    const listedRes = await auth(request(app.getHttpServer()).post(base))
+      .send({ name: 'Coupe Listée', sportId })
+      .expect(201);
+    const listedId = (listedRes.body as { id: string }).id;
+    const listedSlug = (listedRes.body as { slug: string }).slug;
+
+    const unlistedRes = await auth(request(app.getHttpServer()).post(base))
+      .send({ name: 'Coupe Privée', sportId })
+      .expect(201);
+    const unlistedId = (unlistedRes.body as { id: string }).id;
+    const unlistedSlug = (unlistedRes.body as { slug: string }).slug;
+    await auth(request(app.getHttpServer()).patch(`${base}/${unlistedId}`))
+      .send({ isListed: false })
+      .expect(200);
+
+    await auth(
+      request(app.getHttpServer()).post(`${base}/${listedId}/publish`),
+    ).expect(200);
+    await auth(
+      request(app.getHttpServer()).post(`${base}/${unlistedId}/publish`),
+    ).expect(200);
+
+    const listRes = await request(app.getHttpServer())
+      .get('/api/v1/public/tournaments')
+      .expect(200);
+    const directoryItems = listRes.body as Record<string, unknown>[];
+    const slugsInDirectory = directoryItems.map((t) => t.slug);
+    expect(slugsInDirectory).toContain(listedSlug);
+    expect(slugsInDirectory).not.toContain(unlistedSlug);
+    // isListed is an internal admin-only flag -- must never leak into the
+    // public directory response.
+    for (const item of directoryItems) {
+      expect(item).not.toHaveProperty('isListed');
+    }
+
+    // Still fully reachable by its own direct link, per ADR 0006.
+    await request(app.getHttpServer())
+      .get(`/api/v1/public/tournaments/${unlistedSlug}`)
+      .expect(200);
+  });
 });

@@ -225,6 +225,13 @@ model Tournament {
   endDate         DateTime?
   isOnline        Boolean          @default(false)
   teamsCanReferee Boolean          @default(false)
+  // Whether a PUBLISHED tournament appears in the public directory search
+  // (GET /public/tournaments, /public/tournaments/search) -- independent
+  // from `status`. A private tournament (false) stays reachable by its
+  // direct slug link (getPublicBySlug is not gated by this field) but is
+  // absent from every listing. Defaults to true so every tournament
+  // published before this field existed keeps its current behavior.
+  isListed        Boolean          @default(true)
   theme           PublicTheme      @default(INK_SIGNAL)
   // Public path served by the API (e.g. /uploads/tournament-logos/<file>) --
   // see TournamentsService.uploadLogo. Null until an organizer uploads one.

@@ -590,6 +590,8 @@
         "sportLabel": "Sport",
         "chooseSport": "Choose a sport",
         "isOnlineLabel": "Online tournament (esport)",
+        "isListedLabel": "Visible in public search",
+        "isListedHint": "A private tournament stays reachable via its direct link, but won't appear in the TournArena event search.",
         "themeLabel": "Public site theme",
         "save": "Save",
         "create": "Create the tournament",

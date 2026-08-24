@@ -908,7 +908,7 @@ describe('TournamentsService', () => {
 
       expect(prisma.tournament.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
-          where: { status: TournamentStatus.PUBLISHED },
+          where: { status: TournamentStatus.PUBLISHED, isListed: true },
         }),
       );
       expect(result).toEqual([

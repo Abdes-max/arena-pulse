@@ -141,6 +141,7 @@ export interface TournamentDetail extends Tournament {
   archivedAt: string | null;
   updatedAt: string;
   teamsCanReferee: boolean;
+  isListed: boolean;
   description: string | null;
   rules: string | null;
   practicalInfo: string | null;
