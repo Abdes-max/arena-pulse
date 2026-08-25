@@ -26,35 +26,46 @@
           }}</a>
         </nav>
       </div>
-      <div class="app-shell__controls">
+      <div class="app-shell__nav-end">
+        <div class="app-shell__controls">
+          <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
+          <ap-button type="button" variant="ghost" (click)="logout()">{{
+            'admin.shell.logout' | transloco
+          }}</ap-button>
+        </div>
+
+        <!-- Always visible, at every viewport width -- not hidden inside
+             the mobile menu below with the rest of app-shell__controls, so
+             switching language never requires opening that menu first.
+             Grouped with the toggle button in this shared wrapper (not a
+             sibling of it directly in __topbar) so justify-content:
+             space-between there keeps treating "the right-hand side" as a
+             single block. -->
         <ap-language-switcher
           [language]="language()"
           [languages]="languages"
           (languageChange)="onLanguageChange($event)"
         />
-        <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
-        <ap-button type="button" variant="ghost" (click)="logout()">{{
-          'admin.shell.logout' | transloco
-        }}</ap-button>
+
+        <button
+          type="button"
+          class="app-shell__nav-toggle"
+          (click)="toggleMobileMenu()"
+          [attr.aria-expanded]="mobileMenuOpen()"
+          aria-controls="app-shell-mobile-menu"
+          [attr.aria-label]="'admin.shell.menu' | transloco"
+        >
+          @if (mobileMenuOpen()) {
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M4 4 L16 16 M16 4 L4 16" />
+            </svg>
+          } @else {
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M3 5 L17 5 M3 10 L17 10 M3 15 L17 15" />
+            </svg>
+          }
+        </button>
       </div>
-      <button
-        type="button"
-        class="app-shell__nav-toggle"
-        (click)="toggleMobileMenu()"
-        [attr.aria-expanded]="mobileMenuOpen()"
-        aria-controls="app-shell-mobile-menu"
-        [attr.aria-label]="'admin.shell.menu' | transloco"
-      >
-        @if (mobileMenuOpen()) {
-          <svg viewBox="0 0 20 20" aria-hidden="true">
-            <path d="M4 4 L16 16 M16 4 L4 16" />
-          </svg>
-        } @else {
-          <svg viewBox="0 0 20 20" aria-hidden="true">
-            <path d="M3 5 L17 5 M3 10 L17 10 M3 15 L17 15" />
-          </svg>
-        }
-      </button>
     </div>
 
     @if (mobileMenuOpen()) {
@@ -88,11 +99,6 @@
           >{{ 'admin.shell.nav.account' | transloco }}</a
         >
         <div class="app-shell__mobile-menu-controls">
-          <ap-language-switcher
-            [language]="language()"
-            [languages]="languages"
-            (languageChange)="onLanguageChange($event)"
-          />
           <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
           <ap-button type="button" variant="ghost" (click)="logout()">{{
             'admin.shell.logout' | transloco

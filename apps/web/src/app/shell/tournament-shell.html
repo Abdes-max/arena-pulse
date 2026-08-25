@@ -26,46 +26,51 @@
           <p class="tournament-shell__sport">{{ t.sportName }}</p>
         </div>
 
-        <!-- Desktop-inline controls -- hidden under the mobile breakpoint in
-             favor of the hamburger + panel below (same duplicate-markup
-             pattern as the admin shell's own AppShell). -->
-        <div class="tournament-shell__actions">
+        <div class="tournament-shell__nav-end">
+          <!-- Desktop-inline controls -- hidden under the mobile breakpoint
+               in favor of the hamburger + panel below (same duplicate-markup
+               pattern as the admin shell's own AppShell). -->
+          <div class="tournament-shell__actions">
+            <ap-share-button [title]="t.name" [text]="shareText()" [url]="shareUrl()" />
+            <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
+          </div>
+
+          <!-- Always visible, at every viewport width -- not hidden inside
+               the mobile menu below with the rest of tournament-shell__
+               actions, so switching language never requires opening that
+               menu first. Grouped with the toggle button in this shared
+               wrapper (not a sibling of it directly in __sport-row) so
+               justify-content: space-between there keeps treating "the
+               right-hand side" as a single block. -->
           <ap-language-switcher
             [language]="language()"
             [languages]="languages"
             (languageChange)="onLanguageChange($event)"
           />
-          <ap-share-button [title]="t.name" [text]="shareText()" [url]="shareUrl()" />
-          <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
-        </div>
 
-        <button
-          type="button"
-          class="tournament-shell__menu-toggle"
-          (click)="toggleMobileMenu()"
-          [attr.aria-expanded]="mobileMenuOpen()"
-          aria-controls="tournament-shell-mobile-menu"
-          [attr.aria-label]="'shell.menu' | transloco"
-        >
-          @if (mobileMenuOpen()) {
-            <svg viewBox="0 0 20 20" aria-hidden="true">
-              <path d="M4 4 L16 16 M16 4 L4 16" />
-            </svg>
-          } @else {
-            <svg viewBox="0 0 20 20" aria-hidden="true">
-              <path d="M3 5 L17 5 M3 10 L17 10 M3 15 L17 15" />
-            </svg>
-          }
-        </button>
+          <button
+            type="button"
+            class="tournament-shell__menu-toggle"
+            (click)="toggleMobileMenu()"
+            [attr.aria-expanded]="mobileMenuOpen()"
+            aria-controls="tournament-shell-mobile-menu"
+            [attr.aria-label]="'shell.menu' | transloco"
+          >
+            @if (mobileMenuOpen()) {
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M4 4 L16 16 M16 4 L4 16" />
+              </svg>
+            } @else {
+              <svg viewBox="0 0 20 20" aria-hidden="true">
+                <path d="M3 5 L17 5 M3 10 L17 10 M3 15 L17 15" />
+              </svg>
+            }
+          </button>
+        </div>
       </div>
 
       @if (mobileMenuOpen()) {
         <div class="tournament-shell__mobile-menu" id="tournament-shell-mobile-menu">
-          <ap-language-switcher
-            [language]="language()"
-            [languages]="languages"
-            (languageChange)="onLanguageChange($event)"
-          />
           <ap-share-button [title]="t.name" [text]="shareText()" [url]="shareUrl()" />
           <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
         </div>
