@@ -14,7 +14,16 @@
       "title": "Eventos publicados",
       "searchLabel": "Procurar um evento",
       "searchPlaceholder": "Procurar um evento…",
-      "empty": "Nenhum evento encontrado."
+      "filters": {
+        "sportLabel": "Desporto",
+        "allSports": "Todos os desportos",
+        "locationLabel": "Local",
+        "locationPlaceholder": "Cidade, pavilhão…",
+        "dateFromLabel": "A partir de"
+      },
+      "empty": "Nenhum evento encontrado.",
+      "loadMore": "Carregar mais",
+      "loading": "A carregar…"
     },
     "settings": {
       "title": "Definições",

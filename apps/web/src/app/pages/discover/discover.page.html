@@ -1,0 +1,86 @@
+<main class="discover-page">
+  <div class="discover-page__header">
+    <button type="button" class="discover-page__back" (click)="goBack()">
+      {{ 'legal.back' | transloco }}
+    </button>
+    <ap-language-switcher
+      [language]="language()"
+      [languages]="languages"
+      (languageChange)="onLanguageChange($event)"
+    />
+  </div>
+  <ap-logo class="discover-page__brand" />
+
+  <h1>{{ 'discover.title' | transloco }}</h1>
+  <p class="discover-page__lede">{{ 'discover.lede' | transloco }}</p>
+
+  <form class="discover-page__filters" (submit)="$event.preventDefault()">
+    <ap-text-field
+      class="discover-page__filter-name"
+      type="search"
+      [label]="'discover.filters.nameLabel' | transloco"
+      [hideLabel]="true"
+      [placeholder]="'discover.filters.namePlaceholder' | transloco"
+      [value]="q()"
+      (valueChange)="q.set($event)"
+    />
+    <ap-select
+      class="discover-page__filter-sport"
+      [label]="'discover.filters.sportLabel' | transloco"
+      [hideLabel]="true"
+      [options]="sportOptions()"
+      [value]="sportId()"
+      (valueChange)="sportId.set($event)"
+    />
+    <ap-text-field
+      class="discover-page__filter-location"
+      type="search"
+      [label]="'discover.filters.locationLabel' | transloco"
+      [hideLabel]="true"
+      [placeholder]="'discover.filters.locationPlaceholder' | transloco"
+      [value]="place()"
+      (valueChange)="place.set($event)"
+    />
+    <ap-text-field
+      class="discover-page__filter-date"
+      type="date"
+      [label]="'discover.filters.dateFromLabel' | transloco"
+      [value]="dateFrom()"
+      (valueChange)="dateFrom.set($event)"
+    />
+  </form>
+
+  @if (hasSearched() && !loading() && items().length === 0) {
+    <p class="discover-page__empty">{{ 'discover.empty' | transloco }}</p>
+  } @else {
+    <p class="discover-page__count">
+      {{ 'discover.resultsCount' | transloco: { count: total() } }}
+    </p>
+    <div class="discover-page__grid">
+      @for (t of resolvedItems(); track t.id) {
+        <a class="discover-page__card-link" [routerLink]="['/', t.slug]">
+          <ap-tournament-card
+            [name]="t.name"
+            [sportName]="t.sportName"
+            [startDate]="t.startDate"
+            [endDate]="t.endDate"
+            [isOnline]="t.isOnline"
+            [location]="t.location"
+            [logoUrl]="t.logoUrl"
+            [organizerName]="t.organizerName"
+          />
+        </a>
+      }
+    </div>
+    @if (hasMore()) {
+      <button
+        type="button"
+        class="discover-page__load-more"
+        [disabled]="loading()"
+        (click)="loadMore()"
+      >
+        {{ (loading() ? 'discover.loading' : 'discover.loadMore') | transloco }}
+      </button>
+    }
+  }
+</main>

@@ -24,6 +24,7 @@ type PrismaMock = {
     findMany: jest.Mock;
     findUnique: jest.Mock;
     update: jest.Mock;
+    count: jest.Mock;
   };
   category: { findMany: jest.Mock; create: jest.Mock; count: jest.Mock };
   team: { count: jest.Mock };
@@ -48,6 +49,7 @@ function createPrismaMock(): PrismaMock {
       findMany: jest.fn(),
       findUnique: jest.fn(),
       update: jest.fn(),
+      count: jest.fn(),
     },
     category: { findMany: jest.fn(), create: jest.fn(), count: jest.fn() },
     team: { count: jest.fn() },
@@ -955,6 +957,83 @@ describe('TournamentsService', () => {
       const [result] = await service.listPublished();
 
       expect(result.location).toBeNull();
+    });
+  });
+
+  describe('searchPublished', () => {
+    it('combines every provided filter with AND, plus the same PUBLISHED/isListed gate as listPublished', async () => {
+      prisma.tournament.findMany.mockResolvedValue([
+        tournamentFixture({
+          status: TournamentStatus.PUBLISHED,
+          slug: 'coupe-de-printemps',
+          venues: [{ name: 'Gymnase municipal', address: '1 rue du Stade' }],
+          organization: { name: 'Ada Tournaments' },
+        }),
+      ]);
+      prisma.tournament.count.mockResolvedValue(1);
+
+      const result = await service.searchPublished({
+        q: 'Printemps',
+        sportId: SPORT.id,
+        location: 'Gymnase',
+        dateFrom: '2027-01-01',
+        page: 1,
+        pageSize: 20,
+      });
+
+      expect(prisma.tournament.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            status: TournamentStatus.PUBLISHED,
+            isListed: true,
+            sportId: SPORT.id,
+            name: { contains: 'Printemps', mode: 'insensitive' },
+            startDate: { gte: new Date('2027-01-01') },
+            venues: {
+              some: {
+                OR: [
+                  { name: { contains: 'Gymnase', mode: 'insensitive' } },
+                  { address: { contains: 'Gymnase', mode: 'insensitive' } },
+                ],
+              },
+            },
+          },
+          skip: 0,
+          take: 20,
+        }),
+      );
+      expect(result).toEqual({
+        items: [
+          expect.objectContaining({
+            slug: 'coupe-de-printemps',
+            organizerName: 'Ada Tournaments',
+          }),
+        ],
+        total: 1,
+      });
+    });
+
+    it('paginates with skip = (page - 1) * pageSize and reports the unpaginated total', async () => {
+      prisma.tournament.findMany.mockResolvedValue([]);
+      prisma.tournament.count.mockResolvedValue(45);
+
+      const result = await service.searchPublished({ page: 3, pageSize: 20 });
+
+      expect(prisma.tournament.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({ skip: 40, take: 20 }),
+      );
+      expect(result.total).toBe(45);
+    });
+
+    it('caps pageSize at 50 regardless of what is requested', async () => {
+      prisma.tournament.findMany.mockResolvedValue([]);
+      prisma.tournament.count.mockResolvedValue(0);
+
+      await service.searchPublished({ page: 1, pageSize: 500 });
+
+      expect(prisma.tournament.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({ take: 50 }),
+      );
     });
   });
 });

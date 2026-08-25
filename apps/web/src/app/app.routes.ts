@@ -45,6 +45,10 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/legal/privacy.page').then((m) => m.PrivacyPage),
   },
   {
+    path: 'decouvrir',
+    loadComponent: () => import('./pages/discover/discover.page').then((m) => m.DiscoverPage),
+  },
+  {
     path: 'player/login',
     loadComponent: () =>
       import('./pages/player-auth/login/player-login.page').then((m) => m.PlayerLoginPage),

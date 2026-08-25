@@ -23,6 +23,11 @@ export class TournamentCard {
   // Already resolved to an absolute URL by the caller (AssetUrlService) --
   // this component stays a dumb presenter, same as every other input here.
   readonly logoUrl = input<string | null>(null);
+  // Only set by the public directory search (a listing spanning every
+  // organization) -- omitted everywhere else (landing grid, mobile
+  // favorites/marquee), where the card is already scoped to one known
+  // organizer and the line would be redundant.
+  readonly organizerName = input<string | null>(null);
 
   protected readonly locationLabel = computed(() =>
     this.isOnline() ? 'En ligne' : this.location(),

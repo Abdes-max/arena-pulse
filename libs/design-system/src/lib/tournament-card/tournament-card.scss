@@ -100,3 +100,11 @@
   color: var(--ap-color-muted);
   font-variant-numeric: tabular-nums;
 }
+
+.ap-tournament-card__organizer {
+  font-size: 0.75rem;
+  color: var(--ap-color-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

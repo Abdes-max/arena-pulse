@@ -12,6 +12,7 @@ import { TournamentCard } from './tournament-card';
       [endDate]="endDate"
       [isOnline]="isOnline"
       [location]="location"
+      [organizerName]="organizerName"
     />
   `,
 })
@@ -20,6 +21,7 @@ class HostComponent {
   endDate: string | null = null;
   isOnline = false;
   location: string | null = null;
+  organizerName: string | null = null;
 }
 
 describe('TournamentCard', () => {
@@ -74,5 +76,21 @@ describe('TournamentCard', () => {
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('.ap-tournament-card__location')).toBeNull();
+  });
+
+  it('shows the organizer name when provided', () => {
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.componentInstance.organizerName = 'Ada Tournaments';
+    fixture.detectChanges();
+
+    const organizer = fixture.nativeElement.querySelector('.ap-tournament-card__organizer');
+    expect(organizer.textContent.trim()).toBe('Ada Tournaments');
+  });
+
+  it('omits the organizer line when none is provided', () => {
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.ap-tournament-card__organizer')).toBeNull();
   });
 });

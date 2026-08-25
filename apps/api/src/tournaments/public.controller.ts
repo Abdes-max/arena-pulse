@@ -29,6 +29,28 @@ export class PublicController {
     );
   }
 
+  // Registered before the ':slug' wildcard route below -- otherwise a
+  // request for /public/tournaments/search would match :slug with
+  // slug === 'search' instead of reaching this handler.
+  @Get('search')
+  searchTournaments(
+    @Query('q') q?: string,
+    @Query('sportId') sportId?: string,
+    @Query('location') location?: string,
+    @Query('dateFrom') dateFrom?: string,
+    @Query('page') page?: string,
+    @Query('pageSize') pageSize?: string,
+  ) {
+    return this.publicService.searchTournaments({
+      q,
+      sportId,
+      location,
+      dateFrom,
+      page: page ? Number(page) : undefined,
+      pageSize: pageSize ? Number(pageSize) : undefined,
+    });
+  }
+
   @Get(':slug')
   getTournament(@Param('slug') slug: string) {
     return this.publicService.getTournament(slug);

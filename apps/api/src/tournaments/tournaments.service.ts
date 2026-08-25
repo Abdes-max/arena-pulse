@@ -12,6 +12,8 @@ import { promises as fs } from 'fs';
 import { join } from 'path';
 import type Stripe from 'stripe';
 import {
+  Organization,
+  Prisma,
   PublicTheme,
   Sport,
   Tournament,
@@ -33,6 +35,18 @@ type TournamentWithSport = Tournament & { sport: Sport };
 type TournamentWithSportAndVenue = TournamentWithSport & {
   venues: { name: string; address: string | null }[];
 };
+type TournamentWithSportVenueAndOrganization = TournamentWithSportAndVenue & {
+  organization: Pick<Organization, 'name'>;
+};
+
+export interface PublicTournamentSearchParams {
+  q?: string;
+  sportId?: string;
+  location?: string;
+  dateFrom?: string;
+  page?: number;
+  pageSize?: number;
+}
 
 // Extension derived from the validated mimetype, never from the client's
 // original filename -- same rationale as TeamsService's own logo upload.
@@ -634,6 +648,73 @@ export class TournamentsService {
   }
 
   /**
+   * Public directory search — every filter is optional and AND-combined.
+   * Same isListed/PUBLISHED gate as listPublished above, this is just the
+   * filterable/paginated sibling of it (a dedicated method rather than
+   * extending listPublished itself, so its existing simple contract —
+   * PublicTournamentSummary[], no pagination envelope — stays untouched for
+   * its current callers, the landing page and the mobile home screen).
+   */
+  async searchPublished(params: PublicTournamentSearchParams) {
+    const page = params.page && params.page > 0 ? Math.floor(params.page) : 1;
+    const pageSize =
+      params.pageSize && params.pageSize > 0
+        ? Math.min(Math.floor(params.pageSize), 50)
+        : 20;
+
+    const where: Prisma.TournamentWhereInput = {
+      status: TournamentStatus.PUBLISHED,
+      isListed: true,
+      ...(params.sportId ? { sportId: params.sportId } : {}),
+      ...(params.q
+        ? { name: { contains: params.q, mode: 'insensitive' } }
+        : {}),
+      ...(params.dateFrom
+        ? { startDate: { gte: new Date(params.dateFrom) } }
+        : {}),
+      ...(params.location
+        ? {
+            venues: {
+              some: {
+                OR: [
+                  { name: { contains: params.location, mode: 'insensitive' } },
+                  {
+                    address: {
+                      contains: params.location,
+                      mode: 'insensitive',
+                    },
+                  },
+                ],
+              },
+            },
+          }
+        : {}),
+    };
+
+    const [tournaments, total] = await Promise.all([
+      this.prisma.tournament.findMany({
+        where,
+        include: {
+          sport: true,
+          organization: { select: { name: true } },
+          venues: { orderBy: { position: 'asc' }, take: 1 },
+        },
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      this.prisma.tournament.count({ where }),
+    ]);
+
+    return {
+      items: tournaments.map((tournament) =>
+        this.toPublicDirectoryItem(tournament),
+      ),
+      total,
+    };
+  }
+
+  /**
    * Public-site lookup: no organizationId (visitors don't know it), and only
    * a PUBLISHED tournament is findable — everything else (draft, unpublished,
    * archived, or no such slug) reads identically as "not found" so the public
@@ -834,6 +915,15 @@ export class TournamentsService {
       location: tournament.isOnline
         ? null
         : (venue?.address ?? venue?.name ?? null),
+    };
+  }
+
+  private toPublicDirectoryItem(
+    tournament: TournamentWithSportVenueAndOrganization,
+  ) {
+    return {
+      ...this.toPublicListItem(tournament),
+      organizerName: tournament.organization.name,
     };
   }
 

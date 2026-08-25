@@ -164,6 +164,23 @@
       "updated": "Zuletzt aktualisiert: 16. August 2026"
     }
   },
+  "discover": {
+    "title": "Turniere entdecken",
+    "lede": "Durchsuchen Sie veröffentlichte TournArena-Turniere, die von ihren Organisatoren öffentlich gemacht wurden.",
+    "filters": {
+      "nameLabel": "Turniername",
+      "namePlaceholder": "Turnier suchen…",
+      "sportLabel": "Sportart",
+      "allSports": "Alle Sportarten",
+      "locationLabel": "Ort",
+      "locationPlaceholder": "Stadt, Halle…",
+      "dateFromLabel": "Ab"
+    },
+    "resultsCount": "{{count}} Turnier(e) gefunden",
+    "empty": "Kein Turnier entspricht Ihrer Suche.",
+    "loadMore": "Mehr laden",
+    "loading": "Wird geladen…"
+  },
   "shell": {
     "loading": "Wird geladen…",
     "error": {

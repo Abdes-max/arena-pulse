@@ -414,46 +414,79 @@
 </ion-header>
 
 <ion-content class="tournament-entry-page">
-  @if (tournaments().length > 0) {
-    <section class="tournament-entry-page__published">
-      <h2 class="tournament-entry-page__published-title">
-        <span class="tournament-entry-page__published-pulse" aria-hidden="true"></span>
-        {{ 'tournamentEntry.published.title' | transloco }}
-      </h2>
+  <section class="tournament-entry-page__published">
+    <h2 class="tournament-entry-page__published-title">
+      <span class="tournament-entry-page__published-pulse" aria-hidden="true"></span>
+      {{ 'tournamentEntry.published.title' | transloco }}
+    </h2>
+    <div class="tournament-entry-page__published-filters">
       <ap-text-field
-        class="tournament-entry-page__published-search"
         type="search"
         [label]="'tournamentEntry.published.searchLabel' | transloco"
         [hideLabel]="true"
         [placeholder]="'tournamentEntry.published.searchPlaceholder' | transloco"
-        [value]="query()"
-        (valueChange)="onQueryChange($event)"
+        [value]="q()"
+        (valueChange)="q.set($event)"
       />
-      @if (filteredTournaments().length === 0) {
-        <p class="tournament-entry-page__published-empty">
-          {{ 'tournamentEntry.published.empty' | transloco }}
-        </p>
-      } @else {
-        <div class="tournament-entry-page__published-list">
-          @for (t of filteredTournaments(); track t.id) {
-            <button
-              type="button"
-              class="tournament-entry-page__published-item"
-              (click)="goToTournament(t)"
-            >
-              <ap-tournament-card
-                [name]="t.name"
-                [sportName]="t.sportName"
-                [startDate]="t.startDate"
-                [endDate]="t.endDate"
-                [isOnline]="t.isOnline"
-                [location]="t.location"
-                [logoUrl]="logoUrl(t.logoUrl)"
-              />
-            </button>
-          }
-        </div>
+      <ap-select
+        [label]="'tournamentEntry.published.filters.sportLabel' | transloco"
+        [hideLabel]="true"
+        [options]="sportOptions()"
+        [value]="sportId()"
+        (valueChange)="sportId.set($event)"
+      />
+      <ap-text-field
+        type="search"
+        [label]="'tournamentEntry.published.filters.locationLabel' | transloco"
+        [hideLabel]="true"
+        [placeholder]="'tournamentEntry.published.filters.locationPlaceholder' | transloco"
+        [value]="place()"
+        (valueChange)="place.set($event)"
+      />
+      <ap-text-field
+        type="date"
+        [label]="'tournamentEntry.published.filters.dateFromLabel' | transloco"
+        [value]="dateFrom()"
+        (valueChange)="dateFrom.set($event)"
+      />
+    </div>
+
+    @if (hasSearched() && !searchLoading() && searchItems().length === 0) {
+      <p class="tournament-entry-page__published-empty">
+        {{ 'tournamentEntry.published.empty' | transloco }}
+      </p>
+    } @else {
+      <div class="tournament-entry-page__published-list">
+        @for (t of resolvedSearchItems(); track t.id) {
+          <button
+            type="button"
+            class="tournament-entry-page__published-item"
+            (click)="goToTournament(t)"
+          >
+            <ap-tournament-card
+              [name]="t.name"
+              [sportName]="t.sportName"
+              [startDate]="t.startDate"
+              [endDate]="t.endDate"
+              [isOnline]="t.isOnline"
+              [location]="t.location"
+              [logoUrl]="t.logoUrl"
+              [organizerName]="t.organizerName"
+            />
+          </button>
+        }
+      </div>
+      @if (hasMoreResults()) {
+        <ap-button
+          type="button"
+          variant="secondary"
+          [fullWidth]="true"
+          [disabled]="searchLoading()"
+          (click)="loadMoreResults()"
+        >
+          {{ (searchLoading() ? 'tournamentEntry.published.loading' : 'tournamentEntry.published.loadMore') | transloco }}
+        </ap-button>
       }
-    </section>
-  }
+    }
+  </section>
 </ion-content>

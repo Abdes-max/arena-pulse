@@ -266,6 +266,23 @@
       }
     }
   },
+  "discover": {
+    "title": "Discover tournaments",
+    "lede": "Search published TournArena tournaments made public by their organizers.",
+    "filters": {
+      "nameLabel": "Tournament name",
+      "namePlaceholder": "Search a tournament…",
+      "sportLabel": "Sport",
+      "allSports": "All sports",
+      "locationLabel": "Location",
+      "locationPlaceholder": "City, venue…",
+      "dateFromLabel": "From"
+    },
+    "resultsCount": "{{count}} tournament(s) found",
+    "empty": "No tournament matches your search.",
+    "loadMore": "Load more",
+    "loading": "Loading…"
+  },
   "shell": {
     "loading": "Loading…",
     "error": {

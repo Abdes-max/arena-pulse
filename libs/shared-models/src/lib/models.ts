@@ -59,6 +59,26 @@ export interface PublicTournamentSummary {
   logoUrl: string | null;
 }
 
+/** One row of the public directory search (`GET /public/tournaments/search`) -- unlike PublicTournamentSummary, carries the organizer's name (shown on each result card) since a directory search spans every organization, not just this site's own recent list. */
+export interface PublicTournamentDirectoryItem extends PublicTournamentSummary {
+  organizerName: string;
+}
+
+/** Query params accepted by `GET /public/tournaments/search`. All optional except pagination. */
+export interface PublicTournamentSearchQuery {
+  q?: string;
+  sportId?: string;
+  location?: string;
+  dateFrom?: string;
+  page: number;
+  pageSize: number;
+}
+
+export interface PublicTournamentSearchResult {
+  items: PublicTournamentDirectoryItem[];
+  total: number;
+}
+
 export interface PublicTournament {
   id: string;
   name: string;
