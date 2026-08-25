@@ -484,7 +484,12 @@
           [disabled]="searchLoading()"
           (click)="loadMoreResults()"
         >
-          {{ (searchLoading() ? 'tournamentEntry.published.loading' : 'tournamentEntry.published.loadMore') | transloco }}
+          {{
+            (searchLoading()
+              ? 'tournamentEntry.published.loading'
+              : 'tournamentEntry.published.loadMore'
+            ) | transloco
+          }}
         </ap-button>
       }
     }

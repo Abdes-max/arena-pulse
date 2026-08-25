@@ -141,7 +141,9 @@ export class TournamentEntryPage {
   protected readonly searchTotal = signal(0);
   protected readonly searchLoading = signal(false);
   protected readonly hasSearched = signal(false);
-  protected readonly hasMoreResults = computed(() => this.searchItems().length < this.searchTotal());
+  protected readonly hasMoreResults = computed(
+    () => this.searchItems().length < this.searchTotal(),
+  );
   protected readonly resolvedSearchItems = computed(() =>
     this.searchItems().map((item) => ({ ...item, logoUrl: this.logoUrl(item.logoUrl) })),
   );

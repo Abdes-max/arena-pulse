@@ -43,17 +43,18 @@ export class PublicApiService {
   }
 
   searchTournaments(query: PublicTournamentSearchQuery): Promise<PublicTournamentSearchResult> {
-    let params = new HttpParams()
-      .set('page', query.page)
-      .set('pageSize', query.pageSize);
+    let params = new HttpParams().set('page', query.page).set('pageSize', query.pageSize);
     if (query.q) params = params.set('q', query.q);
     if (query.sportId) params = params.set('sportId', query.sportId);
     if (query.location) params = params.set('location', query.location);
     if (query.dateFrom) params = params.set('dateFrom', query.dateFrom);
     return firstValueFrom(
-      this.http.get<PublicTournamentSearchResult>(`${this.config.apiUrl}/public/tournaments/search`, {
-        params,
-      }),
+      this.http.get<PublicTournamentSearchResult>(
+        `${this.config.apiUrl}/public/tournaments/search`,
+        {
+          params,
+        },
+      ),
     );
   }
 

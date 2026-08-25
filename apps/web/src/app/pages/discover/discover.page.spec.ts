@@ -86,7 +86,9 @@ describe('DiscoverPage', () => {
     typeName(root, 'Printemps');
     await wait(PAST_DEBOUNCE_MS);
 
-    const req = httpMock.expectOne((r) => r.url === SEARCH_URL && r.params.get('q') === 'Printemps');
+    const req = httpMock.expectOne(
+      (r) => r.url === SEARCH_URL && r.params.get('q') === 'Printemps',
+    );
     req.flush({ items: [], total: 0 });
 
     httpMock.verify();
