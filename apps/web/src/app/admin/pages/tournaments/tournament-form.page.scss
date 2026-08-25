@@ -12,6 +12,15 @@
   section {
     margin-top: var(--ap-space-8);
   }
+
+  // Missing here unlike every other admin page (account.page.scss,
+  // organization-subscription.page.scss...) -- fell back to the browser's
+  // own h2 default margin, which read as glued to whatever sits right below
+  // it (e.g. the "Modifier logo et thème" trigger button in Personnalisation).
+  h2 {
+    margin: 0 0 var(--ap-space-3);
+    font-size: 1.05rem;
+  }
 }
 
 .tournament-form-page__error {
