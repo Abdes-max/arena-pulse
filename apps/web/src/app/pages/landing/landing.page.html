@@ -20,12 +20,15 @@
       <a class="landing-page__nav-link" href="#tarifs">{{ 'landing.nav.pricing' | transloco }}</a>
     </div>
     <div class="landing-page__nav-end">
+      <!-- Always visible, at every viewport width -- not hidden inside the
+           <720px hamburger menu below with the rest of nav-end-links, so
+           switching language never requires opening that menu first. -->
+      <ap-language-switcher
+        [language]="language()"
+        [languages]="languages"
+        (languageChange)="onLanguageChange($event)"
+      />
       <div class="landing-page__nav-end-links">
-        <ap-language-switcher
-          [language]="language()"
-          [languages]="languages"
-          (languageChange)="onLanguageChange($event)"
-        />
         <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
         @if (authService.isAuthenticated()) {
           <a class="landing-page__nav-login" routerLink="/admin/tournaments">{{
@@ -80,11 +83,6 @@
       }}</a>
 
       <div class="landing-page__mobile-menu-toggle">
-        <ap-language-switcher
-          [language]="language()"
-          [languages]="languages"
-          (languageChange)="onLanguageChange($event)"
-        />
         <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
       </div>
 

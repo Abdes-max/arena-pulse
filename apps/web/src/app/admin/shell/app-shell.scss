@@ -46,6 +46,12 @@
   }
 }
 
+.app-shell__nav-end {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-3);
+}
+
 .app-shell__controls {
   display: flex;
   align-items: center;
