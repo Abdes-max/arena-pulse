@@ -485,14 +485,23 @@ ap-tournament-marquee {
   animation: tournament-entry-page-pulse 1.8s ease-in-out infinite;
 }
 
-.tournament-entry-page__published-search {
-  display: block;
-  margin-bottom: var(--ap-space-3);
+.tournament-entry-page__published-filters {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-3);
+  margin-bottom: var(--ap-space-4);
 }
 
 .tournament-entry-page__published-empty {
   color: var(--ap-color-muted);
   font-size: 0.9rem;
+}
+
+// fullWidth already makes ap-button block-level (:host([data-full-width])
+// in button.scss) -- just needs the gap above it that a raw sibling
+// selector would otherwise leave flush against the card list.
+.tournament-entry-page__published-list + ap-button {
+  margin-top: var(--ap-space-4);
 }
 
 .tournament-entry-page__published-list {

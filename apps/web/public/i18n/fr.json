@@ -266,6 +266,23 @@
       }
     }
   },
+  "discover": {
+    "title": "Découvrir des tournois",
+    "lede": "Recherchez parmi les tournois TournArena publiés et rendus publics par leurs organisateurs.",
+    "filters": {
+      "nameLabel": "Nom du tournoi",
+      "namePlaceholder": "Rechercher un tournoi…",
+      "sportLabel": "Sport",
+      "allSports": "Tous les sports",
+      "locationLabel": "Lieu",
+      "locationPlaceholder": "Ville, salle…",
+      "dateFromLabel": "À partir du"
+    },
+    "resultsCount": "{{count}} tournoi(s) trouvé(s)",
+    "empty": "Aucun tournoi ne correspond à votre recherche.",
+    "loadMore": "Charger plus",
+    "loading": "Chargement…"
+  },
   "shell": {
     "loading": "Chargement…",
     "error": {

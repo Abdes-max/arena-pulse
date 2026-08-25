@@ -1,0 +1,123 @@
+// Same lightweight header pattern as legal-page.scss (back link, brand,
+// language switcher) rather than the landing's full marketing nav -- this
+// is a utility page, not a marketing surface.
+:host {
+  display: block;
+  min-height: 100dvh;
+  background: var(--ap-color-bg);
+  color: var(--ap-color-fg);
+}
+
+.discover-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: var(--ap-space-6) var(--ap-space-6) var(--ap-space-16);
+}
+
+.discover-page__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-3);
+  margin-bottom: var(--ap-space-6);
+}
+
+.discover-page__back {
+  display: inline-block;
+  padding: var(--ap-space-2) var(--ap-space-3);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  background: transparent;
+  color: var(--ap-color-fg);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color var(--ap-motion-fast) var(--ap-easing-standard);
+
+  &:hover {
+    border-color: var(--ap-color-signal);
+  }
+}
+
+.discover-page__brand {
+  display: block;
+  margin-bottom: var(--ap-space-6);
+}
+
+h1 {
+  font-family: var(--ap-font-heading);
+  font-size: 1.75rem;
+  margin: 0 0 var(--ap-space-2);
+}
+
+.discover-page__lede {
+  color: var(--ap-color-muted);
+  max-width: 60ch;
+  margin: 0 0 var(--ap-space-8);
+}
+
+.discover-page__filters {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1.4fr 1fr;
+  gap: var(--ap-space-3);
+  margin-bottom: var(--ap-space-6);
+}
+
+@media (max-width: 720px) {
+  .discover-page__filters {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .discover-page__filters {
+    grid-template-columns: 1fr;
+  }
+}
+
+.discover-page__count {
+  margin: 0 0 var(--ap-space-4);
+  color: var(--ap-color-muted);
+  font-size: 0.85rem;
+}
+
+.discover-page__empty {
+  padding: var(--ap-space-8) 0;
+  text-align: center;
+  color: var(--ap-color-muted);
+}
+
+.discover-page__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--ap-space-4);
+}
+
+.discover-page__card-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.discover-page__load-more {
+  display: block;
+  margin: var(--ap-space-8) auto 0;
+  padding: var(--ap-space-3) var(--ap-space-8);
+  border-radius: var(--ap-radius-md);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  background: transparent;
+  color: var(--ap-color-fg);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color var(--ap-motion-fast) var(--ap-easing-standard);
+
+  &:hover {
+    border-color: var(--ap-color-signal);
+  }
+
+  &:disabled {
+    opacity: var(--ap-opacity-disabled);
+    cursor: not-allowed;
+  }
+}

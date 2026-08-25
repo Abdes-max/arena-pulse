@@ -6,14 +6,16 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { IonContent, IonHeader, IonToolbar } from '@ionic/angular/standalone';
 import { AssetUrlService, PublicApiService } from 'api-client';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
   Button,
   LanguageSwitcher,
   Logo,
+  Select,
   ShareButton,
   TextField,
   ThemeModeToggle,
@@ -27,8 +29,11 @@ import {
   ThemeMode,
   ThemeService,
 } from 'design-tokens';
-import { PublicTournamentSummary } from 'shared-models';
+import { debounceTime } from 'rxjs';
+import { PublicSport, PublicTournamentDirectoryItem, PublicTournamentSummary } from 'shared-models';
 import { environment } from '../../../environments/environment';
+
+const PAGE_SIZE = 20;
 
 @Component({
   selector: 'app-tournament-entry-page',
@@ -39,6 +44,7 @@ import { environment } from '../../../environments/environment';
     IonToolbar,
     LanguageSwitcher,
     Logo,
+    Select,
     ShareButton,
     TextField,
     ThemeModeToggle,
@@ -55,10 +61,14 @@ export class TournamentEntryPage {
   private readonly api = inject(PublicApiService);
   private readonly themeService = inject(ThemeService);
   private readonly languageService = inject(LanguageService);
+  private readonly transloco = inject(TranslocoService);
   private readonly assetUrl = inject(AssetUrlService);
 
+  // Still the plain "recent 50 published" fetch -- feeds the hero's
+  // marquee/example-tournament CTA only. The "Événements publiés" section
+  // below is now driven by its own server search (see q/sportId/place/
+  // dateFrom/items/searchResolvedItems below), not this list.
   protected readonly tournaments = signal<PublicTournamentSummary[]>([]);
-  protected readonly query = signal('');
   // Governs everything below the hero, same as apps/web's landing.page --
   // the hero itself stays forced dark regardless (data-mode="dark" scoped
   // on tournament-entry-page__hero in the template).
@@ -102,18 +112,6 @@ export class TournamentEntryPage {
   // logic rather than duplicating it.
   private readonly shareButton = viewChild<ShareButton>('shareButton');
 
-  // Same pattern as apps/web's LandingPage (and team-search.page's
-  // filteredTeams) -- client-side filter over a wider-than-displayed fetch.
-  protected readonly filteredTournaments = computed(() => {
-    const q = this.query().trim().toLowerCase();
-    if (!q) {
-      return this.tournaments();
-    }
-    return this.tournaments().filter(
-      (t) => t.name.toLowerCase().includes(q) || t.sportName.toLowerCase().includes(q),
-    );
-  });
-
   // ap-tournament-marquee's TournamentMarqueeItem needs a resolved (absolute)
   // logoUrl -- it's a dumb presenter, same reason ap-tournament-card gets
   // its own [logoUrl]="logoUrl(t.logoUrl)" binding per-card below instead.
@@ -121,8 +119,80 @@ export class TournamentEntryPage {
     this.tournaments().map((t) => ({ ...t, logoUrl: this.logoUrl(t.logoUrl) })),
   );
 
+  // --- "Événements publiés" section: server-side directory search (mirrors
+  // apps/web's discover.page, same debounce/filters/load-more logic) ---
+  protected readonly q = signal('');
+  protected readonly sportId = signal('');
+  protected readonly place = signal('');
+  protected readonly dateFrom = signal('');
+  protected readonly sports = signal<PublicSport[]>([]);
+  protected readonly sportOptions = computed(() => {
+    const lang = this.language();
+    return [
+      {
+        value: '',
+        label: this.transloco.translate('tournamentEntry.published.filters.allSports', {}, lang),
+      },
+      ...this.sports().map((sport) => ({ value: sport.id, label: sport.name })),
+    ];
+  });
+
+  protected readonly searchItems = signal<PublicTournamentDirectoryItem[]>([]);
+  protected readonly searchTotal = signal(0);
+  protected readonly searchLoading = signal(false);
+  protected readonly hasSearched = signal(false);
+  protected readonly hasMoreResults = computed(
+    () => this.searchItems().length < this.searchTotal(),
+  );
+  protected readonly resolvedSearchItems = computed(() =>
+    this.searchItems().map((item) => ({ ...item, logoUrl: this.logoUrl(item.logoUrl) })),
+  );
+
+  private searchPage = 1;
+  private readonly searchFilters = computed(() => ({
+    q: this.q().trim(),
+    sportId: this.sportId(),
+    location: this.place().trim(),
+    dateFrom: this.dateFrom(),
+  }));
+
   constructor() {
     void this.api.listTournaments(50).then((tournaments) => this.tournaments.set(tournaments));
+    void this.api.listSports().then((sports) => this.sports.set(sports));
+
+    toObservable(this.searchFilters)
+      .pipe(debounceTime(300), takeUntilDestroyed())
+      .subscribe((filters) => {
+        this.searchPage = 1;
+        void this.runSearch(filters, false);
+      });
+  }
+
+  protected loadMoreResults(): void {
+    this.searchPage += 1;
+    void this.runSearch(this.searchFilters(), true);
+  }
+
+  private async runSearch(
+    filters: { q: string; sportId: string; location: string; dateFrom: string },
+    append: boolean,
+  ): Promise<void> {
+    this.searchLoading.set(true);
+    try {
+      const result = await this.api.searchTournaments({
+        q: filters.q || undefined,
+        sportId: filters.sportId || undefined,
+        location: filters.location || undefined,
+        dateFrom: filters.dateFrom || undefined,
+        page: this.searchPage,
+        pageSize: PAGE_SIZE,
+      });
+      this.searchItems.set(append ? [...this.searchItems(), ...result.items] : result.items);
+      this.searchTotal.set(result.total);
+      this.hasSearched.set(true);
+    } finally {
+      this.searchLoading.set(false);
+    }
   }
 
   protected logoUrl(url: string | null): string | null {
@@ -135,10 +205,6 @@ export class TournamentEntryPage {
 
   protected onLanguageChange(code: string): void {
     this.languageService.setLanguage(code as LanguageCode);
-  }
-
-  protected onQueryChange(value: string): void {
-    this.query.set(value);
   }
 
   protected goToTournament(tournament: PublicTournamentSummary): void {

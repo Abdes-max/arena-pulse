@@ -14,7 +14,16 @@
       "title": "Published events",
       "searchLabel": "Search an event",
       "searchPlaceholder": "Search an event…",
-      "empty": "No event found."
+      "filters": {
+        "sportLabel": "Sport",
+        "allSports": "All sports",
+        "locationLabel": "Location",
+        "locationPlaceholder": "City, venue…",
+        "dateFromLabel": "From"
+      },
+      "empty": "No event found.",
+      "loadMore": "Load more",
+      "loading": "Loading…"
     },
     "settings": {
       "title": "Settings",

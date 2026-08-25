@@ -12,7 +12,10 @@ import { SponsorsService } from './sponsors.service';
 import { StandingsService } from './standings.service';
 import { StandingRow } from './standings.util';
 import { TeamsService } from './teams.service';
-import { TournamentsService } from './tournaments.service';
+import {
+  PublicTournamentSearchParams,
+  TournamentsService,
+} from './tournaments.service';
 import { VenuesService } from './venues.service';
 
 /** Team fields visible to the public — never a manager's personal contact details. */
@@ -61,6 +64,10 @@ export class PublicService {
 
   listTournaments(limit?: number) {
     return this.tournamentsService.listPublished(limit);
+  }
+
+  searchTournaments(params: PublicTournamentSearchParams) {
+    return this.tournamentsService.searchPublished(params);
   }
 
   async getTournament(slug: string) {

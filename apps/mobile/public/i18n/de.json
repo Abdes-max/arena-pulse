@@ -14,7 +14,16 @@
       "title": "Veröffentlichte Veranstaltungen",
       "searchLabel": "Veranstaltung suchen",
       "searchPlaceholder": "Veranstaltung suchen…",
-      "empty": "Keine Veranstaltung gefunden."
+      "filters": {
+        "sportLabel": "Sportart",
+        "allSports": "Alle Sportarten",
+        "locationLabel": "Ort",
+        "locationPlaceholder": "Stadt, Halle…",
+        "dateFromLabel": "Ab"
+      },
+      "empty": "Keine Veranstaltung gefunden.",
+      "loadMore": "Mehr laden",
+      "loading": "Wird geladen…"
     },
     "settings": {
       "title": "Einstellungen",

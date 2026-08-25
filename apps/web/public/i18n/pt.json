@@ -164,6 +164,23 @@
       "updated": "Última atualização: 16 de agosto de 2026"
     }
   },
+  "discover": {
+    "title": "Descobrir torneios",
+    "lede": "Pesquise entre os torneios TournArena publicados e tornados públicos pelos seus organizadores.",
+    "filters": {
+      "nameLabel": "Nome do torneio",
+      "namePlaceholder": "Pesquisar um torneio…",
+      "sportLabel": "Desporto",
+      "allSports": "Todos os desportos",
+      "locationLabel": "Local",
+      "locationPlaceholder": "Cidade, pavilhão…",
+      "dateFromLabel": "A partir de"
+    },
+    "resultsCount": "{{count}} torneio(s) encontrado(s)",
+    "empty": "Nenhum torneio corresponde à sua pesquisa.",
+    "loadMore": "Carregar mais",
+    "loading": "A carregar…"
+  },
   "shell": {
     "loading": "A carregar…",
     "error": {
