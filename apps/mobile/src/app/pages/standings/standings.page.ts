@@ -189,13 +189,23 @@ export class StandingsPage {
         void this.loadStandings();
       }
     });
-    // Re-measure whenever a bracket's active page changes (round navigation)
-    // or its data changes (category switch, realtime score update) --
-    // deferred one frame so the new page has actually painted first (a
-    // freshly-navigated-to page's height isn't known until then).
+    // Re-measure whenever a bracket's active page changes (round navigation),
+    // its data changes (category switch, realtime score update), or the
+    // "Phase finale" tab itself becomes active. That last one matters on
+    // first load: syncActiveTabToAvailability() can flip activeTab to
+    // 'final' *after* bracketByPhase is already set (a KNOCKOUT_ONLY
+    // category has no "Phase de poules" tab to land on first), so the
+    // .standings-page__pager-track elements this effect measures don't
+    // exist in the DOM yet the first time it runs -- without activeTab as a
+    // tracked dependency, nothing re-triggers a measurement once they do
+    // exist, and every peeking page silently keeps its dense (non-peeking)
+    // layout until the pager is paged at least once by hand. Deferred one
+    // frame so the new page has actually painted first (a freshly-navigated
+    // -to or freshly-shown page's height isn't known until then).
     effect(() => {
       this.pageIndexByPhase();
       this.bracketByPhase();
+      this.activeTab();
       requestAnimationFrame(() => this.measureActivePageHeights());
     });
   }
