@@ -8,6 +8,62 @@
       <p class="team-list-page__error" role="alert">{{ message | transloco }}</p>
     }
 
+    @if (tierExceededModal(); as tier) {
+      <!-- Same backdrop-button-sibling modal pattern as
+           tournament-form.page.html's own personalization dialog. -->
+      <button
+        type="button"
+        class="team-list-page__tier-modal-backdrop"
+        (click)="closeTierExceededModal()"
+        [attr.aria-label]="'admin.teamList.tierModal.close' | transloco"
+      ></button>
+      <div
+        class="team-list-page__tier-modal-dialog"
+        role="dialog"
+        aria-modal="true"
+        [attr.aria-label]="'admin.teamList.tierModal.title' | transloco"
+      >
+        <h2>{{ 'admin.teamList.tierModal.title' | transloco }}</h2>
+        <p>
+          {{
+            'admin.teamList.tierModal.body'
+              | transloco: { currentPlan: tierLabel(tier.currentTier) }
+          }}
+        </p>
+        @if (tierUpgradeError(); as message) {
+          <p class="team-list-page__error" role="alert">{{ message | transloco }}</p>
+        }
+        <div class="team-list-page__tier-modal-actions">
+          <ap-button type="button" [disabled]="tierUpgrading()" (click)="upgradeToNextTier()">
+            {{
+              'admin.teamList.tierModal.upgradeButton'
+                | transloco
+                  : {
+                      plan: tierLabel(tier.requiredTier),
+                      amount: formatAmount(tier.upgradeAmountCents, tier.currency),
+                    }
+            }}
+          </ap-button>
+          <ap-button
+            type="button"
+            variant="secondary"
+            [disabled]="tierUpgrading()"
+            (click)="subscribeAnnually()"
+          >
+            {{ 'admin.teamList.tierModal.subscribeButton' | transloco }}
+          </ap-button>
+          <ap-button
+            type="button"
+            variant="ghost"
+            [disabled]="tierUpgrading()"
+            (click)="closeTierExceededModal()"
+          >
+            {{ 'admin.teamList.tierModal.cancel' | transloco }}
+          </ap-button>
+        </div>
+      </div>
+    }
+
     <section class="team-list-page__section">
       <h2>
         {{ (editingTeamId() ? 'admin.teamList.editTitle' : 'admin.teamList.addTitle') | transloco }}
@@ -88,15 +144,33 @@
       </div>
 
       @if (confirmingBulkDelete()) {
-        <ap-type-to-confirm
-          [label]="'admin.teamList.typeToConfirmLabel' | transloco"
-          [confirmLabel]="'admin.teamList.confirmDelete' | transloco"
-          [pendingLabel]="'admin.teamList.deleting' | transloco"
-          [cancelLabel]="'admin.teamList.cancel' | transloco"
-          [pending]="bulkDeleting()"
-          (confirm)="confirmDeleteSelected()"
-          (cancelled)="cancelDeleteSelected()"
-        />
+        <span class="team-list-page__confirm-inline">
+          <span class="team-list-page__confirm-inline-question">
+            {{
+              'admin.teamList.confirmBulkDeleteQuestion'
+                | transloco: { count: selectedTeamIds().size }
+            }}
+          </span>
+          <ap-button
+            type="button"
+            variant="primary"
+            [disabled]="bulkDeleting()"
+            (click)="confirmDeleteSelected()"
+          >
+            {{
+              (bulkDeleting() ? 'admin.teamList.deleting' : 'admin.teamList.confirmDelete')
+                | transloco
+            }}
+          </ap-button>
+          <ap-button
+            type="button"
+            variant="ghost"
+            [disabled]="bulkDeleting()"
+            (click)="cancelDeleteSelected()"
+          >
+            {{ 'admin.teamList.cancel' | transloco }}
+          </ap-button>
+        </span>
       }
 
       @if (!premiumUnlocked()) {
@@ -181,15 +255,32 @@
                 </td>
                 <td class="team-list-page__cell team-list-page__actions">
                   @if (confirmingTeamId() === team.id) {
-                    <ap-type-to-confirm
-                      [label]="'admin.teamList.typeToConfirmLabel' | transloco"
-                      [confirmLabel]="'admin.teamList.confirmDelete' | transloco"
-                      [pendingLabel]="'admin.teamList.deleting' | transloco"
-                      [cancelLabel]="'admin.teamList.cancel' | transloco"
-                      [pending]="deletingTeamId() === team.id"
-                      (confirm)="confirmDeleteTeam(team)"
-                      (cancelled)="cancelDeleteTeam()"
-                    />
+                    <span class="team-list-page__confirm-inline">
+                      <span class="team-list-page__confirm-inline-question">
+                        {{ 'admin.teamList.confirmDeleteQuestion' | transloco }}
+                      </span>
+                      <ap-button
+                        type="button"
+                        variant="primary"
+                        [disabled]="deletingTeamId() === team.id"
+                        (click)="confirmDeleteTeam(team)"
+                      >
+                        {{
+                          (deletingTeamId() === team.id
+                            ? 'admin.teamList.deleting'
+                            : 'admin.teamList.confirmDelete'
+                          ) | transloco
+                        }}
+                      </ap-button>
+                      <ap-button
+                        type="button"
+                        variant="ghost"
+                        [disabled]="deletingTeamId() === team.id"
+                        (click)="cancelDeleteTeam()"
+                      >
+                        {{ 'admin.teamList.cancel' | transloco }}
+                      </ap-button>
+                    </span>
                   } @else {
                     <span class="team-list-page__actions-inner">
                       <ap-button type="button" variant="ghost" (click)="startEdit(team)">

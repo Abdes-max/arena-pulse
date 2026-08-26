@@ -11,6 +11,53 @@
   font-size: 0.9rem;
 }
 
+// Same backdrop-button-sibling modal pattern as
+// tournament-form.page.scss's own personalization dialog.
+.team-list-page__tier-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  padding: 0;
+  border: none;
+  background: rgb(0 0 0 / 50%);
+  cursor: pointer;
+}
+
+.team-list-page__tier-modal-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 101;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-4);
+  padding: var(--ap-space-6);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-lg);
+  max-width: 480px;
+  width: calc(100% - var(--ap-space-8));
+  max-height: calc(100vh - var(--ap-space-8));
+  overflow-y: auto;
+  color: var(--ap-color-fg);
+
+  h2 {
+    margin: 0;
+  }
+
+  p {
+    margin: 0;
+    color: var(--ap-color-muted);
+  }
+}
+
+.team-list-page__tier-modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+}
+
 .team-list-page__section {
   margin-top: var(--ap-space-8);
 }
@@ -56,6 +103,21 @@
 .team-list-page__actions-inner {
   display: flex;
   gap: var(--ap-space-2);
+}
+
+// Two-click team deletion (arm, then confirm) -- replaced a
+// type-SUPPRIMER-to-confirm step, same simplification and same reasoning as
+// structure.page.scss's own __confirm-inline (phase deletion).
+.team-list-page__confirm-inline {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  flex-wrap: wrap;
+}
+
+.team-list-page__confirm-inline-question {
+  font-size: 0.85rem;
+  color: var(--ap-color-muted);
 }
 
 .team-list-page__logo-cell-inner {

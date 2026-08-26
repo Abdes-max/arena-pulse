@@ -17,18 +17,16 @@ import { LanguageService, ThemeService } from 'design-tokens';
 import { AuthService } from '../../core/auth.service';
 import {
   Category,
-  Permission,
+  OrganizationSubscriptionStatus,
   PublicationOrder,
   PublicTheme,
   Sponsor,
   Sport,
-  TournamentAdministrator,
   TournamentDetail,
   TournamentStatus,
   Venue,
 } from '../../core/models';
 import { OrganizationsService } from '../../core/organizations.service';
-import { PermissionsService } from '../../core/permissions.service';
 import { SponsorsService } from '../../core/sponsors.service';
 import { SportsService } from '../../core/sports.service';
 import { THEME_MAP } from '../../core/theme-map';
@@ -77,7 +75,6 @@ export class TournamentFormPage {
   private readonly tournamentsService = inject(TournamentsService);
   private readonly organizationsService = inject(OrganizationsService);
   private readonly sportsService = inject(SportsService);
-  private readonly permissionsService = inject(PermissionsService);
   private readonly sponsorsService = inject(SponsorsService);
   private readonly authService = inject(AuthService);
   private readonly themeService = inject(ThemeService);
@@ -136,12 +133,10 @@ export class TournamentFormPage {
   // palettes (via each card's own [data-theme] attribute, see the .scss)
   // side by side instead of picking a name off a dropdown blind.
   protected readonly personalizationOpen = signal(false);
-  protected readonly permissions = signal<Permission[]>([]);
   protected readonly tournament = signal<TournamentDetail | null>(null);
   protected readonly categories = signal<Category[]>([]);
   protected readonly venues = signal<Venue[]>([]);
   protected readonly sponsors = signal<Sponsor[]>([]);
-  protected readonly administrators = signal<TournamentAdministrator[]>([]);
   protected readonly publicationOrders = signal<PublicationOrder[]>([]);
   protected readonly publicationOrdersLoading = signal(true);
   protected readonly printingOrder = signal<PublicationOrder | null>(null);
@@ -155,6 +150,141 @@ export class TournamentFormPage {
   // is enforced server-side either way).
   protected readonly premiumUnlocked = signal(true);
   protected readonly freeMaxTeams = signal(8);
+  // Server-sourced (see PremiumFeaturesStatus's own comment) -- the "Plan"
+  // card list's real prices, never hardcoded to match the landing page's
+  // own marketing copy.
+  protected readonly midMaxTeams = signal(48);
+  protected readonly midPriceCents = signal(0);
+  protected readonly highPriceCents = signal(0);
+  // The "Plan" section (see template, below "Paiement de publication")
+  // shows this regardless of create/edit mode -- an organization-level
+  // concern, not tied to whether this particular tournament exists yet.
+  // Full management (subscribe, payment history, receipts) stays on its
+  // own dedicated page (admin/organization/subscription); this is just a
+  // status summary + a link there, not a re-implementation.
+  protected readonly subscriptionStatus = signal<OrganizationSubscriptionStatus | null>(null);
+
+  // Cards for the Plan section's grid (template, below the payment table) --
+  // name/description text stays the landing page's own copy
+  // (landing.pricing.*.tag/.desc, same call as team-list.page.ts's
+  // tierLabel), but the price is always formatted live from
+  // midPriceCents()/highPriceCents() rather than the landing page's static
+  // "25 €"/"80 €" strings, so it never drifts from what's actually
+  // configured server-side.
+  protected readonly planCards = computed(() => {
+    const lang = this.languageService.language();
+    const t = (key: string) => this.transloco.translate(key, {}, lang);
+    return [
+      {
+        tier: 'FREE' as const,
+        name: t('landing.pricing.free.tag'),
+        price: t('landing.pricing.free.price'),
+        desc: t('landing.pricing.free.desc'),
+      },
+      {
+        tier: 'STANDARD' as const,
+        name: t('landing.pricing.standard.tag'),
+        price: this.formatAmount(this.midPriceCents(), 'eur'),
+        desc: t('landing.pricing.standard.desc'),
+      },
+      {
+        tier: 'LARGE' as const,
+        name: t('landing.pricing.large.tag'),
+        price: this.formatAmount(this.highPriceCents(), 'eur'),
+        desc: t('landing.pricing.large.desc'),
+      },
+    ];
+  });
+
+  private readonly tierOrder: Record<'FREE' | 'STANDARD' | 'LARGE', number> = {
+    FREE: 0,
+    STANDARD: 1,
+    LARGE: 2,
+  };
+
+  // Mirrors TournamentsService.tierCodeForFeeCents (apps/api) exactly --
+  // the SUM of every PAID order's amountCents is the source of truth for
+  // "what's already been paid for" (never the tournament's current team
+  // count, which can grow past what was paid for and get blocked
+  // separately, see assertTeamAdditionAllowed). A sum, not the largest
+  // single order -- each order is itself already a gap/top-up amount
+  // (requiredCents - alreadyPaidCents at the time it was charged), so
+  // taking just the max under-counts as soon as a tournament crosses a
+  // second tier (e.g. FREE->STANDARD->LARGE): the LARGE top-up's own amount
+  // can be smaller than the STANDARD order before it.
+  protected readonly currentTierCode = computed<'FREE' | 'STANDARD' | 'LARGE'>(() => {
+    const totalPaidCents = this.publicationOrders()
+      .filter((order) => order.status === 'PAID')
+      .reduce((sum, order) => sum + order.amountCents, 0);
+    if (totalPaidCents <= 0) {
+      return 'FREE';
+    }
+    const highPriceCents = this.highPriceCents();
+    return totalPaidCents >= highPriceCents && highPriceCents > 0 ? 'LARGE' : 'STANDARD';
+  });
+
+  // Set when the organizer clicks a higher tier's card -- the confirm popup
+  // (template) reads this to show "changer de plan de X à Y ?" before
+  // selectTier() itself ever calls the API (confirmTierChangeAction does).
+  protected readonly confirmTierChange = signal<{
+    tier: 'STANDARD' | 'LARGE';
+    fromLabel: string;
+    toLabel: string;
+  } | null>(null);
+  protected readonly tierChanging = signal(false);
+  protected readonly tierChangeError = signal<string | null>(null);
+
+  protected selectTier(tier: 'FREE' | 'STANDARD' | 'LARGE'): void {
+    if (tier === 'FREE' || this.tierOrder[tier] <= this.tierOrder[this.currentTierCode()]) {
+      // No card for FREE and no downgrade path -- a paid tier is never
+      // lowered client-side, only ever upgraded.
+      return;
+    }
+    const cards = this.planCards();
+    const fromLabel = cards.find((card) => card.tier === this.currentTierCode())?.name ?? '';
+    const toLabel = cards.find((card) => card.tier === tier)?.name ?? '';
+    this.tierChangeError.set(null);
+    this.confirmTierChange.set({ tier, fromLabel, toLabel });
+  }
+
+  protected cancelTierChange(): void {
+    if (this.tierChanging()) {
+      return;
+    }
+    this.confirmTierChange.set(null);
+    this.tierChangeError.set(null);
+  }
+
+  protected async confirmTierChangeAction(): Promise<void> {
+    const change = this.confirmTierChange();
+    const organizationId = this.organization()?.id;
+    const tournamentId = this.tournamentId();
+    if (!change || !organizationId || !tournamentId || this.tierChanging()) {
+      return;
+    }
+    this.tierChanging.set(true);
+    this.tierChangeError.set(null);
+    try {
+      const result = await this.tournamentsService.payForTournamentTier(
+        organizationId,
+        tournamentId,
+        change.tier,
+      );
+      if (result.status === 'PENDING_PAYMENT') {
+        window.location.href = result.checkoutUrl;
+        return;
+      }
+      // Nothing left to pay for (e.g. the organization's annual subscription
+      // kicked in mid-flow) -- just refresh so the grid reflects it.
+      this.confirmTierChange.set(null);
+      void this.loadPremiumFeatures();
+      void this.loadPublicationOrders();
+    } catch {
+      this.tierChangeError.set('admin.tournamentForm.plan.error');
+    } finally {
+      this.tierChanging.set(false);
+    }
+  }
 
   protected statusLabel(status: TournamentStatus): string {
     return this.transloco.translate(STATUS_LABEL_KEYS[status], {}, this.languageService.language());
@@ -174,8 +304,6 @@ export class TournamentFormPage {
   protected readonly newDivisionNameByCategory = signal<Record<string, string>>({});
   protected readonly newVenueName = signal('');
   protected readonly newFieldNameByVenue = signal<Record<string, string>>({});
-  protected readonly newAdministratorEmail = signal('');
-  protected readonly newAdministratorPermissionKeys = signal<string[]>([]);
 
   // Draft text for the free-text content sections (Description/Règlement/
   // Infos pratiques) -- each saved independently via its own "Enregistrer"
@@ -225,15 +353,12 @@ export class TournamentFormPage {
     this.newDivisionNameByCategory.set({});
     this.newVenueName.set('');
     this.newFieldNameByVenue.set({});
-    this.newAdministratorEmail.set('');
-    this.newAdministratorPermissionKeys.set([]);
     this.newSponsorName.set('');
     this.newSponsorLinkUrl.set('');
     this.publicationOrders.set([]);
     this.publicationOrdersLoading.set(true);
     try {
       this.sports.set(await this.sportsService.listSports());
-      this.permissions.set(await this.permissionsService.listPermissions());
       if (this.isEditMode()) {
         await this.loadTournament();
       }
@@ -263,8 +388,16 @@ export class TournamentFormPage {
         );
         this.premiumUnlocked.set(status.unlocked);
         this.freeMaxTeams.set(status.freeMaxTeams);
-      } else {
-        const subscription = await this.organizationsService.getSubscriptionStatus(organizationId);
+        this.midMaxTeams.set(status.midMaxTeams);
+        this.midPriceCents.set(status.midPriceCents);
+        this.highPriceCents.set(status.highPriceCents);
+      }
+      // Always fetched (not just create mode, unlike the branch above) --
+      // the "Plan" section shows it either way. In create mode it's also
+      // still what premiumUnlocked falls back to, same as before.
+      const subscription = await this.organizationsService.getSubscriptionStatus(organizationId);
+      this.subscriptionStatus.set(subscription);
+      if (!tournamentId) {
         this.premiumUnlocked.set(subscription.status === 'ACTIVE');
       }
     } catch {
@@ -302,9 +435,6 @@ export class TournamentFormPage {
       ),
     );
     this.venues.set(await this.tournamentsService.listVenues(organizationId, tournamentId));
-    this.administrators.set(
-      await this.tournamentsService.listAdministrators(organizationId, tournamentId),
-    );
     void this.loadPublicationOrders();
   }
 
@@ -384,12 +514,31 @@ export class TournamentFormPage {
       this.tournament.set(result);
       void this.loadPublicationOrders();
     } catch (error) {
-      this.errorMessage.set(
-        error instanceof HttpErrorResponse && error.status === 409
-          ? 'admin.tournamentForm.errors.actionNotAllowed'
-          : 'admin.tournamentForm.errors.generic',
-      );
+      this.errorMessage.set(this.publishErrorKey(error));
     }
+  }
+
+  // assertReadyToPublish (apps/api) attaches a `code` to its 409 body --
+  // each maps to a precise, translated reason instead of the generic
+  // "action not allowed" every other 409 on this page still falls back to,
+  // since these three are the ones an organizer can actually act on
+  // (add a category/structure/calendar) rather than a state conflict to
+  // just retry later.
+  private publishErrorKey(error: unknown): string {
+    if (error instanceof HttpErrorResponse && error.status === 409) {
+      const code = (error.error as { code?: unknown } | null)?.code;
+      switch (code) {
+        case 'PUBLISH_NO_CATEGORY':
+          return 'admin.tournamentForm.errors.publishNoCategory';
+        case 'PUBLISH_NO_STRUCTURE':
+          return 'admin.tournamentForm.errors.publishNoStructure';
+        case 'PUBLISH_NO_CALENDAR':
+          return 'admin.tournamentForm.errors.publishNoCalendar';
+        default:
+          return 'admin.tournamentForm.errors.actionNotAllowed';
+      }
+    }
+    return 'admin.tournamentForm.errors.generic';
   }
 
   protected unpublish(): Promise<void> {
@@ -848,71 +997,6 @@ export class TournamentFormPage {
       );
     } catch {
       this.errorMessage.set('admin.tournamentForm.errors.removeField');
-    }
-  }
-
-  protected onNewAdministratorEmailChange(value: string): void {
-    this.newAdministratorEmail.set(value);
-  }
-
-  protected togglePermission(key: string, event: Event): void {
-    const checked = (event.target as HTMLInputElement).checked;
-    this.newAdministratorPermissionKeys.update((keys) =>
-      checked ? [...keys, key] : keys.filter((k) => k !== key),
-    );
-  }
-
-  protected applyPresetFull(): void {
-    this.newAdministratorPermissionKeys.set(this.permissions().map((permission) => permission.key));
-  }
-
-  protected applyPresetReferee(): void {
-    this.newAdministratorPermissionKeys.set(['MANAGE_SCORES']);
-  }
-
-  protected async addAdministrator(): Promise<void> {
-    const organizationId = this.organization()?.id;
-    const tournamentId = this.tournamentId();
-    const email = this.newAdministratorEmail().trim();
-    if (!organizationId || !tournamentId || !email) {
-      return;
-    }
-    try {
-      const administrator = await this.tournamentsService.addAdministrator(
-        organizationId,
-        tournamentId,
-        email,
-        this.newAdministratorPermissionKeys(),
-      );
-      this.administrators.update((administrators) => [...administrators, administrator]);
-      this.newAdministratorEmail.set('');
-      this.newAdministratorPermissionKeys.set([]);
-    } catch (error) {
-      this.errorMessage.set(
-        error instanceof HttpErrorResponse && error.status === 404
-          ? 'admin.tournamentForm.errors.addAdminNotMember'
-          : 'admin.tournamentForm.errors.addAdminGeneric',
-      );
-    }
-  }
-
-  protected async removeAdministrator(administrator: TournamentAdministrator): Promise<void> {
-    const organizationId = this.organization()?.id;
-    const tournamentId = this.tournamentId();
-    if (!organizationId || !tournamentId) {
-      return;
-    }
-    try {
-      await this.tournamentsService.removeAdministrator(
-        organizationId,
-        tournamentId,
-        administrator.id,
-      );
-      this.administrators.update((administrators) =>
-        administrators.filter((a) => a.id !== administrator.id),
-      );
-    } catch {
-      this.errorMessage.set('admin.tournamentForm.errors.removeAdmin');
     }
   }
 

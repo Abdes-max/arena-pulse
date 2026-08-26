@@ -50,6 +50,13 @@ export interface PublishPendingPayment {
 
 export type PublishTournamentResult = TournamentDetail | PublishPendingPayment;
 
+// See TournamentsService.payForTeamAdditionTier (apps/api): pays for the
+// tier a *prospective* team count would need, without creating the team(s)
+// -- unlike PublishTournamentResult, "already covered" here is a plain
+// { status: 'PUBLISHED' } rather than the full TournamentDetail, since the
+// tournament's own record didn't change.
+export type PayForTeamAdditionResult = { status: 'PUBLISHED' } | PublishPendingPayment;
+
 // Logos (tournoi/équipe), thème personnalisé, QR code et export PDF sont
 // réservés aux tournois passé le palier gratuit de publication -- voir
 // TournamentsService.hasPremiumFeatures (apps/api). `freeMaxTeams` est
@@ -59,6 +66,12 @@ export type PublishTournamentResult = TournamentDetail | PublishPendingPayment;
 export interface PremiumFeaturesStatus {
   unlocked: boolean;
   freeMaxTeams: number;
+  // Same reasoning as freeMaxTeams above -- server-sourced so the "Plan"
+  // section's card list (tournament-form.page.ts) never hardcodes a price
+  // that could drift from what's actually configured.
+  midMaxTeams: number;
+  midPriceCents: number;
+  highPriceCents: number;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -129,6 +142,34 @@ export class TournamentsService {
       this.http.post<PublishTournamentResult>(
         `${this.base(organizationId)}/${tournamentId}/publish`,
         {},
+      ),
+    );
+  }
+
+  /** For team-list.page.ts's "you're blocked, upgrade to unblock" dialog -- see the API method's own doc comment for why plain publish() can't be reused here (it prices against the tournament's current, not prospective, team count). */
+  payForTeamAdditionTier(
+    organizationId: string,
+    tournamentId: string,
+    additionalTeams: number,
+  ): Promise<PayForTeamAdditionResult> {
+    return firstValueFrom(
+      this.http.post<PayForTeamAdditionResult>(
+        `${this.base(organizationId)}/${tournamentId}/publish/upgrade`,
+        { additionalTeams },
+      ),
+    );
+  }
+
+  /** For the "Plan" section's card list (tournament-form.page.ts) -- directly pays for a chosen tier, not derived from team count like payForTeamAdditionTier above. */
+  payForTournamentTier(
+    organizationId: string,
+    tournamentId: string,
+    tier: 'STANDARD' | 'LARGE',
+  ): Promise<PayForTeamAdditionResult> {
+    return firstValueFrom(
+      this.http.post<PayForTeamAdditionResult>(
+        `${this.base(organizationId)}/${tournamentId}/plan`,
+        { tier },
       ),
     );
   }
