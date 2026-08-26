@@ -110,5 +110,73 @@
         </form>
       </section>
     }
+
+    @if (tournaments().length > 0) {
+      <section>
+        <h2>{{ 'admin.collaborators.tournamentAdmins.title' | transloco }}</h2>
+
+        <ap-select
+          class="collaborators-page__tournament-select"
+          [label]="'admin.collaborators.tournamentAdmins.tournamentLabel' | transloco"
+          [options]="tournamentOptions()"
+          [value]="selectedTournamentId()"
+          (valueChange)="onTournamentChange($event)"
+        />
+
+        @if (administratorsLoading()) {
+          <p>{{ 'admin.collaborators.loading' | transloco }}</p>
+        } @else {
+          <ul class="collaborators-page__administrator-list">
+            @for (administrator of administrators(); track administrator.id) {
+              <li>
+                {{ administrator.firstName }} {{ administrator.lastName }} ({{
+                  administrator.email
+                }}) —
+                {{ administrator.permissionKeys.join(', ') }}
+                <ap-button
+                  type="button"
+                  variant="ghost"
+                  (click)="removeAdministrator(administrator)"
+                >
+                  {{ 'admin.collaborators.tournamentAdmins.remove' | transloco }}
+                </ap-button>
+              </li>
+            }
+          </ul>
+
+          <div class="collaborators-page__add-administrator">
+            <ap-text-field
+              [label]="'admin.collaborators.tournamentAdmins.emailLabel' | transloco"
+              [hideLabel]="true"
+              type="email"
+              [placeholder]="'admin.collaborators.tournamentAdmins.emailLabel' | transloco"
+              [value]="newAdministratorEmail()"
+              (valueChange)="onNewAdministratorEmailChange($event)"
+            />
+            <div class="collaborators-page__presets">
+              <ap-button type="button" variant="ghost" (click)="applyPresetFull()">
+                {{ 'admin.collaborators.tournamentAdmins.presetFull' | transloco }}
+              </ap-button>
+              <ap-button type="button" variant="ghost" (click)="applyPresetReferee()">
+                {{ 'admin.collaborators.tournamentAdmins.presetReferee' | transloco }}
+              </ap-button>
+            </div>
+            @for (permission of permissions(); track permission.id) {
+              <label class="collaborators-page__permission-checkbox">
+                <input
+                  type="checkbox"
+                  [checked]="newAdministratorPermissionKeys().includes(permission.key)"
+                  (change)="togglePermission(permission.key, $event)"
+                />
+                {{ permission.label }}
+              </label>
+            }
+            <ap-button type="button" (click)="addAdministrator()">{{
+              'admin.collaborators.tournamentAdmins.add' | transloco
+            }}</ap-button>
+          </div>
+        }
+      </section>
+    }
   }
 </main>

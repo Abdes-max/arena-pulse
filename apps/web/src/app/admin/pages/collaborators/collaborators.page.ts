@@ -12,8 +12,17 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Button, Select, SelectOption, TextField } from 'design-system';
 import { DEFAULT_THEME, LanguageService, ThemeService } from 'design-tokens';
 import { AuthService } from '../../core/auth.service';
-import { OrganizationMember, OrganizationRole, PendingInvitation } from '../../core/models';
+import {
+  OrganizationMember,
+  OrganizationRole,
+  PendingInvitation,
+  Permission,
+  Tournament,
+  TournamentAdministrator,
+} from '../../core/models';
 import { OrganizationsService } from '../../core/organizations.service';
+import { PermissionsService } from '../../core/permissions.service';
+import { TournamentsService } from '../../core/tournaments.service';
 
 @Component({
   selector: 'app-collaborators-page',
@@ -25,6 +34,8 @@ import { OrganizationsService } from '../../core/organizations.service';
 export class CollaboratorsPage {
   private readonly formBuilder = inject(FormBuilder);
   private readonly organizationsService = inject(OrganizationsService);
+  private readonly tournamentsService = inject(TournamentsService);
+  private readonly permissionsService = inject(PermissionsService);
   private readonly themeService = inject(ThemeService);
   private readonly languageService = inject(LanguageService);
   private readonly transloco = inject(TranslocoService);
@@ -62,8 +73,27 @@ export class CollaboratorsPage {
     role: ['ORG_MEMBER' as OrganizationRole, Validators.required],
   });
 
+  // Tournament administrators (moved here from each tournament's own Général
+  // tab -- adding one requires the email to already be an org member/
+  // collaborator, see addAdministrator's 404 handling below, so this is a
+  // more natural home than the per-tournament form). Distinct from the org
+  // membership above: a person can be an org collaborator without being an
+  // administrator of any given tournament, and vice versa isn't possible
+  // (see addAdministrator).
+  protected readonly tournaments = signal<Tournament[]>([]);
+  protected readonly selectedTournamentId = signal('');
+  protected readonly tournamentOptions = computed<SelectOption[]>(() =>
+    this.tournaments().map((tournament) => ({ value: tournament.id, label: tournament.name })),
+  );
+  protected readonly permissions = signal<Permission[]>([]);
+  protected readonly administrators = signal<TournamentAdministrator[]>([]);
+  protected readonly administratorsLoading = signal(false);
+  protected readonly newAdministratorEmail = signal('');
+  protected readonly newAdministratorPermissionKeys = signal<string[]>([]);
+
   constructor() {
     void this.load();
+    void this.loadTournaments();
 
     // Collaborators isn't tied to any one tournament, so it stays on the
     // fixed product identity regardless of the last tournament theme picked
@@ -171,5 +201,116 @@ export class CollaboratorsPage {
     this.pendingInvitations.update((invitations) =>
       invitations.filter((i) => i.id !== invitation.id),
     );
+  }
+
+  private async loadTournaments(): Promise<void> {
+    const organizationId = this.organization()?.id;
+    if (!organizationId) {
+      return;
+    }
+    try {
+      const [tournaments, permissions] = await Promise.all([
+        this.tournamentsService.listTournaments(organizationId),
+        this.permissionsService.listPermissions(),
+      ]);
+      this.tournaments.set(tournaments);
+      this.permissions.set(permissions);
+      if (tournaments.length > 0) {
+        this.selectedTournamentId.set(tournaments[0].id);
+        await this.loadAdministrators();
+      }
+    } catch {
+      this.errorMessage.set('admin.collaborators.tournamentAdmins.errorLoad');
+    }
+  }
+
+  protected async onTournamentChange(tournamentId: string): Promise<void> {
+    this.selectedTournamentId.set(tournamentId);
+    this.newAdministratorEmail.set('');
+    this.newAdministratorPermissionKeys.set([]);
+    await this.loadAdministrators();
+  }
+
+  private async loadAdministrators(): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const tournamentId = this.selectedTournamentId();
+    if (!organizationId || !tournamentId) {
+      return;
+    }
+    this.administratorsLoading.set(true);
+    try {
+      this.administrators.set(
+        await this.tournamentsService.listAdministrators(organizationId, tournamentId),
+      );
+    } catch {
+      this.errorMessage.set('admin.collaborators.tournamentAdmins.errorLoad');
+    } finally {
+      this.administratorsLoading.set(false);
+    }
+  }
+
+  protected onNewAdministratorEmailChange(value: string): void {
+    this.newAdministratorEmail.set(value);
+  }
+
+  protected togglePermission(key: string, event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.newAdministratorPermissionKeys.update((keys) =>
+      checked ? [...keys, key] : keys.filter((k) => k !== key),
+    );
+  }
+
+  protected applyPresetFull(): void {
+    this.newAdministratorPermissionKeys.set(this.permissions().map((permission) => permission.key));
+  }
+
+  protected applyPresetReferee(): void {
+    this.newAdministratorPermissionKeys.set(['MANAGE_SCORES']);
+  }
+
+  protected async addAdministrator(): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const tournamentId = this.selectedTournamentId();
+    const email = this.newAdministratorEmail().trim();
+    if (!organizationId || !tournamentId || !email) {
+      return;
+    }
+    try {
+      const administrator = await this.tournamentsService.addAdministrator(
+        organizationId,
+        tournamentId,
+        email,
+        this.newAdministratorPermissionKeys(),
+      );
+      this.administrators.update((administrators) => [...administrators, administrator]);
+      this.newAdministratorEmail.set('');
+      this.newAdministratorPermissionKeys.set([]);
+    } catch (error) {
+      this.errorMessage.set(
+        error instanceof HttpErrorResponse && error.status === 404
+          ? 'admin.collaborators.tournamentAdmins.errorAddNotMember'
+          : 'admin.collaborators.tournamentAdmins.errorAddGeneric',
+      );
+    }
+  }
+
+  protected async removeAdministrator(administrator: TournamentAdministrator): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const tournamentId = this.selectedTournamentId();
+    if (!organizationId || !tournamentId) {
+      return;
+    }
+    try {
+      await this.tournamentsService.removeAdministrator(
+        organizationId,
+        tournamentId,
+        administrator.id,
+      );
+      this.administrators.update((administrators) =>
+        administrators.filter((a) => a.id !== administrator.id),
+      );
+    } catch {
+      this.errorMessage.set('admin.collaborators.tournamentAdmins.errorRemove');
+    }
   }
 }
