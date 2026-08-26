@@ -49,5 +49,46 @@
       },
       "copyright": "© 2026 TournArena. Todos los derechos reservados."
     }
+  },
+  "organizer": {
+    "auth": {
+      "register": {
+        "title": "Crear mi cuenta",
+        "lede": "Crea tu cuenta de organizador·a para gestionar tus torneos directamente desde la app.",
+        "orgNameLabel": "Nombre de la organización",
+        "firstNameLabel": "Nombre",
+        "lastNameLabel": "Apellidos",
+        "emailLabel": "Correo electrónico",
+        "passwordLabel": "Contraseña",
+        "submit": "Crear mi cuenta",
+        "alreadyAccount": "¿Ya eres organizador·a?",
+        "login": "Iniciar sesión",
+        "sentTitle": "Revisa tu correo",
+        "sentBody": "Se ha enviado un correo de confirmación a {{email}}.",
+        "sentHint": "Abre el enlace para activar tu cuenta y vuelve aquí para iniciar sesión.",
+        "resend": "Reenviar correo",
+        "resent": "Correo reenviado.",
+        "errorConflict": "Ya existe una cuenta con este correo.",
+        "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo."
+      },
+      "login": {
+        "title": "Iniciar sesión",
+        "emailLabel": "Correo electrónico",
+        "passwordLabel": "Contraseña",
+        "submit": "Iniciar sesión",
+        "resend": "Reenviar el correo de verificación",
+        "resent": "Correo reenviado.",
+        "noAccount": "¿Aún no tienes cuenta?",
+        "createOrg": "Crea una",
+        "errorVerify": "Verifica tu correo antes de iniciar sesión.",
+        "errorCredentials": "Correo o contraseña incorrectos.",
+        "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo."
+      }
+    },
+    "tournaments": {
+      "welcome": "Bienvenido·a, {{firstName}}",
+      "comingSoon": "La lista de tus torneos y la creación llegan muy pronto.",
+      "logout": "Cerrar sesión"
+    }
   }
 }

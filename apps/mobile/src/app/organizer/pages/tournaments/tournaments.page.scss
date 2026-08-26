@@ -1,0 +1,30 @@
+.organizer-tournaments-page {
+  --padding-top: var(--ap-space-6);
+  --padding-bottom: var(--ap-space-6);
+  --padding-start: var(--ap-space-5);
+  --padding-end: var(--ap-space-5);
+}
+
+.organizer-tournaments-page__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-4);
+  max-width: 420px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.organizer-tournaments-page__brand {
+  align-self: center;
+  margin-bottom: var(--ap-space-2);
+}
+
+.organizer-tournaments-page__org {
+  margin: calc(-1 * var(--ap-space-2)) 0 0;
+  color: var(--ap-color-muted);
+}
+
+.organizer-tournaments-page__soon {
+  color: var(--ap-color-muted);
+  font-size: 0.9rem;
+}

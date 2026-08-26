@@ -7,7 +7,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { IonContent, IonHeader, IonToolbar } from '@ionic/angular/standalone';
 import { AssetUrlService, PublicApiService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
@@ -44,6 +44,7 @@ const PAGE_SIZE = 20;
     IonToolbar,
     LanguageSwitcher,
     Logo,
+    RouterLink,
     Select,
     ShareButton,
     TextField,
@@ -76,14 +77,11 @@ export class TournamentEntryPage {
   protected readonly language = this.languageService.language;
   protected readonly languages = SUPPORTED_LANGUAGES;
 
-  // There's no tournament-creation flow in this app itself -- these all just
-  // hand off to the web app, same as apps/web's landing page hero ("Créer
-  // mon tournoi"). Moved out of the toolbar into the Paramètres panel below
-  // (grouped with the rest of the app's external/legal links) so the
-  // toolbar itself stays down to just the logo, the settings button and the
-  // theme toggle.
-  protected readonly createTournamentUrl = `${environment.webUrl}/register`;
-  protected readonly loginUrl = `${environment.webUrl}/login`;
+  // Connexion/Créer un tournoi now navigate natively (feat/193, see
+  // organizerAuthGuard's routes) instead of handing off to the web app --
+  // only the remaining rows below (contact/pricing/legal) still do. Kept in
+  // the Paramètres panel (grouped with the rest of this section) rather than
+  // moved back into the toolbar, same layout reasoning as before.
   protected readonly contactUrl = `${environment.webUrl}/contact`;
   protected readonly pricingUrl = `${environment.webUrl}/#tarifs`;
   protected readonly privacyUrl = `${environment.webUrl}/privacy`;

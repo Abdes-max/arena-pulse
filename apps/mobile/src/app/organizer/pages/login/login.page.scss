@@ -1,0 +1,37 @@
+.organizer-login-page {
+  --padding-top: var(--ap-space-6);
+  --padding-bottom: var(--ap-space-6);
+  --padding-start: var(--ap-space-5);
+  --padding-end: var(--ap-space-5);
+}
+
+.organizer-login-page__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-4);
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.organizer-login-page__brand {
+  align-self: center;
+  margin-bottom: var(--ap-space-2);
+}
+
+.organizer-login-page__hint {
+  margin: 0;
+  color: var(--ap-color-muted);
+  font-size: 0.85rem;
+}
+
+.organizer-login-page__error {
+  margin: 0;
+  color: var(--ap-color-error);
+  font-size: 0.85rem;
+}
+
+.organizer-login-page__footer {
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--ap-color-muted);
+}

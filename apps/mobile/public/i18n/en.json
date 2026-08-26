@@ -49,5 +49,46 @@
       },
       "copyright": "© 2026 TournArena. All rights reserved."
     }
+  },
+  "organizer": {
+    "auth": {
+      "register": {
+        "title": "Create my account",
+        "lede": "Create your organizer account to manage your tournaments directly from the app.",
+        "orgNameLabel": "Organization name",
+        "firstNameLabel": "First name",
+        "lastNameLabel": "Last name",
+        "emailLabel": "Email",
+        "passwordLabel": "Password",
+        "submit": "Create my account",
+        "alreadyAccount": "Already an organizer?",
+        "login": "Log in",
+        "sentTitle": "Check your inbox",
+        "sentBody": "A confirmation email was sent to {{email}}.",
+        "sentHint": "Open the link inside to activate your account, then come back here to log in.",
+        "resend": "Resend email",
+        "resent": "Email resent.",
+        "errorConflict": "An account already exists with this email.",
+        "errorGeneric": "Something went wrong, please try again."
+      },
+      "login": {
+        "title": "Log in",
+        "emailLabel": "Email",
+        "passwordLabel": "Password",
+        "submit": "Log in",
+        "resend": "Resend verification email",
+        "resent": "Email resent.",
+        "noAccount": "Don't have an account yet?",
+        "createOrg": "Create one",
+        "errorVerify": "Verify your email before logging in.",
+        "errorCredentials": "Incorrect email or password.",
+        "errorGeneric": "Something went wrong, please try again."
+      }
+    },
+    "tournaments": {
+      "welcome": "Welcome, {{firstName}}",
+      "comingSoon": "Your tournament list and creation flow are coming very soon.",
+      "logout": "Log out"
+    }
   }
 }

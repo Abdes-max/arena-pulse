@@ -1,0 +1,17 @@
+<ion-content class="organizer-tournaments-page">
+  <div class="organizer-tournaments-page__card">
+    <ap-logo class="organizer-tournaments-page__brand" />
+    @if (user(); as u) {
+      <h1>{{ 'organizer.tournaments.welcome' | transloco: { firstName: u.firstName } }}</h1>
+      @if (organizations()[0]; as org) {
+        <p class="organizer-tournaments-page__org">{{ org.name }}</p>
+      }
+    }
+    <p class="organizer-tournaments-page__soon">
+      {{ 'organizer.tournaments.comingSoon' | transloco }}
+    </p>
+    <ap-button type="button" variant="secondary" [fullWidth]="true" (click)="logout()">
+      {{ 'organizer.tournaments.logout' | transloco }}
+    </ap-button>
+  </div>
+</ion-content>

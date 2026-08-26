@@ -49,5 +49,46 @@
       },
       "copyright": "© 2026 TournArena. Tutti i diritti riservati."
     }
+  },
+  "organizer": {
+    "auth": {
+      "register": {
+        "title": "Crea il mio account",
+        "lede": "Crea il tuo account organizzatore·rice per gestire i tuoi tornei direttamente dall'app.",
+        "orgNameLabel": "Nome dell'organizzazione",
+        "firstNameLabel": "Nome",
+        "lastNameLabel": "Cognome",
+        "emailLabel": "Email",
+        "passwordLabel": "Password",
+        "submit": "Crea il mio account",
+        "alreadyAccount": "Sei già organizzatore·rice?",
+        "login": "Accedi",
+        "sentTitle": "Controlla la tua email",
+        "sentBody": "Un'email di conferma è stata inviata a {{email}}.",
+        "sentHint": "Apri il link contenuto per attivare il tuo account, poi torna qui per accedere.",
+        "resend": "Invia di nuovo l'email",
+        "resent": "Email inviata di nuovo.",
+        "errorConflict": "Esiste già un account con questa email.",
+        "errorGeneric": "Si è verificato un errore, riprova."
+      },
+      "login": {
+        "title": "Accedi",
+        "emailLabel": "Email",
+        "passwordLabel": "Password",
+        "submit": "Accedi",
+        "resend": "Invia di nuovo l'email di verifica",
+        "resent": "Email inviata di nuovo.",
+        "noAccount": "Non hai ancora un account?",
+        "createOrg": "Creane uno",
+        "errorVerify": "Verifica la tua email prima di accedere.",
+        "errorCredentials": "Email o password errati.",
+        "errorGeneric": "Si è verificato un errore, riprova."
+      }
+    },
+    "tournaments": {
+      "welcome": "Benvenuto·a, {{firstName}}",
+      "comingSoon": "L'elenco dei tuoi tornei e la creazione arrivano molto presto.",
+      "logout": "Esci"
+    }
   }
 }

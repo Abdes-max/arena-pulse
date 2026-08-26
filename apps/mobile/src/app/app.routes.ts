@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { organizerAuthGuard } from './organizer/core/auth.guard';
 
 export const routes: Routes = [
   {
@@ -6,6 +7,27 @@ export const routes: Routes = [
     pathMatch: 'full',
     loadComponent: () =>
       import('./pages/tournament-entry/tournament-entry.page').then((m) => m.TournamentEntryPage),
+  },
+  // Organizer auth + dashboard -- native (feat/193), no more hand-off to the
+  // web app. Registered ahead of the ':slug' catch-all below, same reason
+  // apps/web/src/app/app.routes.ts registers '/decouvrir' ahead of its own.
+  {
+    path: 'organizer/register',
+    loadComponent: () =>
+      import('./organizer/pages/register/register.page').then((m) => m.OrganizerRegisterPage),
+  },
+  {
+    path: 'organizer/login',
+    loadComponent: () =>
+      import('./organizer/pages/login/login.page').then((m) => m.OrganizerLoginPage),
+  },
+  {
+    path: 'organizer/tournaments',
+    canActivate: [organizerAuthGuard],
+    loadComponent: () =>
+      import('./organizer/pages/tournaments/tournaments.page').then(
+        (m) => m.OrganizerTournamentsPage,
+      ),
   },
   {
     path: ':slug',

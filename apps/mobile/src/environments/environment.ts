@@ -11,7 +11,8 @@ export const environment = {
   // worked on the machine that built it. Must match infra/deployment/.env's
   // DOMAIN/WEB_PUBLIC_ORIGIN for the real deployment.
   apiUrl: 'https://tournarena.com/api/v1',
-  // Where "Créer un tournoi"/"Connexion" open externally -- there's no admin
-  // UI in this app, only the web app has one.
+  // Where the remaining external rows (contact/tarifs/mentions légales) open
+  // -- "Connexion"/"Créer un tournoi" are native routes now (feat/193, see
+  // app.routes.ts's organizer/* routes), no longer built from this.
   webUrl: 'https://tournarena.com',
 };
