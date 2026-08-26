@@ -1,43 +1,64 @@
-<ion-content class="organizer-login-page">
-  <form class="organizer-login-page__card" [formGroup]="form" (ngSubmit)="submit()">
-    <ap-logo class="organizer-login-page__brand" />
-    <h1>{{ 'organizer.auth.login.title' | transloco }}</h1>
-    <ap-text-field
-      [label]="'organizer.auth.login.emailLabel' | transloco"
-      type="email"
-      formControlName="email"
-      autocomplete="email"
-    />
-    <ap-text-field
-      [label]="'organizer.auth.login.passwordLabel' | transloco"
-      type="password"
-      formControlName="password"
-      autocomplete="current-password"
-    />
-    @if (errorMessage(); as message) {
-      <p class="organizer-login-page__error" role="alert">{{ message | transloco }}</p>
-    }
-    @if (needsVerification()) {
-      @if (resent()) {
-        <p class="organizer-login-page__hint">{{ 'organizer.auth.login.resent' | transloco }}</p>
-      } @else {
-        <ap-button
-          type="button"
-          variant="secondary"
-          [fullWidth]="true"
-          [disabled]="submitting()"
-          (click)="resendVerification()"
-        >
-          {{ 'organizer.auth.login.resend' | transloco }}
-        </ap-button>
+<ion-header>
+  <ion-toolbar>
+    <button
+      type="button"
+      class="organizer-login-page__back"
+      slot="start"
+      (click)="goBack()"
+      [attr.aria-label]="'organizer.auth.login.backAria' | transloco"
+    >
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+        <path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+      </svg>
+    </button>
+    <ap-logo class="organizer-login-page__brand" slot="start" [wordmark]="false" />
+    <ion-title>{{ 'organizer.auth.login.title' | transloco }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<form class="organizer-login-page__form" [formGroup]="form" (ngSubmit)="submit()">
+  <ion-content class="organizer-login-page">
+    <div class="organizer-login-page__fields">
+      <p class="organizer-login-page__lede">{{ 'organizer.auth.login.lede' | transloco }}</p>
+      <ap-text-field
+        [label]="'organizer.auth.login.emailLabel' | transloco"
+        type="email"
+        formControlName="email"
+        autocomplete="email"
+      />
+      <ap-text-field
+        [label]="'organizer.auth.login.passwordLabel' | transloco"
+        type="password"
+        formControlName="password"
+        autocomplete="current-password"
+      />
+      @if (errorMessage(); as message) {
+        <p class="organizer-login-page__error" role="alert">{{ message | transloco }}</p>
       }
-    }
+      @if (needsVerification()) {
+        @if (resent()) {
+          <p class="organizer-login-page__hint">{{ 'organizer.auth.login.resent' | transloco }}</p>
+        } @else {
+          <ap-button
+            type="button"
+            variant="secondary"
+            [fullWidth]="true"
+            [disabled]="submitting()"
+            (click)="resendVerification()"
+          >
+            {{ 'organizer.auth.login.resend' | transloco }}
+          </ap-button>
+        }
+      }
+    </div>
+  </ion-content>
+  <ion-footer class="organizer-login-page__footer">
     <ap-button type="submit" [fullWidth]="true" [disabled]="submitting()">
       {{ 'organizer.auth.login.submit' | transloco }}
     </ap-button>
-    <p class="organizer-login-page__footer">
+    <p class="organizer-login-page__linkrow">
       {{ 'organizer.auth.login.noAccount' | transloco }}
       <a routerLink="/organizer/register">{{ 'organizer.auth.login.createOrg' | transloco }}</a>
     </p>
-  </form>
-</ion-content>
+  </ion-footer>
+</form>

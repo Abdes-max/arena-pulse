@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { IonContent } from '@ionic/angular/standalone';
+import { IonContent, IonFooter, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Button, Logo, TextField } from 'design-system';
 import { OrganizerAuthService } from '../../core/auth.service';
@@ -17,9 +17,28 @@ type PageState = 'form' | 'sent';
 // there's no deep-linking set up in apps/mobile to catch that link back into
 // this app, so the 'sent' state's copy explicitly says "open it, then come
 // back and log in" rather than implying the app itself will pick it up.
+//
+// Layout follows the approved mockup (adaptive-leaping-elephant.md, Étape
+// 0): app-bar header (brand mark + title -- explicitly requested on top of
+// the mockup's own bare title, which doesn't show one), scrollable fields,
+// primary CTA pinned in a footer. See login.page.scss's comment on
+// `display: contents` for why the <form> wraps both ion-content and
+// ion-footer.
 @Component({
   selector: 'app-organizer-register-page',
-  imports: [ReactiveFormsModule, RouterLink, Button, IonContent, Logo, TextField, TranslocoPipe],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    Button,
+    IonContent,
+    IonFooter,
+    IonHeader,
+    IonTitle,
+    IonToolbar,
+    Logo,
+    TextField,
+    TranslocoPipe,
+  ],
   templateUrl: './register.page.html',
   styleUrl: './register.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,21 +1,73 @@
-.organizer-login-page {
-  --padding-top: var(--ap-space-6);
-  --padding-bottom: var(--ap-space-6);
-  --padding-start: var(--ap-space-5);
-  --padding-end: var(--ap-space-5);
+// display: contents makes this <form> disappear from Ionic's own .ion-page
+// flex layout (ion-header / ion-content / ion-footer normally need to be
+// direct flex children for ion-content to size correctly) while keeping it
+// as the real ancestor <form> for both the fields in ion-content and the
+// type="submit" button in ion-footer -- so Enter-to-submit and (ngSubmit)
+// still work across both regions instead of only the fields half.
+.organizer-login-page__form {
+  display: contents;
 }
 
-.organizer-login-page__card {
+// ap-space-4 (16px), not the previously-used ap-space-5 which doesn't exist
+// in libs/design-tokens' scale (1/2/3/4/6/8/12/16/24) -- that typo silently
+// resolved to an invalid custom property, which is what made the page's
+// side padding disappear/behave asymmetrically instead of erroring loudly.
+ion-toolbar {
+  --padding-start: var(--ap-space-4);
+  --padding-end: var(--ap-space-4);
+}
+
+ion-title {
+  padding-inline: 0;
+  text-align: start;
+  font-family: var(--ap-font-heading);
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.organizer-login-page__back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  margin-inline-end: var(--ap-space-2);
+  border: none;
+  background: transparent;
+  color: var(--ap-color-fg);
+  cursor: pointer;
+}
+
+// Icon-only ([wordmark]="false") -- a tight nav-bar slot, same reasoning as
+// its own doc comment. Sits between the back button and the title.
+.organizer-login-page__brand {
+  margin-inline-end: var(--ap-space-2);
+}
+
+.organizer-login-page {
+  --padding-top: var(--ap-space-4);
+  --padding-bottom: var(--ap-space-4);
+  --padding-start: var(--ap-space-4);
+  --padding-end: var(--ap-space-4);
+}
+
+// ion-content's own host element isn't the flex container for its projected
+// (slotted) content -- setting display:flex on ion-content itself has no
+// effect on how its light-DOM children are laid out inside its shadow
+// scroll wrapper. So the flex/gap comes from this plain wrapper div instead,
+// matching the mockup's own .screen__scroll (flex column, gap 16px).
+.organizer-login-page__fields {
   display: flex;
   flex-direction: column;
   gap: var(--ap-space-4);
-  max-width: 420px;
-  margin: 0 auto;
 }
 
-.organizer-login-page__brand {
-  align-self: center;
-  margin-bottom: var(--ap-space-2);
+.organizer-login-page__lede {
+  margin: 0;
+  color: var(--ap-color-muted);
+  font-size: 0.86rem;
+  line-height: 1.5;
 }
 
 .organizer-login-page__hint {
@@ -31,7 +83,18 @@
 }
 
 .organizer-login-page__footer {
+  --background: var(--ap-color-bg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+  padding: var(--ap-space-3) var(--ap-space-4) var(--ap-space-6);
+  border-top: var(--ap-border-width) solid var(--ap-color-border);
+  background: var(--ap-color-bg);
+}
+
+.organizer-login-page__linkrow {
+  margin: 0;
   text-align: center;
-  font-size: 0.9rem;
+  font-size: 0.83rem;
   color: var(--ap-color-muted);
 }

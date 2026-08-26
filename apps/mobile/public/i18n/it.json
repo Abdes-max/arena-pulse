@@ -73,6 +73,8 @@
       },
       "login": {
         "title": "Accedi",
+        "backAria": "Indietro",
+        "lede": "Accedi al tuo account organizzatore·rice.",
         "emailLabel": "Email",
         "passwordLabel": "Password",
         "submit": "Accedi",
@@ -86,9 +88,116 @@
       }
     },
     "tournaments": {
-      "welcome": "Benvenuto·a, {{firstName}}",
-      "comingSoon": "L'elenco dei tuoi tornei e la creazione arrivano molto presto.",
-      "logout": "Esci"
+      "list": {
+        "title": "I miei tornei",
+        "loading": "Caricamento…",
+        "empty": "Nessun torneo per ora.",
+        "errorGeneric": "Si è verificato un errore, riprova.",
+        "newTournament": "Nuovo torneo",
+        "logout": "Esci",
+        "status": {
+          "DRAFT": "Bozza",
+          "PUBLISHED": "Pubblicato",
+          "UNPUBLISHED": "Non pubblicato",
+          "ARCHIVED": "Archiviato"
+        }
+      }
+    },
+    "wizard": {
+      "title": "Nuovo torneo",
+      "cancelAria": "Annulla",
+      "cancel": "Annulla",
+      "back": "Indietro",
+      "next": "Avanti",
+      "payAndPublish": "Paga e pubblica",
+      "errorGeneric": "Si è verificato un errore, riprova.",
+      "rail": {
+        "1": "Info",
+        "2": "Squadre",
+        "3": "Struttura",
+        "4": "Calendario",
+        "5": "Pubblicazione"
+      },
+      "infos": {
+        "title": "Informazioni generali",
+        "nameLabel": "Nome del torneo",
+        "sportLabel": "Sport",
+        "sportPlaceholder": "Scegli uno sport…",
+        "venueLabel": "Luogo",
+        "onlineLabel": "Torneo online",
+        "onlineHint": "Competizione eSport, senza luogo fisico",
+        "personalizationTitle": "Personalizzazione",
+        "theme": {
+          "INK_SIGNAL": "Tema Inchiostro e Segnale",
+          "PULSE_EMBER": "Tema Brace",
+          "NEON_COURT": "Tema Neon",
+          "FRESH_PITCH": "Tema Prato",
+          "CRIMSON_CHARGE": "Tema Cremisi"
+        },
+        "logoLabel": "Logo del torneo"
+      },
+      "teams": {
+        "title": "Squadre partecipanti",
+        "countSingular": "{{count}} squadra aggiunta",
+        "countPlural": "{{count}} squadre aggiunte",
+        "addLabel": "Nome della squadra",
+        "addPlaceholder": "Nome della squadra",
+        "add": "Aggiungi",
+        "remove": "Rimuovi {{name}}",
+        "minHint": "Servono almeno 3 squadre per passare al passaggio successivo."
+      },
+      "structure": {
+        "title": "Formato della competizione",
+        "poolsKnockout": {
+          "name": "Gironi poi eliminazione diretta",
+          "desc": "Fase a gironi, poi le migliori squadre si affrontano in diretta."
+        },
+        "knockoutOnly": {
+          "name": "Eliminazione diretta semplice",
+          "desc": "Ogni sconfitta elimina la squadra. Veloce, un solo vincitore."
+        },
+        "league": {
+          "name": "Campionato (tutti contro tutti)",
+          "desc": "Ogni squadra affronta tutte le altre una volta."
+        },
+        "poolCountLabel": "Numero di gironi",
+        "qualifiersLabel": "Qualificati per girone"
+      },
+      "calendar": {
+        "title": "Calendario delle partite",
+        "lede": "Genera automaticamente il calendario in base alle squadre e al formato scelti.",
+        "generate": "Genera calendario",
+        "generating": "Generazione…",
+        "noScheduleHint": "Nessun calendario da generare per questo formato -- il tabellone a eliminazione diretta si completa partita dopo partita, man mano che si conoscono i risultati.",
+        "editLaterHint": "Orari e luoghi esatti potranno essere modificati più avanti da \"I miei tornei\".",
+        "errorGeneric": "Si è verificato un errore, riprova."
+      },
+      "publish": {
+        "visibilityTitle": "Visibilità",
+        "public": {
+          "name": "Pubblico",
+          "desc": "Visibile nella ricerca dei tornei."
+        },
+        "private": {
+          "name": "Privato",
+          "desc": "Accessibile solo tramite link."
+        },
+        "publishTitle": "Pubblicazione",
+        "paymentHint": "Se superi il tuo piano gratuito, prima della pubblicazione ti verrà proposto un pagamento sicuro con Stripe.",
+        "planTitle": "Piano",
+        "planLoading": "Caricamento…",
+        "planActive": "Abbonamento annuale attivo fino al {{date}} — tutte le tue pubblicazioni sono gratuite.",
+        "planPending": "Pagamento dell'abbonamento annuale in attesa di conferma.",
+        "planNone": "Fatturazione per pubblicazione in base al numero di squadre. L'abbonamento annuale rende gratuita ogni tua pubblicazione.",
+        "planManage": "Gestisci il mio abbonamento"
+      },
+      "done": {
+        "title": "Torneo pubblicato!",
+        "body": "{{name}} è online e pronto a ricevere risultati.",
+        "pendingPaymentTitle": "Completa il pagamento",
+        "pendingPaymentBody": "Si è aperta una scheda di pagamento sicuro. Una volta completato il pagamento, il tuo torneo sarà pubblicato -- torna su I miei tornei per verificarne lo stato.",
+        "backToList": "Torna a I miei tornei"
+      }
     }
   }
 }

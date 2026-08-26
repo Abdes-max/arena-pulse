@@ -1,8 +1,9 @@
+import { Location } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { IonContent } from '@ionic/angular/standalone';
+import { IonContent, IonFooter, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Button, Logo, TextField } from 'design-system';
 import { isSafeReturnUrl } from '../../../core/safe-return-url.util';
@@ -10,10 +11,30 @@ import { OrganizerAuthService } from '../../core/auth.service';
 
 // Same shape as apps/web/src/app/admin/pages/login/login.page.ts (see its
 // comments) -- default landing route differs (this app has no
-// /admin/tournaments), see submit() below.
+// /admin/tournaments), see submit() below. Layout follows the approved
+// mockup (adaptive-leaping-elephant.md, Étape 0) rather than the previous
+// centered-logo card: app-bar header (back link into /organizer/register,
+// matching the mockup's screen-to-screen back arrow, plus a small brand
+// mark + title -- explicitly requested on top of the mockup's own bare
+// title, which doesn't show one), scrollable fields, and the primary CTA
+// pinned in a footer -- see login.page.scss for how the
+// [formGroup] wraps both ion-content and ion-footer (display: contents) so
+// the submit button in the footer still participates in the same <form>.
 @Component({
   selector: 'app-organizer-login-page',
-  imports: [ReactiveFormsModule, RouterLink, Button, IonContent, Logo, TextField, TranslocoPipe],
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    Button,
+    IonContent,
+    IonFooter,
+    IonHeader,
+    IonTitle,
+    IonToolbar,
+    Logo,
+    TextField,
+    TranslocoPipe,
+  ],
   templateUrl: './login.page.html',
   styleUrl: './login.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -23,6 +44,7 @@ export class OrganizerLoginPage {
   private readonly auth = inject(OrganizerAuthService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly location = inject(Location);
 
   protected readonly form = this.formBuilder.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -76,5 +98,14 @@ export class OrganizerLoginPage {
     } finally {
       this.submitting.set(false);
     }
+  }
+
+  // Mirrors the mockup's appbar back arrow (goScreen('register')). Uses
+  // browser/router history rather than hardcoding routerLink="/organizer/register"
+  // -- this page can also be reached directly (e.g. tournament-entry page's
+  // Paramètres panel), where "back" should return there, not force a detour
+  // through the register screen.
+  protected goBack(): void {
+    this.location.back();
   }
 }

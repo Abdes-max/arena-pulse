@@ -73,6 +73,8 @@
       },
       "login": {
         "title": "Iniciar sessão",
+        "backAria": "Voltar",
+        "lede": "Inicie sessão na sua conta de organizador·a.",
         "emailLabel": "Email",
         "passwordLabel": "Palavra-passe",
         "submit": "Iniciar sessão",
@@ -86,9 +88,116 @@
       }
     },
     "tournaments": {
-      "welcome": "Bem-vindo·a, {{firstName}}",
-      "comingSoon": "A lista dos seus torneios e a criação chegam muito em breve.",
-      "logout": "Terminar sessão"
+      "list": {
+        "title": "Os meus torneios",
+        "loading": "A carregar…",
+        "empty": "Ainda não tem torneios.",
+        "errorGeneric": "Ocorreu um erro, tente novamente.",
+        "newTournament": "Novo torneio",
+        "logout": "Terminar sessão",
+        "status": {
+          "DRAFT": "Rascunho",
+          "PUBLISHED": "Publicado",
+          "UNPUBLISHED": "Despublicado",
+          "ARCHIVED": "Arquivado"
+        }
+      }
+    },
+    "wizard": {
+      "title": "Novo torneio",
+      "cancelAria": "Cancelar",
+      "cancel": "Cancelar",
+      "back": "Voltar",
+      "next": "Seguinte",
+      "payAndPublish": "Pagar e publicar",
+      "errorGeneric": "Ocorreu um erro, tente novamente.",
+      "rail": {
+        "1": "Info",
+        "2": "Equipas",
+        "3": "Estrutura",
+        "4": "Calendário",
+        "5": "Publicação"
+      },
+      "infos": {
+        "title": "Informações gerais",
+        "nameLabel": "Nome do torneio",
+        "sportLabel": "Desporto",
+        "sportPlaceholder": "Escolha um desporto…",
+        "venueLabel": "Local",
+        "onlineLabel": "Torneio online",
+        "onlineHint": "Competição eSport, sem local físico",
+        "personalizationTitle": "Personalização",
+        "theme": {
+          "INK_SIGNAL": "Tema Tinta e Sinal",
+          "PULSE_EMBER": "Tema Brasa",
+          "NEON_COURT": "Tema Néon",
+          "FRESH_PITCH": "Tema Relvado",
+          "CRIMSON_CHARGE": "Tema Carmesim"
+        },
+        "logoLabel": "Logótipo do torneio"
+      },
+      "teams": {
+        "title": "Equipas participantes",
+        "countSingular": "{{count}} equipa adicionada",
+        "countPlural": "{{count}} equipas adicionadas",
+        "addLabel": "Nome da equipa",
+        "addPlaceholder": "Nome da equipa",
+        "add": "Adicionar",
+        "remove": "Remover {{name}}",
+        "minHint": "São necessárias pelo menos 3 equipas para avançar para o passo seguinte."
+      },
+      "structure": {
+        "title": "Formato da competição",
+        "poolsKnockout": {
+          "name": "Grupos seguidos de eliminatórias",
+          "desc": "Fase de grupos e depois as melhores equipas defrontam-se em eliminatórias."
+        },
+        "knockoutOnly": {
+          "name": "Eliminação direta simples",
+          "desc": "Cada derrota elimina a equipa. Rápido, um único vencedor."
+        },
+        "league": {
+          "name": "Liga (todos contra todos)",
+          "desc": "Cada equipa defronta todas as outras uma vez."
+        },
+        "poolCountLabel": "Número de grupos",
+        "qualifiersLabel": "Apurados por grupo"
+      },
+      "calendar": {
+        "title": "Calendário dos jogos",
+        "lede": "Gere automaticamente o calendário a partir das equipas e do formato escolhidos.",
+        "generate": "Gerar calendário",
+        "generating": "A gerar…",
+        "noScheduleHint": "Sem calendário para gerar neste formato -- o quadro de eliminação direta preenche-se jogo a jogo, à medida que os resultados vão sendo conhecidos.",
+        "editLaterHint": "Os horários e locais exatos poderão ser ajustados mais tarde em \"Os meus torneios\".",
+        "errorGeneric": "Ocorreu um erro, tente novamente."
+      },
+      "publish": {
+        "visibilityTitle": "Visibilidade",
+        "public": {
+          "name": "Público",
+          "desc": "Visível na pesquisa de torneios."
+        },
+        "private": {
+          "name": "Privado",
+          "desc": "Acessível apenas por link."
+        },
+        "publishTitle": "Publicação",
+        "paymentHint": "Se ultrapassar o seu plano gratuito, ser-lhe-á proposto um pagamento seguro com Stripe antes da publicação.",
+        "planTitle": "Plano",
+        "planLoading": "A carregar…",
+        "planActive": "Subscrição anual ativa até {{date}} — todas as suas publicações são gratuitas.",
+        "planPending": "Pagamento da subscrição anual a aguardar confirmação.",
+        "planNone": "Faturação por publicação consoante o número de equipas. A subscrição anual torna todas as suas publicações gratuitas.",
+        "planManage": "Gerir a minha subscrição"
+      },
+      "done": {
+        "title": "Torneio publicado!",
+        "body": "{{name}} está online e pronto para receber resultados.",
+        "pendingPaymentTitle": "Finalize o pagamento",
+        "pendingPaymentBody": "Abriu-se um separador de pagamento seguro. Assim que o pagamento for concluído, o seu torneio será publicado -- volte a Os meus torneios para verificar o estado.",
+        "backToList": "Voltar a Os meus torneios"
+      }
     }
   }
 }

@@ -1,30 +1,122 @@
-.organizer-tournaments-page {
-  --padding-top: var(--ap-space-6);
-  --padding-bottom: var(--ap-space-6);
-  --padding-start: var(--ap-space-5);
-  --padding-end: var(--ap-space-5);
+ion-toolbar {
+  --padding-start: var(--ap-space-4);
+  --padding-end: var(--ap-space-4);
 }
 
-.organizer-tournaments-page__card {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ap-space-4);
-  max-width: 420px;
-  margin: 0 auto;
-  text-align: center;
+ion-title {
+  padding-inline: 0;
+  text-align: start;
+  font-family: var(--ap-font-heading);
+  font-weight: 700;
+  font-size: 1.05rem;
 }
 
 .organizer-tournaments-page__brand {
-  align-self: center;
-  margin-bottom: var(--ap-space-2);
+  margin-inline-end: var(--ap-space-2);
 }
 
-.organizer-tournaments-page__org {
-  margin: calc(-1 * var(--ap-space-2)) 0 0;
-  color: var(--ap-color-muted);
+.organizer-tournaments-page__avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: var(--ap-color-signal-soft);
+  color: var(--ap-color-signal-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
 }
 
-.organizer-tournaments-page__soon {
+.organizer-tournaments-page {
+  --padding-top: var(--ap-space-4);
+  --padding-bottom: var(--ap-space-16);
+  --padding-start: var(--ap-space-4);
+  --padding-end: var(--ap-space-4);
+  position: relative;
+}
+
+.organizer-tournaments-page__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-3);
+}
+
+.organizer-tournaments-page__hint {
   color: var(--ap-color-muted);
   font-size: 0.9rem;
+}
+
+.organizer-tournaments-page__error {
+  color: var(--ap-color-error);
+  font-size: 0.9rem;
+}
+
+// A <button> now (opens the tournament -- see openTournament()), not a
+// plain <div> -- these reset the native button chrome (font, text-align,
+// full-width block layout) back to how the card looked before.
+.tcard {
+  width: 100%;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-lg);
+  padding: var(--ap-space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+}
+
+.tcard__top {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+}
+
+.tcard__logo {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--ap-radius-md);
+  object-fit: cover;
+  flex: none;
+}
+
+.tcard__name {
+  flex: 1;
+  font-family: var(--ap-font-heading);
+  font-weight: 700;
+  font-size: 0.98rem;
+  margin: 0;
+}
+
+.tcard__meta {
+  font-size: 0.78rem;
+  color: var(--ap-color-muted);
+}
+
+// Fixed inside ion-content -- position: relative on the host above lets
+// this pin to the viewport rather than scrolling away with the list, same
+// as the mockup's own .fab (position: absolute within the phone frame).
+.organizer-tournaments-page__fab {
+  position: fixed;
+  right: var(--ap-space-4);
+  bottom: var(--ap-space-4);
+  background: var(--ap-color-primary);
+  color: var(--ap-color-on-primary);
+  border: none;
+  border-radius: 999px;
+  padding: var(--ap-space-3) var(--ap-space-4);
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  cursor: pointer;
+  box-shadow: 0 10px 24px -8px rgba(0, 0, 0, 0.4);
 }

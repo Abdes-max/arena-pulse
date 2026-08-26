@@ -29,6 +29,17 @@ export const routes: Routes = [
         (m) => m.OrganizerTournamentsPage,
       ),
   },
+  // Registered ahead of 'organizer/tournaments/:something' would-be routes
+  // (there are none yet, but this keeps the static 'new' segment safely out
+  // of a future ':tournamentId' param's way, same reasoning as ':slug' below).
+  {
+    path: 'organizer/tournaments/new',
+    canActivate: [organizerAuthGuard],
+    loadComponent: () =>
+      import('./organizer/pages/tournament-wizard/tournament-wizard.page').then(
+        (m) => m.OrganizerTournamentWizardPage,
+      ),
+  },
   {
     path: ':slug',
     loadComponent: () => import('./shell/tournament-shell').then((m) => m.TournamentShell),
