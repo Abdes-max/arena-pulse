@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { Button, Select, SelectOption, Tabs, TabOption, TextField } from 'design-system';
+import { Button, Select, SelectOption, TextField } from 'design-system';
 import { LanguageService } from 'design-tokens';
 import { AuthService } from '../../core/auth.service';
 import {
@@ -41,7 +41,7 @@ interface QualificationRuleGroup {
 
 @Component({
   selector: 'app-structure-page',
-  imports: [Button, Select, Tabs, TextField, TranslocoPipe],
+  imports: [Button, Select, TextField, TranslocoPipe],
   templateUrl: './structure.page.html',
   styleUrl: './structure.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -117,15 +117,37 @@ export class StructurePage {
   // phases/pools/brackets/qualification rules only -- no calendar; that's
   // generated separately on the Calendrier page once the organizer is ready.
   protected readonly presetFormat = signal<StructurePresetFormat>('POOLS_AND_KNOCKOUT');
-  protected readonly presetFormatOptions = computed<TabOption[]>(() => {
+  // Card-style picker (radio circle + name + description per card) -- same
+  // visual pattern as apps/mobile's tournament-wizard.page.html
+  // .wizard-page__formatcard, replacing the plain ap-tabs this used to be.
+  // Each card's own description reuses admin.structure.preset.intro.* --
+  // previously shown as a single line below the tabs for only the
+  // currently-selected format (presetIntroText, still used for the
+  // knockout-only-note-style hint further down), now shown on every card at
+  // once so the organizer can compare all three without clicking through.
+  protected readonly presetFormatCards = computed(() => {
     const lang = this.languageService.language();
     const t = (key: string) =>
       this.transloco.translate(`admin.structure.preset.format.${key}`, {}, lang);
-    return [
-      { value: 'POOLS_ONLY', label: t('poolsOnly') },
-      { value: 'POOLS_AND_KNOCKOUT', label: t('poolsAndKnockout') },
-      { value: 'KNOCKOUT_ONLY', label: t('knockoutOnly') },
-    ];
+    const tIntro = (key: string) =>
+      this.transloco.translate(`admin.structure.preset.intro.${key}`, {}, lang);
+    return (['POOLS_ONLY', 'POOLS_AND_KNOCKOUT', 'KNOCKOUT_ONLY'] as const).map((value) => ({
+      value,
+      name: t(
+        value === 'POOLS_ONLY'
+          ? 'poolsOnly'
+          : value === 'KNOCKOUT_ONLY'
+            ? 'knockoutOnly'
+            : 'poolsAndKnockout',
+      ),
+      desc: tIntro(
+        value === 'POOLS_ONLY'
+          ? 'poolsOnly'
+          : value === 'KNOCKOUT_ONLY'
+            ? 'knockoutOnly'
+            : 'poolsAndKnockout',
+      ),
+    }));
   });
   protected readonly presetTeamCount = signal('');
   protected readonly presetPoolCount = signal('');
@@ -193,20 +215,6 @@ export class StructurePage {
         ),
       size: poolCount * (Number(tier.qualifiersPerPool) || 0) + (index === 0 ? bestCount : 0),
     }));
-  });
-
-  // A Transloco *key*, not the translated string itself -- resolved in the
-  // template (| transloco) instead of here so it stays reactive to a
-  // language switch instead of freezing whatever was active at read time.
-  protected readonly presetIntroText = computed(() => {
-    switch (this.presetFormat()) {
-      case 'POOLS_ONLY':
-        return 'admin.structure.preset.intro.poolsOnly';
-      case 'KNOCKOUT_ONLY':
-        return 'admin.structure.preset.intro.knockoutOnly';
-      default:
-        return 'admin.structure.preset.intro.poolsAndKnockout';
-    }
   });
 
   // Client-side mirror of structure-presets.service.ts's validation -- lets
@@ -606,7 +614,38 @@ export class StructurePage {
     }
   }
 
-  protected async removePhase(phase: CompetitionPhase): Promise<void> {
+  // Deleting a phase takes every group, match and result under it with it
+  // -- irreversible, so a click on "Supprimer la phase" only *arms* the
+  // action; a second, explicit "Confirmer la suppression" click is what
+  // actually deletes it (see the template's __confirm-inline). This used to
+  // be a bare one-click ghost button with no confirmation at all, which is
+  // how an organizer trying to "reset and start over" after adding a team
+  // could wipe an entire published tournament's structure by accident; a
+  // first fix required typing SUPPRIMER (team-list.page.ts's own team
+  // deletion still does), but that was reported as more friction than an
+  // organizer wants for "just" a phase -- a second click is enough here.
+  protected readonly confirmingRemovePhaseId = signal<string | null>(null);
+  protected readonly removingPhaseId = signal<string | null>(null);
+
+  protected requestRemovePhase(phase: CompetitionPhase): void {
+    this.confirmingRemovePhaseId.set(phase.id);
+  }
+
+  protected cancelRemovePhase(): void {
+    this.confirmingRemovePhaseId.set(null);
+  }
+
+  protected async confirmRemovePhase(phase: CompetitionPhase): Promise<void> {
+    this.removingPhaseId.set(phase.id);
+    try {
+      await this.removePhase(phase);
+      this.confirmingRemovePhaseId.set(null);
+    } finally {
+      this.removingPhaseId.set(null);
+    }
+  }
+
+  private async removePhase(phase: CompetitionPhase): Promise<void> {
     const organizationId = this.organization()?.id;
     if (!organizationId) {
       return;
