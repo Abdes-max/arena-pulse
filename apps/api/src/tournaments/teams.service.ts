@@ -126,6 +126,10 @@ export class TeamsService {
       organizationId,
       tournamentId,
     );
+    await this.tournamentsService.assertTeamAdditionAllowed(
+      organizationId,
+      tournamentId,
+    );
     const category = await this.categoriesService.assertCategoryExists(
       tournamentId,
       dto.categoryId,
@@ -510,6 +514,15 @@ export class TeamsService {
       tournamentId,
     );
     const { rows, errors } = parseTeamsCsv(csv);
+    // Whole-batch check, up front -- same reasoning as importFromCsv's own
+    // top comment for premiumUnlocked, just the opposite failure posture:
+    // this one genuinely blocks the import (money, not a cosmetic logo)
+    // rather than degrading gracefully row by row.
+    await this.tournamentsService.assertTeamAdditionAllowed(
+      organizationId,
+      tournamentId,
+      rows.length,
+    );
     const created: ReturnType<TeamsService['toSummary']>[] = [];
     const warnings: { line: number; message: string }[] = [];
 

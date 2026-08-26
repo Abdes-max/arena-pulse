@@ -20,6 +20,9 @@ interface MailCopy {
   publicationReceiptBody1: (tournamentName: string) => string;
   amountPaidLabel: string;
   publicationReceiptBody2: string;
+  // Links to Stripe's own hosted receipt (Charge.receipt_url) rather than a
+  // custom one -- see TournamentsService.applyPaidPublicationSession.
+  viewStripeReceiptCta: string;
   subscriptionReceiptSubject: string;
   subscriptionReceiptBody1: (organizationName: string) => string;
   subscriptionReceiptBody2: (formattedExpiry: string) => string;
@@ -58,6 +61,7 @@ const MAIL_COPY: Record<MailLanguage, MailCopy> = {
     amountPaidLabel: 'Montant réglé :',
     publicationReceiptBody2:
       'Votre tournoi est désormais publié et visible publiquement.',
+    viewStripeReceiptCta: 'Voir le reçu de paiement',
     subscriptionReceiptSubject:
       'Confirmation de votre abonnement annuel TournArena',
     subscriptionReceiptBody1: (org) =>
@@ -89,6 +93,7 @@ const MAIL_COPY: Record<MailLanguage, MailCopy> = {
     amountPaidLabel: 'Amount paid:',
     publicationReceiptBody2:
       'Your tournament is now published and publicly visible.',
+    viewStripeReceiptCta: 'View payment receipt',
     subscriptionReceiptSubject:
       'Your TournArena annual subscription confirmation',
     subscriptionReceiptBody1: (org) =>
@@ -121,6 +126,7 @@ const MAIL_COPY: Record<MailLanguage, MailCopy> = {
     amountPaidLabel: 'Importe pagado:',
     publicationReceiptBody2:
       'Tu torneo ya está publicado y visible públicamente.',
+    viewStripeReceiptCta: 'Ver el recibo de pago',
     subscriptionReceiptSubject:
       'Confirmación de tu suscripción anual TournArena',
     subscriptionReceiptBody1: (org) =>
@@ -153,6 +159,7 @@ const MAIL_COPY: Record<MailLanguage, MailCopy> = {
     amountPaidLabel: 'Bezahlter Betrag:',
     publicationReceiptBody2:
       'Ihr Turnier ist nun veröffentlicht und öffentlich sichtbar.',
+    viewStripeReceiptCta: 'Zahlungsbeleg ansehen',
     subscriptionReceiptSubject:
       'Bestätigung Ihres TournArena-Jahresabonnements',
     subscriptionReceiptBody1: (org) =>
@@ -185,6 +192,7 @@ const MAIL_COPY: Record<MailLanguage, MailCopy> = {
     amountPaidLabel: 'Importo pagato:',
     publicationReceiptBody2:
       'Il tuo torneo è ora pubblicato e visibile pubblicamente.',
+    viewStripeReceiptCta: 'Visualizza la ricevuta di pagamento',
     subscriptionReceiptSubject:
       'Conferma del tuo abbonamento annuale TournArena',
     subscriptionReceiptBody1: (org) =>
@@ -217,6 +225,7 @@ const MAIL_COPY: Record<MailLanguage, MailCopy> = {
     amountPaidLabel: 'Valor pago:',
     publicationReceiptBody2:
       'O seu torneio está agora publicado e visível publicamente.',
+    viewStripeReceiptCta: 'Ver o recibo de pagamento',
     subscriptionReceiptSubject:
       'Confirmação da sua assinatura anual TournArena',
     subscriptionReceiptBody1: (org) =>
@@ -369,6 +378,9 @@ export class MailService {
     tournamentName: string,
     amountCents: number,
     currency: string,
+    // Stripe's own hosted receipt (Charge.receipt_url) -- null for the free
+    // tier's $0 order, which never goes through Stripe Checkout at all.
+    stripeReceiptUrl: string | null,
     lang: MailLanguage = DEFAULT_MAIL_LANGUAGE,
   ): Promise<void> {
     const copy = MAIL_COPY[lang];
@@ -381,6 +393,11 @@ export class MailService {
         <p>${copy.publicationReceiptBody1(tournamentName)}</p>
         <p>${copy.amountPaidLabel} <strong>${this.formatAmount(amountCents, currency, lang)}</strong></p>
         <p>${copy.publicationReceiptBody2}</p>
+        ${
+          stripeReceiptUrl
+            ? `<p><a href="${stripeReceiptUrl}" target="_blank" rel="noopener">${copy.viewStripeReceiptCta}</a></p>`
+            : ''
+        }
       `,
         lang,
       ),

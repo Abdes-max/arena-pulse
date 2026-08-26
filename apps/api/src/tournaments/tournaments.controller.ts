@@ -23,6 +23,8 @@ import type { MailLanguage } from '../mail/mail-language';
 import { RequireOrgRole } from '../organizations/decorators/require-org-role.decorator';
 import { OrganizationRoleGuard } from '../organizations/guards/organization-role.guard';
 import { ConfirmPublicationPaymentDto } from './dto/confirm-publication-payment.dto';
+import { PayForTeamAdditionDto } from './dto/pay-for-team-addition.dto';
+import { PayForTournamentTierDto } from './dto/pay-for-tournament-tier.dto';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { DuplicateTournamentDto } from './dto/duplicate-tournament.dto';
 import { UpdateTournamentDto } from './dto/update-tournament.dto';
@@ -118,7 +120,10 @@ export class TournamentsController {
       organizationId,
       tournamentId,
     );
-    return { unlocked, freeMaxTeams: this.tournamentsService.freeMaxTeams() };
+    return {
+      unlocked,
+      ...this.tournamentsService.publicationTierConfig(),
+    };
   }
 
   @RequireOrgRole(OrganizationRole.ORG_MEMBER)
@@ -141,6 +146,36 @@ export class TournamentsController {
     @Param('tournamentId') tournamentId: string,
   ) {
     return this.tournamentsService.publish(organizationId, tournamentId);
+  }
+
+  @RequireOrgRole(OrganizationRole.ORG_ADMIN)
+  @HttpCode(HttpStatus.OK)
+  @Post(':tournamentId/publish/upgrade')
+  payForTeamAddition(
+    @Param('organizationId') organizationId: string,
+    @Param('tournamentId') tournamentId: string,
+    @Body() dto: PayForTeamAdditionDto,
+  ) {
+    return this.tournamentsService.payForTeamAdditionTier(
+      organizationId,
+      tournamentId,
+      dto.additionalTeams,
+    );
+  }
+
+  @RequireOrgRole(OrganizationRole.ORG_ADMIN)
+  @HttpCode(HttpStatus.OK)
+  @Post(':tournamentId/plan')
+  payForTournamentTier(
+    @Param('organizationId') organizationId: string,
+    @Param('tournamentId') tournamentId: string,
+    @Body() dto: PayForTournamentTierDto,
+  ) {
+    return this.tournamentsService.payForTournamentTier(
+      organizationId,
+      tournamentId,
+      dto.tier,
+    );
   }
 
   @RequireOrgRole(OrganizationRole.ORG_ADMIN)
