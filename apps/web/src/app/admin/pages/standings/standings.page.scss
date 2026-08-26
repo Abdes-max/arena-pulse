@@ -221,3 +221,190 @@
 .standings-page__points {
   font-weight: 700;
 }
+
+.standings-page__empty {
+  color: var(--ap-color-muted);
+}
+
+.standings-page__final-table {
+  th:nth-child(3),
+  td:nth-child(3),
+  th:nth-child(4),
+  td:nth-child(4) {
+    text-align: left;
+  }
+}
+
+// --- Tableau à élimination directe : arbre connecté ---
+// Same connected-tree bracket as the public site's own classement (see
+// apps/web/src/app/pages/standings/standings.page.scss for the full
+// rationale) -- admin skips that page's separate one-round-at-a-time mobile
+// pager, relying instead on the same horizontal-scroll container
+// (.standings-page__table-scroll) already used for the dense pool tables
+// above, consistent with how the rest of this admin page handles narrow
+// screens.
+.standings-page__bracket {
+  --bracket-gap: 40px;
+  display: flex;
+  align-items: stretch;
+  padding: var(--ap-space-2) var(--ap-space-2) var(--ap-space-4);
+}
+
+.standings-page__bracket-round {
+  display: flex;
+  flex-direction: column;
+  flex: none;
+  width: 200px;
+
+  & + & {
+    margin-left: var(--bracket-gap);
+  }
+
+  h3 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ap-color-muted);
+    margin: 0 0 var(--ap-space-3);
+  }
+}
+
+.standings-page__bracket-round-matches {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.standings-page__bracket-slot {
+  position: relative;
+}
+
+// Connecteur sortant : du bord droit de la carte vers le point de fusion
+// avec son partenaire de paire — un demi-coin par créneau (haut pour le
+// premier de la paire, bas pour le second), qui se rejoignent exactement
+// au milieu grâce à la symétrie de `space-around`.
+.standings-page__bracket-round:not(:last-child) .standings-page__bracket-slot::after {
+  content: '';
+  position: absolute;
+  right: calc(var(--bracket-gap) / -2);
+  width: calc(var(--bracket-gap) / 2);
+  height: 50%;
+  border-right: var(--ap-border-width) solid var(--ap-color-border);
+}
+
+.standings-page__bracket-round:not(:last-child)
+  .standings-page__bracket-slot:nth-child(odd)::after {
+  top: 50%;
+  border-top: var(--ap-border-width) solid var(--ap-color-border);
+}
+
+.standings-page__bracket-round:not(:last-child)
+  .standings-page__bracket-slot:nth-child(even)::after {
+  top: 0;
+  border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+}
+
+// Connecteur entrant : du point de fusion (déjà tracé côté sortant) jusqu'au
+// bord gauche de la carte du tour suivant.
+.standings-page__bracket-round:not(:first-child) .standings-page__bracket-slot::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: calc(var(--bracket-gap) / -2);
+  width: calc(var(--bracket-gap) / 2);
+  border-top: var(--ap-border-width) solid var(--ap-color-border);
+}
+
+// Positionné sous la finale (dernière colonne, donc déjà la plus à droite
+// de l'arbre) plutôt qu'en pleine largeur -- juste décalé vers le bas, sans
+// cadre autour du titre.
+.standings-page__third-place {
+  width: 200px;
+  margin: var(--ap-space-3) 0 0 auto;
+
+  h3 {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ap-color-muted);
+    margin: 0 0 var(--ap-space-2);
+  }
+}
+
+// --- Classement final : podium ---
+.standings-page__podium {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: var(--ap-space-2);
+  margin: var(--ap-space-4) 0 var(--ap-space-8);
+}
+
+// Fluid width (flex + max-width) rather than a fixed 160px per step -- three
+// fixed-width steps never fit a phone viewport (3×160px alone exceeds a
+// 375px screen before gaps/padding). Shrinking to fit and truncating long
+// team names keeps all three steps visible without any horizontal scroll.
+.standings-page__podium-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ap-space-1);
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 160px;
+  padding: var(--ap-space-4) var(--ap-space-2);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-lg) var(--ap-radius-lg) 0 0;
+  text-align: center;
+}
+
+.standings-page__podium-name,
+.standings-page__podium-stage {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.standings-page__podium-rank {
+  font-family: var(--ap-font-heading);
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--ap-color-signal-text);
+}
+
+.standings-page__podium-logo {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--ap-radius-sm);
+  object-fit: cover;
+}
+
+.standings-page__podium-name {
+  font-weight: 700;
+}
+
+.standings-page__podium-stage {
+  font-size: 0.75rem;
+  color: var(--ap-color-muted);
+}
+
+.standings-page__podium-step--1 {
+  order: 2;
+  padding-top: var(--ap-space-8);
+  border-color: var(--ap-color-signal-text);
+
+  .standings-page__podium-rank {
+    font-size: 2.25rem;
+  }
+}
+
+.standings-page__podium-step--2 {
+  order: 1;
+}
+
+.standings-page__podium-step--3 {
+  order: 3;
+}
