@@ -383,7 +383,20 @@
       "errorRoleLastAdmin": "Impossibile modificare questo ruolo: è l'ultimo amministratore dell'organizzazione.",
       "errorRoleGeneric": "Impossibile modificare questo ruolo, riprova.",
       "errorRemoveLastAdmin": "Impossibile rimuovere questo collaboratore: è l'ultimo amministratore dell'organizzazione.",
-      "errorRemoveGeneric": "Impossibile rimuovere questo collaboratore, riprova."
+      "errorRemoveGeneric": "Impossibile rimuovere questo collaboratore, riprova.",
+      "tournamentAdmins": {
+        "title": "Amministratori del torneo",
+        "tournamentLabel": "Torneo",
+        "remove": "Rimuovi",
+        "emailLabel": "Email del collaboratore",
+        "presetFull": "Amministratore completo",
+        "presetReferee": "Arbitro (solo risultati)",
+        "add": "Aggiungi come amministratore",
+        "errorLoad": "Impossibile caricare gli amministratori di questo torneo.",
+        "errorAddNotMember": "Questa persona deve prima essere membro dell'organizzazione.",
+        "errorAddGeneric": "Impossibile aggiungere questo amministratore.",
+        "errorRemove": "Impossibile rimuovere questo amministratore."
+      }
     },
     "account": {
       "title": "Il mio account",
@@ -491,7 +504,23 @@
         },
         "paid": "Pagato",
         "pending": "In attesa",
-        "print": "Stampa"
+        "print": "Stampa",
+        "viewReceipt": "Visualizza la ricevuta"
+      },
+      "plan": {
+        "title": "Piano",
+        "loading": "Caricamento…",
+        "active": "Abbonamento annuale attivo fino al {{date}} — tutte le pubblicazioni di tornei sono gratuite.",
+        "pending": "Pagamento dell'abbonamento annuale in attesa di conferma.",
+        "none": "Fatturazione per pubblicazione in base al numero di squadre (gratis fino a {{count}} squadre). L'abbonamento annuale rende gratuita ogni pubblicazione.",
+        "manage": "Gestisci il mio abbonamento",
+        "current": "Piano attuale",
+        "confirmTitle": "Cambiare piano",
+        "confirmChange": "Vuoi davvero cambiare piano da {{from}} a {{to}}? Sarai reindirizzato al pagamento.",
+        "cancel": "Annulla",
+        "processing": "Reindirizzamento…",
+        "proceedToPayment": "Procedi al pagamento",
+        "error": "Si è verificato un errore, riprova."
       },
       "logo": {
         "title": "Logo",
@@ -535,14 +564,6 @@
         "newVenuePlaceholder": "Nuova sede (es. Stadio comunale)",
         "addVenue": "Aggiungi una sede"
       },
-      "admins": {
-        "title": "Amministratori del torneo",
-        "remove": "Rimuovi",
-        "emailLabel": "Email del collaboratore",
-        "presetFull": "Amministratore completo",
-        "presetReferee": "Arbitro (solo risultati)",
-        "add": "Aggiungi come amministratore"
-      },
       "description": {
         "title": "Descrizione",
         "placeholder": "Presenta la tua competizione ai visitatori del sito pubblico…",
@@ -577,6 +598,9 @@
         "loadData": "Impossibile caricare i dati del torneo.",
         "save": "Impossibile salvare il torneo.",
         "actionNotAllowed": "Questa azione non è possibile nello stato attuale del torneo.",
+        "publishNoCategory": "Aggiungi almeno una categoria e strutturala (gironi o tabellone) prima di pubblicare.",
+        "publishNoStructure": "Scegli una struttura (gironi o tabellone) prima di pubblicare.",
+        "publishNoCalendar": "Genera il calendario dei gironi prima di pubblicare.",
         "generic": "Si è verificato un errore, riprova.",
         "duplicate": "Impossibile duplicare questo torneo.",
         "logoInvalid": "Formato o dimensione del file non validi (PNG, JPEG o WebP, 2 MB massimo).",
@@ -594,9 +618,6 @@
         "removeVenue": "Impossibile eliminare questa sede.",
         "addField": "Impossibile aggiungere questo campo (nome già utilizzato?).",
         "removeField": "Impossibile eliminare questo campo.",
-        "addAdminNotMember": "Questa persona deve prima essere membro dell'organizzazione.",
-        "addAdminGeneric": "Impossibile aggiungere questo amministratore.",
-        "removeAdmin": "Impossibile rimuovere questo amministratore.",
         "logoPremiumLocked": "Riservato ai tornei con più di {{count}} squadre o con un abbonamento annuale attivo."
       },
       "personalization": {
@@ -624,7 +645,8 @@
       "cancel": "Annulla",
       "export": "Esporta",
       "deleteSelected": "Elimina la selezione",
-      "typeToConfirmLabel": "Digita SUPPRIMER per confermare",
+      "confirmDeleteQuestion": "Eliminare questa squadra? Questa azione è irreversibile.",
+      "confirmBulkDeleteQuestion": "Eliminare {{count}} squadra/e selezionata/e? Questa azione è irreversibile.",
       "confirmDelete": "Conferma eliminazione",
       "deleting": "Eliminazione…",
       "empty": "Nessuna squadra per ora.",
@@ -668,7 +690,19 @@
         "removePlayer": "Impossibile rimuovere questo giocatore.",
         "logoPremiumLocked": "Riservato ai tornei con più di {{count}} squadre o con un abbonamento annuale attivo."
       },
-      "logoPremiumHint": "I loghi delle squadre sono riservati ai tornei con più di {{count}} squadre o con un abbonamento annuale attivo."
+      "logoPremiumHint": "I loghi delle squadre sono riservati ai tornei con più di {{count}} squadre o con un abbonamento annuale attivo.",
+      "tierModal": {
+        "title": "Sei sul piano {{currentPlan}}",
+        "body": "Questa squadra farebbe superare a questo torneo già pubblicato il tuo piano {{currentPlan}}. Passa al piano superiore o sottoscrivi l'abbonamento annuale per continuare.",
+        "upgradeButton": "Passa al piano {{plan}} — {{amount}}",
+        "subscribeButton": "Passa all'abbonamento annuale",
+        "cancel": "Annulla",
+        "close": "Chiudi",
+        "errors": {
+          "upgrade": "Impossibile aggiornare il pagamento di pubblicazione, riprova.",
+          "subscribe": "Impossibile sottoscrivere l'abbonamento, riprova."
+        }
+      }
     },
     "refereeList": {
       "title": "Arbitri",
@@ -788,6 +822,10 @@
       },
       "phase": {
         "removePhase": "Elimina la fase",
+        "confirmRemoveQuestion": "Eliminando questa fase verranno eliminati anche i suoi gironi, le partite e i risultati. Confermare?",
+        "confirmRemove": "Conferma eliminazione",
+        "removing": "Eliminazione…",
+        "cancelRemove": "Annulla",
         "standingRule": {
           "title": "Sistema di punteggio",
           "hint": "Si applica a tutti i gironi di questa fase.",
@@ -960,10 +998,13 @@
       "addCategoryFirst": "Aggiungi prima una categoria nella pagina del torneo.",
       "categoryLabel": "Categoria",
       "phaseLabel": "Fase",
-      "knockoutOnlyNote": "Questo torneo è in formato eliminazione diretta: non c'è una classifica di girone.",
+      "knockoutOnlyNote": "Questo torneo è in formato eliminazione diretta: genera prima il tabellone nella pagina Struttura di questa categoria.",
       "addPoolPhaseFirst": "Aggiungi prima una fase a gironi nella pagina Struttura di questa categoria.",
       "addGroupFirst": "Aggiungi prima un girone a questa fase.",
       "provisional": "(provvisorio)",
+      "bracketNotGenerated": "Il tabellone non è ancora stato generato per questa fase.",
+      "finalRankingTab": "Classifica finale",
+      "finalRankingEmpty": "La classifica finale sarà disponibile una volta completati i tabelloni della fase finale.",
       "table": {
         "team": "Squadra",
         "played": "G",
@@ -982,7 +1023,9 @@
         "diffFull": "Differenza reti",
         "points": "Pt",
         "pointsFull": "Punti",
-        "rating": "Rating"
+        "rating": "Rating",
+        "bracket": "Tabellone",
+        "result": "Risultato"
       },
       "tieTotal": "Parità totale tra",
       "tieQuestion": "— chi deve essere classificato davanti agli altri?",

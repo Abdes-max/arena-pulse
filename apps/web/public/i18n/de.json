@@ -383,7 +383,20 @@
       "errorRoleLastAdmin": "Diese Rolle kann nicht geändert werden: Dies ist der letzte Administrator der Organisation.",
       "errorRoleGeneric": "Diese Rolle konnte nicht geändert werden, bitte versuchen Sie es erneut.",
       "errorRemoveLastAdmin": "Dieser Mitarbeiter kann nicht entfernt werden: Dies ist der letzte Administrator der Organisation.",
-      "errorRemoveGeneric": "Dieser Mitarbeiter konnte nicht entfernt werden, bitte versuchen Sie es erneut."
+      "errorRemoveGeneric": "Dieser Mitarbeiter konnte nicht entfernt werden, bitte versuchen Sie es erneut.",
+      "tournamentAdmins": {
+        "title": "Turnieradministratoren",
+        "tournamentLabel": "Turnier",
+        "remove": "Entfernen",
+        "emailLabel": "E-Mail des Mitarbeiters",
+        "presetFull": "Vollständiger Administrator",
+        "presetReferee": "Schiedsrichter (nur Ergebnisse)",
+        "add": "Als Administrator hinzufügen",
+        "errorLoad": "Die Administratoren dieses Turniers konnten nicht geladen werden.",
+        "errorAddNotMember": "Diese Person muss zuerst Mitglied der Organisation sein.",
+        "errorAddGeneric": "Dieser Administrator konnte nicht hinzugefügt werden.",
+        "errorRemove": "Dieser Administrator konnte nicht entfernt werden."
+      }
     },
     "account": {
       "title": "Mein Konto",
@@ -491,7 +504,23 @@
         },
         "paid": "Bezahlt",
         "pending": "Ausstehend",
-        "print": "Drucken"
+        "print": "Drucken",
+        "viewReceipt": "Beleg ansehen"
+      },
+      "plan": {
+        "title": "Plan",
+        "loading": "Wird geladen…",
+        "active": "Jahresabonnement aktiv bis {{date}} — jede Turnierveröffentlichung ist kostenlos.",
+        "pending": "Zahlung des Jahresabonnements wartet auf Bestätigung.",
+        "none": "Abrechnung pro Veröffentlichung nach Teamanzahl (kostenlos bis {{count}} Teams). Das Jahresabonnement macht jede Veröffentlichung kostenlos.",
+        "manage": "Abonnement verwalten",
+        "current": "Aktueller Plan",
+        "confirmTitle": "Plan wechseln",
+        "confirmChange": "Möchten Sie wirklich von {{from}} zu {{to}} wechseln? Sie werden zur Zahlung weitergeleitet.",
+        "cancel": "Abbrechen",
+        "processing": "Weiterleitung…",
+        "proceedToPayment": "Zur Zahlung",
+        "error": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut."
       },
       "logo": {
         "title": "Logo",
@@ -535,14 +564,6 @@
         "newVenuePlaceholder": "Neuer Austragungsort (z. B. Städtisches Stadion)",
         "addVenue": "Austragungsort hinzufügen"
       },
-      "admins": {
-        "title": "Turnieradministratoren",
-        "remove": "Entfernen",
-        "emailLabel": "E-Mail des Mitarbeiters",
-        "presetFull": "Vollständiger Administrator",
-        "presetReferee": "Schiedsrichter (nur Ergebnisse)",
-        "add": "Als Administrator hinzufügen"
-      },
       "description": {
         "title": "Beschreibung",
         "placeholder": "Stellen Sie Ihren Wettbewerb den Besuchern der öffentlichen Seite vor…",
@@ -577,6 +598,9 @@
         "loadData": "Turnierdaten konnten nicht geladen werden.",
         "save": "Das Turnier konnte nicht gespeichert werden.",
         "actionNotAllowed": "Diese Aktion ist im aktuellen Status des Turniers nicht möglich.",
+        "publishNoCategory": "Fügen Sie mindestens eine Kategorie hinzu und legen Sie deren Struktur fest (Gruppen oder Tabelle), bevor Sie veröffentlichen.",
+        "publishNoStructure": "Wählen Sie eine Struktur (Gruppen oder Tabelle), bevor Sie veröffentlichen.",
+        "publishNoCalendar": "Erstellen Sie den Gruppenspielplan, bevor Sie veröffentlichen.",
         "generic": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut.",
         "duplicate": "Dieses Turnier konnte nicht dupliziert werden.",
         "logoInvalid": "Ungültiges Dateiformat oder ungültige Größe (PNG, JPEG oder WebP, maximal 2 MB).",
@@ -594,9 +618,6 @@
         "removeVenue": "Dieser Austragungsort konnte nicht gelöscht werden.",
         "addField": "Dieses Feld konnte nicht hinzugefügt werden (Name bereits vergeben?).",
         "removeField": "Dieses Feld konnte nicht gelöscht werden.",
-        "addAdminNotMember": "Diese Person muss zuerst Mitglied der Organisation sein.",
-        "addAdminGeneric": "Dieser Administrator konnte nicht hinzugefügt werden.",
-        "removeAdmin": "Dieser Administrator konnte nicht entfernt werden.",
         "logoPremiumLocked": "Nur für Turniere mit mehr als {{count}} Teams oder mit aktivem Jahresabonnement."
       },
       "personalization": {
@@ -624,7 +645,8 @@
       "cancel": "Abbrechen",
       "export": "Exportieren",
       "deleteSelected": "Auswahl löschen",
-      "typeToConfirmLabel": "Geben Sie SUPPRIMER ein, um zu bestätigen",
+      "confirmDeleteQuestion": "Dieses Team löschen? Diese Aktion ist unwiderruflich.",
+      "confirmBulkDeleteQuestion": "{{count}} ausgewählte(s) Team(s) löschen? Diese Aktion ist unwiderruflich.",
       "confirmDelete": "Löschung bestätigen",
       "deleting": "Wird gelöscht…",
       "empty": "Noch keine Teams.",
@@ -668,7 +690,19 @@
         "removePlayer": "Dieser Spieler konnte nicht entfernt werden.",
         "logoPremiumLocked": "Nur für Turniere mit mehr als {{count}} Teams oder mit aktivem Jahresabonnement."
       },
-      "logoPremiumHint": "Team-Logos sind nur für Turniere mit mehr als {{count}} Teams oder mit aktivem Jahresabonnement verfügbar."
+      "logoPremiumHint": "Team-Logos sind nur für Turniere mit mehr als {{count}} Teams oder mit aktivem Jahresabonnement verfügbar.",
+      "tierModal": {
+        "title": "Sie befinden sich im Tarif {{currentPlan}}",
+        "body": "Dieses Team würde dieses bereits veröffentlichte Turnier über Ihren Tarif {{currentPlan}} hinausführen. Wechseln Sie in den nächsthöheren Tarif oder schließen Sie das Jahresabonnement ab, um fortzufahren.",
+        "upgradeButton": "Zu {{plan}} wechseln — {{amount}}",
+        "subscribeButton": "Zum Jahresabonnement wechseln",
+        "cancel": "Abbrechen",
+        "close": "Schließen",
+        "errors": {
+          "upgrade": "Die Veröffentlichungszahlung konnte nicht aktualisiert werden, bitte versuchen Sie es erneut.",
+          "subscribe": "Das Abonnement konnte nicht abgeschlossen werden, bitte versuchen Sie es erneut."
+        }
+      }
     },
     "refereeList": {
       "title": "Schiedsrichter",
@@ -788,6 +822,10 @@
       },
       "phase": {
         "removePhase": "Phase löschen",
+        "confirmRemoveQuestion": "Das Löschen dieser Phase löscht auch ihre Gruppen, Spiele und Ergebnisse. Bestätigen?",
+        "confirmRemove": "Löschung bestätigen",
+        "removing": "Wird gelöscht…",
+        "cancelRemove": "Abbrechen",
         "standingRule": {
           "title": "Punkteschema",
           "hint": "Gilt für alle Gruppen dieser Phase.",
@@ -960,10 +998,13 @@
       "addCategoryFirst": "Fügen Sie zuerst eine Kategorie auf der Turnierseite hinzu.",
       "categoryLabel": "Kategorie",
       "phaseLabel": "Phase",
-      "knockoutOnlyNote": "Dieses Turnier hat das Format K.-o.-Runde: Es gibt keine Gruppentabelle.",
+      "knockoutOnlyNote": "Dieses Turnier hat das Format K.-o.-Runde: Erstellen Sie zuerst den Turnierbaum auf der Strukturseite dieser Kategorie.",
       "addPoolPhaseFirst": "Fügen Sie zuerst eine Gruppenphase auf der Strukturseite dieser Kategorie hinzu.",
       "addGroupFirst": "Fügen Sie zuerst eine Gruppe zu dieser Phase hinzu.",
       "provisional": "(vorläufig)",
+      "bracketNotGenerated": "Der Turnierbaum wurde für diese Phase noch nicht erstellt.",
+      "finalRankingTab": "Endstand",
+      "finalRankingEmpty": "Der Endstand ist verfügbar, sobald die Endrunden-Turnierbäume abgeschlossen sind.",
       "table": {
         "team": "Team",
         "played": "Sp",
@@ -982,7 +1023,9 @@
         "diffFull": "Tordifferenz",
         "points": "Pkt",
         "pointsFull": "Punkte",
-        "rating": "Rating"
+        "rating": "Rating",
+        "bracket": "Turnierbaum",
+        "result": "Ergebnis"
       },
       "tieTotal": "Vollständige Gleichheit zwischen",
       "tieQuestion": "— wer soll vor den anderen platziert werden?",
