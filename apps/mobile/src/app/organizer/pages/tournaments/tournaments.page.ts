@@ -12,12 +12,12 @@ import { OrganizerTournamentsService } from '../../core/tournaments.service';
 // verify -> login -> land somewhere real) now that the creation wizard
 // (tournament-wizard.page.ts) gives this a genuine destination. Mirrors the
 // mockup's "Écran 3" (adaptive-leaping-elephant.md, Étape 0): a card per
-// tournament with a status badge + sport, and a floating "+ Nouveau
-// tournoi" button. Tapping a card opens that same wizard in edit mode
-// (feat/193 PR 3, openTournament() below) -- sponsors/arbitres/scores/
-// classement stay out of scope (apps/web/src/app/admin's own
-// tournament-list.page.ts is far richer than this), but the core "rename,
-// manage teams, publish/unpublish" loop is now native end to end.
+// tournament with a status badge + sport, a floating "+ Nouveau tournoi"
+// button, and (PR 4) two small actions per card for Scores/Classements.
+// Tapping the card body itself opens the wizard in edit mode (feat/193 PR
+// 3, openTournament() below). Remaining admin-web-only pages (arbitres,
+// structure/calendrier manual editing, sponsors...) are tracked as PR 5+
+// in the plan file's "PR 4+ -- parité complète" section.
 @Component({
   selector: 'app-organizer-tournaments-page',
   imports: [Badge, IonContent, IonHeader, IonTitle, IonToolbar, Logo, RouterLink, TranslocoPipe],
@@ -75,6 +75,18 @@ export class OrganizerTournamentsPage {
    */
   protected async openTournament(tournament: OrganizerTournament): Promise<void> {
     await this.router.navigateByUrl(`/organizer/tournaments/${tournament.id}/edit`);
+  }
+
+  /** PR 4 -- card action, stops propagation so it doesn't also trigger openTournament() above. */
+  protected async openScores(event: Event, tournament: OrganizerTournament): Promise<void> {
+    event.stopPropagation();
+    await this.router.navigateByUrl(`/organizer/tournaments/${tournament.id}/scores`);
+  }
+
+  /** PR 4 -- same as openScores() above. */
+  protected async openStandings(event: Event, tournament: OrganizerTournament): Promise<void> {
+    event.stopPropagation();
+    await this.router.navigateByUrl(`/organizer/tournaments/${tournament.id}/standings`);
   }
 
   protected statusLabel(status: OrganizerTournament['status']): string {

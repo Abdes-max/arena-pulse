@@ -54,9 +54,11 @@ ion-title {
   font-size: 0.9rem;
 }
 
-// A <button> now (opens the tournament -- see openTournament()), not a
-// plain <div> -- these reset the native button chrome (font, text-align,
-// full-width block layout) back to how the card looked before.
+// A role="button" <div> (see tournaments.page.html), not a real <button> --
+// PR 4 added two nested action buttons (Scores/Classements) inside, and
+// nesting <button> inside <button> is invalid HTML, so the outer card
+// stepped back to a div+role+keydown handlers (same a11y pattern as the
+// wizard's own rail steps). Still styled to look/feel like a button.
 .tcard {
   width: 100%;
   font: inherit;
@@ -97,6 +99,23 @@ ion-title {
 .tcard__meta {
   font-size: 0.78rem;
   color: var(--ap-color-muted);
+}
+
+.tcard__actions {
+  display: flex;
+  gap: var(--ap-space-2);
+}
+
+.tcard__action {
+  font: inherit;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--ap-color-signal-text);
+  background: var(--ap-color-signal-soft);
+  border: none;
+  border-radius: var(--ap-radius-md);
+  padding: var(--ap-space-1) var(--ap-space-2);
+  cursor: pointer;
 }
 
 // Fixed inside ion-content -- position: relative on the host above lets

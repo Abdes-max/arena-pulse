@@ -7,7 +7,7 @@
 // file's own top comment: this is an admin/organizer-app concern, not a
 // public one, so it doesn't belong in shared-models alongside the
 // public-site types both apps already share.
-import type { PublicTheme, TournamentStatus } from 'shared-models';
+import type { CompetitionPhase, PublicTheme, TournamentStatus } from 'shared-models';
 
 export type { PublicTheme, TournamentStatus };
 
@@ -93,16 +93,26 @@ export interface StructurePresetResult {
   tiers: { phaseId: string; name: string; bracketSize: number }[];
 }
 
-// Just enough of apps/web's own CompetitionPhase (admin/core/models.ts) for
-// the edit-mode wizard to tell "does a structure already exist" (see
-// tournament-wizard.page.ts's loadForEdit) and summarize it read-only --
-// not a general-purpose structure editor, so no groups/qualification-rule
-// detail beyond the group count needed for that one-line summary.
-export interface OrganizerPhase {
-  id: string;
-  name: string;
-  type: 'GROUP_STAGE' | 'KNOCKOUT';
-  isSeedPhase: boolean;
-  groups: { id: string; name: string }[];
-  knockoutBracket: { id: string; size: number } | null;
+// Originally "just enough" of apps/web's own CompetitionPhase for the
+// edit-mode wizard to tell "does a structure already exist" and summarize
+// it read-only (see tournament-wizard.page.ts's loadForEdit). Widened to a
+// straight alias of shared-models' own CompetitionPhase (PR 4, Scores +
+// Classements) since those pages need the full shape -- position for
+// tournament-order sorting, the complete KnockoutBracket/CompetitionGroup
+// objects groupMatchesByPhaseSection/buildBracketView expect, not the
+// trimmed {id,name}/{id,size} views this used to carry. The API already
+// returns the full shape either way; only the TS type was narrower before.
+export type OrganizerPhase = CompetitionPhase;
+
+// Mirrors apps/web/src/app/admin/core/models.ts's own StandingRule --
+// admin/organizer-app concern (barème config), not shared with the public
+// site, same convention as the rest of this file's top comment.
+export interface OrganizerStandingRule {
+  groupId: string;
+  winPoints: number;
+  drawPoints: number;
+  lossPoints: number;
+  tieBreakOrder: string[];
+  supplementaryStandingEnabled: boolean;
+  penaltyShootoutEnabled: boolean;
 }

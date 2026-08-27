@@ -1,0 +1,308 @@
+<ion-header>
+  <ion-toolbar>
+    <button
+      type="button"
+      class="standings-page__back"
+      slot="start"
+      (click)="goBack()"
+      [attr.aria-label]="'organizer.wizard.cancelAria' | transloco"
+    >
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+        <path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+      </svg>
+    </button>
+    <ion-title>{{ 'organizer.standings.title' | transloco }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="standings-page">
+  <div class="standings-page__scroll">
+    @if (loading()) {
+      <p class="standings-page__hint">{{ 'organizer.standings.loading' | transloco }}</p>
+    } @else {
+      @if (errorMessage(); as message) {
+        <p class="standings-page__error" role="alert">{{ message | transloco }}</p>
+      }
+
+      @if (categories().length === 0) {
+        <p class="standings-page__hint">{{ 'organizer.standings.addCategoryFirst' | transloco }}</p>
+      } @else {
+        <div class="standings-page__selects-row">
+          <ap-select
+            class="standings-page__select"
+            [label]="'organizer.standings.categoryLabel' | transloco"
+            [options]="categoryOptions()"
+            [value]="selectedCategoryId()"
+            (valueChange)="onCategoryChange($event)"
+          />
+          @if (phaseOptions().length > 0) {
+            <ap-select
+              class="standings-page__select"
+              [label]="'organizer.standings.phaseLabel' | transloco"
+              [options]="phaseOptions()"
+              [value]="selectedPhaseId()"
+              (valueChange)="onPhaseChange($event)"
+            />
+          }
+        </div>
+
+        @if (phaseOptions().length === 0) {
+          @if (isKnockoutOnly()) {
+            <p class="standings-page__hint">
+              {{ 'organizer.standings.knockoutOnlyNote' | transloco }}
+            </p>
+          } @else {
+            <p class="standings-page__hint">
+              {{ 'organizer.standings.addPoolPhaseFirst' | transloco }}
+            </p>
+          }
+        } @else if (selectedPhaseType() === 'GROUP_STAGE') {
+          @if (groupStandings().length === 0) {
+            <p class="standings-page__hint">
+              {{ 'organizer.standings.addGroupFirst' | transloco }}
+            </p>
+          } @else {
+            @for (group of groupStandings(); track group.groupId) {
+              <section class="standings-page__group">
+                <h2 class="standings-page__group-title">
+                  {{ group.groupName }}
+                  @if (!group.standings.isComplete) {
+                    <span class="standings-page__provisional">{{
+                      'organizer.standings.provisional' | transloco
+                    }}</span>
+                  }
+                </h2>
+
+                <div class="standings-page__table-scroll">
+                  <table class="standings-page__table">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>{{ 'organizer.standings.table.team' | transloco }}</th>
+                        <th></th>
+                        <th>{{ 'organizer.standings.table.played' | transloco }}</th>
+                        <th>{{ 'organizer.standings.table.won' | transloco }}</th>
+                        <th>{{ 'organizer.standings.table.drawn' | transloco }}</th>
+                        <th>{{ 'organizer.standings.table.lost' | transloco }}</th>
+                        <th>{{ 'organizer.standings.table.diff' | transloco }}</th>
+                        <th>{{ 'organizer.standings.table.points' | transloco }}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (row of group.standings.rows; track row.teamId) {
+                        @let tier = qualificationTier(group, row.teamId);
+                        <tr [style.background]="tier?.soft ?? null">
+                          <td>{{ row.position }}</td>
+                          <td class="standings-page__team-cell">
+                            @if (logoUrl(row.teamLogoUrl); as logo) {
+                              <img class="standings-page__team-logo" [src]="logo" alt="" />
+                            }
+                            {{ row.teamName }}
+                          </td>
+                          <td>
+                            @if (qualificationTierPhases().length < 2) {
+                              @if (isQualified(group, row.teamId)) {
+                                <ap-badge status="qualified" />
+                              }
+                            } @else if (tier) {
+                              <span class="standings-page__tier-badge" [style.color]="tier.color">{{
+                                tier.label
+                              }}</span>
+                            }
+                          </td>
+                          <td>{{ row.played }}</td>
+                          <td>{{ row.won }}</td>
+                          <td>{{ row.drawn }}</td>
+                          <td>{{ row.lost }}</td>
+                          <td>{{ row.goalDifference }}</td>
+                          <td class="standings-page__points">{{ row.points }}</td>
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+
+                @if (group.standings.unresolvedTies.length > 0) {
+                  <div class="standings-page__ties">
+                    @for (tie of group.standings.unresolvedTies; track tie) {
+                      <p class="standings-page__tie">
+                        {{ 'organizer.standings.tieTotal' | transloco }}
+                        <strong>{{ tie.teams.map((t) => t.name).join(', ') }}</strong>
+                        {{ 'organizer.standings.tieQuestion' | transloco }}
+                      </p>
+                      <ap-select
+                        class="standings-page__tie-select"
+                        [label]="'organizer.standings.chooseTeamAheadLabel' | transloco"
+                        [hideLabel]="true"
+                        [options]="tieOptions(tie)"
+                        [resetAfterSelect]="true"
+                        (valueChange)="onPoolTieBreakChoice(group, $event)"
+                      />
+                    }
+                    <ap-button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      (click)="onPoolTieBreakClear(group)"
+                    >
+                      {{ 'organizer.standings.resetToAlphabetical' | transloco }}
+                    </ap-button>
+                  </div>
+                }
+              </section>
+            }
+
+            @if (crossGroupTies().length > 0) {
+              <section class="standings-page__group">
+                <h2 class="standings-page__group-title">
+                  {{ 'organizer.standings.crossGroupTiesTitle' | transloco }}
+                </h2>
+                @for (rule of crossGroupTies(); track rule.ruleId) {
+                  <div class="standings-page__ties">
+                    <p class="standings-page__tie-context">
+                      {{
+                        'organizer.standings.crossGroupTieContext'
+                          | transloco: { target: rule.targetPhaseName, position: rule.position }
+                      }}
+                    </p>
+                    @for (tie of rule.ties; track tie) {
+                      <p class="standings-page__tie">
+                        {{ 'organizer.standings.tieTotal' | transloco }}
+                        <strong>{{
+                          tie.teams.map((t) => t.name + ' (' + t.groupName + ')').join(', ')
+                        }}</strong>
+                        {{ 'organizer.standings.tieQuestion' | transloco }}
+                      </p>
+                      <ap-select
+                        class="standings-page__tie-select"
+                        [label]="'organizer.standings.chooseTeamAheadLabel' | transloco"
+                        [hideLabel]="true"
+                        [options]="tieOptions(tie)"
+                        [resetAfterSelect]="true"
+                        (valueChange)="onCrossGroupTieBreakChoice(rule.ruleId, $event)"
+                      />
+                    }
+                    <ap-button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      (click)="onCrossGroupTieBreakClear(rule.ruleId)"
+                    >
+                      {{ 'organizer.standings.resetToAlphabetical' | transloco }}
+                    </ap-button>
+                  </div>
+                }
+              </section>
+            }
+          }
+        } @else if (selectedPhaseType() === 'KNOCKOUT') {
+          @if (bracketByPhase().get(selectedPhaseId()); as bracket) {
+            @if (bracket.rounds.length === 0) {
+              <p class="standings-page__hint">
+                {{ 'organizer.standings.bracketNotGenerated' | transloco }}
+              </p>
+            } @else {
+              <div class="standings-page__table-scroll">
+                <div class="standings-page__bracket">
+                  @for (round of bracket.rounds; track round.round) {
+                    <div class="standings-page__bracket-round">
+                      <h3>{{ round.label }}</h3>
+                      @for (match of round.matches; track match.id) {
+                        <ap-bracket-match
+                          [homeTeam]="match.homeTeam ?? { name: match.homeSourceLabel ?? '—' }"
+                          [awayTeam]="match.awayTeam ?? { name: match.awaySourceLabel ?? '—' }"
+                          [homeScore]="match.score?.homeScore"
+                          [awayScore]="match.score?.awayScore"
+                          [forfeitedTeamName]="
+                            match.status === 'FORFEITED' ? match.forfeitedTeam?.name : undefined
+                          "
+                        />
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+
+              @if (bracket.thirdPlaceMatch; as match) {
+                <div class="standings-page__third-place">
+                  <h3>{{ 'organizer.scores.thirdPlace' | transloco }}</h3>
+                  <ap-bracket-match
+                    [homeTeam]="match.homeTeam ?? { name: match.homeSourceLabel ?? '—' }"
+                    [awayTeam]="match.awayTeam ?? { name: match.awaySourceLabel ?? '—' }"
+                    [homeScore]="match.score?.homeScore"
+                    [awayScore]="match.score?.awayScore"
+                    [forfeitedTeamName]="
+                      match.status === 'FORFEITED' ? match.forfeitedTeam?.name : undefined
+                    "
+                  />
+                </div>
+              }
+            }
+          }
+        } @else if (selectedPhaseType() === 'final') {
+          @if (finalRanking().length === 0) {
+            <p class="standings-page__hint">
+              {{ 'organizer.standings.finalRankingEmpty' | transloco }}
+            </p>
+          } @else {
+            @if (podium(); as p) {
+              <div class="standings-page__podium">
+                <div class="standings-page__podium-step standings-page__podium-step--2">
+                  <span class="standings-page__podium-rank">2</span>
+                  @if (logoUrl(p.second.teamLogoUrl); as logo) {
+                    <img class="standings-page__podium-logo" [src]="logo" alt="" />
+                  }
+                  <span class="standings-page__podium-name">{{ p.second.teamName }}</span>
+                </div>
+                <div class="standings-page__podium-step standings-page__podium-step--1">
+                  <span class="standings-page__podium-rank">1</span>
+                  @if (logoUrl(p.first.teamLogoUrl); as logo) {
+                    <img class="standings-page__podium-logo" [src]="logo" alt="" />
+                  }
+                  <span class="standings-page__podium-name">{{ p.first.teamName }}</span>
+                </div>
+                <div class="standings-page__podium-step standings-page__podium-step--3">
+                  <span class="standings-page__podium-rank">3</span>
+                  @if (logoUrl(p.third.teamLogoUrl); as logo) {
+                    <img class="standings-page__podium-logo" [src]="logo" alt="" />
+                  }
+                  <span class="standings-page__podium-name">{{ p.third.teamName }}</span>
+                </div>
+              </div>
+            }
+
+            @if (finalRankingRest().length > 0) {
+              <div class="standings-page__table-scroll">
+                <table class="standings-page__table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>{{ 'organizer.standings.table.team' | transloco }}</th>
+                      <th>{{ 'organizer.standings.table.bracket' | transloco }}</th>
+                      <th>{{ 'organizer.standings.table.result' | transloco }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (row of finalRankingRest(); track row.teamId + row.phaseId) {
+                      <tr>
+                        <td>{{ row.position }}</td>
+                        <td class="standings-page__team-cell">
+                          @if (logoUrl(row.teamLogoUrl); as logo) {
+                            <img class="standings-page__team-logo" [src]="logo" alt="" />
+                          }
+                          {{ row.teamName }}
+                        </td>
+                        <td>{{ row.phaseName }}</td>
+                        <td>{{ row.stageLabel }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          }
+        }
+      }
+    }
+  </div>
+</ion-content>

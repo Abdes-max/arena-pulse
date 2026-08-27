@@ -50,6 +50,20 @@ export const routes: Routes = [
         (m) => m.OrganizerTournamentWizardPage,
       ),
   },
+  // PR 4 ("parité complète admin web <-> mobile", see the plan file) --
+  // native ports of apps/web/src/app/admin/pages/{scores,standings}.
+  {
+    path: 'organizer/tournaments/:id/scores',
+    canActivate: [organizerAuthGuard],
+    loadComponent: () =>
+      import('./organizer/pages/scores/scores.page').then((m) => m.OrganizerScoresPage),
+  },
+  {
+    path: 'organizer/tournaments/:id/standings',
+    canActivate: [organizerAuthGuard],
+    loadComponent: () =>
+      import('./organizer/pages/standings/standings.page').then((m) => m.OrganizerStandingsPage),
+  },
   {
     path: ':slug',
     loadComponent: () => import('./shell/tournament-shell').then((m) => m.TournamentShell),
