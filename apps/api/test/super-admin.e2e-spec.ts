@@ -5,6 +5,7 @@ import { TournamentPublicationOrderStatus } from '../generated/prisma/client';
 import { PasswordService } from '../src/auth/password.service';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { createTestApp } from './utils/bootstrap-app';
+import { makeTournamentPublishable } from './utils/make-tournament-publishable';
 import { resetDatabase } from './utils/reset-database';
 
 interface SuperAdminAuthResponseBody {
@@ -215,6 +216,12 @@ describe('Super admin data endpoints (e2e)', () => {
       ),
     ).expect(204);
 
+    await makeTournamentPublishable(
+      app,
+      orgAuth,
+      `/api/v1/organizations/${organizationId}/tournaments`,
+      tournamentId,
+    );
     await orgAuth(
       request(app.getHttpServer()).post(
         `/api/v1/organizations/${organizationId}/tournaments/${tournamentId}/publish`,

@@ -5,6 +5,7 @@ import { App } from 'supertest/types';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { StripeService } from '../src/payments/stripe.service';
 import { createTestApp } from './utils/bootstrap-app';
+import { makeTournamentPublishable } from './utils/make-tournament-publishable';
 import { resetDatabase } from './utils/reset-database';
 
 interface OrganizerAuthResponseBody {
@@ -148,6 +149,7 @@ describe('Registrations & payments (e2e)', () => {
       .expect(201);
     const categoryId = (categoryRes.body as { id: string }).id;
 
+    await makeTournamentPublishable(app, auth, base, tournamentId, categoryId);
     await auth(
       request(app.getHttpServer()).post(`${base}/${tournamentId}/publish`),
     ).expect(200);

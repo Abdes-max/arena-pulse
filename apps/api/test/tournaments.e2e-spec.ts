@@ -3,6 +3,7 @@ import request from 'supertest';
 import { App } from 'supertest/types';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { createTestApp } from './utils/bootstrap-app';
+import { makeTournamentPublishable } from './utils/make-tournament-publishable';
 import { resetDatabase } from './utils/reset-database';
 
 interface AuthResponseBody {
@@ -105,12 +106,18 @@ describe('Tournaments (e2e)', () => {
       .send({ name: 'Coupe de printemps (2026)' })
       .expect(200);
 
+    await makeTournamentPublishable(app, auth, base, tournament.id);
     await auth(
       request(app.getHttpServer()).post(`${base}/${tournament.id}/publish`),
     ).expect(200);
+    // A repeat publish() call on an already-PUBLISHED tournament is no
+    // longer a conflict -- it re-confirms PUBLISHED (still within the tier
+    // already paid for, nothing new to charge), see TournamentsService
+    // .publish's own doc comment for why ("toujours revérifier lors d'une
+    // republication").
     await auth(
       request(app.getHttpServer()).post(`${base}/${tournament.id}/publish`),
-    ).expect(409);
+    ).expect(200);
     await auth(
       request(app.getHttpServer()).post(`${base}/${tournament.id}/unpublish`),
     ).expect(200);
