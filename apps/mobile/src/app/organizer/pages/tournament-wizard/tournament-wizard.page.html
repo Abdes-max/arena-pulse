@@ -20,16 +20,24 @@
         </svg>
       }
     </button>
-    <ion-title>{{ 'organizer.wizard.title' | transloco }}</ion-title>
+    <ion-title>{{
+      (mode() === 'edit' ? 'organizer.wizard.titleEdit' : 'organizer.wizard.title') | transloco
+    }}</ion-title>
   </ion-toolbar>
 
-  @if (step() !== 'done') {
+  @if (step() !== 'done' && !initializing()) {
     <div class="wizard-page__rail">
       @for (n of [1, 2, 3, 4, 5]; track n) {
         <div
           class="wizard-page__rail-step"
           [class.is-done]="n < stepNumber()"
           [class.is-current]="n === stepNumber()"
+          [style.cursor]="mode() === 'edit' ? 'pointer' : null"
+          [attr.role]="mode() === 'edit' ? 'button' : null"
+          [attr.tabindex]="mode() === 'edit' ? 0 : null"
+          (click)="goToStep(n)"
+          (keydown.enter)="goToStep(n)"
+          (keydown.space)="goToStep(n)"
         >
           <span class="wizard-page__rail-line"></span>
           <span class="wizard-page__rail-dot">
@@ -50,7 +58,10 @@
 
 <ion-content class="wizard-page">
   <div class="wizard-page__scroll">
-    @switch (step()) {
+    @if (initializing()) {
+      <p class="wizard-page__hint">{{ 'organizer.wizard.loading' | transloco }}</p>
+    } @else {
+      @switch (step()) {
       @case (1) {
         <h3 class="wizard-page__section-title">{{ 'organizer.wizard.infos.title' | transloco }}</h3>
         <ap-text-field
@@ -288,18 +299,19 @@
             (valueChange)="teamInput.set($event)"
             [placeholder]="'organizer.wizard.teams.addPlaceholder' | transloco"
           />
-          <ap-button type="button" (click)="addTeam()">
+          <ap-button type="button" [disabled]="submitting()" (click)="addTeam()">
             {{ 'organizer.wizard.teams.add' | transloco }}
           </ap-button>
         </div>
         <div class="wizard-page__teamlist">
-          @for (name of teams(); track $index) {
+          @for (team of teams(); track team.id ?? $index) {
             <div class="wizard-page__teamrow">
-              <span>{{ name }}</span>
+              <span>{{ team.name }}</span>
               <button
                 type="button"
                 class="wizard-page__teamrow-remove"
-                [attr.aria-label]="'organizer.wizard.teams.remove' | transloco: { name }"
+                [disabled]="submitting()"
+                [attr.aria-label]="'organizer.wizard.teams.remove' | transloco: { name: team.name }"
                 (click)="removeTeam($index)"
               >
                 ✕
@@ -307,7 +319,7 @@
             </div>
           }
         </div>
-        @if (teams().length < 3) {
+        @if (mode() === 'create' && teams().length < 3) {
           <p class="wizard-page__hint">{{ 'organizer.wizard.teams.minHint' | transloco }}</p>
         }
       }
@@ -315,6 +327,12 @@
         <h3 class="wizard-page__section-title">
           {{ 'organizer.wizard.structure.title' | transloco }}
         </h3>
+        @if (structureSummary(); as summary) {
+          <p class="wizard-page__lede">{{ summary }}</p>
+          <p class="wizard-page__hint">
+            {{ 'organizer.wizard.structure.editOnWebHint' | transloco }}
+          </p>
+        } @else {
         <button
           type="button"
           class="wizard-page__formatcard"
@@ -379,6 +397,7 @@
             [value]="qualifiersPerPool()"
             (valueChange)="qualifiersPerPool.set($event)"
           />
+        }
         }
       }
       @case (4) {
@@ -490,6 +509,7 @@
           <p class="wizard-page__hint">{{ 'organizer.wizard.publish.planLoading' | transloco }}</p>
         }
       }
+      }
     }
     @if (errorMessage(); as message) {
       <p class="wizard-page__error" role="alert">{{ message | transloco }}</p>
@@ -521,7 +541,7 @@
   </div>
 </ion-content>
 
-@if (step() !== 'done') {
+@if (step() !== 'done' && !initializing()) {
   <ion-footer class="wizard-page__footer">
     <ap-button type="button" variant="secondary" [disabled]="submitting()" (click)="prevStep()">
       {{ (step() === 1 ? 'organizer.wizard.cancel' : 'organizer.wizard.back') | transloco }}
@@ -532,7 +552,7 @@
       [disabled]="!canAdvance() || submitting()"
       (click)="nextStep()"
     >
-      {{ (step() === 5 ? 'organizer.wizard.payAndPublish' : 'organizer.wizard.next') | transloco }}
+      {{ footerNextLabel() | transloco }}
     </ap-button>
   </ion-footer>
 }

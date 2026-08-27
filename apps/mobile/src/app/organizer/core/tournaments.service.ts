@@ -29,6 +29,13 @@ export class OrganizerTournamentsService {
     return firstValueFrom(this.http.get<OrganizerTournament[]>(this.base(organizationId)));
   }
 
+  /** For the edit-mode wizard's preload (tournament-wizard.page.ts) -- same detail shape as the list/create/update responses above, just fetched by id. */
+  getTournament(organizationId: string, tournamentId: string): Promise<OrganizerTournament> {
+    return firstValueFrom(
+      this.http.get<OrganizerTournament>(`${this.base(organizationId)}/${tournamentId}`),
+    );
+  }
+
   createTournament(
     organizationId: string,
     payload: CreateTournamentPayload,
@@ -62,7 +69,17 @@ export class OrganizerTournamentsService {
   updateTournament(
     organizationId: string,
     tournamentId: string,
-    payload: { isListed?: boolean; theme?: PublicTheme },
+    // name/sportId/isOnline added for the edit-mode wizard's Infos step --
+    // apps/api's UpdateTournamentDto already accepted them, this payload
+    // type just hadn't needed to name them yet (create-only wizard always
+    // set these at creation time, never patched them after).
+    payload: {
+      name?: string;
+      sportId?: string;
+      isOnline?: boolean;
+      isListed?: boolean;
+      theme?: PublicTheme;
+    },
   ): Promise<OrganizerTournament> {
     return firstValueFrom(
       this.http.patch<OrganizerTournament>(`${this.base(organizationId)}/${tournamentId}`, payload),
@@ -73,6 +90,16 @@ export class OrganizerTournamentsService {
     return firstValueFrom(
       this.http.post<PublishTournamentResult>(
         `${this.base(organizationId)}/${tournamentId}/publish`,
+        {},
+      ),
+    );
+  }
+
+  /** Edit-mode wizard's "Dépublier" action (Publication step) -- a published tournament stops being publicly reachable but keeps all its data, same as apps/web's own unpublish button. */
+  unpublish(organizationId: string, tournamentId: string): Promise<OrganizerTournament> {
+    return firstValueFrom(
+      this.http.post<OrganizerTournament>(
+        `${this.base(organizationId)}/${tournamentId}/unpublish`,
         {},
       ),
     );

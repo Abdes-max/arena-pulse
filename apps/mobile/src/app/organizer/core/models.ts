@@ -92,3 +92,17 @@ export interface StructurePresetResult {
   groupPhaseId: string;
   tiers: { phaseId: string; name: string; bracketSize: number }[];
 }
+
+// Just enough of apps/web's own CompetitionPhase (admin/core/models.ts) for
+// the edit-mode wizard to tell "does a structure already exist" (see
+// tournament-wizard.page.ts's loadForEdit) and summarize it read-only --
+// not a general-purpose structure editor, so no groups/qualification-rule
+// detail beyond the group count needed for that one-line summary.
+export interface OrganizerPhase {
+  id: string;
+  name: string;
+  type: 'GROUP_STAGE' | 'KNOCKOUT';
+  isSeedPhase: boolean;
+  groups: { id: string; name: string }[];
+  knockoutBracket: { id: string; size: number } | null;
+}

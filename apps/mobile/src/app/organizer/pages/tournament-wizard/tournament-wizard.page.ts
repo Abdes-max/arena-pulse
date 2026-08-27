@@ -1,13 +1,13 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { IonContent, IonFooter, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { PublicApiService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Button, TextField } from 'design-system';
 import { PublicSport, PublicTheme } from 'shared-models';
 import { OrganizerAuthService } from '../../core/auth.service';
-import { WizardStructureFormat } from '../../core/models';
+import { OrganizerPhase, TournamentStatus, WizardStructureFormat } from '../../core/models';
 import {
   OrganizationSubscriptionStatus,
   OrganizerOrganizationsService,
@@ -40,6 +40,20 @@ const DEFAULT_THEME: PublicTheme = 'INK_SIGNAL';
 // and one implicit venue/field get created transparently, never surfaced
 // as their own screens here. The full editor for all of that stays
 // admin-web-only for now.
+//
+// Also doubles as the edit-mode entry point for an EXISTING tournament
+// (route 'organizer/tournaments/:id/edit', see app.routes.ts) instead of a
+// second, parallel screen -- mode() (derived from the route's 'id' param)
+// governs the few places create and edit genuinely diverge:
+// - Infos/Équipes act immediately (PATCH/POST/DELETE per keystroke or tap)
+//   instead of queuing everything up for one create-time submit.
+// - Structure/Calendrier become read-only summaries once real data already
+//   exists (StructurePresetsService.create, apps/api, refuses to run again
+//   on a non-empty category -- there's no "re-generate" to offer here).
+// - Publication reflects and acts on the tournament's real current status
+//   (Publier/Dépublier/Republier) instead of always being a first publish.
+// - The rail becomes directly clickable (all data is already loaded, no
+//   reason to force a linear walk to reach e.g. step 5 to just publish).
 @Component({
   selector: 'app-organizer-tournament-wizard-page',
   imports: [
@@ -66,6 +80,20 @@ export class OrganizerTournamentWizardPage {
   private readonly publicApi = inject(PublicApiService);
   private readonly transloco = inject(TranslocoService);
   private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
+
+  protected readonly mode = signal<'create' | 'edit'>('create');
+  // True only while the initial edit-mode preload is in flight -- distinct
+  // from submitting() (a per-action spinner for both modes), this guards
+  // the whole step content from rendering (and the rail from being tapped)
+  // before there's anything real to show.
+  protected readonly initializing = signal(false);
+  protected readonly currentStatus = signal<TournamentStatus>('DRAFT');
+  // Non-null once loadForEdit finds a real (non-seed) phase already on the
+  // category -- StructurePresetsService.create (apps/api) refuses to run
+  // again once that's true, so the Structure step switches to a read-only
+  // summary instead of re-offering the format picker.
+  protected readonly structureSummary = signal<string | null>(null);
 
   protected readonly step = signal<WizardStep>(1);
   // Rail-comparison helper: the rail (1..5 dots) never renders once step()
@@ -102,7 +130,10 @@ export class OrganizerTournamentWizardPage {
 
   // ---- Step 2: Équipes ----
   protected readonly teamInput = signal('');
-  protected readonly teams = signal<string[]>([]);
+  // id is null for a create-mode entry not yet committed to the API (see
+  // submitTeams(), still batched at "Suivant" there) and always set in edit
+  // mode, where add/remove act immediately -- see addTeam()/removeTeam().
+  protected readonly teams = signal<{ id: string | null; name: string }[]>([]);
 
   // ---- Step 3: Structure ----
   protected readonly format = signal<WizardStructureFormat>('pools-knockout');
@@ -133,6 +164,85 @@ export class OrganizerTournamentWizardPage {
         .getSubscriptionStatus(organizationId)
         .then((status) => this.subscriptionStatus.set(status));
     }
+    const editId = this.route.snapshot.paramMap.get('id');
+    if (editId && organizationId) {
+      this.mode.set('edit');
+      this.tournamentId = editId;
+      void this.loadForEdit(organizationId, editId);
+    }
+  }
+
+  /** Edit-mode-only preload, run once from the constructor -- fetches everything the wizard's 5 steps need to prefill, in the same dependency order the create flow builds it up in (tournament -> category -> teams/structure -> calendar). A failure here is fatal to the whole page (nothing meaningful to show without it), unlike the per-step errorMessage() used everywhere else. */
+  private async loadForEdit(organizationId: string, tournamentId: string): Promise<void> {
+    this.initializing.set(true);
+    try {
+      const tournament = await this.tournamentsApi.getTournament(organizationId, tournamentId);
+      this.name.set(tournament.name);
+      this.sportId.set(tournament.sportId);
+      this.isOnline.set(tournament.isOnline);
+      this.isListed.set(tournament.isListed);
+      this.theme.set(tournament.theme);
+      this.currentStatus.set(tournament.status);
+
+      const categories = await this.creationApi.listCategories(organizationId, tournamentId);
+      const category = categories[0];
+      if (!category) {
+        // Created but abandoned before Infos ever finished (no category yet)
+        // -- nothing further to preload, the rest of the wizard just runs
+        // the normal create flow from here.
+        return;
+      }
+      this.categoryId = category.id;
+
+      const [teams, phases] = await Promise.all([
+        this.teamsApi.listTeams(organizationId, tournamentId, category.id),
+        this.creationApi.listPhases(organizationId, tournamentId, category.id),
+      ]);
+      this.teams.set(teams.map((team) => ({ id: team.id, name: team.name })));
+
+      const realPhases = phases.filter((phase) => !phase.isSeedPhase);
+      if (realPhases.length === 0) {
+        return;
+      }
+      this.structureSummary.set(this.summarizeStructure(realPhases));
+
+      const groupPhase = realPhases.find((phase) => phase.type === 'GROUP_STAGE');
+      if (!groupPhase) {
+        return;
+      }
+      this.groupPhaseId = groupPhase.id;
+      const matches = await this.creationApi.listMatches(organizationId, tournamentId, groupPhase.id);
+      if (matches.length > 0) {
+        this.matches.set(matches);
+      }
+    } catch {
+      this.errorMessage.set('organizer.wizard.errorGeneric');
+    } finally {
+      this.initializing.set(false);
+    }
+  }
+
+  /** One-line, best-effort description of an already-generated structure for the read-only Structure step -- not trying to reproduce the full admin-web Structure page, just enough context that "you already have one" reads as more than a bare fact. */
+  private summarizeStructure(realPhases: OrganizerPhase[]): string {
+    const groupStage = realPhases.find((phase) => phase.type === 'GROUP_STAGE');
+    const hasKnockout = realPhases.some((phase) => phase.type === 'KNOCKOUT');
+    const poolCount = groupStage?.groups.length ?? 0;
+    const lang = this.transloco.getActiveLang();
+    if (groupStage && hasKnockout) {
+      return this.transloco.translate(
+        'organizer.wizard.structure.summary.poolsKnockout',
+        { count: poolCount },
+        lang,
+      );
+    }
+    if (groupStage) {
+      return this.transloco.translate(
+        'organizer.wizard.structure.summary.pools',
+        { count: poolCount },
+        lang,
+      );
+    }
+    return this.transloco.translate('organizer.wizard.structure.summary.knockoutOnly', {}, lang);
   }
 
   /** No native subscription-management UI yet -- opens the web app's own page in the system browser, same pattern as the Stripe publication checkout in submitPublish() below. */
@@ -145,16 +255,62 @@ export class OrganizerTournamentWizardPage {
     this.logoFile.set(file);
   }
 
-  protected addTeam(): void {
+  /** Create mode just queues the name (committed later, see submitTeams()); edit mode creates it right away since there's no later "Suivant" that owns Équipes changes there. */
+  protected async addTeam(): Promise<void> {
     const name = this.teamInput().trim();
-    if (!name) {
+    if (!name || this.submitting()) {
       return;
     }
-    this.teams.update((teams) => [...teams, name]);
-    this.teamInput.set('');
+    if (this.mode() === 'create') {
+      this.teams.update((teams) => [...teams, { id: null, name }]);
+      this.teamInput.set('');
+      return;
+    }
+    const organizationId = this.organizationId;
+    const tournamentId = this.tournamentId;
+    const categoryId = this.categoryId;
+    if (!organizationId || !tournamentId || !categoryId) {
+      return;
+    }
+    this.submitting.set(true);
+    this.errorMessage.set(null);
+    try {
+      const team = await this.teamsApi.createTeam(organizationId, tournamentId, {
+        name,
+        categoryId,
+      });
+      this.teams.update((teams) => [...teams, { id: team.id, name: team.name }]);
+      this.teamInput.set('');
+    } catch {
+      this.errorMessage.set('organizer.wizard.teams.errorAdd');
+    } finally {
+      this.submitting.set(false);
+    }
   }
 
-  protected removeTeam(index: number): void {
+  /** Create mode just drops it from the local queue (never existed server-side yet); edit mode deletes the real team. */
+  protected async removeTeam(index: number): Promise<void> {
+    const team = this.teams()[index];
+    if (!team || this.submitting()) {
+      return;
+    }
+    if (this.mode() === 'edit' && team.id) {
+      const organizationId = this.organizationId;
+      const tournamentId = this.tournamentId;
+      if (!organizationId || !tournamentId) {
+        return;
+      }
+      this.submitting.set(true);
+      this.errorMessage.set(null);
+      try {
+        await this.teamsApi.removeTeam(organizationId, tournamentId, team.id);
+      } catch {
+        this.errorMessage.set('organizer.wizard.teams.errorRemove');
+        return;
+      } finally {
+        this.submitting.set(false);
+      }
+    }
     this.teams.update((teams) => teams.filter((_, i) => i !== index));
   }
 
@@ -171,10 +327,21 @@ export class OrganizerTournamentWizardPage {
       case 1:
         return this.name().trim().length > 0 && this.sportId() !== '';
       case 2:
-        return this.teams().length >= 3;
+        // The "≥3 teams" nudge only makes sense while building a tournament
+        // from scratch -- an existing one may legitimately have any team
+        // count already (or the organizer may just be here to remove one).
+        return this.mode() === 'edit' || this.teams().length >= 3;
       default:
         return true;
     }
+  }
+
+  /** Edit mode only -- all data is already loaded, so the rail can jump straight to any step instead of forcing the linear create-mode walk. n is a plain number here (the rail's own [1,2,3,4,5] template array, same as stepNumber's own comment on why the rail stays untyped as WizardStep) rather than the narrower WizardStep union. */
+  protected goToStep(n: number): void {
+    if (this.mode() !== 'edit' || this.submitting() || this.initializing()) {
+      return;
+    }
+    this.step.set(n as 1 | 2 | 3 | 4 | 5);
   }
 
   protected async prevStep(): Promise<void> {
@@ -199,12 +366,20 @@ export class OrganizerTournamentWizardPage {
     try {
       if (current === 1) {
         await this.submitInfos();
-      } else if (current === 2) {
+      } else if (current === 2 && this.mode() === 'create') {
+        // Edit mode: Équipes already commits every add/remove immediately
+        // (see addTeam()/removeTeam()), nothing left to do here.
         await this.submitTeams();
-      } else if (current === 3) {
+      } else if (current === 3 && !this.structureSummary()) {
+        // Edit mode with a structure already generated: read-only summary,
+        // nothing to submit (see the template's own guard).
         await this.submitStructure();
       } else if (current === 5) {
-        await this.submitPublish();
+        if (this.mode() === 'edit' && this.currentStatus() === 'PUBLISHED') {
+          await this.submitUnpublish();
+        } else {
+          await this.submitPublish();
+        }
         return;
       }
       this.step.set((current + 1) as 2 | 3 | 4 | 5);
@@ -219,6 +394,10 @@ export class OrganizerTournamentWizardPage {
     const organizationId = this.organizationId;
     if (!organizationId) {
       throw new Error('No organization');
+    }
+    if (this.mode() === 'edit') {
+      await this.submitInfosEdit(organizationId);
+      return;
     }
     // theme is intentionally NOT sent here -- apps/api rejects a non-default
     // theme at creation time for tournaments that aren't past the free
@@ -261,6 +440,37 @@ export class OrganizerTournamentWizardPage {
     }
   }
 
+  /** Edit mode's Infos step -- PATCH instead of POST, no category to (re-)create, logo upload replaces the existing one (already idempotent server-side). */
+  private async submitInfosEdit(organizationId: string): Promise<void> {
+    const tournamentId = this.tournamentId;
+    if (!tournamentId) {
+      throw new Error('Wizard state not initialized');
+    }
+    await this.tournamentsApi.updateTournament(organizationId, tournamentId, {
+      name: this.name().trim(),
+      sportId: this.sportId(),
+      isOnline: this.isOnline(),
+    });
+    // Sent separately from the core fields above -- a theme change can be
+    // rejected on its own (still free tier, see PremiumFeaturesStatus), and
+    // that shouldn't take a plain rename/sport change down with it.
+    try {
+      await this.tournamentsApi.updateTournament(organizationId, tournamentId, {
+        theme: this.theme(),
+      });
+    } catch {
+      // Best-effort, same reasoning as the create-mode path.
+    }
+    const logo = this.logoFile();
+    if (logo) {
+      try {
+        await this.tournamentsApi.uploadLogo(organizationId, tournamentId, logo);
+      } catch {
+        // Best-effort, same reasoning as the create-mode path above.
+      }
+    }
+  }
+
   private async submitTeams(): Promise<void> {
     const organizationId = this.organizationId;
     const tournamentId = this.tournamentId;
@@ -268,8 +478,11 @@ export class OrganizerTournamentWizardPage {
     if (!organizationId || !tournamentId || !categoryId) {
       throw new Error('Wizard state not initialized');
     }
-    for (const name of this.teams()) {
-      await this.teamsApi.createTeam(organizationId, tournamentId, { name, categoryId });
+    for (const team of this.teams()) {
+      await this.teamsApi.createTeam(organizationId, tournamentId, {
+        name: team.name,
+        categoryId,
+      });
     }
   }
 
@@ -331,8 +544,9 @@ export class OrganizerTournamentWizardPage {
     }
   }
 
-  /** Format doesn't create a pool phase to schedule (KNOCKOUT_ONLY) -- see tournament-creation.service.ts's comment on generateSchedule(). */
-  protected readonly hasSchedulableStructure = () => this.format() !== 'knockout-only';
+  /** Format doesn't create a pool phase to schedule (KNOCKOUT_ONLY) -- see tournament-creation.service.ts's comment on generateSchedule(). In edit mode format() may still be its unused default (the format picker never ran), so this checks the real preloaded groupPhaseId instead. */
+  protected readonly hasSchedulableStructure = (): boolean =>
+    this.mode() === 'edit' ? this.groupPhaseId !== null : this.format() !== 'knockout-only';
 
   private async submitPublish(): Promise<void> {
     const organizationId = this.organizationId;
@@ -356,6 +570,33 @@ export class OrganizerTournamentWizardPage {
       this.publishedTournamentName.set(result.name);
     }
     this.step.set('done');
+  }
+
+  /** Edit mode only, Publication step's footer action when currentStatus() is PUBLISHED -- doesn't route through the 'done' confirmation screen (its copy assumes a fresh publish) since the updated status badge on this same step already is the confirmation. */
+  private async submitUnpublish(): Promise<void> {
+    const organizationId = this.organizationId;
+    const tournamentId = this.tournamentId;
+    if (!organizationId || !tournamentId) {
+      throw new Error('Wizard state not initialized');
+    }
+    const tournament = await this.tournamentsApi.unpublish(organizationId, tournamentId);
+    this.currentStatus.set(tournament.status);
+  }
+
+  /** Publication step's footer button label -- "Payer et publier" only makes sense for a genuine first publish; edit mode relabels it to match what the tap will actually do. */
+  protected footerNextLabel(): string {
+    if (this.step() !== 5) {
+      return 'organizer.wizard.next';
+    }
+    if (this.mode() === 'edit') {
+      if (this.currentStatus() === 'PUBLISHED') {
+        return 'organizer.wizard.publish.unpublish';
+      }
+      if (this.currentStatus() === 'UNPUBLISHED') {
+        return 'organizer.wizard.publish.republish';
+      }
+    }
+    return 'organizer.wizard.payAndPublish';
   }
 
   protected async backToList(): Promise<void> {

@@ -105,12 +105,14 @@
     },
     "wizard": {
       "title": "Neues Turnier",
+      "titleEdit": "Turnier bearbeiten",
       "cancelAria": "Abbrechen",
       "cancel": "Abbrechen",
       "back": "Zurück",
       "next": "Weiter",
       "payAndPublish": "Bezahlen und veröffentlichen",
       "errorGeneric": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut.",
+      "loading": "Wird geladen…",
       "rail": {
         "1": "Infos",
         "2": "Teams",
@@ -144,7 +146,9 @@
         "addPlaceholder": "Teamname",
         "add": "Hinzufügen",
         "remove": "{{name}} entfernen",
-        "minHint": "Mindestens 3 Teams sind nötig, um zum nächsten Schritt zu gelangen."
+        "minHint": "Mindestens 3 Teams sind nötig, um zum nächsten Schritt zu gelangen.",
+        "errorAdd": "Dieses Team konnte nicht hinzugefügt werden, bitte versuchen Sie es erneut.",
+        "errorRemove": "Dieses Team konnte nicht entfernt werden, bitte versuchen Sie es erneut."
       },
       "structure": {
         "title": "Wettbewerbsformat",
@@ -161,7 +165,13 @@
           "desc": "Jedes Team spielt einmal gegen jedes andere Team."
         },
         "poolCountLabel": "Anzahl der Gruppen",
-        "qualifiersLabel": "Qualifizierte pro Gruppe"
+        "qualifiersLabel": "Qualifizierte pro Gruppe",
+        "summary": {
+          "poolsKnockout": "Gruppenphase, dann K.-o.-System -- {{count}} Gruppe(n).",
+          "pools": "Liga in Gruppen -- {{count}} Gruppe(n).",
+          "knockoutOnly": "Einfaches K.-o.-System."
+        },
+        "editOnWebHint": "Um die Struktur zu ändern, nutzen Sie das Web-Admin (Struktur)."
       },
       "calendar": {
         "title": "Spielplan",
@@ -189,7 +199,9 @@
         "planActive": "Jahresabonnement aktiv bis {{date}} — alle Ihre Veröffentlichungen sind kostenlos.",
         "planPending": "Zahlung des Jahresabonnements wartet auf Bestätigung.",
         "planNone": "Abrechnung pro Veröffentlichung nach Teamanzahl. Das Jahresabonnement macht alle Ihre Veröffentlichungen kostenlos.",
-        "planManage": "Abonnement verwalten"
+        "planManage": "Abonnement verwalten",
+        "unpublish": "Veröffentlichung aufheben",
+        "republish": "Erneut veröffentlichen"
       },
       "done": {
         "title": "Turnier veröffentlicht!",

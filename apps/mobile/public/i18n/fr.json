@@ -105,12 +105,14 @@
     },
     "wizard": {
       "title": "Nouveau tournoi",
+      "titleEdit": "Modifier le tournoi",
       "cancelAria": "Annuler",
       "cancel": "Annuler",
       "back": "Retour",
       "next": "Suivant",
       "payAndPublish": "Payer et publier",
       "errorGeneric": "Une erreur est survenue, réessayez.",
+      "loading": "Chargement…",
       "rail": {
         "1": "Infos",
         "2": "Équipes",
@@ -144,7 +146,9 @@
         "addPlaceholder": "Nom de l'équipe",
         "add": "Ajouter",
         "remove": "Retirer {{name}}",
-        "minHint": "Minimum 3 équipes pour passer à l'étape suivante."
+        "minHint": "Minimum 3 équipes pour passer à l'étape suivante.",
+        "errorAdd": "Impossible d'ajouter cette équipe, réessayez.",
+        "errorRemove": "Impossible de retirer cette équipe, réessayez."
       },
       "structure": {
         "title": "Format de la compétition",
@@ -161,7 +165,13 @@
           "desc": "Chaque équipe affronte toutes les autres une fois."
         },
         "poolCountLabel": "Nombre de poules",
-        "qualifiersLabel": "Qualifiés par poule"
+        "qualifiersLabel": "Qualifiés par poule",
+        "summary": {
+          "poolsKnockout": "Poules puis élimination directe -- {{count}} poule(s).",
+          "pools": "Championnat en poules -- {{count}} poule(s).",
+          "knockoutOnly": "Élimination directe simple."
+        },
+        "editOnWebHint": "Pour modifier la structure, utilisez l'admin web (Structure)."
       },
       "calendar": {
         "title": "Calendrier des matchs",
@@ -189,7 +199,9 @@
         "planActive": "Abonnement annuel actif jusqu'au {{date}} — toutes vos publications sont gratuites.",
         "planPending": "Paiement de l'abonnement annuel en attente de confirmation.",
         "planNone": "Facturation à l'acte selon le nombre d'équipes. L'abonnement annuel rend toutes vos publications gratuites.",
-        "planManage": "Gérer mon abonnement"
+        "planManage": "Gérer mon abonnement",
+        "unpublish": "Dépublier",
+        "republish": "Republier"
       },
       "done": {
         "title": "Tournoi publié !",
