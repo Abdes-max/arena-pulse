@@ -201,7 +201,9 @@
       } @else if (selectedPhaseType() === 'KNOCKOUT') {
         @if (bracketByPhase().get(selectedPhaseId()); as bracket) {
           @if (bracket.rounds.length === 0) {
-            <p class="standings-page__empty">{{ 'admin.standings.bracketNotGenerated' | transloco }}</p>
+            <p class="standings-page__empty">
+              {{ 'admin.standings.bracketNotGenerated' | transloco }}
+            </p>
           } @else {
             <div class="standings-page__table-scroll">
               <div class="standings-page__bracket">
