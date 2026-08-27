@@ -105,12 +105,14 @@
     },
     "wizard": {
       "title": "Novo torneio",
+      "titleEdit": "Editar torneio",
       "cancelAria": "Cancelar",
       "cancel": "Cancelar",
       "back": "Voltar",
       "next": "Seguinte",
       "payAndPublish": "Pagar e publicar",
       "errorGeneric": "Ocorreu um erro, tente novamente.",
+      "loading": "A carregar…",
       "rail": {
         "1": "Info",
         "2": "Equipas",
@@ -144,7 +146,9 @@
         "addPlaceholder": "Nome da equipa",
         "add": "Adicionar",
         "remove": "Remover {{name}}",
-        "minHint": "São necessárias pelo menos 3 equipas para avançar para o passo seguinte."
+        "minHint": "São necessárias pelo menos 3 equipas para avançar para o passo seguinte.",
+        "errorAdd": "Não foi possível adicionar esta equipa, tente novamente.",
+        "errorRemove": "Não foi possível remover esta equipa, tente novamente."
       },
       "structure": {
         "title": "Formato da competição",
@@ -161,7 +165,13 @@
           "desc": "Cada equipa defronta todas as outras uma vez."
         },
         "poolCountLabel": "Número de grupos",
-        "qualifiersLabel": "Apurados por grupo"
+        "qualifiersLabel": "Apurados por grupo",
+        "summary": {
+          "poolsKnockout": "Grupos seguidos de eliminatórias -- {{count}} grupo(s).",
+          "pools": "Liga em grupos -- {{count}} grupo(s).",
+          "knockoutOnly": "Eliminação direta simples."
+        },
+        "editOnWebHint": "Para alterar a estrutura, use o admin web (Estrutura)."
       },
       "calendar": {
         "title": "Calendário dos jogos",
@@ -189,7 +199,9 @@
         "planActive": "Subscrição anual ativa até {{date}} — todas as suas publicações são gratuitas.",
         "planPending": "Pagamento da subscrição anual a aguardar confirmação.",
         "planNone": "Faturação por publicação consoante o número de equipas. A subscrição anual torna todas as suas publicações gratuitas.",
-        "planManage": "Gerir a minha subscrição"
+        "planManage": "Gerir a minha subscrição",
+        "unpublish": "Cancelar publicação",
+        "republish": "Publicar novamente"
       },
       "done": {
         "title": "Torneio publicado!",

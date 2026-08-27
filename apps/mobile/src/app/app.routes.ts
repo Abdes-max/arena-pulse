@@ -40,6 +40,16 @@ export const routes: Routes = [
         (m) => m.OrganizerTournamentWizardPage,
       ),
   },
+  // Same component as 'new' above, in edit mode -- see
+  // OrganizerTournamentWizardPage's own constructor (reads paramMap's 'id').
+  {
+    path: 'organizer/tournaments/:id/edit',
+    canActivate: [organizerAuthGuard],
+    loadComponent: () =>
+      import('./organizer/pages/tournament-wizard/tournament-wizard.page').then(
+        (m) => m.OrganizerTournamentWizardPage,
+      ),
+  },
   {
     path: ':slug',
     loadComponent: () => import('./shell/tournament-shell').then((m) => m.TournamentShell),

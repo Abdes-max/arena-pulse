@@ -2,7 +2,12 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { OrganizerCategory, StructurePresetResult, WizardStructureFormat } from './models';
+import {
+  OrganizerCategory,
+  OrganizerPhase,
+  StructurePresetResult,
+  WizardStructureFormat,
+} from './models';
 
 export interface MatchSummary {
   id: string;
@@ -31,6 +36,41 @@ export class TournamentCreationService {
 
   private tournamentBase(organizationId: string, tournamentId: string): string {
     return `${environment.apiUrl}/organizations/${organizationId}/tournaments/${tournamentId}`;
+  }
+
+  /** Edit-mode wizard's preload (tournament-wizard.page.ts) -- the wizard only ever creates/uses one category, so it just reads [0] off this. */
+  listCategories(organizationId: string, tournamentId: string): Promise<OrganizerCategory[]> {
+    return firstValueFrom(
+      this.http.get<OrganizerCategory[]>(
+        `${this.tournamentBase(organizationId, tournamentId)}/categories`,
+      ),
+    );
+  }
+
+  /** Edit-mode wizard's preload -- lets it tell whether a structure already exists (see StructurePresetsService.create's "catégorie vierge" guard, apps/api) and summarize it read-only instead of re-offering the format picker. */
+  listPhases(
+    organizationId: string,
+    tournamentId: string,
+    categoryId: string,
+  ): Promise<OrganizerPhase[]> {
+    return firstValueFrom(
+      this.http.get<OrganizerPhase[]>(
+        `${this.tournamentBase(organizationId, tournamentId)}/categories/${categoryId}/phases`,
+      ),
+    );
+  }
+
+  /** Edit-mode wizard's preload -- same matches shape generateSchedule() below already returns, just read back instead of generated. */
+  listMatches(
+    organizationId: string,
+    tournamentId: string,
+    phaseId: string,
+  ): Promise<MatchSummary[]> {
+    return firstValueFrom(
+      this.http.get<MatchSummary[]>(
+        `${this.tournamentBase(organizationId, tournamentId)}/phases/${phaseId}/matches`,
+      ),
+    );
   }
 
   createCategory(

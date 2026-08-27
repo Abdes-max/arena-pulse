@@ -16,6 +16,19 @@ export class OrganizerTeamsService {
     return `${environment.apiUrl}/organizations/${organizationId}/tournaments/${tournamentId}/teams`;
   }
 
+  /** Edit-mode wizard's preload (tournament-wizard.page.ts) -- categoryId scopes to the wizard's one implicit category, same query param apps/web's own team-list.page.ts uses. */
+  listTeams(
+    organizationId: string,
+    tournamentId: string,
+    categoryId: string,
+  ): Promise<OrganizerTeam[]> {
+    return firstValueFrom(
+      this.http.get<OrganizerTeam[]>(this.base(organizationId, tournamentId), {
+        params: { categoryId },
+      }),
+    );
+  }
+
   createTeam(
     organizationId: string,
     tournamentId: string,

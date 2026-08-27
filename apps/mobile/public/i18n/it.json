@@ -105,12 +105,14 @@
     },
     "wizard": {
       "title": "Nuovo torneo",
+      "titleEdit": "Modifica torneo",
       "cancelAria": "Annulla",
       "cancel": "Annulla",
       "back": "Indietro",
       "next": "Avanti",
       "payAndPublish": "Paga e pubblica",
       "errorGeneric": "Si è verificato un errore, riprova.",
+      "loading": "Caricamento…",
       "rail": {
         "1": "Info",
         "2": "Squadre",
@@ -144,7 +146,9 @@
         "addPlaceholder": "Nome della squadra",
         "add": "Aggiungi",
         "remove": "Rimuovi {{name}}",
-        "minHint": "Servono almeno 3 squadre per passare al passaggio successivo."
+        "minHint": "Servono almeno 3 squadre per passare al passaggio successivo.",
+        "errorAdd": "Impossibile aggiungere questa squadra, riprova.",
+        "errorRemove": "Impossibile rimuovere questa squadra, riprova."
       },
       "structure": {
         "title": "Formato della competizione",
@@ -161,7 +165,13 @@
           "desc": "Ogni squadra affronta tutte le altre una volta."
         },
         "poolCountLabel": "Numero di gironi",
-        "qualifiersLabel": "Qualificati per girone"
+        "qualifiersLabel": "Qualificati per girone",
+        "summary": {
+          "poolsKnockout": "Gironi poi eliminazione diretta -- {{count}} girone/i.",
+          "pools": "Campionato a gironi -- {{count}} girone/i.",
+          "knockoutOnly": "Eliminazione diretta semplice."
+        },
+        "editOnWebHint": "Per modificare la struttura, usa l'admin web (Struttura)."
       },
       "calendar": {
         "title": "Calendario delle partite",
@@ -189,7 +199,9 @@
         "planActive": "Abbonamento annuale attivo fino al {{date}} — tutte le tue pubblicazioni sono gratuite.",
         "planPending": "Pagamento dell'abbonamento annuale in attesa di conferma.",
         "planNone": "Fatturazione per pubblicazione in base al numero di squadre. L'abbonamento annuale rende gratuita ogni tua pubblicazione.",
-        "planManage": "Gestisci il mio abbonamento"
+        "planManage": "Gestisci il mio abbonamento",
+        "unpublish": "Annulla pubblicazione",
+        "republish": "Ripubblica"
       },
       "done": {
         "title": "Torneo pubblicato!",

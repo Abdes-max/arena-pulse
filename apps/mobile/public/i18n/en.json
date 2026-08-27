@@ -105,12 +105,14 @@
     },
     "wizard": {
       "title": "New tournament",
+      "titleEdit": "Edit tournament",
       "cancelAria": "Cancel",
       "cancel": "Cancel",
       "back": "Back",
       "next": "Next",
       "payAndPublish": "Pay and publish",
       "errorGeneric": "Something went wrong, please try again.",
+      "loading": "Loading…",
       "rail": {
         "1": "Info",
         "2": "Teams",
@@ -144,7 +146,9 @@
         "addPlaceholder": "Team name",
         "add": "Add",
         "remove": "Remove {{name}}",
-        "minHint": "At least 3 teams are needed to move on to the next step."
+        "minHint": "At least 3 teams are needed to move on to the next step.",
+        "errorAdd": "Couldn't add this team, please try again.",
+        "errorRemove": "Couldn't remove this team, please try again."
       },
       "structure": {
         "title": "Competition format",
@@ -161,7 +165,13 @@
           "desc": "Every team plays every other team once."
         },
         "poolCountLabel": "Number of pools",
-        "qualifiersLabel": "Qualifiers per pool"
+        "qualifiersLabel": "Qualifiers per pool",
+        "summary": {
+          "poolsKnockout": "Pools then knockout -- {{count}} pool(s).",
+          "pools": "League in pools -- {{count}} pool(s).",
+          "knockoutOnly": "Single-elimination knockout."
+        },
+        "editOnWebHint": "To change the structure, use the web admin (Structure)."
       },
       "calendar": {
         "title": "Match schedule",
@@ -189,7 +199,9 @@
         "planActive": "Annual subscription active until {{date}} — every publication of yours is free.",
         "planPending": "Annual subscription payment awaiting confirmation.",
         "planNone": "Billed per publication based on team count. The annual subscription makes every publication of yours free.",
-        "planManage": "Manage my subscription"
+        "planManage": "Manage my subscription",
+        "unpublish": "Unpublish",
+        "republish": "Republish"
       },
       "done": {
         "title": "Tournament published!",

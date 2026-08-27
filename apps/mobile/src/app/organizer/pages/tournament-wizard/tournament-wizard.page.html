@@ -20,16 +20,24 @@
         </svg>
       }
     </button>
-    <ion-title>{{ 'organizer.wizard.title' | transloco }}</ion-title>
+    <ion-title>{{
+      (mode() === 'edit' ? 'organizer.wizard.titleEdit' : 'organizer.wizard.title') | transloco
+    }}</ion-title>
   </ion-toolbar>
 
-  @if (step() !== 'done') {
+  @if (step() !== 'done' && !initializing()) {
     <div class="wizard-page__rail">
       @for (n of [1, 2, 3, 4, 5]; track n) {
         <div
           class="wizard-page__rail-step"
           [class.is-done]="n < stepNumber()"
           [class.is-current]="n === stepNumber()"
+          [style.cursor]="mode() === 'edit' ? 'pointer' : null"
+          [attr.role]="mode() === 'edit' ? 'button' : null"
+          [attr.tabindex]="mode() === 'edit' ? 0 : null"
+          (click)="goToStep(n)"
+          (keydown.enter)="goToStep(n)"
+          (keydown.space)="goToStep(n)"
         >
           <span class="wizard-page__rail-line"></span>
           <span class="wizard-page__rail-dot">
@@ -50,444 +58,468 @@
 
 <ion-content class="wizard-page">
   <div class="wizard-page__scroll">
-    @switch (step()) {
-      @case (1) {
-        <h3 class="wizard-page__section-title">{{ 'organizer.wizard.infos.title' | transloco }}</h3>
-        <ap-text-field
-          [label]="'organizer.wizard.infos.nameLabel' | transloco"
-          [value]="name()"
-          (valueChange)="name.set($event)"
-        />
-        <span class="wizard-page__switchrow-label">{{
-          'organizer.wizard.infos.sportLabel' | transloco
-        }}</span>
-        <!-- Same card family as the structure step's __formatcard, just
+    @if (initializing()) {
+      <p class="wizard-page__hint">{{ 'organizer.wizard.loading' | transloco }}</p>
+    } @else {
+      @switch (step()) {
+        @case (1) {
+          <h3 class="wizard-page__section-title">
+            {{ 'organizer.wizard.infos.title' | transloco }}
+          </h3>
+          <ap-text-field
+            [label]="'organizer.wizard.infos.nameLabel' | transloco"
+            [value]="name()"
+            (valueChange)="name.set($event)"
+          />
+          <span class="wizard-page__switchrow-label">{{
+            'organizer.wizard.infos.sportLabel' | transloco
+          }}</span>
+          <!-- Same card family as the structure step's __formatcard, just
              smaller (icon-on-top, no description) and with each sport's own
              logo -- same hand-drawn line-icon set as the public landing
              page's #sports section (landing.page.html), reused rather than
              duplicated with a different style since no real image assets
              exist for sports (see docs/product/pull-request-plan.md's own
              note on this). -->
-        <div class="wizard-page__sport-grid">
-          @for (sport of sports(); track sport.id) {
-            <button
-              type="button"
-              class="wizard-page__sportcard"
-              [class.is-selected]="sportId() === sport.id"
-              (click)="sportId.set(sport.id)"
-            >
-              <span class="wizard-page__sportcard-icon" aria-hidden="true">
-                @switch (sport.name) {
-                  @case ('Football') {
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="1.6"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <circle cx="12" cy="12" r="9" />
-                      <path d="M12 7 L15.5 9.5 L14.2 13.5 L9.8 13.5 L8.5 9.5 Z" />
-                      <path
-                        d="M12 3 V7 M8.5 9.5 L5 8 M9.8 13.5 L8 17.5 M14.2 13.5 L16 17.5 M15.5 9.5 L19 8"
-                      />
-                    </svg>
-                  }
-                  @case ('Basketball') {
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="1.6"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <circle cx="12" cy="12" r="9" />
-                      <path d="M3 12 H21 M12 3 V21" />
-                      <path d="M5.5 5.5 C9 9 9 15 5.5 18.5 M18.5 5.5 C15 9 15 15 18.5 18.5" />
-                    </svg>
-                  }
-                  @case ('Volleyball') {
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="1.6"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <circle cx="12" cy="12" r="9" />
-                      <path d="M4 9 C9 11 15 11 20 8" />
-                      <path d="M4 15 C9 13 15 13 20 16" />
-                      <path d="M12 3 C10 8 10 16 12 21" />
-                    </svg>
-                  }
-                  @case ('Handball') {
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="1.6"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <rect x="3" y="5" width="18" height="12" rx="1" />
-                      <path d="M3 9 H21 M3 13 H21 M8 5 V17 M16 5 V17" />
-                      <circle cx="12" cy="11" r="2.2" />
-                    </svg>
-                  }
-                  @case ('Rugby') {
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="1.6"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <ellipse cx="12" cy="12" rx="9" ry="5.5" />
-                      <path d="M4.5 12 H19.5" />
-                      <path d="M9 10 V14 M12 9.5 V14.5 M15 10 V14" />
-                    </svg>
-                  }
-                  @case ('Tennis') {
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="1.6"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <ellipse cx="10.5" cy="10" rx="5.5" ry="6.5" />
-                      <path d="M10.5 3.5 V16.5 M6 7 H15 M6 13 H15" />
-                      <path d="M8 16 L4 21" />
-                      <circle cx="19" cy="6" r="1.8" />
-                    </svg>
-                  }
-                  @case ('Badminton') {
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="1.6"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <circle cx="12" cy="5.5" r="2" />
-                      <path d="M12 7.5 L7.5 18 M12 7.5 V18 M12 7.5 L16.5 18" />
-                      <path d="M7.5 18 H16.5" />
-                    </svg>
-                  }
-                  @case ('Futsal') {
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="1.6"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <rect x="3" y="4" width="18" height="16" rx="2" />
-                      <path d="M12 4 V20 M3 12 H21" />
-                      <circle cx="12" cy="12" r="3" />
-                    </svg>
-                  }
-                  @case ('Esport') {
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="1.6"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <rect x="2.5" y="8" width="19" height="10" rx="5" />
-                      <path d="M8 11 V15 M6 13 H10" />
-                      <circle cx="16" cy="12" r="1" fill="currentColor" stroke="none" />
-                      <circle cx="18.5" cy="14.5" r="1" fill="currentColor" stroke="none" />
-                    </svg>
-                  }
-                  @default {
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="1.6"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    >
-                      <circle cx="12" cy="12" r="9" />
-                      <path d="M12 3 V21 M3 12 H21" />
-                    </svg>
-                  }
-                }
-              </span>
-              <span class="wizard-page__sportcard-name">{{ sport.name }}</span>
-            </button>
-          }
-        </div>
-        @if (!isOnline()) {
-          <ap-text-field
-            [label]="'organizer.wizard.infos.venueLabel' | transloco"
-            [value]="venueName()"
-            (valueChange)="venueName.set($event)"
-          />
-        }
-        <label class="wizard-page__switchrow">
-          <span>
-            <span class="wizard-page__switchrow-label">{{
-              'organizer.wizard.infos.onlineLabel' | transloco
-            }}</span>
-            <span class="wizard-page__switchrow-hint">{{
-              'organizer.wizard.infos.onlineHint' | transloco
-            }}</span>
-          </span>
-          <input type="checkbox" [checked]="isOnline()" (change)="isOnline.set(!isOnline())" />
-        </label>
-
-        <h3 class="wizard-page__section-title">
-          {{ 'organizer.wizard.infos.personalizationTitle' | transloco }}
-        </h3>
-        <div class="wizard-page__themes">
-          @for (t of themes; track t) {
-            <button
-              type="button"
-              class="wizard-page__theme-swatch"
-              [class.is-selected]="theme() === t"
-              [attr.data-theme-swatch]="t"
-              [attr.aria-label]="'organizer.wizard.infos.theme.' + t | transloco"
-              (click)="theme.set(t)"
-            ></button>
-          }
-        </div>
-        <label class="wizard-page__logo-picker">
-          <span>{{ 'organizer.wizard.infos.logoLabel' | transloco }}</span>
-          <input type="file" accept="image/*" (change)="onLogoFileSelected($event)" />
-          @if (logoFile(); as file) {
-            <span class="wizard-page__logo-filename">{{ file.name }}</span>
-          }
-        </label>
-      }
-      @case (2) {
-        <h3 class="wizard-page__section-title">{{ 'organizer.wizard.teams.title' | transloco }}</h3>
-        <p class="wizard-page__teamcount">
-          {{
-            (teams().length === 1
-              ? 'organizer.wizard.teams.countSingular'
-              : 'organizer.wizard.teams.countPlural'
-            ) | transloco: { count: teams().length }
-          }}
-        </p>
-        <div class="wizard-page__teamadd">
-          <ap-text-field
-            [label]="'organizer.wizard.teams.addLabel' | transloco"
-            [hideLabel]="true"
-            [value]="teamInput()"
-            (valueChange)="teamInput.set($event)"
-            [placeholder]="'organizer.wizard.teams.addPlaceholder' | transloco"
-          />
-          <ap-button type="button" (click)="addTeam()">
-            {{ 'organizer.wizard.teams.add' | transloco }}
-          </ap-button>
-        </div>
-        <div class="wizard-page__teamlist">
-          @for (name of teams(); track $index) {
-            <div class="wizard-page__teamrow">
-              <span>{{ name }}</span>
+          <div class="wizard-page__sport-grid">
+            @for (sport of sports(); track sport.id) {
               <button
                 type="button"
-                class="wizard-page__teamrow-remove"
-                [attr.aria-label]="'organizer.wizard.teams.remove' | transloco: { name }"
-                (click)="removeTeam($index)"
+                class="wizard-page__sportcard"
+                [class.is-selected]="sportId() === sport.id"
+                (click)="sportId.set(sport.id)"
               >
-                ✕
-              </button>
-            </div>
-          }
-        </div>
-        @if (teams().length < 3) {
-          <p class="wizard-page__hint">{{ 'organizer.wizard.teams.minHint' | transloco }}</p>
-        }
-      }
-      @case (3) {
-        <h3 class="wizard-page__section-title">
-          {{ 'organizer.wizard.structure.title' | transloco }}
-        </h3>
-        <button
-          type="button"
-          class="wizard-page__formatcard"
-          [class.is-selected]="format() === 'pools-knockout'"
-          (click)="selectFormat('pools-knockout')"
-        >
-          <span class="wizard-page__formatcard-radio"></span>
-          <span class="wizard-page__formatcard-body">
-            <span class="wizard-page__formatcard-name">{{
-              'organizer.wizard.structure.poolsKnockout.name' | transloco
-            }}</span>
-            <span class="wizard-page__formatcard-desc">{{
-              'organizer.wizard.structure.poolsKnockout.desc' | transloco
-            }}</span>
-          </span>
-        </button>
-        <button
-          type="button"
-          class="wizard-page__formatcard"
-          [class.is-selected]="format() === 'knockout-only'"
-          (click)="selectFormat('knockout-only')"
-        >
-          <span class="wizard-page__formatcard-radio"></span>
-          <span class="wizard-page__formatcard-body">
-            <span class="wizard-page__formatcard-name">{{
-              'organizer.wizard.structure.knockoutOnly.name' | transloco
-            }}</span>
-            <span class="wizard-page__formatcard-desc">{{
-              'organizer.wizard.structure.knockoutOnly.desc' | transloco
-            }}</span>
-          </span>
-        </button>
-        <button
-          type="button"
-          class="wizard-page__formatcard"
-          [class.is-selected]="format() === 'league'"
-          (click)="selectFormat('league')"
-        >
-          <span class="wizard-page__formatcard-radio"></span>
-          <span class="wizard-page__formatcard-body">
-            <span class="wizard-page__formatcard-name">{{
-              'organizer.wizard.structure.league.name' | transloco
-            }}</span>
-            <span class="wizard-page__formatcard-desc">{{
-              'organizer.wizard.structure.league.desc' | transloco
-            }}</span>
-          </span>
-        </button>
-
-        @if (format() === 'pools-knockout') {
-          <ap-text-field
-            type="number"
-            min="1"
-            [label]="'organizer.wizard.structure.poolCountLabel' | transloco"
-            [value]="poolCount()"
-            (valueChange)="poolCount.set($event)"
-          />
-          <ap-text-field
-            type="number"
-            min="1"
-            [label]="'organizer.wizard.structure.qualifiersLabel' | transloco"
-            [value]="qualifiersPerPool()"
-            (valueChange)="qualifiersPerPool.set($event)"
-          />
-        }
-      }
-      @case (4) {
-        <h3 class="wizard-page__section-title">
-          {{ 'organizer.wizard.calendar.title' | transloco }}
-        </h3>
-        @if (!hasSchedulableStructure()) {
-          <p class="wizard-page__hint">
-            {{ 'organizer.wizard.calendar.noScheduleHint' | transloco }}
-          </p>
-        } @else if (matches(); as generatedMatches) {
-          <div class="wizard-page__matchlist">
-            @for (match of generatedMatches; track match.id) {
-              <div class="wizard-page__matchrow">
-                <span class="wizard-page__matchrow-teams">
-                  {{ match.homeTeam?.name }} – {{ match.awayTeam?.name }}
+                <span class="wizard-page__sportcard-icon" aria-hidden="true">
+                  @switch (sport.name) {
+                    @case ('Football') {
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.6"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="M12 7 L15.5 9.5 L14.2 13.5 L9.8 13.5 L8.5 9.5 Z" />
+                        <path
+                          d="M12 3 V7 M8.5 9.5 L5 8 M9.8 13.5 L8 17.5 M14.2 13.5 L16 17.5 M15.5 9.5 L19 8"
+                        />
+                      </svg>
+                    }
+                    @case ('Basketball') {
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.6"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="M3 12 H21 M12 3 V21" />
+                        <path d="M5.5 5.5 C9 9 9 15 5.5 18.5 M18.5 5.5 C15 9 15 15 18.5 18.5" />
+                      </svg>
+                    }
+                    @case ('Volleyball') {
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.6"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="M4 9 C9 11 15 11 20 8" />
+                        <path d="M4 15 C9 13 15 13 20 16" />
+                        <path d="M12 3 C10 8 10 16 12 21" />
+                      </svg>
+                    }
+                    @case ('Handball') {
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.6"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <rect x="3" y="5" width="18" height="12" rx="1" />
+                        <path d="M3 9 H21 M3 13 H21 M8 5 V17 M16 5 V17" />
+                        <circle cx="12" cy="11" r="2.2" />
+                      </svg>
+                    }
+                    @case ('Rugby') {
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.6"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <ellipse cx="12" cy="12" rx="9" ry="5.5" />
+                        <path d="M4.5 12 H19.5" />
+                        <path d="M9 10 V14 M12 9.5 V14.5 M15 10 V14" />
+                      </svg>
+                    }
+                    @case ('Tennis') {
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.6"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <ellipse cx="10.5" cy="10" rx="5.5" ry="6.5" />
+                        <path d="M10.5 3.5 V16.5 M6 7 H15 M6 13 H15" />
+                        <path d="M8 16 L4 21" />
+                        <circle cx="19" cy="6" r="1.8" />
+                      </svg>
+                    }
+                    @case ('Badminton') {
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.6"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <circle cx="12" cy="5.5" r="2" />
+                        <path d="M12 7.5 L7.5 18 M12 7.5 V18 M12 7.5 L16.5 18" />
+                        <path d="M7.5 18 H16.5" />
+                      </svg>
+                    }
+                    @case ('Futsal') {
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.6"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <rect x="3" y="4" width="18" height="16" rx="2" />
+                        <path d="M12 4 V20 M3 12 H21" />
+                        <circle cx="12" cy="12" r="3" />
+                      </svg>
+                    }
+                    @case ('Esport') {
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.6"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <rect x="2.5" y="8" width="19" height="10" rx="5" />
+                        <path d="M8 11 V15 M6 13 H10" />
+                        <circle cx="16" cy="12" r="1" fill="currentColor" stroke="none" />
+                        <circle cx="18.5" cy="14.5" r="1" fill="currentColor" stroke="none" />
+                      </svg>
+                    }
+                    @default {
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.6"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      >
+                        <circle cx="12" cy="12" r="9" />
+                        <path d="M12 3 V21 M3 12 H21" />
+                      </svg>
+                    }
+                  }
                 </span>
-                @if (match.timeSlot; as slot) {
-                  <span class="wizard-page__matchrow-time">
-                    {{ slot.startTime | date: 'EEE d MMM, HH:mm' }}
-                  </span>
-                }
+                <span class="wizard-page__sportcard-name">{{ sport.name }}</span>
+              </button>
+            }
+          </div>
+          @if (!isOnline()) {
+            <ap-text-field
+              [label]="'organizer.wizard.infos.venueLabel' | transloco"
+              [value]="venueName()"
+              (valueChange)="venueName.set($event)"
+            />
+          }
+          <label class="wizard-page__switchrow">
+            <span>
+              <span class="wizard-page__switchrow-label">{{
+                'organizer.wizard.infos.onlineLabel' | transloco
+              }}</span>
+              <span class="wizard-page__switchrow-hint">{{
+                'organizer.wizard.infos.onlineHint' | transloco
+              }}</span>
+            </span>
+            <input type="checkbox" [checked]="isOnline()" (change)="isOnline.set(!isOnline())" />
+          </label>
+
+          <h3 class="wizard-page__section-title">
+            {{ 'organizer.wizard.infos.personalizationTitle' | transloco }}
+          </h3>
+          <div class="wizard-page__themes">
+            @for (t of themes; track t) {
+              <button
+                type="button"
+                class="wizard-page__theme-swatch"
+                [class.is-selected]="theme() === t"
+                [attr.data-theme-swatch]="t"
+                [attr.aria-label]="'organizer.wizard.infos.theme.' + t | transloco"
+                (click)="theme.set(t)"
+              ></button>
+            }
+          </div>
+          <label class="wizard-page__logo-picker">
+            <span>{{ 'organizer.wizard.infos.logoLabel' | transloco }}</span>
+            <input type="file" accept="image/*" (change)="onLogoFileSelected($event)" />
+            @if (logoFile(); as file) {
+              <span class="wizard-page__logo-filename">{{ file.name }}</span>
+            }
+          </label>
+        }
+        @case (2) {
+          <h3 class="wizard-page__section-title">
+            {{ 'organizer.wizard.teams.title' | transloco }}
+          </h3>
+          <p class="wizard-page__teamcount">
+            {{
+              (teams().length === 1
+                ? 'organizer.wizard.teams.countSingular'
+                : 'organizer.wizard.teams.countPlural'
+              ) | transloco: { count: teams().length }
+            }}
+          </p>
+          <div class="wizard-page__teamadd">
+            <ap-text-field
+              [label]="'organizer.wizard.teams.addLabel' | transloco"
+              [hideLabel]="true"
+              [value]="teamInput()"
+              (valueChange)="teamInput.set($event)"
+              [placeholder]="'organizer.wizard.teams.addPlaceholder' | transloco"
+            />
+            <ap-button type="button" [disabled]="submitting()" (click)="addTeam()">
+              {{ 'organizer.wizard.teams.add' | transloco }}
+            </ap-button>
+          </div>
+          <div class="wizard-page__teamlist">
+            @for (team of teams(); track team.id ?? $index) {
+              <div class="wizard-page__teamrow">
+                <span>{{ team.name }}</span>
+                <button
+                  type="button"
+                  class="wizard-page__teamrow-remove"
+                  [disabled]="submitting()"
+                  [attr.aria-label]="
+                    'organizer.wizard.teams.remove' | transloco: { name: team.name }
+                  "
+                  (click)="removeTeam($index)"
+                >
+                  ✕
+                </button>
               </div>
             }
           </div>
-          <p class="wizard-page__hint">
-            {{ 'organizer.wizard.calendar.editLaterHint' | transloco }}
-          </p>
-        } @else {
-          <div class="wizard-page__gen-cta">
-            <p class="wizard-page__lede">{{ 'organizer.wizard.calendar.lede' | transloco }}</p>
-            <ap-button type="button" [disabled]="generatingSchedule()" (click)="generateSchedule()">
-              {{
-                (generatingSchedule()
-                  ? 'organizer.wizard.calendar.generating'
-                  : 'organizer.wizard.calendar.generate'
-                ) | transloco
-              }}
-            </ap-button>
-          </div>
+          @if (mode() === 'create' && teams().length < 3) {
+            <p class="wizard-page__hint">{{ 'organizer.wizard.teams.minHint' | transloco }}</p>
+          }
         }
-      }
-      @case (5) {
-        <h3 class="wizard-page__section-title">
-          {{ 'organizer.wizard.publish.visibilityTitle' | transloco }}
-        </h3>
-        <div class="wizard-page__visicards">
-          <button
-            type="button"
-            class="wizard-page__formatcard"
-            [class.is-selected]="isListed()"
-            (click)="selectVisibility(true)"
-          >
-            <span class="wizard-page__formatcard-icon">🔎</span>
-            <span class="wizard-page__formatcard-body">
-              <span class="wizard-page__formatcard-name">{{
-                'organizer.wizard.publish.public.name' | transloco
-              }}</span>
-              <span class="wizard-page__formatcard-desc">{{
-                'organizer.wizard.publish.public.desc' | transloco
-              }}</span>
-            </span>
-          </button>
-          <button
-            type="button"
-            class="wizard-page__formatcard"
-            [class.is-selected]="!isListed()"
-            (click)="selectVisibility(false)"
-          >
-            <span class="wizard-page__formatcard-icon">🔒</span>
-            <span class="wizard-page__formatcard-body">
-              <span class="wizard-page__formatcard-name">{{
-                'organizer.wizard.publish.private.name' | transloco
-              }}</span>
-              <span class="wizard-page__formatcard-desc">{{
-                'organizer.wizard.publish.private.desc' | transloco
-              }}</span>
-            </span>
-          </button>
-        </div>
-
-        <h3 class="wizard-page__section-title">
-          {{ 'organizer.wizard.publish.publishTitle' | transloco }}
-        </h3>
-        <p class="wizard-page__hint">{{ 'organizer.wizard.publish.paymentHint' | transloco }}</p>
-
-        <h3 class="wizard-page__section-title">
-          {{ 'organizer.wizard.publish.planTitle' | transloco }}
-        </h3>
-        @if (subscriptionStatus(); as sub) {
-          @if (sub.status === 'ACTIVE') {
+        @case (3) {
+          <h3 class="wizard-page__section-title">
+            {{ 'organizer.wizard.structure.title' | transloco }}
+          </h3>
+          @if (structureSummary(); as summary) {
+            <p class="wizard-page__lede">{{ summary }}</p>
             <p class="wizard-page__hint">
-              {{
-                'organizer.wizard.publish.planActive'
-                  | transloco: { date: sub.expiresAt | date: 'd MMM y' }
-              }}
-            </p>
-          } @else if (sub.status === 'PENDING_PAYMENT') {
-            <p class="wizard-page__hint">
-              {{ 'organizer.wizard.publish.planPending' | transloco }}
+              {{ 'organizer.wizard.structure.editOnWebHint' | transloco }}
             </p>
           } @else {
-            <p class="wizard-page__hint">{{ 'organizer.wizard.publish.planNone' | transloco }}</p>
+            <button
+              type="button"
+              class="wizard-page__formatcard"
+              [class.is-selected]="format() === 'pools-knockout'"
+              (click)="selectFormat('pools-knockout')"
+            >
+              <span class="wizard-page__formatcard-radio"></span>
+              <span class="wizard-page__formatcard-body">
+                <span class="wizard-page__formatcard-name">{{
+                  'organizer.wizard.structure.poolsKnockout.name' | transloco
+                }}</span>
+                <span class="wizard-page__formatcard-desc">{{
+                  'organizer.wizard.structure.poolsKnockout.desc' | transloco
+                }}</span>
+              </span>
+            </button>
+            <button
+              type="button"
+              class="wizard-page__formatcard"
+              [class.is-selected]="format() === 'knockout-only'"
+              (click)="selectFormat('knockout-only')"
+            >
+              <span class="wizard-page__formatcard-radio"></span>
+              <span class="wizard-page__formatcard-body">
+                <span class="wizard-page__formatcard-name">{{
+                  'organizer.wizard.structure.knockoutOnly.name' | transloco
+                }}</span>
+                <span class="wizard-page__formatcard-desc">{{
+                  'organizer.wizard.structure.knockoutOnly.desc' | transloco
+                }}</span>
+              </span>
+            </button>
+            <button
+              type="button"
+              class="wizard-page__formatcard"
+              [class.is-selected]="format() === 'league'"
+              (click)="selectFormat('league')"
+            >
+              <span class="wizard-page__formatcard-radio"></span>
+              <span class="wizard-page__formatcard-body">
+                <span class="wizard-page__formatcard-name">{{
+                  'organizer.wizard.structure.league.name' | transloco
+                }}</span>
+                <span class="wizard-page__formatcard-desc">{{
+                  'organizer.wizard.structure.league.desc' | transloco
+                }}</span>
+              </span>
+            </button>
+
+            @if (format() === 'pools-knockout') {
+              <ap-text-field
+                type="number"
+                min="1"
+                [label]="'organizer.wizard.structure.poolCountLabel' | transloco"
+                [value]="poolCount()"
+                (valueChange)="poolCount.set($event)"
+              />
+              <ap-text-field
+                type="number"
+                min="1"
+                [label]="'organizer.wizard.structure.qualifiersLabel' | transloco"
+                [value]="qualifiersPerPool()"
+                (valueChange)="qualifiersPerPool.set($event)"
+              />
+            }
           }
-          <ap-button type="button" variant="secondary" (click)="openSubscriptionManagement()">
-            {{ 'organizer.wizard.publish.planManage' | transloco }}
-          </ap-button>
-        } @else {
-          <p class="wizard-page__hint">{{ 'organizer.wizard.publish.planLoading' | transloco }}</p>
+        }
+        @case (4) {
+          <h3 class="wizard-page__section-title">
+            {{ 'organizer.wizard.calendar.title' | transloco }}
+          </h3>
+          @if (!hasSchedulableStructure()) {
+            <p class="wizard-page__hint">
+              {{ 'organizer.wizard.calendar.noScheduleHint' | transloco }}
+            </p>
+          } @else if (matches(); as generatedMatches) {
+            <div class="wizard-page__matchlist">
+              @for (match of generatedMatches; track match.id) {
+                <div class="wizard-page__matchrow">
+                  <span class="wizard-page__matchrow-teams">
+                    {{ match.homeTeam?.name }} – {{ match.awayTeam?.name }}
+                  </span>
+                  @if (match.timeSlot; as slot) {
+                    <span class="wizard-page__matchrow-time">
+                      {{ slot.startTime | date: 'EEE d MMM, HH:mm' }}
+                    </span>
+                  }
+                </div>
+              }
+            </div>
+            <p class="wizard-page__hint">
+              {{ 'organizer.wizard.calendar.editLaterHint' | transloco }}
+            </p>
+          } @else {
+            <div class="wizard-page__gen-cta">
+              <p class="wizard-page__lede">{{ 'organizer.wizard.calendar.lede' | transloco }}</p>
+              <ap-button
+                type="button"
+                [disabled]="generatingSchedule()"
+                (click)="generateSchedule()"
+              >
+                {{
+                  (generatingSchedule()
+                    ? 'organizer.wizard.calendar.generating'
+                    : 'organizer.wizard.calendar.generate'
+                  ) | transloco
+                }}
+              </ap-button>
+            </div>
+          }
+        }
+        @case (5) {
+          <h3 class="wizard-page__section-title">
+            {{ 'organizer.wizard.publish.visibilityTitle' | transloco }}
+          </h3>
+          <div class="wizard-page__visicards">
+            <button
+              type="button"
+              class="wizard-page__formatcard"
+              [class.is-selected]="isListed()"
+              (click)="selectVisibility(true)"
+            >
+              <span class="wizard-page__formatcard-icon">🔎</span>
+              <span class="wizard-page__formatcard-body">
+                <span class="wizard-page__formatcard-name">{{
+                  'organizer.wizard.publish.public.name' | transloco
+                }}</span>
+                <span class="wizard-page__formatcard-desc">{{
+                  'organizer.wizard.publish.public.desc' | transloco
+                }}</span>
+              </span>
+            </button>
+            <button
+              type="button"
+              class="wizard-page__formatcard"
+              [class.is-selected]="!isListed()"
+              (click)="selectVisibility(false)"
+            >
+              <span class="wizard-page__formatcard-icon">🔒</span>
+              <span class="wizard-page__formatcard-body">
+                <span class="wizard-page__formatcard-name">{{
+                  'organizer.wizard.publish.private.name' | transloco
+                }}</span>
+                <span class="wizard-page__formatcard-desc">{{
+                  'organizer.wizard.publish.private.desc' | transloco
+                }}</span>
+              </span>
+            </button>
+          </div>
+
+          <h3 class="wizard-page__section-title">
+            {{ 'organizer.wizard.publish.publishTitle' | transloco }}
+          </h3>
+          <p class="wizard-page__hint">{{ 'organizer.wizard.publish.paymentHint' | transloco }}</p>
+
+          <h3 class="wizard-page__section-title">
+            {{ 'organizer.wizard.publish.planTitle' | transloco }}
+          </h3>
+          @if (subscriptionStatus(); as sub) {
+            @if (sub.status === 'ACTIVE') {
+              <p class="wizard-page__hint">
+                {{
+                  'organizer.wizard.publish.planActive'
+                    | transloco: { date: sub.expiresAt | date: 'd MMM y' }
+                }}
+              </p>
+            } @else if (sub.status === 'PENDING_PAYMENT') {
+              <p class="wizard-page__hint">
+                {{ 'organizer.wizard.publish.planPending' | transloco }}
+              </p>
+            } @else {
+              <p class="wizard-page__hint">{{ 'organizer.wizard.publish.planNone' | transloco }}</p>
+            }
+            <ap-button type="button" variant="secondary" (click)="openSubscriptionManagement()">
+              {{ 'organizer.wizard.publish.planManage' | transloco }}
+            </ap-button>
+          } @else {
+            <p class="wizard-page__hint">
+              {{ 'organizer.wizard.publish.planLoading' | transloco }}
+            </p>
+          }
         }
       }
     }
@@ -521,7 +553,7 @@
   </div>
 </ion-content>
 
-@if (step() !== 'done') {
+@if (step() !== 'done' && !initializing()) {
   <ion-footer class="wizard-page__footer">
     <ap-button type="button" variant="secondary" [disabled]="submitting()" (click)="prevStep()">
       {{ (step() === 1 ? 'organizer.wizard.cancel' : 'organizer.wizard.back') | transloco }}
@@ -532,7 +564,7 @@
       [disabled]="!canAdvance() || submitting()"
       (click)="nextStep()"
     >
-      {{ (step() === 5 ? 'organizer.wizard.payAndPublish' : 'organizer.wizard.next') | transloco }}
+      {{ footerNextLabel() | transloco }}
     </ap-button>
   </ion-footer>
 }

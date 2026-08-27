@@ -7,17 +7,17 @@ import { Badge, Logo } from 'design-system';
 import { OrganizerAuthService } from '../../core/auth.service';
 import { OrganizerTournament } from '../../core/models';
 import { OrganizerTournamentsService } from '../../core/tournaments.service';
-import { environment } from '../../../../environments/environment';
 
 // Real "Mes tournois" list -- replaces the PR 1 placeholder (register ->
 // verify -> login -> land somewhere real) now that the creation wizard
 // (tournament-wizard.page.ts) gives this a genuine destination. Mirrors the
 // mockup's "Écran 3" (adaptive-leaping-elephant.md, Étape 0): a card per
 // tournament with a status badge + sport, and a floating "+ Nouveau
-// tournoi" button. Sponsors/referees/publication-orders/multi-organization
-// switching stay out of scope, same as apps/web/src/app/admin's own
-// tournament-list.page.ts is far richer than this -- this is the fast
-// native "see what I've got, start a new one" view, not the full admin.
+// tournoi" button. Tapping a card opens that same wizard in edit mode
+// (feat/193 PR 3, openTournament() below) -- sponsors/arbitres/scores/
+// classement stay out of scope (apps/web/src/app/admin's own
+// tournament-list.page.ts is far richer than this), but the core "rename,
+// manage teams, publish/unpublish" loop is now native end to end.
 @Component({
   selector: 'app-organizer-tournaments-page',
   imports: [Badge, IonContent, IonHeader, IonTitle, IonToolbar, Logo, RouterLink, TranslocoPipe],
@@ -65,16 +65,16 @@ export class OrganizerTournamentsPage {
   }
 
   /**
-   * No native tournament-management UI yet (teams, structure, calendar,
-   * publish/unpublish, personalization -- this list is deliberately just
-   * "see what I've got, start a new one", see this class's own doc comment
-   * above) -- opens the existing full admin-web page for that tournament in
-   * the system browser instead of a dead-end unclickable card, same
-   * "no native UI yet" pattern already used for subscription management and
-   * the Stripe publication checkout (tournament-wizard.page.ts).
+   * Native edit mode (feat/193 PR 3) -- same wizard component as "Créer un
+   * tournoi", reading the route's 'id' param to preload this tournament's
+   * data instead of starting from scratch (see tournament-wizard.page.ts's
+   * own doc comment). Used to bounce out to the admin-web page in the
+   * system browser; the richer editor (arbitres, scores, classement...)
+   * genuinely stays admin-web-only, but the organizer no longer leaves the
+   * app just to rename a tournament or add a team.
    */
-  protected openTournament(tournament: OrganizerTournament): void {
-    window.open(`${environment.webUrl}/admin/tournaments/${tournament.id}`, '_blank', 'noopener');
+  protected async openTournament(tournament: OrganizerTournament): Promise<void> {
+    await this.router.navigateByUrl(`/organizer/tournaments/${tournament.id}/edit`);
   }
 
   protected statusLabel(status: OrganizerTournament['status']): string {
