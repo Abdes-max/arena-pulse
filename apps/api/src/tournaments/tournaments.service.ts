@@ -12,6 +12,7 @@ import { promises as fs } from 'fs';
 import { join } from 'path';
 import type Stripe from 'stripe';
 import {
+  CompetitionPhaseType,
   Organization,
   Prisma,
   PublicTheme,
@@ -177,49 +178,82 @@ export class TournamentsService {
       currency: order.currency,
       createdAt: order.createdAt,
       paidAt: order.paidAt,
+      // Stripe's own hosted receipt -- see applyPaidPublicationSession.
+      // Null for a $0 free-tier order or a still-PENDING_PAYMENT one.
+      stripeReceiptUrl: order.stripeReceiptUrl,
     }));
   }
 
   /**
    * Publishing is gated behind a one-time Stripe payment computed from a
    * team-count tier (feat/044, see
-   * docs/architecture/adr/0006-paid-tournament-publication.md) -- unless
-   * either (a) a TournamentPublicationOrder for this tournament already
-   * reached PAID, in which case a later publish (e.g. after an unpublish) is
-   * free: the payment unlocks PUBLISHED for the tournament's lifetime, it
-   * isn't billed again as the team count grows -- or (b) the organization
-   * holds an active annual subscription, which covers every publish() call
-   * for free while it's active (an order is still recorded, at 0, for a
-   * uniform history/audit trail).
+   * docs/architecture/adr/0006-paid-tournament-publication.md), topped up
+   * rather than re-charged in full as the tournament grows: re-runs on
+   * every call, including on an already-PUBLISHED tournament (feat/XXX --
+   * "toujours revérifier lors d'une republication". Previously a second
+   * call was rejected outright with ConflictException, which meant a
+   * tournament that grew past its paid tier after publishing -- more teams
+   * added later -- had no way to ever be charged for the upgrade; the old
+   * `alreadyPaid` shortcut only ever checked "has ANY order ever been
+   * paid", not "does a paid order cover the CURRENT team count's tier").
+   * assertTeamAdditionAllowed (see below) is the first line of defense --
+   * it blocks a team being added past the paid tier in the first place --
+   * this is the second: whatever the current team count actually is,
+   * publish()/republish always charges exactly the gap between what's
+   * required now and what's already been paid, never less, never double.
+   * An organization with an active annual subscription pays nothing here
+   * regardless of team count, same as before.
    */
   async publish(organizationId: string, tournamentId: string) {
     await this.organizationsService.assertNotSuspended(organizationId);
     const tournament = await this.getOrThrow(organizationId, tournamentId);
     this.assertEditable(tournament);
-    if (tournament.status === TournamentStatus.PUBLISHED) {
-      throw new ConflictException('Ce tournoi est déjà publié.');
-    }
+    await this.assertReadyToPublish(tournamentId);
 
-    const alreadyPaid = await this.prisma.tournamentPublicationOrder.findFirst({
-      where: {
-        tournamentId,
-        status: TournamentPublicationOrderStatus.PAID,
-      },
-    });
-    if (alreadyPaid) {
-      return this.setStatus(tournamentId, TournamentStatus.PUBLISHED);
-    }
-
-    const [categoriesCount, teamsCount, hasActiveSubscription] =
+    const [categoriesCount, teamsCount, hasActiveSubscription, paidTotal] =
       await Promise.all([
         this.prisma.category.count({ where: { tournamentId } }),
         this.prisma.team.count({ where: { tournamentId } }),
         this.organizationsService.hasActiveSubscription(organizationId),
+        this.prisma.tournamentPublicationOrder.aggregate({
+          where: {
+            tournamentId,
+            status: TournamentPublicationOrderStatus.PAID,
+          },
+          _sum: { amountCents: true },
+        }),
       ]);
-    const amountCents = hasActiveSubscription
+    // Every PAID order's amountCents is itself already a gap/top-up amount
+    // (requiredCents - alreadyPaidCents at the time it was charged, see
+    // amountCents below and payForTeamAdditionTier/payForTournamentTier's
+    // own identical pattern) -- so what's actually been paid so far is the
+    // SUM of every PAID order, never just the largest one. Summing the
+    // wrong way (_max) used to under-count as soon as a tournament crossed
+    // a second tier (e.g. FREE->STANDARD->LARGE): the LARGE top-up's own
+    // amount could be smaller than the STANDARD order that preceded it,
+    // making the system think less had been paid than actually had, and
+    // demanding a second, overlapping payment for the same tier.
+    // Prisma's aggregate _sum is null specifically when zero rows match --
+    // distinct from a real $0 order, which is exactly the very-first-publish
+    // case below still needs to tell apart from "already published, still
+    // within the tier already paid for".
+    const hasPriorPaidOrder = paidTotal._sum.amountCents !== null;
+    const alreadyPaidCents = paidTotal._sum.amountCents ?? 0;
+    const requiredCents = hasActiveSubscription
       ? 0
       : this.computePublicationFeeCents(teamsCount);
     const currency = 'eur';
+
+    // A prior paid order already covers the current tier -- nothing new to
+    // charge or record, just (re-)confirm PUBLISHED. Doesn't short-circuit
+    // the very first publish of a genuinely free tournament (no prior order
+    // exists yet there) -- that one still falls through and records its own
+    // $0 PAID order below, same as always.
+    if (hasPriorPaidOrder && requiredCents <= alreadyPaidCents) {
+      return this.setStatus(tournamentId, TournamentStatus.PUBLISHED);
+    }
+
+    const amountCents = Math.max(0, requiredCents - alreadyPaidCents);
 
     if (amountCents <= 0) {
       await this.prisma.tournamentPublicationOrder.create({
@@ -236,14 +270,31 @@ export class TournamentsService {
       return this.setStatus(tournamentId, TournamentStatus.PUBLISHED);
     }
 
+    return this.createPendingPublicationCheckout(tournament, {
+      categoriesCount,
+      teamsCount,
+      amountCents,
+      currency,
+    });
+  }
+
+  /**
+   * Shared by publish() and payForTeamAdditionTier() below -- creates the
+   * PENDING_PAYMENT order row and its Stripe Checkout session. Split out
+   * once a second caller needed the exact same "create order, start
+   * checkout, stamp the session id back onto it" sequence.
+   */
+  private async createPendingPublicationCheckout(
+    tournament: Pick<Tournament, 'id' | 'name'>,
+    data: {
+      categoriesCount: number;
+      teamsCount: number;
+      amountCents: number;
+      currency: string;
+    },
+  ): Promise<{ status: 'PENDING_PAYMENT'; checkoutUrl: string }> {
     const order = await this.prisma.tournamentPublicationOrder.create({
-      data: {
-        tournamentId,
-        categoriesCount,
-        teamsCount,
-        amountCents,
-        currency,
-      },
+      data: { tournamentId: tournament.id, ...data },
     });
 
     const webUrl = this.configService.get<string>(
@@ -251,11 +302,11 @@ export class TournamentsService {
       'http://localhost:4200',
     );
     const session = await this.stripeService.createCheckoutSession({
-      amountCents,
-      currency,
+      amountCents: data.amountCents,
+      currency: data.currency,
       productName: `Publication du tournoi — ${tournament.name}`,
-      successUrl: `${webUrl}/admin/tournaments/${tournamentId}/publish/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancelUrl: `${webUrl}/admin/tournaments/${tournamentId}?publishCancelled=1`,
+      successUrl: `${webUrl}/admin/tournaments/${tournament.id}/publish/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancelUrl: `${webUrl}/admin/tournaments/${tournament.id}?publishCancelled=1`,
       metadata: { tournamentPublicationOrderId: order.id },
     });
 
@@ -265,6 +316,127 @@ export class TournamentsService {
     });
 
     return { status: 'PENDING_PAYMENT', checkoutUrl: session.url! };
+  }
+
+  /**
+   * Pays (or free-confirms) the tier an already-PUBLISHED tournament would
+   * need if `additionalTeams` more teams were added -- the team(s)
+   * themselves are NOT created here, that's still TeamsService.create()'s
+   * job. Exists specifically for the "you're blocked, upgrade to unblock"
+   * dialog (apps/web's team-list.page.ts): assertTeamAdditionAllowed below
+   * blocks the addition BEFORE it happens, so by the time the organizer
+   * clicks "upgrade", the tournament's stored team count hasn't actually
+   * grown yet -- calling plain publish() again would price against that
+   * still-too-low count and silently do nothing. This prices against
+   * teamsCount + additionalTeams instead, same "charge only the gap" logic
+   * as publish() otherwise.
+   */
+  async payForTeamAdditionTier(
+    organizationId: string,
+    tournamentId: string,
+    additionalTeams: number,
+  ): Promise<
+    { status: 'PUBLISHED' } | { status: 'PENDING_PAYMENT'; checkoutUrl: string }
+  > {
+    await this.organizationsService.assertNotSuspended(organizationId);
+    const tournament = await this.getOrThrow(organizationId, tournamentId);
+    this.assertEditable(tournament);
+
+    const [categoriesCount, teamsCount, hasActiveSubscription, paidTotal] =
+      await Promise.all([
+        this.prisma.category.count({ where: { tournamentId } }),
+        this.prisma.team.count({ where: { tournamentId } }),
+        this.organizationsService.hasActiveSubscription(organizationId),
+        this.prisma.tournamentPublicationOrder.aggregate({
+          where: {
+            tournamentId,
+            status: TournamentPublicationOrderStatus.PAID,
+          },
+          _sum: { amountCents: true },
+        }),
+      ]);
+    // See publish()'s own comment on why this is a SUM of every PAID order,
+    // not just the largest one.
+    const alreadyPaidCents = paidTotal._sum.amountCents ?? 0;
+    const prospectiveTeamsCount = teamsCount + additionalTeams;
+    const requiredCents = hasActiveSubscription
+      ? 0
+      : this.computePublicationFeeCents(prospectiveTeamsCount);
+    const currency = 'eur';
+
+    if (requiredCents <= alreadyPaidCents) {
+      // Already covered (e.g. tier prices are unset/0 in this environment,
+      // or the org just gained an active subscription) -- nothing to
+      // charge, and no order to record: publish()/republish already owns
+      // recording the tournament's actual paid history, this endpoint only
+      // ever pre-pays for a *prospective* count that may never even be
+      // reached if the organizer changes their mind.
+      return { status: 'PUBLISHED' };
+    }
+
+    const amountCents = requiredCents - alreadyPaidCents;
+    return this.createPendingPublicationCheckout(tournament, {
+      categoriesCount,
+      teamsCount: prospectiveTeamsCount,
+      amountCents,
+      currency,
+    });
+  }
+
+  /** Reverse of tierCodeForFeeCents -- the flat price of a given tier, regardless of team count. FREE is always 0. */
+  private tierPriceCents(tier: 'STANDARD' | 'LARGE'): number {
+    const key =
+      tier === 'STANDARD'
+        ? 'TOURNAMENT_PUBLICATION_TIER_MID_PRICE_CENTS'
+        : 'TOURNAMENT_PUBLICATION_TIER_HIGH_PRICE_CENTS';
+    return Number(this.configService.get<string>(key, '0'));
+  }
+
+  /**
+   * Directly pays for a chosen plan tier (apps/web's new "Plan" section,
+   * card-list-with-a-confirm-popup -- distinct from
+   * payForTeamAdditionTier's own trigger, which is computed from a
+   * prospective team count instead of picked outright). Works before the
+   * tournament has ever been published too (assertEditable, not a PUBLISHED
+   * check) -- pre-paying for a higher tier ahead of publish() just means
+   * publish() itself finds the gap already covered and charges nothing.
+   */
+  async payForTournamentTier(
+    organizationId: string,
+    tournamentId: string,
+    tier: 'STANDARD' | 'LARGE',
+  ): Promise<
+    { status: 'PUBLISHED' } | { status: 'PENDING_PAYMENT'; checkoutUrl: string }
+  > {
+    await this.organizationsService.assertNotSuspended(organizationId);
+    const tournament = await this.getOrThrow(organizationId, tournamentId);
+    this.assertEditable(tournament);
+
+    const [categoriesCount, teamsCount, paidTotal] = await Promise.all([
+      this.prisma.category.count({ where: { tournamentId } }),
+      this.prisma.team.count({ where: { tournamentId } }),
+      this.prisma.tournamentPublicationOrder.aggregate({
+        where: { tournamentId, status: TournamentPublicationOrderStatus.PAID },
+        _sum: { amountCents: true },
+      }),
+    ]);
+    // See publish()'s own comment on why this is a SUM of every PAID order,
+    // not just the largest one.
+    const alreadyPaidCents = paidTotal._sum.amountCents ?? 0;
+    const requiredCents = this.tierPriceCents(tier);
+    const currency = 'eur';
+
+    if (requiredCents <= alreadyPaidCents) {
+      return { status: 'PUBLISHED' };
+    }
+
+    const amountCents = requiredCents - alreadyPaidCents;
+    return this.createPendingPublicationCheckout(tournament, {
+      categoriesCount,
+      teamsCount,
+      amountCents,
+      currency,
+    });
   }
 
   /** Called by PaymentsWebhookController after Stripe signature verification. */
@@ -342,6 +514,22 @@ export class TournamentsService {
       typeof session.payment_intent === 'string'
         ? session.payment_intent
         : (session.payment_intent?.id ?? null);
+    // Best-effort (own try/catch, not the transaction below) -- a Stripe
+    // API hiccup fetching the receipt is never worth blocking "mark paid +
+    // publish" over. Null for the $0 free-tier path too, which never has a
+    // paymentIntentId (see publish()'s own amountCents<=0 branch, no Stripe
+    // Checkout session at all there).
+    let stripeReceiptUrl: string | null = null;
+    if (paymentIntentId) {
+      try {
+        stripeReceiptUrl =
+          await this.stripeService.retrieveChargeReceiptUrl(paymentIntentId);
+      } catch (error) {
+        this.logger.warn(
+          `Failed to retrieve Stripe receipt URL for payment intent ${paymentIntentId}: ${(error as Error).message}`,
+        );
+      }
+    }
 
     await this.prisma.$transaction([
       this.prisma.tournamentPublicationOrder.update({
@@ -350,6 +538,7 @@ export class TournamentsService {
           status: TournamentPublicationOrderStatus.PAID,
           paidAt: new Date(),
           stripePaymentIntentId: paymentIntentId,
+          stripeReceiptUrl,
         },
       }),
       this.prisma.tournament.update({
@@ -358,7 +547,7 @@ export class TournamentsService {
       }),
     ]);
 
-    await this.sendPublicationReceipt(order, lang);
+    await this.sendPublicationReceipt(order, stripeReceiptUrl, lang);
   }
 
   /**
@@ -372,6 +561,7 @@ export class TournamentsService {
       amountCents: number;
       currency: string;
     },
+    stripeReceiptUrl: string | null,
     lang: MailLanguage,
   ): Promise<void> {
     const adminEmails = await this.organizationsService.getAdminEmails(
@@ -384,6 +574,7 @@ export class TournamentsService {
           order.tournament.name,
           order.amountCents,
           order.currency,
+          stripeReceiptUrl,
           lang,
         );
       } catch (error) {
@@ -764,6 +955,71 @@ export class TournamentsService {
     }
   }
 
+  /**
+   * Publishing requires a structure to have been chosen for at least one
+   * category, and -- for whichever of those categories has a real (non-seed)
+   * pool phase -- a calendar generated for it (feat/XXX, product request:
+   * "la publication doit être possible uniquement si on a choisi la
+   * structure et que le calendrier des poules au moins est généré"). A pure
+   * KNOCKOUT_ONLY category has no pool phase to schedule ahead of time at
+   * all (see tournament-creation.service.ts's own comment on the mobile
+   * side, and ScheduleController's own "only a pool phase" guard) -- its
+   * seed phase existing is enough, there's no calendar step to demand there.
+   */
+  private async assertReadyToPublish(tournamentId: string): Promise<void> {
+    const categories = await this.prisma.category.findMany({
+      where: { tournamentId },
+      select: { id: true },
+    });
+    if (categories.length === 0) {
+      throw new ConflictException({
+        message:
+          'Ajoutez au moins une catégorie et structurez-la (poules ou tableau) avant de publier.',
+        code: 'PUBLISH_NO_CATEGORY',
+      });
+    }
+    const categoryIds = categories.map((category) => category.id);
+
+    const phaseCount = await this.prisma.competitionPhase.count({
+      where: { categoryId: { in: categoryIds } },
+    });
+    if (phaseCount === 0) {
+      throw new ConflictException({
+        message:
+          'Choisissez une structure (poules ou tableau) avant de publier.',
+        code: 'PUBLISH_NO_STRUCTURE',
+      });
+    }
+
+    const realGroupStagePhases = await this.prisma.competitionPhase.findMany({
+      where: {
+        categoryId: { in: categoryIds },
+        type: CompetitionPhaseType.GROUP_STAGE,
+        isSeedPhase: false,
+      },
+      select: { id: true },
+    });
+    if (realGroupStagePhases.length === 0) {
+      // Pure KNOCKOUT_ONLY (or some other structure with no real pool
+      // phase) -- nothing to schedule ahead of time, see this method's own
+      // doc comment.
+      return;
+    }
+    const matchCount = await this.prisma.match.count({
+      where: {
+        group: {
+          phaseId: { in: realGroupStagePhases.map((phase) => phase.id) },
+        },
+      },
+    });
+    if (matchCount === 0) {
+      throw new ConflictException({
+        message: 'Générez le calendrier des poules avant de publier.',
+        code: 'PUBLISH_NO_CALENDAR',
+      });
+    }
+  }
+
   private async assertSportExists(sportId: string): Promise<void> {
     const sport = await this.prisma.sport.findUnique({
       where: { id: sportId },
@@ -835,6 +1091,118 @@ export class TournamentsService {
         '8',
       ),
     );
+  }
+
+  /**
+   * Public so the premium-features endpoint (below) can hand the actual
+   * configured tier prices to the frontend -- apps/web's "Plan" section
+   * (tournament-form.page.ts) needs the real cents amounts to render its
+   * card list and to tell which tier a tournament's highest-paid order
+   * actually corresponds to, rather than hardcoding the landing page's own
+   * marketing copy prices as if they were guaranteed to match .env.
+   */
+  publicationTierConfig(): {
+    freeMaxTeams: number;
+    midMaxTeams: number;
+    midPriceCents: number;
+    highPriceCents: number;
+  } {
+    return {
+      freeMaxTeams: this.freeMaxTeams(),
+      midMaxTeams: Number(
+        this.configService.get<string>(
+          'TOURNAMENT_PUBLICATION_TIER_MID_MAX_TEAMS',
+          '48',
+        ),
+      ),
+      midPriceCents: this.tierPriceCents('STANDARD'),
+      highPriceCents: this.tierPriceCents('LARGE'),
+    };
+  }
+
+  /**
+   * The total amount actually paid so far toward this tournament's
+   * publication, 0 if none -- what publish() (and assertTeamAdditionAllowed
+   * below) compare the currently-required tier price against. A SUM of
+   * every PAID order, not the largest one -- see publish()'s own comment on
+   * why (each order is itself already a gap/top-up amount, so only the sum
+   * reflects what's actually been paid toward the current tier).
+   */
+  private async totalPaidPublicationFeeCents(
+    tournamentId: string,
+  ): Promise<number> {
+    const paidTotal = await this.prisma.tournamentPublicationOrder.aggregate({
+      where: { tournamentId, status: TournamentPublicationOrderStatus.PAID },
+      _sum: { amountCents: true },
+    });
+    return paidTotal._sum.amountCents ?? 0;
+  }
+
+  /**
+   * Semantic tier code for a given publication fee -- matches the 3 tiers
+   * named on the landing page's pricing section (Découverte/Standard/Grand
+   * format, apps/web's public.pricing.* i18n). Names/prices themselves stay
+   * frontend-owned (i18n) -- this is just enough for a client to know which
+   * one it's talking about without re-deriving the tier boundaries itself.
+   */
+  private tierCodeForFeeCents(cents: number): 'FREE' | 'STANDARD' | 'LARGE' {
+    if (cents <= 0) {
+      return 'FREE';
+    }
+    const highPriceCents = Number(
+      this.configService.get<string>(
+        'TOURNAMENT_PUBLICATION_TIER_HIGH_PRICE_CENTS',
+        '0',
+      ),
+    );
+    return cents >= highPriceCents && highPriceCents > 0 ? 'LARGE' : 'STANDARD';
+  }
+
+  /**
+   * Blocks TeamsService.create()/importFromCsv() from pushing an already-
+   * PUBLISHED tournament's team count into a pricing tier that hasn't been
+   * paid for yet (feat/XXX -- "bloquer l'ajout d'équipe si déjà publié").
+   * A no-op for a tournament that isn't published (DRAFT/UNPUBLISHED) --
+   * team count is free to change there, the tier is only priced and locked
+   * in at publish() time. `additionalCount` lets a bulk CSV import check
+   * the whole batch up front rather than failing midway through.
+   *
+   * The thrown ForbiddenException carries a structured body (not just a
+   * message) so the frontend can show a real upsell dialog -- "you're on
+   * $currentTier, upgrade to $requiredTier or subscribe annually" -- instead
+   * of a plain error banner (feat/XXX, product request after a real
+   * organizer hit this blind).
+   */
+  async assertTeamAdditionAllowed(
+    organizationId: string,
+    tournamentId: string,
+    additionalCount = 1,
+  ): Promise<void> {
+    const tournament = await this.getOrThrow(organizationId, tournamentId);
+    if (tournament.status !== TournamentStatus.PUBLISHED) {
+      return;
+    }
+    if (await this.organizationsService.hasActiveSubscription(organizationId)) {
+      return;
+    }
+    const [teamsCount, alreadyPaidCents] = await Promise.all([
+      this.prisma.team.count({ where: { tournamentId } }),
+      this.totalPaidPublicationFeeCents(tournamentId),
+    ]);
+    const nextRequiredCents = this.computePublicationFeeCents(
+      teamsCount + additionalCount,
+    );
+    if (nextRequiredCents > alreadyPaidCents) {
+      throw new ForbiddenException({
+        message:
+          "Cette ou ces équipe(s) supplémentaire(s) feraient passer ce tournoi déjà publié à un palier tarifaire supérieur -- mettez à jour le paiement de publication avant d'ajouter d'autres équipes.",
+        code: 'PUBLICATION_TIER_EXCEEDED',
+        currentTier: this.tierCodeForFeeCents(alreadyPaidCents),
+        requiredTier: this.tierCodeForFeeCents(nextRequiredCents),
+        upgradeAmountCents: nextRequiredCents - alreadyPaidCents,
+        currency: 'eur',
+      });
+    }
   }
 
   /**

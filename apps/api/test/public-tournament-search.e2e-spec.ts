@@ -3,6 +3,7 @@ import request from 'supertest';
 import { App } from 'supertest/types';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { createTestApp } from './utils/bootstrap-app';
+import { makeTournamentPublishable } from './utils/make-tournament-publishable';
 import { resetDatabase } from './utils/reset-database';
 
 interface AuthResponseBody {
@@ -92,6 +93,7 @@ describe('Public tournament directory search (e2e)', () => {
         .expect(201);
     }
 
+    await makeTournamentPublishable(app, auth, base, tournamentId);
     await auth(
       request(app.getHttpServer()).post(`${base}/${tournamentId}/publish`),
     ).expect(200);

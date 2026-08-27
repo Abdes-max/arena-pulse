@@ -1,5 +1,11 @@
-import { provideHttpClient } from '@angular/common/http';
-import { ApplicationConfig, ErrorHandler, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import {
+  ApplicationConfig,
+  ErrorHandler,
+  inject,
+  provideAppInitializer,
+  provideBrowserGlobalErrorListeners,
+} from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideApiClient } from 'api-client';
 import { provideIonicAngular } from '@ionic/angular/standalone';
@@ -9,15 +15,24 @@ import { SUPPORTED_LANGUAGES, TranslocoHttpLoader, resolveInitialLanguage } from
 import { environment } from '../environments/environment';
 import { routes } from './app.routes';
 import { GlobalErrorHandler } from './core/global-error-handler';
+import { languageInterceptor } from './core/language.interceptor';
+import { OrganizerAuthService } from './organizer/core/auth.service';
+import { organizerAuthInterceptor } from './organizer/core/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     { provide: ErrorHandler, useClass: GlobalErrorHandler },
     provideRouter(routes),
-    provideHttpClient(),
+    provideHttpClient(withInterceptors([languageInterceptor, organizerAuthInterceptor])),
     provideIonicAngular(),
     provideApiClient({ apiUrl: environment.apiUrl }),
+    // Restores an organizer session from the httpOnly refresh cookie on app
+    // startup (same pattern as apps/web/src/app/app.config.ts) -- so
+    // reopening the app after logging in once doesn't force a re-login.
+    // Harmless 401 when there's no session yet, caught silently inside
+    // OrganizerAuthService.silentRefresh().
+    provideAppInitializer(() => inject(OrganizerAuthService).silentRefresh()),
     // Same reasoning as apps/web's own provideTransloco (see its comment):
     // resolveInitialLanguage() so the app boots straight into the right
     // language instead of flashing fr first.

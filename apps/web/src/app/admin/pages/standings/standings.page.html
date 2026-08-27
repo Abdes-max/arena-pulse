@@ -19,7 +19,7 @@
           [value]="selectedCategoryId()"
           (valueChange)="onCategoryChange($event)"
         />
-        @if (groupStagePhases().length > 0) {
+        @if (phaseOptions().length > 0) {
           <ap-select
             class="standings-page__select"
             [label]="'admin.standings.phaseLabel' | transloco"
@@ -30,13 +30,13 @@
         }
       </div>
 
-      @if (groupStagePhases().length === 0) {
+      @if (phaseOptions().length === 0) {
         @if (isKnockoutOnly()) {
           <p>{{ 'admin.standings.knockoutOnlyNote' | transloco }}</p>
         } @else {
           <p>{{ 'admin.standings.addPoolPhaseFirst' | transloco }}</p>
         }
-      } @else {
+      } @else if (selectedPhaseType() === 'GROUP_STAGE') {
         @if (groupStandings().length === 0) {
           <p>{{ 'admin.standings.addGroupFirst' | transloco }}</p>
         } @else {
@@ -196,6 +196,117 @@
                 </div>
               }
             </section>
+          }
+        }
+      } @else if (selectedPhaseType() === 'KNOCKOUT') {
+        @if (bracketByPhase().get(selectedPhaseId()); as bracket) {
+          @if (bracket.rounds.length === 0) {
+            <p class="standings-page__empty">
+              {{ 'admin.standings.bracketNotGenerated' | transloco }}
+            </p>
+          } @else {
+            <div class="standings-page__table-scroll">
+              <div class="standings-page__bracket">
+                @for (round of bracket.rounds; track round.round) {
+                  <div class="standings-page__bracket-round">
+                    <h3>{{ round.label }}</h3>
+                    <div class="standings-page__bracket-round-matches">
+                      @for (match of round.matches; track match.id) {
+                        <div class="standings-page__bracket-slot">
+                          <ap-bracket-match
+                            [homeTeam]="match.homeTeam ?? { name: match.homeSourceLabel ?? '—' }"
+                            [awayTeam]="match.awayTeam ?? { name: match.awaySourceLabel ?? '—' }"
+                            [homeScore]="match.score?.homeScore"
+                            [awayScore]="match.score?.awayScore"
+                            [forfeitedTeamName]="
+                              match.status === 'FORFEITED' ? match.forfeitedTeam?.name : undefined
+                            "
+                          />
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+
+            @if (bracket.thirdPlaceMatch; as match) {
+              <div class="standings-page__third-place">
+                <h3>{{ 'admin.scores.thirdPlace' | transloco }}</h3>
+                <ap-bracket-match
+                  [homeTeam]="match.homeTeam ?? { name: match.homeSourceLabel ?? '—' }"
+                  [awayTeam]="match.awayTeam ?? { name: match.awaySourceLabel ?? '—' }"
+                  [homeScore]="match.score?.homeScore"
+                  [awayScore]="match.score?.awayScore"
+                  [forfeitedTeamName]="
+                    match.status === 'FORFEITED' ? match.forfeitedTeam?.name : undefined
+                  "
+                />
+              </div>
+            }
+          }
+        }
+      } @else if (selectedPhaseType() === 'final') {
+        @if (finalRanking().length === 0) {
+          <p class="standings-page__empty">{{ 'admin.standings.finalRankingEmpty' | transloco }}</p>
+        } @else {
+          @if (podium(); as p) {
+            <div class="standings-page__podium">
+              <div class="standings-page__podium-step standings-page__podium-step--2">
+                <span class="standings-page__podium-rank">2</span>
+                @if (logoUrl(p.second.teamLogoUrl); as logo) {
+                  <img class="standings-page__podium-logo" [src]="logo" alt="" />
+                }
+                <span class="standings-page__podium-name">{{ p.second.teamName }}</span>
+                <span class="standings-page__podium-stage">{{ p.second.stageLabel }}</span>
+              </div>
+              <div class="standings-page__podium-step standings-page__podium-step--1">
+                <span class="standings-page__podium-rank">1</span>
+                @if (logoUrl(p.first.teamLogoUrl); as logo) {
+                  <img class="standings-page__podium-logo" [src]="logo" alt="" />
+                }
+                <span class="standings-page__podium-name">{{ p.first.teamName }}</span>
+                <span class="standings-page__podium-stage">{{ p.first.stageLabel }}</span>
+              </div>
+              <div class="standings-page__podium-step standings-page__podium-step--3">
+                <span class="standings-page__podium-rank">3</span>
+                @if (logoUrl(p.third.teamLogoUrl); as logo) {
+                  <img class="standings-page__podium-logo" [src]="logo" alt="" />
+                }
+                <span class="standings-page__podium-name">{{ p.third.teamName }}</span>
+                <span class="standings-page__podium-stage">{{ p.third.stageLabel }}</span>
+              </div>
+            </div>
+          }
+
+          @if (finalRankingRest().length > 0) {
+            <div class="standings-page__table-scroll">
+              <table class="standings-page__table standings-page__final-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>{{ 'admin.standings.table.team' | transloco }}</th>
+                    <th>{{ 'admin.standings.table.bracket' | transloco }}</th>
+                    <th>{{ 'admin.standings.table.result' | transloco }}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (row of finalRankingRest(); track row.teamId + row.phaseId) {
+                    <tr>
+                      <td>{{ row.position }}</td>
+                      <td class="standings-page__team-cell">
+                        @if (logoUrl(row.teamLogoUrl); as logo) {
+                          <img class="standings-page__team-logo" [src]="logo" alt="" />
+                        }
+                        {{ row.teamName }}
+                      </td>
+                      <td>{{ row.phaseName }}</td>
+                      <td>{{ row.stageLabel }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
           }
         }
       }

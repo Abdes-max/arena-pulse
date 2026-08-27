@@ -1,0 +1,96 @@
+<ion-header>
+  <ion-toolbar>
+    <ap-logo class="organizer-register-page__brand" slot="start" [wordmark]="false" />
+    <ion-title>
+      {{
+        (state() === 'sent' ? 'organizer.auth.register.sentTitle' : 'organizer.auth.register.title')
+          | transloco
+      }}
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+@switch (state()) {
+  @case ('form') {
+    <form class="organizer-register-page__form" [formGroup]="form" (ngSubmit)="submit()">
+      <ion-content class="organizer-register-page">
+        <div class="organizer-register-page__fields">
+          <p class="organizer-register-page__lede">
+            {{ 'organizer.auth.register.lede' | transloco }}
+          </p>
+          <ap-text-field
+            [label]="'organizer.auth.register.orgNameLabel' | transloco"
+            formControlName="organizationName"
+            autocomplete="organization"
+          />
+          <ap-text-field
+            [label]="'organizer.auth.register.firstNameLabel' | transloco"
+            formControlName="firstName"
+            autocomplete="given-name"
+          />
+          <ap-text-field
+            [label]="'organizer.auth.register.lastNameLabel' | transloco"
+            formControlName="lastName"
+            autocomplete="family-name"
+          />
+          <ap-text-field
+            [label]="'organizer.auth.register.emailLabel' | transloco"
+            type="email"
+            formControlName="email"
+            autocomplete="email"
+          />
+          <ap-text-field
+            [label]="'organizer.auth.register.passwordLabel' | transloco"
+            type="password"
+            formControlName="password"
+            autocomplete="new-password"
+          />
+          @if (errorMessage(); as message) {
+            <p class="organizer-register-page__error" role="alert">{{ message | transloco }}</p>
+          }
+        </div>
+      </ion-content>
+      <ion-footer class="organizer-register-page__footer">
+        <ap-button type="submit" [fullWidth]="true" [disabled]="submitting()">
+          {{ 'organizer.auth.register.submit' | transloco }}
+        </ap-button>
+        <p class="organizer-register-page__linkrow">
+          {{ 'organizer.auth.register.alreadyAccount' | transloco }}
+          <a routerLink="/organizer/login">{{ 'organizer.auth.register.login' | transloco }}</a>
+        </p>
+      </ion-footer>
+    </form>
+  }
+  @case ('sent') {
+    <ion-content class="organizer-register-page">
+      <div class="organizer-register-page__fields">
+        <p>{{ 'organizer.auth.register.sentBody' | transloco: { email: registeredEmail() } }}</p>
+        <p class="organizer-register-page__hint">
+          {{ 'organizer.auth.register.sentHint' | transloco }}
+        </p>
+        @if (resent()) {
+          <p class="organizer-register-page__hint">
+            {{ 'organizer.auth.register.resent' | transloco }}
+          </p>
+        }
+        @if (errorMessage(); as message) {
+          <p class="organizer-register-page__error" role="alert">{{ message | transloco }}</p>
+        }
+      </div>
+    </ion-content>
+    <ion-footer class="organizer-register-page__footer">
+      <ap-button
+        type="button"
+        variant="secondary"
+        [fullWidth]="true"
+        [disabled]="submitting()"
+        (click)="resendVerification()"
+      >
+        {{ 'organizer.auth.register.resend' | transloco }}
+      </ap-button>
+      <ap-button type="button" [fullWidth]="true" routerLink="/organizer/login">
+        {{ 'organizer.auth.register.login' | transloco }}
+      </ap-button>
+    </ion-footer>
+  }
+}

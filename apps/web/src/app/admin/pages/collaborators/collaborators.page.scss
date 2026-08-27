@@ -55,6 +55,49 @@
   max-width: 320px;
 }
 
+// Tournament administrators -- moved here from each tournament's own Général
+// tab (apps/web/src/app/admin/pages/tournaments/tournament-form.page.scss
+// used to own these same 4 rules).
+.collaborators-page__tournament-select {
+  max-width: 320px;
+  margin-bottom: var(--ap-space-4);
+}
+
+.collaborators-page__administrator-list {
+  list-style: none;
+  margin: 0 0 var(--ap-space-4);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+
+  li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ap-space-3);
+  }
+}
+
+.collaborators-page__add-administrator {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-3);
+  max-width: 400px;
+}
+
+.collaborators-page__presets {
+  display: flex;
+  gap: var(--ap-space-2);
+}
+
+.collaborators-page__permission-checkbox {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  font-size: 0.9rem;
+}
+
 // Members table (Nom/Email/Rôle/Actions) -> stacked card per member under
 // md, same pattern as team-list.page (Phase 3) -- email + a role <ap-select>
 // don't have anywhere sensible to shrink into on a phone-width row.

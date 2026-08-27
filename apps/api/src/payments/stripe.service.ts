@@ -71,6 +71,29 @@ export class StripeService {
     return this.getClient().checkout.sessions.retrieve(sessionId);
   }
 
+  /**
+   * Stripe's own hosted receipt URL for the Charge underlying a
+   * PaymentIntent (Charge.receipt_url) -- used to link the admin UI and the
+   * payment confirmation email straight to Stripe's real receipt instead of
+   * rendering a custom one (see TournamentsService.applyPaidPublicationSession).
+   * Returns null rather than throwing if the charge isn't there yet or has
+   * no receipt (e.g. receipt emails disabled on the Stripe account) --
+   * never worth failing the whole "mark paid" transaction over.
+   */
+  async retrieveChargeReceiptUrl(
+    paymentIntentId: string,
+  ): Promise<string | null> {
+    const paymentIntent = await this.getClient().paymentIntents.retrieve(
+      paymentIntentId,
+      { expand: ['latest_charge'] },
+    );
+    const charge = paymentIntent.latest_charge;
+    if (!charge || typeof charge === 'string') {
+      return null;
+    }
+    return charge.receipt_url ?? null;
+  }
+
   constructWebhookEvent(payload: Buffer, signature: string): Stripe.Event {
     const webhookSecret = this.configService.getOrThrow<string>(
       'STRIPE_WEBHOOK_SECRET',

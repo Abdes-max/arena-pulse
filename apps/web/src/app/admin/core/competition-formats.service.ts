@@ -296,6 +296,18 @@ export class CompetitionFormatsService {
     );
   }
 
+  listBracketMatches(
+    organizationId: string,
+    tournamentId: string,
+    bracketId: string,
+  ): Promise<Match[]> {
+    return firstValueFrom(
+      this.http.get<Match[]>(
+        `${this.base(organizationId, tournamentId)}/knockout-brackets/${bracketId}/matches`,
+      ),
+    );
+  }
+
   listQualificationRules(
     organizationId: string,
     tournamentId: string,

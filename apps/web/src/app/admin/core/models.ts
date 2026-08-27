@@ -108,6 +108,9 @@ export interface PublicationOrder {
   currency: string;
   createdAt: string;
   paidAt: string | null;
+  // Stripe's own hosted receipt -- null for a $0 free-tier order (never
+  // goes through Stripe Checkout) or a still-PENDING_PAYMENT one.
+  stripeReceiptUrl: string | null;
 }
 
 export interface Sport {

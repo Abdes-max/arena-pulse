@@ -23,15 +23,27 @@
         <section class="structure-page__section">
           <h2>{{ 'admin.structure.preset.title' | transloco }}</h2>
 
-          <ap-tabs
-            [label]="'admin.structure.preset.formatLabel' | transloco"
-            [value]="presetFormat()"
-            [options]="presetFormatOptions()"
-            (valueChange)="onPresetFormatChange($event)"
-          />
+          <span class="structure-page__format-label">{{
+            'admin.structure.preset.formatLabel' | transloco
+          }}</span>
+          <div class="structure-page__format-grid">
+            @for (card of presetFormatCards(); track card.value) {
+              <button
+                type="button"
+                class="structure-page__formatcard"
+                [class.is-selected]="presetFormat() === card.value"
+                (click)="onPresetFormatChange(card.value)"
+              >
+                <span class="structure-page__formatcard-radio"></span>
+                <span class="structure-page__formatcard-body">
+                  <span class="structure-page__formatcard-name">{{ card.name }}</span>
+                  <span class="structure-page__formatcard-desc">{{ card.desc }}</span>
+                </span>
+              </button>
+            }
+          </div>
 
           <p class="structure-page__hint">
-            {{ presetIntroText() | transloco }}
             @if (unassignedTeams().length > 0) {
               {{
                 'admin.structure.preset.unassignedAvailable'
@@ -262,9 +274,38 @@
                 }})
               </span>
             </h2>
-            <ap-button type="button" variant="ghost" (click)="removePhase(phase)">
-              {{ 'admin.structure.phase.removePhase' | transloco }}
-            </ap-button>
+            @if (confirmingRemovePhaseId() === phase.id) {
+              <span class="structure-page__confirm-inline">
+                <span class="structure-page__confirm-inline-question">
+                  {{ 'admin.structure.phase.confirmRemoveQuestion' | transloco }}
+                </span>
+                <ap-button
+                  type="button"
+                  variant="primary"
+                  [disabled]="removingPhaseId() === phase.id"
+                  (click)="confirmRemovePhase(phase)"
+                >
+                  {{
+                    (removingPhaseId() === phase.id
+                      ? 'admin.structure.phase.removing'
+                      : 'admin.structure.phase.confirmRemove'
+                    ) | transloco
+                  }}
+                </ap-button>
+                <ap-button
+                  type="button"
+                  variant="ghost"
+                  [disabled]="removingPhaseId() === phase.id"
+                  (click)="cancelRemovePhase()"
+                >
+                  {{ 'admin.structure.phase.cancelRemove' | transloco }}
+                </ap-button>
+              </span>
+            } @else {
+              <ap-button type="button" variant="ghost" (click)="requestRemovePhase(phase)">
+                {{ 'admin.structure.phase.removePhase' | transloco }}
+              </ap-button>
+            }
           </div>
 
           @if (phase.type === 'GROUP_STAGE') {

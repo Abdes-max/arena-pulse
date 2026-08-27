@@ -49,5 +49,155 @@
       },
       "copyright": "© 2026 TournArena. Todos los derechos reservados."
     }
+  },
+  "organizer": {
+    "auth": {
+      "register": {
+        "title": "Crear mi cuenta",
+        "lede": "Crea tu cuenta de organizador·a para gestionar tus torneos directamente desde la app.",
+        "orgNameLabel": "Nombre de la organización",
+        "firstNameLabel": "Nombre",
+        "lastNameLabel": "Apellidos",
+        "emailLabel": "Correo electrónico",
+        "passwordLabel": "Contraseña",
+        "submit": "Crear mi cuenta",
+        "alreadyAccount": "¿Ya eres organizador·a?",
+        "login": "Iniciar sesión",
+        "sentTitle": "Revisa tu correo",
+        "sentBody": "Se ha enviado un correo de confirmación a {{email}}.",
+        "sentHint": "Abre el enlace para activar tu cuenta y vuelve aquí para iniciar sesión.",
+        "resend": "Reenviar correo",
+        "resent": "Correo reenviado.",
+        "errorConflict": "Ya existe una cuenta con este correo.",
+        "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo."
+      },
+      "login": {
+        "title": "Iniciar sesión",
+        "backAria": "Atrás",
+        "lede": "Inicia sesión en tu cuenta de organizador·a.",
+        "emailLabel": "Correo electrónico",
+        "passwordLabel": "Contraseña",
+        "submit": "Iniciar sesión",
+        "resend": "Reenviar el correo de verificación",
+        "resent": "Correo reenviado.",
+        "noAccount": "¿Aún no tienes cuenta?",
+        "createOrg": "Crea una",
+        "errorVerify": "Verifica tu correo antes de iniciar sesión.",
+        "errorCredentials": "Correo o contraseña incorrectos.",
+        "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo."
+      }
+    },
+    "tournaments": {
+      "list": {
+        "title": "Mis torneos",
+        "loading": "Cargando…",
+        "empty": "Todavía no tienes torneos.",
+        "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo.",
+        "newTournament": "Nuevo torneo",
+        "logout": "Cerrar sesión",
+        "status": {
+          "DRAFT": "Borrador",
+          "PUBLISHED": "Publicado",
+          "UNPUBLISHED": "Despublicado",
+          "ARCHIVED": "Archivado"
+        }
+      }
+    },
+    "wizard": {
+      "title": "Nuevo torneo",
+      "cancelAria": "Cancelar",
+      "cancel": "Cancelar",
+      "back": "Atrás",
+      "next": "Siguiente",
+      "payAndPublish": "Pagar y publicar",
+      "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo.",
+      "rail": {
+        "1": "Info",
+        "2": "Equipos",
+        "3": "Estructura",
+        "4": "Calendario",
+        "5": "Publicación"
+      },
+      "infos": {
+        "title": "Información general",
+        "nameLabel": "Nombre del torneo",
+        "sportLabel": "Deporte",
+        "sportPlaceholder": "Elige un deporte…",
+        "venueLabel": "Lugar",
+        "onlineLabel": "Torneo en línea",
+        "onlineHint": "Competición eSport, sin lugar físico",
+        "personalizationTitle": "Personalización",
+        "theme": {
+          "INK_SIGNAL": "Tema Tinta y Señal",
+          "PULSE_EMBER": "Tema Brasa",
+          "NEON_COURT": "Tema Neón",
+          "FRESH_PITCH": "Tema Césped",
+          "CRIMSON_CHARGE": "Tema Carmesí"
+        },
+        "logoLabel": "Logo del torneo"
+      },
+      "teams": {
+        "title": "Equipos participantes",
+        "countSingular": "{{count}} equipo añadido",
+        "countPlural": "{{count}} equipos añadidos",
+        "addLabel": "Nombre del equipo",
+        "addPlaceholder": "Nombre del equipo",
+        "add": "Añadir",
+        "remove": "Quitar {{name}}",
+        "minHint": "Se necesitan al menos 3 equipos para pasar al siguiente paso."
+      },
+      "structure": {
+        "title": "Formato de la competición",
+        "poolsKnockout": {
+          "name": "Grupos y luego eliminación directa",
+          "desc": "Fase de grupos, y después los mejores equipos se enfrentan en directo."
+        },
+        "knockoutOnly": {
+          "name": "Eliminación directa simple",
+          "desc": "Cada derrota elimina al equipo. Rápido, un único ganador."
+        },
+        "league": {
+          "name": "Liga (todos contra todos)",
+          "desc": "Cada equipo se enfrenta una vez a todos los demás."
+        },
+        "poolCountLabel": "Número de grupos",
+        "qualifiersLabel": "Clasificados por grupo"
+      },
+      "calendar": {
+        "title": "Calendario de partidos",
+        "lede": "Genera automáticamente el calendario a partir de los equipos y el formato elegidos.",
+        "generate": "Generar calendario",
+        "generating": "Generando…",
+        "noScheduleHint": "No hay calendario que generar para este formato -- el cuadro de eliminación directa se completa partido a partido, a medida que se conocen los resultados.",
+        "editLaterHint": "Los horarios y lugares exactos podrán ajustarse más tarde desde \"Mis torneos\".",
+        "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo."
+      },
+      "publish": {
+        "visibilityTitle": "Visibilidad",
+        "public": {
+          "name": "Público",
+          "desc": "Visible en la búsqueda de torneos."
+        },
+        "private": {
+          "name": "Privado",
+          "desc": "Accesible solo mediante enlace."
+        },
+        "publishTitle": "Publicación",
+        "paymentHint": "Si superas tu plan gratuito, se te propondrá un pago seguro con Stripe antes de publicar.",
+        "planTitle": "Plan",
+        "planLoading": "Cargando…",
+        "planActive": "Suscripción anual activa hasta el {{date}} — todas tus publicaciones son gratuitas.",
+        "planPending": "Pago de la suscripción anual pendiente de confirmación.",
+        "planNone": "Facturación por publicación según el número de equipos. La suscripción anual hace que todas tus publicaciones sean gratuitas.",
+        "planManage": "Gestionar mi suscripción"
+      },
+      "done": {
+        "title": "¡Torneo publicado!",
+        "body": "{{name}} ya está en línea y listo para recibir resultados.",
+        "pendingPaymentTitle": "Finaliza el pago",
+        "pendingPaymentBody": "Se ha abierto una pestaña de pago seguro. Una vez completado el pago, tu torneo se publicará -- vuelve a Mis torneos para comprobar su estado.",
+        "backToList": "Volver a Mis torneos"
+      }
+    }
   }
 }

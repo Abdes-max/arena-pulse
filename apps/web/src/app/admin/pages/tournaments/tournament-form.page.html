@@ -82,7 +82,24 @@
                         }
                       </td>
                       <td>
-                        @if (order.status === 'PAID') {
+                        @if (order.stripeReceiptUrl) {
+                          <!-- Stripe's own hosted receipt (real invoice/
+                               receipt from the actual Charge) -- preferred
+                               over the custom print-only view below
+                               whenever a real Stripe payment produced one
+                               (never true for a $0 free-tier order). -->
+                          <a
+                            [href]="order.stripeReceiptUrl"
+                            target="_blank"
+                            rel="noopener"
+                            class="tournament-form-page__print-btn"
+                          >
+                            {{ 'admin.tournamentForm.payment.viewReceipt' | transloco }}
+                          </a>
+                        } @else if (order.status === 'PAID' && order.amountCents > 0) {
+                          <!-- A €0 free-tier order never goes through Stripe,
+                               so there's no real receipt to print or link to
+                               -- no button at all rather than a fake one. -->
                           <button
                             type="button"
                             class="tournament-form-page__print-btn"
@@ -99,6 +116,121 @@
             </div>
           }
         </section>
+      }
+
+      <section class="tournament-form-page__section">
+        <h2>{{ 'admin.tournamentForm.plan.title' | transloco }}</h2>
+        @if (subscriptionStatus(); as sub) {
+          @if (sub.status === 'ACTIVE') {
+            <p class="tournament-form-page__note">
+              {{
+                'admin.tournamentForm.plan.active' | transloco: { date: formatDate(sub.expiresAt) }
+              }}
+            </p>
+          } @else if (isEditMode()) {
+            <!-- Card grid only makes sense once a tournamentId exists --
+                 getPremiumFeatures (loadPremiumFeatures) is what fills
+                 midMaxTeams/midPriceCents/highPriceCents, and it's only
+                 fetched in edit mode. Create mode falls through to the
+                 plain-text branch below, same as before this grid existed. -->
+            <div class="tournament-form-page__plan-grid">
+              @for (card of planCards(); track card.tier) {
+                <button
+                  type="button"
+                  class="tournament-form-page__plan-card"
+                  [class.tournament-form-page__plan-card--current]="card.tier === currentTierCode()"
+                  [disabled]="card.tier === 'FREE' || card.tier === currentTierCode()"
+                  (click)="selectTier(card.tier)"
+                >
+                  @if (card.tier === currentTierCode()) {
+                    <span class="tournament-form-page__plan-current-badge">
+                      {{ 'admin.tournamentForm.plan.current' | transloco }}
+                    </span>
+                  }
+                  <span class="tournament-form-page__plan-name">{{ card.name }}</span>
+                  <span class="tournament-form-page__plan-price">{{ card.price }}</span>
+                  <span class="tournament-form-page__plan-desc">{{ card.desc }}</span>
+                </button>
+              }
+            </div>
+            @if (sub.status === 'PENDING_PAYMENT') {
+              <p class="tournament-form-page__note">
+                {{ 'admin.tournamentForm.plan.pending' | transloco }}
+              </p>
+            }
+          } @else {
+            <p class="tournament-form-page__note">
+              {{ 'admin.tournamentForm.plan.none' | transloco: { count: freeMaxTeams() } }}
+            </p>
+          }
+          <ap-button
+            type="button"
+            variant="ghost"
+            size="sm"
+            routerLink="/admin/organization/subscription"
+          >
+            {{ 'admin.tournamentForm.plan.manage' | transloco }}
+          </ap-button>
+        } @else {
+          <p class="tournament-form-page__note">
+            {{ 'admin.tournamentForm.plan.loading' | transloco }}
+          </p>
+        }
+      </section>
+
+      @if (confirmTierChange(); as change) {
+        <!-- Same backdrop-button-sibling modal pattern as the
+             Personnalisation dialog above. -->
+        <button
+          type="button"
+          class="tournament-form-page__plan-backdrop"
+          (click)="cancelTierChange()"
+          [attr.aria-label]="'admin.tournamentForm.plan.cancel' | transloco"
+        ></button>
+        <div
+          class="tournament-form-page__plan-dialog"
+          role="dialog"
+          aria-modal="true"
+          [attr.aria-label]="'admin.tournamentForm.plan.confirmTitle' | transloco"
+        >
+          <h2 class="tournament-form-page__personalization-title">
+            {{ 'admin.tournamentForm.plan.confirmTitle' | transloco }}
+          </h2>
+          <p>
+            {{
+              'admin.tournamentForm.plan.confirmChange'
+                | transloco: { from: change.fromLabel, to: change.toLabel }
+            }}
+          </p>
+          @if (tierChangeError()) {
+            <p class="tournament-form-page__error">
+              {{ tierChangeError() | transloco }}
+            </p>
+          }
+          <div class="tournament-form-page__plan-dialog-actions">
+            <ap-button
+              type="button"
+              variant="ghost"
+              [disabled]="tierChanging()"
+              (click)="cancelTierChange()"
+            >
+              {{ 'admin.tournamentForm.plan.cancel' | transloco }}
+            </ap-button>
+            <ap-button
+              type="button"
+              variant="primary"
+              [disabled]="tierChanging()"
+              (click)="confirmTierChangeAction()"
+            >
+              {{
+                (tierChanging()
+                  ? 'admin.tournamentForm.plan.processing'
+                  : 'admin.tournamentForm.plan.proceedToPayment'
+                ) | transloco
+              }}
+            </ap-button>
+          </div>
+        </div>
       }
 
       @if (isEditMode() && tournament(); as t) {
@@ -403,59 +535,6 @@
             />
             <ap-button type="button" variant="ghost" (click)="addVenue()">{{
               'admin.tournamentForm.venues.addVenue' | transloco
-            }}</ap-button>
-          </div>
-        </section>
-
-        <section class="tournament-form-page__section">
-          <h2>{{ 'admin.tournamentForm.admins.title' | transloco }}</h2>
-          <ul class="tournament-form-page__administrator-list">
-            @for (administrator of administrators(); track administrator.id) {
-              <li>
-                {{ administrator.firstName }} {{ administrator.lastName }} ({{
-                  administrator.email
-                }}) —
-                {{ administrator.permissionKeys.join(', ') }}
-                <ap-button
-                  type="button"
-                  variant="ghost"
-                  (click)="removeAdministrator(administrator)"
-                >
-                  {{ 'admin.tournamentForm.admins.remove' | transloco }}
-                </ap-button>
-              </li>
-            }
-          </ul>
-
-          <div class="tournament-form-page__add-administrator">
-            <ap-text-field
-              [label]="'admin.tournamentForm.admins.emailLabel' | transloco"
-              [hideLabel]="true"
-              type="email"
-              [placeholder]="'admin.tournamentForm.admins.emailLabel' | transloco"
-              [value]="newAdministratorEmail()"
-              (valueChange)="onNewAdministratorEmailChange($event)"
-            />
-            <div class="tournament-form-page__presets">
-              <ap-button type="button" variant="ghost" (click)="applyPresetFull()">
-                {{ 'admin.tournamentForm.admins.presetFull' | transloco }}
-              </ap-button>
-              <ap-button type="button" variant="ghost" (click)="applyPresetReferee()">
-                {{ 'admin.tournamentForm.admins.presetReferee' | transloco }}
-              </ap-button>
-            </div>
-            @for (permission of permissions(); track permission.id) {
-              <label class="tournament-form-page__permission-checkbox">
-                <input
-                  type="checkbox"
-                  [checked]="newAdministratorPermissionKeys().includes(permission.key)"
-                  (change)="togglePermission(permission.key, $event)"
-                />
-                {{ permission.label }}
-              </label>
-            }
-            <ap-button type="button" (click)="addAdministrator()">{{
-              'admin.tournamentForm.admins.add' | transloco
             }}</ap-button>
           </div>
         </section>

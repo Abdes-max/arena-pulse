@@ -1,0 +1,482 @@
+// Port of the approved mockup's wizard screen CSS (adaptive-leaping-elephant.md,
+// Étape 0) -- class names below intentionally echo the mockup's own
+// (.rail/.formatcard/.switchrow/...) even though they're BEM-prefixed here
+// (wizard-page__rail, not .rail) to stay consistent with this app's other
+// pages, which all scope their classes to the page name.
+
+ion-toolbar {
+  --padding-start: var(--ap-space-2);
+  --padding-end: var(--ap-space-4);
+}
+
+ion-title {
+  padding-inline: 0;
+  text-align: start;
+  font-family: var(--ap-font-heading);
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.wizard-page__cancel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--ap-color-fg);
+  cursor: pointer;
+}
+
+// ---- rail (step progress) ----
+
+.wizard-page__rail {
+  display: flex;
+  align-items: center;
+  padding: var(--ap-space-1) var(--ap-space-4) var(--ap-space-3);
+  background: var(--ap-color-surface);
+}
+
+.wizard-page__rail-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ap-space-1);
+  flex: 1;
+  position: relative;
+}
+
+.wizard-page__rail-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--ap-color-border);
+  color: var(--ap-color-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.68rem;
+  font-weight: 700;
+  z-index: 1;
+}
+
+.wizard-page__rail-step.is-done .wizard-page__rail-dot {
+  background: var(--ap-color-signal);
+  color: var(--ap-color-on-signal);
+}
+
+.wizard-page__rail-step.is-current .wizard-page__rail-dot {
+  background: var(--ap-color-signal-soft);
+  color: var(--ap-color-signal-text);
+  border: 2px solid var(--ap-color-signal);
+}
+
+.wizard-page__rail-label {
+  font-size: 0.6rem;
+  color: var(--ap-color-muted);
+  text-align: center;
+  line-height: 1.2;
+}
+
+.wizard-page__rail-step.is-current .wizard-page__rail-label {
+  color: var(--ap-color-fg);
+  font-weight: 700;
+}
+
+.wizard-page__rail-line {
+  position: absolute;
+  top: 11px;
+  left: -50%;
+  width: 100%;
+  height: 2px;
+  background: var(--ap-color-border);
+  z-index: 0;
+}
+
+.wizard-page__rail-step:first-child .wizard-page__rail-line {
+  display: none;
+}
+
+.wizard-page__rail-step.is-done .wizard-page__rail-line,
+.wizard-page__rail-step.is-current .wizard-page__rail-line {
+  background: var(--ap-color-signal);
+}
+
+// ---- content ----
+
+.wizard-page {
+  --padding-top: var(--ap-space-4);
+  --padding-bottom: var(--ap-space-4);
+  --padding-start: var(--ap-space-4);
+  --padding-end: var(--ap-space-4);
+}
+
+.wizard-page__scroll {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-4);
+}
+
+.wizard-page__section-title {
+  font-family: var(--ap-font-heading);
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin: 0;
+  letter-spacing: var(--ap-tracking-tight);
+}
+
+.wizard-page__lede {
+  margin: 0;
+  color: var(--ap-color-muted);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.wizard-page__hint {
+  margin: 0;
+  color: var(--ap-color-muted);
+  font-size: 0.78rem;
+}
+
+.wizard-page__error {
+  margin: 0;
+  color: var(--ap-color-error);
+  font-size: 0.85rem;
+}
+
+// ---- step 1: infos personalization ----
+
+.wizard-page__switchrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-3);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  padding: var(--ap-space-3);
+  cursor: pointer;
+}
+
+.wizard-page__switchrow-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.wizard-page__switchrow-hint {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--ap-color-muted);
+  margin-top: 2px;
+}
+
+.wizard-page__themes {
+  display: flex;
+  gap: var(--ap-space-2);
+}
+
+.wizard-page__theme-swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+
+  &[data-theme-swatch='INK_SIGNAL'] {
+    background: #1e293b;
+  }
+  &[data-theme-swatch='PULSE_EMBER'] {
+    background: #b45309;
+  }
+  &[data-theme-swatch='NEON_COURT'] {
+    background: #7c3aed;
+  }
+  &[data-theme-swatch='FRESH_PITCH'] {
+    background: #15803d;
+  }
+  &[data-theme-swatch='CRIMSON_CHARGE'] {
+    background: #b91c1c;
+  }
+
+  &.is-selected {
+    border-color: var(--ap-color-fg);
+    box-shadow: 0 0 0 2px var(--ap-color-bg);
+  }
+}
+
+// Smaller, icon-led sibling of .wizard-page__formatcard below (shares its
+// base declarations there via a combined selector) -- a compact grid
+// instead of one-per-row, since a sport name alone (no description) fits a
+// much smaller card.
+.wizard-page__sport-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: var(--ap-space-2);
+}
+
+.wizard-page__sportcard {
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ap-space-1);
+  border-radius: var(--ap-radius-md);
+  padding: var(--ap-space-2);
+  color: var(--ap-color-muted);
+}
+
+.wizard-page__sportcard-icon svg {
+  width: 26px;
+  height: 26px;
+  display: block;
+}
+
+.wizard-page__sportcard-name {
+  font-size: 0.72rem;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.wizard-page__logo-picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.wizard-page__logo-filename {
+  font-weight: 400;
+  color: var(--ap-color-muted);
+  font-size: 0.78rem;
+}
+
+// ---- step 2: teams ----
+
+.wizard-page__teamcount {
+  margin: calc(-1 * var(--ap-space-2)) 0 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.wizard-page__teamadd {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--ap-space-2);
+
+  ap-text-field {
+    flex: 1;
+  }
+}
+
+.wizard-page__teamlist {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+}
+
+.wizard-page__teamrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  padding: var(--ap-space-2) var(--ap-space-3);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.wizard-page__teamrow-remove {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--ap-color-muted);
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1;
+
+  &:hover {
+    color: var(--ap-color-error);
+  }
+}
+
+// ---- step 3 + 5: format/visibility cards ----
+
+.wizard-page__formatcard,
+.wizard-page__sportcard {
+  display: flex;
+  background: var(--ap-color-surface);
+  border: 1.5px solid var(--ap-color-border);
+  cursor: pointer;
+  font: inherit;
+}
+
+.wizard-page__formatcard {
+  align-items: flex-start;
+  gap: var(--ap-space-3);
+  border-radius: var(--ap-radius-lg);
+  padding: var(--ap-space-3);
+  text-align: left;
+  width: 100%;
+  color: var(--ap-color-fg);
+}
+
+.wizard-page__formatcard.is-selected,
+.wizard-page__sportcard.is-selected {
+  border-color: var(--ap-color-signal);
+  background: var(--ap-color-signal-soft);
+}
+
+.wizard-page__sportcard.is-selected {
+  color: var(--ap-color-signal);
+}
+
+.wizard-page__formatcard-radio {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--ap-color-border);
+  flex: none;
+  margin-top: 2px;
+  position: relative;
+}
+
+.wizard-page__formatcard.is-selected .wizard-page__formatcard-radio {
+  border-color: var(--ap-color-signal);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border-radius: 50%;
+    background: var(--ap-color-signal);
+  }
+}
+
+.wizard-page__formatcard-icon {
+  font-size: 1.1rem;
+}
+
+.wizard-page__formatcard-body {
+  flex: 1;
+}
+
+.wizard-page__formatcard-name {
+  font-weight: 700;
+  font-size: 0.88rem;
+}
+
+.wizard-page__formatcard-desc {
+  display: block;
+  font-size: 0.76rem;
+  color: var(--ap-color-muted);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+.wizard-page__visicards {
+  display: flex;
+  gap: var(--ap-space-2);
+
+  .wizard-page__formatcard {
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--ap-space-1);
+  }
+}
+
+// ---- step 4: schedule ----
+
+.wizard-page__gen-cta {
+  background: var(--ap-color-surface);
+  border: 1.5px dashed var(--ap-color-border);
+  border-radius: var(--ap-radius-lg);
+  padding: var(--ap-space-6) var(--ap-space-4);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ap-space-3);
+}
+
+.wizard-page__matchlist {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+}
+
+.wizard-page__matchrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-2);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  padding: var(--ap-space-2) var(--ap-space-3);
+  font-size: 0.82rem;
+}
+
+.wizard-page__matchrow-teams {
+  font-weight: 600;
+}
+
+.wizard-page__matchrow-time {
+  color: var(--ap-color-muted);
+  font-size: 0.72rem;
+  flex: none;
+}
+
+// ---- footer (back/next) ----
+
+.wizard-page__footer {
+  --background: var(--ap-color-bg);
+  display: flex;
+  gap: var(--ap-space-2);
+  padding: var(--ap-space-3) var(--ap-space-4) var(--ap-space-6);
+  border-top: var(--ap-border-width) solid var(--ap-color-border);
+  background: var(--ap-color-bg);
+}
+
+.wizard-page__footer-next {
+  flex: 2;
+}
+
+// ---- confirmation ----
+
+.wizard-page__confirm {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--ap-space-4);
+  padding: var(--ap-space-6) var(--ap-space-4);
+}
+
+.wizard-page__confirm-check {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--ap-color-signal-soft);
+  color: var(--ap-color-signal-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+}
+
+.wizard-page__confirm-title {
+  font-family: var(--ap-font-heading);
+  font-weight: 800;
+  font-size: 1.3rem;
+  margin: 0;
+  letter-spacing: var(--ap-tracking-tight);
+}

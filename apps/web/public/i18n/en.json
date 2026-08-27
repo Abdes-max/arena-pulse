@@ -485,7 +485,20 @@
       "errorRoleLastAdmin": "Unable to change this role: this is the organization's last administrator.",
       "errorRoleGeneric": "Unable to change this role, please try again.",
       "errorRemoveLastAdmin": "Unable to remove this collaborator: this is the organization's last administrator.",
-      "errorRemoveGeneric": "Unable to remove this collaborator, please try again."
+      "errorRemoveGeneric": "Unable to remove this collaborator, please try again.",
+      "tournamentAdmins": {
+        "title": "Tournament administrators",
+        "tournamentLabel": "Tournament",
+        "remove": "Remove",
+        "emailLabel": "Collaborator's email",
+        "presetFull": "Full administrator",
+        "presetReferee": "Referee (scores only)",
+        "add": "Add as administrator",
+        "errorLoad": "Unable to load this tournament's administrators.",
+        "errorAddNotMember": "This person must first be a member of the organization.",
+        "errorAddGeneric": "Unable to add this administrator.",
+        "errorRemove": "Unable to remove this administrator."
+      }
     },
     "account": {
       "title": "My account",
@@ -593,7 +606,23 @@
         },
         "paid": "Paid",
         "pending": "Pending",
-        "print": "Print"
+        "print": "Print",
+        "viewReceipt": "View receipt"
+      },
+      "plan": {
+        "title": "Plan",
+        "loading": "Loading…",
+        "active": "Annual subscription active until {{date}} — every tournament publication is free.",
+        "pending": "Annual subscription payment awaiting confirmation.",
+        "none": "Billed per publication based on team count (free up to {{count}} teams). The annual subscription makes every publication free.",
+        "manage": "Manage my subscription",
+        "current": "Current plan",
+        "confirmTitle": "Change plan",
+        "confirmChange": "Do you really want to change plan from {{from}} to {{to}}? You'll be redirected to payment.",
+        "cancel": "Cancel",
+        "processing": "Redirecting…",
+        "proceedToPayment": "Proceed to payment",
+        "error": "Something went wrong, please try again."
       },
       "logo": {
         "title": "Logo",
@@ -637,14 +666,6 @@
         "newVenuePlaceholder": "New venue (e.g. Municipal stadium)",
         "addVenue": "Add a venue"
       },
-      "admins": {
-        "title": "Tournament administrators",
-        "remove": "Remove",
-        "emailLabel": "Collaborator's email",
-        "presetFull": "Full administrator",
-        "presetReferee": "Referee (scores only)",
-        "add": "Add as administrator"
-      },
       "description": {
         "title": "Description",
         "placeholder": "Introduce your competition to public site visitors…",
@@ -679,6 +700,9 @@
         "loadData": "Unable to load tournament data.",
         "save": "Unable to save the tournament.",
         "actionNotAllowed": "This action isn't possible in the tournament's current state.",
+        "publishNoCategory": "Add at least one category and set up its structure (pools or bracket) before publishing.",
+        "publishNoStructure": "Choose a structure (pools or bracket) before publishing.",
+        "publishNoCalendar": "Generate the pools schedule before publishing.",
         "generic": "Something went wrong, please try again.",
         "duplicate": "Unable to duplicate this tournament.",
         "logoInvalid": "Invalid file format or size (PNG, JPEG, or WebP, 2 MB maximum).",
@@ -696,9 +720,6 @@
         "removeVenue": "Unable to delete this venue.",
         "addField": "Unable to add this field (name already used?).",
         "removeField": "Unable to delete this field.",
-        "addAdminNotMember": "This person must first be a member of the organization.",
-        "addAdminGeneric": "Unable to add this administrator.",
-        "removeAdmin": "Unable to remove this administrator.",
         "logoPremiumLocked": "Reserved for tournaments with more than {{count}} teams, or an active annual subscription."
       },
       "personalization": {
@@ -726,7 +747,8 @@
       "cancel": "Cancel",
       "export": "Export",
       "deleteSelected": "Delete selection",
-      "typeToConfirmLabel": "Type SUPPRIMER to confirm",
+      "confirmDeleteQuestion": "Delete this team? This action is irreversible.",
+      "confirmBulkDeleteQuestion": "Delete {{count}} selected team(s)? This action is irreversible.",
       "confirmDelete": "Confirm deletion",
       "deleting": "Deleting…",
       "empty": "No teams yet.",
@@ -770,7 +792,19 @@
         "removePlayer": "Unable to remove this player.",
         "logoPremiumLocked": "Reserved for tournaments with more than {{count}} teams, or an active annual subscription."
       },
-      "logoPremiumHint": "Team logos are reserved for tournaments with more than {{count}} teams, or an active annual subscription."
+      "logoPremiumHint": "Team logos are reserved for tournaments with more than {{count}} teams, or an active annual subscription.",
+      "tierModal": {
+        "title": "You're on the {{currentPlan}} plan",
+        "body": "This team would push this already-published tournament past your {{currentPlan}} plan. Upgrade to the next tier or subscribe annually to continue.",
+        "upgradeButton": "Upgrade to {{plan}} — {{amount}}",
+        "subscribeButton": "Switch to annual subscription",
+        "cancel": "Cancel",
+        "close": "Close",
+        "errors": {
+          "upgrade": "Couldn't update the publication payment, please try again.",
+          "subscribe": "Couldn't subscribe, please try again."
+        }
+      }
     },
     "refereeList": {
       "title": "Referees",
@@ -890,6 +924,10 @@
       },
       "phase": {
         "removePhase": "Delete phase",
+        "confirmRemoveQuestion": "Deleting this phase also deletes its pools, matches and results. Confirm?",
+        "confirmRemove": "Confirm deletion",
+        "removing": "Deleting…",
+        "cancelRemove": "Cancel",
         "standingRule": {
           "title": "Points scale",
           "hint": "Applies to every pool in this phase.",
@@ -1062,10 +1100,13 @@
       "addCategoryFirst": "Add a category first on the tournament page.",
       "categoryLabel": "Category",
       "phaseLabel": "Phase",
-      "knockoutOnlyNote": "This tournament is in Knockout format: there is no pool standing.",
+      "knockoutOnlyNote": "This tournament is in Knockout format: generate the bracket on this category’s Structure page first.",
       "addPoolPhaseFirst": "Add a pool phase first on this category’s Structure page.",
       "addGroupFirst": "Add a pool to this phase first.",
       "provisional": "(provisional)",
+      "bracketNotGenerated": "The bracket hasn't been generated for this phase yet.",
+      "finalRankingTab": "Final ranking",
+      "finalRankingEmpty": "The final ranking will be available once the knockout brackets are completed.",
       "table": {
         "team": "Team",
         "played": "P",
@@ -1084,7 +1125,9 @@
         "diffFull": "Goal difference",
         "points": "Pts",
         "pointsFull": "Points",
-        "rating": "Rating"
+        "rating": "Rating",
+        "bracket": "Bracket",
+        "result": "Result"
       },
       "tieTotal": "Complete tie between",
       "tieQuestion": "— who should rank ahead of the others?",

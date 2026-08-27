@@ -147,6 +147,104 @@
   color: var(--ap-color-muted);
 }
 
+// Two-click phase deletion (arm, then confirm) -- replaced a
+// type-SUPPRIMER-to-confirm step that was reported as too much friction for
+// "just" a phase (team-list.page.ts's own team deletion keeps the typed
+// word, this one doesn't).
+.structure-page__confirm-inline {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  flex-wrap: wrap;
+}
+
+.structure-page__confirm-inline-question {
+  font-size: 0.85rem;
+  color: var(--ap-color-muted);
+}
+
+// "Mode Tournoi" format picker -- card style matching apps/mobile's
+// tournament-wizard.page.scss .wizard-page__formatcard (radio circle + name
+// + description per card), replacing the plain ap-tabs this used to be, so
+// the two apps' structure-choice UIs finally look like the same feature.
+.structure-page__format-label {
+  display: block;
+  margin: var(--ap-space-4) 0 var(--ap-space-2);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ap-color-fg);
+}
+
+.structure-page__format-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+}
+
+.structure-page__formatcard {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ap-space-3);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  padding: var(--ap-space-3);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  font: inherit;
+  color: var(--ap-color-fg);
+
+  &:hover {
+    border-color: var(--ap-color-primary);
+  }
+}
+
+.structure-page__formatcard.is-selected {
+  border-color: var(--ap-color-primary);
+  box-shadow: 0 0 0 1px var(--ap-color-primary);
+}
+
+.structure-page__formatcard-radio {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--ap-color-border);
+  flex: none;
+  margin-top: 2px;
+  position: relative;
+}
+
+.structure-page__formatcard.is-selected .structure-page__formatcard-radio {
+  border-color: var(--ap-color-primary);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border-radius: 50%;
+    background: var(--ap-color-primary);
+  }
+}
+
+.structure-page__formatcard-body {
+  flex: 1;
+}
+
+.structure-page__formatcard-name {
+  display: block;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.structure-page__formatcard-desc {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--ap-color-muted);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
 .structure-page__qualification-list {
   list-style: none;
   margin: 0 0 var(--ap-space-3);

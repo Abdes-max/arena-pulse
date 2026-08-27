@@ -49,5 +49,155 @@
       },
       "copyright": "© 2026 TournArena. Tous droits réservés."
     }
+  },
+  "organizer": {
+    "auth": {
+      "register": {
+        "title": "Créer mon compte",
+        "lede": "Créez votre compte organisateur pour gérer vos tournois directement depuis l'application.",
+        "orgNameLabel": "Nom de l'organisation",
+        "firstNameLabel": "Prénom",
+        "lastNameLabel": "Nom",
+        "emailLabel": "Email",
+        "passwordLabel": "Mot de passe",
+        "submit": "Créer mon compte",
+        "alreadyAccount": "Déjà organisateur ?",
+        "login": "Se connecter",
+        "sentTitle": "Vérifiez votre boîte mail",
+        "sentBody": "Un email de confirmation a été envoyé à {{email}}.",
+        "sentHint": "Ouvrez le lien qu'il contient pour activer votre compte, puis revenez ici pour vous connecter.",
+        "resend": "Renvoyer l'email",
+        "resent": "Email renvoyé.",
+        "errorConflict": "Un compte existe déjà avec cet email.",
+        "errorGeneric": "Une erreur est survenue, réessayez."
+      },
+      "login": {
+        "title": "Connexion",
+        "backAria": "Retour",
+        "lede": "Connectez-vous à votre compte organisateur.",
+        "emailLabel": "Email",
+        "passwordLabel": "Mot de passe",
+        "submit": "Se connecter",
+        "resend": "Renvoyer l'email de vérification",
+        "resent": "Email renvoyé.",
+        "noAccount": "Pas encore de compte ?",
+        "createOrg": "Créez-en un",
+        "errorVerify": "Vérifiez votre email avant de vous connecter.",
+        "errorCredentials": "Email ou mot de passe incorrect.",
+        "errorGeneric": "Une erreur est survenue, réessayez."
+      }
+    },
+    "tournaments": {
+      "list": {
+        "title": "Mes tournois",
+        "loading": "Chargement…",
+        "empty": "Aucun tournoi pour l'instant.",
+        "errorGeneric": "Une erreur est survenue, réessayez.",
+        "newTournament": "Nouveau tournoi",
+        "logout": "Se déconnecter",
+        "status": {
+          "DRAFT": "Brouillon",
+          "PUBLISHED": "Publié",
+          "UNPUBLISHED": "Dépublié",
+          "ARCHIVED": "Archivé"
+        }
+      }
+    },
+    "wizard": {
+      "title": "Nouveau tournoi",
+      "cancelAria": "Annuler",
+      "cancel": "Annuler",
+      "back": "Retour",
+      "next": "Suivant",
+      "payAndPublish": "Payer et publier",
+      "errorGeneric": "Une erreur est survenue, réessayez.",
+      "rail": {
+        "1": "Infos",
+        "2": "Équipes",
+        "3": "Structure",
+        "4": "Calendrier",
+        "5": "Publication"
+      },
+      "infos": {
+        "title": "Informations générales",
+        "nameLabel": "Nom du tournoi",
+        "sportLabel": "Sport",
+        "sportPlaceholder": "Choisir un sport…",
+        "venueLabel": "Lieu",
+        "onlineLabel": "Tournoi en ligne",
+        "onlineHint": "Compétition eSport, sans lieu physique",
+        "personalizationTitle": "Personnalisation",
+        "theme": {
+          "INK_SIGNAL": "Thème Encre & Signal",
+          "PULSE_EMBER": "Thème Braise",
+          "NEON_COURT": "Thème Néon",
+          "FRESH_PITCH": "Thème Pelouse",
+          "CRIMSON_CHARGE": "Thème Grenat"
+        },
+        "logoLabel": "Logo du tournoi"
+      },
+      "teams": {
+        "title": "Équipes participantes",
+        "countSingular": "{{count}} équipe ajoutée",
+        "countPlural": "{{count}} équipes ajoutées",
+        "addLabel": "Nom de l'équipe",
+        "addPlaceholder": "Nom de l'équipe",
+        "add": "Ajouter",
+        "remove": "Retirer {{name}}",
+        "minHint": "Minimum 3 équipes pour passer à l'étape suivante."
+      },
+      "structure": {
+        "title": "Format de la compétition",
+        "poolsKnockout": {
+          "name": "Poules puis élimination directe",
+          "desc": "Phase de groupes, puis les meilleures équipes s'affrontent en direct."
+        },
+        "knockoutOnly": {
+          "name": "Élimination directe simple",
+          "desc": "Chaque défaite élimine l'équipe. Rapide, un vainqueur unique."
+        },
+        "league": {
+          "name": "Championnat (tous contre tous)",
+          "desc": "Chaque équipe affronte toutes les autres une fois."
+        },
+        "poolCountLabel": "Nombre de poules",
+        "qualifiersLabel": "Qualifiés par poule"
+      },
+      "calendar": {
+        "title": "Calendrier des matchs",
+        "lede": "Générez automatiquement le calendrier à partir des équipes et du format choisis.",
+        "generate": "Générer le calendrier",
+        "generating": "Génération…",
+        "noScheduleHint": "Pas de calendrier à générer pour ce format -- le tableau à élimination directe se complète match après match, une fois les résultats connus.",
+        "editLaterHint": "Les horaires et lieux exacts pourront être ajustés depuis \"Mes tournois\".",
+        "errorGeneric": "Une erreur est survenue, réessayez."
+      },
+      "publish": {
+        "visibilityTitle": "Visibilité",
+        "public": {
+          "name": "Public",
+          "desc": "Visible dans la recherche de tournois."
+        },
+        "private": {
+          "name": "Privé",
+          "desc": "Accessible uniquement par lien."
+        },
+        "publishTitle": "Publication",
+        "paymentHint": "Si votre offre gratuite est dépassée, un paiement Stripe sécurisé vous sera proposé avant la publication.",
+        "planTitle": "Plan",
+        "planLoading": "Chargement…",
+        "planActive": "Abonnement annuel actif jusqu'au {{date}} — toutes vos publications sont gratuites.",
+        "planPending": "Paiement de l'abonnement annuel en attente de confirmation.",
+        "planNone": "Facturation à l'acte selon le nombre d'équipes. L'abonnement annuel rend toutes vos publications gratuites.",
+        "planManage": "Gérer mon abonnement"
+      },
+      "done": {
+        "title": "Tournoi publié !",
+        "body": "{{name}} est en ligne et prêt à recevoir des résultats.",
+        "pendingPaymentTitle": "Finalisez le paiement",
+        "pendingPaymentBody": "Un onglet de paiement sécurisé s'est ouvert. Une fois le paiement effectué, votre tournoi sera publié -- revenez à Mes tournois pour vérifier son statut.",
+        "backToList": "Retour à Mes tournois"
+      }
+    }
   }
 }

@@ -6,6 +6,7 @@ import { MailService } from '../src/mail/mail.service';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { StripeService } from '../src/payments/stripe.service';
 import { createTestApp } from './utils/bootstrap-app';
+import { makeTournamentPublishable } from './utils/make-tournament-publishable';
 import { resetDatabase } from './utils/reset-database';
 
 interface AuthResponseBody {
@@ -148,6 +149,7 @@ describe('Paid tournament publication (e2e)', () => {
       })
       .expect(201);
 
+    await makeTournamentPublishable(app, auth, base, tournamentId, categoryId);
     const publishRes = await auth(
       request(app.getHttpServer()).post(`${base}/${tournamentId}/publish`),
     ).expect(200);
@@ -189,6 +191,11 @@ describe('Paid tournament publication (e2e)', () => {
       'Coupe Payante',
       1000,
       'eur',
+      // stripeReceiptUrl -- null here since this spec's StripeService stub
+      // doesn't implement retrieveChargeReceiptUrl, which
+      // applyPaidPublicationSession treats as a non-fatal "couldn't fetch
+      // it" (see its own try/catch), same as a real Stripe lookup failure.
+      null,
       'fr',
     );
 
@@ -217,8 +224,10 @@ describe('Paid tournament publication (e2e)', () => {
       .expect(201);
     const tournamentId = (tournamentRes.body as { id: string }).id;
 
-    // No category/team at all -- computed fee is 0, publishes for free
-    // immediately but still records a PAID order (amountCents 0).
+    // No team at all -- computed fee is 0, publishes for free immediately
+    // but still records a PAID order (amountCents 0). Still needs a bare
+    // structure to satisfy assertReadyToPublish.
+    await makeTournamentPublishable(app, auth, base, tournamentId);
     await auth(
       request(app.getHttpServer()).post(`${base}/${tournamentId}/publish`),
     ).expect(200);
@@ -253,8 +262,10 @@ describe('Paid tournament publication (e2e)', () => {
       .expect(201);
     const tournamentId = (tournamentRes.body as { id: string }).id;
 
-    // No category/team -- computed fee is 0, publishes immediately and
-    // still records a PAID order (amountCents 0).
+    // No team -- computed fee is 0, publishes immediately and still records
+    // a PAID order (amountCents 0). Still needs a bare structure to satisfy
+    // assertReadyToPublish.
+    await makeTournamentPublishable(app, auth, base, tournamentId);
     await auth(
       request(app.getHttpServer()).post(`${base}/${tournamentId}/publish`),
     ).expect(200);
@@ -365,6 +376,13 @@ describe('Paid tournament publication (e2e)', () => {
       })
       .expect(201);
 
+    await makeTournamentPublishable(
+      app,
+      auth,
+      tournamentsBase,
+      tournamentId,
+      categoryId,
+    );
     stripeService.createCheckoutSession.mockClear();
     const publishRes = await auth(
       request(app.getHttpServer()).post(

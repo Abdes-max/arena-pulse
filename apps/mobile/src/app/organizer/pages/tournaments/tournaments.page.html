@@ -1,0 +1,54 @@
+<ion-header>
+  <ion-toolbar>
+    <ap-logo class="organizer-tournaments-page__brand" slot="start" [wordmark]="false" />
+    <ion-title>{{ 'organizer.tournaments.list.title' | transloco }}</ion-title>
+    @if (user(); as u) {
+      <button
+        class="organizer-tournaments-page__avatar"
+        type="button"
+        slot="end"
+        [attr.aria-label]="'organizer.tournaments.list.logout' | transloco"
+        [attr.title]="u.firstName + ' ' + u.lastName"
+        (click)="logout()"
+      >
+        {{ u.firstName.charAt(0) }}{{ u.lastName.charAt(0) }}
+      </button>
+    }
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="organizer-tournaments-page">
+  <div class="organizer-tournaments-page__list">
+    @if (loading()) {
+      <p class="organizer-tournaments-page__hint">
+        {{ 'organizer.tournaments.list.loading' | transloco }}
+      </p>
+    } @else if (errorMessage(); as message) {
+      <p class="organizer-tournaments-page__error" role="alert">{{ message | transloco }}</p>
+    } @else if (tournaments().length === 0) {
+      <p class="organizer-tournaments-page__hint">
+        {{ 'organizer.tournaments.list.empty' | transloco }}
+      </p>
+    } @else {
+      @for (t of tournaments(); track t.id) {
+        <button type="button" class="tcard" (click)="openTournament(t)">
+          <div class="tcard__top">
+            @if (logoUrl(t.logoUrl); as logo) {
+              <img class="tcard__logo" [src]="logo" alt="" />
+            }
+            <p class="tcard__name">{{ t.name }}</p>
+            <ap-badge [status]="badgeStatus(t.status)" [label]="statusLabel(t.status)" />
+          </div>
+          <p class="tcard__meta">{{ t.sportName }}</p>
+        </button>
+      }
+    }
+  </div>
+  <button
+    class="organizer-tournaments-page__fab"
+    type="button"
+    routerLink="/organizer/tournaments/new"
+  >
+    + {{ 'organizer.tournaments.list.newTournament' | transloco }}
+  </button>
+</ion-content>

@@ -40,6 +40,11 @@
   flex-direction: column;
   gap: var(--ap-space-4);
   max-width: 400px;
+  // Whatever sits directly above (the lifecycle row's publish/archive/
+  // duplicate buttons in edit mode, or the personalization trigger/"Fermer"
+  // button) otherwise reads as glued straight onto "Nom du tournoi" --
+  // same reasoning as this file's own h2 comment above.
+  margin-top: var(--ap-space-4);
 }
 
 .tournament-form-page__logo-row {
@@ -299,6 +304,112 @@
   flex: 1;
 }
 
+// Plan section's card grid -- same visual family as the theme grid above
+// (card/selected/locked pattern), just one state renamed (--current instead
+// of --selected, since "current" here means "already paid for", not
+// "currently chosen" -- there's nothing to choose, only to upgrade from).
+.tournament-form-page__plan-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--ap-space-3);
+  margin-bottom: var(--ap-space-3);
+}
+
+.tournament-form-page__plan-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-1);
+  padding: var(--ap-space-4);
+  background: var(--ap-color-bg);
+  border: 2px solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+
+  &:hover:not(:disabled) {
+    border-color: var(--ap-color-primary);
+  }
+
+  // FREE (never a target, publication never downgrades) and the current
+  // paid tier are both non-clickable, so both end up :disabled -- the
+  // --current modifier below is what actually distinguishes "this is what
+  // you're on" from "this is just unavailable".
+  &:disabled {
+    cursor: default;
+  }
+}
+
+.tournament-form-page__plan-card--current {
+  border-color: var(--ap-color-primary);
+  box-shadow: 0 0 0 1px var(--ap-color-primary);
+}
+
+.tournament-form-page__plan-current-badge {
+  align-self: flex-start;
+  padding: 2px var(--ap-space-2);
+  border-radius: var(--ap-radius-pill, 999px);
+  background: var(--ap-color-primary);
+  color: var(--ap-color-primary-contrast, #fff);
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.tournament-form-page__plan-name {
+  font-family: var(--ap-font-heading);
+  font-size: 1rem;
+  color: var(--ap-color-fg);
+}
+
+.tournament-form-page__plan-price {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--ap-color-fg);
+}
+
+.tournament-form-page__plan-desc {
+  font-size: 0.85rem;
+  color: var(--ap-color-muted);
+}
+
+// Same backdrop-button-sibling modal pattern as
+// __personalization-backdrop/-dialog above.
+.tournament-form-page__plan-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  padding: 0;
+  border: none;
+  background: rgb(0 0 0 / 50%);
+  cursor: pointer;
+}
+
+.tournament-form-page__plan-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 101;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-4);
+  padding: var(--ap-space-6);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-lg);
+  max-width: 420px;
+  width: calc(100% - var(--ap-space-8));
+}
+
+.tournament-form-page__plan-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--ap-space-3);
+}
+
 .tournament-form-page__theme-lock {
   display: inline-flex;
   flex: none;
@@ -371,41 +482,6 @@
   color: var(--ap-color-fg);
   font: inherit;
   resize: vertical;
-}
-
-.tournament-form-page__administrator-list {
-  list-style: none;
-  margin: 0 0 var(--ap-space-4);
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--ap-space-2);
-
-  li {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--ap-space-3);
-  }
-}
-
-.tournament-form-page__add-administrator {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ap-space-3);
-  max-width: 400px;
-}
-
-.tournament-form-page__presets {
-  display: flex;
-  gap: var(--ap-space-2);
-}
-
-.tournament-form-page__permission-checkbox {
-  display: flex;
-  align-items: center;
-  gap: var(--ap-space-2);
-  font-size: 0.9rem;
 }
 
 .tournament-form-page__note {

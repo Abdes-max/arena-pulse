@@ -4,6 +4,7 @@ import { App } from 'supertest/types';
 import { OrganizationSubscriptionStatus } from '../generated/prisma/client';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { createTestApp } from './utils/bootstrap-app';
+import { makeTournamentPublishable } from './utils/make-tournament-publishable';
 import { resetDatabase } from './utils/reset-database';
 
 interface AuthResponseBody {
@@ -125,18 +126,47 @@ describe('Public tournament site (e2e)', () => {
       .send({ groupId })
       .expect(200);
 
+    // assertReadyToPublish requires at least one match once a real
+    // GROUP_STAGE phase exists (see TournamentsService's own doc comment) --
+    // a second team + generate-schedule below produces one.
+    const secondTeamRes = await auth(
+      request(app.getHttpServer()).post(`${base}/${tournamentId}/teams`),
+    )
+      .send({ name: 'Tigres', categoryId })
+      .expect(201);
+    const secondTeamId = (secondTeamRes.body as { id: string }).id;
+    await auth(
+      request(app.getHttpServer()).patch(
+        `${base}/${tournamentId}/teams/${secondTeamId}/group`,
+      ),
+    )
+      .send({ groupId })
+      .expect(200);
+
     const venueRes = await auth(
       request(app.getHttpServer()).post(`${base}/${tournamentId}/venues`),
     )
       .send({ name: 'Stade municipal', address: '1 rue du Stade' })
       .expect(201);
     const venueId = (venueRes.body as { id: string }).id;
-    await auth(
+    const fieldRes = await auth(
       request(app.getHttpServer()).post(
         `${base}/${tournamentId}/venues/${venueId}/fields`,
       ),
     )
       .send({ name: 'Terrain 1' })
+      .expect(201);
+    const fieldId = (fieldRes.body as { id: string }).id;
+
+    await auth(
+      request(app.getHttpServer()).post(
+        `${base}/${tournamentId}/phases/${phaseId}/generate-schedule`,
+      ),
+    )
+      .send({
+        fieldIds: [fieldId],
+        startDateTime: new Date().toISOString(),
+      })
       .expect(201);
 
     await auth(
@@ -175,32 +205,38 @@ describe('Public tournament site (e2e)', () => {
     const teamsRes = await request(app.getHttpServer())
       .get(`${publicBase}/teams`)
       .expect(200);
-    expect(teamsRes.body).toEqual([
-      expect.objectContaining({ id: teamId, name: 'Lions' }),
-    ]);
-    expect((teamsRes.body as Record<string, unknown>[])[0]).not.toHaveProperty(
-      'managerEmail',
+    // Two teams now -- Tigres exists only so generate-schedule below has
+    // someone to pair Lions against (assertReadyToPublish requires a real
+    // GROUP_STAGE phase to already have a match, see makeTournamentPublishable
+    // and this test's own generate-schedule call).
+    expect(teamsRes.body).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: teamId, name: 'Lions' }),
+      ]),
     );
-    expect((teamsRes.body as Record<string, unknown>[])[0]).not.toHaveProperty(
-      'managerPhone',
-    );
+    expect(teamsRes.body).toHaveLength(2);
+    for (const team of teamsRes.body as Record<string, unknown>[]) {
+      expect(team).not.toHaveProperty('managerEmail');
+      expect(team).not.toHaveProperty('managerPhone');
+    }
 
     const teamDetailRes = await request(app.getHttpServer())
       .get(`${publicBase}/teams/${teamId}`)
       .expect(200);
     expect(teamDetailRes.body).toMatchObject({ id: teamId, name: 'Lions' });
     expect(teamDetailRes.body).not.toHaveProperty('managerEmail');
-    expect((teamDetailRes.body as { matches: unknown[] }).matches).toEqual([]);
-    expect(
-      (teamDetailRes.body as { standing: { position: number } }).standing,
-    ).toMatchObject({
-      position: 1,
-    });
+    expect((teamDetailRes.body as { matches: unknown[] }).matches).toHaveLength(
+      1,
+    );
+    const { position } = (
+      teamDetailRes.body as { standing: { position: number } }
+    ).standing;
+    expect(typeof position).toBe('number');
 
     const standingsRes = await request(app.getHttpServer())
       .get(`${publicBase}/groups/${groupId}/standings`)
       .expect(200);
-    expect((standingsRes.body as { rows: unknown[] }).rows).toHaveLength(1);
+    expect((standingsRes.body as { rows: unknown[] }).rows).toHaveLength(2);
 
     const qualificationsRes = await request(app.getHttpServer())
       .get(`${publicBase}/groups/${groupId}/qualifications`)
@@ -210,7 +246,7 @@ describe('Public tournament site (e2e)', () => {
     const matchesRes = await request(app.getHttpServer())
       .get(`${publicBase}/phases/${phaseId}/matches`)
       .expect(200);
-    expect(matchesRes.body).toEqual([]);
+    expect(matchesRes.body).toHaveLength(1);
   });
 
   it("lists a tournament's soonest scheduled matches, in chronological order", async () => {
@@ -408,6 +444,7 @@ describe('Public tournament site (e2e)', () => {
       .send({ theme: 'PULSE_EMBER' })
       .expect(200);
 
+    await makeTournamentPublishable(app, auth, base, tournamentId);
     await auth(
       request(app.getHttpServer()).post(`${base}/${tournamentId}/publish`),
     ).expect(200);
@@ -473,9 +510,11 @@ describe('Public tournament site (e2e)', () => {
       .send({ isListed: false })
       .expect(200);
 
+    await makeTournamentPublishable(app, auth, base, listedId);
     await auth(
       request(app.getHttpServer()).post(`${base}/${listedId}/publish`),
     ).expect(200);
+    await makeTournamentPublishable(app, auth, base, unlistedId);
     await auth(
       request(app.getHttpServer()).post(`${base}/${unlistedId}/publish`),
     ).expect(200);

@@ -818,6 +818,15 @@ model TournamentPublicationOrder {
   currency                String
   stripeCheckoutSessionId String?                          @unique
   stripePaymentIntentId   String?
+  // Stripe's own hosted receipt for the underlying Charge (Charge.receipt_url)
+  // -- captured once, at the same time as stripePaymentIntentId (see
+  // TournamentsService.applyPaidPublicationSession), so the admin UI and the
+  // payment confirmation email can link straight to Stripe's real receipt
+  // instead of rendering a custom one. Null for a $0 free-tier order (never
+  // goes through Stripe Checkout at all, see publish()'s own amountCents<=0
+  // branch) or if the retrieval call itself failed (non-fatal, see the same
+  // method's try/catch).
+  stripeReceiptUrl        String?
   createdAt               DateTime                         @default(now())
   paidAt                  DateTime?
 

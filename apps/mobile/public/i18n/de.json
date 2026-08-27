@@ -49,5 +49,155 @@
       },
       "copyright": "© 2026 TournArena. Alle Rechte vorbehalten."
     }
+  },
+  "organizer": {
+    "auth": {
+      "register": {
+        "title": "Konto erstellen",
+        "lede": "Erstellen Sie Ihr Organisator·innen-Konto, um Ihre Turniere direkt über die App zu verwalten.",
+        "orgNameLabel": "Name der Organisation",
+        "firstNameLabel": "Vorname",
+        "lastNameLabel": "Nachname",
+        "emailLabel": "E-Mail",
+        "passwordLabel": "Passwort",
+        "submit": "Konto erstellen",
+        "alreadyAccount": "Bereits Organisator·in?",
+        "login": "Anmelden",
+        "sentTitle": "Prüfen Sie Ihr Postfach",
+        "sentBody": "Eine Bestätigungs-E-Mail wurde an {{email}} gesendet.",
+        "sentHint": "Öffnen Sie den enthaltenen Link, um Ihr Konto zu aktivieren, und kehren Sie dann hierher zurück, um sich anzumelden.",
+        "resend": "E-Mail erneut senden",
+        "resent": "E-Mail erneut gesendet.",
+        "errorConflict": "Es existiert bereits ein Konto mit dieser E-Mail-Adresse.",
+        "errorGeneric": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut."
+      },
+      "login": {
+        "title": "Anmelden",
+        "backAria": "Zurück",
+        "lede": "Melden Sie sich bei Ihrem Organisator·innen-Konto an.",
+        "emailLabel": "E-Mail",
+        "passwordLabel": "Passwort",
+        "submit": "Anmelden",
+        "resend": "Bestätigungs-E-Mail erneut senden",
+        "resent": "E-Mail erneut gesendet.",
+        "noAccount": "Noch kein Konto?",
+        "createOrg": "Jetzt erstellen",
+        "errorVerify": "Bestätigen Sie Ihre E-Mail-Adresse, bevor Sie sich anmelden.",
+        "errorCredentials": "E-Mail oder Passwort ist falsch.",
+        "errorGeneric": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut."
+      }
+    },
+    "tournaments": {
+      "list": {
+        "title": "Meine Turniere",
+        "loading": "Wird geladen…",
+        "empty": "Noch keine Turniere vorhanden.",
+        "errorGeneric": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut.",
+        "newTournament": "Neues Turnier",
+        "logout": "Abmelden",
+        "status": {
+          "DRAFT": "Entwurf",
+          "PUBLISHED": "Veröffentlicht",
+          "UNPUBLISHED": "Zurückgezogen",
+          "ARCHIVED": "Archiviert"
+        }
+      }
+    },
+    "wizard": {
+      "title": "Neues Turnier",
+      "cancelAria": "Abbrechen",
+      "cancel": "Abbrechen",
+      "back": "Zurück",
+      "next": "Weiter",
+      "payAndPublish": "Bezahlen und veröffentlichen",
+      "errorGeneric": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut.",
+      "rail": {
+        "1": "Infos",
+        "2": "Teams",
+        "3": "Struktur",
+        "4": "Spielplan",
+        "5": "Veröffentlichung"
+      },
+      "infos": {
+        "title": "Allgemeine Informationen",
+        "nameLabel": "Turniername",
+        "sportLabel": "Sportart",
+        "sportPlaceholder": "Sportart wählen…",
+        "venueLabel": "Ort",
+        "onlineLabel": "Online-Turnier",
+        "onlineHint": "E-Sport-Wettbewerb, ohne physischen Austragungsort",
+        "personalizationTitle": "Personalisierung",
+        "theme": {
+          "INK_SIGNAL": "Motiv Tinte & Signal",
+          "PULSE_EMBER": "Motiv Glut",
+          "NEON_COURT": "Motiv Neon",
+          "FRESH_PITCH": "Motiv Rasen",
+          "CRIMSON_CHARGE": "Motiv Karmesin"
+        },
+        "logoLabel": "Turnier-Logo"
+      },
+      "teams": {
+        "title": "Teilnehmende Teams",
+        "countSingular": "{{count}} Team hinzugefügt",
+        "countPlural": "{{count}} Teams hinzugefügt",
+        "addLabel": "Teamname",
+        "addPlaceholder": "Teamname",
+        "add": "Hinzufügen",
+        "remove": "{{name}} entfernen",
+        "minHint": "Mindestens 3 Teams sind nötig, um zum nächsten Schritt zu gelangen."
+      },
+      "structure": {
+        "title": "Wettbewerbsformat",
+        "poolsKnockout": {
+          "name": "Gruppenphase, dann K.-o.-System",
+          "desc": "Gruppenphase, danach treten die besten Teams im K.-o.-System gegeneinander an."
+        },
+        "knockoutOnly": {
+          "name": "Einfaches K.-o.-System",
+          "desc": "Eine Niederlage bedeutet das Aus. Schnell, ein einziger Sieger."
+        },
+        "league": {
+          "name": "Liga (jeder gegen jeden)",
+          "desc": "Jedes Team spielt einmal gegen jedes andere Team."
+        },
+        "poolCountLabel": "Anzahl der Gruppen",
+        "qualifiersLabel": "Qualifizierte pro Gruppe"
+      },
+      "calendar": {
+        "title": "Spielplan",
+        "lede": "Erstellen Sie den Spielplan automatisch anhand der gewählten Teams und des Formats.",
+        "generate": "Spielplan erstellen",
+        "generating": "Wird erstellt…",
+        "noScheduleHint": "Für dieses Format gibt es keinen Spielplan zu erstellen -- ein K.-o.-Turnier füllt sich Spiel für Spiel, sobald Ergebnisse feststehen.",
+        "editLaterHint": "Genaue Zeiten und Orte können später über \"Meine Turniere\" angepasst werden.",
+        "errorGeneric": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut."
+      },
+      "publish": {
+        "visibilityTitle": "Sichtbarkeit",
+        "public": {
+          "name": "Öffentlich",
+          "desc": "In der Turniersuche sichtbar."
+        },
+        "private": {
+          "name": "Privat",
+          "desc": "Nur über einen Link zugänglich."
+        },
+        "publishTitle": "Veröffentlichung",
+        "paymentHint": "Wird Ihr kostenloses Kontingent überschritten, wird Ihnen vor der Veröffentlichung eine sichere Stripe-Zahlung angeboten.",
+        "planTitle": "Plan",
+        "planLoading": "Wird geladen…",
+        "planActive": "Jahresabonnement aktiv bis {{date}} — alle Ihre Veröffentlichungen sind kostenlos.",
+        "planPending": "Zahlung des Jahresabonnements wartet auf Bestätigung.",
+        "planNone": "Abrechnung pro Veröffentlichung nach Teamanzahl. Das Jahresabonnement macht alle Ihre Veröffentlichungen kostenlos.",
+        "planManage": "Abonnement verwalten"
+      },
+      "done": {
+        "title": "Turnier veröffentlicht!",
+        "body": "{{name}} ist online und bereit, Ergebnisse zu empfangen.",
+        "pendingPaymentTitle": "Zahlung abschließen",
+        "pendingPaymentBody": "Ein sicherer Zahlungstab wurde geöffnet. Nach Abschluss der Zahlung wird Ihr Turnier veröffentlicht -- prüfen Sie den Status später unter Meine Turniere.",
+        "backToList": "Zurück zu Meine Turniere"
+      }
+    }
   }
 }

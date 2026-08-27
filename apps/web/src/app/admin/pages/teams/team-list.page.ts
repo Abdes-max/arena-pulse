@@ -3,16 +3,40 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { ActivatedRoute } from '@angular/router';
 import { AssetUrlService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { Button, Select, SelectOption, TextField, TypeToConfirm } from 'design-system';
+import { Button, Select, SelectOption, TextField } from 'design-system';
 import { LanguageService } from 'design-tokens';
 import { AuthService } from '../../core/auth.service';
 import { Category, Player, Team, TeamImportResult } from '../../core/models';
+import { OrganizationsService } from '../../core/organizations.service';
 import { TeamsService } from '../../core/teams.service';
 import { TournamentsService } from '../../core/tournaments.service';
 
+type PublicationTierCode = 'FREE' | 'STANDARD' | 'LARGE';
+
+// Mirrors the structured body TournamentsService.assertTeamAdditionAllowed
+// (apps/api) throws (403, code PUBLICATION_TIER_EXCEEDED) -- enough for this
+// page to render the upsell dialog itself, no extra round-trip needed.
+interface PublicationTierExceededError {
+  code: 'PUBLICATION_TIER_EXCEEDED';
+  currentTier: PublicationTierCode;
+  requiredTier: PublicationTierCode;
+  upgradeAmountCents: number;
+  currency: string;
+}
+
+function isPublicationTierExceededError(
+  error: unknown,
+): error is HttpErrorResponse & { error: PublicationTierExceededError } {
+  return (
+    error instanceof HttpErrorResponse &&
+    error.status === 403 &&
+    (error.error as { code?: unknown } | null)?.code === 'PUBLICATION_TIER_EXCEEDED'
+  );
+}
+
 @Component({
   selector: 'app-team-list-page',
-  imports: [Button, Select, TextField, TranslocoPipe, TypeToConfirm],
+  imports: [Button, Select, TextField, TranslocoPipe],
   templateUrl: './team-list.page.html',
   styleUrl: './team-list.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -22,6 +46,7 @@ export class TeamListPage {
   private readonly authService = inject(AuthService);
   private readonly teamsService = inject(TeamsService);
   private readonly tournamentsService = inject(TournamentsService);
+  private readonly organizationsService = inject(OrganizationsService);
   private readonly assetUrl = inject(AssetUrlService);
   private readonly languageService = inject(LanguageService);
   private readonly transloco = inject(TranslocoService);
@@ -32,6 +57,14 @@ export class TeamListPage {
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly teams = signal<Team[]>([]);
+
+  // "You're on the Découverte plan" upsell dialog (see
+  // isPublicationTierExceededError above) -- replaces a plain error banner
+  // when adding a team is blocked because it would cross this already-
+  // published tournament's paid tier.
+  protected readonly tierExceededModal = signal<PublicationTierExceededError | null>(null);
+  protected readonly tierUpgradeError = signal<string | null>(null);
+  protected readonly tierUpgrading = signal(false);
 
   // Team logos are a premium touch (see
   // TournamentsService.assertPremiumFeaturesUnlocked, apps/api) --
@@ -80,10 +113,12 @@ export class TeamListPage {
   protected readonly importCsv = signal('');
   protected readonly importResult = signal<TeamImportResult | null>(null);
 
-  // Audit finding (securite-audit.md): deleting a team/player used to fire
-  // straight from the row button with no confirmation step at all -- reuses
-  // ap-type-to-confirm (feat/173) rather than a plain window.confirm, same
-  // as every other destructive action in the app.
+  // Audit finding (securite-audit.md): deleting a team used to fire straight
+  // from the row button with no confirmation step at all. First fix reused
+  // ap-type-to-confirm (feat/173, "type SUPPRIMER"); reported as more
+  // friction than an organizer wants for a team (structure.page.ts's own
+  // phase deletion got the same simplification for the same reason) -- an
+  // arm/confirm two-click (template's own __confirm-inline) is enough here.
   protected readonly confirmingTeamId = signal<string | null>(null);
   protected readonly deletingTeamId = signal<string | null>(null);
   protected readonly confirmingBulkDelete = signal(false);
@@ -212,8 +247,78 @@ export class TeamListPage {
         this.teams.update((teams) => [...teams, created]);
       }
       this.cancelEdit();
-    } catch {
+    } catch (error) {
+      if (isPublicationTierExceededError(error)) {
+        this.tierExceededModal.set(error.error);
+        return;
+      }
       this.errorMessage.set('admin.teamList.errors.save');
+    }
+  }
+
+  protected closeTierExceededModal(): void {
+    this.tierExceededModal.set(null);
+    this.tierUpgradeError.set(null);
+  }
+
+  /**
+   * Pays for the tier the blocked team addition needs. Deliberately NOT
+   * plain publish() -- the team that triggered the dialog was blocked
+   * before it was ever created, so the tournament's stored team count
+   * hasn't grown yet; publish() would price against that still-too-low
+   * count and silently do nothing (see
+   * TournamentsService.payForTeamAdditionTier's own doc comment, apps/api).
+   * This always asks for exactly 1 more team -- the single row this form
+   * submits at a time (see submitForm()'s catch above).
+   */
+  protected async upgradeToNextTier(): Promise<void> {
+    const organizationId = this.organization()?.id;
+    if (!organizationId || this.tierUpgrading()) {
+      return;
+    }
+    this.tierUpgrading.set(true);
+    this.tierUpgradeError.set(null);
+    try {
+      const result = await this.tournamentsService.payForTeamAdditionTier(
+        organizationId,
+        this.tournamentId,
+        1,
+      );
+      if (result.status === 'PENDING_PAYMENT') {
+        window.location.href = result.checkoutUrl;
+        return;
+      }
+      // Free in this environment (tier price unset) or already covered --
+      // the tier is now paid for, but the team that triggered the block
+      // still wasn't created. Close the dialog and let the organizer's own
+      // next "Ajouter" click go through -- it'll pass the check this time.
+      this.tierExceededModal.set(null);
+    } catch {
+      this.tierUpgradeError.set('admin.teamList.tierModal.errors.upgrade');
+    } finally {
+      this.tierUpgrading.set(false);
+    }
+  }
+
+  /** Same idea as upgradeToNextTier, but the organization-wide annual subscription instead of a one-off per-tournament payment. */
+  protected async subscribeAnnually(): Promise<void> {
+    const organizationId = this.organization()?.id;
+    if (!organizationId || this.tierUpgrading()) {
+      return;
+    }
+    this.tierUpgrading.set(true);
+    this.tierUpgradeError.set(null);
+    try {
+      const result = await this.organizationsService.subscribe(organizationId);
+      if (result.status === 'PENDING_PAYMENT') {
+        window.location.href = result.checkoutUrl;
+        return;
+      }
+      this.tierExceededModal.set(null);
+    } catch {
+      this.tierUpgradeError.set('admin.teamList.tierModal.errors.subscribe');
+    } finally {
+      this.tierUpgrading.set(false);
     }
   }
 
@@ -448,5 +553,25 @@ export class TeamListPage {
     } catch {
       this.errorMessage.set('admin.teamList.errors.removePlayer');
     }
+  }
+
+  protected formatAmount(amountCents: number, currency: string): string {
+    return new Intl.NumberFormat(this.languageService.language(), {
+      style: 'currency',
+      currency: currency.toUpperCase(),
+    }).format(amountCents / 100);
+  }
+
+  // Matches the landing page's public pricing tags (apps/web's own
+  // landing.pricing.*.tag i18n) -- same 3 tiers, same names, just reused
+  // here rather than duplicated with a different wording.
+  protected tierLabel(tier: PublicationTierCode): string {
+    const key =
+      tier === 'FREE'
+        ? 'landing.pricing.free.tag'
+        : tier === 'STANDARD'
+          ? 'landing.pricing.standard.tag'
+          : 'landing.pricing.large.tag';
+    return this.transloco.translate(key, {}, this.languageService.language());
   }
 }

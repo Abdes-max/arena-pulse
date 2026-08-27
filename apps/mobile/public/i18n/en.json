@@ -49,5 +49,155 @@
       },
       "copyright": "© 2026 TournArena. All rights reserved."
     }
+  },
+  "organizer": {
+    "auth": {
+      "register": {
+        "title": "Create my account",
+        "lede": "Create your organizer account to manage your tournaments directly from the app.",
+        "orgNameLabel": "Organization name",
+        "firstNameLabel": "First name",
+        "lastNameLabel": "Last name",
+        "emailLabel": "Email",
+        "passwordLabel": "Password",
+        "submit": "Create my account",
+        "alreadyAccount": "Already an organizer?",
+        "login": "Log in",
+        "sentTitle": "Check your inbox",
+        "sentBody": "A confirmation email was sent to {{email}}.",
+        "sentHint": "Open the link inside to activate your account, then come back here to log in.",
+        "resend": "Resend email",
+        "resent": "Email resent.",
+        "errorConflict": "An account already exists with this email.",
+        "errorGeneric": "Something went wrong, please try again."
+      },
+      "login": {
+        "title": "Log in",
+        "backAria": "Back",
+        "lede": "Log in to your organizer account.",
+        "emailLabel": "Email",
+        "passwordLabel": "Password",
+        "submit": "Log in",
+        "resend": "Resend verification email",
+        "resent": "Email resent.",
+        "noAccount": "Don't have an account yet?",
+        "createOrg": "Create one",
+        "errorVerify": "Verify your email before logging in.",
+        "errorCredentials": "Incorrect email or password.",
+        "errorGeneric": "Something went wrong, please try again."
+      }
+    },
+    "tournaments": {
+      "list": {
+        "title": "My tournaments",
+        "loading": "Loading…",
+        "empty": "No tournaments yet.",
+        "errorGeneric": "Something went wrong, please try again.",
+        "newTournament": "New tournament",
+        "logout": "Log out",
+        "status": {
+          "DRAFT": "Draft",
+          "PUBLISHED": "Published",
+          "UNPUBLISHED": "Unpublished",
+          "ARCHIVED": "Archived"
+        }
+      }
+    },
+    "wizard": {
+      "title": "New tournament",
+      "cancelAria": "Cancel",
+      "cancel": "Cancel",
+      "back": "Back",
+      "next": "Next",
+      "payAndPublish": "Pay and publish",
+      "errorGeneric": "Something went wrong, please try again.",
+      "rail": {
+        "1": "Info",
+        "2": "Teams",
+        "3": "Structure",
+        "4": "Schedule",
+        "5": "Publish"
+      },
+      "infos": {
+        "title": "General information",
+        "nameLabel": "Tournament name",
+        "sportLabel": "Sport",
+        "sportPlaceholder": "Choose a sport…",
+        "venueLabel": "Venue",
+        "onlineLabel": "Online tournament",
+        "onlineHint": "Esport competition, no physical venue",
+        "personalizationTitle": "Personalization",
+        "theme": {
+          "INK_SIGNAL": "Ink & Signal theme",
+          "PULSE_EMBER": "Ember theme",
+          "NEON_COURT": "Neon theme",
+          "FRESH_PITCH": "Pitch theme",
+          "CRIMSON_CHARGE": "Crimson theme"
+        },
+        "logoLabel": "Tournament logo"
+      },
+      "teams": {
+        "title": "Participating teams",
+        "countSingular": "{{count}} team added",
+        "countPlural": "{{count}} teams added",
+        "addLabel": "Team name",
+        "addPlaceholder": "Team name",
+        "add": "Add",
+        "remove": "Remove {{name}}",
+        "minHint": "At least 3 teams are needed to move on to the next step."
+      },
+      "structure": {
+        "title": "Competition format",
+        "poolsKnockout": {
+          "name": "Pools then knockout",
+          "desc": "Group stage, then the top teams face off in a knockout bracket."
+        },
+        "knockoutOnly": {
+          "name": "Single-elimination knockout",
+          "desc": "One loss and a team is out. Fast, a single winner."
+        },
+        "league": {
+          "name": "League (round-robin)",
+          "desc": "Every team plays every other team once."
+        },
+        "poolCountLabel": "Number of pools",
+        "qualifiersLabel": "Qualifiers per pool"
+      },
+      "calendar": {
+        "title": "Match schedule",
+        "lede": "Automatically generate the schedule from the teams and format you chose.",
+        "generate": "Generate schedule",
+        "generating": "Generating…",
+        "noScheduleHint": "No schedule to generate for this format -- a knockout bracket fills in match by match, as results come in.",
+        "editLaterHint": "Exact times and venues can be adjusted later from \"My tournaments\".",
+        "errorGeneric": "Something went wrong, please try again."
+      },
+      "publish": {
+        "visibilityTitle": "Visibility",
+        "public": {
+          "name": "Public",
+          "desc": "Shown in tournament search."
+        },
+        "private": {
+          "name": "Private",
+          "desc": "Accessible by link only."
+        },
+        "publishTitle": "Publish",
+        "paymentHint": "If your free tier is exceeded, a secure Stripe payment will be offered before publishing.",
+        "planTitle": "Plan",
+        "planLoading": "Loading…",
+        "planActive": "Annual subscription active until {{date}} — every publication of yours is free.",
+        "planPending": "Annual subscription payment awaiting confirmation.",
+        "planNone": "Billed per publication based on team count. The annual subscription makes every publication of yours free.",
+        "planManage": "Manage my subscription"
+      },
+      "done": {
+        "title": "Tournament published!",
+        "body": "{{name}} is live and ready to receive results.",
+        "pendingPaymentTitle": "Finish your payment",
+        "pendingPaymentBody": "A secure payment tab has opened. Once payment is complete, your tournament will be published -- check back from My tournaments to see its status.",
+        "backToList": "Back to My tournaments"
+      }
+    }
   }
 }

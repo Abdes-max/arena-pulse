@@ -86,6 +86,7 @@ describe('TeamsService', () => {
     assertTournamentIsEditable: jest.Mock;
     assertTournamentExists: jest.Mock;
     assertPremiumFeaturesUnlocked: jest.Mock;
+    assertTeamAdditionAllowed: jest.Mock;
     hasPremiumFeatures: jest.Mock;
     freeMaxTeams: jest.Mock;
   };
@@ -117,6 +118,10 @@ describe('TeamsService', () => {
       // Unlocked by default -- individual premium-gating tests below
       // override this to exercise the locked path.
       assertPremiumFeaturesUnlocked: jest.fn().mockResolvedValue(undefined),
+      // Allowed by default (tournament isn't published, or is within its
+      // paid tier) -- individual tests below override this to exercise the
+      // "already published, would cross a paid tier" blocked path.
+      assertTeamAdditionAllowed: jest.fn().mockResolvedValue(undefined),
       hasPremiumFeatures: jest.fn().mockResolvedValue(true),
       freeMaxTeams: jest.fn().mockReturnValue(8),
     };
@@ -159,6 +164,20 @@ describe('TeamsService', () => {
           categoryId: 'category-1',
         }),
       ).rejects.toThrow('archived');
+      expect(prisma.team.create).not.toHaveBeenCalled();
+    });
+
+    it('rejects when adding this team would push an already-published tournament past its paid tier', async () => {
+      tournamentsService.assertTeamAdditionAllowed.mockRejectedValue(
+        new ForbiddenException('palier tarifaire supérieur'),
+      );
+
+      await expect(
+        service.create('org-1', 'tournament-1', {
+          name: 'Les Aigles',
+          categoryId: 'category-1',
+        }),
+      ).rejects.toBeInstanceOf(ForbiddenException);
       expect(prisma.team.create).not.toHaveBeenCalled();
     });
 
