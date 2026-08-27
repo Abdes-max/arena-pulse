@@ -211,7 +211,11 @@ export class OrganizerTournamentWizardPage {
         return;
       }
       this.groupPhaseId = groupPhase.id;
-      const matches = await this.creationApi.listMatches(organizationId, tournamentId, groupPhase.id);
+      const matches = await this.creationApi.listMatches(
+        organizationId,
+        tournamentId,
+        groupPhase.id,
+      );
       if (matches.length > 0) {
         this.matches.set(matches);
       }
