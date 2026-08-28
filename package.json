@@ -33,6 +33,7 @@
     "lint:mobile": "ng lint mobile",
     "lint:api": "npm --prefix apps/api run lint",
     "e2e": "playwright test",
+    "e2e:full": "playwright test --config=playwright.full.config.ts",
     "format": "prettier --write \"apps/{web,mobile}/**/*.{ts,html,scss}\" \"libs/**/*.{ts,html,scss}\"",
     "format:check": "prettier --check \"apps/{web,mobile}/**/*.{ts,html,scss}\" \"libs/**/*.{ts,html,scss}\"",
     "verify": "npm run format:check && npm run lint && npm run build && npm run test"
