@@ -1,0 +1,206 @@
+<ion-header>
+  <ion-toolbar>
+    <button
+      type="button"
+      class="scores-page__back"
+      slot="start"
+      (click)="goBack()"
+      [attr.aria-label]="'organizer.wizard.cancelAria' | transloco"
+    >
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+        <path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+      </svg>
+    </button>
+    <ion-title>{{ 'organizer.scores.title' | transloco }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="scores-page">
+  <div class="scores-page__scroll">
+    @if (loading()) {
+      <p class="scores-page__hint">{{ 'organizer.scores.loading' | transloco }}</p>
+    } @else if (forbidden()) {
+      <p class="scores-page__error" role="alert">
+        {{ 'organizer.scores.errors.forbidden' | transloco }}
+      </p>
+    } @else {
+      @if (errorMessage(); as message) {
+        <p class="scores-page__error" role="alert">{{ message | transloco }}</p>
+      }
+
+      @if (categories().length === 0) {
+        <p class="scores-page__hint">{{ 'organizer.scores.addCategoryFirst' | transloco }}</p>
+      } @else {
+        <div class="scores-page__selects-row">
+          <ap-select
+            class="scores-page__select"
+            [label]="'organizer.scores.categoryLabel' | transloco"
+            [options]="categoryOptions()"
+            [value]="selectedCategoryId()"
+            (valueChange)="onCategoryChange($event)"
+          />
+          @if (phaseTypeOptions().length > 0) {
+            <ap-select
+              class="scores-page__select"
+              [label]="'organizer.scores.phaseLabel' | transloco"
+              [options]="phaseTypeOptions()"
+              [value]="selectedPhaseType()"
+              (valueChange)="onPhaseTypeChange($event)"
+            />
+          }
+        </div>
+
+        @if (phaseTypeOptions().length === 0) {
+          <p class="scores-page__hint">{{ 'organizer.scores.addPhaseFirst' | transloco }}</p>
+        } @else if (matches().length === 0) {
+          <p class="scores-page__hint">{{ 'organizer.scores.empty' | transloco }}</p>
+        } @else {
+          <p class="scores-page__progress">
+            {{
+              'organizer.scores.progress'
+                | transloco: { entered: progress().entered, total: progress().total }
+            }}
+          </p>
+
+          @for (section of matchesByRoundSection(); track section) {
+            <section class="scores-page__section">
+              <h2 class="scores-page__section-title">{{ section.label }}</h2>
+              @for (subgroup of section.subgroups; track subgroup) {
+                @if (subgroup.label; as subgroupLabel) {
+                  <h3 class="scores-page__subgroup-label">{{ subgroupLabel }}</h3>
+                }
+                @for (match of subgroup.matches; track match.id) {
+                  <div class="scores-page__match">
+                    <div class="scores-page__match-meta">
+                      <span class="scores-page__time-badge">{{ matchTimeLabel(match) }}</span>
+                      @if (match.timeSlot; as timeSlot) {
+                        <span class="scores-page__field-name">{{ timeSlot.field.name }}</span>
+                      }
+                    </div>
+
+                    @if (match.status === 'FORFEITED') {
+                      <div class="scores-page__forfeit-row">
+                        <span class="scores-page__forfeit-badge">
+                          {{
+                            'organizer.scores.forfeit'
+                              | transloco: { team: match.forfeitedTeam?.name }
+                          }}
+                        </span>
+                        <ap-button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          (click)="undoForfeit(match)"
+                        >
+                          {{ 'organizer.scores.undoForfeit' | transloco }}
+                        </ap-button>
+                      </div>
+                    } @else if (pendingOpponents(match)) {
+                      <div class="scores-page__pending-row">
+                        <span class="scores-page__team-name">{{
+                          match.homeTeam?.name ?? match.homeSourceLabel ?? '?'
+                        }}</span>
+                        <span>-</span>
+                        <span class="scores-page__team-name">{{
+                          match.awayTeam?.name ?? match.awaySourceLabel ?? '?'
+                        }}</span>
+                        <span class="scores-page__pending-badge">{{
+                          'organizer.scores.pending' | transloco
+                        }}</span>
+                      </div>
+                    } @else {
+                      <div class="scores-page__teamrow">
+                        <span class="scores-page__team-name">{{
+                          match.homeTeam?.name ?? '?'
+                        }}</span>
+                        <ap-text-field
+                          class="scores-page__score-input"
+                          [label]="'organizer.scores.homeScoreLabel' | transloco"
+                          [hideLabel]="true"
+                          type="number"
+                          [min]="0"
+                          [value]="draftFor(match).home"
+                          (valueChange)="onDraftChange(match, 'home', $event)"
+                        />
+                      </div>
+                      <div class="scores-page__teamrow scores-page__teamrow--away">
+                        <span class="scores-page__team-name">{{
+                          match.awayTeam?.name ?? '?'
+                        }}</span>
+                        <ap-text-field
+                          class="scores-page__score-input"
+                          [label]="'organizer.scores.awayScoreLabel' | transloco"
+                          [hideLabel]="true"
+                          type="number"
+                          [min]="0"
+                          [value]="draftFor(match).away"
+                          (valueChange)="onDraftChange(match, 'away', $event)"
+                        />
+                      </div>
+
+                      @if (isDraw(match) && penaltyShootoutEnabled(match)) {
+                        <div class="scores-page__penalty-row">
+                          <span class="scores-page__penalty-label">{{
+                            'organizer.scores.penaltyLabel' | transloco
+                          }}</span>
+                          <ap-text-field
+                            class="scores-page__score-input"
+                            [label]="'organizer.scores.homePenaltyLabel' | transloco"
+                            [hideLabel]="true"
+                            type="number"
+                            [min]="0"
+                            [value]="draftFor(match).homePenalty"
+                            (valueChange)="onDraftChange(match, 'homePenalty', $event)"
+                          />
+                          <span>-</span>
+                          <ap-text-field
+                            class="scores-page__score-input"
+                            [label]="'organizer.scores.awayPenaltyLabel' | transloco"
+                            [hideLabel]="true"
+                            type="number"
+                            [min]="0"
+                            [value]="draftFor(match).awayPenalty"
+                            (valueChange)="onDraftChange(match, 'awayPenalty', $event)"
+                          />
+                        </div>
+                      }
+
+                      <div class="scores-page__match-actions">
+                        <ap-button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          (click)="saveScore(match)"
+                        >
+                          {{ 'organizer.scores.save' | transloco }}
+                        </ap-button>
+                        @if (match.score) {
+                          @if (match.score.isValidated) {
+                            <span class="scores-page__validated-badge">{{
+                              'organizer.scores.validated' | transloco
+                            }}</span>
+                          } @else {
+                            <ap-button type="button" size="sm" (click)="validateScore(match)">
+                              {{ 'organizer.scores.validate' | transloco }}
+                            </ap-button>
+                          }
+                          <button
+                            type="button"
+                            class="scores-page__clear"
+                            (click)="clearScore(match)"
+                          >
+                            {{ 'organizer.scores.clear' | transloco }}
+                          </button>
+                        }
+                      </div>
+                    }
+                  </div>
+                }
+              }
+            </section>
+          }
+        }
+      }
+    }
+  </div>
+</ion-content>

@@ -31,7 +31,14 @@
       </p>
     } @else {
       @for (t of tournaments(); track t.id) {
-        <button type="button" class="tcard" (click)="openTournament(t)">
+        <div
+          class="tcard"
+          role="button"
+          tabindex="0"
+          (click)="openTournament(t)"
+          (keydown.enter)="openTournament(t)"
+          (keydown.space)="openTournament(t)"
+        >
           <div class="tcard__top">
             @if (logoUrl(t.logoUrl); as logo) {
               <img class="tcard__logo" [src]="logo" alt="" />
@@ -40,7 +47,15 @@
             <ap-badge [status]="badgeStatus(t.status)" [label]="statusLabel(t.status)" />
           </div>
           <p class="tcard__meta">{{ t.sportName }}</p>
-        </button>
+          <div class="tcard__actions">
+            <button type="button" class="tcard__action" (click)="openScores($event, t)">
+              {{ 'organizer.tournaments.list.scoresAction' | transloco }}
+            </button>
+            <button type="button" class="tcard__action" (click)="openStandings($event, t)">
+              {{ 'organizer.tournaments.list.standingsAction' | transloco }}
+            </button>
+          </div>
+        </div>
       }
     }
   </div>
