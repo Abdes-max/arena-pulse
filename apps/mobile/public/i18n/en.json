@@ -95,6 +95,7 @@
         "errorGeneric": "Something went wrong, please try again.",
         "newTournament": "New tournament",
         "logout": "Log out",
+        "accountAction": "My account",
         "scoresAction": "Scores",
         "standingsAction": "Standings",
         "status": {
@@ -104,6 +105,20 @@
           "ARCHIVED": "Archived"
         }
       }
+    },
+    "account": {
+      "title": "My account",
+      "identityTitle": "Identity",
+      "dangerZoneTitle": "Danger zone",
+      "dangerZoneIntro": "Permanently delete your account and all associated data.",
+      "deleteReveal": "Delete my account",
+      "deleteWarning": "This action is irreversible. Your account will be deleted immediately. If you are the sole administrator of an organization, it will be deleted along with all its tournaments, teams, and data.",
+      "typeToConfirmLabel": "Type SUPPRIMER to confirm",
+      "cancel": "Cancel",
+      "deleteConfirm": "Confirm deletion",
+      "deleting": "Deleting…",
+      "errorGeneric": "Something went wrong, please try again.",
+      "back": "Back"
     },
     "wizard": {
       "title": "New tournament",
@@ -202,6 +217,7 @@
         "planPending": "Annual subscription payment awaiting confirmation.",
         "planNone": "Billed per publication based on team count. The annual subscription makes every publication of yours free.",
         "planManage": "Manage my subscription",
+        "planManageIosNotice": "Manage your subscription from a browser, at tournarena.com.",
         "unpublish": "Unpublish",
         "republish": "Republish"
       },
@@ -210,6 +226,8 @@
         "body": "{{name}} is live and ready to receive results.",
         "pendingPaymentTitle": "Finish your payment",
         "pendingPaymentBody": "A secure payment tab has opened. Once payment is complete, your tournament will be published -- check back from My tournaments to see its status.",
+        "paymentBlockedIosTitle": "Finish publishing on the web",
+        "paymentBlockedIosBody": "This tournament goes beyond the free tier. To complete payment and publish it, go to tournarena.com from a browser -- not available in the iOS app.",
         "backToList": "Back to My tournaments"
       }
     },

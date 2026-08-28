@@ -16,6 +16,7 @@ import { MatchSummary, TournamentCreationService } from '../../core/tournament-c
 import { OrganizerTeamsService } from '../../core/teams.service';
 import { OrganizerTournamentsService } from '../../core/tournaments.service';
 import { environment } from '../../../../environments/environment';
+import { isIosNative } from '../../../core/native-platform.util';
 
 type WizardStep = 1 | 2 | 3 | 4 | 5 | 'done';
 
@@ -148,7 +149,15 @@ export class OrganizerTournamentWizardPage {
   // ---- Step 5: Publication ----
   protected readonly isListed = signal(true);
   protected readonly checkoutOpened = signal(false);
+  // Set instead of checkoutOpened when submitPublish() hits PENDING_PAYMENT
+  // on the native iOS build -- see isIosNative's own comment (App Review
+  // guideline 3.1.1, no in-app purchase flow other than IAP on iOS).
+  protected readonly paymentBlockedOnIos = signal(false);
   protected readonly publishedTournamentName = signal('');
+  // Computed once (the platform never changes mid-session), not re-evaluated
+  // per template read -- same "resolved once, plain field" style as this
+  // component's IDs (organizationId/tournamentId/...).
+  protected readonly isIosNative = isIosNative();
   // "Plan" block, right below the payment hint -- shows the organization's
   // current subscription regardless of team count/tier, same reasoning as
   // apps/web's tournament-form.page.ts own addition right next to its
@@ -249,8 +258,17 @@ export class OrganizerTournamentWizardPage {
     return this.transloco.translate('organizer.wizard.structure.summary.knockoutOnly', {}, lang);
   }
 
-  /** No native subscription-management UI yet -- opens the web app's own page in the system browser, same pattern as the Stripe publication checkout in submitPublish() below. */
+  /**
+   * No native subscription-management UI yet -- opens the web app's own page
+   * in the system browser, same pattern as the Stripe publication checkout
+   * in submitPublish() below. Never called on iOS: the template hides this
+   * button entirely there (isIosNative), so this early return is only a
+   * defensive backstop, not the actual gate.
+   */
   protected openSubscriptionManagement(): void {
+    if (this.isIosNative) {
+      return;
+    }
     window.open(`${environment.webUrl}/admin/organization/subscription`, '_blank', 'noopener');
   }
 
@@ -563,13 +581,23 @@ export class OrganizerTournamentWizardPage {
     });
     const result = await this.tournamentsApi.publish(organizationId, tournamentId);
     if (result.status === 'PENDING_PAYMENT') {
-      // No deep-linking back into this app from Stripe's hosted checkout
-      // (same limitation as PR 1's email verification link) -- opened in a
-      // new tab/system browser so this app's own state survives, and the
-      // 'done' step's copy says explicitly to finish payment there and
-      // check back later rather than implying it happens automatically.
-      window.open(result.checkoutUrl, '_blank', 'noopener');
-      this.checkoutOpened.set(true);
+      if (this.isIosNative) {
+        // App Review guideline 3.1.1 -- no payment flow other than In-App
+        // Purchase may be reachable from inside the iOS build, including a
+        // link/button that opens one outside the app. Free-tier publishing
+        // (the `else` branch below) is untouched, only this paid-tier path
+        // is blocked here; the 'done' step tells the organizer in plain,
+        // non-actionable text to finish this from a browser on the web.
+        this.paymentBlockedOnIos.set(true);
+      } else {
+        // No deep-linking back into this app from Stripe's hosted checkout
+        // (same limitation as PR 1's email verification link) -- opened in a
+        // new tab/system browser so this app's own state survives, and the
+        // 'done' step's copy says explicitly to finish payment there and
+        // check back later rather than implying it happens automatically.
+        window.open(result.checkoutUrl, '_blank', 'noopener');
+        this.checkoutOpened.set(true);
+      }
     } else {
       this.publishedTournamentName.set(result.name);
     }

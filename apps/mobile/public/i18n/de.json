@@ -95,6 +95,7 @@
         "errorGeneric": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut.",
         "newTournament": "Neues Turnier",
         "logout": "Abmelden",
+        "accountAction": "Mein Konto",
         "scoresAction": "Ergebnisse",
         "standingsAction": "Tabelle",
         "status": {
@@ -104,6 +105,20 @@
           "ARCHIVED": "Archiviert"
         }
       }
+    },
+    "account": {
+      "title": "Mein Konto",
+      "identityTitle": "Identität",
+      "dangerZoneTitle": "Gefahrenzone",
+      "dangerZoneIntro": "Löschen Sie Ihr Konto und alle zugehörigen Daten dauerhaft.",
+      "deleteReveal": "Mein Konto löschen",
+      "deleteWarning": "Diese Aktion ist unwiderruflich. Ihr Konto wird sofort gelöscht. Wenn Sie die einzige administrierende Person einer Organisation sind, wird diese zusammen mit allen Turnieren, Teams und Daten gelöscht.",
+      "typeToConfirmLabel": "Geben Sie SUPPRIMER ein, um zu bestätigen",
+      "cancel": "Abbrechen",
+      "deleteConfirm": "Löschung bestätigen",
+      "deleting": "Wird gelöscht…",
+      "errorGeneric": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut.",
+      "back": "Zurück"
     },
     "wizard": {
       "title": "Neues Turnier",
@@ -202,6 +217,7 @@
         "planPending": "Zahlung des Jahresabonnements wartet auf Bestätigung.",
         "planNone": "Abrechnung pro Veröffentlichung nach Teamanzahl. Das Jahresabonnement macht alle Ihre Veröffentlichungen kostenlos.",
         "planManage": "Abonnement verwalten",
+        "planManageIosNotice": "Verwalten Sie Ihr Abonnement über einen Browser unter tournarena.com.",
         "unpublish": "Veröffentlichung aufheben",
         "republish": "Erneut veröffentlichen"
       },
@@ -210,6 +226,8 @@
         "body": "{{name}} ist online und bereit, Ergebnisse zu empfangen.",
         "pendingPaymentTitle": "Zahlung abschließen",
         "pendingPaymentBody": "Ein sicherer Zahlungstab wurde geöffnet. Nach Abschluss der Zahlung wird Ihr Turnier veröffentlicht -- prüfen Sie den Status später unter Meine Turniere.",
+        "paymentBlockedIosTitle": "Veröffentlichung im Web abschließen",
+        "paymentBlockedIosBody": "Dieses Turnier übersteigt das kostenlose Kontingent. Um die Zahlung abzuschließen und zu veröffentlichen, besuchen Sie tournarena.com über einen Browser -- in der iOS-App nicht verfügbar.",
         "backToList": "Zurück zu Meine Turniere"
       }
     },

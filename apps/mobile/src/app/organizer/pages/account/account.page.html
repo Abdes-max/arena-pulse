@@ -1,0 +1,58 @@
+<ion-header>
+  <ion-toolbar>
+    <button
+      type="button"
+      class="organizer-account-page__back"
+      slot="start"
+      (click)="goBack()"
+      [attr.aria-label]="'organizer.account.back' | transloco"
+    >
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+        <path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+      </svg>
+    </button>
+    <ion-title>{{ 'organizer.account.title' | transloco }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="organizer-account-page">
+  <div class="organizer-account-page__scroll">
+    @if (user(); as u) {
+      <section class="organizer-account-page__identity">
+        <h2>{{ 'organizer.account.identityTitle' | transloco }}</h2>
+        <p>
+          {{ u.firstName }} {{ u.lastName }}<br />
+          {{ u.email }}
+        </p>
+      </section>
+    }
+
+    <section class="organizer-account-page__danger-zone">
+      <h2>{{ 'organizer.account.dangerZoneTitle' | transloco }}</h2>
+
+      @if (!dangerZoneOpen()) {
+        <p>{{ 'organizer.account.dangerZoneIntro' | transloco }}</p>
+        <ap-button type="button" variant="secondary" (click)="openDangerZone()">{{
+          'organizer.account.deleteReveal' | transloco
+        }}</ap-button>
+      } @else {
+        <p class="organizer-account-page__warning">
+          {{ 'organizer.account.deleteWarning' | transloco }}
+        </p>
+
+        @if (displayedError(); as message) {
+          <p class="organizer-account-page__error" role="alert">{{ message }}</p>
+        }
+        <ap-type-to-confirm
+          [label]="'organizer.account.typeToConfirmLabel' | transloco"
+          [confirmLabel]="'organizer.account.deleteConfirm' | transloco"
+          [pendingLabel]="'organizer.account.deleting' | transloco"
+          [cancelLabel]="'organizer.account.cancel' | transloco"
+          [pending]="deleting()"
+          (confirm)="deleteAccount()"
+          (cancelled)="cancelDeletion()"
+        />
+      }
+    </section>
+  </div>
+</ion-content>

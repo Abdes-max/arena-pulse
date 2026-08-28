@@ -15,6 +15,18 @@ ion-title {
   margin-inline-end: var(--ap-space-2);
 }
 
+.organizer-tournaments-page__account {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--ap-color-fg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
 .organizer-tournaments-page__avatar {
   width: 32px;
   height: 32px;

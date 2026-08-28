@@ -512,9 +512,15 @@
             } @else {
               <p class="wizard-page__hint">{{ 'organizer.wizard.publish.planNone' | transloco }}</p>
             }
-            <ap-button type="button" variant="secondary" (click)="openSubscriptionManagement()">
-              {{ 'organizer.wizard.publish.planManage' | transloco }}
-            </ap-button>
+            @if (isIosNative) {
+              <p class="wizard-page__hint">
+                {{ 'organizer.wizard.publish.planManageIosNotice' | transloco }}
+              </p>
+            } @else {
+              <ap-button type="button" variant="secondary" (click)="openSubscriptionManagement()">
+                {{ 'organizer.wizard.publish.planManage' | transloco }}
+              </ap-button>
+            }
           } @else {
             <p class="wizard-page__hint">
               {{ 'organizer.wizard.publish.planLoading' | transloco }}
@@ -530,7 +536,14 @@
     @if (step() === 'done') {
       <div class="wizard-page__confirm">
         <div class="wizard-page__confirm-check">✓</div>
-        @if (checkoutOpened()) {
+        @if (paymentBlockedOnIos()) {
+          <h2 class="wizard-page__confirm-title">
+            {{ 'organizer.wizard.done.paymentBlockedIosTitle' | transloco }}
+          </h2>
+          <p class="wizard-page__lede">
+            {{ 'organizer.wizard.done.paymentBlockedIosBody' | transloco }}
+          </p>
+        } @else if (checkoutOpened()) {
           <h2 class="wizard-page__confirm-title">
             {{ 'organizer.wizard.done.pendingPaymentTitle' | transloco }}
           </h2>
