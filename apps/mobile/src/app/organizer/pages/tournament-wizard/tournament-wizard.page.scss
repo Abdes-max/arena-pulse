@@ -411,25 +411,58 @@ ion-title {
   gap: var(--ap-space-2);
 }
 
-.wizard-page__matchrow {
+// Mirrors apps/web's admin .schedule-page__match-card* (colored header).
+.wizard-page__matchcard {
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  overflow: hidden;
+  font-size: 0.85rem;
+}
+
+.wizard-page__matchcard-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--ap-space-2);
-  background: var(--ap-color-surface);
-  border: var(--ap-border-width) solid var(--ap-color-border);
-  border-radius: var(--ap-radius-md);
-  padding: var(--ap-space-2) var(--ap-space-3);
-  font-size: 0.82rem;
+  padding: var(--ap-space-1) var(--ap-space-2);
+  background: var(--ap-color-primary);
+  color: var(--ap-color-on-primary);
+  font-size: 0.68rem;
+  font-weight: 700;
 }
 
-.wizard-page__matchrow-teams {
+.wizard-page__matchcard-round {
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.wizard-page__matchcard-time {
+  font-variant-numeric: tabular-nums;
+}
+
+.wizard-page__matchcard-teams {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-1);
+  padding: var(--ap-space-2);
+}
+
+.wizard-page__matchcard-team {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-1);
   font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.wizard-page__matchrow-time {
-  color: var(--ap-color-muted);
-  font-size: 0.72rem;
+.wizard-page__matchcard-team-logo {
+  width: 16px;
+  height: 16px;
+  border-radius: var(--ap-radius-sm);
+  object-fit: cover;
   flex: none;
 }
 

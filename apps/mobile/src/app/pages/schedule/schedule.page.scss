@@ -43,8 +43,23 @@
   border-bottom: var(--ap-border-width) solid var(--ap-color-border);
 }
 
+// Same breakpoints as apps/web's own schedule.page.scss (kept in sync
+// deliberately) -- a phone viewport always resolves to the same single
+// column either app already used, but this also gives iPad the same
+// multi-column density the web admin gets at an equivalent width, instead
+// of always forcing one column regardless of how much room is actually
+// available.
 .schedule-page__grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--ap-space-3);
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--ap-space-4);
+
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+    gap: var(--ap-space-3);
+  }
 }
