@@ -614,17 +614,17 @@ async function playFinalAndThirdPlace(
 
 async function main() {
   const stamp = Date.now();
-  const email = `worldcup2026-${stamp}@example.com`;
+  const email = `demo-nations-2026-${stamp}@example.com`;
   const password = 'a-very-strong-password';
 
-  const organizationName = `FIFA Demo ${stamp}`;
+  const organizationName = `TournArena Demo ${stamp}`;
   console.log(`Registering organization (${email})…`);
   await api('POST', '/auth/register', null, {
     email,
     password,
     organizationName,
     firstName: 'Demo',
-    lastName: 'FIFA',
+    lastName: 'TournArena',
   });
 
   // Accounts are no longer auto-logged-in on register() (mandatory email
@@ -662,7 +662,7 @@ async function main() {
     `/organizations/${orgId}/tournaments`,
     token,
     {
-      name: 'Coupe du Monde FIFA 2026',
+      name: 'Coupe des Nations TournArena 2026',
       sportId: football.id,
       theme: 'PULSE_EMBER',
       startDate: '2026-06-11',
@@ -905,7 +905,7 @@ async function main() {
     );
   }
 
-  console.log('\n=== Coupe du Monde FIFA 2026 créée ===');
+  console.log('\n=== Coupe des Nations TournArena 2026 créée ===');
   console.log(
     `Organisation : ${organizationName} (login : ${email} / ${password})`,
   );

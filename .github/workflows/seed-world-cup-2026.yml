@@ -1,4 +1,4 @@
-# Manual, one-off: (re-)seeds the reference "Coupe du Monde FIFA 2026"
+# Manual, one-off: (re-)seeds the reference "Coupe des Nations TournArena 2026"
 # tournament in production -- the tournament the landing page's "Voir un
 # exemple en direct" button links to (most-recently-published tournament
 # wins that slot, see TournamentsService.listPublished's `orderBy:

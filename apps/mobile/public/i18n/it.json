@@ -95,6 +95,7 @@
         "errorGeneric": "Si è verificato un errore, riprova.",
         "newTournament": "Nuovo torneo",
         "logout": "Esci",
+        "accountAction": "Il mio account",
         "scoresAction": "Risultati",
         "standingsAction": "Classifica",
         "status": {
@@ -104,6 +105,20 @@
           "ARCHIVED": "Archiviato"
         }
       }
+    },
+    "account": {
+      "title": "Il mio account",
+      "identityTitle": "Identità",
+      "dangerZoneTitle": "Zona pericolosa",
+      "dangerZoneIntro": "Elimina definitivamente il tuo account e tutti i dati associati.",
+      "deleteReveal": "Elimina il mio account",
+      "deleteWarning": "Questa azione è irreversibile. Il tuo account verrà eliminato immediatamente. Se sei l'unica persona amministratrice di un'organizzazione, questa verrà eliminata insieme a tutti i suoi tornei, squadre e dati.",
+      "typeToConfirmLabel": "Digita SUPPRIMER per confermare",
+      "cancel": "Annulla",
+      "deleteConfirm": "Conferma eliminazione",
+      "deleting": "Eliminazione…",
+      "errorGeneric": "Si è verificato un errore, riprova.",
+      "back": "Indietro"
     },
     "wizard": {
       "title": "Nuovo torneo",
@@ -202,6 +217,7 @@
         "planPending": "Pagamento dell'abbonamento annuale in attesa di conferma.",
         "planNone": "Fatturazione per pubblicazione in base al numero di squadre. L'abbonamento annuale rende gratuita ogni tua pubblicazione.",
         "planManage": "Gestisci il mio abbonamento",
+        "planManageIosNotice": "Gestisci il tuo abbonamento da un browser, su tournarena.com.",
         "unpublish": "Annulla pubblicazione",
         "republish": "Ripubblica"
       },
@@ -210,6 +226,8 @@
         "body": "{{name}} è online e pronto a ricevere risultati.",
         "pendingPaymentTitle": "Completa il pagamento",
         "pendingPaymentBody": "Si è aperta una scheda di pagamento sicuro. Una volta completato il pagamento, il tuo torneo sarà pubblicato -- torna su I miei tornei per verificarne lo stato.",
+        "paymentBlockedIosTitle": "Completa la pubblicazione sul web",
+        "paymentBlockedIosBody": "Questo torneo supera il piano gratuito. Per completare il pagamento e pubblicarlo, vai su tournarena.com da un browser -- non disponibile nell'app iOS.",
         "backToList": "Torna a I miei tornei"
       }
     },

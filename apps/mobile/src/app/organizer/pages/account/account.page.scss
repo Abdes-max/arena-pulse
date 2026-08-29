@@ -1,0 +1,80 @@
+ion-toolbar {
+  --padding-start: var(--ap-space-2);
+  --padding-end: var(--ap-space-4);
+}
+
+ion-title {
+  padding-inline: 0;
+  text-align: start;
+  font-family: var(--ap-font-heading);
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.organizer-account-page__back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--ap-color-fg);
+  cursor: pointer;
+}
+
+.organizer-account-page {
+  --padding-top: var(--ap-space-4);
+  --padding-bottom: var(--ap-space-6);
+  --padding-start: var(--ap-space-4);
+  --padding-end: var(--ap-space-4);
+}
+
+.organizer-account-page__scroll {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-8);
+}
+
+.organizer-account-page__identity {
+  h2 {
+    margin: 0 0 var(--ap-space-3);
+    font-size: 1.05rem;
+  }
+
+  p {
+    margin: 0;
+    color: var(--ap-color-muted);
+    line-height: 1.5;
+  }
+}
+
+// The first destructive-action zone in this app -- a visible border in the
+// error color signals "careful here" without needing a modal, same as
+// apps/web's admin account page.
+.organizer-account-page__danger-zone {
+  padding: var(--ap-space-5);
+  border: var(--ap-border-width) solid var(--ap-color-error);
+  border-radius: var(--ap-radius-md);
+
+  h2 {
+    margin: 0 0 var(--ap-space-3);
+    font-size: 1.05rem;
+  }
+
+  p {
+    margin: 0 0 var(--ap-space-4);
+    color: var(--ap-color-muted);
+  }
+}
+
+.organizer-account-page__warning {
+  color: var(--ap-color-error) !important;
+}
+
+.organizer-account-page__error {
+  margin: 0 !important;
+  color: var(--ap-color-error);
+  font-size: 0.9rem;
+}

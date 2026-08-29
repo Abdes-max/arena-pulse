@@ -107,6 +107,17 @@ export class OrganizerAuthService {
     }
   }
 
+  /** Permanent, immediate deletion (see AuthService.deleteAccount server-side, same endpoint as apps/web's admin account page). The caller is expected to redirect away right after this resolves. */
+  async deleteAccount(confirmation: string): Promise<void> {
+    await firstValueFrom(
+      this.http.delete(`${environment.apiUrl}/auth/me`, {
+        body: { confirmation },
+        withCredentials: true,
+      }),
+    );
+    this.clearSession();
+  }
+
   async logout(): Promise<void> {
     try {
       await firstValueFrom(
