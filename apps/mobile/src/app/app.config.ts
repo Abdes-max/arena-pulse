@@ -25,7 +25,21 @@ export const appConfig: ApplicationConfig = {
     { provide: ErrorHandler, useClass: GlobalErrorHandler },
     provideRouter(routes),
     provideHttpClient(withInterceptors([languageInterceptor, organizerAuthInterceptor])),
-    provideIonicAngular(),
+    // Forced to 'md' (rather than Ionic's default per-platform auto-detect,
+    // which picks 'ios' on a real iPhone) -- every page in this app was
+    // built and visually tuned against 'md' mode's toolbar layout (a normal
+    // flex row, ion-title left-aligned and taking the remaining width, see
+    // e.g. every page's own `ion-title { text-align: start }` override).
+    // 'ios' mode instead absolutely-centers ion-title independent of the
+    // start/end slot content's width, which overlaps a start-slot logo with
+    // the title text whenever the title is long enough -- invisible in every
+    // form of testing this app had received so far (desktop Chrome, the
+    // Android emulator, Playwright) since none of those ever render 'ios'
+    // mode, only caught once tested on a real iPhone via TestFlight
+    // (2026-08-29). Forcing 'md' everywhere, on both platforms, is far
+    // cheaper than re-tuning every toolbar for 'ios' mode's different layout
+    // rules, and keeps iOS visually consistent with the Android build.
+    provideIonicAngular({ mode: 'md' }),
     provideApiClient({ apiUrl: environment.apiUrl }),
     // Restores an organizer session from the httpOnly refresh cookie on app
     // startup (same pattern as apps/web/src/app/app.config.ts) -- so

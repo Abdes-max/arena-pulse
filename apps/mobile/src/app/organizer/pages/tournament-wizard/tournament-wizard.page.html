@@ -535,7 +535,20 @@
 
     @if (step() === 'done') {
       <div class="wizard-page__confirm">
-        <div class="wizard-page__confirm-check">✓</div>
+        @if (paymentBlockedOnIos()) {
+          <!-- Not a ✓: nothing was actually confirmed here (the tournament
+               stays exactly as it was -- no payment happened), so this
+               screen must not visually read as a success/validation state
+               the way the other two branches genuinely are. -->
+          <div
+            class="wizard-page__confirm-check"
+            style="background: var(--ap-color-border); color: var(--ap-color-muted)"
+          >
+            ↗
+          </div>
+        } @else {
+          <div class="wizard-page__confirm-check">✓</div>
+        }
         @if (paymentBlockedOnIos()) {
           <h2 class="wizard-page__confirm-title">
             {{ 'organizer.wizard.done.paymentBlockedIosTitle' | transloco }}
