@@ -417,15 +417,29 @@
           } @else if (matches(); as generatedMatches) {
             <div class="wizard-page__matchlist">
               @for (match of generatedMatches; track match.id) {
-                <div class="wizard-page__matchrow">
-                  <span class="wizard-page__matchrow-teams">
-                    {{ match.homeTeam?.name }} – {{ match.awayTeam?.name }}
-                  </span>
-                  @if (match.timeSlot; as slot) {
-                    <span class="wizard-page__matchrow-time">
-                      {{ slot.startTime | date: 'EEE d MMM, HH:mm' }}
+                <div class="wizard-page__matchcard">
+                  <div class="wizard-page__matchcard-header">
+                    <span class="wizard-page__matchcard-round">{{ matchHeaderLabel(match) }}</span>
+                    @if (match.timeSlot; as slot) {
+                      <span class="wizard-page__matchcard-time">
+                        {{ slot.startTime | date: 'EEE d MMM, HH:mm' }}
+                      </span>
+                    }
+                  </div>
+                  <div class="wizard-page__matchcard-teams">
+                    <span class="wizard-page__matchcard-team">
+                      @if (logoUrl(match.homeTeam?.logoUrl); as logo) {
+                        <img class="wizard-page__matchcard-team-logo" [src]="logo" alt="" />
+                      }
+                      {{ match.homeTeam?.name ?? '?' }}
                     </span>
-                  }
+                    <span class="wizard-page__matchcard-team">
+                      @if (logoUrl(match.awayTeam?.logoUrl); as logo) {
+                        <img class="wizard-page__matchcard-team-logo" [src]="logo" alt="" />
+                      }
+                      {{ match.awayTeam?.name ?? '?' }}
+                    </span>
+                  </div>
                 </div>
               }
             </div>

@@ -12,9 +12,12 @@ import {
 export interface MatchSummary {
   id: string;
   round: number;
-  homeTeam: { id: string; name: string } | null;
-  awayTeam: { id: string; name: string } | null;
-  timeSlot: { startTime: string } | null;
+  homeTeam: { id: string; name: string; logoUrl: string | null } | null;
+  awayTeam: { id: string; name: string; logoUrl: string | null } | null;
+  // field is already in the real API response (MATCH_INCLUDE, apps/api's
+  // match-summary.util.ts) -- just never surfaced through this narrower
+  // wizard-facing type until the Calendrier step's card needed it too.
+  timeSlot: { startTime: string; field: { name: string } } | null;
 }
 
 // Plumbing behind the wizard's "Structure" and "Calendrier" steps -- these

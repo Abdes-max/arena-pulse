@@ -2,10 +2,10 @@ import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonContent, IonFooter, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
-import { PublicApiService } from 'api-client';
+import { AssetUrlService, PublicApiService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Button, TextField } from 'design-system';
-import { PublicSport, PublicTheme } from 'shared-models';
+import { PublicSport, PublicTheme, matchRoundLabel } from 'shared-models';
 import { OrganizerAuthService } from '../../core/auth.service';
 import { OrganizerPhase, TournamentStatus, WizardStructureFormat } from '../../core/models';
 import {
@@ -79,6 +79,7 @@ export class OrganizerTournamentWizardPage {
   private readonly creationApi = inject(TournamentCreationService);
   private readonly organizationsApi = inject(OrganizerOrganizationsService);
   private readonly publicApi = inject(PublicApiService);
+  private readonly assetUrl = inject(AssetUrlService);
   private readonly transloco = inject(TranslocoService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
@@ -569,6 +570,33 @@ export class OrganizerTournamentWizardPage {
   /** Format doesn't create a pool phase to schedule (KNOCKOUT_ONLY) -- see tournament-creation.service.ts's comment on generateSchedule(). In edit mode format() may still be its unused default (the format picker never ran), so this checks the real preloaded groupPhaseId instead. */
   protected readonly hasSchedulableStructure = (): boolean =>
     this.mode() === 'edit' ? this.groupPhaseId !== null : this.format() !== 'knockout-only';
+
+  protected logoUrl(url: string | null | undefined): string | null {
+    return this.assetUrl.resolve(url ?? null);
+  }
+
+  /**
+   * "Poules · Tour N" header for a Calendrier-step match card, matching
+   * apps/web's admin schedule.page.ts#roundDisplay -- deliberately simpler
+   * than that method since this step only ever generates GROUP_STAGE
+   * matches (see hasSchedulableStructure's own comment: KNOCKOUT_ONLY skips
+   * this step entirely, and pools always precede any bracket in the other
+   * two formats), so there's no knockout-round-name branch to handle and no
+   * need to fetch the real phase/group entity just to read its type.
+   * Reuses organizer.scores.poolsOption's "Poules" rather than adding a new
+   * key for the same word.
+   */
+  protected matchHeaderLabel(match: MatchSummary): string {
+    const lang = this.transloco.getActiveLang();
+    const poolsLabel = this.transloco.translate('organizer.scores.poolsOption', {}, lang);
+    const roundLabel = matchRoundLabel(
+      { type: 'GROUP_STAGE', knockoutBracket: null },
+      { round: match.round, isThirdPlaceMatch: false },
+      'compact',
+      lang as Parameters<typeof matchRoundLabel>[3],
+    );
+    return `${poolsLabel} · ${roundLabel}`;
+  }
 
   private async submitPublish(): Promise<void> {
     const organizationId = this.organizationId;
