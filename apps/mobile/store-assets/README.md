@@ -1,8 +1,8 @@
 # Visuels des fiches store (Google Play + App Store Connect)
 
-Générés le 2026-08-19, à uploader manuellement dans les deux consoles (aucune des deux
-n'expose d'`<input type="file">` accessible à l'automatisation — le champ n'existe qu'après
-clic, ce qui ouvre le sélecteur natif de l'OS).
+À uploader manuellement dans les deux consoles (aucune des deux n'expose
+d'`<input type="file">` accessible à l'automatisation — le champ n'existe qu'après clic, ce
+qui ouvre le sélecteur natif de l'OS).
 
 ## Contenu
 
@@ -11,15 +11,23 @@ clic, ce qui ouvre le sélecteur natif de l'OS).
 - `play/feature-graphic-1024x500.png` — image de présentation Play Store, rendue via
   Playwright à partir de la géométrie exacte de `libs/design-system/src/lib/logo/`
   (variante `on-dark`, fond `#1e293b`).
-- `play/screenshots/*.png` — 4 captures d'écran téléphone (1080×2400, natif), prises sur
-  l'émulateur Android (`npm run emulator:mobile`) avec les données World Cup 2026 déjà
-  seedées : découverte/recherche de tournoi, fiche tournoi, phase finale (tableau à
-  élimination), calendrier.
-- `app-store/screenshots-6.5in/*.png` — mêmes captures, recadrées (`fit: cover`, crop
-  minimal) à 1242×2688 pour respecter la taille exacte exigée par App Store Connect pour
-  l'iPhone 6,5". Pas de simulateur iOS utilisé (aucun Mac local, cf. ADR 0008) — l'UI
-  Capacitor étant partagée entre les deux plateformes, les captures Android recadrées sont
-  représentatives.
+- `play/screenshots/*.png` (1080×2400), `app-store/screenshots-6.5in/*.png` (1242×2688),
+  `app-store/screenshots-ipad-13in/*.png` (2064×2752) — les mêmes 4 captures (découverte/
+  recherche de tournoi, fiche tournoi, phase finale, calendrier) à chaque taille exigée.
+
+  **Régénérées le 2026-08-29** via `node infra/scripts/capture-store-screenshots.mjs
+  <slug-du-tournoi>` (nécessite `npm run dev:api` + `npm run dev:mobile` déjà lancés, et le
+  tournoi vitrine seedé/mis à jour localement — voir l'en-tête de
+  `apps/api/prisma/seed-world-cup-2026.ts`) plutôt que capturées à la main sur l'émulateur
+  Android comme la toute première version (2026-08-19) : cette 1ère version montrait la
+  barre de statut Android sur les captures App Store (refusé par Apple, guideline 2.3.10 —
+  "remove non-iOS status bar images") et le nom/logo FIFA du tournoi vitrine d'alors
+  (refusé, guideline 5.2.1, voir le rebrand du 2026-08-28 vers "Coupe des Nations
+  TournArena 2026"). Le nouveau script capture directement un viewport Playwright nu, sans
+  aucun habillage d'OS (ni barre Android, ni fausse barre iOS) — Apple demandait de
+  *retirer* la barre non-iOS, pas d'en simuler une iOS, et une capture sans aucune barre de
+  statut satisfait ça directement sans avoir besoin d'un vrai Simulateur iOS (pas de Mac
+  local, cf. ADR 0008).
 
 ## Textes associés (déjà saisis dans les deux consoles au 2026-08-19)
 
@@ -29,7 +37,9 @@ conversation pour le texte exact FR. **Traduction EN encore à faire.**
 
 ## Reste à faire (porteur de projet)
 
-- Uploader ces 10 fichiers dans les deux consoles (glisser-déposer, ~2 min).
+- Uploader les captures d'écran régénérées (12 fichiers : 4 par taille × 3 tailles) dans
+  les deux consoles (glisser-déposer, ~2 min) — remplace les anciennes captures refusées
+  par Apple.
 - Traduire la fiche en anglais (Google Play : ajouter une langue ; App Store Connect :
   ajouter une localisation en-US).
 - Google Play : Data safety, classification du contenu, cible (déclarée adultes
