@@ -85,3 +85,22 @@ www.{$DOMAIN} {
 www.{$KELTO_DOMAIN} {
 	redir https://{$KELTO_DOMAIN}{uri} permanent
 }
+
+# EvolyFoot -- an unrelated project of the same operator's, sharing this VPS
+# and this Caddy instance purely as a reverse-proxy front door (its own
+# `evolyfoot-web` container, on the external `edge` Docker network -- see
+# docker-compose.prod.yml's own comment on why `caddy` joins that network
+# too). Same {$ENV_VAR} convention as {$KELTO_DOMAIN} above rather than the
+# domain hardcoded here, so it can change without touching this checked-in
+# file. No security-header block here (unlike {$DOMAIN}/{$KELTO_DOMAIN}
+# above): those headers, especially the CSP, are shaped around what *this*
+# app's own frontend loads -- copying them onto a codebase this repo knows
+# nothing about risks silently breaking EvolyFoot's own scripts/styles/fonts.
+{$EVOLYFOOT_DOMAIN} {
+	encode gzip
+	reverse_proxy evolyfoot-web:3000
+}
+
+www.{$EVOLYFOOT_DOMAIN} {
+	redir https://{$EVOLYFOOT_DOMAIN}{uri} permanent
+}
