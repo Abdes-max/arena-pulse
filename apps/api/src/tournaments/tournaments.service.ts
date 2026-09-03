@@ -283,7 +283,38 @@ export class TournamentsService {
       teamsCount,
       amountCents,
       currency,
+      isUpgrade: hasPriorPaidOrder && alreadyPaidCents > 0,
     });
+  }
+
+  /**
+   * Which IAP product (if any) an iOS client should offer to purchase to
+   * cover this exact gap -- the mobile wizard reads this alongside
+   * `checkoutUrl` (which it never opens, see PR "corrige 3 des 4 rejets App
+   * Store") and, once StoreKit reports success, confirms it server-side via
+   * confirmPublicationPaymentViaIap. `isUpgrade` disambiguates a case where
+   * a from-zero tier price and the STANDARD->LARGE gap could otherwise
+   * coincidentally match the same cents amount -- each of this method's 3
+   * callers already knows which situation it's in (alreadyPaidCents > 0)
+   * without needing to guess from the number alone. Null (no matching
+   * product, e.g. both tier prices are unset/0 in this environment) is a
+   * legitimate case the mobile client falls back to its "finish on the
+   * web" message for.
+   */
+  private iapProductIdForCheckout(
+    amountCents: number,
+    isUpgrade: boolean,
+  ): IapProductId | null {
+    if (isUpgrade) {
+      return IAP_PRODUCT_IDS.TOURNAMENT_PUBLICATION_UPGRADE_STANDARD_TO_LARGE;
+    }
+    if (amountCents === this.tierPriceCents('STANDARD') && amountCents > 0) {
+      return IAP_PRODUCT_IDS.TOURNAMENT_PUBLICATION_STANDARD;
+    }
+    if (amountCents === this.tierPriceCents('LARGE') && amountCents > 0) {
+      return IAP_PRODUCT_IDS.TOURNAMENT_PUBLICATION_LARGE;
+    }
+    return null;
   }
 
   /**
@@ -299,10 +330,16 @@ export class TournamentsService {
       teamsCount: number;
       amountCents: number;
       currency: string;
+      isUpgrade: boolean;
     },
-  ): Promise<{ status: 'PENDING_PAYMENT'; checkoutUrl: string }> {
+  ): Promise<{
+    status: 'PENDING_PAYMENT';
+    checkoutUrl: string;
+    iapProductId: IapProductId | null;
+  }> {
+    const { isUpgrade, ...orderData } = data;
     const order = await this.prisma.tournamentPublicationOrder.create({
-      data: { tournamentId: tournament.id, ...data },
+      data: { tournamentId: tournament.id, ...orderData },
     });
 
     const webUrl = this.configService.get<string>(
@@ -323,7 +360,11 @@ export class TournamentsService {
       data: { stripeCheckoutSessionId: session.id },
     });
 
-    return { status: 'PENDING_PAYMENT', checkoutUrl: session.url! };
+    return {
+      status: 'PENDING_PAYMENT',
+      checkoutUrl: session.url!,
+      iapProductId: this.iapProductIdForCheckout(data.amountCents, isUpgrade),
+    };
   }
 
   /**
@@ -344,7 +385,12 @@ export class TournamentsService {
     tournamentId: string,
     additionalTeams: number,
   ): Promise<
-    { status: 'PUBLISHED' } | { status: 'PENDING_PAYMENT'; checkoutUrl: string }
+    | { status: 'PUBLISHED' }
+    | {
+        status: 'PENDING_PAYMENT';
+        checkoutUrl: string;
+        iapProductId: IapProductId | null;
+      }
   > {
     await this.organizationsService.assertNotSuspended(organizationId);
     const tournament = await this.getOrThrow(organizationId, tournamentId);
@@ -388,6 +434,7 @@ export class TournamentsService {
       teamsCount: prospectiveTeamsCount,
       amountCents,
       currency,
+      isUpgrade: alreadyPaidCents > 0,
     });
   }
 
@@ -414,7 +461,12 @@ export class TournamentsService {
     tournamentId: string,
     tier: 'STANDARD' | 'LARGE',
   ): Promise<
-    { status: 'PUBLISHED' } | { status: 'PENDING_PAYMENT'; checkoutUrl: string }
+    | { status: 'PUBLISHED' }
+    | {
+        status: 'PENDING_PAYMENT';
+        checkoutUrl: string;
+        iapProductId: IapProductId | null;
+      }
   > {
     await this.organizationsService.assertNotSuspended(organizationId);
     const tournament = await this.getOrThrow(organizationId, tournamentId);
@@ -444,6 +496,7 @@ export class TournamentsService {
       teamsCount,
       amountCents,
       currency,
+      isUpgrade: alreadyPaidCents > 0,
     });
   }
 

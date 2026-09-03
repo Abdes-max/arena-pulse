@@ -493,6 +493,7 @@ describe('TournamentsService', () => {
       expect(result).toEqual({
         status: 'PENDING_PAYMENT',
         checkoutUrl: 'https://checkout.stripe.example/cs_test_publish_123',
+        iapProductId: 'tournament_publication_standard',
       });
     });
 
@@ -552,6 +553,7 @@ describe('TournamentsService', () => {
       expect(result).toEqual({
         status: 'PENDING_PAYMENT',
         checkoutUrl: 'https://checkout.stripe.example/cs_test_publish_123',
+        iapProductId: 'tournament_publication_large',
       });
     });
 
@@ -785,6 +787,7 @@ describe('TournamentsService', () => {
       expect(result).toEqual({
         status: 'PENDING_PAYMENT',
         checkoutUrl: 'https://checkout.stripe.example/cs_test_publish_123',
+        iapProductId: 'tournament_publication_upgrade_standard_to_large',
       });
       expect(prisma.tournament.update).not.toHaveBeenCalled();
     });
@@ -888,6 +891,7 @@ describe('TournamentsService', () => {
       expect(result).toEqual({
         status: 'PENDING_PAYMENT',
         checkoutUrl: 'https://checkout.stripe.example/cs_test_publish_123',
+        iapProductId: 'tournament_publication_standard',
       });
       expect(prisma.tournament.update).not.toHaveBeenCalled();
     });
