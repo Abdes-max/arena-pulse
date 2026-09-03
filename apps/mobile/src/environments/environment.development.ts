@@ -11,4 +11,10 @@ export const environment = {
   // tournaments.service.ts) -- that's also where this app's own emailed
   // verify-email links point, so a locally-verified account matches this port.
   webUrl: 'http://localhost:4200',
+  // Same key as environment.ts (prod) -- RevenueCat's sandbox purchases are
+  // driven by which build/environment the device itself is in (a
+  // TestFlight/dev-signed build automatically transacts in the App Store
+  // sandbox), not by using a different API key here. See environment.ts's
+  // own comment for why this key is safe to keep in source.
+  revenueCatApiKey: 'appl_bVmmdsLVmSmGazbtlCXlerQMJWK',
 };

@@ -4,6 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import {
   CreateTournamentPayload,
+  IapProductId,
   OrganizerTournament,
   PremiumFeaturesStatus,
   PublicTheme,
@@ -115,6 +116,27 @@ export class OrganizerTournamentsService {
       this.http.post<OrganizerTournament>(
         `${this.base(organizationId)}/${tournamentId}/publish/confirm`,
         { sessionId },
+      ),
+    );
+  }
+
+  /**
+   * iOS counterpart of confirmPublicationPayment above -- called right
+   * after IapService.purchase() reports StoreKit success, never before
+   * (see submitPublish()'s own comment). The backend independently
+   * re-verifies the purchase against RevenueCat's own records rather than
+   * trusting this call's mere existence, so there's no transaction id or
+   * receipt to pass here -- just which product was bought.
+   */
+  confirmPublicationPaymentViaIap(
+    organizationId: string,
+    tournamentId: string,
+    productId: IapProductId,
+  ): Promise<OrganizerTournament> {
+    return firstValueFrom(
+      this.http.post<OrganizerTournament>(
+        `${this.base(organizationId)}/${tournamentId}/publish/confirm-iap`,
+        { productId },
       ),
     );
   }

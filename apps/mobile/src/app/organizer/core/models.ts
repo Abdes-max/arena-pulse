@@ -59,7 +59,24 @@ export interface CreateTournamentPayload {
 export interface PublishPendingPayment {
   status: 'PENDING_PAYMENT';
   checkoutUrl: string;
+  // Which iOS In-App Purchase product (if any) covers this exact gap --
+  // null when no matching product exists for the amount (e.g. tier prices
+  // are unset/0 in this environment). See IapService and
+  // tournament-wizard.page.ts's submitPublish() for how this drives the
+  // native purchase flow on iOS (guideline 3.1.1) instead of opening
+  // checkoutUrl, which iOS never does.
+  iapProductId: IapProductId | null;
 }
+
+// Mirrors apps/api's IAP_PRODUCT_IDS (payments/revenuecat.service.ts) --
+// kept as a plain union of the same string literals rather than importing
+// from the backend, same "deliberate port, not a shared lib" convention as
+// the rest of this file.
+export type IapProductId =
+  | 'tournament_publication_standard'
+  | 'tournament_publication_large'
+  | 'tournament_publication_upgrade_standard_to_large'
+  | 'annual_subscription';
 
 export type PublishTournamentResult = OrganizerTournament | PublishPendingPayment;
 

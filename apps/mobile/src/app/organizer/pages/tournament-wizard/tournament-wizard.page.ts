@@ -7,6 +7,7 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Button, TextField } from 'design-system';
 import { PublicSport, PublicTheme, matchRoundLabel } from 'shared-models';
 import { OrganizerAuthService } from '../../core/auth.service';
+import { IapCancelledError, IapService } from '../../core/iap.service';
 import { OrganizerPhase, TournamentStatus, WizardStructureFormat } from '../../core/models';
 import {
   OrganizationSubscriptionStatus,
@@ -80,6 +81,7 @@ export class OrganizerTournamentWizardPage {
   private readonly organizationsApi = inject(OrganizerOrganizationsService);
   private readonly publicApi = inject(PublicApiService);
   private readonly assetUrl = inject(AssetUrlService);
+  private readonly iap = inject(IapService);
   private readonly transloco = inject(TranslocoService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
@@ -610,13 +612,37 @@ export class OrganizerTournamentWizardPage {
     const result = await this.tournamentsApi.publish(organizationId, tournamentId);
     if (result.status === 'PENDING_PAYMENT') {
       if (this.isIosNative) {
-        // App Review guideline 3.1.1 -- no payment flow other than In-App
-        // Purchase may be reachable from inside the iOS build, including a
-        // link/button that opens one outside the app. Free-tier publishing
-        // (the `else` branch below) is untouched, only this paid-tier path
-        // is blocked here; the 'done' step tells the organizer in plain,
-        // non-actionable text to finish this from a browser on the web.
-        this.paymentBlockedOnIos.set(true);
+        if (result.iapProductId) {
+          // Real StoreKit purchase (App Review guideline 3.1.1) -- buy the
+          // matching product via RevenueCat, then confirm it server-side.
+          // The purchase call succeeding is never enough on its own: the
+          // backend independently re-verifies against RevenueCat's own
+          // records before actually publishing (same "never trust the
+          // client" posture Stripe's own confirm/webhook pair already had).
+          try {
+            await this.iap.purchase(result.iapProductId);
+          } catch (error) {
+            if (error instanceof IapCancelledError) {
+              // Organizer backed out of the native purchase sheet
+              // themselves -- a normal outcome, not an error. Stay on the
+              // Publication step exactly as it was; no 'done' navigation.
+              return;
+            }
+            throw error;
+          }
+          const published = await this.tournamentsApi.confirmPublicationPaymentViaIap(
+            organizationId,
+            tournamentId,
+            result.iapProductId,
+          );
+          this.publishedTournamentName.set(published.name);
+        } else {
+          // No IAP product matches this exact amount (e.g. tier prices are
+          // unset/0 in this environment) -- same fallback as before: the
+          // 'done' step tells the organizer in plain, non-actionable text
+          // to finish this from a browser on the web.
+          this.paymentBlockedOnIos.set(true);
+        }
       } else {
         // No deep-linking back into this app from Stripe's hosted checkout
         // (same limitation as PR 1's email verification link) -- opened in a

@@ -15,4 +15,12 @@ export const environment = {
   // -- "Connexion"/"Créer un tournoi" are native routes now (feat/193, see
   // app.routes.ts's organizer/* routes), no longer built from this.
   webUrl: 'https://tournarena.com',
+  // RevenueCat's own PUBLIC API key for the iOS app (prefixed `appl_`,
+  // deliberately different from the SECRET key the backend holds in
+  // apps/api/.env -- see RevenueCatService's module comment) -- safe to
+  // ship client-side by design, same posture RevenueCat's own docs take on
+  // this key (it authenticates the app, not a user or an organization).
+  // Used only on iOS (IapService checks isIosNative() before configuring
+  // Purchases at all) -- guideline 3.1.1, see ADR 0008.
+  revenueCatApiKey: 'appl_bVmmdsLVmSmGazbtlCXlerQMJWK',
 };
