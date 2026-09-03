@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { IapService } from './iap.service';
 import { MeResponse, OrganizationSummary, OrganizerUser } from './models';
 
 // Same contract as apps/web/src/app/admin/core/auth.service.ts (this file is
@@ -32,6 +33,7 @@ interface TokenResponse {
 @Injectable({ providedIn: 'root' })
 export class OrganizerAuthService {
   private readonly http = inject(HttpClient);
+  private readonly iap = inject(IapService);
 
   private readonly accessToken = signal<string | null>(null);
   private readonly currentUserSignal = signal<OrganizerUser | null>(null);
@@ -139,6 +141,11 @@ export class OrganizerAuthService {
       lastName: me.lastName,
     });
     this.organizationsSignal.set(me.organizations);
+    // Best-effort, never blocks auth on an IAP concern (IapService.configureForUser
+    // already swallows its own errors) -- me.id becomes RevenueCat's
+    // app_user_id, must match what the backend passes to
+    // RevenueCatService.fetchSubscriber when confirming a purchase later.
+    void this.iap.configureForUser(me.id);
   }
 
   private clearSession(): void {
