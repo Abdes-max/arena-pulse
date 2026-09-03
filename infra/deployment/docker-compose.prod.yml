@@ -157,11 +157,29 @@ services:
       # actually serves anything once that domain's DNS points here.
       KELTO_DOMAIN: ${KELTO_DOMAIN:-kelto-studio.fr}
       # Third-party project on the same host, same "riding along" posture as
-      # KELTO_DOMAIN above -- see Caddyfile's own comment. Empty by default
-      # (unlike KELTO_DOMAIN's real fallback) since there's no sensible
-      # default domain for someone else's project; Caddy just never matches
-      # that site block until it's set.
-      EVOLYFOOT_DOMAIN: ${EVOLYFOOT_DOMAIN:-}
+      # KELTO_DOMAIN above -- see Caddyfile's own comment.
+      #
+      # INCIDENT (2026-09-03): originally defaulted to an empty string here
+      # ("no sensible default domain for someone else's project"), reasoning
+      # that Caddy would just never match an unnamed site block. Wrong: an
+      # *empty* {$EVOLYFOOT_DOMAIN} doesn't produce a harmless non-matching
+      # site block, it produces a site block with no key at all, which
+      # Caddy's own config adapter rejects outright -- "server block without
+      # any key is global configuration, and if used, it must be first" --
+      # taking down the ENTIRE Caddyfile (so {$DOMAIN}/{$KELTO_DOMAIN} too,
+      # not just EvolyFoot) the moment this var isn't set on a given host.
+      # Only ever caught by `caddy validate` runs that happened to pass an
+      # explicit non-empty value -- never the actual default path, which is
+      # exactly what production hit on the very next deploy.
+      #
+      # Fixed the same way KELTO_DOMAIN always avoided this class of bug:
+      # a real, syntactically-valid placeholder hostname, not empty. RFC
+      # 2606 reserves the .invalid TLD specifically for this -- guaranteed
+      # to never resolve/be registered, so this site block never receives
+      # real traffic and Caddy's background certificate retries for it stay
+      # perpetually (harmlessly) unresolved, exactly like KELTO_DOMAIN's own
+      # "only actually serves anything once that domain's DNS points here".
+      EVOLYFOOT_DOMAIN: ${EVOLYFOOT_DOMAIN:-evolyfoot.invalid}
     # `default` kept explicitly (not just `edge`) -- declaring any
     # `networks:` on a service opts it out of the implicit default network
     # otherwise auto-attached, and caddy still needs that one for `web`
