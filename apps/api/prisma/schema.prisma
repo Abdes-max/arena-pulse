@@ -827,6 +827,13 @@ model TournamentPublicationOrder {
   // branch) or if the retrieval call itself failed (non-fatal, see the same
   // method's try/catch).
   stripeReceiptUrl        String?
+  // Set instead of the stripe* fields above for an iOS In-App Purchase order
+  // (RevenueCatService, feat/iap) -- Apple's StoreKit transaction id as
+  // RevenueCat reports it. Which of the two payment paths an order went
+  // through is inferred from which of these two id fields is non-null,
+  // same convention already used for stripeCheckoutSessionId itself (no
+  // separate "provider" enum column).
+  revenueCatTransactionId String?                          @unique
   createdAt               DateTime                         @default(now())
   paidAt                  DateTime?
 
@@ -857,6 +864,10 @@ model OrganizationSubscription {
   currency                String
   stripeCheckoutSessionId String?                         @unique
   stripePaymentIntentId   String?
+  // Same convention as TournamentPublicationOrder's own field of the
+  // same name -- set for an iOS annual-subscription In-App Purchase
+  // instead of the stripe* fields above.
+  revenueCatTransactionId String?                         @unique
   createdAt               DateTime                        @default(now())
   paidAt                  DateTime?
 

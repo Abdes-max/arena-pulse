@@ -18,10 +18,13 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
 import { memoryStorage } from 'multer';
 import { OrganizationRole } from '../../generated/prisma/client';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import type { AuthenticatedUser } from '../auth/strategies/jwt.strategy';
 import { MailLang } from '../mail/decorators/mail-lang.decorator';
 import type { MailLanguage } from '../mail/mail-language';
 import { RequireOrgRole } from '../organizations/decorators/require-org-role.decorator';
 import { OrganizationRoleGuard } from '../organizations/guards/organization-role.guard';
+import { ConfirmIapPurchaseDto } from './dto/confirm-iap-purchase.dto';
 import { ConfirmPublicationPaymentDto } from './dto/confirm-publication-payment.dto';
 import { PayForTeamAdditionDto } from './dto/pay-for-team-addition.dto';
 import { PayForTournamentTierDto } from './dto/pay-for-tournament-tier.dto';
@@ -191,6 +194,26 @@ export class TournamentsController {
       organizationId,
       tournamentId,
       dto.sessionId,
+      lang,
+    );
+  }
+
+  /** iOS counterpart of publish/confirm above -- see ConfirmIapPurchaseDto's own comment and TournamentsService.confirmPublicationPaymentViaIap. */
+  @RequireOrgRole(OrganizationRole.ORG_ADMIN)
+  @HttpCode(HttpStatus.OK)
+  @Post(':tournamentId/publish/confirm-iap')
+  confirmPublicationPaymentViaIap(
+    @Param('organizationId') organizationId: string,
+    @Param('tournamentId') tournamentId: string,
+    @Body() dto: ConfirmIapPurchaseDto,
+    @CurrentUser() user: AuthenticatedUser,
+    @MailLang() lang: MailLanguage,
+  ) {
+    return this.tournamentsService.confirmPublicationPaymentViaIap(
+      organizationId,
+      tournamentId,
+      user.id,
+      dto,
       lang,
     );
   }

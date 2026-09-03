@@ -12,6 +12,7 @@ import { ApiTags } from '@nestjs/swagger';
 import type { Request } from 'express';
 import { Public } from '../auth/decorators/public.decorator';
 import { OrganizationsService } from '../organizations/organizations.service';
+import { RevenueCatService } from '../payments/revenuecat.service';
 import { StripeService } from '../payments/stripe.service';
 import { TournamentsService } from '../tournaments/tournaments.service';
 import { RegistrationsService } from './registrations.service';
@@ -21,6 +22,7 @@ import { RegistrationsService } from './registrations.service';
 export class PaymentsWebhookController {
   constructor(
     private readonly stripeService: StripeService,
+    private readonly revenueCatService: RevenueCatService,
     private readonly registrationsService: RegistrationsService,
     private readonly tournamentsService: TournamentsService,
     private readonly organizationsService: OrganizationsService,
@@ -52,6 +54,44 @@ export class PaymentsWebhookController {
     await this.registrationsService.handleStripeEvent(event);
     await this.tournamentsService.handlePublicationStripeEvent(event);
     await this.organizationsService.handleSubscriptionStripeEvent(event);
+    return { received: true };
+  }
+
+  /**
+   * iOS In-App Purchase counterpart of the Stripe webhook above -- see
+   * RevenueCatService's own module comment and
+   * docs/architecture/adr/0008-ios-distribution.md. Same "durable,
+   * idempotent, two independent handlers" shape as the Stripe route, one
+   * per payment concern (tournament publication tier vs. annual
+   * subscription) rather than a single dispatcher, matching the Stripe
+   * route's own reasoning.
+   */
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  @Post('revenuecat-webhook')
+  async handleRevenueCatWebhook(
+    @Req() req: RawBodyRequest<Request>,
+    @Headers('authorization') authorization: string,
+  ): Promise<{ received: true }> {
+    if (!req.rawBody || !authorization) {
+      throw new BadRequestException('Requête webhook invalide.');
+    }
+
+    const event = (() => {
+      try {
+        return this.revenueCatService.parseWebhookEvent(
+          req.rawBody,
+          authorization,
+        );
+      } catch {
+        throw new BadRequestException('Authentification webhook invalide.');
+      }
+    })();
+
+    await this.tournamentsService.handleRevenueCatWebhookEvent(event);
+    await this.organizationsService.handleRevenueCatSubscriptionWebhookEvent(
+      event,
+    );
     return { received: true };
   }
 }

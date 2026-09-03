@@ -15,6 +15,11 @@ import { DEFAULT_MAIL_LANGUAGE, MailLanguage } from '../mail/mail-language';
 import { MailService } from '../mail/mail.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { StripeService } from '../payments/stripe.service';
+import {
+  IAP_PRODUCT_IDS,
+  RevenueCatService,
+  RevenueCatWebhookEvent,
+} from '../payments/revenuecat.service';
 
 const SUBSCRIPTION_DURATION_YEARS = 1;
 
@@ -25,6 +30,7 @@ export class OrganizationsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly stripeService: StripeService,
+    private readonly revenueCatService: RevenueCatService,
     private readonly configService: ConfigService,
     private readonly mailService: MailService,
   ) {}
@@ -412,5 +418,158 @@ export class OrganizationsService {
       expiresAt.getFullYear() + SUBSCRIPTION_DURATION_YEARS,
     );
     return { startsAt, expiresAt };
+  }
+
+  /**
+   * iOS counterpart of subscribe() above (App Review guideline 3.1.1 --
+   * see docs/architecture/adr/0008-ios-distribution.md and
+   * TournamentsService.confirmPublicationPaymentViaIap's identical
+   * reasoning). Unlike the Stripe path's "manual renewal only, no
+   * auto-charge at expiry" (this file's own subscribe() comment), a
+   * StoreKit auto-renewing subscription genuinely DOES keep renewing on
+   * Apple's own schedule unless the organizer cancels it -- expiresAt here
+   * is only the *current* period's end, extended forward automatically by
+   * handleRevenueCatSubscriptionWebhookEvent's RENEWAL case below, not a
+   * hard 1-year cutoff the way activePeriod() is for the manual Stripe path.
+   */
+  async confirmSubscriptionPaymentViaIap(
+    organizationId: string,
+    userId: string,
+    lang: MailLanguage = DEFAULT_MAIL_LANGUAGE,
+  ) {
+    await this.assertNotSuspended(organizationId);
+    if (await this.hasActiveSubscription(organizationId)) {
+      throw new ConflictException(
+        'Cette organisation a déjà un abonnement annuel actif.',
+      );
+    }
+
+    const subscriber = await this.revenueCatService.fetchSubscriber(userId);
+    const entry = subscriber.subscriptions[IAP_PRODUCT_IDS.ANNUAL_SUBSCRIPTION];
+    if (!entry || entry.refunded_at || !entry.expires_date) {
+      throw new ConflictException(
+        "Aucun abonnement actif correspondant n'a été trouvé auprès d'Apple. Réessayez dans quelques instants.",
+      );
+    }
+    const expiresAt = new Date(entry.expires_date);
+    if (expiresAt <= new Date()) {
+      throw new ConflictException('Cet abonnement Apple est déjà expiré.');
+    }
+
+    await this.applyPaidSubscriptionViaIap(
+      organizationId,
+      entry.store_transaction_id,
+      expiresAt,
+      lang,
+    );
+    return this.getSubscriptionStatus(organizationId);
+  }
+
+  /**
+   * Shared by confirmSubscriptionPaymentViaIap above and
+   * handleRevenueCatSubscriptionWebhookEvent's INITIAL_PURCHASE/RENEWAL
+   * cases below -- same duality as applyPaidSubscriptionSession's own
+   * confirm-call/webhook pair for Stripe. `revenueCatTransactionId` here is
+   * RevenueCat's store_transaction_id/original_transaction_id for the
+   * *current period* -- a renewal gets a new transaction id each time, so
+   * this always creates a fresh row rather than updating expiresAt on an
+   * existing one, matching how a fresh TournamentPublicationOrder-style
+   * receipt is expected per payment (listSubscriptionHistory already shows
+   * every row, not just the latest).
+   */
+  private async applyPaidSubscriptionViaIap(
+    organizationId: string,
+    revenueCatTransactionId: string,
+    expiresAt: Date,
+    lang: MailLanguage,
+  ): Promise<void> {
+    const alreadyRecorded =
+      await this.prisma.organizationSubscription.findUnique({
+        where: { revenueCatTransactionId },
+      });
+    if (alreadyRecorded) {
+      return;
+    }
+
+    const amountCents = Number(
+      this.configService.get<string>(
+        'ORGANIZATION_ANNUAL_SUBSCRIPTION_PRICE_CENTS',
+        '0',
+      ),
+    );
+    const subscription = await this.prisma.organizationSubscription.create({
+      data: {
+        organizationId,
+        status: OrganizationSubscriptionStatus.ACTIVE,
+        amountCents,
+        currency: 'eur',
+        revenueCatTransactionId,
+        startsAt: new Date(),
+        expiresAt,
+        paidAt: new Date(),
+      },
+    });
+
+    await this.sendSubscriptionReceipt(subscription, lang);
+  }
+
+  /**
+   * Called by PaymentsWebhookController after RevenueCat signature
+   * verification -- mirrors handleSubscriptionStripeEvent, but also
+   * handles RENEWAL (unlike Stripe's manual-only subscription, StoreKit
+   * genuinely auto-renews -- see confirmSubscriptionPaymentViaIap's own
+   * comment). Every other event type/product id is a silent no-op, same
+   * tolerance as TournamentsService.handleRevenueCatWebhookEvent.
+   */
+  async handleRevenueCatSubscriptionWebhookEvent(
+    event: RevenueCatWebhookEvent,
+  ): Promise<void> {
+    const {
+      type,
+      product_id: productId,
+      app_user_id: userId,
+      expiration_at_ms: expirationAtMs,
+      transaction_id: transactionId,
+    } = event.event;
+    if (productId !== IAP_PRODUCT_IDS.ANNUAL_SUBSCRIPTION) {
+      return;
+    }
+    if (type !== 'INITIAL_PURCHASE' && type !== 'RENEWAL') {
+      // EXPIRATION/CANCELLATION need no action -- same "never un-publishes
+      // anything already live" posture as this file's own ADR 0006 note on
+      // an expiring Stripe subscription; hasActiveSubscription's own
+      // expiresAt check already stops covering *future* publish() calls
+      // once this period genuinely lapses, with no separate write needed
+      // here to make that true.
+      return;
+    }
+    if (!expirationAtMs) {
+      this.logger.warn(
+        `RevenueCat ${type} webhook for user ${userId} has no expiration_at_ms -- cannot record.`,
+      );
+      return;
+    }
+
+    // No organizationId is carried on the webhook event itself (RevenueCat
+    // only knows app_user_id) -- userId is this app's own User.id (see
+    // confirmSubscriptionPaymentViaIap's own comment), resolved back to
+    // their organization the same way the rest of the app derives it.
+    const membership = await this.prisma.organizationMember.findFirst({
+      where: { userId, role: OrganizationRole.ORG_ADMIN },
+      orderBy: { createdAt: 'asc' },
+    });
+    if (!membership) {
+      this.logger.warn(
+        `RevenueCat ${type} webhook for user ${userId} (transaction ${transactionId}): no ORG_ADMIN membership found, cannot attribute to an organization.`,
+      );
+      return;
+    }
+
+    await this.applyPaidSubscriptionViaIap(
+      membership.organizationId,
+      transactionId,
+      new Date(expirationAtMs),
+      DEFAULT_MAIL_LANGUAGE,
+    );
   }
 }
