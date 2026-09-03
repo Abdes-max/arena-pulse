@@ -12,6 +12,7 @@ import {
 import { MailService } from '../mail/mail.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { StripeService } from '../payments/stripe.service';
+import { RevenueCatService } from '../payments/revenuecat.service';
 import { OrganizationsService } from './organizations.service';
 
 type PrismaMock = {
@@ -86,6 +87,16 @@ function createStripeServiceMock() {
   };
 }
 
+// Unused by every pre-existing test here (none of them exercise the iOS IAP
+// path) -- just enough of RevenueCatService's shape for the constructor
+// call below to type-check.
+function createRevenueCatServiceMock() {
+  return {
+    parseWebhookEvent: jest.fn(),
+    fetchSubscriber: jest.fn(),
+  };
+}
+
 function checkoutCompletedEvent(sessionId: string): Stripe.Event {
   return {
     type: 'checkout.session.completed',
@@ -112,6 +123,7 @@ describe('OrganizationsService', () => {
     service = new OrganizationsService(
       prisma as unknown as PrismaService,
       stripeService as unknown as StripeService,
+      createRevenueCatServiceMock() as unknown as RevenueCatService,
       createConfigServiceMock(),
       mailService as unknown as MailService,
     );
@@ -279,6 +291,7 @@ describe('OrganizationsService', () => {
       const paidService = new OrganizationsService(
         prisma as unknown as PrismaService,
         stripeService as unknown as StripeService,
+        createRevenueCatServiceMock() as unknown as RevenueCatService,
         createConfigServiceMock({
           ORGANIZATION_ANNUAL_SUBSCRIPTION_PRICE_CENTS: '20000',
         }),

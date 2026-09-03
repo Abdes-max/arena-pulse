@@ -10,6 +10,8 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { OrganizationRole } from '../../generated/prisma/client';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import type { AuthenticatedUser } from '../auth/strategies/jwt.strategy';
 import { ConfirmSubscriptionPaymentDto } from './dto/confirm-subscription-payment.dto';
 import { RequireOrgRole } from './decorators/require-org-role.decorator';
 import { OrganizationRoleGuard } from './guards/organization-role.guard';
@@ -52,6 +54,22 @@ export class OrganizationSubscriptionController {
     return this.organizationsService.confirmSubscriptionPayment(
       organizationId,
       dto.sessionId,
+      lang,
+    );
+  }
+
+  /** iOS counterpart of confirm above -- see OrganizationsService.confirmSubscriptionPaymentViaIap. */
+  @RequireOrgRole(OrganizationRole.ORG_ADMIN)
+  @HttpCode(HttpStatus.OK)
+  @Post('confirm-iap')
+  confirmPaymentViaIap(
+    @Param('organizationId') organizationId: string,
+    @CurrentUser() user: AuthenticatedUser,
+    @MailLang() lang: MailLanguage,
+  ) {
+    return this.organizationsService.confirmSubscriptionPaymentViaIap(
+      organizationId,
+      user.id,
       lang,
     );
   }

@@ -27,6 +27,13 @@ import { MailService } from '../mail/mail.service';
 import { OrganizationsService } from '../organizations/organizations.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { StripeService } from '../payments/stripe.service';
+import {
+  IAP_PRODUCT_IDS,
+  IapProductId,
+  RevenueCatService,
+  RevenueCatWebhookEvent,
+} from '../payments/revenuecat.service';
+import { ConfirmIapPurchaseDto } from './dto/confirm-iap-purchase.dto';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { DuplicateTournamentDto } from './dto/duplicate-tournament.dto';
 import { UpdateTournamentDto } from './dto/update-tournament.dto';
@@ -65,6 +72,7 @@ export class TournamentsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly stripeService: StripeService,
+    private readonly revenueCatService: RevenueCatService,
     private readonly configService: ConfigService,
     private readonly organizationsService: OrganizationsService,
     private readonly mailService: MailService,
@@ -583,6 +591,221 @@ export class TournamentsService {
         );
       }
     }
+  }
+
+  /**
+   * Fixed StoreKit price for a tournament-tier IAP product, sourced from
+   * the exact same .env-configured cents amounts as the Stripe path
+   * (tierPriceCents) rather than a separate hardcoded number -- keeps the
+   * price an organizer sees quoted in the app (computed from team count,
+   * same UI copy as web) and the price actually charged by StoreKit in
+   * sync automatically whenever the .env price changes, instead of two
+   * numbers that could silently drift apart. The upgrade product's price
+   * is the STANDARD->LARGE gap, mirroring publish()'s own delta-billing
+   * math (`amountCents = requiredCents - alreadyPaidCents`) -- Apple has
+   * no notion of crediting a prior purchase, so that gap has to be its own
+   * fixed-price product (see the App Store Connect setup this requires,
+   * revenuecat.service.ts's own module comment).
+   */
+  private iapProductPriceCents(productId: IapProductId): number {
+    switch (productId) {
+      case IAP_PRODUCT_IDS.TOURNAMENT_PUBLICATION_STANDARD:
+        return this.tierPriceCents('STANDARD');
+      case IAP_PRODUCT_IDS.TOURNAMENT_PUBLICATION_LARGE:
+        return this.tierPriceCents('LARGE');
+      case IAP_PRODUCT_IDS.TOURNAMENT_PUBLICATION_UPGRADE_STANDARD_TO_LARGE:
+        return Math.max(
+          0,
+          this.tierPriceCents('LARGE') - this.tierPriceCents('STANDARD'),
+        );
+      default:
+        return 0;
+    }
+  }
+
+  /**
+   * The iOS counterpart to publish()'s Stripe Checkout path (App Review
+   * guideline 3.1.1 -- see docs/architecture/adr/0008-ios-distribution.md).
+   * Unlike Stripe Checkout, a StoreKit purchase happens entirely on-device
+   * first (via RevenueCat's SDK), so there's no server-created "pending
+   * order" for the app to redirect into beforehand -- the app calls this
+   * only *after* StoreKit reports success, and this method independently
+   * re-verifies that purchase against RevenueCat's own records
+   * (fetchSubscriber) rather than trusting the client's say-so, same
+   * "never trust a client-reported payment" posture as
+   * confirmPublicationPayment verifying against Stripe's API rather than
+   * just the client's redirect. `userId` is the authenticated organizer's
+   * own User.id, used as RevenueCat's app_user_id (configured client-side
+   * at SDK init, see the mobile app's RevenueCat wiring) -- no separate
+   * RevenueCat-specific identifier stored anywhere.
+   */
+  async confirmPublicationPaymentViaIap(
+    organizationId: string,
+    tournamentId: string,
+    userId: string,
+    dto: ConfirmIapPurchaseDto,
+    lang: MailLanguage = DEFAULT_MAIL_LANGUAGE,
+  ) {
+    await this.organizationsService.assertNotSuspended(organizationId);
+    const tournament = await this.getOrThrow(organizationId, tournamentId);
+    this.assertEditable(tournament);
+
+    const amountCents = this.iapProductPriceCents(dto.productId);
+    if (amountCents <= 0) {
+      throw new BadRequestException(
+        'Ce produit ne correspond à aucun palier payant configuré.',
+      );
+    }
+
+    const subscriber = await this.revenueCatService.fetchSubscriber(userId);
+    const purchases = subscriber.non_subscriptions[dto.productId] ?? [];
+    // Most recent purchase of this product not already recorded against
+    // another order -- the DB's own @unique constraint on
+    // revenueCatTransactionId is the real guard against double-spending a
+    // single transaction across two orders; this just picks a sensible
+    // candidate to try first (newest = most likely to be the purchase the
+    // app is actually confirming right now).
+    const existingTransactionIds = new Set(
+      (
+        await this.prisma.tournamentPublicationOrder.findMany({
+          where: { revenueCatTransactionId: { not: null } },
+          select: { revenueCatTransactionId: true },
+        })
+      ).map((order) => order.revenueCatTransactionId),
+    );
+    const purchase = [...purchases]
+      .sort((a, b) => b.purchase_date.localeCompare(a.purchase_date))
+      .find((entry) => !existingTransactionIds.has(entry.id));
+
+    if (!purchase) {
+      throw new BadRequestException(
+        "Aucun achat correspondant n'a été trouvé auprès d'Apple. Réessayez dans quelques instants.",
+      );
+    }
+
+    const [categoriesCount, teamsCount] = await Promise.all([
+      this.prisma.category.count({ where: { tournamentId } }),
+      this.prisma.team.count({ where: { tournamentId } }),
+    ]);
+
+    await this.applyPaidPublicationViaIap(
+      tournament,
+      purchase.id,
+      amountCents,
+      categoriesCount,
+      teamsCount,
+      lang,
+    );
+    return this.toDetail(await this.getOrThrow(organizationId, tournamentId));
+  }
+
+  /**
+   * Shared by confirmPublicationPaymentViaIap above and the RevenueCat
+   * webhook handler below -- same "record a PAID order + publish + email
+   * the receipt" side effects regardless of which one first learns the
+   * purchase is genuine, same duality as applyPaidPublicationSession's own
+   * confirm-call/webhook pair for Stripe.
+   */
+  private async applyPaidPublicationViaIap(
+    tournament: Pick<Tournament, 'id' | 'name' | 'organizationId'>,
+    revenueCatTransactionId: string,
+    amountCents: number,
+    categoriesCount: number,
+    teamsCount: number,
+    lang: MailLanguage,
+  ): Promise<void> {
+    // Idempotent: a retried webhook delivery, or a confirm call racing the
+    // webhook for the very same transaction, no-ops via the @unique
+    // constraint on revenueCatTransactionId rather than a raced double
+    // "PAID + PUBLISHED" write.
+    const alreadyRecorded =
+      await this.prisma.tournamentPublicationOrder.findUnique({
+        where: { revenueCatTransactionId },
+      });
+    if (alreadyRecorded) {
+      return;
+    }
+
+    await this.prisma.$transaction([
+      this.prisma.tournamentPublicationOrder.create({
+        data: {
+          tournamentId: tournament.id,
+          status: TournamentPublicationOrderStatus.PAID,
+          categoriesCount,
+          teamsCount,
+          amountCents,
+          currency: 'eur',
+          revenueCatTransactionId,
+          paidAt: new Date(),
+        },
+      }),
+      this.prisma.tournament.update({
+        where: { id: tournament.id },
+        data: { status: TournamentStatus.PUBLISHED },
+      }),
+    ]);
+
+    await this.sendPublicationReceipt(
+      { tournament, amountCents, currency: 'eur' },
+      null,
+      lang,
+    );
+  }
+
+  /**
+   * Called by PaymentsWebhookController after RevenueCat signature
+   * verification -- the durable confirmation path (mirrors
+   * handlePublicationStripeEvent), independent of whether the app's own
+   * confirmPublicationPaymentViaIap call already landed first. Only
+   * NON_RENEWING_PURCHASE (RevenueCat's event type for a one-time IAP,
+   * which every tournament-tier product is) and only the tournament-tier
+   * product ids are handled here -- ANNUAL_SUBSCRIPTION events are
+   * OrganizationsService.handleRevenueCatSubscriptionWebhookEvent's job,
+   * and every other event type/product id (renewals, cancellations of a
+   * subscription this service doesn't own, RevenueCat's own TEST event)
+   * is a silent no-op, same tolerance as handlePublicationStripeEvent's
+   * own event.type filter.
+   */
+  async handleRevenueCatWebhookEvent(
+    event: RevenueCatWebhookEvent,
+  ): Promise<void> {
+    const { type, product_id: productId, app_user_id: userId } = event.event;
+    if (
+      type !== 'NON_RENEWING_PURCHASE' &&
+      type !== 'INITIAL_PURCHASE' // RevenueCat's sandbox test purchases arrive as this type instead
+    ) {
+      return;
+    }
+    const tournamentTierProductIds: string[] = [
+      IAP_PRODUCT_IDS.TOURNAMENT_PUBLICATION_STANDARD,
+      IAP_PRODUCT_IDS.TOURNAMENT_PUBLICATION_LARGE,
+      IAP_PRODUCT_IDS.TOURNAMENT_PUBLICATION_UPGRADE_STANDARD_TO_LARGE,
+    ];
+    if (!tournamentTierProductIds.includes(productId)) {
+      return;
+    }
+
+    // No tournamentId is carried on the webhook event itself (RevenueCat
+    // only knows app_user_id/product_id/transaction_id, nothing about this
+    // app's own domain) -- confirmPublicationPaymentViaIap already applied
+    // the exact same purchase by the time this webhook typically arrives
+    // (the app's own confirm call is synchronous, right after StoreKit
+    // returns), so this only needs to be a safety net: re-fetch the
+    // subscriber and, if this exact transaction was somehow never
+    // recorded, there's no tournament context left to publish -- log and
+    // move on rather than guessing which tournament it was for. Prevented
+    // in the overwhelmingly common case by the app's own synchronous
+    // confirm call always running first.
+    const alreadyRecorded =
+      await this.prisma.tournamentPublicationOrder.findUnique({
+        where: { revenueCatTransactionId: event.event.transaction_id },
+      });
+    if (alreadyRecorded) {
+      return;
+    }
+    this.logger.warn(
+      `RevenueCat webhook for transaction ${event.event.transaction_id} (user ${userId}, product ${productId}) arrived with no matching order -- the app's own confirm-iap call should have recorded it first. Not applied: no tournament context available from the webhook payload alone.`,
+    );
   }
 
   async unpublish(organizationId: string, tournamentId: string) {

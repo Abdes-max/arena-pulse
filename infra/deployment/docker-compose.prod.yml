@@ -94,6 +94,13 @@ services:
       # instead, same as leaving it unset in apps/api/.env.example locally.
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
       STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+      # Same optional/lazy posture as the two Stripe vars above --
+      # RevenueCatService only reads these at the moment of an actual iOS
+      # IAP confirm call or incoming webhook (App Review guideline 3.1.1,
+      # see docs/architecture/adr/0008-ios-distribution.md), so the rest of
+      # the stack boots fine before this is configured.
+      REVENUECAT_SECRET_API_KEY: ${REVENUECAT_SECRET_API_KEY:-}
+      REVENUECAT_WEBHOOK_AUTH_TOKEN: ${REVENUECAT_WEBHOOK_AUTH_TOKEN:-}
       TOURNAMENT_PUBLICATION_TIER_FREE_MAX_TEAMS: ${TOURNAMENT_PUBLICATION_TIER_FREE_MAX_TEAMS:-8}
       TOURNAMENT_PUBLICATION_TIER_MID_MAX_TEAMS: ${TOURNAMENT_PUBLICATION_TIER_MID_MAX_TEAMS:-48}
       TOURNAMENT_PUBLICATION_TIER_MID_PRICE_CENTS: ${TOURNAMENT_PUBLICATION_TIER_MID_PRICE_CENTS:-0}

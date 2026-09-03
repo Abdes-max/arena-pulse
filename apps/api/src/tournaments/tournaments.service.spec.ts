@@ -15,6 +15,7 @@ import type { MailService } from '../mail/mail.service';
 import type { OrganizationsService } from '../organizations/organizations.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { StripeService } from '../payments/stripe.service';
+import { RevenueCatService } from '../payments/revenuecat.service';
 import { TournamentsService } from './tournaments.service';
 
 type PrismaMock = {
@@ -122,6 +123,17 @@ function createStripeServiceMock() {
   };
 }
 
+// Unused by every pre-existing test here (none of them exercise the iOS IAP
+// path) -- just enough of RevenueCatService's shape for the constructor
+// call below to type-check. Same untyped-mock rationale as
+// createStripeServiceMock above.
+function createRevenueCatServiceMock() {
+  return {
+    parseWebhookEvent: jest.fn(),
+    fetchSubscriber: jest.fn(),
+  };
+}
+
 // Same untyped-mock rationale as createStripeServiceMock above.
 function createOrganizationsServiceMock() {
   return {
@@ -175,6 +187,7 @@ describe('TournamentsService', () => {
     service = new TournamentsService(
       prisma as unknown as PrismaService,
       stripeService as unknown as StripeService,
+      createRevenueCatServiceMock() as unknown as RevenueCatService,
       createConfigServiceMock(),
       organizationsService as unknown as OrganizationsService,
       mailService as unknown as MailService,
@@ -409,6 +422,7 @@ describe('TournamentsService', () => {
       const paidService = new TournamentsService(
         prisma as unknown as PrismaService,
         stripeService as unknown as StripeService,
+        createRevenueCatServiceMock() as unknown as RevenueCatService,
         createConfigServiceMock({
           TOURNAMENT_PUBLICATION_TIER_MID_PRICE_CENTS: '2500',
           TOURNAMENT_PUBLICATION_TIER_HIGH_PRICE_CENTS: '8000',
@@ -446,6 +460,7 @@ describe('TournamentsService', () => {
       const paidService = new TournamentsService(
         prisma as unknown as PrismaService,
         stripeService as unknown as StripeService,
+        createRevenueCatServiceMock() as unknown as RevenueCatService,
         createConfigServiceMock({
           TOURNAMENT_PUBLICATION_TIER_MID_PRICE_CENTS: '2500',
         }),
@@ -507,6 +522,7 @@ describe('TournamentsService', () => {
       const paidService = new TournamentsService(
         prisma as unknown as PrismaService,
         stripeService as unknown as StripeService,
+        createRevenueCatServiceMock() as unknown as RevenueCatService,
         createConfigServiceMock({
           TOURNAMENT_PUBLICATION_TIER_MID_PRICE_CENTS: '2500',
           TOURNAMENT_PUBLICATION_TIER_HIGH_PRICE_CENTS: '8000',
@@ -543,6 +559,7 @@ describe('TournamentsService', () => {
       const paidService = new TournamentsService(
         prisma as unknown as PrismaService,
         stripeService as unknown as StripeService,
+        createRevenueCatServiceMock() as unknown as RevenueCatService,
         createConfigServiceMock({
           TOURNAMENT_PUBLICATION_TIER_MID_PRICE_CENTS: '2500',
           TOURNAMENT_PUBLICATION_TIER_HIGH_PRICE_CENTS: '8000',
@@ -736,6 +753,7 @@ describe('TournamentsService', () => {
       const paidService = new TournamentsService(
         prisma as unknown as PrismaService,
         stripeService as unknown as StripeService,
+        createRevenueCatServiceMock() as unknown as RevenueCatService,
         createConfigServiceMock({
           TOURNAMENT_PUBLICATION_TIER_MID_PRICE_CENTS: '2500',
           TOURNAMENT_PUBLICATION_TIER_HIGH_PRICE_CENTS: '8000',
@@ -847,6 +865,7 @@ describe('TournamentsService', () => {
       const paidService = new TournamentsService(
         prisma as unknown as PrismaService,
         stripeService as unknown as StripeService,
+        createRevenueCatServiceMock() as unknown as RevenueCatService,
         createConfigServiceMock({
           TOURNAMENT_PUBLICATION_TIER_MID_PRICE_CENTS: '2500',
         }),
@@ -884,6 +903,7 @@ describe('TournamentsService', () => {
         const paidService = new TournamentsService(
           prisma as unknown as PrismaService,
           stripeService as unknown as StripeService,
+          createRevenueCatServiceMock() as unknown as RevenueCatService,
           createConfigServiceMock({
             TOURNAMENT_PUBLICATION_TIER_MID_PRICE_CENTS: '2500',
             TOURNAMENT_PUBLICATION_TIER_HIGH_PRICE_CENTS: '8000',
