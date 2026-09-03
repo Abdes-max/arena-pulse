@@ -149,6 +149,23 @@ services:
       # so existing deploys keep working without touching .env, but only
       # actually serves anything once that domain's DNS points here.
       KELTO_DOMAIN: ${KELTO_DOMAIN:-kelto-studio.fr}
+      # Third-party project on the same host, same "riding along" posture as
+      # KELTO_DOMAIN above -- see Caddyfile's own comment. Empty by default
+      # (unlike KELTO_DOMAIN's real fallback) since there's no sensible
+      # default domain for someone else's project; Caddy just never matches
+      # that site block until it's set.
+      EVOLYFOOT_DOMAIN: ${EVOLYFOOT_DOMAIN:-}
+    # `default` kept explicitly (not just `edge`) -- declaring any
+    # `networks:` on a service opts it out of the implicit default network
+    # otherwise auto-attached, and caddy still needs that one for `web`
+    # (depends_on below) and every other service in this file, none of
+    # which join `edge`. `edge` itself is EvolyFoot's own external network
+    # (its `evolyfoot-web` container is already on it) -- created by that
+    # project, not this one, hence `external: true` below rather than a
+    # `docker network create edge` this repo would own.
+    networks:
+      - default
+      - edge
     ports:
       - '80:80'
       - '443:443'
@@ -174,3 +191,12 @@ volumes:
   arena-pulse-uploads-prod:
   caddy-data-prod:
   caddy-config-prod:
+
+networks:
+  # Declared, not created, by this stack -- EvolyFoot's own compose project
+  # owns this network (its `evolyfoot-web` container is already attached to
+  # it); this repo only needs to join it, never `docker network create edge`
+  # itself. See caddy's own `networks:` comment above for why it needs this
+  # at all.
+  edge:
+    external: true
