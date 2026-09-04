@@ -4,6 +4,7 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
+  InternalServerErrorException,
   Logger,
   NotFoundException,
   UnauthorizedException,
@@ -333,12 +334,29 @@ export class AuthService {
     await this.prisma.user.findUniqueOrThrow({ where: { id: userId } });
     const soleOrganizationIds =
       await this.assertCanDeleteAccountAndGetSoleOrganizations(userId);
-    await this.prisma.$transaction(async (tx) => {
-      for (const organizationId of soleOrganizationIds) {
-        await tx.organization.delete({ where: { id: organizationId } });
-      }
-      await tx.user.delete({ where: { id: userId } });
-    });
+    try {
+      await this.prisma.$transaction(async (tx) => {
+        for (const organizationId of soleOrganizationIds) {
+          await tx.organization.delete({ where: { id: organizationId } });
+        }
+        await tx.user.delete({ where: { id: userId } });
+      });
+    } catch (error) {
+      // TEMPORARY diagnostic (2026-09): this is the very first real-account,
+      // real-data run of this cascade (every prior test used freshly-seeded
+      // throwaway accounts) -- something in it is throwing a real 500 on a
+      // real device, masked by Nest's default "Internal server error" body
+      // in production. Surface the actual Prisma error so the client (see
+      // apps/mobile's account.page.ts matching diagnostic) shows it
+      // on-screen instead of guessing blind. Revert once the cause is found.
+      this.logger.error(
+        `deleteAccount failed for user ${userId}: ${(error as Error).message}`,
+        (error as Error).stack,
+      );
+      throw new InternalServerErrorException(
+        `[diag] ${(error as Error).name}: ${(error as Error).message}`,
+      );
+    }
   }
 
   private async assertCanDeleteAccountAndGetSoleOrganizations(
