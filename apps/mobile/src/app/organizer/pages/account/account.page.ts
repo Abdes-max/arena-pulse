@@ -78,24 +78,9 @@ export class OrganizerAccountPage {
         this.errorMessage.set(
           body?.message ?? this.transloco.translate('organizer.account.errorGeneric'),
         );
-      } else if (error instanceof HttpErrorResponse) {
-        // TEMPORARY diagnostic (2026-09): the generic translated message was
-        // hiding the real cause of a device-only failure (works in every
-        // desktop test, fails on real iOS via TestFlight) -- surfacing the
-        // raw status/body here so the next on-device retest tells us exactly
-        // what's failing (0 = request never reached the server e.g. CORS/
-        // network, 4xx/5xx = a real server response) instead of guessing
-        // again. Revert to the generic translated message once resolved.
-        const body = error.error as { message?: string } | null;
-        this.errorIsRaw.set(true);
-        this.errorMessage.set(
-          `Erreur ${error.status || '(réseau)'} : ${body?.message ?? error.message ?? 'inconnue'}`,
-        );
       } else {
-        this.errorIsRaw.set(true);
-        this.errorMessage.set(
-          `Erreur inattendue : ${error instanceof Error ? error.message : String(error)}`,
-        );
+        this.errorIsRaw.set(false);
+        this.errorMessage.set('organizer.account.errorGeneric');
       }
     } finally {
       this.deleting.set(false);
