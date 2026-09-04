@@ -79,7 +79,7 @@ describe('Account deletion (e2e)', () => {
     await request(app.getHttpServer())
       .delete('/api/v1/auth/me')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({ confirmation: 'nope' })
+      .query({ confirmation: 'nope' })
       .expect(400);
   });
 
@@ -89,7 +89,7 @@ describe('Account deletion (e2e)', () => {
     await request(app.getHttpServer())
       .delete('/api/v1/auth/me')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({ confirmation: 'SUPPRIMER' })
+      .query({ confirmation: 'SUPPRIMER' })
       .expect(204);
 
     await request(app.getHttpServer())
@@ -112,7 +112,7 @@ describe('Account deletion (e2e)', () => {
     await request(app.getHttpServer())
       .delete('/api/v1/auth/me')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({ confirmation: 'SUPPRIMER' })
+      .query({ confirmation: 'SUPPRIMER' })
       .expect(204);
 
     const organization = await prisma.organization.findUnique({
@@ -161,7 +161,7 @@ describe('Account deletion (e2e)', () => {
     await request(app.getHttpServer())
       .delete('/api/v1/auth/me')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({ confirmation: 'SUPPRIMER' })
+      .query({ confirmation: 'SUPPRIMER' })
       .expect(204);
 
     const organization = await prisma.organization.findUnique({
@@ -198,7 +198,7 @@ describe('Account deletion (e2e)', () => {
     await request(app.getHttpServer())
       .delete('/api/v1/auth/me')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({ confirmation: 'SUPPRIMER' })
+      .query({ confirmation: 'SUPPRIMER' })
       .expect(409);
   });
 });

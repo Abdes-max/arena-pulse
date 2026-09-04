@@ -7,6 +7,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Query,
   Req,
   Res,
   UnauthorizedException,
@@ -17,7 +18,6 @@ import type { CookieOptions, Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { Public } from './decorators/public.decorator';
-import { DeleteAccountDto } from './dto/delete-account.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { MailLang } from '../mail/decorators/mail-lang.decorator';
@@ -145,14 +145,28 @@ export class AuthController {
     return this.authService.getProfile(user.id);
   }
 
+  /**
+   * `confirmation` is a query param, not a DELETE body -- found the hard
+   * way (2026-09, first real-device iOS test via TestFlight): a DELETE
+   * request with a JSON body is technically legal HTTP, but WKWebView's own
+   * fetch() implementation (what Capacitor's WebView uses on iOS once
+   * CapacitorHttp is disabled, see capacitor.config.ts's own comment)
+   * silently drops it in transit on-device -- worked perfectly through
+   * every desktop-browser test this feature ever got (Chrome's fetch keeps
+   * the body fine), never reproduced until an actual iPhone. A query
+   * param sidesteps the whole class of "does this client/proxy forward a
+   * DELETE body" ambiguity -- it's part of the URL, universally supported.
+   */
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('me')
   async deleteAccount(
     @CurrentUser() user: AuthenticatedUser,
-    @Body() dto: DeleteAccountDto,
+    @Query('confirmation') confirmation: string | undefined,
     @Res({ passthrough: true }) res: Response,
   ) {
-    await this.authService.deleteAccount(user.id, dto);
+    await this.authService.deleteAccount(user.id, {
+      confirmation: confirmation ?? '',
+    });
     // Same clearing gesture as logout() above -- the account is gone, so
     // there's no refresh token left to explicitly revoke (the cascade on
     // User already deleted every RefreshToken row), just drop the cookie.
