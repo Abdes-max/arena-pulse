@@ -336,25 +336,68 @@ export class AuthService {
       await this.assertCanDeleteAccountAndGetSoleOrganizations(userId);
     try {
       await this.prisma.$transaction(async (tx) => {
+        // Match rows must be deleted explicitly, up front, rather than left
+        // to Organization's own cascading delete below (found 2026-09,
+        // first time this ever ran against a real account with real
+        // tournament data -- every prior test used a throwaway account with
+        // no matches). Root cause, reproduced locally against a freshly
+        // migrated DB with plain Prisma/Postgres, no app code involved: a
+        // Match is reachable from a Group two different ways once teams
+        // exist -- Group -[Cascade]-> Match directly, and
+        // Team -[Cascade from Tournament/Category]-> then
+        // Match.homeTeamId/awayTeamId -[SetNull]-> Team. When Postgres
+        // processes the Team-side SET NULL update on a Match row whose
+        // Group has already been cascade-deleted via the other path, it
+        // re-validates that row's *other* FK (groupId) against a Group
+        // that's already gone and raises Match_groupId_fkey, even though
+        // groupId itself was never touched by that statement -- a known
+        // multi-path-cascade ordering limitation, not something the schema
+        // (already fully onDelete: Cascade end-to-end) can fix. Deleting
+        // every Match up front removes both conflicting paths before
+        // Organization's cascade ever reaches Team or Group, sidestepping
+        // the ordering issue entirely -- same "children before parents,
+        // explicit order" approach test/utils/reset-database.ts already
+        // relies on for the same reason.
+        await tx.match.deleteMany({
+          where: {
+            OR: [
+              {
+                group: {
+                  phase: {
+                    category: {
+                      tournament: {
+                        organizationId: { in: soleOrganizationIds },
+                      },
+                    },
+                  },
+                },
+              },
+              {
+                knockoutBracket: {
+                  phase: {
+                    category: {
+                      tournament: {
+                        organizationId: { in: soleOrganizationIds },
+                      },
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        });
         for (const organizationId of soleOrganizationIds) {
           await tx.organization.delete({ where: { id: organizationId } });
         }
         await tx.user.delete({ where: { id: userId } });
       });
     } catch (error) {
-      // TEMPORARY diagnostic (2026-09): this is the very first real-account,
-      // real-data run of this cascade (every prior test used freshly-seeded
-      // throwaway accounts) -- something in it is throwing a real 500 on a
-      // real device, masked by Nest's default "Internal server error" body
-      // in production. Surface the actual Prisma error so the client (see
-      // apps/mobile's account.page.ts matching diagnostic) shows it
-      // on-screen instead of guessing blind. Revert once the cause is found.
       this.logger.error(
         `deleteAccount failed for user ${userId}: ${(error as Error).message}`,
         (error as Error).stack,
       );
       throw new InternalServerErrorException(
-        `[diag] ${(error as Error).name}: ${(error as Error).message}`,
+        'Une erreur est survenue lors de la suppression du compte.',
       );
     }
   }

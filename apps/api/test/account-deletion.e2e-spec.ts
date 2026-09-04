@@ -125,6 +125,75 @@ describe('Account deletion (e2e)', () => {
     expect(rating).toBeNull();
   });
 
+  it('deletes an organization that has a group with scheduled matches (regression: Match_groupId_fkey cascade ordering)', async () => {
+    // Reproduces a real production 500 (2026-09, first-ever deletion of a
+    // real account with real tournament data): once a Group has both teams
+    // and matches, Postgres's own cascade ordering fails with
+    // "insert or update on table Match violates foreign key constraint
+    // Match_groupId_fkey" -- a Group->Match cascade racing a
+    // Team->Match.home/awayTeamId SET NULL, both reachable from the same
+    // Organization delete. See AuthService.deleteAccount's own comment for
+    // the full mechanism and the fix (explicit Match deleteMany up front).
+    const { accessToken, organizationId } = await registerOrganizer(app);
+    const sport = await prisma.sport.upsert({
+      where: { name: 'Football' },
+      update: {},
+      create: { name: 'Football' },
+    });
+    const tournament = await prisma.tournament.create({
+      data: {
+        organizationId,
+        sportId: sport.id,
+        name: 'Coupe des Copains',
+        slug: `coupe-des-copains-${Date.now()}`,
+      },
+    });
+    const category = await prisma.category.create({
+      data: { tournamentId: tournament.id, name: 'Senior' },
+    });
+    const phase = await prisma.competitionPhase.create({
+      data: { categoryId: category.id, name: 'Poules', type: 'GROUP_STAGE' },
+    });
+    const group = await prisma.group.create({
+      data: { phaseId: phase.id, name: 'A' },
+    });
+    const teamA = await prisma.team.create({
+      data: {
+        tournamentId: tournament.id,
+        categoryId: category.id,
+        groupId: group.id,
+        name: 'Team A',
+      },
+    });
+    const teamB = await prisma.team.create({
+      data: {
+        tournamentId: tournament.id,
+        categoryId: category.id,
+        groupId: group.id,
+        name: 'Team B',
+      },
+    });
+    await prisma.match.create({
+      data: {
+        groupId: group.id,
+        round: 1,
+        homeTeamId: teamA.id,
+        awayTeamId: teamB.id,
+      },
+    });
+
+    await request(app.getHttpServer())
+      .delete('/api/v1/auth/me')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .query({ confirmation: 'SUPPRIMER' })
+      .expect(204);
+
+    const organization = await prisma.organization.findUnique({
+      where: { id: organizationId },
+    });
+    expect(organization).toBeNull();
+  });
+
   it('does not fail when the account has a pending sent invitation to an organization it survives leaving (invitedById becomes null)', async () => {
     // The organization must survive this deletion for this to actually
     // exercise the invitedById FK fix -- a sole-member org's Invitation rows

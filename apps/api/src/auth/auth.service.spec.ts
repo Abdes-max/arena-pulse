@@ -24,6 +24,7 @@ type PrismaMock = {
   };
   organization: { create: jest.Mock; delete: jest.Mock };
   organizationMember: { create: jest.Mock; findMany: jest.Mock };
+  match: { deleteMany: jest.Mock };
   refreshToken: {
     findUnique: jest.Mock;
     create: jest.Mock;
@@ -44,6 +45,7 @@ function createPrismaMock(): PrismaMock {
     },
     organization: { create: jest.fn(), delete: jest.fn() },
     organizationMember: { create: jest.fn(), findMany: jest.fn() },
+    match: { deleteMany: jest.fn() },
     refreshToken: {
       findUnique: jest.fn(),
       create: jest.fn(),
