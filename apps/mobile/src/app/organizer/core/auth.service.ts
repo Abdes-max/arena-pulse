@@ -109,11 +109,24 @@ export class OrganizerAuthService {
     }
   }
 
-  /** Permanent, immediate deletion (see AuthService.deleteAccount server-side, same endpoint as apps/web's admin account page). The caller is expected to redirect away right after this resolves. */
+  /**
+   * Permanent, immediate deletion (see AuthService.deleteAccount server-side,
+   * same endpoint as apps/web's admin account page). The caller is expected
+   * to redirect away right after this resolves.
+   *
+   * `confirmation` goes as a query param, not a DELETE body -- found the
+   * hard way on a real iPhone via TestFlight (2026-09): WKWebView's own
+   * fetch() (what this app's WebView uses once CapacitorHttp is disabled,
+   * see capacitor.config.ts's own comment) silently drops a DELETE
+   * request's body in transit, even though the exact same call worked
+   * perfectly in every desktop-browser test this feature ever got. A query
+   * param has no such ambiguity on any client. See
+   * apps/api/src/auth/auth.controller.ts's matching comment.
+   */
   async deleteAccount(confirmation: string): Promise<void> {
     await firstValueFrom(
       this.http.delete(`${environment.apiUrl}/auth/me`, {
-        body: { confirmation },
+        params: { confirmation },
         withCredentials: true,
       }),
     );

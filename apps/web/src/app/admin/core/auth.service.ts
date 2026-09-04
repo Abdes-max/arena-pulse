@@ -117,10 +117,18 @@ export class AuthService {
   }
 
   /** Permanent, immediate deletion (see AuthService.deleteAccount server-side) -- the caller is expected to redirect away right after this resolves. */
+  /**
+   * `confirmation` goes as a query param, not a DELETE body -- see
+   * apps/api/src/auth/auth.controller.ts's own comment on why (WKWebView's
+   * fetch() silently drops DELETE bodies on-device, found via the mobile
+   * app's identical call). Kept consistent here too even though this web
+   * app's own desktop-browser fetch never had the problem, so both clients
+   * stay identical against the same endpoint contract.
+   */
   async deleteAccount(confirmation: string): Promise<void> {
     await firstValueFrom(
       this.http.delete(`${environment.apiUrl}/auth/me`, {
-        body: { confirmation },
+        params: { confirmation },
         withCredentials: true,
       }),
     );
