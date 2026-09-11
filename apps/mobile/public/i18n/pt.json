@@ -217,7 +217,8 @@
         "planPending": "Pagamento da subscrição anual a aguardar confirmação.",
         "planNone": "Faturação por publicação consoante o número de equipas. A subscrição anual torna todas as suas publicações gratuitas.",
         "planManage": "Gerir a minha subscrição",
-        "planManageIosNotice": "Faça a gestão da sua subscrição a partir de um navegador, em tournarena.com.",
+        "planSubscribe": "Subscrever",
+        "subscribeError": "Não foi possível confirmar a sua subscrição. Tente novamente dentro de instantes.",
         "unpublish": "Cancelar publicação",
         "republish": "Publicar novamente"
       },

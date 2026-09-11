@@ -527,9 +527,11 @@
               <p class="wizard-page__hint">{{ 'organizer.wizard.publish.planNone' | transloco }}</p>
             }
             @if (isIosNative) {
-              <p class="wizard-page__hint">
-                {{ 'organizer.wizard.publish.planManageIosNotice' | transloco }}
-              </p>
+              @if (sub.status !== 'ACTIVE') {
+                <ap-button type="button" [disabled]="submitting()" (click)="subscribeIos()">
+                  {{ 'organizer.wizard.publish.planSubscribe' | transloco }}
+                </ap-button>
+              }
             } @else {
               <ap-button type="button" variant="secondary" (click)="openSubscriptionManagement()">
                 {{ 'organizer.wizard.publish.planManage' | transloco }}

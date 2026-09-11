@@ -217,7 +217,8 @@
         "planPending": "Annual subscription payment awaiting confirmation.",
         "planNone": "Billed per publication based on team count. The annual subscription makes every publication of yours free.",
         "planManage": "Manage my subscription",
-        "planManageIosNotice": "Manage your subscription from a browser, at tournarena.com.",
+        "planSubscribe": "Subscribe",
+        "subscribeError": "Could not confirm your subscription. Please try again shortly.",
         "unpublish": "Unpublish",
         "republish": "Republish"
       },

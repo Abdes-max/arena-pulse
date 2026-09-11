@@ -217,7 +217,8 @@
         "planPending": "Paiement de l'abonnement annuel en attente de confirmation.",
         "planNone": "Facturation à l'acte selon le nombre d'équipes. L'abonnement annuel rend toutes vos publications gratuites.",
         "planManage": "Gérer mon abonnement",
-        "planManageIosNotice": "Gérez votre abonnement depuis un navigateur, sur tournarena.com.",
+        "planSubscribe": "S'abonner",
+        "subscribeError": "Impossible de confirmer votre abonnement. Réessayez dans quelques instants.",
         "unpublish": "Dépublier",
         "republish": "Republier"
       },

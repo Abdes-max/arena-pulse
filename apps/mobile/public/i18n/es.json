@@ -217,7 +217,8 @@
         "planPending": "Pago de la suscripción anual pendiente de confirmación.",
         "planNone": "Facturación por publicación según el número de equipos. La suscripción anual hace que todas tus publicaciones sean gratuitas.",
         "planManage": "Gestionar mi suscripción",
-        "planManageIosNotice": "Gestiona tu suscripción desde un navegador, en tournarena.com.",
+        "planSubscribe": "Suscribirme",
+        "subscribeError": "No se pudo confirmar tu suscripción. Inténtalo de nuevo en unos instantes.",
         "unpublish": "Anular publicación",
         "republish": "Volver a publicar"
       },

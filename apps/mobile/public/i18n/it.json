@@ -217,7 +217,8 @@
         "planPending": "Pagamento dell'abbonamento annuale in attesa di conferma.",
         "planNone": "Fatturazione per pubblicazione in base al numero di squadre. L'abbonamento annuale rende gratuita ogni tua pubblicazione.",
         "planManage": "Gestisci il mio abbonamento",
-        "planManageIosNotice": "Gestisci il tuo abbonamento da un browser, su tournarena.com.",
+        "planSubscribe": "Abbonati",
+        "subscribeError": "Impossibile confermare il tuo abbonamento. Riprova tra qualche istante.",
         "unpublish": "Annulla pubblicazione",
         "republish": "Ripubblica"
       },
