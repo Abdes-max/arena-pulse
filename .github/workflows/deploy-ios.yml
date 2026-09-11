@@ -133,6 +133,36 @@ jobs:
           /usr/libexec/PlistBuddy -c "Add :ITSAppUsesNonExemptEncryption bool false" App/Info.plist ||
             /usr/libexec/PlistBuddy -c "Set :ITSAppUsesNonExemptEncryption false" App/Info.plist
 
+      # Rejected on submission 3c23eb17 (2026-09-11, Guideline 2.1(a)): the
+      # tournament-creation wizard's logo picker is a plain
+      # <input type="file" accept="image/*"> (tournament-wizard.page.html) --
+      # WKWebView still surfaces this as a native action sheet with "Take
+      # Photo"/"Choose Photo" on iOS, no @capacitor/camera plugin involved.
+      # Without an NSCameraUsageDescription/NSPhotoLibraryUsageDescription in
+      # Info.plist, tapping "Take Photo" there is an instant TCC crash
+      # (SIGABRT, "attempted to access privacy-sensitive data without a
+      # usage description") -- confirmed by the crash log Apple attached to
+      # the rejection. capacitor-assets/cap sync never add these keys on
+      # their own, so -- same reasoning as export compliance above -- declare
+      # them here on every run rather than relying on a committed ios/.
+      - name: Declare camera and photo library usage descriptions
+        working-directory: apps/mobile/ios/App
+        env:
+          # Passed unquoted into -c below (PlistBuddy takes the rest of the
+          # command line after "string" as the value, spaces and all -- no
+          # quoting needed), which also means no way to escape an apostrophe
+          # inside the value. Phrased with no French elision (no
+          # "d'accéder"/"l'appareil") to stay apostrophe-free instead of
+          # fighting PlistBuddy's parser.
+          CAMERA_USAGE: TournArena requiert un accès a la camera afin de photographier le logo du tournoi.
+          PHOTO_LIBRARY_USAGE: TournArena requiert un accès a vos photos afin de choisir le logo du tournoi.
+        run: |
+          set -euo pipefail
+          /usr/libexec/PlistBuddy -c "Add :NSCameraUsageDescription string $CAMERA_USAGE" App/Info.plist ||
+            /usr/libexec/PlistBuddy -c "Set :NSCameraUsageDescription $CAMERA_USAGE" App/Info.plist
+          /usr/libexec/PlistBuddy -c "Add :NSPhotoLibraryUsageDescription string $PHOTO_LIBRARY_USAGE" App/Info.plist ||
+            /usr/libexec/PlistBuddy -c "Set :NSPhotoLibraryUsageDescription $PHOTO_LIBRARY_USAGE" App/Info.plist
+
       - name: Archive
         working-directory: apps/mobile/ios/App
         env:
