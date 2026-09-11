@@ -217,7 +217,8 @@
         "planPending": "Zahlung des Jahresabonnements wartet auf Bestätigung.",
         "planNone": "Abrechnung pro Veröffentlichung nach Teamanzahl. Das Jahresabonnement macht alle Ihre Veröffentlichungen kostenlos.",
         "planManage": "Abonnement verwalten",
-        "planManageIosNotice": "Verwalten Sie Ihr Abonnement über einen Browser unter tournarena.com.",
+        "planSubscribe": "Abonnieren",
+        "subscribeError": "Ihr Abonnement konnte nicht bestätigt werden. Bitte versuchen Sie es in Kürze erneut.",
         "unpublish": "Veröffentlichung aufheben",
         "republish": "Erneut veröffentlichen"
       },

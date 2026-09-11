@@ -275,6 +275,46 @@ export class OrganizerTournamentWizardPage {
     window.open(`${environment.webUrl}/admin/organization/subscription`, '_blank', 'noopener');
   }
 
+  /**
+   * iOS-only counterpart of openSubscriptionManagement above, for the one
+   * action that *is* available natively: subscribing itself (App Review
+   * guideline 3.1.1, same StoreKit-only posture as submitPublish()'s own
+   * IAP branch). No PENDING_PAYMENT/checkoutUrl round-trip to start first
+   * here -- unlike a tournament-tier purchase, there's no order to size
+   * (subscription price is fixed), so this goes straight to StoreKit;
+   * confirmSubscriptionPaymentViaIap resolves it against RevenueCat
+   * server-side afterwards, same "never trust the client" posture.
+   */
+  protected async subscribeIos(): Promise<void> {
+    const organizationId = this.organizationId;
+    if (!organizationId || this.submitting()) {
+      return;
+    }
+    this.submitting.set(true);
+    this.errorMessage.set(null);
+    try {
+      await this.iap.purchase('annual_subscription');
+    } catch (error) {
+      this.submitting.set(false);
+      if (error instanceof IapCancelledError) {
+        // Organizer backed out of the native purchase sheet themselves --
+        // a normal outcome, not an error, same as submitPublish()'s own
+        // IapCancelledError handling.
+        return;
+      }
+      this.errorMessage.set('organizer.wizard.publish.subscribeError');
+      return;
+    }
+    try {
+      const status = await this.organizationsApi.confirmSubscriptionPaymentViaIap(organizationId);
+      this.subscriptionStatus.set(status);
+    } catch {
+      this.errorMessage.set('organizer.wizard.publish.subscribeError');
+    } finally {
+      this.submitting.set(false);
+    }
+  }
+
   protected onLogoFileSelected(event: Event): void {
     const file = (event.target as HTMLInputElement).files?.[0] ?? null;
     this.logoFile.set(file);
