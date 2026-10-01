@@ -444,7 +444,15 @@ export class OrganizationsService {
       );
     }
 
-    const subscriber = await this.revenueCatService.fetchSubscriber(userId);
+    const subscriber = await this.revenueCatService.fetchSubscriberUntil(
+      userId,
+      (s) => {
+        const candidate = s.subscriptions[IAP_PRODUCT_IDS.ANNUAL_SUBSCRIPTION];
+        return (
+          !!candidate && !candidate.refunded_at && !!candidate.expires_date
+        );
+      },
+    );
     const entry = subscriber.subscriptions[IAP_PRODUCT_IDS.ANNUAL_SUBSCRIPTION];
     if (!entry || entry.refunded_at || !entry.expires_date) {
       throw new ConflictException(
