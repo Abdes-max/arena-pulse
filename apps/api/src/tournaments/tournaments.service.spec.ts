@@ -15,7 +15,10 @@ import type { MailService } from '../mail/mail.service';
 import type { OrganizationsService } from '../organizations/organizations.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { StripeService } from '../payments/stripe.service';
-import { RevenueCatService } from '../payments/revenuecat.service';
+import {
+  IAP_PRODUCT_IDS,
+  RevenueCatService,
+} from '../payments/revenuecat.service';
 import { TournamentsService } from './tournaments.service';
 
 type PrismaMock = {
@@ -123,14 +126,12 @@ function createStripeServiceMock() {
   };
 }
 
-// Unused by every pre-existing test here (none of them exercise the iOS IAP
-// path) -- just enough of RevenueCatService's shape for the constructor
-// call below to type-check. Same untyped-mock rationale as
-// createStripeServiceMock above.
+// Same untyped-mock rationale as createStripeServiceMock above.
 function createRevenueCatServiceMock() {
   return {
     parseWebhookEvent: jest.fn(),
     fetchSubscriber: jest.fn(),
+    fetchSubscriberUntil: jest.fn(),
   };
 }
 
@@ -173,6 +174,7 @@ function tournamentFixture(overrides: Partial<Record<string, unknown>> = {}) {
 describe('TournamentsService', () => {
   let prisma: PrismaMock;
   let stripeService: ReturnType<typeof createStripeServiceMock>;
+  let revenueCatService: ReturnType<typeof createRevenueCatServiceMock>;
   let organizationsService: ReturnType<typeof createOrganizationsServiceMock>;
   let mailService: ReturnType<typeof createMailServiceMock>;
   let service: TournamentsService;
@@ -180,6 +182,7 @@ describe('TournamentsService', () => {
   beforeEach(() => {
     prisma = createPrismaMock();
     stripeService = createStripeServiceMock();
+    revenueCatService = createRevenueCatServiceMock();
     organizationsService = createOrganizationsServiceMock();
     mailService = createMailServiceMock();
     // Zero-cents defaults, matching production until the project owner sets
@@ -187,7 +190,7 @@ describe('TournamentsService', () => {
     service = new TournamentsService(
       prisma as unknown as PrismaService,
       stripeService as unknown as StripeService,
-      createRevenueCatServiceMock() as unknown as RevenueCatService,
+      revenueCatService as unknown as RevenueCatService,
       createConfigServiceMock(),
       organizationsService as unknown as OrganizationsService,
       mailService as unknown as MailService,
@@ -1241,6 +1244,151 @@ describe('TournamentsService', () => {
         'fr',
       );
       expect(result.status).toBe(TournamentStatus.PUBLISHED);
+    });
+  });
+
+  // Regression coverage for the 2026-09-29 App Review rejection under
+  // Guideline 2.1(b) ("Could not confirm your subscription") -- the same
+  // RevenueCat read-after-write race this method shares with
+  // OrganizationsService.confirmSubscriptionPaymentViaIap (see
+  // RevenueCatService.fetchSubscriberUntil's own doc comment). These tests
+  // only check this method wires fetchSubscriberUntil correctly (isReady
+  // predicate, existingTransactionIds exclusion, product id); the retry
+  // loop itself is covered in revenuecat.service.spec.ts.
+  describe('confirmPublicationPaymentViaIap', () => {
+    const DTO = {
+      productId: IAP_PRODUCT_IDS.TOURNAMENT_PUBLICATION_STANDARD,
+    };
+
+    function createPaidService() {
+      return new TournamentsService(
+        prisma as unknown as PrismaService,
+        stripeService as unknown as StripeService,
+        revenueCatService as unknown as RevenueCatService,
+        createConfigServiceMock({
+          TOURNAMENT_PUBLICATION_TIER_MID_PRICE_CENTS: '2500',
+        }),
+        organizationsService as unknown as OrganizationsService,
+        mailService as unknown as MailService,
+      );
+    }
+
+    it('rejects when RevenueCat never reports a matching purchase (fetchSubscriberUntil exhausted its own attempts)', async () => {
+      const paidService = createPaidService();
+      prisma.tournament.findUnique.mockResolvedValue(tournamentFixture());
+      prisma.tournamentPublicationOrder.findMany.mockResolvedValue([]);
+      revenueCatService.fetchSubscriberUntil.mockResolvedValue({
+        original_app_user_id: 'user-1',
+        non_subscriptions: {},
+        subscriptions: {},
+      });
+
+      await expect(
+        paidService.confirmPublicationPaymentViaIap(
+          'org-1',
+          'tournament-1',
+          'user-1',
+          DTO,
+        ),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(prisma.tournamentPublicationOrder.create).not.toHaveBeenCalled();
+    });
+
+    it('excludes purchases already recorded against another order, even once RevenueCat reports them', async () => {
+      const paidService = createPaidService();
+      prisma.tournament.findUnique.mockResolvedValue(tournamentFixture());
+      prisma.tournamentPublicationOrder.findMany.mockResolvedValue([
+        { revenueCatTransactionId: 'txn-already-used' },
+      ]);
+      revenueCatService.fetchSubscriberUntil.mockResolvedValue({
+        original_app_user_id: 'user-1',
+        non_subscriptions: {
+          [DTO.productId]: [
+            {
+              id: 'txn-already-used',
+              purchase_date: '2026-01-01T00:00:00Z',
+              store: 'app_store',
+              is_sandbox: true,
+            },
+          ],
+        },
+        subscriptions: {},
+      });
+
+      await expect(
+        paidService.confirmPublicationPaymentViaIap(
+          'org-1',
+          'tournament-1',
+          'user-1',
+          DTO,
+        ),
+      ).rejects.toBeInstanceOf(BadRequestException);
+
+      // Confirms the isReady predicate passed to fetchSubscriberUntil
+      // actually applies the same exclusion rather than treating any
+      // purchase (even an already-recorded one) as ready.
+      const [, isReady] = revenueCatService.fetchSubscriberUntil.mock
+        .calls[0] as [string, (s: unknown) => boolean];
+      expect(
+        isReady({
+          non_subscriptions: {
+            [DTO.productId]: [{ id: 'txn-already-used' }],
+          },
+          subscriptions: {},
+        }),
+      ).toBe(false);
+      expect(
+        isReady({
+          non_subscriptions: { [DTO.productId]: [{ id: 'txn-new' }] },
+          subscriptions: {},
+        }),
+      ).toBe(true);
+    });
+
+    it('records a PAID order and publishes once RevenueCat reports a new, unrecorded purchase', async () => {
+      const paidService = createPaidService();
+      prisma.tournament.findUnique.mockResolvedValue(tournamentFixture());
+      prisma.tournamentPublicationOrder.findMany.mockResolvedValue([]);
+      prisma.tournamentPublicationOrder.findUnique.mockResolvedValue(null); // applyPaidPublicationViaIap's own dedupe check
+      revenueCatService.fetchSubscriberUntil.mockResolvedValue({
+        original_app_user_id: 'user-1',
+        non_subscriptions: {
+          [DTO.productId]: [
+            {
+              id: 'txn-new',
+              purchase_date: '2026-01-01T00:00:00Z',
+              store: 'app_store',
+              is_sandbox: true,
+            },
+          ],
+        },
+        subscriptions: {},
+      });
+      prisma.category.count.mockResolvedValue(1);
+      prisma.team.count.mockResolvedValue(9);
+      prisma.tournamentPublicationOrder.create.mockResolvedValue({
+        id: 'order-1',
+      });
+      prisma.tournament.update.mockResolvedValue({});
+
+      const result = await paidService.confirmPublicationPaymentViaIap(
+        'org-1',
+        'tournament-1',
+        'user-1',
+        DTO,
+      );
+
+      expect(revenueCatService.fetchSubscriberUntil).toHaveBeenCalledWith(
+        'user-1',
+        expect.any(Function),
+      );
+      const [[createCall]] = prisma.tournamentPublicationOrder.create.mock
+        .calls as [
+        [{ data: { revenueCatTransactionId: string; amountCents: number } }],
+      ];
+      expect(createCall.data.revenueCatTransactionId).toBe('txn-new');
+      expect(createCall.data.amountCents).toBe(2500);
+      expect(result.id).toBe('tournament-1');
     });
   });
 

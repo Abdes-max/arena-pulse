@@ -94,6 +94,7 @@ function createRevenueCatServiceMock() {
   return {
     parseWebhookEvent: jest.fn(),
     fetchSubscriber: jest.fn(),
+    fetchSubscriberUntil: jest.fn(),
   };
 }
 
@@ -107,12 +108,14 @@ function checkoutCompletedEvent(sessionId: string): Stripe.Event {
 describe('OrganizationsService', () => {
   let prisma: PrismaMock;
   let stripeService: ReturnType<typeof createStripeServiceMock>;
+  let revenueCatService: ReturnType<typeof createRevenueCatServiceMock>;
   let mailService: ReturnType<typeof createMailServiceMock>;
   let service: OrganizationsService;
 
   beforeEach(() => {
     prisma = createPrismaMock();
     stripeService = createStripeServiceMock();
+    revenueCatService = createRevenueCatServiceMock();
     mailService = createMailServiceMock();
     // Default: not suspended -- assertNotSuspended() (called at the top of
     // subscribe()) reads this for every test unless overridden.
@@ -123,7 +126,7 @@ describe('OrganizationsService', () => {
     service = new OrganizationsService(
       prisma as unknown as PrismaService,
       stripeService as unknown as StripeService,
-      createRevenueCatServiceMock() as unknown as RevenueCatService,
+      revenueCatService as unknown as RevenueCatService,
       createConfigServiceMock(),
       mailService as unknown as MailService,
     );
@@ -646,6 +649,145 @@ describe('OrganizationsService', () => {
           paidAt,
         },
       ]);
+    });
+
+    // Regression coverage for the 2026-09-29 App Review rejection under
+    // Guideline 2.1(b) ("Could not confirm your subscription") -- see
+    // RevenueCatService.fetchSubscriberUntil's own doc comment for the full
+    // story (RevenueCat's brief read-after-write lag after a StoreKit
+    // purchase). These tests only check this method wires
+    // fetchSubscriberUntil correctly (predicate, transaction id, expiry);
+    // the retry loop itself is covered in revenuecat.service.spec.ts.
+    describe('confirmSubscriptionPaymentViaIap', () => {
+      it('rejects without calling RevenueCat when the organization already has an active subscription', async () => {
+        prisma.organizationSubscription.findFirst.mockResolvedValue({
+          id: 'sub-existing',
+        });
+
+        await expect(
+          service.confirmSubscriptionPaymentViaIap('org-1', 'user-1'),
+        ).rejects.toBeInstanceOf(ConflictException);
+        expect(revenueCatService.fetchSubscriberUntil).not.toHaveBeenCalled();
+      });
+
+      it("rejects when RevenueCat never reports a matching, non-refunded subscription (fetchSubscriberUntil's own attempts exhausted)", async () => {
+        prisma.organizationSubscription.findFirst.mockResolvedValue(null); // hasActiveSubscription check
+        revenueCatService.fetchSubscriberUntil.mockResolvedValue({
+          original_app_user_id: 'user-1',
+          non_subscriptions: {},
+          subscriptions: {},
+        });
+
+        await expect(
+          service.confirmSubscriptionPaymentViaIap('org-1', 'user-1'),
+        ).rejects.toBeInstanceOf(ConflictException);
+        expect(prisma.organizationSubscription.create).not.toHaveBeenCalled();
+      });
+
+      it('rejects a refunded subscription entry the same as a missing one', async () => {
+        prisma.organizationSubscription.findFirst.mockResolvedValue(null);
+        revenueCatService.fetchSubscriberUntil.mockResolvedValue({
+          original_app_user_id: 'user-1',
+          non_subscriptions: {},
+          subscriptions: {
+            annual_subscription: {
+              expires_date: '2027-01-01',
+              purchase_date: '2026-01-01',
+              store: 'app_store',
+              store_transaction_id: 'txn-1',
+              is_sandbox: true,
+              unsubscribe_detected_at: null,
+              refunded_at: '2026-01-02',
+            },
+          },
+        });
+
+        await expect(
+          service.confirmSubscriptionPaymentViaIap('org-1', 'user-1'),
+        ).rejects.toBeInstanceOf(ConflictException);
+      });
+
+      it('activates the subscription once RevenueCat reports a matching, unexpired entry', async () => {
+        prisma.organizationSubscription.findFirst.mockResolvedValue(null);
+        prisma.organizationSubscription.findUnique.mockResolvedValue(null); // applyPaidSubscriptionViaIap's own dedupe check
+        const expiresAt = new Date('2027-01-01');
+        revenueCatService.fetchSubscriberUntil.mockResolvedValue({
+          original_app_user_id: 'user-1',
+          non_subscriptions: {},
+          subscriptions: {
+            annual_subscription: {
+              expires_date: expiresAt.toISOString(),
+              purchase_date: '2026-01-01',
+              store: 'app_store',
+              store_transaction_id: 'txn-1',
+              is_sandbox: true,
+              unsubscribe_detected_at: null,
+              refunded_at: null,
+            },
+          },
+        });
+        prisma.organizationSubscription.create.mockResolvedValue({
+          id: 'sub-1',
+          organizationId: 'org-1',
+        });
+        prisma.organizationMember.findMany.mockResolvedValue([]);
+
+        await service.confirmSubscriptionPaymentViaIap('org-1', 'user-1');
+
+        expect(revenueCatService.fetchSubscriberUntil).toHaveBeenCalledWith(
+          'user-1',
+          expect.any(Function),
+        );
+        // Confirms the isReady predicate passed to fetchSubscriberUntil
+        // actually reflects this method's own acceptance rule (present,
+        // not refunded, has an expiry) rather than e.g. always true.
+        const [, isReady] = revenueCatService.fetchSubscriberUntil.mock
+          .calls[0] as [string, (s: unknown) => boolean];
+        expect(isReady({ subscriptions: {}, non_subscriptions: {} })).toBe(
+          false,
+        );
+        expect(
+          isReady({
+            subscriptions: {
+              annual_subscription: { expires_date: null, refunded_at: null },
+            },
+            non_subscriptions: {},
+          }),
+        ).toBe(false);
+
+        expect(prisma.organizationSubscription.create).toHaveBeenCalledWith({
+          data: expect.objectContaining({
+            organizationId: 'org-1',
+            status: OrganizationSubscriptionStatus.ACTIVE,
+            revenueCatTransactionId: 'txn-1',
+            expiresAt,
+          }) as unknown,
+        });
+      });
+
+      it('rejects an entry RevenueCat reports as already expired', async () => {
+        prisma.organizationSubscription.findFirst.mockResolvedValue(null);
+        revenueCatService.fetchSubscriberUntil.mockResolvedValue({
+          original_app_user_id: 'user-1',
+          non_subscriptions: {},
+          subscriptions: {
+            annual_subscription: {
+              expires_date: '2020-01-01', // well in the past
+              purchase_date: '2019-01-01',
+              store: 'app_store',
+              store_transaction_id: 'txn-1',
+              is_sandbox: true,
+              unsubscribe_detected_at: null,
+              refunded_at: null,
+            },
+          },
+        });
+
+        await expect(
+          service.confirmSubscriptionPaymentViaIap('org-1', 'user-1'),
+        ).rejects.toBeInstanceOf(ConflictException);
+        expect(prisma.organizationSubscription.create).not.toHaveBeenCalled();
+      });
     });
   });
 });

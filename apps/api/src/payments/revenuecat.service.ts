@@ -140,4 +140,43 @@ export class RevenueCatService {
     const body = (await res.json()) as { subscriber: RevenueCatSubscriber };
     return body.subscriber;
   }
+
+  /**
+   * Same as fetchSubscriber, but tolerates RevenueCat's brief
+   * read-after-write lag: the client SDK's purchaseStoreProduct() can
+   * resolve successfully before GET /subscribers/{id} reflects that same
+   * purchase server-side. Hit directly by Apple App Review on the
+   * annual-subscription purchase (rejected under Guideline 2.1(b) on
+   * 2026-09-29, "Could not confirm your subscription") -- the app called
+   * confirm-iap immediately after StoreKit reported success, and this
+   * endpoint still returned the pre-purchase subscriber state once.
+   *
+   * Retries fetchSubscriber up to `attempts` times (`delayMs` apart),
+   * stopping as soon as `isReady` returns true on the fetched subscriber --
+   * or once attempts are exhausted, returning whatever was last fetched.
+   * The caller's own "not found" error path is unchanged for a purchase
+   * that genuinely doesn't exist; this only buys it a few extra seconds
+   * before giving up. Defaults (5 attempts, 1.5s apart -- up to ~6s total)
+   * are a deliberate trade-off: long enough to clear RevenueCat's lag in
+   * practice, short enough to stay well within a normal request timeout.
+   */
+  async fetchSubscriberUntil(
+    appUserId: string,
+    isReady: (subscriber: RevenueCatSubscriber) => boolean,
+    {
+      attempts = 5,
+      delayMs = 1500,
+    }: { attempts?: number; delayMs?: number } = {},
+  ): Promise<RevenueCatSubscriber> {
+    let subscriber = await this.fetchSubscriber(appUserId);
+    for (
+      let attempt = 1;
+      attempt < attempts && !isReady(subscriber);
+      attempt++
+    ) {
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+      subscriber = await this.fetchSubscriber(appUserId);
+    }
+    return subscriber;
+  }
 }

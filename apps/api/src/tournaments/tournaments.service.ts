@@ -710,14 +710,9 @@ export class TournamentsService {
       );
     }
 
-    const subscriber = await this.revenueCatService.fetchSubscriber(userId);
-    const purchases = subscriber.non_subscriptions[dto.productId] ?? [];
-    // Most recent purchase of this product not already recorded against
-    // another order -- the DB's own @unique constraint on
-    // revenueCatTransactionId is the real guard against double-spending a
-    // single transaction across two orders; this just picks a sensible
-    // candidate to try first (newest = most likely to be the purchase the
-    // app is actually confirming right now).
+    // Computed before the RevenueCat fetch below (independent of it) --
+    // fetchSubscriberUntil's isReady predicate needs this set available on
+    // its very first attempt.
     const existingTransactionIds = new Set(
       (
         await this.prisma.tournamentPublicationOrder.findMany({
@@ -726,6 +721,24 @@ export class TournamentsService {
         })
       ).map((order) => order.revenueCatTransactionId),
     );
+    // fetchSubscriberUntil tolerates RevenueCat's brief read-after-write lag
+    // -- see its own doc comment (RevenueCatService) for why this app's
+    // IAP confirmation calls can't just trust a single fetchSubscriber
+    // right after StoreKit reports success.
+    const subscriber = await this.revenueCatService.fetchSubscriberUntil(
+      userId,
+      (s) =>
+        (s.non_subscriptions[dto.productId] ?? []).some(
+          (entry) => !existingTransactionIds.has(entry.id),
+        ),
+    );
+    const purchases = subscriber.non_subscriptions[dto.productId] ?? [];
+    // Most recent purchase of this product not already recorded against
+    // another order -- the DB's own @unique constraint on
+    // revenueCatTransactionId is the real guard against double-spending a
+    // single transaction across two orders; this just picks a sensible
+    // candidate to try first (newest = most likely to be the purchase the
+    // app is actually confirming right now).
     const purchase = [...purchases]
       .sort((a, b) => b.purchase_date.localeCompare(a.purchase_date))
       .find((entry) => !existingTransactionIds.has(entry.id));
