@@ -69,7 +69,13 @@
         "resend": "Renvoyer l'email",
         "resent": "Email renvoyé.",
         "errorConflict": "Un compte existe déjà avec cet email.",
-        "errorGeneric": "Une erreur est survenue, réessayez."
+        "errorGeneric": "Une erreur est survenue, réessayez.",
+        "passwordHint": "Au moins 10 caractères.",
+        "errors": {
+          "required": "Ce champ est obligatoire.",
+          "email": "Adresse email invalide.",
+          "passwordMinLength": "Le mot de passe doit contenir au moins 10 caractères."
+        }
       },
       "login": {
         "title": "Connexion",

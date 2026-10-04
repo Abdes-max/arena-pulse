@@ -60,9 +60,45 @@ export class OrganizerRegisterPage {
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly resent = signal(false);
+  // Flagged on a submit attempt made while the form is still invalid (e.g.
+  // tapping "Créer mon compte" without having blurred the last field yet --
+  // touched alone wouldn't catch that). Reported by Apple App Review
+  // 2026-10-04 (Guideline 2.1(a)) as "the Create my account button was
+  // unresponsive": no field here ever showed *why* -- TextField's own
+  // errorMessage input (libs/design-system) was never wired up by this
+  // page, so an invalid form (the password minlength(10) requirement is
+  // never hinted at anywhere) just silently no-opped on tap. fieldError()
+  // below now surfaces that instead of submit() returning in silence.
+  protected readonly submitAttempted = signal(false);
+
+  protected fieldError(
+    name: 'organizationName' | 'firstName' | 'lastName' | 'email' | 'password',
+  ): string | null {
+    const control = this.form.controls[name];
+    if (!(control.touched || this.submitAttempted()) || control.valid) {
+      return null;
+    }
+    if (control.hasError('required')) {
+      return 'organizer.auth.register.errors.required';
+    }
+    if (control.hasError('email')) {
+      return 'organizer.auth.register.errors.email';
+    }
+    if (control.hasError('minlength')) {
+      return 'organizer.auth.register.errors.passwordMinLength';
+    }
+    return null;
+  }
 
   protected async submit(): Promise<void> {
-    if (this.form.invalid || this.submitting()) {
+    if (this.submitting()) {
+      return;
+    }
+    if (this.form.invalid) {
+      // Reveals every field's error at once rather than one-at-a-time as
+      // the organizer blurs each field -- see submitAttempted's own comment.
+      this.submitAttempted.set(true);
+      this.form.markAllAsTouched();
       return;
     }
     this.submitting.set(true);

@@ -69,7 +69,13 @@
         "resend": "Resend email",
         "resent": "Email resent.",
         "errorConflict": "An account already exists with this email.",
-        "errorGeneric": "Something went wrong, please try again."
+        "errorGeneric": "Something went wrong, please try again.",
+        "passwordHint": "At least 10 characters.",
+        "errors": {
+          "required": "This field is required.",
+          "email": "Invalid email address.",
+          "passwordMinLength": "Password must be at least 10 characters."
+        }
       },
       "login": {
         "title": "Log in",

@@ -69,7 +69,13 @@
         "resend": "E-Mail erneut senden",
         "resent": "E-Mail erneut gesendet.",
         "errorConflict": "Es existiert bereits ein Konto mit dieser E-Mail-Adresse.",
-        "errorGeneric": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut."
+        "errorGeneric": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut.",
+        "passwordHint": "Mindestens 10 Zeichen.",
+        "errors": {
+          "required": "Dieses Feld ist erforderlich.",
+          "email": "Ungültige E-Mail-Adresse.",
+          "passwordMinLength": "Das Passwort muss mindestens 10 Zeichen lang sein."
+        }
       },
       "login": {
         "title": "Anmelden",
