@@ -69,7 +69,13 @@
         "resend": "Reenviar correo",
         "resent": "Correo reenviado.",
         "errorConflict": "Ya existe una cuenta con este correo.",
-        "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo."
+        "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo.",
+        "passwordHint": "Al menos 10 caracteres.",
+        "errors": {
+          "required": "Este campo es obligatorio.",
+          "email": "Dirección de correo no válida.",
+          "passwordMinLength": "La contraseña debe tener al menos 10 caracteres."
+        }
       },
       "login": {
         "title": "Iniciar sesión",

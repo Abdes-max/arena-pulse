@@ -22,29 +22,39 @@
             [label]="'organizer.auth.register.orgNameLabel' | transloco"
             formControlName="organizationName"
             autocomplete="organization"
+            [errorMessage]="fieldError('organizationName') | transloco"
           />
           <ap-text-field
             [label]="'organizer.auth.register.firstNameLabel' | transloco"
             formControlName="firstName"
             autocomplete="given-name"
+            [errorMessage]="fieldError('firstName') | transloco"
           />
           <ap-text-field
             [label]="'organizer.auth.register.lastNameLabel' | transloco"
             formControlName="lastName"
             autocomplete="family-name"
+            [errorMessage]="fieldError('lastName') | transloco"
           />
           <ap-text-field
             [label]="'organizer.auth.register.emailLabel' | transloco"
             type="email"
             formControlName="email"
             autocomplete="email"
+            [errorMessage]="fieldError('email') | transloco"
           />
           <ap-text-field
             [label]="'organizer.auth.register.passwordLabel' | transloco"
             type="password"
             formControlName="password"
             autocomplete="new-password"
+            [errorMessage]="fieldError('password') | transloco"
           />
+          @if (!fieldError('password')) {
+            <p class="organizer-register-page__hint">
+              {{ 'organizer.auth.register.passwordHint' | transloco }}
+            </p>
+          }
           @if (errorMessage(); as message) {
             <p class="organizer-register-page__error" role="alert">{{ message | transloco }}</p>
           }

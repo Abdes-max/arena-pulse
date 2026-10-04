@@ -69,7 +69,13 @@
         "resend": "Invia di nuovo l'email",
         "resent": "Email inviata di nuovo.",
         "errorConflict": "Esiste già un account con questa email.",
-        "errorGeneric": "Si è verificato un errore, riprova."
+        "errorGeneric": "Si è verificato un errore, riprova.",
+        "passwordHint": "Almeno 10 caratteri.",
+        "errors": {
+          "required": "Questo campo è obbligatorio.",
+          "email": "Indirizzo email non valido.",
+          "passwordMinLength": "La password deve contenere almeno 10 caratteri."
+        }
       },
       "login": {
         "title": "Accedi",
