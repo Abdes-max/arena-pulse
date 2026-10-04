@@ -13,6 +13,20 @@
     </button>
     <ap-logo class="organizer-login-page__brand" slot="start" [wordmark]="false" />
     <ion-title>{{ 'organizer.auth.login.title' | transloco }}</ion-title>
+    <button
+      type="button"
+      class="organizer-login-page__close"
+      slot="end"
+      (click)="cancel()"
+      [attr.aria-label]="'organizer.auth.login.cancelAria' | transloco"
+    >
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+        <path
+          fill="currentColor"
+          d="M18.3 5.71 12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.3 19.7 2.89 18.3 9.17 12 2.89 5.71 4.3 4.29l6.3 6.3 6.29-6.3z"
+        />
+      </svg>
+    </button>
   </ion-toolbar>
 </ion-header>
 

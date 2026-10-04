@@ -75,11 +75,13 @@
           "required": "This field is required.",
           "email": "Invalid email address.",
           "passwordMinLength": "Password must be at least 10 characters."
-        }
+        },
+        "cancelAria": "Cancel"
       },
       "login": {
         "title": "Log in",
         "backAria": "Back",
+        "cancelAria": "Cancel",
         "lede": "Log in to your organizer account.",
         "emailLabel": "Email",
         "passwordLabel": "Password",

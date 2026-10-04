@@ -75,11 +75,13 @@
           "required": "Dieses Feld ist erforderlich.",
           "email": "Ungültige E-Mail-Adresse.",
           "passwordMinLength": "Das Passwort muss mindestens 10 Zeichen lang sein."
-        }
+        },
+        "cancelAria": "Abbrechen"
       },
       "login": {
         "title": "Anmelden",
         "backAria": "Zurück",
+        "cancelAria": "Abbrechen",
         "lede": "Melden Sie sich bei Ihrem Organisator·innen-Konto an.",
         "emailLabel": "E-Mail",
         "passwordLabel": "Passwort",

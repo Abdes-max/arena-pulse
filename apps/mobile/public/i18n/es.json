@@ -75,11 +75,13 @@
           "required": "Este campo es obligatorio.",
           "email": "Dirección de correo no válida.",
           "passwordMinLength": "La contraseña debe tener al menos 10 caracteres."
-        }
+        },
+        "cancelAria": "Cancelar"
       },
       "login": {
         "title": "Iniciar sesión",
         "backAria": "Atrás",
+        "cancelAria": "Cancelar",
         "lede": "Inicia sesión en tu cuenta de organizador·a.",
         "emailLabel": "Correo electrónico",
         "passwordLabel": "Contraseña",

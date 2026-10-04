@@ -25,18 +25,22 @@ ion-title {
   font-size: 1.05rem;
 }
 
-.organizer-login-page__back {
+.organizer-login-page__back,
+.organizer-login-page__close {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 32px;
   height: 32px;
   padding: 0;
-  margin-inline-end: var(--ap-space-2);
   border: none;
   background: transparent;
   color: var(--ap-color-fg);
   cursor: pointer;
+}
+
+.organizer-login-page__back {
+  margin-inline-end: var(--ap-space-2);
 }
 
 // Icon-only ([wordmark]="false") -- a tight nav-bar slot, same reasoning as

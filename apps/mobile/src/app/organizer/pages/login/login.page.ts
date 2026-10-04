@@ -108,4 +108,9 @@ export class OrganizerLoginPage {
   protected goBack(): void {
     this.location.back();
   }
+
+  /** Top-right close (X) -- always bails out to the app's public home ('/'), regardless of how this page was reached, unlike goBack() above which retraces history. */
+  protected cancel(): void {
+    void this.router.navigateByUrl('/');
+  }
 }

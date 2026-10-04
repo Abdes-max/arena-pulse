@@ -75,11 +75,13 @@
           "required": "Questo campo è obbligatorio.",
           "email": "Indirizzo email non valido.",
           "passwordMinLength": "La password deve contenere almeno 10 caratteri."
-        }
+        },
+        "cancelAria": "Annulla"
       },
       "login": {
         "title": "Accedi",
         "backAria": "Indietro",
+        "cancelAria": "Annulla",
         "lede": "Accedi al tuo account organizzatore·rice.",
         "emailLabel": "Email",
         "passwordLabel": "Password",

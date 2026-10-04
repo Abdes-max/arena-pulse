@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { IonContent, IonFooter, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Button, Logo, TextField } from 'design-system';
@@ -46,6 +46,7 @@ type PageState = 'form' | 'sent';
 export class OrganizerRegisterPage {
   private readonly formBuilder = inject(FormBuilder);
   private readonly auth = inject(OrganizerAuthService);
+  private readonly router = inject(Router);
 
   protected readonly form = this.formBuilder.nonNullable.group({
     organizationName: ['', Validators.required],
@@ -132,5 +133,10 @@ export class OrganizerRegisterPage {
     } finally {
       this.submitting.set(false);
     }
+  }
+
+  /** Top-right close (X) -- bails out to the app's public home ('/'), same target as login.page.ts's own cancel(). */
+  protected cancel(): void {
+    void this.router.navigateByUrl('/');
   }
 }
