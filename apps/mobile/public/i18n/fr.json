@@ -75,11 +75,13 @@
           "required": "Ce champ est obligatoire.",
           "email": "Adresse email invalide.",
           "passwordMinLength": "Le mot de passe doit contenir au moins 10 caractères."
-        }
+        },
+        "cancelAria": "Annuler"
       },
       "login": {
         "title": "Connexion",
         "backAria": "Retour",
+        "cancelAria": "Annuler",
         "lede": "Connectez-vous à votre compte organisateur.",
         "emailLabel": "Email",
         "passwordLabel": "Mot de passe",

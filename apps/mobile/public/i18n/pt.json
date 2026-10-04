@@ -75,11 +75,13 @@
           "required": "Este campo é obrigatório.",
           "email": "Endereço de email inválido.",
           "passwordMinLength": "A palavra-passe deve ter pelo menos 10 caracteres."
-        }
+        },
+        "cancelAria": "Cancelar"
       },
       "login": {
         "title": "Iniciar sessão",
         "backAria": "Voltar",
+        "cancelAria": "Cancelar",
         "lede": "Inicie sessão na sua conta de organizador·a.",
         "emailLabel": "Email",
         "passwordLabel": "Palavra-passe",
