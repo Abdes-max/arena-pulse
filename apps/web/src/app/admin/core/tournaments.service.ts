@@ -144,10 +144,7 @@ export class TournamentsService {
     );
   }
 
-  removeHeaderBackground(
-    organizationId: string,
-    tournamentId: string,
-  ): Promise<TournamentDetail> {
+  removeHeaderBackground(organizationId: string, tournamentId: string): Promise<TournamentDetail> {
     return firstValueFrom(
       this.http.delete<TournamentDetail>(
         `${this.base(organizationId)}/${tournamentId}/header-background`,
