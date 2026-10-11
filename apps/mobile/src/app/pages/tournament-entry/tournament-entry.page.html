@@ -366,16 +366,6 @@
           <ap-button type="button" [fullWidth]="true" (click)="viewEvents()">
             {{ 'tournamentEntry.hero.ctaViewEvents' | transloco }}
           </ap-button>
-          @if (exampleTournament(); as example) {
-            <ap-button
-              type="button"
-              variant="secondary"
-              [fullWidth]="true"
-              (click)="goToTournament(example)"
-            >
-              {{ 'tournamentEntry.hero.ctaViewExample' | transloco }}
-            </ap-button>
-          }
         </div>
       }
 
