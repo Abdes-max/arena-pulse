@@ -165,21 +165,17 @@
       <a class="landing-page__cta" routerLink="/register">{{
         'landing.hero.ctaCreate' | transloco
       }}</a>
-      @if (tournaments().length > 0) {
-        <a class="landing-page__cta-ghost" [routerLink]="['/', tournaments()[0].slug]">
-          {{ 'landing.hero.ctaExample' | transloco }}
-        </a>
-      }
     </div>
 
-    <!-- href="#" -- pas encore publiée sur l'un ou l'autre store, voir la
-         section stores plus bas pour le detail. -->
+    <!-- The hero is permanently dark (data-mode="dark" above, regardless of
+         the page's own light/dark toggle) -- true is hardcoded here, not
+         mode()-driven, for that reason (see appleBadgeSrc's own comment). -->
     <div class="landing-page__hero-stores">
-      <a href="#"
-        ><img src="badge-app-store.png" [attr.alt]="'landing.hero.storeApple' | transloco"
+      <a [href]="appStoreUrl" target="_blank" rel="noopener"
+        ><img [src]="appleBadgeSrc(true)" [attr.alt]="'landing.hero.storeApple' | transloco"
       /></a>
-      <a href="#"
-        ><img src="badge-google-play.png" [attr.alt]="'landing.hero.storeGoogle' | transloco"
+      <a href="#" (click)="openGoogleComingSoon($event)"
+        ><img [src]="googleBadgeSrc(true)" [attr.alt]="'landing.hero.storeGoogle' | transloco"
       /></a>
     </div>
   </div>
@@ -719,18 +715,21 @@
   <p>
     {{ 'landing.stores.desc' | transloco }}
   </p>
-  <!--
-    href="#" -- TournArena n'est pour l'instant publiée que sur TestFlight
-    (pas encore en revue App Store publique) et pas du tout sur le Play
-    Store (docs/architecture/adr/0008 et 0009). À remplacer par les vraies
-    fiches une fois publiées.
-  -->
+  <!-- Unlike the hero above, this section follows the page's own
+       light/dark toggle (mode()) -- no data-mode override here -- so both
+       badges swap color with it instead of staying fixed. Google Play
+       isn't published yet (docs/architecture/adr/0008 et 0009): its badge
+       opens the "coming soon" dialog rather than a dead link. -->
   <div class="landing-page__store-badges">
-    <a href="#"
-      ><img src="badge-app-store.png" [attr.alt]="'landing.hero.storeApple' | transloco"
+    <a [href]="appStoreUrl" target="_blank" rel="noopener"
+      ><img
+        [src]="appleBadgeSrc(mode() === 'dark')"
+        [attr.alt]="'landing.hero.storeApple' | transloco"
     /></a>
-    <a href="#"
-      ><img src="badge-google-play.png" [attr.alt]="'landing.hero.storeGoogle' | transloco"
+    <a href="#" (click)="openGoogleComingSoon($event)"
+      ><img
+        [src]="googleBadgeSrc(mode() === 'dark')"
+        [attr.alt]="'landing.hero.storeGoogle' | transloco"
     /></a>
   </div>
 </section>
@@ -757,3 +756,32 @@
     </span>
   </p>
 </footer>
+
+@if (googleComingSoonOpen()) {
+  <!-- Same backdrop-button-sibling pattern as the submenu's own QR dialog
+       (tournament-submenu.html) -- a real <button>, not a clickable <div>,
+       as the dialog panel's sibling rather than its parent, so the panel
+       never needs its own stopPropagation() click handler. -->
+  <button
+    type="button"
+    class="landing-page__google-soon-backdrop"
+    (click)="closeGoogleComingSoon()"
+    [attr.aria-label]="'landing.googleComingSoon.close' | transloco"
+  ></button>
+  <div
+    class="landing-page__google-soon-dialog"
+    role="alertdialog"
+    aria-modal="true"
+    [attr.aria-label]="'landing.googleComingSoon.title' | transloco"
+  >
+    <h2 class="landing-page__google-soon-title">
+      {{ 'landing.googleComingSoon.title' | transloco }}
+    </h2>
+    <p class="landing-page__google-soon-body">
+      {{ 'landing.googleComingSoon.body' | transloco }}
+    </p>
+    <ap-button type="button" (click)="closeGoogleComingSoon()">
+      {{ 'landing.googleComingSoon.back' | transloco }}
+    </ap-button>
+  </div>
+}

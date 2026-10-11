@@ -311,6 +311,13 @@
     height: 40px;
     width: auto;
     border-radius: var(--ap-radius-md);
+    // These SVGs are already colored to match their background (black/white
+    // badge, chosen in landing.page.ts); without this, Chrome's own
+    // auto-dark-theming (triggered by styles.scss's page-wide
+    // `color-scheme: light dark`) recolors the badge's unspecified-fill
+    // icon/text paths too, inverting our deliberate color choice back to
+    // the wrong one.
+    color-scheme: light;
   }
 
   a {
@@ -335,22 +342,6 @@
 
   &:hover {
     filter: brightness(1.08);
-  }
-}
-
-.landing-page__cta-ghost {
-  display: inline-flex;
-  align-items: center;
-  padding: var(--ap-space-3) var(--ap-space-6);
-  border-radius: var(--ap-radius-md);
-  border: var(--ap-border-width) solid var(--ap-color-border);
-  color: var(--ap-color-fg);
-  font-weight: 600;
-  text-decoration: none;
-  transition: border-color var(--ap-motion-fast) var(--ap-easing-standard);
-
-  &:hover {
-    border-color: var(--ap-color-signal);
   }
 }
 
@@ -923,6 +914,9 @@ ap-tournament-marquee {
     height: 44px;
     width: auto;
     border-radius: var(--ap-radius-md);
+    // See .landing-page__hero-stores img's own comment -- same fix needed
+    // here for this section's own black/white badges.
+    color-scheme: light;
   }
 }
 
@@ -994,4 +988,44 @@ ap-tournament-marquee {
     color: var(--ap-color-fg);
     text-decoration: underline;
   }
+}
+
+// Same dimmed-backdrop-plus-centered-panel shape as the admin shell's own
+// session-timeout dialog (app-shell.scss) / the submenu's QR dialog.
+.landing-page__google-soon-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  padding: 0;
+  border: none;
+  background: rgb(0 0 0 / 50%);
+  cursor: pointer;
+}
+
+.landing-page__google-soon-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 201;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-4);
+  padding: var(--ap-space-6);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-lg);
+  max-width: 360px;
+  width: calc(100% - var(--ap-space-8));
+  text-align: center;
+}
+
+.landing-page__google-soon-title {
+  margin: 0;
+  font-family: var(--ap-font-heading);
+}
+
+.landing-page__google-soon-body {
+  margin: 0;
+  color: var(--ap-color-muted);
 }

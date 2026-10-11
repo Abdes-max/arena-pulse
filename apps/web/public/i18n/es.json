@@ -19,7 +19,6 @@
       "titleEmphasis": "seguidos en directo por todos.",
       "subtitle": "Grupos, cuadros de eliminación, calendario, arbitraje y clasificaciones — y un sitio público generado automáticamente para cada una de tus competiciones, actualizado en el instante en que se registra un resultado.",
       "ctaCreate": "Crear mi torneo",
-      "ctaExample": "Ver un ejemplo en directo",
       "storeApple": "Descargar en App Store",
       "storeGoogle": "Disponible en Google Play"
     },
@@ -149,6 +148,12 @@
       "privacy": "Política de privacidad",
       "copyright": "© 2026 TournArena. Todos los derechos reservados.",
       "madeBy": "Creado por"
+    },
+    "googleComingSoon": {
+      "title": "Próximamente",
+      "body": "La aplicación Android llegará pronto a Google Play.",
+      "back": "Volver",
+      "close": "Cerrar"
     }
   },
   "legal": {
