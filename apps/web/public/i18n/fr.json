@@ -297,7 +297,8 @@
       "tournament": "Tournoi",
       "teams": "Équipes",
       "standings": "Classement",
-      "schedule": "Calendrier"
+      "schedule": "Calendrier",
+      "wrapped": "Statistiques"
     },
     "menu": "Menu"
   },
@@ -1218,6 +1219,54 @@
       "errors": {
         "load": "Impossible de charger l'export."
       }
+    }
+  },
+  "wrapped": {
+    "loading": "Chargement des statistiques…",
+    "locked": "Les statistiques de ce tournoi ne sont pas disponibles.",
+    "eyebrow": "Statistiques du tournoi",
+    "hero": {
+      "goals": "buts marqués"
+    },
+    "organisation": {
+      "title": "Le tournoi en chiffres",
+      "teams": "Équipes",
+      "categories": "Catégories",
+      "groups": "Poules",
+      "venues": "Terrains",
+      "referees": "Arbitres",
+      "date": "Date",
+      "startDate": "Début",
+      "endDate": "Fin"
+    },
+    "charts": {
+      "venues": "Répartition des matchs par terrain",
+      "hours": "Matchs par tranche horaire",
+      "outcomes": "Comment les matchs se sont terminés",
+      "attack": "Top attaques · buts marqués",
+      "defense": "Top défenses · buts encaissés"
+    },
+    "goals": {
+      "title": "Buts & suspense",
+      "average": "Une moyenne de {{average}} buts par match.",
+      "highestScoring": "Match le plus prolifique",
+      "biggestMargin": "Plus grosse victoire",
+      "closest": "Match le plus serré"
+    },
+    "outcomes": {
+      "homeWin": "Victoire à domicile",
+      "awayWin": "Victoire à l'extérieur",
+      "draw": "Match nul",
+      "shootout": "Décidé aux tirs au but"
+    },
+    "teams": {
+      "title": "Attaque & défense"
+    },
+    "level": {
+      "title": "Niveau de jeu",
+      "champion": "Champion {{category}} · niveau {{rating}}",
+      "upsetKicker": "Plus gros exploit du tournoi",
+      "upset": "{{winner}} élimine {{loser}}, un écart de {{gap}} points de niveau renversé."
     }
   }
 }

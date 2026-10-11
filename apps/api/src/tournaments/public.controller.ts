@@ -111,6 +111,11 @@ export class PublicController {
     return this.publicService.listBracketMatches(slug, bracketId);
   }
 
+  @Get(':slug/wrapped')
+  getWrapped(@Param('slug') slug: string) {
+    return this.publicService.getWrapped(slug);
+  }
+
   @Get(':slug/matches/upcoming')
   getUpcomingMatches(
     @Param('slug') slug: string,

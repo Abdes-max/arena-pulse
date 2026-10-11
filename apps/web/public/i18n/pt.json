@@ -195,7 +195,8 @@
       "tournament": "Torneio",
       "teams": "Equipas",
       "standings": "Classificação",
-      "schedule": "Calendário"
+      "schedule": "Calendário",
+      "wrapped": "Estatísticas"
     },
     "menu": "Menu"
   },
@@ -1116,6 +1117,54 @@
       "errors": {
         "load": "Não foi possível carregar a exportação."
       }
+    }
+  },
+  "wrapped": {
+    "loading": "A carregar as estatísticas…",
+    "locked": "As estatísticas deste torneio não estão disponíveis.",
+    "eyebrow": "Estatísticas do torneio",
+    "hero": {
+      "goals": "golos marcados"
+    },
+    "organisation": {
+      "title": "O torneio em números",
+      "teams": "Equipas",
+      "categories": "Categorias",
+      "groups": "Grupos",
+      "venues": "Campos",
+      "referees": "Árbitros",
+      "date": "Data",
+      "startDate": "Início",
+      "endDate": "Fim"
+    },
+    "charts": {
+      "venues": "Jogos por campo",
+      "hours": "Jogos por faixa horária",
+      "outcomes": "Como terminaram os jogos",
+      "attack": "Melhores ataques · golos marcados",
+      "defense": "Melhores defesas · golos sofridos"
+    },
+    "goals": {
+      "title": "Golos e emoção",
+      "average": "Uma média de {{average}} golos por jogo.",
+      "highestScoring": "Jogo mais goleador",
+      "biggestMargin": "Maior vitória",
+      "closest": "Jogo mais equilibrado"
+    },
+    "outcomes": {
+      "homeWin": "Vitória em casa",
+      "awayWin": "Vitória fora",
+      "draw": "Empate",
+      "shootout": "Decidido por grandes penalidades"
+    },
+    "teams": {
+      "title": "Ataque e defesa"
+    },
+    "level": {
+      "title": "Nível de jogo",
+      "champion": "Campeão {{category}} · nível {{rating}}",
+      "upsetKicker": "A maior surpresa do torneio",
+      "upset": "{{winner}} elimina {{loser}}, revertendo uma diferença de {{gap}} pontos de nível."
     }
   }
 }

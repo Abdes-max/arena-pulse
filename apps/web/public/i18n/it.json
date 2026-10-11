@@ -195,7 +195,8 @@
       "tournament": "Torneo",
       "teams": "Squadre",
       "standings": "Classifica",
-      "schedule": "Calendario"
+      "schedule": "Calendario",
+      "wrapped": "Statistiche"
     },
     "menu": "Menu"
   },
@@ -1116,6 +1117,54 @@
       "errors": {
         "load": "Impossibile caricare l'esportazione."
       }
+    }
+  },
+  "wrapped": {
+    "loading": "Caricamento delle statistiche…",
+    "locked": "Le statistiche di questo torneo non sono disponibili.",
+    "eyebrow": "Statistiche del torneo",
+    "hero": {
+      "goals": "gol segnati"
+    },
+    "organisation": {
+      "title": "Il torneo in cifre",
+      "teams": "Squadre",
+      "categories": "Categorie",
+      "groups": "Gironi",
+      "venues": "Campi",
+      "referees": "Arbitri",
+      "date": "Data",
+      "startDate": "Inizio",
+      "endDate": "Fine"
+    },
+    "charts": {
+      "venues": "Partite per campo",
+      "hours": "Partite per fascia oraria",
+      "outcomes": "Come sono finite le partite",
+      "attack": "Migliori attacchi · gol segnati",
+      "defense": "Migliori difese · gol subiti"
+    },
+    "goals": {
+      "title": "Gol e suspense",
+      "average": "Una media di {{average}} gol a partita.",
+      "highestScoring": "Partita più prolifica",
+      "biggestMargin": "Vittoria più larga",
+      "closest": "Partita più combattuta"
+    },
+    "outcomes": {
+      "homeWin": "Vittoria interna",
+      "awayWin": "Vittoria esterna",
+      "draw": "Pareggio",
+      "shootout": "Deciso ai rigori"
+    },
+    "teams": {
+      "title": "Attacco e difesa"
+    },
+    "level": {
+      "title": "Livello di gioco",
+      "champion": "Campione {{category}} · livello {{rating}}",
+      "upsetKicker": "La sorpresa più grande del torneo",
+      "upset": "{{winner}} elimina {{loser}}, ribaltando un divario di {{gap}} punti di livello."
     }
   }
 }
