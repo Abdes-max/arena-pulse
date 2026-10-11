@@ -19,7 +19,6 @@
       "titleEmphasis": "followed live by everyone.",
       "subtitle": "Pools, knockout brackets, schedule, officiating and standings — plus a public site generated automatically for each of your competitions, updated the instant a score is entered.",
       "ctaCreate": "Create my tournament",
-      "ctaExample": "See a live example",
       "storeApple": "Download on the App Store",
       "storeGoogle": "Get it on Google Play"
     },
@@ -149,6 +148,12 @@
       "privacy": "Privacy policy",
       "copyright": "© 2026 TournArena. All rights reserved.",
       "madeBy": "Built by"
+    },
+    "googleComingSoon": {
+      "title": "Coming soon",
+      "body": "The Android app is coming soon to Google Play.",
+      "back": "Back",
+      "close": "Close"
     }
   },
   "legal": {

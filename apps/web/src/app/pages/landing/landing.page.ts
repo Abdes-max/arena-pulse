@@ -4,6 +4,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AssetUrlService, PublicApiService } from 'api-client';
 import { TranslocoPipe } from '@jsverse/transloco';
 import {
+  Button,
   LanguageSwitcher,
   Logo,
   TextField,
@@ -44,10 +45,16 @@ const SPORT_DESCRIPTION_KEYS: Record<string, string> = {
 };
 const DEFAULT_SPORT_DESCRIPTION_KEY = 'landing.sports.description.default';
 
+// Universal (no country code) App Store product link -- Apple resolves it
+// to the visitor's own storefront, so this one URL works worldwide instead
+// of hardcoding e.g. /fr/. TournArena's numeric id (App Store Connect).
+const APP_STORE_URL = 'https://apps.apple.com/app/tournarena/id6800457795';
+
 @Component({
   selector: 'app-landing-page',
   imports: [
     RouterLink,
+    Button,
     LanguageSwitcher,
     Logo,
     ThemeModeToggle,
@@ -81,6 +88,12 @@ export class LandingPage {
   // into this slide-down panel behind a hamburger toggle instead of being
   // hidden outright, which is what broke access to them on mobile before.
   protected readonly mobileMenuOpen = signal(false);
+  protected readonly appStoreUrl = APP_STORE_URL;
+  // Android isn't published yet (no Google Play listing to send anyone to)
+  // -- the badge stays visible (same "here's what's coming" reasoning as
+  // keeping the button in the layout at all) but its click opens this
+  // dialog instead of a dead link.
+  protected readonly googleComingSoonOpen = signal(false);
 
   // Client-side over a wider-than-displayed fetch (50, not just the first
   // handful) -- same pattern as team-search.page's filteredTeams, and simple
@@ -99,9 +112,19 @@ export class LandingPage {
   // ap-tournament-marquee's TournamentMarqueeItem needs a resolved (absolute)
   // logoUrl -- it's a dumb presenter, same reason ap-tournament-card gets
   // its own [logoUrl]="logoUrl(t.logoUrl)" binding per-card below instead.
-  protected readonly marqueeTournaments = computed(() =>
-    this.tournaments().map((t) => ({ ...t, logoUrl: this.logoUrl(t.logoUrl) })),
-  );
+  // Unlike filteredTournaments above (the searchable grid, where a visitor
+  // might legitimately be looking for a tournament that already happened),
+  // "En ce moment sur TournArena" is a live/upcoming-only strip -- a
+  // tournament with no endDate at all is kept (nothing to compare against,
+  // so it can't be confidently called "past"), compared against the start
+  // of today so one that ends today still shows all day.
+  protected readonly marqueeTournaments = computed(() => {
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    return this.tournaments()
+      .filter((t) => !t.endDate || new Date(t.endDate) >= todayStart)
+      .map((t) => ({ ...t, logoUrl: this.logoUrl(t.logoUrl) }));
+  });
 
   constructor() {
     const tournamentsLoaded = this.api
@@ -146,6 +169,42 @@ export class LandingPage {
 
   protected logoUrl(url: string | null): string | null {
     return this.assetUrl.resolve(url);
+  }
+
+  // Apple's own two official badge colors (developer.apple.com/app-store/
+  // marketing/guidelines -- "black" badge is the default/preferred one,
+  // "white" only where the black badge would otherwise sit on a dark
+  // surface and read as visually heavy). onDarkBackground is passed by each
+  // call site rather than read from a shared signal here, since the hero's
+  // own background is *always* dark regardless of the page-wide light/dark
+  // toggle (data-mode="dark" is hardcoded on landing-page__hero), while the
+  // #stores section below follows that toggle (`mode()`). Each of the 6
+  // supported locales has its own official badge asset (text baked into the
+  // artwork by Apple's badge service), so the filename also follows
+  // `language()` and re-renders when the visitor switches language.
+  protected appleBadgeSrc(onDarkBackground: boolean): string {
+    const color = onDarkBackground ? 'white' : 'black';
+    return `badge-app-store-${this.language()}-${color}.svg`;
+  }
+
+  // Google Play badge: no official white/light variant exists (unlike
+  // Apple's two-tier system), so this is a hand-built recreation using
+  // official brand colors/shapes for the parts that must stay fixed, with
+  // only the small locale label swapped per language -- see the generator
+  // script used to produce these assets. Same per-locale + per-background
+  // pattern as appleBadgeSrc above.
+  protected googleBadgeSrc(onDarkBackground: boolean): string {
+    const color = onDarkBackground ? 'white' : 'black';
+    return `badge-google-play-${this.language()}-${color}.svg`;
+  }
+
+  protected openGoogleComingSoon(event: Event): void {
+    event.preventDefault();
+    this.googleComingSoonOpen.set(true);
+  }
+
+  protected closeGoogleComingSoon(): void {
+    this.googleComingSoonOpen.set(false);
   }
 
   protected onModeChange(next: ThemeMode): void {

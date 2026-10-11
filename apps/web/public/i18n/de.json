@@ -19,7 +19,6 @@
       "titleEmphasis": "live von allen verfolgt.",
       "subtitle": "Gruppen, K.-o.-Tabellen, Spielplan, Schiedsrichterwesen und Tabellen — plus eine öffentliche Website, automatisch für jeden Ihrer Wettbewerbe erstellt und in dem Moment aktualisiert, in dem ein Ergebnis eingetragen wird.",
       "ctaCreate": "Mein Turnier erstellen",
-      "ctaExample": "Live-Beispiel ansehen",
       "storeApple": "Im App Store laden",
       "storeGoogle": "Bei Google Play erhältlich"
     },
@@ -149,6 +148,12 @@
       "privacy": "Datenschutzrichtlinie",
       "copyright": "© 2026 TournArena. Alle Rechte vorbehalten.",
       "madeBy": "Entwickelt von"
+    },
+    "googleComingSoon": {
+      "title": "Demnächst verfügbar",
+      "body": "Die Android-App kommt bald bei Google Play.",
+      "back": "Zurück",
+      "close": "Schließen"
     }
   },
   "legal": {
