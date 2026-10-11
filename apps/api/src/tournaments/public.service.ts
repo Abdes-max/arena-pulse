@@ -103,6 +103,8 @@ export class PublicService {
       isOnline: tournament.isOnline,
       theme: tournament.theme,
       logoUrl: tournament.logoUrl,
+      headerBackgroundUrl: tournament.headerBackgroundUrl,
+      posterUrl: tournament.posterUrl,
       description: tournament.description,
       rules: tournament.rules,
       practicalInfo: tournament.practicalInfo,

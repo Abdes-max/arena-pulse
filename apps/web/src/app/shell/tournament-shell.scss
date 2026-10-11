@@ -12,8 +12,40 @@
   position: sticky;
   top: 0;
   z-index: var(--ap-z-sticky);
-  background: var(--ap-color-surface);
+  background-color: var(--ap-color-surface);
+  // `html { color: var(--ap-color-fg) }` (styles.scss) resolves and
+  // inherits its computed value just once -- redeclaring --ap-color-fg
+  // deeper in the tree (the [data-theme][data-mode] override below) changes
+  // the *token*, but every descendant here would otherwise keep inheriting
+  // the already-resolved color from <html>. Re-asserting `color` here is
+  // what makes the hero's own text actually pick up that override.
+  color: var(--ap-color-fg);
   border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+  transition:
+    background-color var(--ap-motion-fast) var(--ap-easing-standard),
+    color var(--ap-motion-fast) var(--ap-easing-standard);
+}
+
+// The organizer's own header photo -- background-image itself is set
+// inline (tournament-shell.ts's headerBackgroundImage(), already layered
+// under a scrim gradient whose color matches which of these two variants is
+// active), this just adds the sizing/position that can't come from an
+// inline style binding, plus a border matching the forced-dark palette by
+// default (the now-invisible-against-a-photo default border color would
+// otherwise show through).
+.tournament-shell__hero--has-background {
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  border-bottom-color: rgba(255, 255, 255, 0.12);
+}
+
+// heroLight() === true (tournament-shell.ts) -- the scrim itself switches
+// from black to white at the same time (headerBackgroundImage()), so this
+// only needs to follow suit for the one piece of chrome that isn't part of
+// that scrim.
+.tournament-shell__hero--light-banner {
+  border-bottom-color: rgba(0, 0, 0, 0.12);
 }
 
 .tournament-shell__hero-inner {

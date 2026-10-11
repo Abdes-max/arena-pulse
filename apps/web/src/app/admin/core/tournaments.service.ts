@@ -129,6 +129,50 @@ export class TournamentsService {
     );
   }
 
+  uploadHeaderBackground(
+    organizationId: string,
+    tournamentId: string,
+    file: File,
+  ): Promise<TournamentDetail> {
+    const formData = new FormData();
+    formData.append('headerBackground', file);
+    return firstValueFrom(
+      this.http.post<TournamentDetail>(
+        `${this.base(organizationId)}/${tournamentId}/header-background`,
+        formData,
+      ),
+    );
+  }
+
+  removeHeaderBackground(organizationId: string, tournamentId: string): Promise<TournamentDetail> {
+    return firstValueFrom(
+      this.http.delete<TournamentDetail>(
+        `${this.base(organizationId)}/${tournamentId}/header-background`,
+      ),
+    );
+  }
+
+  uploadPoster(
+    organizationId: string,
+    tournamentId: string,
+    file: File,
+  ): Promise<TournamentDetail> {
+    const formData = new FormData();
+    formData.append('poster', file);
+    return firstValueFrom(
+      this.http.post<TournamentDetail>(
+        `${this.base(organizationId)}/${tournamentId}/poster`,
+        formData,
+      ),
+    );
+  }
+
+  removePoster(organizationId: string, tournamentId: string): Promise<TournamentDetail> {
+    return firstValueFrom(
+      this.http.delete<TournamentDetail>(`${this.base(organizationId)}/${tournamentId}/poster`),
+    );
+  }
+
   getPremiumFeatures(organizationId: string, tournamentId: string): Promise<PremiumFeaturesStatus> {
     return firstValueFrom(
       this.http.get<PremiumFeaturesStatus>(

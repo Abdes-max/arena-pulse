@@ -635,6 +635,85 @@ export class TournamentFormPage {
     }
   }
 
+  protected async onHeaderBackgroundFileSelected(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    const organizationId = this.organization()?.id;
+    const tournamentId = this.tournamentId();
+    if (!file || !organizationId || !tournamentId) {
+      return;
+    }
+    try {
+      this.tournament.set(
+        await this.tournamentsService.uploadHeaderBackground(organizationId, tournamentId, file),
+      );
+    } catch (error) {
+      this.errorMessage.set(this.imageUploadErrorKey(error));
+    }
+  }
+
+  protected async removeHeaderBackground(): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const tournamentId = this.tournamentId();
+    if (!organizationId || !tournamentId) {
+      return;
+    }
+    try {
+      this.tournament.set(
+        await this.tournamentsService.removeHeaderBackground(organizationId, tournamentId),
+      );
+    } catch {
+      this.errorMessage.set('admin.tournamentForm.errors.imageRemove');
+    }
+  }
+
+  protected async onPosterFileSelected(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+    const organizationId = this.organization()?.id;
+    const tournamentId = this.tournamentId();
+    if (!file || !organizationId || !tournamentId) {
+      return;
+    }
+    try {
+      this.tournament.set(
+        await this.tournamentsService.uploadPoster(organizationId, tournamentId, file),
+      );
+    } catch (error) {
+      this.errorMessage.set(this.imageUploadErrorKey(error));
+    }
+  }
+
+  protected async removePoster(): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const tournamentId = this.tournamentId();
+    if (!organizationId || !tournamentId) {
+      return;
+    }
+    try {
+      this.tournament.set(await this.tournamentsService.removePoster(organizationId, tournamentId));
+    } catch {
+      this.errorMessage.set('admin.tournamentForm.errors.imageRemove');
+    }
+  }
+
+  // Shared by the header-background and poster uploads above -- same error
+  // shape as logoUploadErrorKey (403: premium-locked, 400: invalid file),
+  // own wording since both allow larger files (4 Mo) than the logo (2 Mo).
+  private imageUploadErrorKey(error: unknown): string {
+    if (error instanceof HttpErrorResponse) {
+      if (error.status === 403) {
+        return 'admin.tournamentForm.errors.imagePremiumLocked';
+      }
+      if (error.status === 400) {
+        return 'admin.tournamentForm.errors.imageInvalid';
+      }
+    }
+    return 'admin.tournamentForm.errors.imageUpload';
+  }
+
   protected onDescriptionDraftChange(event: Event): void {
     this.descriptionDraft.set((event.target as HTMLTextAreaElement).value);
   }

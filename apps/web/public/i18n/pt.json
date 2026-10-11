@@ -219,6 +219,11 @@
       "thirdPlace": "Pelo 3.º lugar",
       "final": "Fase final",
       "round": "Ronda {{round}}"
+    },
+    "overview": {
+      "location": "Local",
+      "online": "Online",
+      "poster": "Cartaz do torneio"
     }
   },
   "schedule": {
@@ -631,13 +636,29 @@
         "removeVenue": "Não foi possível eliminar este local.",
         "addField": "Não foi possível adicionar este campo (nome já utilizado?).",
         "removeField": "Não foi possível eliminar este campo.",
-        "logoPremiumLocked": "Reservado a torneios com mais de {{count}} equipas ou com uma subscrição anual ativa."
+        "logoPremiumLocked": "Reservado a torneios com mais de {{count}} equipas ou com uma subscrição anual ativa.",
+        "imageInvalid": "Formato ou tamanho de ficheiro inválido (PNG, JPEG ou WebP, 4 MB máximo).",
+        "imageUpload": "Não foi possível enviar esta imagem, tente novamente.",
+        "imageRemove": "Não foi possível remover esta imagem.",
+        "imagePremiumLocked": "Reservado a torneios com mais de {{count}} equipas ou com uma subscrição anual ativa."
       },
       "personalization": {
         "title": "Personalização",
         "open": "Editar logótipo e tema",
         "close": "Fechar",
         "premiumHint": "O logótipo e a escolha do tema são reservados a torneios com mais de {{count}} equipas, ou a uma subscrição ativa do plano de 25 €. Com menos de {{count}} equipas, atualize o plano para os desbloquear."
+      },
+      "headerBackground": {
+        "title": "Fundo do cabeçalho",
+        "change": "Alterar",
+        "add": "Adicionar um fundo",
+        "remove": "Remover"
+      },
+      "poster": {
+        "title": "Cartaz / flyer",
+        "change": "Alterar",
+        "add": "Adicionar um cartaz",
+        "remove": "Remover"
       }
     },
     "teamList": {

@@ -148,6 +148,8 @@ export interface TournamentDetail extends Tournament {
   description: string | null;
   rules: string | null;
   practicalInfo: string | null;
+  headerBackgroundUrl: string | null;
+  posterUrl: string | null;
 }
 
 export interface Sponsor {

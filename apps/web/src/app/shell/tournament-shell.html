@@ -9,7 +9,14 @@
     'shell.skipLink' | transloco
   }}</a>
 
-  <header class="tournament-shell__hero">
+  <header
+    class="tournament-shell__hero"
+    [class.tournament-shell__hero--has-background]="!!t.headerBackgroundUrl"
+    [class.tournament-shell__hero--light-banner]="!!t.headerBackgroundUrl && heroLight() === true"
+    [style.background-image]="headerBackgroundImage(t.headerBackgroundUrl, heroLight())"
+    [attr.data-theme]="t.headerBackgroundUrl ? heroTheme(t.theme) : null"
+    [attr.data-mode]="t.headerBackgroundUrl ? (heroLight() ? 'light' : 'dark') : null"
+  >
     <div class="tournament-shell__hero-inner">
       <div class="tournament-shell__sport-row">
         <div class="tournament-shell__sport-group">

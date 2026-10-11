@@ -19,6 +19,30 @@ async function bootstrap() {
   });
   const configService = app.get(ConfigService);
 
+  // Registered before useStaticAssets below -- Express applies middleware in
+  // registration order, so /uploads/* responses need enableCors() to have
+  // already run or they're served with no CORS headers at all (found while
+  // adding TournamentShell's header-photo luminance sampling, apps/web:
+  // reading a cross-origin <img> into a <canvas> taints it without
+  // Access-Control-Allow-Origin on the image response itself).
+  const isProduction = configService.get<string>('NODE_ENV') === 'production';
+  const corsOriginEnv = configService.get<string>('CORS_ORIGIN');
+  if (isProduction && !corsOriginEnv) {
+    // Refuse to silently fall back to the localhost dev default in
+    // production -- combined with `credentials: true` below, a wrong CORS
+    // origin is a cookie-theft vector, so an unset value must fail loudly
+    // rather than default to something that merely "happens to work".
+    throw new Error('CORS_ORIGIN must be set explicitly in production.');
+  }
+  const corsOrigins = (corsOriginEnv ?? 'http://localhost:4200')
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter((origin) => origin.length > 0);
+  app.enableCors({
+    origin: corsOrigins,
+    credentials: true,
+  });
+
   // Team logos (feat/045) -- local-disk upload served back out under
   // /uploads, outside the /api/v1 prefix set below since it's a static
   // asset, not an API route. UPLOADS_DIR must match TeamsService's own
@@ -39,23 +63,6 @@ async function bootstrap() {
   // block. The other headers (nosniff, frame-options, HSTS...) still apply.
   app.use(helmet({ contentSecurityPolicy: false }));
   app.use(cookieParser());
-  const isProduction = configService.get<string>('NODE_ENV') === 'production';
-  const corsOriginEnv = configService.get<string>('CORS_ORIGIN');
-  if (isProduction && !corsOriginEnv) {
-    // Refuse to silently fall back to the localhost dev default in
-    // production -- combined with `credentials: true` below, a wrong CORS
-    // origin is a cookie-theft vector, so an unset value must fail loudly
-    // rather than default to something that merely "happens to work".
-    throw new Error('CORS_ORIGIN must be set explicitly in production.');
-  }
-  const corsOrigins = (corsOriginEnv ?? 'http://localhost:4200')
-    .split(',')
-    .map((origin) => origin.trim())
-    .filter((origin) => origin.length > 0);
-  app.enableCors({
-    origin: corsOrigins,
-    credentials: true,
-  });
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

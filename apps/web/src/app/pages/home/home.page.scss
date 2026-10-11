@@ -1,3 +1,76 @@
+// Lieu(x) + Affiche (left, stacked) + description (right) -- the public
+// page's own "at a glance" summary. 1fr/2fr: the left column is a narrow
+// card stack (venue info + a portrait poster), the right column is the
+// primary read.
+.home-page__overview {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: var(--ap-space-4);
+  margin-bottom: var(--ap-space-8);
+}
+
+@media (max-width: 720px) {
+  .home-page__overview {
+    grid-template-columns: 1fr;
+  }
+}
+
+.home-page__overview-side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-4);
+}
+
+.home-page__overview-description {
+  margin: 0;
+}
+
+.home-page__overview-card {
+  padding: var(--ap-space-4);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-lg);
+}
+
+.home-page__overview-label {
+  margin: 0 0 var(--ap-space-1);
+  color: var(--ap-color-muted);
+  font-weight: 700;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.home-page__overview-value {
+  margin: 0;
+  color: var(--ap-color-fg);
+  font-weight: 600;
+}
+
+.home-page__overview-card--poster {
+  padding-bottom: 0;
+  overflow: hidden;
+  // Square off the bottom corners to match the image's own radius below --
+  // the card's base radius (all 4 corners, see .home-page__overview-card)
+  // combined with overflow: hidden was otherwise clipping the image's flush
+  // bottom edge into an unwanted rounded look.
+  border-radius: var(--ap-radius-lg) var(--ap-radius-lg) 0 0;
+}
+
+.home-page__overview-poster {
+  display: block;
+  width: 100%;
+  // Portrait flyer, not a landscape photo -- a fixed aspect keeps the card
+  // from jumping around while it loads, and crops a wider image sanely.
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  // Biased toward the bottom of the source image -- a flyer's key info
+  // (date, title) usually sits in the lower half, while the top is often
+  // just background/sky that can afford to be cropped away first.
+  object-position: center 75%;
+  border-radius: var(--ap-radius-md) var(--ap-radius-md) 0 0;
+}
+
 .home-page__section {
   margin-bottom: var(--ap-space-8);
 
@@ -51,12 +124,6 @@
     font-weight: 600;
     font-size: 0.9rem;
   }
-}
-
-.home-page__venues {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: var(--ap-space-4);
 }
 
 .home-page__venue {

@@ -219,6 +219,11 @@
       "thirdPlace": "Um Platz 3",
       "final": "Endrunde",
       "round": "Runde {{round}}"
+    },
+    "overview": {
+      "location": "Ort",
+      "online": "Online",
+      "poster": "Turnierplakat"
     }
   },
   "schedule": {
@@ -631,13 +636,29 @@
         "removeVenue": "Dieser Austragungsort konnte nicht gelöscht werden.",
         "addField": "Dieses Feld konnte nicht hinzugefügt werden (Name bereits vergeben?).",
         "removeField": "Dieses Feld konnte nicht gelöscht werden.",
-        "logoPremiumLocked": "Nur für Turniere mit mehr als {{count}} Teams oder mit aktivem Jahresabonnement."
+        "logoPremiumLocked": "Nur für Turniere mit mehr als {{count}} Teams oder mit aktivem Jahresabonnement.",
+        "imageInvalid": "Ungültiges Dateiformat oder -größe (PNG, JPEG oder WebP, maximal 4 MB).",
+        "imageUpload": "Dieses Bild konnte nicht hochgeladen werden, bitte erneut versuchen.",
+        "imageRemove": "Dieses Bild konnte nicht entfernt werden.",
+        "imagePremiumLocked": "Nur für Turniere mit mehr als {{count}} Teams oder mit aktivem Jahresabonnement."
       },
       "personalization": {
         "title": "Personalisierung",
         "open": "Logo und Design bearbeiten",
         "close": "Schließen",
         "premiumHint": "Logo und Designauswahl sind Turnieren mit mehr als {{count}} Teams oder einem aktiven Abonnement des 25-€-Plans vorbehalten. Bei weniger als {{count}} Teams müssen Sie upgraden, um sie freizuschalten."
+      },
+      "headerBackground": {
+        "title": "Kopfzeilen-Hintergrund",
+        "change": "Ändern",
+        "add": "Hintergrund hinzufügen",
+        "remove": "Entfernen"
+      },
+      "poster": {
+        "title": "Plakat / Flyer",
+        "change": "Ändern",
+        "add": "Plakat hinzufügen",
+        "remove": "Entfernen"
       }
     },
     "teamList": {

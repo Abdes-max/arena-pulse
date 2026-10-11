@@ -219,6 +219,11 @@
       "thirdPlace": "Por el 3er puesto",
       "final": "Fase final",
       "round": "Ronda {{round}}"
+    },
+    "overview": {
+      "location": "Lugar",
+      "online": "En línea",
+      "poster": "Cartel del torneo"
     }
   },
   "schedule": {
@@ -631,13 +636,29 @@
         "removeVenue": "No se ha podido eliminar esta sede.",
         "addField": "No se ha podido añadir esta pista (¿nombre ya utilizado?).",
         "removeField": "No se ha podido eliminar esta pista.",
-        "logoPremiumLocked": "Reservado a torneos con más de {{count}} equipos o con una suscripción anual activa."
+        "logoPremiumLocked": "Reservado a torneos con más de {{count}} equipos o con una suscripción anual activa.",
+        "imageInvalid": "Formato o tamaño de archivo no válido (PNG, JPEG o WebP, 4 MB máximo).",
+        "imageUpload": "No se ha podido enviar esta imagen, inténtalo de nuevo.",
+        "imageRemove": "No se ha podido quitar esta imagen.",
+        "imagePremiumLocked": "Reservado a torneos con más de {{count}} equipos o con una suscripción anual activa."
       },
       "personalization": {
         "title": "Personalización",
         "open": "Editar logo y tema",
         "close": "Cerrar",
         "premiumHint": "El logo y la elección del tema están reservados a torneos con más de {{count}} equipos, o a una suscripción activa al plan de 25 €. Con menos de {{count}} equipos, actualiza tu plan para desbloquearlos."
+      },
+      "headerBackground": {
+        "title": "Fondo de la cabecera",
+        "change": "Cambiar",
+        "add": "Añadir un fondo",
+        "remove": "Quitar"
+      },
+      "poster": {
+        "title": "Cartel / flyer",
+        "change": "Cambiar",
+        "add": "Añadir un cartel",
+        "remove": "Quitar"
       }
     },
     "teamList": {

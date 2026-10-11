@@ -321,6 +321,11 @@
       "thirdPlace": "For 3rd place",
       "final": "Final stage",
       "round": "Round {{round}}"
+    },
+    "overview": {
+      "location": "Location",
+      "online": "Online",
+      "poster": "Tournament poster"
     }
   },
   "schedule": {
@@ -733,13 +738,29 @@
         "removeVenue": "Unable to delete this venue.",
         "addField": "Unable to add this field (name already used?).",
         "removeField": "Unable to delete this field.",
-        "logoPremiumLocked": "Reserved for tournaments with more than {{count}} teams, or an active annual subscription."
+        "logoPremiumLocked": "Reserved for tournaments with more than {{count}} teams, or an active annual subscription.",
+        "imageInvalid": "Invalid file format or size (PNG, JPEG or WebP, 4 MB maximum).",
+        "imageUpload": "Unable to upload this image, please try again.",
+        "imageRemove": "Unable to remove this image.",
+        "imagePremiumLocked": "Reserved for tournaments with more than {{count}} teams, or an active annual subscription."
       },
       "personalization": {
         "title": "Personalization",
         "open": "Edit logo and theme",
         "close": "Close",
         "premiumHint": "The logo and theme selection are reserved for tournaments with more than {{count}} teams, or an active subscription to the €25 plan. Under {{count}} teams, upgrade to unlock them."
+      },
+      "headerBackground": {
+        "title": "Header background",
+        "change": "Change",
+        "add": "Add a background",
+        "remove": "Remove"
+      },
+      "poster": {
+        "title": "Poster / flyer",
+        "change": "Change",
+        "add": "Add a poster",
+        "remove": "Remove"
       }
     },
     "teamList": {

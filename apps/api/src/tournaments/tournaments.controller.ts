@@ -108,6 +108,73 @@ export class TournamentsController {
     return this.tournamentsService.removeLogo(organizationId, tournamentId);
   }
 
+  @RequireOrgRole(OrganizationRole.ORG_ADMIN)
+  @UseInterceptors(
+    FileInterceptor('headerBackground', {
+      storage: memoryStorage(),
+      limits: { fileSize: 4 * 1024 * 1024 },
+    }),
+  )
+  @Post(':tournamentId/header-background')
+  uploadHeaderBackground(
+    @Param('organizationId') organizationId: string,
+    @Param('tournamentId') tournamentId: string,
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
+    if (!file) {
+      throw new BadRequestException('Aucun fichier reçu.');
+    }
+    return this.tournamentsService.uploadHeaderBackground(
+      organizationId,
+      tournamentId,
+      file,
+    );
+  }
+
+  @RequireOrgRole(OrganizationRole.ORG_ADMIN)
+  @Delete(':tournamentId/header-background')
+  removeHeaderBackground(
+    @Param('organizationId') organizationId: string,
+    @Param('tournamentId') tournamentId: string,
+  ) {
+    return this.tournamentsService.removeHeaderBackground(
+      organizationId,
+      tournamentId,
+    );
+  }
+
+  @RequireOrgRole(OrganizationRole.ORG_ADMIN)
+  @UseInterceptors(
+    FileInterceptor('poster', {
+      storage: memoryStorage(),
+      limits: { fileSize: 4 * 1024 * 1024 },
+    }),
+  )
+  @Post(':tournamentId/poster')
+  uploadPoster(
+    @Param('organizationId') organizationId: string,
+    @Param('tournamentId') tournamentId: string,
+    @UploadedFile() file?: Express.Multer.File,
+  ) {
+    if (!file) {
+      throw new BadRequestException('Aucun fichier reçu.');
+    }
+    return this.tournamentsService.uploadPoster(
+      organizationId,
+      tournamentId,
+      file,
+    );
+  }
+
+  @RequireOrgRole(OrganizationRole.ORG_ADMIN)
+  @Delete(':tournamentId/poster')
+  removePoster(
+    @Param('organizationId') organizationId: string,
+    @Param('tournamentId') tournamentId: string,
+  ) {
+    return this.tournamentsService.removePoster(organizationId, tournamentId);
+  }
+
   // Read by the admin UI to gate logos/thème/QR code/export PDF (grey out +
   // upgrade prompt) before the organizer even attempts the action -- the
   // services themselves still reject each gated write server-side
