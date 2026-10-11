@@ -1,0 +1,254 @@
+@if (loading()) {
+  <p class="wrapped-page__loading">{{ 'wrapped.loading' | transloco }}</p>
+} @else if (!unlocked()) {
+  <div class="wrapped-page__locked">
+    <p>{{ 'wrapped.locked' | transloco }}</p>
+  </div>
+} @else {
+  @let w = data()!;
+
+  <header class="wrapped-page__hero">
+    <p class="wrapped-page__eyebrow">{{ 'wrapped.eyebrow' | transloco }}</p>
+    <p class="wrapped-page__figure">
+      {{ w.goals.totalGoals }}
+      <span class="wrapped-page__figure-label">{{ 'wrapped.hero.goals' | transloco }}</span>
+    </p>
+  </header>
+
+  <section class="wrapped-page__section" aria-labelledby="wrapped-org-title">
+    <h2 id="wrapped-org-title">{{ 'wrapped.organisation.title' | transloco }}</h2>
+
+    <div class="wrapped-page__tiles">
+      <div class="wrapped-page__tile">
+        <span class="wrapped-page__tile-value">{{ w.organisation.teamsCount }}</span>
+        <span class="wrapped-page__tile-label">{{ 'wrapped.organisation.teams' | transloco }}</span>
+      </div>
+      <div class="wrapped-page__tile">
+        <span class="wrapped-page__tile-value">{{ w.organisation.categoriesCount }}</span>
+        <span class="wrapped-page__tile-label">{{
+          'wrapped.organisation.categories' | transloco
+        }}</span>
+      </div>
+      <div class="wrapped-page__tile">
+        <span class="wrapped-page__tile-value">{{ w.organisation.groupsCount }}</span>
+        <span class="wrapped-page__tile-label">{{
+          'wrapped.organisation.groups' | transloco
+        }}</span>
+      </div>
+      <div class="wrapped-page__tile">
+        <span class="wrapped-page__tile-value">{{ w.organisation.venuesCount }}</span>
+        <span class="wrapped-page__tile-label">{{
+          'wrapped.organisation.venues' | transloco
+        }}</span>
+      </div>
+      <div class="wrapped-page__tile">
+        <span class="wrapped-page__tile-value">{{ w.organisation.refereesCount }}</span>
+        <span class="wrapped-page__tile-label">{{
+          'wrapped.organisation.referees' | transloco
+        }}</span>
+      </div>
+      @if (formatDate(w.organisation.startDate); as start) {
+        <div class="wrapped-page__tile">
+          <span class="wrapped-page__tile-value wrapped-page__tile-value--small">{{ start }}</span>
+          <span class="wrapped-page__tile-label">{{
+            (w.organisation.endDate && w.organisation.endDate !== w.organisation.startDate
+              ? 'wrapped.organisation.startDate'
+              : 'wrapped.organisation.date'
+            ) | transloco
+          }}</span>
+        </div>
+      }
+      @if (
+        w.organisation.endDate &&
+          w.organisation.endDate !== w.organisation.startDate &&
+          formatDate(w.organisation.endDate);
+        as end
+      ) {
+        <div class="wrapped-page__tile">
+          <span class="wrapped-page__tile-value wrapped-page__tile-value--small">{{ end }}</span>
+          <span class="wrapped-page__tile-label">{{
+            'wrapped.organisation.endDate' | transloco
+          }}</span>
+        </div>
+      }
+    </div>
+
+    <div class="wrapped-page__chart-grid">
+      @if (venueSlices().length > 0) {
+        <div class="wrapped-page__chart-box">
+          <h3>{{ 'wrapped.charts.venues' | transloco }}</h3>
+          <div class="wrapped-page__chart-flex">
+            <svg viewBox="0 0 100 100" class="wrapped-page__donut" role="img" aria-hidden="true">
+              @for (slice of venueSlices(); track slice.label) {
+                <path [attr.d]="slice.path" [attr.fill]="slice.color" />
+              }
+            </svg>
+            <ul class="wrapped-page__legend">
+              @for (slice of venueSlices(); track slice.label) {
+                <li>
+                  <span class="wrapped-page__swatch" [style.background]="slice.color"></span>
+                  {{ slice.label }}
+                  <b>{{ slice.percent }}%</b>
+                </li>
+              }
+            </ul>
+          </div>
+        </div>
+      }
+      @if (hourBars().length > 0) {
+        <div class="wrapped-page__chart-box">
+          <h3>{{ 'wrapped.charts.hours' | transloco }}</h3>
+          <div class="wrapped-page__histogram">
+            @for (bar of hourBars(); track bar.label) {
+              <div class="wrapped-page__histogram-col">
+                <span class="wrapped-page__histogram-n">{{ bar.value }}</span>
+                <div class="wrapped-page__histogram-bar" [style.height.%]="bar.widthPercent"></div>
+                <span class="wrapped-page__histogram-label">{{ bar.label }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <section
+    class="wrapped-page__section wrapped-page__section--alt"
+    aria-labelledby="wrapped-goals-title"
+  >
+    <h2 id="wrapped-goals-title">{{ 'wrapped.goals.title' | transloco }}</h2>
+    <p class="wrapped-page__average">
+      {{
+        'wrapped.goals.average'
+          | transloco: { average: (w.goals.averageGoalsPerMatch | number: '1.1-1') }
+      }}
+    </p>
+
+    <div class="wrapped-page__cards">
+      @if (w.goals.highestScoringMatch; as match) {
+        <div class="wrapped-page__card">
+          <p class="wrapped-page__card-label">{{ 'wrapped.goals.highestScoring' | transloco }}</p>
+          <p class="wrapped-page__card-score">{{ matchLabel(match) }}</p>
+        </div>
+      }
+      @if (w.goals.biggestWinMargin; as match) {
+        <div class="wrapped-page__card">
+          <p class="wrapped-page__card-label">{{ 'wrapped.goals.biggestMargin' | transloco }}</p>
+          <p class="wrapped-page__card-score">{{ matchLabel(match) }}</p>
+        </div>
+      }
+      @if (w.goals.closestMatch; as match) {
+        <div class="wrapped-page__card">
+          <p class="wrapped-page__card-label">{{ 'wrapped.goals.closest' | transloco }}</p>
+          <p class="wrapped-page__card-score">{{ matchLabel(match) }}</p>
+        </div>
+      }
+    </div>
+
+    @if (outcomeSlices().length > 0) {
+      <div class="wrapped-page__chart-box">
+        <h3>{{ 'wrapped.charts.outcomes' | transloco }}</h3>
+        <div class="wrapped-page__chart-flex">
+          <svg viewBox="0 0 100 100" class="wrapped-page__donut" role="img" aria-hidden="true">
+            @for (slice of outcomeSlices(); track slice.label) {
+              <path [attr.d]="slice.path" [attr.fill]="slice.color" />
+            }
+          </svg>
+          <ul class="wrapped-page__legend">
+            @for (slice of outcomeSlices(); track slice.label) {
+              <li>
+                <span class="wrapped-page__swatch" [style.background]="slice.color"></span>
+                {{ slice.label }}
+                <b>{{ slice.percent }}%</b>
+              </li>
+            }
+          </ul>
+        </div>
+      </div>
+    }
+  </section>
+
+  @if (attackBars().length > 0 || defenseBars().length > 0) {
+    <section class="wrapped-page__section" aria-labelledby="wrapped-teams-title">
+      <h2 id="wrapped-teams-title">{{ 'wrapped.teams.title' | transloco }}</h2>
+      <div class="wrapped-page__chart-grid">
+        @if (attackBars().length > 0) {
+          <div class="wrapped-page__chart-box">
+            <h3>{{ 'wrapped.charts.attack' | transloco }}</h3>
+            <div class="wrapped-page__barchart">
+              @for (bar of attackBars(); track bar.label) {
+                <div class="wrapped-page__bar-row">
+                  <span class="wrapped-page__bar-name">{{ bar.label }}</span>
+                  <span class="wrapped-page__bar-track">
+                    <span class="wrapped-page__bar-fill" [style.width.%]="bar.widthPercent"></span>
+                  </span>
+                  <span class="wrapped-page__bar-value">{{ bar.value }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+        @if (defenseBars().length > 0) {
+          <div class="wrapped-page__chart-box">
+            <h3>{{ 'wrapped.charts.defense' | transloco }}</h3>
+            <div class="wrapped-page__barchart">
+              @for (bar of defenseBars(); track bar.label) {
+                <div class="wrapped-page__bar-row">
+                  <span class="wrapped-page__bar-name">{{ bar.label }}</span>
+                  <span class="wrapped-page__bar-track">
+                    <span
+                      class="wrapped-page__bar-fill wrapped-page__bar-fill--defense"
+                      [style.width.%]="bar.widthPercent"
+                    ></span>
+                  </span>
+                  <span class="wrapped-page__bar-value">{{ bar.value }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </section>
+  }
+
+  @if (w.level.champions.length > 0 || w.level.biggestUpset) {
+    <section
+      class="wrapped-page__section wrapped-page__section--level"
+      aria-labelledby="wrapped-level-title"
+    >
+      <h2 id="wrapped-level-title">{{ 'wrapped.level.title' | transloco }}</h2>
+
+      @for (champion of w.level.champions; track champion.categoryId) {
+        <div class="wrapped-page__champion-card">
+          <span class="wrapped-page__trophy" aria-hidden="true">🏆</span>
+          <div>
+            <p class="wrapped-page__champion-name">{{ champion.teamName }}</p>
+            <p class="wrapped-page__champion-meta">
+              {{
+                'wrapped.level.champion'
+                  | transloco
+                    : {
+                        category: champion.categoryName,
+                        rating: (champion.rating | number: '1.0-0'),
+                      }
+              }}
+            </p>
+          </div>
+        </div>
+      }
+
+      @if (w.level.biggestUpset; as upset) {
+        <div class="wrapped-page__upset-card">
+          <p class="wrapped-page__upset-kicker">{{ 'wrapped.level.upsetKicker' | transloco }}</p>
+          <p>
+            {{
+              'wrapped.level.upset'
+                | transloco
+                  : { winner: upset.winnerTeamName, loser: upset.loserTeamName, gap: upsetGap() }
+            }}
+          </p>
+        </div>
+      }
+    </section>
+  }
+}

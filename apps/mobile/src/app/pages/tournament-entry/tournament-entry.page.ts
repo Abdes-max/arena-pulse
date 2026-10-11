@@ -87,7 +87,6 @@ export class TournamentEntryPage {
   protected readonly privacyUrl = `${environment.webUrl}/privacy`;
   protected readonly termsUrl = `${environment.webUrl}/terms`;
   protected readonly appUrl = environment.webUrl;
-  protected readonly exampleTournament = computed(() => this.tournaments()[0] ?? null);
   // Governs the hero's own CTA: this screen's H1 promises "Suivre une
   // compétition", so its primary action should deliver on that (jump to
   // the published-events list already on this same page) rather than

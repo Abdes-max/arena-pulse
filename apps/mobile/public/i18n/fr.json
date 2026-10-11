@@ -7,7 +7,6 @@
       "title": "Suivre une compétition",
       "hint": "Poules, tableaux à élimination, calendrier et classements en direct.",
       "ctaViewEvents": "Voir les événements",
-      "ctaViewExample": "Voir un exemple",
       "marqueeLabel": "En ce moment"
     },
     "published": {
@@ -93,7 +92,14 @@
         "errorVerify": "Vérifiez votre email avant de vous connecter.",
         "errorCredentials": "Email ou mot de passe incorrect.",
         "errorGeneric": "Une erreur est survenue, réessayez.",
+        "sessionExpired": "Votre session a expiré, reconnectez-vous.",
         "forgotPassword": "Mot de passe oublié ?"
+      },
+      "sessionTimeout": {
+        "title": "Toujours là ?",
+        "body": "Votre session va expirer dans {{seconds}} secondes pour inactivité.",
+        "stayConnected": "Rester connecté",
+        "logout": "Se déconnecter"
       },
       "forgotPassword": {
         "title": "Mot de passe oublié",

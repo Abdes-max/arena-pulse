@@ -7,7 +7,6 @@
       "title": "Follow a competition",
       "hint": "Pools, knockout brackets, schedule and live standings.",
       "ctaViewEvents": "See events",
-      "ctaViewExample": "See an example",
       "marqueeLabel": "Happening now"
     },
     "published": {
@@ -93,7 +92,14 @@
         "errorVerify": "Verify your email before logging in.",
         "errorCredentials": "Incorrect email or password.",
         "errorGeneric": "Something went wrong, please try again.",
+        "sessionExpired": "Your session has expired, please sign in again.",
         "forgotPassword": "Forgot password?"
+      },
+      "sessionTimeout": {
+        "title": "Still there?",
+        "body": "Your session will expire in {{seconds}} seconds due to inactivity.",
+        "stayConnected": "Stay connected",
+        "logout": "Log out"
       },
       "forgotPassword": {
         "title": "Forgot password",

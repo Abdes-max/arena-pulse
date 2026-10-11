@@ -17,6 +17,7 @@ import {
   TournamentsService,
 } from './tournaments.service';
 import { VenuesService } from './venues.service';
+import { WrappedService } from './wrapped.service';
 
 /** Team fields visible to the public — never a manager's personal contact details. */
 function toPublicTeam(team: {
@@ -60,6 +61,7 @@ export class PublicService {
     private readonly bracketsService: BracketsService,
     private readonly realtimeService: RealtimeService,
     private readonly crossGroupQualificationRulesService: CrossGroupQualificationRulesService,
+    private readonly wrappedService: WrappedService,
   ) {}
 
   listTournaments(limit?: number) {
@@ -72,12 +74,20 @@ export class PublicService {
 
   async getTournament(slug: string) {
     const tournament = await this.resolveTournament(slug);
-    const [venues, sponsors] = await Promise.all([
+    const [venues, sponsors, wrappedUnlocked] = await Promise.all([
       this.venuesService.list(
         tournament.organizationId,
         tournament.tournamentId,
       ),
       this.sponsorsService.list(
+        tournament.organizationId,
+        tournament.tournamentId,
+      ),
+      // Drives whether TournamentShell shows the "Récap" tab at all — the
+      // dedicated GET .../wrapped endpoint enforces the same check
+      // independently, this just avoids an extra round-trip just to find
+      // out the tab shouldn't be there.
+      this.tournamentsService.hasPremiumFeatures(
         tournament.organizationId,
         tournament.tournamentId,
       ),
@@ -98,7 +108,12 @@ export class PublicService {
       practicalInfo: tournament.practicalInfo,
       venues,
       sponsors,
+      wrappedUnlocked,
     };
+  }
+
+  getWrapped(slug: string) {
+    return this.wrappedService.getWrapped(slug);
   }
 
   async listCategories(slug: string) {

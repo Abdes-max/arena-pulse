@@ -7,7 +7,6 @@
       "title": "Seguir una competición",
       "hint": "Grupos, cuadros de eliminación, calendario y clasificaciones en directo.",
       "ctaViewEvents": "Ver eventos",
-      "ctaViewExample": "Ver un ejemplo",
       "marqueeLabel": "Ahora mismo"
     },
     "published": {
@@ -93,7 +92,14 @@
         "errorVerify": "Verifica tu correo antes de iniciar sesión.",
         "errorCredentials": "Correo o contraseña incorrectos.",
         "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo.",
+        "sessionExpired": "Tu sesión ha caducado, inicia sesión de nuevo.",
         "forgotPassword": "¿Has olvidado tu contraseña?"
+      },
+      "sessionTimeout": {
+        "title": "¿Sigues ahí?",
+        "body": "Tu sesión caducará en {{seconds}} segundos por inactividad.",
+        "stayConnected": "Permanecer conectado",
+        "logout": "Cerrar sesión"
       },
       "forgotPassword": {
         "title": "Contraseña olvidada",

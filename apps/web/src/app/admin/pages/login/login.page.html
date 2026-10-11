@@ -2,6 +2,9 @@
   <form class="login-page__card" [formGroup]="form" (ngSubmit)="submit()">
     <ap-logo class="login-page__brand" />
     <h1>{{ 'admin.auth.login.title' | transloco }}</h1>
+    @if (sessionExpired) {
+      <p class="login-page__hint">{{ 'admin.auth.login.sessionExpired' | transloco }}</p>
+    }
     <ap-text-field
       [label]="'admin.auth.login.emailLabel' | transloco"
       type="email"

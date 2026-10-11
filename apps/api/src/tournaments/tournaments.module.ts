@@ -54,6 +54,7 @@ import { TournamentsController } from './tournaments.controller';
 import { TournamentsService } from './tournaments.service';
 import { VenuesController } from './venues.controller';
 import { VenuesService } from './venues.service';
+import { WrappedService } from './wrapped.service';
 
 @Module({
   imports: [OrganizationsModule, PermissionsModule, PaymentsModule, MailModule],
@@ -111,6 +112,7 @@ import { VenuesService } from './venues.service';
     RatingsService,
     PublicService,
     RealtimeService,
+    WrappedService,
   ],
   // TournamentsService/CategoriesService additionally exported for
   // RegistrationsModule (feat/036), which resolves a public tournament by

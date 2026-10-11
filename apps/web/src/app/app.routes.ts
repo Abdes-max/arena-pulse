@@ -274,6 +274,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/schedule/schedule.page').then((m) => m.SchedulePage),
       },
       {
+        path: 'wrapped',
+        loadComponent: () => import('./pages/wrapped/wrapped.page').then((m) => m.WrappedPage),
+      },
+      {
         path: 'register',
         canActivate: [playerAuthGuard],
         loadComponent: () => import('./pages/register/register.page').then((m) => m.RegisterPage),

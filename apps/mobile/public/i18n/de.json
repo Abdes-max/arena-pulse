@@ -7,7 +7,6 @@
       "title": "Einen Wettbewerb verfolgen",
       "hint": "Gruppen, K.-o.-Tabellen, Spielplan und Tabellen live.",
       "ctaViewEvents": "Veranstaltungen ansehen",
-      "ctaViewExample": "Beispiel ansehen",
       "marqueeLabel": "Gerade jetzt"
     },
     "published": {
@@ -93,7 +92,14 @@
         "errorVerify": "Bestätigen Sie Ihre E-Mail-Adresse, bevor Sie sich anmelden.",
         "errorCredentials": "E-Mail oder Passwort ist falsch.",
         "errorGeneric": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut.",
+        "sessionExpired": "Ihre Sitzung ist abgelaufen, bitte melden Sie sich erneut an.",
         "forgotPassword": "Passwort vergessen?"
+      },
+      "sessionTimeout": {
+        "title": "Noch da?",
+        "body": "Ihre Sitzung läuft in {{seconds}} Sekunden wegen Inaktivität ab.",
+        "stayConnected": "Verbunden bleiben",
+        "logout": "Abmelden"
       },
       "forgotPassword": {
         "title": "Passwort vergessen",

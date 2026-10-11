@@ -1,0 +1,325 @@
+.wrapped-page__loading,
+.wrapped-page__locked {
+  padding: var(--ap-space-8) 0;
+  color: var(--ap-color-muted);
+  text-align: center;
+}
+
+// --- Hero -------------------------------------------------------------
+.wrapped-page__hero {
+  background: var(--ap-color-primary);
+  color: var(--ap-color-on-primary);
+  border-radius: var(--ap-radius-lg);
+  padding: var(--ap-space-8) var(--ap-space-6);
+  text-align: center;
+  margin-bottom: var(--ap-space-8);
+}
+
+.wrapped-page__eyebrow {
+  margin: 0 0 var(--ap-space-2);
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.wrapped-page__figure {
+  margin: 0;
+  font-family: var(--ap-font-heading);
+  font-size: clamp(2.6rem, 8vw, 4.5rem);
+  line-height: 1;
+}
+
+.wrapped-page__figure-label {
+  display: block;
+  margin-top: var(--ap-space-2);
+  font-family: var(--ap-font-body);
+  font-size: 1rem;
+  font-weight: 400;
+  text-transform: none;
+}
+
+// --- Sections -----------------------------------------------------------
+.wrapped-page__section {
+  padding: var(--ap-space-6) 0;
+  border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+
+  h2 {
+    margin: 0 0 var(--ap-space-4);
+    font-size: 1.3rem;
+  }
+
+  h3 {
+    margin: 0 0 var(--ap-space-3);
+    font-size: 0.95rem;
+  }
+}
+
+.wrapped-page__section--alt {
+  background: var(--ap-color-surface);
+  border-radius: var(--ap-radius-lg);
+  padding: var(--ap-space-6);
+}
+
+.wrapped-page__section--level {
+  border-bottom: none;
+}
+
+.wrapped-page__average {
+  margin: 0 0 var(--ap-space-4);
+  color: var(--ap-color-muted);
+}
+
+// --- Stat tiles -----------------------------------------------------------
+.wrapped-page__tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: var(--ap-border-width);
+  background: var(--ap-color-border);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  overflow: hidden;
+  margin-bottom: var(--ap-space-6);
+}
+
+.wrapped-page__tile {
+  background: var(--ap-color-surface);
+  padding: var(--ap-space-3) var(--ap-space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-1);
+}
+
+.wrapped-page__tile-value {
+  font-family: var(--ap-font-heading);
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.wrapped-page__tile-value--small {
+  font-size: 1rem;
+}
+
+.wrapped-page__tile-label {
+  font-size: 0.72rem;
+  color: var(--ap-color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+// --- Highlight cards --------------------------------------------------
+.wrapped-page__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--ap-space-3);
+  margin-bottom: var(--ap-space-6);
+}
+
+.wrapped-page__card {
+  background: var(--ap-color-bg);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  padding: var(--ap-space-3) var(--ap-space-4);
+}
+
+.wrapped-page__card-label {
+  margin: 0 0 var(--ap-space-1);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ap-color-signal-text, var(--ap-color-signal));
+}
+
+.wrapped-page__card-score {
+  margin: 0;
+  font-weight: 600;
+}
+
+// --- Charts ---------------------------------------------------------------
+.wrapped-page__chart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: var(--ap-space-4);
+}
+
+.wrapped-page__chart-box {
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  padding: var(--ap-space-4);
+}
+
+.wrapped-page__chart-flex {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-4);
+  flex-wrap: wrap;
+}
+
+.wrapped-page__donut {
+  width: 8rem;
+  height: 8rem;
+  flex: none;
+}
+
+.wrapped-page__legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+  font-size: 0.85rem;
+  flex: 1 1 9rem;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: var(--ap-space-2);
+    color: var(--ap-color-muted);
+  }
+
+  b {
+    margin-left: auto;
+    color: var(--ap-color-fg);
+  }
+}
+
+.wrapped-page__swatch {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 2px;
+  flex: none;
+}
+
+.wrapped-page__histogram {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(2rem, 1fr));
+  align-items: end;
+  gap: var(--ap-space-2);
+  height: 8rem;
+}
+
+.wrapped-page__histogram-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ap-space-1);
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.wrapped-page__histogram-bar {
+  width: 100%;
+  max-width: 2rem;
+  border-radius: var(--ap-radius-sm) var(--ap-radius-sm) 2px 2px;
+  background: var(--ap-color-primary);
+}
+
+.wrapped-page__histogram-n {
+  font-size: 0.72rem;
+  color: var(--ap-color-muted);
+}
+
+.wrapped-page__histogram-label {
+  font-size: 0.68rem;
+  color: var(--ap-color-muted);
+}
+
+// --- Ranking bar charts -----------------------------------------------
+.wrapped-page__barchart {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+}
+
+.wrapped-page__bar-row {
+  display: grid;
+  grid-template-columns: minmax(6rem, 9rem) 1fr 2.4rem;
+  align-items: center;
+  gap: var(--ap-space-2);
+}
+
+.wrapped-page__bar-name {
+  font-size: 0.82rem;
+  color: var(--ap-color-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wrapped-page__bar-track {
+  background: var(--ap-color-bg);
+  border-radius: var(--ap-radius-sm);
+  height: 0.8rem;
+  display: block;
+}
+
+.wrapped-page__bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: var(--ap-radius-sm);
+  background: var(--ap-color-primary);
+}
+
+.wrapped-page__bar-fill--defense {
+  background: var(--ap-color-signal);
+}
+
+.wrapped-page__bar-value {
+  font-size: 0.82rem;
+  text-align: right;
+}
+
+// --- Level (champion / upset) -------------------------------------------
+.wrapped-page__champion-card {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-4);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-lg);
+  padding: var(--ap-space-4) var(--ap-space-6);
+  margin-bottom: var(--ap-space-3);
+}
+
+.wrapped-page__trophy {
+  font-size: 2rem;
+}
+
+.wrapped-page__champion-name {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.wrapped-page__champion-meta {
+  margin: var(--ap-space-1) 0 0;
+  font-size: 0.85rem;
+  color: var(--ap-color-muted);
+}
+
+.wrapped-page__upset-card {
+  background: var(--ap-color-signal-soft);
+  border: 1px dashed var(--ap-color-signal);
+  border-radius: var(--ap-radius-lg);
+  padding: var(--ap-space-4) var(--ap-space-6);
+
+  p {
+    margin: 0;
+  }
+}
+
+.wrapped-page__upset-kicker {
+  margin: 0 0 var(--ap-space-1);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ap-color-signal-text, var(--ap-color-signal));
+}
+
+@media (max-width: 768px) {
+  .wrapped-page__bar-row {
+    grid-template-columns: minmax(5rem, 6rem) 1fr 2rem;
+  }
+}

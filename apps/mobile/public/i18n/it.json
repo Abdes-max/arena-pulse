@@ -7,7 +7,6 @@
       "title": "Segui una competizione",
       "hint": "Gironi, tabelloni a eliminazione, calendario e classifiche in diretta.",
       "ctaViewEvents": "Vedi gli eventi",
-      "ctaViewExample": "Vedi un esempio",
       "marqueeLabel": "In questo momento"
     },
     "published": {
@@ -93,7 +92,14 @@
         "errorVerify": "Verifica la tua email prima di accedere.",
         "errorCredentials": "Email o password errati.",
         "errorGeneric": "Si è verificato un errore, riprova.",
+        "sessionExpired": "La tua sessione è scaduta, accedi di nuovo.",
         "forgotPassword": "Password dimenticata?"
+      },
+      "sessionTimeout": {
+        "title": "Sei ancora lì?",
+        "body": "La tua sessione scadrà tra {{seconds}} secondi per inattività.",
+        "stayConnected": "Resta connesso",
+        "logout": "Disconnetti"
       },
       "forgotPassword": {
         "title": "Password dimenticata",

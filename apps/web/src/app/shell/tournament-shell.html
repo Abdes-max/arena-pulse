@@ -121,6 +121,14 @@
         (click)="centerTab($event)"
         >{{ 'shell.nav.schedule' | transloco }}</a
       >
+      @if (tournament()?.wrappedUnlocked) {
+        <a
+          routerLink="wrapped"
+          routerLinkActive="tournament-shell__nav-link--active"
+          (click)="centerTab($event)"
+          >{{ 'shell.nav.wrapped' | transloco }}</a
+        >
+      }
     </nav>
   </header>
 

@@ -19,7 +19,6 @@
       "titleEmphasis": "seguidos en directo por todos.",
       "subtitle": "Grupos, cuadros de eliminación, calendario, arbitraje y clasificaciones — y un sitio público generado automáticamente para cada una de tus competiciones, actualizado en el instante en que se registra un resultado.",
       "ctaCreate": "Crear mi torneo",
-      "ctaExample": "Ver un ejemplo en directo",
       "storeApple": "Descargar en App Store",
       "storeGoogle": "Disponible en Google Play"
     },
@@ -149,6 +148,12 @@
       "privacy": "Política de privacidad",
       "copyright": "© 2026 TournArena. Todos los derechos reservados.",
       "madeBy": "Creado por"
+    },
+    "googleComingSoon": {
+      "title": "Próximamente",
+      "body": "La aplicación Android llegará pronto a Google Play.",
+      "back": "Volver",
+      "close": "Cerrar"
     }
   },
   "legal": {
@@ -195,7 +200,8 @@
       "tournament": "Torneo",
       "teams": "Equipos",
       "standings": "Clasificación",
-      "schedule": "Calendario"
+      "schedule": "Calendario",
+      "wrapped": "Estadísticas"
     },
     "menu": "Menú"
   },
@@ -281,7 +287,13 @@
         "account": "Cuenta"
       },
       "logout": "Cerrar sesión",
-      "menu": "Menú"
+      "menu": "Menú",
+      "sessionTimeout": {
+        "title": "¿Sigues ahí?",
+        "body": "Tu sesión caducará en {{seconds}} segundos por inactividad.",
+        "stayConnected": "Permanecer conectado",
+        "logout": "Cerrar sesión"
+      }
     },
     "submenu": {
       "general": "General",
@@ -313,6 +325,7 @@
         "errorVerify": "Verifica tu email antes de iniciar sesión.",
         "errorCredentials": "Email o contraseña incorrectos.",
         "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo.",
+        "sessionExpired": "Tu sesión ha caducado, inicia sesión de nuevo.",
         "forgotPassword": "¿Has olvidado tu contraseña?"
       },
       "register": {
@@ -1141,6 +1154,54 @@
       "errors": {
         "load": "No se pudo cargar la exportación."
       }
+    }
+  },
+  "wrapped": {
+    "loading": "Cargando las estadísticas…",
+    "locked": "Las estadísticas de este torneo no están disponibles.",
+    "eyebrow": "Estadísticas del torneo",
+    "hero": {
+      "goals": "goles marcados"
+    },
+    "organisation": {
+      "title": "El torneo en cifras",
+      "teams": "Equipos",
+      "categories": "Categorías",
+      "groups": "Grupos",
+      "venues": "Canchas",
+      "referees": "Árbitros",
+      "date": "Fecha",
+      "startDate": "Inicio",
+      "endDate": "Fin"
+    },
+    "charts": {
+      "venues": "Partidos por cancha",
+      "hours": "Partidos por franja horaria",
+      "outcomes": "Cómo terminaron los partidos",
+      "attack": "Mejores ataques · goles marcados",
+      "defense": "Mejores defensas · goles encajados"
+    },
+    "goals": {
+      "title": "Goles y emoción",
+      "average": "Un promedio de {{average}} goles por partido.",
+      "highestScoring": "Partido más goleador",
+      "biggestMargin": "Mayor victoria",
+      "closest": "Partido más reñido"
+    },
+    "outcomes": {
+      "homeWin": "Victoria local",
+      "awayWin": "Victoria visitante",
+      "draw": "Empate",
+      "shootout": "Decidido por penaltis"
+    },
+    "teams": {
+      "title": "Ataque y defensa"
+    },
+    "level": {
+      "title": "Nivel de juego",
+      "champion": "Campeón {{category}} · nivel {{rating}}",
+      "upsetKicker": "La mayor sorpresa del torneo",
+      "upset": "{{winner}} elimina a {{loser}}, remontando una diferencia de {{gap}} puntos de nivel."
     }
   }
 }

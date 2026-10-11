@@ -19,7 +19,6 @@
       "titleEmphasis": "live von allen verfolgt.",
       "subtitle": "Gruppen, K.-o.-Tabellen, Spielplan, Schiedsrichterwesen und Tabellen — plus eine öffentliche Website, automatisch für jeden Ihrer Wettbewerbe erstellt und in dem Moment aktualisiert, in dem ein Ergebnis eingetragen wird.",
       "ctaCreate": "Mein Turnier erstellen",
-      "ctaExample": "Live-Beispiel ansehen",
       "storeApple": "Im App Store laden",
       "storeGoogle": "Bei Google Play erhältlich"
     },
@@ -149,6 +148,12 @@
       "privacy": "Datenschutzrichtlinie",
       "copyright": "© 2026 TournArena. Alle Rechte vorbehalten.",
       "madeBy": "Entwickelt von"
+    },
+    "googleComingSoon": {
+      "title": "Demnächst verfügbar",
+      "body": "Die Android-App kommt bald bei Google Play.",
+      "back": "Zurück",
+      "close": "Schließen"
     }
   },
   "legal": {
@@ -195,7 +200,8 @@
       "tournament": "Turnier",
       "teams": "Teams",
       "standings": "Tabelle",
-      "schedule": "Spielplan"
+      "schedule": "Spielplan",
+      "wrapped": "Statistiken"
     },
     "menu": "Menü"
   },
@@ -281,7 +287,13 @@
         "account": "Konto"
       },
       "logout": "Abmelden",
-      "menu": "Menü"
+      "menu": "Menü",
+      "sessionTimeout": {
+        "title": "Noch da?",
+        "body": "Ihre Sitzung läuft in {{seconds}} Sekunden wegen Inaktivität ab.",
+        "stayConnected": "Verbunden bleiben",
+        "logout": "Abmelden"
+      }
     },
     "submenu": {
       "general": "Allgemein",
@@ -313,6 +325,7 @@
         "errorVerify": "Bestätigen Sie Ihre E-Mail, bevor Sie sich anmelden.",
         "errorCredentials": "Falsche E-Mail oder falsches Passwort.",
         "errorGeneric": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut.",
+        "sessionExpired": "Ihre Sitzung ist abgelaufen, bitte melden Sie sich erneut an.",
         "forgotPassword": "Passwort vergessen?"
       },
       "register": {
@@ -1141,6 +1154,54 @@
       "errors": {
         "load": "Export konnte nicht geladen werden."
       }
+    }
+  },
+  "wrapped": {
+    "loading": "Statistiken werden geladen…",
+    "locked": "Die Statistiken zu diesem Turnier sind nicht verfügbar.",
+    "eyebrow": "Turnier-Statistiken",
+    "hero": {
+      "goals": "erzielte Tore"
+    },
+    "organisation": {
+      "title": "Das Turnier in Zahlen",
+      "teams": "Teams",
+      "categories": "Kategorien",
+      "groups": "Gruppen",
+      "venues": "Plätze",
+      "referees": "Schiedsrichter",
+      "date": "Datum",
+      "startDate": "Beginn",
+      "endDate": "Ende"
+    },
+    "charts": {
+      "venues": "Spiele pro Platz",
+      "hours": "Spiele pro Zeitfenster",
+      "outcomes": "Wie die Spiele ausgingen",
+      "attack": "Beste Angriffe · erzielte Tore",
+      "defense": "Beste Abwehr · Gegentore"
+    },
+    "goals": {
+      "title": "Tore & Spannung",
+      "average": "Im Schnitt {{average}} Tore pro Spiel.",
+      "highestScoring": "Torreichstes Spiel",
+      "biggestMargin": "Höchster Sieg",
+      "closest": "Knappstes Spiel"
+    },
+    "outcomes": {
+      "homeWin": "Heimsieg",
+      "awayWin": "Auswärtssieg",
+      "draw": "Unentschieden",
+      "shootout": "Im Elfmeterschießen entschieden"
+    },
+    "teams": {
+      "title": "Angriff & Abwehr"
+    },
+    "level": {
+      "title": "Spielniveau",
+      "champion": "{{category}}-Champion · Stärke {{rating}}",
+      "upsetKicker": "Die größte Überraschung des Turniers",
+      "upset": "{{winner}} wirft {{loser}} raus und dreht einen Stärkeunterschied von {{gap}} Punkten."
     }
   }
 }

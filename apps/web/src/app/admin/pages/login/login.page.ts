@@ -29,6 +29,12 @@ export class LoginPage {
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly needsVerification = signal(false);
   protected readonly resent = signal(false);
+  // Set by SessionTimeoutService's own redirect (apps/web/src/app/admin/core)
+  // after a 30-min-idle/8h-absolute auto-logout, so the organizer lands here
+  // knowing *why* they were signed out instead of just finding themselves
+  // back at the login form.
+  protected readonly sessionExpired =
+    this.route.snapshot.queryParamMap.get('sessionExpired') === '1';
 
   protected async submit(): Promise<void> {
     if (this.form.invalid || this.submitting()) {
