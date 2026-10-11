@@ -42,6 +42,13 @@ model User {
   emailVerificationTokenHash String?   @unique
   emailVerificationExpiresAt DateTime?
 
+  // "Mot de passe oublié" flow -- same hash-only-at-rest pattern as
+  // emailVerificationTokenHash above. A much shorter TTL than email
+  // verification's 24h (see AuthService.PASSWORD_RESET_TTL_MS): this token
+  // grants account takeover if intercepted, not just "confirm an address".
+  passwordResetTokenHash String?   @unique
+  passwordResetExpiresAt DateTime?
+
   memberships                  OrganizationMember[]
   refreshTokens                RefreshToken[]
   sentInvitations              Invitation[]              @relation("InvitedBy")

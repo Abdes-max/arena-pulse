@@ -312,7 +312,8 @@
         "createOrg": "Criar uma organização",
         "errorVerify": "Verifique o seu email antes de iniciar sessão.",
         "errorCredentials": "Email ou palavra-passe incorretos.",
-        "errorGeneric": "Ocorreu um erro, tente novamente."
+        "errorGeneric": "Ocorreu um erro, tente novamente.",
+        "forgotPassword": "Esqueceu-se da palavra-passe?"
       },
       "register": {
         "title": "Registe-se",
@@ -355,6 +356,30 @@
         "login": "Iniciar sessão",
         "readyBody": "Sessão iniciada como {{email}}.",
         "errorGeneric": "Ocorreu um erro, tente novamente."
+      },
+      "forgotPassword": {
+        "title": "Palavra-passe esquecida",
+        "intro": "Indique o seu endereço de email e enviar-lhe-emos um link para escolher uma nova palavra-passe.",
+        "emailLabel": "Email",
+        "submit": "Enviar link",
+        "backToLogin": "Voltar ao login",
+        "sentTitle": "Verifique a sua caixa de correio",
+        "sentBody": "Se existir uma conta para {{email}}, foi agora enviado um email com um link de redefinição.",
+        "errorGeneric": "Ocorreu um erro, tente novamente."
+      },
+      "resetPassword": {
+        "title": "Escolha uma nova palavra-passe",
+        "newPasswordLabel": "Nova palavra-passe",
+        "confirmPasswordLabel": "Confirmar palavra-passe",
+        "errorMismatch": "As palavras-passe não coincidem.",
+        "submit": "Redefinir palavra-passe",
+        "successTitle": "Palavra-passe atualizada",
+        "successBody": "A sua palavra-passe foi alterada. Já pode iniciar sessão.",
+        "login": "Iniciar sessão",
+        "errorTitle": "Link inválido",
+        "errorExpired": "Este link de redefinição é inválido, expirou ou já foi utilizado.",
+        "errorGeneric": "Ocorreu um erro, tente novamente.",
+        "retry": "Pedir um novo link"
       }
     },
     "collaborators": {

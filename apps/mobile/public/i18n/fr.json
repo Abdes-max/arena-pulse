@@ -92,6 +92,19 @@
         "createOrg": "Créez-en un",
         "errorVerify": "Vérifiez votre email avant de vous connecter.",
         "errorCredentials": "Email ou mot de passe incorrect.",
+        "errorGeneric": "Une erreur est survenue, réessayez.",
+        "forgotPassword": "Mot de passe oublié ?"
+      },
+      "forgotPassword": {
+        "title": "Mot de passe oublié",
+        "backAria": "Retour",
+        "cancelAria": "Annuler",
+        "lede": "Indiquez votre adresse email, nous vous enverrons un lien pour choisir un nouveau mot de passe.",
+        "emailLabel": "Email",
+        "submit": "Envoyer le lien",
+        "sentBody": "Si un compte existe pour {{email}}, un email contenant un lien de réinitialisation vient d'être envoyé.",
+        "sentHint": "Ouvrez le lien qu'il contient pour choisir un nouveau mot de passe, puis revenez ici pour vous connecter.",
+        "login": "Se connecter",
         "errorGeneric": "Une erreur est survenue, réessayez."
       }
     },

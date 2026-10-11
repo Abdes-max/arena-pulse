@@ -26,6 +26,21 @@
   margin-bottom: var(--ap-space-2);
 }
 
+.login-page__forgot {
+  align-self: flex-end;
+  // Pulled up against the password field above it rather than reading as
+  // its own spaced-out row -- same -space-2 gap value the form's own
+  // `gap: var(--ap-space-4)` would otherwise leave here.
+  margin-top: calc(var(--ap-space-2) * -1);
+  color: var(--ap-color-primary);
+  font-size: 0.85rem;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 .login-page__error {
   color: var(--ap-color-error);
   font-size: 0.9rem;

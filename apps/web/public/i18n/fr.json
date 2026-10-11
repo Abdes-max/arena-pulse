@@ -414,7 +414,8 @@
         "createOrg": "Créer une organisation",
         "errorVerify": "Vérifiez votre email avant de vous connecter.",
         "errorCredentials": "Email ou mot de passe incorrect.",
-        "errorGeneric": "Une erreur est survenue, réessayez."
+        "errorGeneric": "Une erreur est survenue, réessayez.",
+        "forgotPassword": "Mot de passe oublié ?"
       },
       "register": {
         "title": "Inscrivez-vous",
@@ -457,6 +458,30 @@
         "login": "Se connecter",
         "readyBody": "Vous êtes connecté·e en tant que {{email}}.",
         "errorGeneric": "Une erreur est survenue, réessayez."
+      },
+      "forgotPassword": {
+        "title": "Mot de passe oublié",
+        "intro": "Indiquez votre adresse email, nous vous enverrons un lien pour choisir un nouveau mot de passe.",
+        "emailLabel": "Email",
+        "submit": "Envoyer le lien",
+        "backToLogin": "Retour à la connexion",
+        "sentTitle": "Vérifiez votre boîte mail",
+        "sentBody": "Si un compte existe pour {{email}}, un email contenant un lien de réinitialisation vient d'être envoyé.",
+        "errorGeneric": "Une erreur est survenue, réessayez."
+      },
+      "resetPassword": {
+        "title": "Choisissez un nouveau mot de passe",
+        "newPasswordLabel": "Nouveau mot de passe",
+        "confirmPasswordLabel": "Confirmer le mot de passe",
+        "errorMismatch": "Les mots de passe ne correspondent pas.",
+        "submit": "Réinitialiser le mot de passe",
+        "successTitle": "Mot de passe mis à jour",
+        "successBody": "Votre mot de passe a été changé. Vous pouvez maintenant vous connecter.",
+        "login": "Se connecter",
+        "errorTitle": "Lien invalide",
+        "errorExpired": "Ce lien de réinitialisation est invalide, expiré ou déjà utilisé.",
+        "errorGeneric": "Une erreur est survenue, réessayez.",
+        "retry": "Demander un nouveau lien"
       }
     },
     "collaborators": {

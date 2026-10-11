@@ -19,6 +19,20 @@ export const routes: Routes = [
     loadComponent: () => import('./admin/pages/register/register.page').then((m) => m.RegisterPage),
   },
   {
+    path: 'forgot-password',
+    loadComponent: () =>
+      import('./admin/pages/forgot-password/forgot-password.page').then(
+        (m) => m.ForgotPasswordPage,
+      ),
+  },
+  {
+    path: 'reset-password/:token',
+    loadComponent: () =>
+      import('./admin/pages/reset-password/reset-password.page').then(
+        (m) => m.ResetPasswordPage,
+      ),
+  },
+  {
     path: 'accept-invitation/:token',
     loadComponent: () =>
       import('./admin/pages/accept-invitation/accept-invitation.page').then(

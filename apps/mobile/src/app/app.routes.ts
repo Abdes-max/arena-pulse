@@ -22,6 +22,13 @@ export const routes: Routes = [
       import('./organizer/pages/login/login.page').then((m) => m.OrganizerLoginPage),
   },
   {
+    path: 'organizer/forgot-password',
+    loadComponent: () =>
+      import('./organizer/pages/forgot-password/forgot-password.page').then(
+        (m) => m.OrganizerForgotPasswordPage,
+      ),
+  },
+  {
     path: 'organizer/tournaments',
     canActivate: [organizerAuthGuard],
     loadComponent: () =>

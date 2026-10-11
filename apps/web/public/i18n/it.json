@@ -312,7 +312,8 @@
         "createOrg": "Crea un'organizzazione",
         "errorVerify": "Verifica la tua email prima di accedere.",
         "errorCredentials": "Email o password errati.",
-        "errorGeneric": "Si è verificato un errore, riprova."
+        "errorGeneric": "Si è verificato un errore, riprova.",
+        "forgotPassword": "Password dimenticata?"
       },
       "register": {
         "title": "Registrati",
@@ -355,6 +356,30 @@
         "login": "Accedi",
         "readyBody": "Hai effettuato l'accesso come {{email}}.",
         "errorGeneric": "Si è verificato un errore, riprova."
+      },
+      "forgotPassword": {
+        "title": "Password dimenticata",
+        "intro": "Inserisci il tuo indirizzo email, ti invieremo un link per scegliere una nuova password.",
+        "emailLabel": "Email",
+        "submit": "Invia link",
+        "backToLogin": "Torna al login",
+        "sentTitle": "Controlla la tua posta",
+        "sentBody": "Se esiste un account per {{email}}, è appena stata inviata un'email con un link di reimpostazione.",
+        "errorGeneric": "Si è verificato un errore, riprova."
+      },
+      "resetPassword": {
+        "title": "Scegli una nuova password",
+        "newPasswordLabel": "Nuova password",
+        "confirmPasswordLabel": "Conferma password",
+        "errorMismatch": "Le password non corrispondono.",
+        "submit": "Reimposta password",
+        "successTitle": "Password aggiornata",
+        "successBody": "La tua password è stata modificata. Ora puoi accedere.",
+        "login": "Accedi",
+        "errorTitle": "Link non valido",
+        "errorExpired": "Questo link di reimpostazione non è valido, è scaduto o è già stato usato.",
+        "errorGeneric": "Si è verificato un errore, riprova.",
+        "retry": "Richiedi un nuovo link"
       }
     },
     "collaborators": {

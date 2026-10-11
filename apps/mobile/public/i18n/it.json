@@ -92,6 +92,19 @@
         "createOrg": "Creane uno",
         "errorVerify": "Verifica la tua email prima di accedere.",
         "errorCredentials": "Email o password errati.",
+        "errorGeneric": "Si è verificato un errore, riprova.",
+        "forgotPassword": "Password dimenticata?"
+      },
+      "forgotPassword": {
+        "title": "Password dimenticata",
+        "backAria": "Indietro",
+        "cancelAria": "Annulla",
+        "lede": "Inserisci il tuo indirizzo email, ti invieremo un link per scegliere una nuova password.",
+        "emailLabel": "Email",
+        "submit": "Invia link",
+        "sentBody": "Se esiste un account per {{email}}, è appena stata inviata un'email con un link di reimpostazione.",
+        "sentHint": "Apri il link contenuto per scegliere una nuova password, poi torna qui per accedere.",
+        "login": "Accedi",
         "errorGeneric": "Si è verificato un errore, riprova."
       }
     },

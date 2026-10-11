@@ -92,6 +92,19 @@
         "createOrg": "Create one",
         "errorVerify": "Verify your email before logging in.",
         "errorCredentials": "Incorrect email or password.",
+        "errorGeneric": "Something went wrong, please try again.",
+        "forgotPassword": "Forgot password?"
+      },
+      "forgotPassword": {
+        "title": "Forgot password",
+        "backAria": "Back",
+        "cancelAria": "Cancel",
+        "lede": "Enter your email address and we'll send you a link to choose a new password.",
+        "emailLabel": "Email",
+        "submit": "Send link",
+        "sentBody": "If an account exists for {{email}}, an email with a reset link was just sent.",
+        "sentHint": "Open the link it contains to choose a new password, then come back here to log in.",
+        "login": "Log in",
         "errorGeneric": "Something went wrong, please try again."
       }
     },
