@@ -302,7 +302,8 @@
       "tournament": "Tournament",
       "teams": "Teams",
       "standings": "Standings",
-      "schedule": "Schedule"
+      "schedule": "Schedule",
+      "wrapped": "Statistics"
     },
     "menu": "Menu"
   },
@@ -1223,6 +1224,54 @@
       "errors": {
         "load": "Unable to load the export."
       }
+    }
+  },
+  "wrapped": {
+    "loading": "Loading statistics…",
+    "locked": "This tournament's statistics aren't available.",
+    "eyebrow": "Tournament statistics",
+    "hero": {
+      "goals": "goals scored"
+    },
+    "organisation": {
+      "title": "The tournament in numbers",
+      "teams": "Teams",
+      "categories": "Categories",
+      "groups": "Groups",
+      "venues": "Venues",
+      "referees": "Referees",
+      "date": "Date",
+      "startDate": "Start",
+      "endDate": "End"
+    },
+    "charts": {
+      "venues": "Matches by venue",
+      "hours": "Matches by time slot",
+      "outcomes": "How matches ended",
+      "attack": "Top attacks · goals scored",
+      "defense": "Top defenses · goals conceded"
+    },
+    "goals": {
+      "title": "Goals & drama",
+      "average": "An average of {{average}} goals per match.",
+      "highestScoring": "Highest-scoring match",
+      "biggestMargin": "Biggest win margin",
+      "closest": "Closest match"
+    },
+    "outcomes": {
+      "homeWin": "Home win",
+      "awayWin": "Away win",
+      "draw": "Draw",
+      "shootout": "Decided on penalties"
+    },
+    "teams": {
+      "title": "Attack & defense"
+    },
+    "level": {
+      "title": "Level of play",
+      "champion": "{{category}} champion · rating {{rating}}",
+      "upsetKicker": "Biggest upset of the tournament",
+      "upset": "{{winner}} knocks out {{loser}}, overturning a {{gap}}-point rating gap."
     }
   }
 }

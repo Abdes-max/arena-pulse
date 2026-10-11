@@ -18,6 +18,7 @@ import {
   PublicTournamentSummary,
   Qualification,
   Standings,
+  TournamentWrapped,
 } from 'shared-models';
 import { API_CLIENT_CONFIG } from './api-client.config';
 
@@ -101,6 +102,10 @@ export class PublicApiService {
     return firstValueFrom(
       this.http.get<Match[]>(`${this.base(slug)}/knockout-brackets/${bracketId}/matches`),
     );
+  }
+
+  getWrapped(slug: string): Promise<TournamentWrapped> {
+    return firstValueFrom(this.http.get<TournamentWrapped>(`${this.base(slug)}/wrapped`));
   }
 
   listUpcomingMatches(slug: string, limit?: number): Promise<Match[]> {

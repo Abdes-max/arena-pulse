@@ -95,7 +95,93 @@ export interface PublicTournament {
   practicalInfo: string | null;
   venues: Venue[];
   sponsors: Sponsor[];
+  // Drives whether TournamentShell shows the "Récap" tab -- same
+  // TournamentsService.hasPremiumFeatures check as theme/logo/QR/export
+  // (active annual subscription, or more teams than the free tier allows).
+  wrappedUnlocked: boolean;
 }
+
+/** One highlighted match on the Wrapped recap (biggest score, closest game, etc.) -- see WrappedMatchStats server-side. */
+export interface WrappedMatchHighlight {
+  matchId: string;
+  homeTeamName: string;
+  awayTeamName: string;
+  homeScore: number;
+  awayScore: number;
+  homePenaltyScore: number | null;
+  awayPenaltyScore: number | null;
+}
+
+export interface WrappedNamedCount {
+  name: string;
+  count: number;
+}
+
+export interface WrappedTeamGoalTally {
+  teamName: string;
+  goals: number;
+  matchesPlayed: number;
+}
+
+export interface WrappedOutcomeBreakdown {
+  homeWin: number;
+  awayWin: number;
+  draw: number;
+  shootout: number;
+}
+
+export interface WrappedChampion {
+  categoryId: string;
+  categoryName: string;
+  teamName: string;
+  rating: number;
+}
+
+export interface WrappedUpset {
+  winnerTeamName: string;
+  loserTeamName: string;
+  winnerRatingBefore: number;
+  loserRatingBefore: number;
+}
+
+/**
+ * GET /public/tournaments/:slug/wrapped -- the "Tournoi Wrapped" end-of-
+ * event recap (see the plan doc "Tournoi Wrapped" for the full design).
+ * `unlocked: false` carries no other field on purpose: a public page must
+ * never leak an organizer's stats just because it computed them before
+ * finding out the tournament isn't on the paid tier.
+ */
+export type TournamentWrapped =
+  | { unlocked: false }
+  | {
+      unlocked: true;
+      organisation: {
+        teamsCount: number;
+        categoriesCount: number;
+        groupsCount: number;
+        venuesCount: number;
+        refereesCount: number;
+        startDate: string | null;
+        endDate: string | null;
+      };
+      goals: {
+        totalGoals: number;
+        averageGoalsPerMatch: number;
+        matchesPlayed: number;
+        highestScoringMatch: WrappedMatchHighlight | null;
+        biggestWinMargin: WrappedMatchHighlight | null;
+        closestMatch: WrappedMatchHighlight | null;
+      };
+      outcomes: WrappedOutcomeBreakdown;
+      venues: WrappedNamedCount[];
+      matchesByHour: WrappedNamedCount[];
+      topAttack: WrappedTeamGoalTally[];
+      topDefense: WrappedTeamGoalTally[];
+      level: {
+        champions: WrappedChampion[];
+        biggestUpset: WrappedUpset | null;
+      };
+    };
 
 export interface Category {
   id: string;
