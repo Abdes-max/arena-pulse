@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   computed,
   effect,
   inject,
@@ -27,6 +28,7 @@ import {
   ThemeService,
 } from 'design-tokens';
 import { AuthService } from '../core/auth.service';
+import { SessionTimeoutService } from '../core/session-timeout.service';
 import { TournamentSubmenu } from '../shared/tournament-submenu';
 import { THEME_MAP } from '../core/theme-map';
 import { TournamentsService } from '../core/tournaments.service';
@@ -56,6 +58,8 @@ export class AppShell {
   private readonly languageService = inject(LanguageService);
   private readonly tournamentsService = inject(TournamentsService);
   private readonly assetUrl = inject(AssetUrlService);
+  protected readonly sessionTimeout = inject(SessionTimeoutService);
+  private readonly destroyRef = inject(DestroyRef);
 
   protected readonly mode = this.themeService.mode;
   protected readonly language = this.languageService.language;
@@ -112,6 +116,13 @@ export class AppShell {
   protected readonly mobileMenuOpen = signal(false);
 
   constructor() {
+    // 30 min idle / 8h absolute session policy, with its own 1-minute
+    // warning popup (template below) -- see SessionTimeoutService's own
+    // doc comment for why start()/stop() (not the service's own lifetime)
+    // bound the clock to exactly this component's.
+    this.sessionTimeout.start();
+    this.destroyRef.onDestroy(() => this.sessionTimeout.stop());
+
     // Applies the current tournament's own public theme to the whole admin
     // shell regardless of which of its sub-pages (Équipes, Arbitres,
     // Structure, Calendrier, Scores, Classement...) is active or freshly
@@ -174,7 +185,16 @@ export class AppShell {
 
   protected async logout(): Promise<void> {
     this.closeMobileMenu();
+    this.sessionTimeout.stop();
     await this.authService.logout();
     await this.router.navigateByUrl('/');
+  }
+
+  protected async extendSession(): Promise<void> {
+    await this.sessionTimeout.extendSession();
+  }
+
+  protected logoutFromWarning(): void {
+    void this.logout();
   }
 }

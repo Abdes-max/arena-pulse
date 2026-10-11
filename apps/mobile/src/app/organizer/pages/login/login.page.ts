@@ -55,6 +55,10 @@ export class OrganizerLoginPage {
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly needsVerification = signal(false);
   protected readonly resent = signal(false);
+  // Set by SessionTimeoutService's own redirect after a 30-min-idle/8h-
+  // absolute auto-logout, same reasoning as apps/web's login.page.ts.
+  protected readonly sessionExpired =
+    this.route.snapshot.queryParamMap.get('sessionExpired') === '1';
 
   protected async submit(): Promise<void> {
     if (this.form.invalid || this.submitting()) {

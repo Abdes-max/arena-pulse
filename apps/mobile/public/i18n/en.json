@@ -91,7 +91,14 @@
         "createOrg": "Create one",
         "errorVerify": "Verify your email before logging in.",
         "errorCredentials": "Incorrect email or password.",
-        "errorGeneric": "Something went wrong, please try again."
+        "errorGeneric": "Something went wrong, please try again.",
+        "sessionExpired": "Your session has expired, please sign in again."
+      },
+      "sessionTimeout": {
+        "title": "Still there?",
+        "body": "Your session will expire in {{seconds}} seconds due to inactivity.",
+        "stayConnected": "Stay connected",
+        "logout": "Log out"
       }
     },
     "tournaments": {
