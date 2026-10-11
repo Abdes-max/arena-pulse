@@ -92,13 +92,26 @@
         "errorVerify": "Verifica tu correo antes de iniciar sesión.",
         "errorCredentials": "Correo o contraseña incorrectos.",
         "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo.",
-        "sessionExpired": "Tu sesión ha caducado, inicia sesión de nuevo."
+        "sessionExpired": "Tu sesión ha caducado, inicia sesión de nuevo.",
+        "forgotPassword": "¿Has olvidado tu contraseña?"
       },
       "sessionTimeout": {
         "title": "¿Sigues ahí?",
         "body": "Tu sesión caducará en {{seconds}} segundos por inactividad.",
         "stayConnected": "Permanecer conectado",
         "logout": "Cerrar sesión"
+      },
+      "forgotPassword": {
+        "title": "Contraseña olvidada",
+        "backAria": "Atrás",
+        "cancelAria": "Cancelar",
+        "lede": "Indica tu dirección de email y te enviaremos un enlace para elegir una nueva contraseña.",
+        "emailLabel": "Email",
+        "submit": "Enviar enlace",
+        "sentBody": "Si existe una cuenta para {{email}}, acabamos de enviar un email con un enlace de restablecimiento.",
+        "sentHint": "Abre el enlace que contiene para elegir una nueva contraseña y luego vuelve aquí para iniciar sesión.",
+        "login": "Iniciar sesión",
+        "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo."
       }
     },
     "tournaments": {

@@ -51,6 +51,9 @@
         formControlName="password"
         autocomplete="current-password"
       />
+      <a class="organizer-login-page__forgot" routerLink="/organizer/forgot-password">{{
+        'organizer.auth.login.forgotPassword' | transloco
+      }}</a>
       @if (errorMessage(); as message) {
         <p class="organizer-login-page__error" role="alert">{{ message | transloco }}</p>
       }

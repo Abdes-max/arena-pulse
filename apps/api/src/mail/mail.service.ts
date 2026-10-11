@@ -13,6 +13,11 @@ interface MailCopy {
   verifyIntro: string;
   verifyCta: string;
   verifyExpiry: string;
+  resetSubject: string;
+  resetIntro: string;
+  resetCta: string;
+  resetExpiry: string;
+  resetIgnore: string;
   welcomeSubject: string;
   welcomeBody1: (organizationName: string) => string;
   welcomeBody2: string;
@@ -49,6 +54,13 @@ const MAIL_COPY: Record<MailLanguage, MailCopy> = {
       'Encore une étape avant de pouvoir utiliser votre compte organisateur·rice : confirmez que cette adresse email vous appartient bien.',
     verifyCta: 'Vérifier mon email',
     verifyExpiry: 'Ce lien expire dans 24 heures.',
+    resetSubject: 'Réinitialisez votre mot de passe — TournArena',
+    resetIntro:
+      'Vous avez demandé à réinitialiser le mot de passe de votre compte organisateur·rice TournArena.',
+    resetCta: 'Choisir un nouveau mot de passe',
+    resetExpiry: 'Ce lien expire dans 1 heure.',
+    resetIgnore:
+      "Si vous n'êtes pas à l'origine de cette demande, vous pouvez ignorer cet email : votre mot de passe reste inchangé.",
     welcomeSubject: 'Bienvenue sur TournArena',
     welcomeBody1: (org) =>
       `Votre compte organisateur·rice a bien été créé, ainsi que votre organisation <strong>${org}</strong> sur TournArena.`,
@@ -82,6 +94,13 @@ const MAIL_COPY: Record<MailLanguage, MailCopy> = {
       'One more step before you can use your organizer account: confirm that this email address is yours.',
     verifyCta: 'Verify my email',
     verifyExpiry: 'This link expires in 24 hours.',
+    resetSubject: 'Reset your password — TournArena',
+    resetIntro:
+      'You requested to reset the password for your TournArena organizer account.',
+    resetCta: 'Choose a new password',
+    resetExpiry: 'This link expires in 1 hour.',
+    resetIgnore:
+      "If you didn't request this, you can safely ignore this email: your password stays unchanged.",
     welcomeSubject: 'Welcome to TournArena',
     welcomeBody1: (org) =>
       `Your organizer account has been created, along with your organization <strong>${org}</strong> on TournArena.`,
@@ -114,6 +133,13 @@ const MAIL_COPY: Record<MailLanguage, MailCopy> = {
       'Un paso más antes de poder usar tu cuenta de organizador·a: confirma que esta dirección de correo te pertenece.',
     verifyCta: 'Verificar mi correo',
     verifyExpiry: 'Este enlace caduca en 24 horas.',
+    resetSubject: 'Restablece tu contraseña — TournArena',
+    resetIntro:
+      'Has solicitado restablecer la contraseña de tu cuenta de organizador·a TournArena.',
+    resetCta: 'Elegir una nueva contraseña',
+    resetExpiry: 'Este enlace caduca en 1 hora.',
+    resetIgnore:
+      'Si no has sido tú quien lo ha solicitado, puedes ignorar este correo: tu contraseña no cambiará.',
     welcomeSubject: 'Bienvenido a TournArena',
     welcomeBody1: (org) =>
       `Tu cuenta de organizador·a se ha creado correctamente, junto con tu organización <strong>${org}</strong> en TournArena.`,
@@ -147,6 +173,13 @@ const MAIL_COPY: Record<MailLanguage, MailCopy> = {
       'Noch ein Schritt, bevor Sie Ihr Organisator·innen-Konto nutzen können: Bestätigen Sie, dass diese E-Mail-Adresse Ihnen gehört.',
     verifyCta: 'Meine E-Mail bestätigen',
     verifyExpiry: 'Dieser Link läuft in 24 Stunden ab.',
+    resetSubject: 'Setzen Sie Ihr Passwort zurück — TournArena',
+    resetIntro:
+      'Sie haben beantragt, das Passwort Ihres TournArena-Organisator·innen-Kontos zurückzusetzen.',
+    resetCta: 'Neues Passwort wählen',
+    resetExpiry: 'Dieser Link läuft in 1 Stunde ab.',
+    resetIgnore:
+      'Wenn Sie diese Anfrage nicht gestellt haben, können Sie diese E-Mail ignorieren: Ihr Passwort bleibt unverändert.',
     welcomeSubject: 'Willkommen bei TournArena',
     welcomeBody1: (org) =>
       `Ihr Organisator·innen-Konto wurde erstellt, ebenso wie Ihre Organisation <strong>${org}</strong> auf TournArena.`,
@@ -180,6 +213,13 @@ const MAIL_COPY: Record<MailLanguage, MailCopy> = {
       'Ancora un passo prima di poter usare il tuo account organizzatore·rice: conferma che questo indirizzo email è tuo.',
     verifyCta: 'Verifica la mia email',
     verifyExpiry: 'Questo link scade tra 24 ore.',
+    resetSubject: 'Reimposta la tua password — TournArena',
+    resetIntro:
+      'Hai richiesto di reimpostare la password del tuo account organizzatore·rice TournArena.',
+    resetCta: 'Scegli una nuova password',
+    resetExpiry: 'Questo link scade tra 1 ora.',
+    resetIgnore:
+      'Se non sei stato tu a richiederlo, puoi ignorare questa email: la tua password resterà invariata.',
     welcomeSubject: 'Benvenuto su TournArena',
     welcomeBody1: (org) =>
       `Il tuo account organizzatore·rice è stato creato, insieme alla tua organizzazione <strong>${org}</strong> su TournArena.`,
@@ -213,6 +253,13 @@ const MAIL_COPY: Record<MailLanguage, MailCopy> = {
       'Mais um passo antes de poder usar a sua conta de organizador·a: confirme que este endereço de email lhe pertence.',
     verifyCta: 'Verificar o meu email',
     verifyExpiry: 'Este link expira em 24 horas.',
+    resetSubject: 'Redefina a sua palavra-passe — TournArena',
+    resetIntro:
+      'Pediu para redefinir a palavra-passe da sua conta de organizador·a TournArena.',
+    resetCta: 'Escolher uma nova palavra-passe',
+    resetExpiry: 'Este link expira em 1 hora.',
+    resetIgnore:
+      'Se não foi você quem fez este pedido, pode ignorar este email: a sua palavra-passe mantém-se inalterada.',
     welcomeSubject: 'Bem-vindo ao TournArena',
     welcomeBody1: (org) =>
       `A sua conta de organizador·a foi criada, assim como a sua organização <strong>${org}</strong> no TournArena.`,
@@ -345,6 +392,30 @@ export class MailService {
         <p>${copy.verifyIntro}</p>
         <p><a href="${verifyUrl}" class="ap-mail-cta">${copy.verifyCta}</a></p>
         <p>${copy.verifyExpiry}</p>
+      `,
+        lang,
+      ),
+    });
+  }
+
+  async sendPasswordResetEmail(
+    to: string,
+    firstName: string,
+    resetUrl: string,
+    lang: MailLanguage = DEFAULT_MAIL_LANGUAGE,
+  ): Promise<void> {
+    const copy = MAIL_COPY[lang];
+    await this.transporter.sendMail({
+      from: this.from,
+      to,
+      subject: copy.resetSubject,
+      html: this.wrapEmail(
+        `
+        <p>${copy.greeting(firstName)}</p>
+        <p>${copy.resetIntro}</p>
+        <p><a href="${resetUrl}" class="ap-mail-cta">${copy.resetCta}</a></p>
+        <p>${copy.resetExpiry}</p>
+        <p>${copy.resetIgnore}</p>
       `,
         lang,
       ),

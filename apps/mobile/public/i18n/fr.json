@@ -92,13 +92,26 @@
         "errorVerify": "Vérifiez votre email avant de vous connecter.",
         "errorCredentials": "Email ou mot de passe incorrect.",
         "errorGeneric": "Une erreur est survenue, réessayez.",
-        "sessionExpired": "Votre session a expiré, reconnectez-vous."
+        "sessionExpired": "Votre session a expiré, reconnectez-vous.",
+        "forgotPassword": "Mot de passe oublié ?"
       },
       "sessionTimeout": {
         "title": "Toujours là ?",
         "body": "Votre session va expirer dans {{seconds}} secondes pour inactivité.",
         "stayConnected": "Rester connecté",
         "logout": "Se déconnecter"
+      },
+      "forgotPassword": {
+        "title": "Mot de passe oublié",
+        "backAria": "Retour",
+        "cancelAria": "Annuler",
+        "lede": "Indiquez votre adresse email, nous vous enverrons un lien pour choisir un nouveau mot de passe.",
+        "emailLabel": "Email",
+        "submit": "Envoyer le lien",
+        "sentBody": "Si un compte existe pour {{email}}, un email contenant un lien de réinitialisation vient d'être envoyé.",
+        "sentHint": "Ouvrez le lien qu'il contient pour choisir un nouveau mot de passe, puis revenez ici pour vous connecter.",
+        "login": "Se connecter",
+        "errorGeneric": "Une erreur est survenue, réessayez."
       }
     },
     "tournaments": {

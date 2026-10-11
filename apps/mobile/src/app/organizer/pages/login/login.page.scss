@@ -74,6 +74,14 @@ ion-title {
   line-height: 1.5;
 }
 
+.organizer-login-page__forgot {
+  align-self: flex-end;
+  margin-top: calc(var(--ap-space-2) * -1);
+  color: var(--ap-color-primary);
+  font-size: 0.83rem;
+  text-decoration: none;
+}
+
 .organizer-login-page__hint {
   margin: 0;
   color: var(--ap-color-muted);

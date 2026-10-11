@@ -21,6 +21,10 @@ import { PasswordService } from './password.service';
 import { TokenService } from './token.service';
 
 const EMAIL_VERIFICATION_TTL_MS = 24 * 60 * 60 * 1000;
+// Much shorter than email verification's 24h -- this token grants account
+// takeover if intercepted (a new password, not just "confirm an address"),
+// so it stays valid only long enough for someone to open their inbox.
+const PASSWORD_RESET_TTL_MS = 60 * 60 * 1000;
 
 export interface UserSummary {
   id: string;
@@ -221,6 +225,85 @@ export class AuthService {
         `Failed to send verification email to ${user.email}: ${(error as Error).message}`,
       );
     }
+  }
+
+  /**
+   * Same no-leak posture as resendVerificationEmail above: always resolves
+   * identically whether or not the account exists, so a caller can never
+   * use this to probe which emails are registered.
+   */
+  async requestPasswordReset(
+    email: string,
+    lang: MailLanguage = DEFAULT_MAIL_LANGUAGE,
+  ): Promise<void> {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      return;
+    }
+
+    const resetToken = randomBytes(32).toString('base64url');
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        passwordResetTokenHash: this.hashToken(resetToken),
+        passwordResetExpiresAt: new Date(Date.now() + PASSWORD_RESET_TTL_MS),
+      },
+    });
+
+    try {
+      await this.mailService.sendPasswordResetEmail(
+        user.email,
+        user.firstName,
+        this.buildResetPasswordUrl(resetToken),
+        lang,
+      );
+    } catch (error) {
+      this.logger.warn(
+        `Failed to send password reset email to ${user.email}: ${(error as Error).message}`,
+      );
+    }
+  }
+
+  /**
+   * Consumes a reset token (single use, same hash-lookup pattern as
+   * verifyEmail) and sets the new password. Every existing refresh token for
+   * this account is revoked -- whoever had access to request this reset no
+   * longer needs any session that predates it, and anyone who *shouldn't*
+   * have had access (the scenario this flow exists to recover from) loses
+   * theirs too. No session is issued here: the caller logs in fresh with the
+   * new password, same posture as a plain password change.
+   */
+  async resetPassword(token: string, newPassword: string): Promise<void> {
+    const user = await this.prisma.user.findUnique({
+      where: { passwordResetTokenHash: this.hashToken(token) },
+    });
+    if (!user) {
+      throw new NotFoundException(
+        'Lien de réinitialisation invalide ou déjà utilisé.',
+      );
+    }
+    if (
+      !user.passwordResetExpiresAt ||
+      user.passwordResetExpiresAt < new Date()
+    ) {
+      throw new NotFoundException('Lien de réinitialisation expiré.');
+    }
+
+    const passwordHash = await this.passwordService.hash(newPassword);
+    await this.prisma.$transaction([
+      this.prisma.user.update({
+        where: { id: user.id },
+        data: {
+          passwordHash,
+          passwordResetTokenHash: null,
+          passwordResetExpiresAt: null,
+        },
+      }),
+      this.prisma.refreshToken.updateMany({
+        where: { userId: user.id, revokedAt: null },
+        data: { revokedAt: new Date() },
+      }),
+    ]);
   }
 
   async refresh(presentedToken: string): Promise<TokenPair> {
@@ -466,6 +549,18 @@ export class AuthService {
       'http://localhost:4300',
     );
     return `${adminWebUrl}/verify-email/${token}`;
+  }
+
+  // Always the *web* app, same reasoning as buildVerifyEmailUrl above --
+  // apps/mobile has no deep-linking set up to catch this link back into the
+  // native app (see register.page.ts's own comment on the mobile side), so
+  // the reset form itself only ever exists on web.
+  private buildResetPasswordUrl(token: string): string {
+    const adminWebUrl = this.configService.get<string>(
+      'ADMIN_WEB_URL',
+      'http://localhost:4300',
+    );
+    return `${adminWebUrl}/reset-password/${token}`;
   }
 
   private toUserSummary(user: {

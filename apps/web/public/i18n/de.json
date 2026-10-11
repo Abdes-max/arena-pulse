@@ -330,7 +330,8 @@
         "errorVerify": "Bestätigen Sie Ihre E-Mail, bevor Sie sich anmelden.",
         "errorCredentials": "Falsche E-Mail oder falsches Passwort.",
         "errorGeneric": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut.",
-        "sessionExpired": "Ihre Sitzung ist abgelaufen, bitte melden Sie sich erneut an."
+        "sessionExpired": "Ihre Sitzung ist abgelaufen, bitte melden Sie sich erneut an.",
+        "forgotPassword": "Passwort vergessen?"
       },
       "register": {
         "title": "Registrieren",
@@ -373,6 +374,30 @@
         "login": "Anmelden",
         "readyBody": "Sie sind angemeldet als {{email}}.",
         "errorGeneric": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut."
+      },
+      "forgotPassword": {
+        "title": "Passwort vergessen",
+        "intro": "Geben Sie Ihre E-Mail-Adresse ein, wir senden Ihnen einen Link zur Wahl eines neuen Passworts.",
+        "emailLabel": "E-Mail",
+        "submit": "Link senden",
+        "backToLogin": "Zurück zur Anmeldung",
+        "sentTitle": "Prüfen Sie Ihr Postfach",
+        "sentBody": "Falls ein Konto für {{email}} existiert, wurde soeben eine E-Mail mit einem Link zum Zurücksetzen gesendet.",
+        "errorGeneric": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut."
+      },
+      "resetPassword": {
+        "title": "Neues Passwort wählen",
+        "newPasswordLabel": "Neues Passwort",
+        "confirmPasswordLabel": "Passwort bestätigen",
+        "errorMismatch": "Die Passwörter stimmen nicht überein.",
+        "submit": "Passwort zurücksetzen",
+        "successTitle": "Passwort aktualisiert",
+        "successBody": "Ihr Passwort wurde geändert. Sie können sich jetzt anmelden.",
+        "login": "Anmelden",
+        "errorTitle": "Ungültiger Link",
+        "errorExpired": "Dieser Link zum Zurücksetzen ist ungültig, abgelaufen oder bereits verwendet.",
+        "errorGeneric": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut.",
+        "retry": "Neuen Link anfordern"
       }
     },
     "collaborators": {

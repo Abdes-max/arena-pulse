@@ -69,6 +69,20 @@ export class AuthService {
     );
   }
 
+  /** Always resolves the same way whether or not the account exists -- mirrors the backend's no-leak posture (see AuthService.requestPasswordReset, apps/api). */
+  async requestPasswordReset(email: string): Promise<void> {
+    await firstValueFrom(
+      this.http.post<void>(`${environment.apiUrl}/auth/request-password-reset`, { email }),
+    );
+  }
+
+  /** Consumes the token from the reset email. No session is issued -- the caller logs in fresh with the new password (see AuthService.resetPassword, apps/api, which also revokes every existing session). */
+  async resetPassword(token: string, newPassword: string): Promise<void> {
+    await firstValueFrom(
+      this.http.post<void>(`${environment.apiUrl}/auth/reset-password`, { token, newPassword }),
+    );
+  }
+
   async login(email: string, password: string): Promise<void> {
     const response = await firstValueFrom(
       this.http.post<TokenResponse>(

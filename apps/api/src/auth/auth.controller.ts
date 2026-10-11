@@ -20,6 +20,8 @@ import { CurrentUser } from './decorators/current-user.decorator';
 import { Public } from './decorators/public.decorator';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { RequestPasswordResetDto } from './dto/request-password-reset.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 import { MailLang } from '../mail/decorators/mail-lang.decorator';
 import type { MailLanguage } from '../mail/mail-language';
 import type { AuthenticatedUser } from './strategies/jwt.strategy';
@@ -85,6 +87,25 @@ export class AuthController {
     // Reuses LoginDto purely for its `email` field shape (already validated
     // as a proper email) -- no password involved here.
     await this.authService.resendVerificationEmail(dto.email, lang);
+  }
+
+  @Public()
+  @Throttle(AUTH_THROTTLE)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Post('request-password-reset')
+  async requestPasswordReset(
+    @Body() dto: RequestPasswordResetDto,
+    @MailLang() lang: MailLanguage,
+  ) {
+    await this.authService.requestPasswordReset(dto.email, lang);
+  }
+
+  @Public()
+  @Throttle(AUTH_THROTTLE)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Post('reset-password')
+  async resetPassword(@Body() dto: ResetPasswordDto) {
+    await this.authService.resetPassword(dto.token, dto.newPassword);
   }
 
   @Public()

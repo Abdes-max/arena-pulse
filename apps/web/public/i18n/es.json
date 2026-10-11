@@ -330,7 +330,8 @@
         "errorVerify": "Verifica tu email antes de iniciar sesión.",
         "errorCredentials": "Email o contraseña incorrectos.",
         "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo.",
-        "sessionExpired": "Tu sesión ha caducado, inicia sesión de nuevo."
+        "sessionExpired": "Tu sesión ha caducado, inicia sesión de nuevo.",
+        "forgotPassword": "¿Has olvidado tu contraseña?"
       },
       "register": {
         "title": "Regístrate",
@@ -373,6 +374,30 @@
         "login": "Iniciar sesión",
         "readyBody": "Has iniciado sesión como {{email}}.",
         "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo."
+      },
+      "forgotPassword": {
+        "title": "Contraseña olvidada",
+        "intro": "Indica tu dirección de email y te enviaremos un enlace para elegir una nueva contraseña.",
+        "emailLabel": "Email",
+        "submit": "Enviar enlace",
+        "backToLogin": "Volver a iniciar sesión",
+        "sentTitle": "Revisa tu correo",
+        "sentBody": "Si existe una cuenta para {{email}}, acabamos de enviar un email con un enlace de restablecimiento.",
+        "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo."
+      },
+      "resetPassword": {
+        "title": "Elige una nueva contraseña",
+        "newPasswordLabel": "Nueva contraseña",
+        "confirmPasswordLabel": "Confirmar contraseña",
+        "errorMismatch": "Las contraseñas no coinciden.",
+        "submit": "Restablecer contraseña",
+        "successTitle": "Contraseña actualizada",
+        "successBody": "Tu contraseña se ha cambiado. Ya puedes iniciar sesión.",
+        "login": "Iniciar sesión",
+        "errorTitle": "Enlace no válido",
+        "errorExpired": "Este enlace de restablecimiento no es válido, ha caducado o ya se ha usado.",
+        "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo.",
+        "retry": "Solicitar un nuevo enlace"
       }
     },
     "collaborators": {

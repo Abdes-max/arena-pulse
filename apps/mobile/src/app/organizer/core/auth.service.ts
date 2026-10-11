@@ -78,6 +78,20 @@ export class OrganizerAuthService {
     );
   }
 
+  /**
+   * Always resolves the same way whether or not the account exists --
+   * mirrors the backend's no-leak posture. Unlike web's AuthService, there
+   * is no matching resetPassword() here: the emailed link always opens the
+   * *web* app (AuthService.buildResetPasswordUrl, apps/api), same reasoning
+   * as this file's own verifyEmail -- apps/mobile has no deep-linking set up
+   * to catch it back into the native app (see register.page.ts's comment).
+   */
+  async requestPasswordReset(email: string): Promise<void> {
+    await firstValueFrom(
+      this.http.post<void>(`${environment.apiUrl}/auth/request-password-reset`, { email }),
+    );
+  }
+
   async login(email: string, password: string): Promise<void> {
     const response = await firstValueFrom(
       this.http.post<TokenResponse>(

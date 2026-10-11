@@ -92,13 +92,26 @@
         "errorVerify": "Verifique o seu email antes de iniciar sessão.",
         "errorCredentials": "Email ou palavra-passe incorretos.",
         "errorGeneric": "Ocorreu um erro, tente novamente.",
-        "sessionExpired": "A sua sessão expirou, inicie sessão novamente."
+        "sessionExpired": "A sua sessão expirou, inicie sessão novamente.",
+        "forgotPassword": "Esqueceu-se da palavra-passe?"
       },
       "sessionTimeout": {
         "title": "Ainda está aí?",
         "body": "A sua sessão vai expirar em {{seconds}} segundos por inatividade.",
         "stayConnected": "Manter sessão",
         "logout": "Terminar sessão"
+      },
+      "forgotPassword": {
+        "title": "Palavra-passe esquecida",
+        "backAria": "Voltar",
+        "cancelAria": "Cancelar",
+        "lede": "Indique o seu endereço de email e enviar-lhe-emos um link para escolher uma nova palavra-passe.",
+        "emailLabel": "Email",
+        "submit": "Enviar link",
+        "sentBody": "Se existir uma conta para {{email}}, foi agora enviado um email com um link de redefinição.",
+        "sentHint": "Abra o link que contém para escolher uma nova palavra-passe e depois volte aqui para iniciar sessão.",
+        "login": "Iniciar sessão",
+        "errorGeneric": "Ocorreu um erro, tente novamente."
       }
     },
     "tournaments": {

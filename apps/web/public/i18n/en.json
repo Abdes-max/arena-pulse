@@ -432,7 +432,8 @@
         "errorVerify": "Verify your email before signing in.",
         "errorCredentials": "Incorrect email or password.",
         "errorGeneric": "Something went wrong, please try again.",
-        "sessionExpired": "Your session has expired, please sign in again."
+        "sessionExpired": "Your session has expired, please sign in again.",
+        "forgotPassword": "Forgot password?"
       },
       "register": {
         "title": "Sign up",
@@ -475,6 +476,30 @@
         "login": "Sign in",
         "readyBody": "You are signed in as {{email}}.",
         "errorGeneric": "Something went wrong, please try again."
+      },
+      "forgotPassword": {
+        "title": "Forgot password",
+        "intro": "Enter your email address and we'll send you a link to choose a new password.",
+        "emailLabel": "Email",
+        "submit": "Send link",
+        "backToLogin": "Back to login",
+        "sentTitle": "Check your inbox",
+        "sentBody": "If an account exists for {{email}}, an email with a reset link was just sent.",
+        "errorGeneric": "Something went wrong, please try again."
+      },
+      "resetPassword": {
+        "title": "Choose a new password",
+        "newPasswordLabel": "New password",
+        "confirmPasswordLabel": "Confirm password",
+        "errorMismatch": "Passwords don't match.",
+        "submit": "Reset password",
+        "successTitle": "Password updated",
+        "successBody": "Your password has been changed. You can now sign in.",
+        "login": "Sign in",
+        "errorTitle": "Invalid link",
+        "errorExpired": "This reset link is invalid, expired, or already used.",
+        "errorGeneric": "Something went wrong, please try again.",
+        "retry": "Request a new link"
       }
     },
     "collaborators": {

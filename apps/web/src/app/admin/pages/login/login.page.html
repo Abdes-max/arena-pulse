@@ -17,6 +17,9 @@
       formControlName="password"
       autocomplete="current-password"
     />
+    <a class="login-page__forgot" routerLink="/forgot-password">{{
+      'admin.auth.login.forgotPassword' | transloco
+    }}</a>
     @if (errorMessage(); as message) {
       <p class="login-page__error" role="alert">{{ message | transloco }}</p>
     }
