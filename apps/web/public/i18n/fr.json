@@ -383,7 +383,13 @@
         "account": "Mon compte"
       },
       "logout": "Se déconnecter",
-      "menu": "Menu"
+      "menu": "Menu",
+      "sessionTimeout": {
+        "title": "Toujours là ?",
+        "body": "Votre session va expirer dans {{seconds}} secondes pour inactivité.",
+        "stayConnected": "Rester connecté",
+        "logout": "Se déconnecter"
+      }
     },
     "submenu": {
       "general": "Général",
@@ -414,7 +420,8 @@
         "createOrg": "Créer une organisation",
         "errorVerify": "Vérifiez votre email avant de vous connecter.",
         "errorCredentials": "Email ou mot de passe incorrect.",
-        "errorGeneric": "Une erreur est survenue, réessayez."
+        "errorGeneric": "Une erreur est survenue, réessayez.",
+        "sessionExpired": "Votre session a expiré, reconnectez-vous."
       },
       "register": {
         "title": "Inscrivez-vous",

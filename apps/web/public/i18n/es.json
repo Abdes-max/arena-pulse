@@ -281,7 +281,13 @@
         "account": "Cuenta"
       },
       "logout": "Cerrar sesión",
-      "menu": "Menú"
+      "menu": "Menú",
+      "sessionTimeout": {
+        "title": "¿Sigues ahí?",
+        "body": "Tu sesión caducará en {{seconds}} segundos por inactividad.",
+        "stayConnected": "Permanecer conectado",
+        "logout": "Cerrar sesión"
+      }
     },
     "submenu": {
       "general": "General",
@@ -312,7 +318,8 @@
         "createOrg": "Crear una organización",
         "errorVerify": "Verifica tu email antes de iniciar sesión.",
         "errorCredentials": "Email o contraseña incorrectos.",
-        "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo."
+        "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo.",
+        "sessionExpired": "Tu sesión ha caducado, inicia sesión de nuevo."
       },
       "register": {
         "title": "Regístrate",

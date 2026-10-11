@@ -92,7 +92,14 @@
         "createOrg": "Crea una",
         "errorVerify": "Verifica tu correo antes de iniciar sesión.",
         "errorCredentials": "Correo o contraseña incorrectos.",
-        "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo."
+        "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo.",
+        "sessionExpired": "Tu sesión ha caducado, inicia sesión de nuevo."
+      },
+      "sessionTimeout": {
+        "title": "¿Sigues ahí?",
+        "body": "Tu sesión caducará en {{seconds}} segundos por inactividad.",
+        "stayConnected": "Permanecer conectado",
+        "logout": "Cerrar sesión"
       }
     },
     "tournaments": {

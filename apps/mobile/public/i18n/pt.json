@@ -92,7 +92,14 @@
         "createOrg": "Crie uma",
         "errorVerify": "Verifique o seu email antes de iniciar sessão.",
         "errorCredentials": "Email ou palavra-passe incorretos.",
-        "errorGeneric": "Ocorreu um erro, tente novamente."
+        "errorGeneric": "Ocorreu um erro, tente novamente.",
+        "sessionExpired": "A sua sessão expirou, inicie sessão novamente."
+      },
+      "sessionTimeout": {
+        "title": "Ainda está aí?",
+        "body": "A sua sessão vai expirar em {{seconds}} segundos por inatividade.",
+        "stayConnected": "Manter sessão",
+        "logout": "Terminar sessão"
       }
     },
     "tournaments": {

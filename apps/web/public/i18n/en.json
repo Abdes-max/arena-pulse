@@ -383,7 +383,13 @@
         "account": "Account"
       },
       "logout": "Log out",
-      "menu": "Menu"
+      "menu": "Menu",
+      "sessionTimeout": {
+        "title": "Still there?",
+        "body": "Your session will expire in {{seconds}} seconds due to inactivity.",
+        "stayConnected": "Stay connected",
+        "logout": "Log out"
+      }
     },
     "submenu": {
       "general": "General",
@@ -414,7 +420,8 @@
         "createOrg": "Create an organization",
         "errorVerify": "Verify your email before signing in.",
         "errorCredentials": "Incorrect email or password.",
-        "errorGeneric": "Something went wrong, please try again."
+        "errorGeneric": "Something went wrong, please try again.",
+        "sessionExpired": "Your session has expired, please sign in again."
       },
       "register": {
         "title": "Sign up",

@@ -18,6 +18,7 @@ import { GlobalErrorHandler } from './core/global-error-handler';
 import { languageInterceptor } from './core/language.interceptor';
 import { OrganizerAuthService } from './organizer/core/auth.service';
 import { organizerAuthInterceptor } from './organizer/core/auth.interceptor';
+import { SessionTimeoutService } from './organizer/core/session-timeout.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -47,6 +48,13 @@ export const appConfig: ApplicationConfig = {
     // Harmless 401 when there's no session yet, caught silently inside
     // OrganizerAuthService.silentRefresh().
     provideAppInitializer(() => inject(OrganizerAuthService).silentRefresh()),
+    // Forces SessionTimeoutService's constructor to run at startup -- it
+    // self-starts/stops by reacting to OrganizerAuthService.isAuthenticated()
+    // (see its own doc comment for why, unlike apps/web's version, which a
+    // shell component's constructor starts explicitly instead).
+    provideAppInitializer(() => {
+      inject(SessionTimeoutService);
+    }),
     // Same reasoning as apps/web's own provideTransloco (see its comment):
     // resolveInitialLanguage() so the app boots straight into the right
     // language instead of flashing fr first.

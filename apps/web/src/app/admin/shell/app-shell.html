@@ -120,3 +120,33 @@
     <router-outlet />
   </main>
 </div>
+
+@if (sessionTimeout.warningVisible()) {
+  <!-- No backdrop click-to-dismiss here (unlike the submenu's own QR/share
+       dialogs) -- an accidental click outside this one would silently
+       extend (or fail to extend) the session, neither of which the
+       organizer actually chose. Only the two buttons below act. -->
+  <div class="app-shell__session-backdrop" aria-hidden="true"></div>
+  <div
+    class="app-shell__session-dialog"
+    role="alertdialog"
+    aria-modal="true"
+    [attr.aria-label]="'admin.shell.sessionTimeout.title' | transloco"
+  >
+    <h2 class="app-shell__session-title">{{ 'admin.shell.sessionTimeout.title' | transloco }}</h2>
+    <p class="app-shell__session-body">
+      {{
+        'admin.shell.sessionTimeout.body'
+          | transloco: { seconds: sessionTimeout.secondsRemaining() }
+      }}
+    </p>
+    <div class="app-shell__session-actions">
+      <ap-button type="button" variant="ghost" (click)="logoutFromWarning()">{{
+        'admin.shell.sessionTimeout.logout' | transloco
+      }}</ap-button>
+      <ap-button type="button" (click)="extendSession()">{{
+        'admin.shell.sessionTimeout.stayConnected' | transloco
+      }}</ap-button>
+    </div>
+  </div>
+}
