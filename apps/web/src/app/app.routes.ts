@@ -28,9 +28,7 @@ export const routes: Routes = [
   {
     path: 'reset-password/:token',
     loadComponent: () =>
-      import('./admin/pages/reset-password/reset-password.page').then(
-        (m) => m.ResetPasswordPage,
-      ),
+      import('./admin/pages/reset-password/reset-password.page').then((m) => m.ResetPasswordPage),
   },
   {
     path: 'accept-invitation/:token',
