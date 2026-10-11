@@ -35,7 +35,9 @@
     <div class="organizer-login-page__fields">
       <p class="organizer-login-page__lede">{{ 'organizer.auth.login.lede' | transloco }}</p>
       @if (sessionExpired) {
-        <p class="organizer-login-page__hint">{{ 'organizer.auth.login.sessionExpired' | transloco }}</p>
+        <p class="organizer-login-page__hint">
+          {{ 'organizer.auth.login.sessionExpired' | transloco }}
+        </p>
       }
       <ap-text-field
         [label]="'organizer.auth.login.emailLabel' | transloco"
