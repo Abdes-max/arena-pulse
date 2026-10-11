@@ -58,12 +58,16 @@ export interface PublicTournamentSearchParams {
 
 // Extension derived from the validated mimetype, never from the client's
 // original filename -- same rationale as TeamsService's own logo upload.
-const TOURNAMENT_LOGO_ALLOWED_MIME_TYPES: Record<string, string> = {
+const TOURNAMENT_IMAGE_ALLOWED_MIME_TYPES: Record<string, string> = {
   'image/png': 'png',
   'image/jpeg': 'jpg',
   'image/webp': 'webp',
 };
 const TOURNAMENT_LOGO_MAX_SIZE_BYTES = 2 * 1024 * 1024;
+// Header background (full-bleed hero photo) and poster/flyer are
+// content images, not an icon -- a bigger cap than the logo's.
+const TOURNAMENT_HEADER_BACKGROUND_MAX_SIZE_BYTES = 4 * 1024 * 1024;
+const TOURNAMENT_POSTER_MAX_SIZE_BYTES = 4 * 1024 * 1024;
 
 @Injectable()
 export class TournamentsService {
@@ -1027,7 +1031,7 @@ export class TournamentsService {
       file.mimetype,
       file.size,
     );
-    await this.deleteLogoFile(tournament.logoUrl);
+    await this.deleteImageFile('tournament-logos', tournament.logoUrl);
 
     const updated = await this.prisma.tournament.update({
       where: { id: tournamentId },
@@ -1042,11 +1046,116 @@ export class TournamentsService {
       organizationId,
       tournamentId,
     );
-    await this.deleteLogoFile(tournament.logoUrl);
+    await this.deleteImageFile('tournament-logos', tournament.logoUrl);
 
     const updated = await this.prisma.tournament.update({
       where: { id: tournamentId },
       data: { logoUrl: null },
+      include: { sport: true },
+    });
+    return this.toDetail(updated);
+  }
+
+  /**
+   * Wide photo behind the public site's header (TournamentShell hero) --
+   * same premium gate/storage pattern as the logo, own subfolder. See
+   * tournament-shell.html: when set, the hero forces data-mode="dark" (the
+   * same override tournament-marquee.ts's own doc comment describes for the
+   * landing hero) so title/nav text stays legible over an arbitrary photo
+   * regardless of the visitor's light/dark toggle.
+   */
+  async uploadHeaderBackground(
+    organizationId: string,
+    tournamentId: string,
+    file: Express.Multer.File,
+  ) {
+    const tournament = await this.assertTournamentIsEditable(
+      organizationId,
+      tournamentId,
+    );
+    await this.assertPremiumFeaturesUnlocked(organizationId, tournamentId);
+
+    const headerBackgroundUrl = await this.saveImageBuffer(
+      'tournament-header-backgrounds',
+      tournamentId,
+      file.buffer,
+      file.mimetype,
+      file.size,
+      TOURNAMENT_HEADER_BACKGROUND_MAX_SIZE_BYTES,
+      'Le fond d’écran ne doit pas dépasser 4 Mo.',
+    );
+    await this.deleteImageFile(
+      'tournament-header-backgrounds',
+      tournament.headerBackgroundUrl,
+    );
+
+    const updated = await this.prisma.tournament.update({
+      where: { id: tournamentId },
+      data: { headerBackgroundUrl },
+      include: { sport: true },
+    });
+    return this.toDetail(updated);
+  }
+
+  async removeHeaderBackground(organizationId: string, tournamentId: string) {
+    const tournament = await this.assertTournamentIsEditable(
+      organizationId,
+      tournamentId,
+    );
+    await this.deleteImageFile(
+      'tournament-header-backgrounds',
+      tournament.headerBackgroundUrl,
+    );
+
+    const updated = await this.prisma.tournament.update({
+      where: { id: tournamentId },
+      data: { headerBackgroundUrl: null },
+      include: { sport: true },
+    });
+    return this.toDetail(updated);
+  }
+
+  /** Portrait poster/flyer shown on the public "Tournoi" page -- same premium gate/storage pattern as the logo, own subfolder. */
+  async uploadPoster(
+    organizationId: string,
+    tournamentId: string,
+    file: Express.Multer.File,
+  ) {
+    const tournament = await this.assertTournamentIsEditable(
+      organizationId,
+      tournamentId,
+    );
+    await this.assertPremiumFeaturesUnlocked(organizationId, tournamentId);
+
+    const posterUrl = await this.saveImageBuffer(
+      'tournament-posters',
+      tournamentId,
+      file.buffer,
+      file.mimetype,
+      file.size,
+      TOURNAMENT_POSTER_MAX_SIZE_BYTES,
+      "L'affiche ne doit pas dépasser 4 Mo.",
+    );
+    await this.deleteImageFile('tournament-posters', tournament.posterUrl);
+
+    const updated = await this.prisma.tournament.update({
+      where: { id: tournamentId },
+      data: { posterUrl },
+      include: { sport: true },
+    });
+    return this.toDetail(updated);
+  }
+
+  async removePoster(organizationId: string, tournamentId: string) {
+    const tournament = await this.assertTournamentIsEditable(
+      organizationId,
+      tournamentId,
+    );
+    await this.deleteImageFile('tournament-posters', tournament.posterUrl);
+
+    const updated = await this.prisma.tournament.update({
+      where: { id: tournamentId },
+      data: { posterUrl: null },
       include: { sport: true },
     });
     return this.toDetail(updated);
@@ -1058,14 +1167,40 @@ export class TournamentsService {
     mimetype: string,
     sizeBytes: number,
   ): Promise<string> {
-    const extension = TOURNAMENT_LOGO_ALLOWED_MIME_TYPES[mimetype];
+    return this.saveImageBuffer(
+      'tournament-logos',
+      tournamentId,
+      buffer,
+      mimetype,
+      sizeBytes,
+      TOURNAMENT_LOGO_MAX_SIZE_BYTES,
+      'Le logo ne doit pas dépasser 2 Mo.',
+    );
+  }
+
+  /**
+   * Shared by the logo/header-background/poster uploads above -- stored on
+   * local disk under UPLOADS_DIR (default ./uploads), served statically by
+   * the API itself at /uploads (see main.ts), each image kind in its own
+   * subfolder. Same layout as TeamsService.uploadLogo.
+   */
+  private async saveImageBuffer(
+    subfolder: string,
+    tournamentId: string,
+    buffer: Buffer,
+    mimetype: string,
+    sizeBytes: number,
+    maxSizeBytes: number,
+    tooLargeMessage: string,
+  ): Promise<string> {
+    const extension = TOURNAMENT_IMAGE_ALLOWED_MIME_TYPES[mimetype];
     if (!extension) {
       throw new BadRequestException(
         "Format d'image non supporté (PNG, JPEG ou WebP uniquement).",
       );
     }
-    if (sizeBytes > TOURNAMENT_LOGO_MAX_SIZE_BYTES) {
-      throw new BadRequestException('Le logo ne doit pas dépasser 2 Mo.');
+    if (sizeBytes > maxSizeBytes) {
+      throw new BadRequestException(tooLargeMessage);
     }
     if (!matchesImageMagicBytes(buffer, mimetype)) {
       throw new BadRequestException(
@@ -1073,11 +1208,11 @@ export class TournamentsService {
       );
     }
 
-    const logosDir = join(this.uploadsDir(), 'tournament-logos');
-    await fs.mkdir(logosDir, { recursive: true });
+    const dir = join(this.uploadsDir(), subfolder);
+    await fs.mkdir(dir, { recursive: true });
     const filename = `${tournamentId}-${randomUUID()}.${extension}`;
-    await fs.writeFile(join(logosDir, filename), buffer);
-    return `/uploads/tournament-logos/${filename}`;
+    await fs.writeFile(join(dir, filename), buffer);
+    return `/uploads/${subfolder}/${filename}`;
   }
 
   private uploadsDir(): string {
@@ -1085,16 +1220,19 @@ export class TournamentsService {
   }
 
   /** Best-effort: a file already gone (or never existing) is not an error. */
-  private async deleteLogoFile(logoUrl: string | null): Promise<void> {
-    if (!logoUrl) {
+  private async deleteImageFile(
+    subfolder: string,
+    imageUrl: string | null,
+  ): Promise<void> {
+    if (!imageUrl) {
       return;
     }
-    const filename = logoUrl.split('/').pop();
+    const filename = imageUrl.split('/').pop();
     if (!filename) {
       return;
     }
     try {
-      await fs.unlink(join(this.uploadsDir(), 'tournament-logos', filename));
+      await fs.unlink(join(this.uploadsDir(), subfolder, filename));
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
         throw error;
@@ -1219,6 +1357,8 @@ export class TournamentsService {
       description: tournament.description,
       rules: tournament.rules,
       practicalInfo: tournament.practicalInfo,
+      headerBackgroundUrl: tournament.headerBackgroundUrl,
+      posterUrl: tournament.posterUrl,
     };
   }
 
@@ -1595,6 +1735,8 @@ export class TournamentsService {
       description: tournament.description,
       rules: tournament.rules,
       practicalInfo: tournament.practicalInfo,
+      headerBackgroundUrl: tournament.headerBackgroundUrl,
+      posterUrl: tournament.posterUrl,
     };
   }
 }

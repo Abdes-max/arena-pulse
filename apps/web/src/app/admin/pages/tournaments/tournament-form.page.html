@@ -312,6 +312,78 @@
           </section>
 
           <section class="tournament-form-page__personalization-section">
+            <h3>{{ 'admin.tournamentForm.headerBackground.title' | transloco }}</h3>
+            <div class="tournament-form-page__logo-row">
+              @if (logoUrl(t.headerBackgroundUrl); as background) {
+                <img class="tournament-form-page__logo" [src]="background" alt="" />
+              } @else {
+                <span class="tournament-form-page__logo-placeholder" aria-hidden="true"></span>
+              }
+              <label
+                class="tournament-form-page__logo-upload"
+                [class.tournament-form-page__logo-upload--locked]="!premiumUnlocked()"
+              >
+                {{
+                  (t.headerBackgroundUrl
+                    ? 'admin.tournamentForm.headerBackground.change'
+                    : 'admin.tournamentForm.headerBackground.add') | transloco
+                }}
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  [disabled]="!premiumUnlocked()"
+                  (change)="onHeaderBackgroundFileSelected($event)"
+                />
+              </label>
+              @if (t.headerBackgroundUrl) {
+                <button
+                  type="button"
+                  class="tournament-form-page__logo-remove"
+                  (click)="removeHeaderBackground()"
+                >
+                  {{ 'admin.tournamentForm.headerBackground.remove' | transloco }}
+                </button>
+              }
+            </div>
+          </section>
+
+          <section class="tournament-form-page__personalization-section">
+            <h3>{{ 'admin.tournamentForm.poster.title' | transloco }}</h3>
+            <div class="tournament-form-page__logo-row">
+              @if (logoUrl(t.posterUrl); as poster) {
+                <img class="tournament-form-page__logo" [src]="poster" alt="" />
+              } @else {
+                <span class="tournament-form-page__logo-placeholder" aria-hidden="true"></span>
+              }
+              <label
+                class="tournament-form-page__logo-upload"
+                [class.tournament-form-page__logo-upload--locked]="!premiumUnlocked()"
+              >
+                {{
+                  (t.posterUrl
+                    ? 'admin.tournamentForm.poster.change'
+                    : 'admin.tournamentForm.poster.add') | transloco
+                }}
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                  [disabled]="!premiumUnlocked()"
+                  (change)="onPosterFileSelected($event)"
+                />
+              </label>
+              @if (t.posterUrl) {
+                <button
+                  type="button"
+                  class="tournament-form-page__logo-remove"
+                  (click)="removePoster()"
+                >
+                  {{ 'admin.tournamentForm.poster.remove' | transloco }}
+                </button>
+              }
+            </div>
+          </section>
+
+          <section class="tournament-form-page__personalization-section">
             <h3>{{ 'admin.tournamentForm.form.themeLabel' | transloco }}</h3>
             <div class="tournament-form-page__theme-grid">
               @for (choice of themeChoices(); track choice.value) {

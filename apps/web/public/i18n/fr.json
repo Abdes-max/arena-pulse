@@ -315,6 +315,11 @@
       "thirdPlace": "Pour la 3e place",
       "final": "Phase finale",
       "round": "Round {{round}}"
+    },
+    "overview": {
+      "location": "Lieu",
+      "online": "En ligne",
+      "poster": "Affiche du tournoi"
     }
   },
   "schedule": {
@@ -720,13 +725,29 @@
         "removeVenue": "Impossible de supprimer ce site.",
         "addField": "Impossible d'ajouter ce terrain (nom déjà utilisé ?).",
         "removeField": "Impossible de supprimer ce terrain.",
-        "logoPremiumLocked": "Réservé aux tournois de plus de {{count}} équipes ou à un abonnement annuel actif."
+        "logoPremiumLocked": "Réservé aux tournois de plus de {{count}} équipes ou à un abonnement annuel actif.",
+        "imageInvalid": "Format ou taille de fichier invalide (PNG, JPEG ou WebP, 4 Mo maximum).",
+        "imageUpload": "Impossible d'envoyer cette image, réessayez.",
+        "imageRemove": "Impossible de retirer cette image.",
+        "imagePremiumLocked": "Réservé aux tournois de plus de {{count}} équipes ou à un abonnement annuel actif."
       },
       "personalization": {
         "title": "Personnalisation",
         "open": "Modifier le logo et le thème",
         "close": "Fermer",
         "premiumHint": "Le logo et le choix du thème sont réservés aux tournois de plus de {{count}} équipes ou à un abonnement au plan à 25 € actif. En dessous de {{count}} équipes, passez au plan supérieur pour les débloquer."
+      },
+      "headerBackground": {
+        "title": "Fond d'écran de l'entête",
+        "change": "Changer",
+        "add": "Ajouter un fond d'écran",
+        "remove": "Retirer"
+      },
+      "poster": {
+        "title": "Affiche / flyer",
+        "change": "Changer",
+        "add": "Ajouter une affiche",
+        "remove": "Retirer"
       }
     },
     "teamList": {

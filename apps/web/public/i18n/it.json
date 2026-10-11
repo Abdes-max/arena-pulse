@@ -213,6 +213,11 @@
       "thirdPlace": "Per il 3° posto",
       "final": "Fase finale",
       "round": "Turno {{round}}"
+    },
+    "overview": {
+      "location": "Luogo",
+      "online": "Online",
+      "poster": "Locandina del torneo"
     }
   },
   "schedule": {
@@ -618,13 +623,29 @@
         "removeVenue": "Impossibile eliminare questa sede.",
         "addField": "Impossibile aggiungere questo campo (nome già utilizzato?).",
         "removeField": "Impossibile eliminare questo campo.",
-        "logoPremiumLocked": "Riservato ai tornei con più di {{count}} squadre o con un abbonamento annuale attivo."
+        "logoPremiumLocked": "Riservato ai tornei con più di {{count}} squadre o con un abbonamento annuale attivo.",
+        "imageInvalid": "Formato o dimensione del file non valido (PNG, JPEG o WebP, 4 MB massimo).",
+        "imageUpload": "Impossibile caricare questa immagine, riprova.",
+        "imageRemove": "Impossibile rimuovere questa immagine.",
+        "imagePremiumLocked": "Riservato ai tornei con più di {{count}} squadre o con un abbonamento annuale attivo."
       },
       "personalization": {
         "title": "Personalizzazione",
         "open": "Modifica logo e tema",
         "close": "Chiudi",
         "premiumHint": "Il logo e la scelta del tema sono riservati ai tornei con più di {{count}} squadre, o a un abbonamento attivo al piano da 25 €. Con meno di {{count}} squadre, esegui l’upgrade per sbloccarli."
+      },
+      "headerBackground": {
+        "title": "Sfondo dell'intestazione",
+        "change": "Cambia",
+        "add": "Aggiungi uno sfondo",
+        "remove": "Rimuovi"
+      },
+      "poster": {
+        "title": "Locandina / flyer",
+        "change": "Cambia",
+        "add": "Aggiungi una locandina",
+        "remove": "Rimuovi"
       }
     },
     "teamList": {

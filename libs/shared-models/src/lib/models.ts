@@ -90,6 +90,11 @@ export interface PublicTournament {
   isOnline: boolean;
   theme: PublicTheme;
   logoUrl: string | null;
+  // Wide photo behind the public site's header (TournamentShell hero) and
+  // the portrait poster/flyer shown on the "Tournoi" page -- both null
+  // until the organizer uploads one, same premium gate as logoUrl.
+  headerBackgroundUrl: string | null;
+  posterUrl: string | null;
   description: string | null;
   rules: string | null;
   practicalInfo: string | null;

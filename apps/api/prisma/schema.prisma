@@ -236,6 +236,15 @@ model Tournament {
   // Public path served by the API (e.g. /uploads/tournament-logos/<file>) --
   // see TournamentsService.uploadLogo. Null until an organizer uploads one.
   logoUrl         String?
+  // Wide photo shown behind the public site's header (TournamentShell hero)
+  // -- see TournamentsService.uploadHeaderBackground. Same
+  // premium-feature gate and storage pattern as logoUrl, own
+  // tournament-header-backgrounds subfolder.
+  headerBackgroundUrl String?
+  // Portrait poster/flyer shown on the public "Tournoi" page -- see
+  // TournamentsService.uploadPoster. Same gate/pattern as logoUrl, own
+  // tournament-posters subfolder.
+  posterUrl       String?
   // Free-text content shown on the tournament's public "Tournoi" page --
   // null until the organizer fills them in. Markdown-free plain text on
   // purpose (rendered with white-space: pre-line), same as every other
