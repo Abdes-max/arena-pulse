@@ -542,10 +542,13 @@
         "table": {
           "date": "Data",
           "teams": "Equipas",
+          "plan": "Plano",
           "amount": "Montante",
+          "discount": "Desconto",
           "status": "Estado"
         },
         "paid": "Pago",
+        "free": "Gratuito",
         "pending": "Pendente",
         "print": "Imprimir",
         "viewReceipt": "Ver o recibo"

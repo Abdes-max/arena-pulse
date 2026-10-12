@@ -542,10 +542,13 @@
         "table": {
           "date": "Data",
           "teams": "Squadre",
+          "plan": "Piano",
           "amount": "Importo",
+          "discount": "Sconto",
           "status": "Stato"
         },
         "paid": "Pagato",
+        "free": "Gratuito",
         "pending": "In attesa",
         "print": "Stampa",
         "viewReceipt": "Visualizza la ricevuta"

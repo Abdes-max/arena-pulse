@@ -87,7 +87,7 @@ function createPrismaMock(): PrismaMock {
       // Default: no publication order has ever been paid for this
       // tournament -- highestPaidPublicationFeeCents() falls back to 0.
       // Individual tests below override this to simulate a prior payment.
-      aggregate: jest.fn().mockResolvedValue({ _sum: { amountCents: null } }),
+      aggregate: jest.fn().mockResolvedValue({ _sum: { tierCents: null } }),
     },
     $transaction: jest.fn(async (arg: unknown) => {
       if (typeof arg === 'function') {
@@ -381,6 +381,30 @@ describe('TournamentsService', () => {
         service.assertPremiumFeaturesUnlocked('org-1', 'tournament-1'),
       ).resolves.toBeUndefined();
     });
+
+    it('unlocks regardless of team count when a paid tier was bought, even if a coupon discounted amountCents to 0', async () => {
+      prisma.team.count.mockResolvedValue(3); // below the free max
+      organizationsService.hasActiveSubscription.mockResolvedValue(false);
+      prisma.tournamentPublicationOrder.aggregate.mockResolvedValue({
+        _sum: { tierCents: 1900 }, // the tier was genuinely purchased...
+      });
+
+      await expect(
+        service.hasPremiumFeatures('org-1', 'tournament-1'),
+      ).resolves.toBe(true); // ...regardless of what amountCents ended up being
+    });
+
+    it('stays locked for a genuinely free tournament (tierCents 0) even though a PAID order row exists', async () => {
+      prisma.team.count.mockResolvedValue(3);
+      organizationsService.hasActiveSubscription.mockResolvedValue(false);
+      prisma.tournamentPublicationOrder.aggregate.mockResolvedValue({
+        _sum: { tierCents: 0 },
+      });
+
+      await expect(
+        service.hasPremiumFeatures('org-1', 'tournament-1'),
+      ).resolves.toBe(false);
+    });
   });
 
   describe('assertTeamAdditionAllowed', () => {
@@ -412,12 +436,42 @@ describe('TournamentsService', () => {
         tournamentFixture({ status: TournamentStatus.PUBLISHED }),
       );
       prisma.tournamentPublicationOrder.aggregate.mockResolvedValue({
-        _sum: { amountCents: 0 },
+        _sum: { tierCents: 0 },
       });
       prisma.team.count.mockResolvedValue(3); // 3 -> 4, still free tier
 
       await expect(
         service.assertTeamAdditionAllowed('org-1', 'tournament-1'),
+      ).resolves.toBeUndefined();
+    });
+
+    it('does not falsely block when the already-paid tier was discounted to 0 via coupon', async () => {
+      const paidService = new TournamentsService(
+        prisma as unknown as PrismaService,
+        stripeService as unknown as StripeService,
+        createRevenueCatServiceMock() as unknown as RevenueCatService,
+        createConfigServiceMock({
+          TOURNAMENT_PUBLICATION_TIER_MID_PRICE_CENTS: '2500',
+          TOURNAMENT_PUBLICATION_TIER_HIGH_PRICE_CENTS: '8000',
+        }),
+        organizationsService as unknown as OrganizationsService,
+        mailService as unknown as MailService,
+      );
+      prisma.tournament.findUnique.mockResolvedValue(
+        tournamentFixture({ status: TournamentStatus.PUBLISHED }),
+      );
+      organizationsService.hasActiveSubscription.mockResolvedValue(false);
+      // tierCents still reflects the full STANDARD tier that was genuinely
+      // purchased, even though the order's own amountCents was discounted
+      // to 0 by a 100%-off coupon -- assertTeamAdditionAllowed must key off
+      // tierCents, not amountCents, or this would wrongly throw.
+      prisma.tournamentPublicationOrder.aggregate.mockResolvedValue({
+        _sum: { tierCents: 2500 },
+      });
+      prisma.team.count.mockResolvedValue(10); // still within STANDARD's range
+
+      await expect(
+        paidService.assertTeamAdditionAllowed('org-1', 'tournament-1'),
       ).resolves.toBeUndefined();
     });
 
@@ -437,7 +491,7 @@ describe('TournamentsService', () => {
         tournamentFixture({ status: TournamentStatus.PUBLISHED }),
       );
       prisma.tournamentPublicationOrder.aggregate.mockResolvedValue({
-        _sum: { amountCents: 0 },
+        _sum: { tierCents: 0 },
       });
       prisma.team.count.mockResolvedValue(8); // 8 -> 9, crosses into the mid tier
 
@@ -474,7 +528,7 @@ describe('TournamentsService', () => {
         tournamentFixture({ status: TournamentStatus.PUBLISHED }),
       );
       prisma.tournamentPublicationOrder.aggregate.mockResolvedValue({
-        _sum: { amountCents: 0 },
+        _sum: { tierCents: 0 },
       });
       prisma.category.count.mockResolvedValue(1);
       prisma.team.count.mockResolvedValue(8); // still 8 -- the blocked 9th team was never created
@@ -505,7 +559,7 @@ describe('TournamentsService', () => {
         tournamentFixture({ status: TournamentStatus.PUBLISHED }),
       );
       prisma.tournamentPublicationOrder.aggregate.mockResolvedValue({
-        _sum: { amountCents: 0 },
+        _sum: { tierCents: 0 },
       });
       prisma.team.count.mockResolvedValue(3);
 
@@ -536,7 +590,7 @@ describe('TournamentsService', () => {
       );
       prisma.tournament.findUnique.mockResolvedValue(tournamentFixture());
       prisma.tournamentPublicationOrder.aggregate.mockResolvedValue({
-        _sum: { amountCents: null },
+        _sum: { tierCents: null },
       });
       prisma.category.count.mockResolvedValue(1);
       prisma.team.count.mockResolvedValue(3); // deliberately irrelevant here
@@ -574,7 +628,7 @@ describe('TournamentsService', () => {
       );
       prisma.tournament.findUnique.mockResolvedValue(tournamentFixture());
       prisma.tournamentPublicationOrder.aggregate.mockResolvedValue({
-        _sum: { amountCents: 2500 },
+        _sum: { tierCents: 2500 },
       });
       prisma.category.count.mockResolvedValue(1);
       prisma.team.count.mockResolvedValue(3);
@@ -592,7 +646,7 @@ describe('TournamentsService', () => {
     it('returns PUBLISHED without charging when the chosen tier is already covered', async () => {
       prisma.tournament.findUnique.mockResolvedValue(tournamentFixture());
       prisma.tournamentPublicationOrder.aggregate.mockResolvedValue({
-        _sum: { amountCents: 8000 },
+        _sum: { tierCents: 8000 },
       });
       prisma.category.count.mockResolvedValue(1);
       prisma.team.count.mockResolvedValue(3);
@@ -739,7 +793,7 @@ describe('TournamentsService', () => {
         tournamentFixture({ status: TournamentStatus.PUBLISHED }),
       );
       prisma.tournamentPublicationOrder.aggregate.mockResolvedValue({
-        _sum: { amountCents: 0 },
+        _sum: { tierCents: 0 },
       });
       prisma.category.count.mockResolvedValue(1);
       prisma.team.count.mockResolvedValue(3); // still free tier, same as when first published
@@ -771,7 +825,7 @@ describe('TournamentsService', () => {
       );
       // Already paid the mid tier (2500) once, at first publication.
       prisma.tournamentPublicationOrder.aggregate.mockResolvedValue({
-        _sum: { amountCents: 2500 },
+        _sum: { tierCents: 2500 },
       });
       prisma.category.count.mockResolvedValue(1);
       prisma.team.count.mockResolvedValue(49); // now past the mid tier's 48-team bound
@@ -782,8 +836,9 @@ describe('TournamentsService', () => {
       const result = await paidService.publish('org-1', 'tournament-1');
 
       const [[createCall]] = prisma.tournamentPublicationOrder.create.mock
-        .calls as [[{ data: { amountCents: number } }]];
+        .calls as [[{ data: { amountCents: number; tierCents: number } }]];
       expect(createCall.data.amountCents).toBe(5500); // 8000 - 2500, not the full 8000
+      expect(createCall.data.tierCents).toBe(5500);
       expect(stripeService.createCheckoutSession).toHaveBeenCalledWith(
         expect.objectContaining({ amountCents: 5500 }),
       );
@@ -816,7 +871,7 @@ describe('TournamentsService', () => {
         tournamentFixture({ status: TournamentStatus.PUBLISHED }),
       );
       prisma.tournamentPublicationOrder.aggregate.mockResolvedValue({
-        _sum: { amountCents: 8000 }, // 2500 (STANDARD) + 5500 (LARGE top-up)
+        _sum: { tierCents: 8000 }, // 2500 (STANDARD) + 5500 (LARGE top-up)
       });
       prisma.category.count.mockResolvedValue(1);
       prisma.team.count.mockResolvedValue(49);
@@ -827,7 +882,7 @@ describe('TournamentsService', () => {
       const result = await service.publish('org-1', 'tournament-1');
 
       expect(prisma.tournamentPublicationOrder.aggregate).toHaveBeenCalledWith(
-        expect.objectContaining({ _sum: { amountCents: true } }),
+        expect.objectContaining({ _sum: { tierCents: true } }),
       );
       expect(result).toMatchObject({ status: TournamentStatus.PUBLISHED });
       expect(stripeService.createCheckoutSession).not.toHaveBeenCalled();
@@ -859,11 +914,14 @@ describe('TournamentsService', () => {
 
       expect(result).toMatchObject({ status: TournamentStatus.PUBLISHED });
       const [[createCall]] = prisma.tournamentPublicationOrder.create.mock
-        .calls as [[{ data: { status: string; amountCents: number } }]];
+        .calls as [
+        [{ data: { status: string; amountCents: number; tierCents: number } }],
+      ];
       expect(createCall.data.status).toBe(
         TournamentPublicationOrderStatus.PAID,
       );
       expect(createCall.data.amountCents).toBe(0);
+      expect(createCall.data.tierCents).toBe(0);
       expect(stripeService.createCheckoutSession).not.toHaveBeenCalled();
     });
 
@@ -955,15 +1013,18 @@ describe('TournamentsService', () => {
 
       expect(result).toMatchObject({ status: TournamentStatus.PUBLISHED });
       const [[createCall]] = prisma.tournamentPublicationOrder.create.mock
-        .calls as [[{ data: { status: string; amountCents: number } }]];
+        .calls as [
+        [{ data: { status: string; amountCents: number; tierCents: number } }],
+      ];
       expect(createCall.data.amountCents).toBe(0);
+      expect(createCall.data.tierCents).toBe(0);
       expect(stripeService.createCheckoutSession).not.toHaveBeenCalled();
     });
 
     it('skips payment and publishes directly when a PAID order already covers the current tier (republish)', async () => {
       prisma.tournament.findUnique.mockResolvedValue(tournamentFixture());
       prisma.tournamentPublicationOrder.aggregate.mockResolvedValue({
-        _sum: { amountCents: 0 },
+        _sum: { tierCents: 0 },
       });
       prisma.category.count.mockResolvedValue(1);
       prisma.team.count.mockResolvedValue(3);
@@ -1309,6 +1370,193 @@ describe('TournamentsService', () => {
         'fr',
       );
     });
+
+    it('captures a percentage-off coupon applied at checkout', async () => {
+      prisma.tournamentPublicationOrder.findUnique.mockResolvedValue({
+        id: 'order-1',
+        status: TournamentPublicationOrderStatus.PENDING_PAYMENT,
+        tournamentId: 'tournament-1',
+        amountCents: 1900,
+        currency: 'eur',
+        tournament: { name: 'Coupe de printemps', organizationId: 'org-1' },
+      });
+      stripeService.retrieveCheckoutSession
+        .mockResolvedValueOnce({
+          id: 'cs_test_publish_123',
+          payment_status: 'paid',
+          payment_intent: 'pi_123',
+          amount_total: 950,
+        })
+        .mockResolvedValueOnce({
+          id: 'cs_test_publish_123',
+          total_details: {
+            breakdown: {
+              discounts: [
+                {
+                  discount: {
+                    source: { coupon: { percent_off: 50, amount_off: null } },
+                  },
+                },
+              ],
+            },
+          },
+        });
+      prisma.tournamentPublicationOrder.update.mockResolvedValue({
+        tournament: { name: 'Coupe de printemps', organizationId: 'org-1' },
+        amountCents: 950,
+        currency: 'eur',
+      });
+      prisma.tournament.update.mockResolvedValue({});
+      prisma.tournament.findUnique.mockResolvedValue(
+        tournamentFixture({ status: TournamentStatus.PUBLISHED }),
+      );
+      organizationsService.getAdminEmails.mockResolvedValue([
+        'admin1@example.com',
+      ]);
+
+      await service.confirmPublicationPayment(
+        'org-1',
+        'tournament-1',
+        'cs_test_publish_123',
+      );
+
+      expect(stripeService.retrieveCheckoutSession).toHaveBeenNthCalledWith(
+        2,
+        'cs_test_publish_123',
+        ['total_details.breakdown.discounts.discount.source.coupon'],
+      );
+      const [[updateCall]] = prisma.tournamentPublicationOrder.update.mock
+        .calls as [
+        [
+          {
+            data: {
+              discountPercent: number | null;
+              discountAmountCents: number | null;
+            };
+          },
+        ],
+      ];
+      expect(updateCall.data.discountPercent).toBe(50);
+      expect(updateCall.data.discountAmountCents).toBeNull();
+    });
+
+    it('captures a fixed-amount-off coupon applied at checkout', async () => {
+      prisma.tournamentPublicationOrder.findUnique.mockResolvedValue({
+        id: 'order-1',
+        status: TournamentPublicationOrderStatus.PENDING_PAYMENT,
+        tournamentId: 'tournament-1',
+        amountCents: 1900,
+        currency: 'eur',
+        tournament: { name: 'Coupe de printemps', organizationId: 'org-1' },
+      });
+      stripeService.retrieveCheckoutSession
+        .mockResolvedValueOnce({
+          id: 'cs_test_publish_123',
+          payment_status: 'paid',
+          payment_intent: 'pi_123',
+          amount_total: 1400,
+        })
+        .mockResolvedValueOnce({
+          id: 'cs_test_publish_123',
+          total_details: {
+            breakdown: {
+              discounts: [
+                {
+                  discount: {
+                    source: { coupon: { percent_off: null, amount_off: 500 } },
+                  },
+                },
+              ],
+            },
+          },
+        });
+      prisma.tournamentPublicationOrder.update.mockResolvedValue({
+        tournament: { name: 'Coupe de printemps', organizationId: 'org-1' },
+        amountCents: 1400,
+        currency: 'eur',
+      });
+      prisma.tournament.update.mockResolvedValue({});
+      prisma.tournament.findUnique.mockResolvedValue(
+        tournamentFixture({ status: TournamentStatus.PUBLISHED }),
+      );
+      organizationsService.getAdminEmails.mockResolvedValue([
+        'admin1@example.com',
+      ]);
+
+      await service.confirmPublicationPayment(
+        'org-1',
+        'tournament-1',
+        'cs_test_publish_123',
+      );
+
+      const [[updateCall]] = prisma.tournamentPublicationOrder.update.mock
+        .calls as [
+        [
+          {
+            data: {
+              discountPercent: number | null;
+              discountAmountCents: number | null;
+            };
+          },
+        ],
+      ];
+      expect(updateCall.data.discountPercent).toBeNull();
+      expect(updateCall.data.discountAmountCents).toBe(500);
+    });
+
+    it('leaves both discount fields null when no coupon was applied', async () => {
+      prisma.tournamentPublicationOrder.findUnique.mockResolvedValue({
+        id: 'order-1',
+        status: TournamentPublicationOrderStatus.PENDING_PAYMENT,
+        tournamentId: 'tournament-1',
+        amountCents: 1900,
+        currency: 'eur',
+        tournament: { name: 'Coupe de printemps', organizationId: 'org-1' },
+      });
+      stripeService.retrieveCheckoutSession
+        .mockResolvedValueOnce({
+          id: 'cs_test_publish_123',
+          payment_status: 'paid',
+          payment_intent: 'pi_123',
+          amount_total: 1900,
+        })
+        .mockResolvedValueOnce({
+          id: 'cs_test_publish_123',
+          total_details: { breakdown: { discounts: [] } },
+        });
+      prisma.tournamentPublicationOrder.update.mockResolvedValue({
+        tournament: { name: 'Coupe de printemps', organizationId: 'org-1' },
+        amountCents: 1900,
+        currency: 'eur',
+      });
+      prisma.tournament.update.mockResolvedValue({});
+      prisma.tournament.findUnique.mockResolvedValue(
+        tournamentFixture({ status: TournamentStatus.PUBLISHED }),
+      );
+      organizationsService.getAdminEmails.mockResolvedValue([
+        'admin1@example.com',
+      ]);
+
+      await service.confirmPublicationPayment(
+        'org-1',
+        'tournament-1',
+        'cs_test_publish_123',
+      );
+
+      const [[updateCall]] = prisma.tournamentPublicationOrder.update.mock
+        .calls as [
+        [
+          {
+            data: {
+              discountPercent: number | null;
+              discountAmountCents: number | null;
+            };
+          },
+        ],
+      ];
+      expect(updateCall.data.discountPercent).toBeNull();
+      expect(updateCall.data.discountAmountCents).toBeNull();
+    });
   });
 
   // Regression coverage for the 2026-09-29 App Review rejection under
@@ -1448,10 +1696,19 @@ describe('TournamentsService', () => {
       );
       const [[createCall]] = prisma.tournamentPublicationOrder.create.mock
         .calls as [
-        [{ data: { revenueCatTransactionId: string; amountCents: number } }],
+        [
+          {
+            data: {
+              revenueCatTransactionId: string;
+              amountCents: number;
+              tierCents: number;
+            };
+          },
+        ],
       ];
       expect(createCall.data.revenueCatTransactionId).toBe('txn-new');
       expect(createCall.data.amountCents).toBe(2500);
+      expect(createCall.data.tierCents).toBe(2500);
       expect(result.id).toBe('tournament-1');
     });
   });

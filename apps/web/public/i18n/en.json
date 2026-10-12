@@ -644,10 +644,13 @@
         "table": {
           "date": "Date",
           "teams": "Teams",
+          "plan": "Plan",
           "amount": "Amount",
+          "discount": "Discount",
           "status": "Status"
         },
         "paid": "Paid",
+        "free": "Free",
         "pending": "Pending",
         "print": "Print",
         "viewReceipt": "View receipt"

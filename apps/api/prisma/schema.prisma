@@ -222,27 +222,27 @@ model Sport {
 }
 
 model Tournament {
-  id              String           @id @default(uuid())
-  organizationId  String
-  sportId         String
-  name            String
-  slug            String           @unique
-  status          TournamentStatus @default(DRAFT)
-  startDate       DateTime?
-  endDate         DateTime?
-  isOnline        Boolean          @default(false)
-  teamsCanReferee Boolean          @default(false)
+  id                  String           @id @default(uuid())
+  organizationId      String
+  sportId             String
+  name                String
+  slug                String           @unique
+  status              TournamentStatus @default(DRAFT)
+  startDate           DateTime?
+  endDate             DateTime?
+  isOnline            Boolean          @default(false)
+  teamsCanReferee     Boolean          @default(false)
   // Whether a PUBLISHED tournament appears in the public directory search
   // (GET /public/tournaments, /public/tournaments/search) -- independent
   // from `status`. A private tournament (false) stays reachable by its
   // direct slug link (getPublicBySlug is not gated by this field) but is
   // absent from every listing. Defaults to true so every tournament
   // published before this field existed keeps its current behavior.
-  isListed        Boolean          @default(true)
-  theme           PublicTheme      @default(INK_SIGNAL)
+  isListed            Boolean          @default(true)
+  theme               PublicTheme      @default(INK_SIGNAL)
   // Public path served by the API (e.g. /uploads/tournament-logos/<file>) --
   // see TournamentsService.uploadLogo. Null until an organizer uploads one.
-  logoUrl         String?
+  logoUrl             String?
   // Wide photo shown behind the public site's header (TournamentShell hero)
   // -- see TournamentsService.uploadHeaderBackground. Same
   // premium-feature gate and storage pattern as logoUrl, own
@@ -251,17 +251,17 @@ model Tournament {
   // Portrait poster/flyer shown on the public "Tournoi" page -- see
   // TournamentsService.uploadPoster. Same gate/pattern as logoUrl, own
   // tournament-posters subfolder.
-  posterUrl       String?
+  posterUrl           String?
   // Free-text content shown on the tournament's public "Tournoi" page --
   // null until the organizer fills them in. Markdown-free plain text on
   // purpose (rendered with white-space: pre-line), same as every other
   // organizer-authored text field in this schema.
-  description     String?
-  rules           String?
-  practicalInfo   String?
-  archivedAt      DateTime?
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  description         String?
+  rules               String?
+  practicalInfo       String?
+  archivedAt          DateTime?
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
 
   organization      Organization                 @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   sport             Sport                        @relation(fields: [sportId], references: [id], onDelete: Restrict)
@@ -831,6 +831,21 @@ model TournamentPublicationOrder {
   categoriesCount         Int
   teamsCount              Int
   amountCents             Int
+  // The tier's flat asking/sticker price in cents at the moment this order
+  // was created (createPendingPublicationCheckout, or publish()'s own $0
+  // free-tier branch) -- unlike amountCents, NEVER updated afterward by
+  // applyPaidPublicationSession, so it keeps identifying which tier this
+  // order represents even when a Stripe coupon makes the amount actually
+  // charged (amountCents) drop below it, down to 0 for a 100%-off coupon.
+  // 0 for a genuine free-tier order; matches amountCents exactly at creation
+  // time, before any discount is ever applied.
+  tierCents               Int
+  // Stripe coupon detail captured at payment confirmation time, for display
+  // only (apps/web's payment-history table) -- at most one of the two is
+  // set, mirroring Stripe's own coupon shape (percent_off XOR amount_off).
+  // Both null when no coupon was applied.
+  discountPercent         Int?
+  discountAmountCents     Int?
   currency                String
   stripeCheckoutSessionId String?                          @unique
   stripePaymentIntentId   String?
@@ -871,20 +886,20 @@ enum OrganizationSubscriptionStatus {
 // expiring subscription never un-publishes anything already live (see ADR
 // 0006's revision) -- it only stops covering *future* publish() calls.
 model OrganizationSubscription {
-  id                      String                          @id @default(uuid())
+  id                      String                         @id @default(uuid())
   organizationId          String
-  status                  OrganizationSubscriptionStatus  @default(PENDING_PAYMENT)
+  status                  OrganizationSubscriptionStatus @default(PENDING_PAYMENT)
   startsAt                DateTime?
   expiresAt               DateTime?
   amountCents             Int
   currency                String
-  stripeCheckoutSessionId String?                         @unique
+  stripeCheckoutSessionId String?                        @unique
   stripePaymentIntentId   String?
   // Same convention as TournamentPublicationOrder's own field of the
   // same name -- set for an iOS annual-subscription In-App Purchase
   // instead of the stripe* fields above.
-  revenueCatTransactionId String?                         @unique
-  createdAt               DateTime                        @default(now())
+  revenueCatTransactionId String?                        @unique
+  createdAt               DateTime                       @default(now())
   paidAt                  DateTime?
 
   organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)

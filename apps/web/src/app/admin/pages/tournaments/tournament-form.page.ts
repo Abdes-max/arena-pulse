@@ -203,7 +203,7 @@ export class TournamentFormPage {
   };
 
   // Mirrors TournamentsService.tierCodeForFeeCents (apps/api) exactly --
-  // the SUM of every PAID order's amountCents is the source of truth for
+  // the SUM of every PAID order's tierCents is the source of truth for
   // "what's already been paid for" (never the tournament's current team
   // count, which can grow past what was paid for and get blocked
   // separately, see assertTeamAdditionAllowed). A sum, not the largest
@@ -211,17 +211,50 @@ export class TournamentFormPage {
   // (requiredCents - alreadyPaidCents at the time it was charged), so
   // taking just the max under-counts as soon as a tournament crosses a
   // second tier (e.g. FREE->STANDARD->LARGE): the LARGE top-up's own amount
-  // can be smaller than the STANDARD order before it.
+  // can be smaller than the STANDARD order before it. Summed on tierCents,
+  // not amountCents: a Stripe coupon can discount the amount actually
+  // charged below the tier's sticker price, down to 0 for a 100%-off
+  // coupon, but the tier itself was still genuinely unlocked.
   protected readonly currentTierCode = computed<'FREE' | 'STANDARD' | 'LARGE'>(() => {
-    const totalPaidCents = this.publicationOrders()
+    const totalPaidTierCents = this.publicationOrders()
       .filter((order) => order.status === 'PAID')
-      .reduce((sum, order) => sum + order.amountCents, 0);
-    if (totalPaidCents <= 0) {
+      .reduce((sum, order) => sum + order.tierCents, 0);
+    if (totalPaidTierCents <= 0) {
       return 'FREE';
     }
     const highPriceCents = this.highPriceCents();
-    return totalPaidCents >= highPriceCents && highPriceCents > 0 ? 'LARGE' : 'STANDARD';
+    return totalPaidTierCents >= highPriceCents && highPriceCents > 0 ? 'LARGE' : 'STANDARD';
   });
+
+  // Per-row mirror of currentTierCode's own threshold logic, for the "Plan"
+  // column of the payment-history table -- which tier THIS one order
+  // represents, independent of any discount (tierCents, not amountCents).
+  protected tierLabelForOrder(order: PublicationOrder): string {
+    const lang = this.languageService.language();
+    if (order.tierCents <= 0) {
+      return this.transloco.translate('landing.pricing.free.tag', {}, lang);
+    }
+    const highPriceCents = this.highPriceCents();
+    const key =
+      order.tierCents >= highPriceCents && highPriceCents > 0
+        ? 'landing.pricing.large.tag'
+        : 'landing.pricing.standard.tag';
+    return this.transloco.translate(key, {}, lang);
+  }
+
+  // "Réduction" column -- the Stripe coupon applied to this order, if any.
+  // At most one of discountPercent/discountAmountCents is ever set (mirrors
+  // Stripe's own coupon shape: percent_off XOR amount_off). Null when no
+  // coupon was applied.
+  protected discountLabelForOrder(order: PublicationOrder): string | null {
+    if (order.discountPercent != null) {
+      return `-${order.discountPercent}%`;
+    }
+    if (order.discountAmountCents != null) {
+      return `-${this.formatAmount(order.discountAmountCents, order.currency)}`;
+    }
+    return null;
+  }
 
   // Set when the organizer clicks a higher tier's card -- the confirm popup
   // (template) reads this to show "changer de plan de X à Y ?" before

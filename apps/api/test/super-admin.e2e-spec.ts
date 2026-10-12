@@ -311,6 +311,7 @@ describe('Super admin data endpoints (e2e)', () => {
         categoriesCount: 0,
         teamsCount: 0,
         amountCents: 2500,
+        tierCents: 2500,
         currency: 'eur',
       },
     });

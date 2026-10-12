@@ -57,7 +57,9 @@
                   <tr>
                     <th>{{ 'admin.tournamentForm.payment.table.date' | transloco }}</th>
                     <th>{{ 'admin.tournamentForm.payment.table.teams' | transloco }}</th>
+                    <th>{{ 'admin.tournamentForm.payment.table.plan' | transloco }}</th>
                     <th>{{ 'admin.tournamentForm.payment.table.amount' | transloco }}</th>
+                    <th>{{ 'admin.tournamentForm.payment.table.discount' | transloco }}</th>
                     <th>{{ 'admin.tournamentForm.payment.table.status' | transloco }}</th>
                     <th></th>
                   </tr>
@@ -67,12 +69,31 @@
                     <tr>
                       <td>{{ formatDate(order.paidAt ?? order.createdAt) }}</td>
                       <td>{{ order.teamsCount }}</td>
+                      <td>{{ tierLabelForOrder(order) }}</td>
                       <td>{{ formatAmount(order.amountCents, order.currency) }}</td>
                       <td>
-                        @if (order.status === 'PAID') {
+                        @if (discountLabelForOrder(order); as discount) {
+                          {{ discount }}
+                        } @else {
+                          —
+                        }
+                      </td>
+                      <td>
+                        @if (order.status === 'PAID' && order.tierCents > 0) {
+                          <!-- A genuine paid tier -- "payé" holds even when
+                               amountCents is 0 (a 100%-off coupon), since
+                               tierCents (not amountCents) is what identifies
+                               a real paid-tier purchase. -->
                           <ap-badge
                             status="published"
                             [label]="'admin.tournamentForm.payment.paid' | transloco"
+                          />
+                        } @else if (order.status === 'PAID') {
+                          <!-- tierCents <= 0: a genuinely free-tier order,
+                               never actually "paid" for anything. -->
+                          <ap-badge
+                            status="unpublished"
+                            [label]="'admin.tournamentForm.payment.free' | transloco"
                           />
                         } @else {
                           <ap-badge
@@ -87,7 +108,7 @@
                                receipt from the actual Charge) -- preferred
                                over the custom print-only view below
                                whenever a real Stripe payment produced one
-                               (never true for a $0 free-tier order). -->
+                               (never true for a genuinely free-tier order). -->
                           <a
                             [href]="order.stripeReceiptUrl"
                             target="_blank"
@@ -96,10 +117,12 @@
                           >
                             {{ 'admin.tournamentForm.payment.viewReceipt' | transloco }}
                           </a>
-                        } @else if (order.status === 'PAID' && order.amountCents > 0) {
-                          <!-- A €0 free-tier order never goes through Stripe,
-                               so there's no real receipt to print or link to
-                               -- no button at all rather than a fake one. -->
+                        } @else if (order.status === 'PAID' && order.tierCents > 0) {
+                          <!-- A genuinely free-tier order never goes through
+                               Stripe, so there's no real receipt to print or
+                               link to -- no button at all rather than a fake
+                               one. tierCents, not amountCents: a paid tier
+                               discounted to 0 via coupon still printable. -->
                           <button
                             type="button"
                             class="tournament-form-page__print-btn"
