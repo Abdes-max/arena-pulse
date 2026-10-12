@@ -93,12 +93,33 @@
           <span>{{ dates }}</span>
         }
         @if (t.venues.length > 0) {
-          <span>
-            {{ t.venues.length }}
-            {{ (t.venues.length > 1 ? 'shell.venues' : 'shell.venue') | transloco }}
+          <span class="tournament-shell__venue">
+            <svg
+              class="tournament-shell__venue-icon"
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              aria-hidden="true"
+            >
+              <path
+                fill="currentColor"
+                d="M12 2c-4.4 0-8 3.6-8 8 0 5.4 7 11.5 7.3 11.7.2.2.5.3.7.3s.5-.1.7-.3C12.9 21.5 20 15.4 20 10c0-4.4-3.6-8-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"
+              />
+            </svg>
+            {{ t.venues[0].name }}
+            @if (t.venues.length > 1) {
+              <span class="tournament-shell__venue-more">+{{ t.venues.length - 1 }}</span>
+            }
           </span>
         }
       </p>
+      @if (categories().length > 0) {
+        <ul class="tournament-shell__categories">
+          @for (category of categories(); track category.id) {
+            <li>{{ category.name }}</li>
+          }
+        </ul>
+      }
     </div>
 
     <nav class="tournament-shell__nav" #nav>

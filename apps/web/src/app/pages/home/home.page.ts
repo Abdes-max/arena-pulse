@@ -4,7 +4,7 @@ import { AssetUrlService, PublicApiService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { LanguageService } from 'design-tokens';
 import { TournamentContextService } from '../../core/tournament-context.service';
-import { Category, Match } from 'shared-models';
+import { Match, PublicTournament } from 'shared-models';
 
 @Component({
   selector: 'app-home-page',
@@ -21,7 +21,9 @@ export class HomePage {
   private readonly transloco = inject(TranslocoService);
 
   protected readonly tournament = this.context.tournament;
-  protected readonly categories = signal<Category[]>([]);
+  // Venue (moved to the shell header) and categories (same) are no longer
+  // this page's own concern -- both now live on TournamentContextService,
+  // shared across every tab.
   protected readonly upcomingMatches = signal<Match[]>([]);
 
   constructor() {
@@ -40,8 +42,22 @@ export class HomePage {
     if (!slug) {
       return;
     }
-    this.categories.set(await this.api.listCategories(slug));
     this.upcomingMatches.set(await this.api.listUpcomingMatches(slug, 3));
+  }
+
+  // Whether the main "aperçu" column (online notice and/or description) has
+  // anything to show -- the venue card that used to live here moved to the
+  // shell header, so a tournament with a physical venue and no description
+  // now has nothing for this column.
+  protected hasOverviewMain(t: PublicTournament): boolean {
+    return !!t.description || (t.venues.length === 0 && t.isOnline);
+  }
+
+  // Whether the poster side column has anything to show -- used both to
+  // gate that column and to collapse the section to a single column when
+  // only one of the two sides has content (see home.page.scss).
+  protected hasPoster(t: PublicTournament): boolean {
+    return !!this.logoUrl(t.posterUrl);
   }
 
   protected formatKickoff(startTime: string): string {
