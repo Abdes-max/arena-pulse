@@ -93,6 +93,29 @@ les comptes qui n'ont pas ce bouton (comptes joueur, ou accès compte perdu). Au
 nécessaire côté App Store Connect elle-même — la fiche déclarée continue de pointer vers la même
 URL `/privacy`, dont le contenu reflète maintenant le nouveau parcours.
 
+## Migration vers l'API `reviewSubmissions` (ajouté après coup, 2026-10-12)
+
+`infra/scripts/submit-ios-app-store.mjs` soumettait la version via un simple `POST
+/appStoreVersionSubmissions` (un seul appel, rattaché directement à l'`appStoreVersion`). Au
+premier essai de resoumission d'une version après un retrait manuel de la revue (« Retirer cette
+version du processus de vérification » dans App Store Connect, nécessaire pour changer le build
+attaché), cet appel a échoué avec `403 FORBIDDEN_ERROR — "The resource 'appStoreVersionSubmissions'
+does not allow 'CREATE'. Allowed operation is: DELETE"`, de façon reproductible (confirmé en
+retentant deux fois, pas un problème de timing). Cause : Apple a remplacé cet ancien point d'entrée
+par un nouveau flux unifié **`reviewSubmissions`** (regroupe version + éventuels achats
+intégrés/événements dans une seule soumission) — une fois qu'une app y a basculé (visible dans
+App Store Connect sous Distribution → « Vérification de l'app », anciennement une sous-page de la
+version elle-même), l'ancien point d'entrée ne répond plus que `DELETE`, plus jamais `CREATE`.
+
+Le script soumet maintenant en 3 appels (voir `developer.apple.com/documentation/appstoreconnectapi/review-submissions`) :
+1. Réutilise une soumission existante à l'état `READY_FOR_REVIEW` pour l'app (`GET
+   /apps/{id}/reviewSubmissions`), ou en crée une nouvelle (`POST /reviewSubmissions`) — échoue
+   loudly si une soumission est déjà active dans un autre état (`WAITING_FOR_REVIEW`, `IN_REVIEW`,
+   etc.), même logique « jamais de resoumission silencieuse » que pour les versions.
+2. Rattache la version comme « item » de cette soumission (`POST /reviewSubmissionItems`).
+3. Marque la soumission comme envoyée (`PATCH /reviewSubmissions/{id}` avec `attributes.submitted
+   = true`) — c'est cette dernière étape, pas la création, qui déclenche réellement la revue Apple.
+
 ## Notes pratiques (vécues sur le premier run réel, absentes du plan initial)
 
 - **`@capacitor/ios` 8.x génère un projet Swift Package Manager par défaut, pas CocoaPods** — pas
