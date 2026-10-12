@@ -206,6 +206,46 @@
   font-size: 0.9rem;
 }
 
+.tournament-shell__venue {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ap-space-1);
+}
+
+.tournament-shell__venue-icon {
+  flex: none;
+  color: var(--ap-color-signal-text);
+}
+
+// "+N" for any venue beyond the first shown by name -- same rationale as
+// .home-page__fields used to have before this moved up here: no room to
+// spell out every venue name in a single header line.
+.tournament-shell__venue-more {
+  color: var(--ap-color-muted);
+  font-weight: 600;
+}
+
+// Same pill treatment as .tournament-shell__nav-link--active below, so
+// these read as part of the same header chrome rather than a different
+// component style.
+.tournament-shell__categories {
+  list-style: none;
+  margin: var(--ap-space-2) 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ap-space-2);
+
+  li {
+    padding: var(--ap-space-1) var(--ap-space-3);
+    background: var(--ap-color-signal-soft);
+    color: var(--ap-color-fg);
+    border-radius: var(--ap-radius-md);
+    font-weight: 600;
+    font-size: 0.78rem;
+  }
+}
+
 .tournament-shell__nav {
   display: flex;
   gap: var(--ap-space-2);

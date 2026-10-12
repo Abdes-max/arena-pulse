@@ -1,12 +1,20 @@
-// Lieu(x) + Affiche (left, stacked) + description (right) -- the public
-// page's own "at a glance" summary. 1fr/2fr: the left column is a narrow
-// card stack (venue info + a portrait poster), the right column is the
-// primary read.
+// Affiche (left, stacked) + description (right) -- the public page's own
+// "at a glance" summary. Venue used to share the left column too, but it
+// moved up into the shell header (shown on every tab, not just this one).
+// 1fr/2fr: the left column is a narrow card stack (online notice + a
+// portrait poster), the right column is the primary read.
 .home-page__overview {
   display: grid;
   grid-template-columns: 1fr 2fr;
   gap: var(--ap-space-4);
   margin-bottom: var(--ap-space-8);
+}
+
+// No online notice and no poster to show on the left -- collapses to a
+// single column instead of leaving an empty 1fr gap before the description
+// (the common case now: a physical venue with no poster uploaded).
+.home-page__overview--no-side {
+  grid-template-columns: 1fr;
 }
 
 @media (max-width: 720px) {
@@ -23,6 +31,18 @@
 
 .home-page__overview-description {
   margin: 0;
+}
+
+// Same visual treatment as .home-page__section h2 below (PROCHAINS MATCHS,
+// etc) -- a plain h2 here (not inside .home-page__section) since this one
+// sits directly above a single boxed paragraph rather than owning a whole
+// section's worth of content.
+.home-page__overview-description-title {
+  margin: 0 0 var(--ap-space-2);
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ap-color-muted);
 }
 
 .home-page__overview-card {
@@ -91,9 +111,9 @@
   white-space: pre-line;
 }
 
-// Same card treatment as .home-page__venue below, so free-text blocks read
-// as distinct content cards rather than bare paragraphs floating on the
-// page background.
+// Same card treatment as .home-page__overview-card above, so free-text
+// blocks read as distinct content cards rather than bare paragraphs
+// floating on the page background.
 .home-page__text--boxed {
   margin: 0;
   padding: var(--ap-space-4);
@@ -106,65 +126,6 @@
   display: flex;
   flex-direction: column;
   gap: var(--ap-space-3);
-}
-
-.home-page__categories {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--ap-space-2);
-
-  li {
-    padding: var(--ap-space-2) var(--ap-space-4);
-    background: var(--ap-color-signal-soft);
-    color: var(--ap-color-fg);
-    border-radius: var(--ap-radius-lg);
-    font-weight: 600;
-    font-size: 0.9rem;
-  }
-}
-
-.home-page__venue {
-  padding: var(--ap-space-4);
-  background: var(--ap-color-surface);
-  border: var(--ap-border-width) solid var(--ap-color-border);
-  border-radius: var(--ap-radius-lg);
-}
-
-.home-page__venue-header {
-  display: flex;
-  align-items: center;
-  gap: var(--ap-space-2);
-
-  h3 {
-    margin: 0;
-    font-family: var(--ap-font-heading);
-  }
-}
-
-.home-page__venue-icon {
-  flex: none;
-  color: var(--ap-color-signal-text);
-}
-
-.home-page__address {
-  margin: var(--ap-space-1) 0 var(--ap-space-2);
-  color: var(--ap-color-muted);
-  font-size: 0.85rem;
-}
-
-.home-page__fields {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  font-size: 0.85rem;
-  color: var(--ap-color-muted);
-
-  li {
-    padding: var(--ap-space-1) 0;
-  }
 }
 
 .home-page__sponsors {
