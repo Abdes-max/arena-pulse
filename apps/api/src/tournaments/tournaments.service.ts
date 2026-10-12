@@ -353,10 +353,16 @@ export class TournamentsService {
     const session = await this.stripeService.createCheckoutSession({
       amountCents: data.amountCents,
       currency: data.currency,
-      productName: `Publication du tournoi — ${tournament.name}`,
+      productName: `Publication du tournoi : ${tournament.name}`,
       successUrl: `${webUrl}/admin/tournaments/${tournament.id}/publish/success?session_id={CHECKOUT_SESSION_ID}`,
       cancelUrl: `${webUrl}/admin/tournaments/${tournament.id}?publishCancelled=1`,
       metadata: { tournamentPublicationOrderId: order.id },
+      // Lets an organizer enter a coupon code (e.g. a loyalty discount or a
+      // free pass) on Stripe's own checkout page -- same mechanism as
+      // OrganizationsService.subscribe's allowPromotionCodes, see
+      // CreateCheckoutSessionParams.allowPromotionCodes for where the
+      // coupon itself gets created and managed.
+      allowPromotionCodes: true,
     });
 
     await this.prisma.tournamentPublicationOrder.update({
@@ -596,7 +602,7 @@ export class TournamentsService {
       }
     }
 
-    await this.prisma.$transaction([
+    const [updatedOrder] = await this.prisma.$transaction([
       this.prisma.tournamentPublicationOrder.update({
         where: { id: order.id },
         data: {
@@ -604,7 +610,19 @@ export class TournamentsService {
           paidAt: new Date(),
           stripePaymentIntentId: paymentIntentId,
           stripeReceiptUrl,
+          // order.amountCents (set at checkout-session creation, see
+          // createPendingPublicationCheckout above) is the pre-discount
+          // sticker price -- with allowPromotionCodes now enabled, the
+          // amount actually charged can be lower. session.amount_total is
+          // Stripe's own post-discount total for this session, so it's
+          // what the receipt email and the payment-history screen should
+          // show, not the original ask. Falls back to the pre-discount
+          // value only in the defensive case Stripe ever omits it on a
+          // paid session. Same pattern as
+          // OrganizationsService.applyPaidSubscriptionSession.
+          amountCents: session.amount_total ?? order.amountCents,
         },
+        include: { tournament: true },
       }),
       this.prisma.tournament.update({
         where: { id: order.tournamentId },
@@ -612,7 +630,7 @@ export class TournamentsService {
       }),
     ]);
 
-    await this.sendPublicationReceipt(order, stripeReceiptUrl, lang);
+    await this.sendPublicationReceipt(updatedOrder, stripeReceiptUrl, lang);
   }
 
   /**

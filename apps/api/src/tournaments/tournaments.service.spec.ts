@@ -1063,7 +1063,11 @@ describe('TournamentsService', () => {
         currency: 'eur',
         tournament: { name: 'Coupe de printemps', organizationId: 'org-1' },
       });
-      prisma.tournamentPublicationOrder.update.mockResolvedValue({});
+      prisma.tournamentPublicationOrder.update.mockResolvedValue({
+        tournament: { name: 'Coupe de printemps', organizationId: 'org-1' },
+        amountCents: 2500,
+        currency: 'eur',
+      });
       prisma.tournament.update.mockResolvedValue({});
       organizationsService.getAdminEmails.mockResolvedValue([
         'admin1@example.com',
@@ -1095,7 +1099,11 @@ describe('TournamentsService', () => {
         currency: 'eur',
         tournament: { name: 'Coupe de printemps', organizationId: 'org-1' },
       });
-      prisma.tournamentPublicationOrder.update.mockResolvedValue({});
+      prisma.tournamentPublicationOrder.update.mockResolvedValue({
+        tournament: { name: 'Coupe de printemps', organizationId: 'org-1' },
+        amountCents: 2500,
+        currency: 'eur',
+      });
       prisma.tournament.update.mockResolvedValue({});
       organizationsService.getAdminEmails.mockResolvedValue([
         'admin1@example.com',
@@ -1216,7 +1224,11 @@ describe('TournamentsService', () => {
         payment_status: 'paid',
         payment_intent: 'pi_123',
       });
-      prisma.tournamentPublicationOrder.update.mockResolvedValue({});
+      prisma.tournamentPublicationOrder.update.mockResolvedValue({
+        tournament: { name: 'Coupe de printemps', organizationId: 'org-1' },
+        amountCents: 2500,
+        currency: 'eur',
+      });
       prisma.tournament.update.mockResolvedValue({});
       prisma.tournament.findUnique.mockResolvedValue(
         tournamentFixture({ status: TournamentStatus.PUBLISHED }),
@@ -1244,6 +1256,58 @@ describe('TournamentsService', () => {
         'fr',
       );
       expect(result.status).toBe(TournamentStatus.PUBLISHED);
+    });
+
+    it('records the actual (post-discount) amount Stripe charged, not the pre-discount ask', async () => {
+      prisma.tournamentPublicationOrder.findUnique.mockResolvedValue({
+        id: 'order-1',
+        status: TournamentPublicationOrderStatus.PENDING_PAYMENT,
+        tournamentId: 'tournament-1',
+        // Pre-discount price the row was created with at checkout-session
+        // creation time (createPendingPublicationCheckout) -- a coupon
+        // redeemed on Stripe's checkout page means the actual charge,
+        // below, is lower.
+        amountCents: 4900,
+        currency: 'eur',
+        tournament: { name: 'Coupe de printemps', organizationId: 'org-1' },
+      });
+      stripeService.retrieveCheckoutSession.mockResolvedValue({
+        id: 'cs_test_publish_123',
+        payment_status: 'paid',
+        payment_intent: 'pi_123',
+        // A promo code applied at checkout.
+        amount_total: 3430,
+      });
+      prisma.tournamentPublicationOrder.update.mockResolvedValue({
+        tournament: { name: 'Coupe de printemps', organizationId: 'org-1' },
+        amountCents: 3430,
+        currency: 'eur',
+      });
+      prisma.tournament.update.mockResolvedValue({});
+      prisma.tournament.findUnique.mockResolvedValue(
+        tournamentFixture({ status: TournamentStatus.PUBLISHED }),
+      );
+      organizationsService.getAdminEmails.mockResolvedValue([
+        'admin1@example.com',
+      ]);
+
+      await service.confirmPublicationPayment(
+        'org-1',
+        'tournament-1',
+        'cs_test_publish_123',
+      );
+
+      const [[updateCall]] = prisma.tournamentPublicationOrder.update.mock
+        .calls as [[{ data: { amountCents: number } }]];
+      expect(updateCall.data.amountCents).toBe(3430);
+      expect(mailService.sendPublicationReceiptEmail).toHaveBeenCalledWith(
+        'admin1@example.com',
+        'Coupe de printemps',
+        3430,
+        'eur',
+        null,
+        'fr',
+      );
     });
   });
 
