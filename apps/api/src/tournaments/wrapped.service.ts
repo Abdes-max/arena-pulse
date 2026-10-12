@@ -191,61 +191,76 @@ export class WrappedService {
     );
     const matchStats = computeMatchStats(matchStatsInput);
 
+    // Crowning a champion while other matches are still to be played reads
+    // as a wrong/premature result -- so the whole champions list stays
+    // empty until every match has reached a final state (a decided winner,
+    // or one that will never be played).
+    const allMatchesDecided =
+      matches.length > 0 &&
+      matches.every(
+        (match) =>
+          match.status === 'CANCELLED' ||
+          match.status === 'FORFEITED' ||
+          (match.status === 'COMPLETED' && match.score?.isValidated === true),
+      );
+
     const champions: {
       categoryId: string;
       categoryName: string;
       teamName: string;
     }[] = [];
-    for (const category of categories) {
-      const knockoutPhase = category.phases.find(
-        (phase) =>
-          phase.type === 'KNOCKOUT' &&
-          !phase.isSeedPhase &&
-          phase.knockoutBracket,
-      );
-      if (knockoutPhase?.knockoutBracket) {
-        const totalRounds = Math.log2(knockoutPhase.knockoutBracket.size);
-        const final = validatedMatches.find(
-          (match) =>
-            match.knockoutBracketId === knockoutPhase.knockoutBracket!.id &&
-            match.round === totalRounds &&
-            !match.isThirdPlaceMatch,
+    if (allMatchesDecided) {
+      for (const category of categories) {
+        const knockoutPhase = category.phases.find(
+          (phase) =>
+            phase.type === 'KNOCKOUT' &&
+            !phase.isSeedPhase &&
+            phase.knockoutBracket,
         );
-        const winnerId = final ? getWinnerTeamId(final) : null;
-        const winnerName =
-          winnerId && final
-            ? winnerId === final.homeTeamId
-              ? final.homeTeam?.name
-              : final.awayTeam?.name
-            : null;
-        if (winnerName) {
-          champions.push({
-            categoryId: category.id,
-            categoryName: category.name,
-            teamName: winnerName,
-          });
+        if (knockoutPhase?.knockoutBracket) {
+          const totalRounds = Math.log2(knockoutPhase.knockoutBracket.size);
+          const final = validatedMatches.find(
+            (match) =>
+              match.knockoutBracketId === knockoutPhase.knockoutBracket!.id &&
+              match.round === totalRounds &&
+              !match.isThirdPlaceMatch,
+          );
+          const winnerId = final ? getWinnerTeamId(final) : null;
+          const winnerName =
+            winnerId && final
+              ? winnerId === final.homeTeamId
+                ? final.homeTeam?.name
+                : final.awayTeam?.name
+              : null;
+          if (winnerName) {
+            champions.push({
+              categoryId: category.id,
+              categoryName: category.name,
+              teamName: winnerName,
+            });
+          }
+          continue;
         }
-        continue;
-      }
-      // Pools-only category: a single pool's rank 1 is an unambiguous
-      // champion; several pools with no knockout phase have no one natural
-      // winner to crown, so they're skipped rather than guessed at.
-      const poolPhase = category.phases.find(
-        (phase) => phase.type === 'GROUP_STAGE' && !phase.isSeedPhase,
-      );
-      if (poolPhase && poolPhase.groups.length === 1) {
-        const { rows } = await this.standingsService.getStandings(
-          tournament.organizationId,
-          tournament.tournamentId,
-          poolPhase.groups[0].id,
+        // Pools-only category: a single pool's rank 1 is an unambiguous
+        // champion; several pools with no knockout phase have no one natural
+        // winner to crown, so they're skipped rather than guessed at.
+        const poolPhase = category.phases.find(
+          (phase) => phase.type === 'GROUP_STAGE' && !phase.isSeedPhase,
         );
-        const winner = rows.find((row) => row.position === 1);
-        if (winner) {
-          champions.push({
-            categoryId: category.id,
-            categoryName: category.name,
-            teamName: winner.teamName,
-          });
+        if (poolPhase && poolPhase.groups.length === 1) {
+          const { rows } = await this.standingsService.getStandings(
+            tournament.organizationId,
+            tournament.tournamentId,
+            poolPhase.groups[0].id,
+          );
+          const winner = rows.find((row) => row.position === 1);
+          if (winner) {
+            champions.push({
+              categoryId: category.id,
+              categoryName: category.name,
+              teamName: winner.teamName,
+            });
+          }
         }
       }
     }

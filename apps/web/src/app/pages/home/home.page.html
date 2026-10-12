@@ -1,8 +1,11 @@
 @if (tournament(); as t) {
-  @if (t.description || t.posterUrl || t.isOnline) {
-    <section class="home-page__overview" [class.home-page__overview--no-side]="!hasOverviewSide(t)">
-      @if (hasOverviewSide(t)) {
-        <div class="home-page__overview-side">
+  @if (hasOverviewMain(t) || hasPoster(t)) {
+    <section
+      class="home-page__overview"
+      [class.home-page__overview--no-side]="!(hasOverviewMain(t) && hasPoster(t))"
+    >
+      @if (hasOverviewMain(t)) {
+        <div>
           <!-- Venue is shown in the shell header now (every tab, not just
                this one) -- this online notice only ever stood in for a
                missing physical venue, so it's still gated on there being
@@ -13,22 +16,24 @@
               <p class="home-page__overview-value">{{ 'home.overview.online' | transloco }}</p>
             </div>
           }
-          @if (logoUrl(t.posterUrl); as poster) {
-            <div class="home-page__overview-card home-page__overview-card--poster">
-              <p class="home-page__overview-label">{{ 'home.overview.poster' | transloco }}</p>
-              <img class="home-page__overview-poster" [src]="poster" [alt]="t.name" />
+          @if (t.description) {
+            <div>
+              <h2 class="home-page__overview-description-title">
+                {{ 'home.sections.description' | transloco }}
+              </h2>
+              <p class="home-page__text home-page__text--boxed home-page__overview-description">
+                {{ t.description }}
+              </p>
             </div>
           }
         </div>
       }
-      @if (t.description) {
-        <div>
+      @if (hasPoster(t)) {
+        <div class="home-page__overview-side">
           <h2 class="home-page__overview-description-title">
-            {{ 'home.sections.description' | transloco }}
+            {{ 'home.overview.poster' | transloco }}
           </h2>
-          <p class="home-page__text home-page__text--boxed home-page__overview-description">
-            {{ t.description }}
-          </p>
+          <img class="home-page__poster" [src]="logoUrl(t.posterUrl)" [alt]="t.name" />
         </div>
       }
     </section>

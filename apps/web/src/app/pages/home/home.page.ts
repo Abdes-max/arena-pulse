@@ -45,13 +45,19 @@ export class HomePage {
     this.upcomingMatches.set(await this.api.listUpcomingMatches(slug, 3));
   }
 
-  // Whether the "aperçu" side column (online notice / poster) has anything
-  // to show -- the venue card that used to live here moved to the shell
-  // header, so a tournament with a physical venue and no poster now has
-  // nothing for this column, and the section should collapse to a single
-  // column instead of leaving an empty one (see home.page.scss).
-  protected hasOverviewSide(t: PublicTournament): boolean {
-    return (t.venues.length === 0 && t.isOnline) || !!this.logoUrl(t.posterUrl);
+  // Whether the main "aperçu" column (online notice and/or description) has
+  // anything to show -- the venue card that used to live here moved to the
+  // shell header, so a tournament with a physical venue and no description
+  // now has nothing for this column.
+  protected hasOverviewMain(t: PublicTournament): boolean {
+    return !!t.description || (t.venues.length === 0 && t.isOnline);
+  }
+
+  // Whether the poster side column has anything to show -- used both to
+  // gate that column and to collapse the section to a single column when
+  // only one of the two sides has content (see home.page.scss).
+  protected hasPoster(t: PublicTournament): boolean {
+    return !!this.logoUrl(t.posterUrl);
   }
 
   protected formatKickoff(startTime: string): string {

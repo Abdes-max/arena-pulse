@@ -1,18 +1,16 @@
-// Affiche (left, stacked) + description (right) -- the public page's own
-// "at a glance" summary. Venue used to share the left column too, but it
-// moved up into the shell header (shown on every tab, not just this one).
-// 1fr/2fr: the left column is a narrow card stack (online notice + a
-// portrait poster), the right column is the primary read.
+// Online notice + description (left, primary) and the poster (right,
+// accent) -- the public page's own "at a glance" summary. Venue used to
+// share the left column too, but it moved up into the shell header (shown
+// on every tab, not just this one).
 .home-page__overview {
   display: grid;
-  grid-template-columns: 1fr 2fr;
+  grid-template-columns: 2fr 1fr;
   gap: var(--ap-space-4);
   margin-bottom: var(--ap-space-8);
 }
 
-// No online notice and no poster to show on the left -- collapses to a
-// single column instead of leaving an empty 1fr gap before the description
-// (the common case now: a physical venue with no poster uploaded).
+// Only one of the two sides has content -- collapses to a single column
+// instead of leaving an empty fr track next to it.
 .home-page__overview--no-side {
   grid-template-columns: 1fr;
 }
@@ -67,28 +65,20 @@
   font-weight: 600;
 }
 
-.home-page__overview-card--poster {
-  padding-bottom: 0;
-  overflow: hidden;
-  // Square off the bottom corners to match the image's own radius below --
-  // the card's base radius (all 4 corners, see .home-page__overview-card)
-  // combined with overflow: hidden was otherwise clipping the image's flush
-  // bottom edge into an unwanted rounded look.
-  border-radius: var(--ap-radius-lg) var(--ap-radius-lg) 0 0;
-}
-
-.home-page__overview-poster {
+.home-page__poster {
   display: block;
   width: 100%;
-  // Portrait flyer, not a landscape photo -- a fixed aspect keeps the card
-  // from jumping around while it loads, and crops a wider image sanely.
+  // Portrait flyer, not a landscape photo -- a fixed aspect keeps the
+  // layout from jumping around while it loads, and crops a wider image
+  // sanely.
   aspect-ratio: 3 / 4;
   object-fit: cover;
   // Biased toward the bottom of the source image -- a flyer's key info
   // (date, title) usually sits in the lower half, while the top is often
   // just background/sky that can afford to be cropped away first.
   object-position: center 75%;
-  border-radius: var(--ap-radius-md) var(--ap-radius-md) 0 0;
+  border-radius: var(--ap-radius-lg);
+  border: var(--ap-border-width) solid var(--ap-color-border);
 }
 
 .home-page__section {
