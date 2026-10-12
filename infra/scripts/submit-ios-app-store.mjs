@@ -204,11 +204,62 @@ async function main() {
     }
   }
 
-  console.log('Submitting for review...');
-  await api(jwt, 'POST', '/appStoreVersionSubmissions', {
+  // Apple replaced the old one-step "appStoreVersionSubmissions" endpoint
+  // with a three-step "reviewSubmissions" flow (apps that have ever used it
+  // get permanently switched over -- the old endpoint then answers 403
+  // "Allowed operation is: DELETE" to any further POST, discovered the hard
+  // way running this script against an app that already had one): create a
+  // review submission, attach the version to it as an "item", then mark it
+  // submitted. See docs/architecture/adr/0008-ios-distribution.md.
+  console.log('Looking for an existing, still-open review submission...');
+  const openSubmissions = await api(
+    jwt,
+    'GET',
+    `/apps/${appId}/reviewSubmissions?filter[platform]=IOS&fields[reviewSubmissions]=state`,
+  );
+  const activeSubmission = (openSubmissions.data ?? []).find(
+    (s) => s.attributes.state !== 'COMPLETE',
+  );
+
+  let reviewSubmissionId;
+  if (activeSubmission) {
+    if (activeSubmission.attributes.state !== 'READY_FOR_REVIEW') {
+      throw new Error(
+        `App already has a review submission in state "${activeSubmission.attributes.state}" ` +
+          `(id ${activeSubmission.id}) -- not safe to add items to it automatically. ` +
+          'Resolve it manually in App Store Connect first (cancel or wait for it to complete).',
+      );
+    }
+    console.log(`  → reusing open review submission ${activeSubmission.id}.`);
+    reviewSubmissionId = activeSubmission.id;
+  } else {
+    console.log('  → none found, creating a new one.');
+    const created = await api(jwt, 'POST', '/reviewSubmissions', {
+      data: {
+        type: 'reviewSubmissions',
+        relationships: { app: { data: { type: 'apps', id: appId } } },
+      },
+    });
+    reviewSubmissionId = created.data.id;
+  }
+
+  console.log(`Adding version ${VERSION_STRING} as a review submission item...`);
+  await api(jwt, 'POST', '/reviewSubmissionItems', {
     data: {
-      type: 'appStoreVersionSubmissions',
-      relationships: { appStoreVersion: { data: { type: 'appStoreVersions', id: version.id } } },
+      type: 'reviewSubmissionItems',
+      relationships: {
+        reviewSubmission: { data: { type: 'reviewSubmissions', id: reviewSubmissionId } },
+        appStoreVersion: { data: { type: 'appStoreVersions', id: version.id } },
+      },
+    },
+  });
+
+  console.log('Submitting for review...');
+  await api(jwt, 'PATCH', `/reviewSubmissions/${reviewSubmissionId}`, {
+    data: {
+      type: 'reviewSubmissions',
+      id: reviewSubmissionId,
+      attributes: { submitted: true },
     },
   });
 
