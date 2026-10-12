@@ -105,7 +105,7 @@
       },
       "standard": {
         "tag": "Il più diffuso",
-        "price": "25 €",
+        "price": "19 €",
         "desc": "Per un torneo o campionato fino a 48 squadre, senza cambiare il tuo modo di lavorare.",
         "cta": "Inizia",
         "featuresLabel": "Tutto ciò che c'è in Scoperta, più",
@@ -116,7 +116,7 @@
       },
       "large": {
         "tag": "Grande formato",
-        "price": "80 €",
+        "price": "49 €",
         "desc": "Per un torneo o un campionato con squadre illimitate, senza costi aggiuntivi.",
         "cta": "Inizia",
         "featuresLabel": "Tutto ciò che c'è in Il più diffuso, più",
@@ -125,7 +125,7 @@
       },
       "subscription": {
         "tag": "Miglior valore",
-        "price": "200 €",
+        "price": "159 €",
         "desc": "Più tornei all'anno? Un abbonamento per organizzazione copre tutte le tue pubblicazioni per un anno.",
         "cta": "Inizia",
         "featuresLabel": "Tutto ciò che c'è in Grande formato, più",
@@ -671,7 +671,7 @@
         "title": "Personalizzazione",
         "open": "Modifica logo e tema",
         "close": "Chiudi",
-        "premiumHint": "Il logo e la scelta del tema sono riservati ai tornei con più di {{count}} squadre, o a un abbonamento attivo al piano da 25 €. Con meno di {{count}} squadre, esegui l’upgrade per sbloccarli."
+        "premiumHint": "Il logo e la scelta del tema sono riservati ai tornei con più di {{count}} squadre, o a un abbonamento attivo al piano da 19 €. Con meno di {{count}} squadre, esegui l’upgrade per sbloccarli."
       },
       "headerBackground": {
         "title": "Sfondo dell'intestazione",
@@ -1103,7 +1103,7 @@
     },
     "subscription": {
       "title": "Abbonamento annuale",
-      "intro": "La pubblicazione di un torneo è fatturata a scaglioni in base al numero di squadre (gratis fino a 8 squadre, 25 € da 9 a 48 squadre, 80 € oltre). L'abbonamento annuale sostituisce questo pagamento per pubblicazione: 200 € all'anno, pubblicazioni illimitate per tutta l'organizzazione.",
+      "intro": "La pubblicazione di un torneo è fatturata a scaglioni in base al numero di squadre (gratis fino a 8 squadre, 19 € da 9 a 48 squadre, 49 € oltre). L'abbonamento annuale sostituisce questo pagamento per pubblicazione: 159 € all'anno, pubblicazioni illimitate per tutta l'organizzazione.",
       "loading": "Caricamento…",
       "adminOnly": "Solo un amministratore dell'organizzazione può gestire l'abbonamento.",
       "status": {
@@ -1115,11 +1115,11 @@
         "pendingPayment": {
           "badgeLabel": "Pagamento in attesa",
           "body": "Una sottoscrizione è in corso di conferma. Se il pagamento è stato abbandonato, puoi avviare un nuovo pagamento.",
-          "retryButton": "Ripeti il pagamento — 200 €"
+          "retryButton": "Ripeti il pagamento — 159 €"
         },
         "none": {
           "body": "Nessun abbonamento attivo per questa organizzazione.",
-          "subscribeButton": "Sottoscrivi — 200 € / anno"
+          "subscribeButton": "Sottoscrivi — 159 € / anno"
         }
       },
       "history": {
