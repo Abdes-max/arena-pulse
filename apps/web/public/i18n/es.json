@@ -105,7 +105,7 @@
       },
       "standard": {
         "tag": "El más común",
-        "price": "25 €",
+        "price": "19 €",
         "desc": "Para un torneo o campeonato de hasta 48 equipos, sin cambiar tu forma de trabajar.",
         "cta": "Empezar",
         "featuresLabel": "Todo lo de Descubrimiento, más",
@@ -116,7 +116,7 @@
       },
       "large": {
         "tag": "Gran formato",
-        "price": "80 €",
+        "price": "49 €",
         "desc": "Para un torneo o una liga con equipos ilimitados, sin coste adicional.",
         "cta": "Empezar",
         "featuresLabel": "Todo lo de El más común, más",
@@ -125,7 +125,7 @@
       },
       "subscription": {
         "tag": "Mejor valor",
-        "price": "200 €",
+        "price": "159 €",
         "desc": "¿Varios torneos al año? Una suscripción por organización cubre todas tus publicaciones durante un año.",
         "cta": "Empezar",
         "featuresLabel": "Todo lo de Gran formato, más",
@@ -671,7 +671,7 @@
         "title": "Personalización",
         "open": "Editar logo y tema",
         "close": "Cerrar",
-        "premiumHint": "El logo y la elección del tema están reservados a torneos con más de {{count}} equipos, o a una suscripción activa al plan de 25 €. Con menos de {{count}} equipos, actualiza tu plan para desbloquearlos."
+        "premiumHint": "El logo y la elección del tema están reservados a torneos con más de {{count}} equipos, o a una suscripción activa al plan de 19 €. Con menos de {{count}} equipos, actualiza tu plan para desbloquearlos."
       },
       "headerBackground": {
         "title": "Fondo de la cabecera",
@@ -1103,7 +1103,7 @@
     },
     "subscription": {
       "title": "Suscripción anual",
-      "intro": "Publicar un torneo se factura por nivel según el número de equipos (gratis hasta 8 equipos, 25 € de 9 a 48 equipos, 80 € más allá). La suscripción anual reemplaza este pago por publicación: 200 € al año, publicaciones ilimitadas para toda la organización.",
+      "intro": "Publicar un torneo se factura por nivel según el número de equipos (gratis hasta 8 equipos, 19 € de 9 a 48 equipos, 49 € más allá). La suscripción anual reemplaza este pago por publicación: 159 € al año, publicaciones ilimitadas para toda la organización.",
       "loading": "Cargando…",
       "adminOnly": "Solo un administrador de la organización puede gestionar la suscripción.",
       "status": {
@@ -1115,11 +1115,11 @@
         "pendingPayment": {
           "badgeLabel": "Pago pendiente",
           "body": "Se está confirmando una suscripción. Si el pago se abandonó, puedes iniciar un nuevo pago.",
-          "retryButton": "Reintentar el pago — 200 €"
+          "retryButton": "Reintentar el pago — 159 €"
         },
         "none": {
           "body": "No hay ninguna suscripción activa para esta organización.",
-          "subscribeButton": "Suscribirse — 200 € / año"
+          "subscribeButton": "Suscribirse — 159 € / año"
         }
       },
       "history": {

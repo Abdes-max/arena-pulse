@@ -105,7 +105,7 @@
       },
       "standard": {
         "tag": "O mais comum",
-        "price": "25 €",
+        "price": "19 €",
         "desc": "Para um torneio ou campeonato até 48 equipas, sem mudar a sua forma de trabalhar.",
         "cta": "Começar",
         "featuresLabel": "Tudo em Descoberta, mais",
@@ -116,7 +116,7 @@
       },
       "large": {
         "tag": "Grande formato",
-        "price": "80 €",
+        "price": "49 €",
         "desc": "Para um torneio ou uma liga com equipas ilimitadas, sem custo adicional.",
         "cta": "Começar",
         "featuresLabel": "Tudo em O mais comum, mais",
@@ -125,7 +125,7 @@
       },
       "subscription": {
         "tag": "Melhor valor",
-        "price": "200 €",
+        "price": "159 €",
         "desc": "Vários torneios por ano? Uma subscrição por organização cobre todas as suas publicações durante um ano.",
         "cta": "Começar",
         "featuresLabel": "Tudo em Grande formato, mais",
@@ -671,7 +671,7 @@
         "title": "Personalização",
         "open": "Editar logótipo e tema",
         "close": "Fechar",
-        "premiumHint": "O logótipo e a escolha do tema são reservados a torneios com mais de {{count}} equipas, ou a uma subscrição ativa do plano de 25 €. Com menos de {{count}} equipas, atualize o plano para os desbloquear."
+        "premiumHint": "O logótipo e a escolha do tema são reservados a torneios com mais de {{count}} equipas, ou a uma subscrição ativa do plano de 19 €. Com menos de {{count}} equipas, atualize o plano para os desbloquear."
       },
       "headerBackground": {
         "title": "Fundo do cabeçalho",
@@ -1103,7 +1103,7 @@
     },
     "subscription": {
       "title": "Assinatura anual",
-      "intro": "A publicação de um torneio é cobrada por escalão de acordo com o número de equipas (grátis até 8 equipas, 25 € de 9 a 48 equipas, 80 € além disso). A assinatura anual substitui esse pagamento por publicação: 200 € por ano, publicações ilimitadas para toda a organização.",
+      "intro": "A publicação de um torneio é cobrada por escalão de acordo com o número de equipas (grátis até 8 equipas, 19 € de 9 a 48 equipas, 49 € além disso). A assinatura anual substitui esse pagamento por publicação: 159 € por ano, publicações ilimitadas para toda a organização.",
       "loading": "A carregar…",
       "adminOnly": "Apenas um administrador da organização pode gerir a assinatura.",
       "status": {
@@ -1115,11 +1115,11 @@
         "pendingPayment": {
           "badgeLabel": "Pagamento pendente",
           "body": "Uma assinatura está a ser confirmada. Se o pagamento foi abandonado, pode iniciar um novo pagamento.",
-          "retryButton": "Repetir o pagamento — 200 €"
+          "retryButton": "Repetir o pagamento — 159 €"
         },
         "none": {
           "body": "Nenhuma assinatura ativa para esta organização.",
-          "subscribeButton": "Assinar — 200 € / ano"
+          "subscribeButton": "Assinar — 159 € / ano"
         }
       },
       "history": {

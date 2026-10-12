@@ -105,7 +105,7 @@
       },
       "standard": {
         "tag": "Most common",
-        "price": "€25",
+        "price": "€19",
         "desc": "For a tournament or championship of up to 48 teams, without changing how you work.",
         "cta": "Get started",
         "featuresLabel": "Everything in Starter, plus",
@@ -116,7 +116,7 @@
       },
       "large": {
         "tag": "Large format",
-        "price": "€80",
+        "price": "€49",
         "desc": "For a tournament or league with unlimited teams, no extra surcharge.",
         "cta": "Get started",
         "featuresLabel": "Everything in Most common, plus",
@@ -125,7 +125,7 @@
       },
       "subscription": {
         "tag": "Best value",
-        "price": "€200",
+        "price": "€159",
         "desc": "Running several tournaments a year? One subscription per organization covers all your publications for a year.",
         "cta": "Get started",
         "featuresLabel": "Everything in Large format, plus",
@@ -773,7 +773,7 @@
         "title": "Personalization",
         "open": "Edit logo and theme",
         "close": "Close",
-        "premiumHint": "The logo and theme selection are reserved for tournaments with more than {{count}} teams, or an active subscription to the €25 plan. Under {{count}} teams, upgrade to unlock them."
+        "premiumHint": "The logo and theme selection are reserved for tournaments with more than {{count}} teams, or an active subscription to the €19 plan. Under {{count}} teams, upgrade to unlock them."
       },
       "headerBackground": {
         "title": "Header background",
@@ -1205,7 +1205,7 @@
     },
     "subscription": {
       "title": "Annual subscription",
-      "intro": "Publishing a tournament is billed by tier based on team count (free up to 8 teams, €25 for 9 to 48 teams, €80 beyond). The annual subscription replaces this per-publication fee: €200 per year, unlimited publications for the whole organization.",
+      "intro": "Publishing a tournament is billed by tier based on team count (free up to 8 teams, €19 for 9 to 48 teams, €49 beyond). The annual subscription replaces this per-publication fee: €159 per year, unlimited publications for the whole organization.",
       "loading": "Loading…",
       "adminOnly": "Only an organization admin can manage the subscription.",
       "status": {
@@ -1217,11 +1217,11 @@
         "pendingPayment": {
           "badgeLabel": "Payment pending",
           "body": "A subscription is being confirmed. If the payment was abandoned, you can start a new payment.",
-          "retryButton": "Retry payment — €200"
+          "retryButton": "Retry payment — €159"
         },
         "none": {
           "body": "No active subscription for this organization.",
-          "subscribeButton": "Subscribe — €200 / year"
+          "subscribeButton": "Subscribe — €159 / year"
         }
       },
       "history": {

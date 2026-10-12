@@ -105,7 +105,7 @@
       },
       "standard": {
         "tag": "Le plus courant",
-        "price": "25 €",
+        "price": "19 €",
         "desc": "Pour un tournoi ou championnat jusqu'à 48 équipes, sans rien changer à votre façon de travailler.",
         "cta": "Commencer",
         "featuresLabel": "Tout dans Découverte, plus",
@@ -116,7 +116,7 @@
       },
       "large": {
         "tag": "Grand format",
-        "price": "80 €",
+        "price": "49 €",
         "desc": "Pour un tournoi ou une ligue avec des équipes illimitées, sans surcoût supplémentaire.",
         "cta": "Commencer",
         "featuresLabel": "Tout dans Le plus courant, plus",
@@ -125,7 +125,7 @@
       },
       "subscription": {
         "tag": "Meilleure valeur",
-        "price": "200 €",
+        "price": "159 €",
         "desc": "Plusieurs tournois par an ? Un abonnement par organisation couvre toutes vos publications pendant un an.",
         "cta": "Commencer",
         "featuresLabel": "Tout dans Grand format, plus",
@@ -773,7 +773,7 @@
         "title": "Personnalisation",
         "open": "Modifier le logo et le thème",
         "close": "Fermer",
-        "premiumHint": "Le logo et le choix du thème sont réservés aux tournois de plus de {{count}} équipes ou à un abonnement au plan à 25 € actif. En dessous de {{count}} équipes, passez au plan supérieur pour les débloquer."
+        "premiumHint": "Le logo et le choix du thème sont réservés aux tournois de plus de {{count}} équipes ou à un abonnement au plan à 19 € actif. En dessous de {{count}} équipes, passez au plan supérieur pour les débloquer."
       },
       "headerBackground": {
         "title": "Fond d'écran de l'entête",
@@ -1205,7 +1205,7 @@
     },
     "subscription": {
       "title": "Abonnement annuel",
-      "intro": "Publier un tournoi est facturé par palier selon le nombre d'équipes (gratuit jusqu'à 8 équipes, 25 € de 9 à 48 équipes, 80 € au-delà). L'abonnement annuel remplace ce paiement à l'unité : 200 € par an, publications illimitées pour toute l'organisation.",
+      "intro": "Publier un tournoi est facturé par palier selon le nombre d'équipes (gratuit jusqu'à 8 équipes, 19 € de 9 à 48 équipes, 49 € au-delà). L'abonnement annuel remplace ce paiement à l'unité : 159 € par an, publications illimitées pour toute l'organisation.",
       "loading": "Chargement…",
       "adminOnly": "Seul un administrateur de l'organisation peut gérer l'abonnement.",
       "status": {
@@ -1217,11 +1217,11 @@
         "pendingPayment": {
           "badgeLabel": "Paiement en attente",
           "body": "Une souscription est en cours de confirmation. Si le paiement a été abandonné, vous pouvez relancer un nouveau paiement.",
-          "retryButton": "Relancer le paiement — 200 €"
+          "retryButton": "Relancer le paiement — 159 €"
         },
         "none": {
           "body": "Aucun abonnement actif pour cette organisation.",
-          "subscribeButton": "Souscrire — 200 € / an"
+          "subscribeButton": "Souscrire — 159 € / an"
         }
       },
       "history": {

@@ -105,7 +105,7 @@
       },
       "standard": {
         "tag": "Am beliebtesten",
-        "price": "25 €",
+        "price": "19 €",
         "desc": "Für ein Turnier oder eine Meisterschaft mit bis zu 48 Teams, ohne Ihre Arbeitsweise zu ändern.",
         "cta": "Loslegen",
         "featuresLabel": "Alles aus Einstieg, plus",
@@ -116,7 +116,7 @@
       },
       "large": {
         "tag": "Großformat",
-        "price": "80 €",
+        "price": "49 €",
         "desc": "Für ein Turnier oder eine Liga mit unbegrenzten Teams, ohne zusätzliche Kosten.",
         "cta": "Loslegen",
         "featuresLabel": "Alles aus Am beliebtesten, plus",
@@ -125,7 +125,7 @@
       },
       "subscription": {
         "tag": "Bestes Preis-Leistungs-Verhältnis",
-        "price": "200 €",
+        "price": "159 €",
         "desc": "Mehrere Turniere im Jahr? Ein Abonnement pro Organisation deckt alle Veröffentlichungen für ein Jahr ab.",
         "cta": "Loslegen",
         "featuresLabel": "Alles aus Großformat, plus",
@@ -671,7 +671,7 @@
         "title": "Personalisierung",
         "open": "Logo und Design bearbeiten",
         "close": "Schließen",
-        "premiumHint": "Logo und Designauswahl sind Turnieren mit mehr als {{count}} Teams oder einem aktiven Abonnement des 25-€-Plans vorbehalten. Bei weniger als {{count}} Teams müssen Sie upgraden, um sie freizuschalten."
+        "premiumHint": "Logo und Designauswahl sind Turnieren mit mehr als {{count}} Teams oder einem aktiven Abonnement des 19-€-Plans vorbehalten. Bei weniger als {{count}} Teams müssen Sie upgraden, um sie freizuschalten."
       },
       "headerBackground": {
         "title": "Kopfzeilen-Hintergrund",
@@ -1103,7 +1103,7 @@
     },
     "subscription": {
       "title": "Jahresabonnement",
-      "intro": "Die Veröffentlichung eines Turniers wird je nach Teamanzahl gestaffelt berechnet (kostenlos bis 8 Teams, 25 € für 9 bis 48 Teams, 80 € darüber hinaus). Das Jahresabonnement ersetzt diese Gebühr pro Veröffentlichung: 200 € pro Jahr, unbegrenzte Veröffentlichungen für die gesamte Organisation.",
+      "intro": "Die Veröffentlichung eines Turniers wird je nach Teamanzahl gestaffelt berechnet (kostenlos bis 8 Teams, 19 € für 9 bis 48 Teams, 49 € darüber hinaus). Das Jahresabonnement ersetzt diese Gebühr pro Veröffentlichung: 159 € pro Jahr, unbegrenzte Veröffentlichungen für die gesamte Organisation.",
       "loading": "Wird geladen…",
       "adminOnly": "Nur ein Administrator der Organisation kann das Abonnement verwalten.",
       "status": {
@@ -1115,11 +1115,11 @@
         "pendingPayment": {
           "badgeLabel": "Zahlung ausstehend",
           "body": "Ein Abonnement wird gerade bestätigt. Falls die Zahlung abgebrochen wurde, können Sie eine neue Zahlung starten.",
-          "retryButton": "Zahlung erneut versuchen — 200 €"
+          "retryButton": "Zahlung erneut versuchen — 159 €"
         },
         "none": {
           "body": "Kein aktives Abonnement für diese Organisation.",
-          "subscribeButton": "Abonnieren — 200 € / Jahr"
+          "subscribeButton": "Abonnieren — 159 € / Jahr"
         }
       },
       "history": {
