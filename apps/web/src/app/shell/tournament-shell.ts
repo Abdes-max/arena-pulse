@@ -249,7 +249,7 @@ export class TournamentShell {
     });
 
     // The tournament's own theme (organizer choice) governs the public site
-    // and slideshow only — applied to <html> here, and reset back to the
+    // and slideshow only -- applied to <html> here, and reset back to the
     // fixed product identity on the way out so the landing page (and any
     // other route outside this shell) never inherits it. Light/dark mode is
     // a separate, user-toggled preference (see `mode`/`toggleMode` above)

@@ -56,7 +56,7 @@ export class NotificationsService {
         continue; // First sighting of this match -- establishes the baseline, doesn't notify.
       }
       if (previous.status !== 'LIVE' && current.status === 'LIVE') {
-        void this.notify(`${favorite.teamName} — le match a commencé`);
+        void this.notify(`${favorite.teamName} : le match a commencé`);
       } else if (current.scoreKey && current.scoreKey !== previous.scoreKey) {
         void this.notify(this.scoreMessage(match));
       }

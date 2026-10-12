@@ -509,7 +509,7 @@ export class SchedulePage {
 
   protected slotTimeLabel(slot: TimeSlot): string {
     return slot.label
-      ? `${this.formatSlotTime(slot.startTime)} — ${slot.label}`
+      ? `${this.formatSlotTime(slot.startTime)}, ${slot.label}`
       : this.formatSlotTime(slot.startTime);
   }
 

@@ -547,8 +547,10 @@
           } @else {
             @if (phase.knockoutBracket; as bracket) {
               <p>
-                <strong>{{ bracket.name }}</strong> —
-                {{ 'admin.structure.phase.bracket.teamsCount' | transloco: { size: bracket.size } }}
+                <strong>{{ bracket.name }}</strong>
+                ({{
+                  'admin.structure.phase.bracket.teamsCount' | transloco: { size: bracket.size }
+                }})
               </p>
               <label class="structure-page__checkbox-label">
                 <input

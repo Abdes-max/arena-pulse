@@ -55,7 +55,7 @@
             @for (match of day.matches; track match.id) {
               @if (match.status === 'FORFEITED') {
                 <p class="schedule-page__forfeit">
-                  {{ match.homeTeam?.name }} vs {{ match.awayTeam?.name }} — forfait :
+                  {{ match.homeTeam?.name }} vs {{ match.awayTeam?.name }}, forfait :
                   {{ match.forfeitedTeam?.name }}
                 </p>
               } @else {
@@ -82,7 +82,7 @@
             @for (match of matchesByDay().unscheduled; track match.id) {
               @if (match.status === 'FORFEITED') {
                 <p class="schedule-page__forfeit">
-                  {{ match.homeTeam?.name }} vs {{ match.awayTeam?.name }} — forfait :
+                  {{ match.homeTeam?.name }} vs {{ match.awayTeam?.name }}, forfait :
                   {{ match.forfeitedTeam?.name }}
                 </p>
               } @else {

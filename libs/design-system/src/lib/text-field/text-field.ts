@@ -37,7 +37,7 @@ function noop(): void {
 })
 export class TextField implements ControlValueAccessor {
   readonly label = input.required<string>();
-  /** Keeps the label in the DOM for screen readers but hides it visually — for compact filter bars. */
+  /** Keeps the label in the DOM for screen readers but hides it visually -- for compact filter bars. */
   readonly hideLabel = input(false);
   readonly type = input<TextFieldType>('text');
   readonly errorMessage = input<string | null>(null);
@@ -49,7 +49,7 @@ export class TextField implements ControlValueAccessor {
 
   /**
    * Controlled-component inputs, for pages that render from plain signals
-   * instead of Angular forms — used alongside (not instead of) the
+   * instead of Angular forms -- used alongside (not instead of) the
    * ControlValueAccessor contract below, which reactive-forms consumers rely on.
    */
   readonly value = input<string>('');

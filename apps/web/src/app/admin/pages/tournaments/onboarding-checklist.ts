@@ -12,7 +12,7 @@ export interface OnboardingStep {
 
 /**
  * A short checklist of setup steps shown on the dashboard until an
- * organization has completed (or dismissed) all of them — helps a
+ * organization has completed (or dismissed) all of them -- helps a
  * first-time organizer find their footing without hunting through the nav.
  */
 @Component({

@@ -240,7 +240,7 @@
         "paymentHint": "Si votre offre gratuite est dépassée, un paiement Stripe sécurisé vous sera proposé avant la publication.",
         "planTitle": "Plan",
         "planLoading": "Chargement…",
-        "planActive": "Abonnement annuel actif jusqu'au {{date}} — toutes vos publications sont gratuites.",
+        "planActive": "Abonnement annuel actif jusqu'au {{date}}. Toutes vos publications sont gratuites.",
         "planPending": "Paiement de l'abonnement annuel en attente de confirmation.",
         "planNone": "Facturation à l'acte selon le nombre d'équipes. L'abonnement annuel rend toutes vos publications gratuites.",
         "planManage": "Gérer mon abonnement",

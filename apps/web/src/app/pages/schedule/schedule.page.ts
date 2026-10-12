@@ -45,7 +45,7 @@ export class SchedulePage {
       }
       const date = new Date(match.timeSlot.startTime);
       // Local calendar day, matching the locale-formatted label below and
-      // each match's own displayed kickoff time (formatKickoff) — using the
+      // each match's own displayed kickoff time (formatKickoff) -- using the
       // UTC day here would split/merge matches inconsistently with what's
       // shown on screen whenever a match falls near local midnight.
       const key = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
@@ -61,7 +61,7 @@ export class SchedulePage {
       days.set(key, entry);
     }
     // filteredMatches() is already chronologically sorted, so insertion
-    // order into the Map already reflects day order — no extra sort needed
+    // order into the Map already reflects day order -- no extra sort needed
     // (and a string sort on the "year-month-day" key above would be wrong
     // since it isn't zero-padded).
     return {

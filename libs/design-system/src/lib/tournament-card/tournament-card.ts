@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 
 /**
  * One tournament in a public directory (web landing page, mobile
- * tournament-entry page) — deliberately not clickable itself, same
+ * tournament-entry page) -- deliberately not clickable itself, same
  * separation as ap-match-card: the consuming page wraps it in whatever
  * navigation element fits its platform (routerLink on web, a button +
  * Router.navigate on mobile, see team-search.page.html on each app).

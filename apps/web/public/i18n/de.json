@@ -17,7 +17,7 @@
     "hero": {
       "titleMain": "Turniere und Meisterschaften organisieren",
       "titleEmphasis": "live von allen verfolgt.",
-      "subtitle": "Gruppen, K.-o.-Tabellen, Spielplan, Schiedsrichterwesen und Tabellen — plus eine öffentliche Website, automatisch für jeden Ihrer Wettbewerbe erstellt und in dem Moment aktualisiert, in dem ein Ergebnis eingetragen wird.",
+      "subtitle": "Gruppen, K.-o.-Tabellen, Spielplan, Schiedsrichterwesen und Tabellen, plus eine öffentliche Website, automatisch für jeden Ihrer Wettbewerbe erstellt und in dem Moment aktualisiert, in dem ein Ergebnis eingetragen wird.",
       "ctaCreate": "Mein Turnier erstellen",
       "storeApple": "Im App Store laden",
       "storeGoogle": "Bei Google Play erhältlich"
@@ -33,9 +33,9 @@
     },
     "features": {
       "title": "Alles, um einen Wettbewerb zu leiten, nichts Überflüssiges",
-      "lead": "Vier Werkzeuge, die miteinander sprechen — eine Ergebnisänderung aktualisiert Gruppen, Tabellen und Spielplan im selben Moment.",
+      "lead": "Vier Werkzeuge, die miteinander sprechen: Eine Ergebnisänderung aktualisiert Gruppen, Tabellen und Spielplan im selben Moment.",
       "pools": {
-        "mockRow": "Gruppe A — U13",
+        "mockRow": "Gruppe A (U13)",
         "tag": "Tabellen",
         "title": "Gruppen und Tabellen",
         "desc": "Qualifikationen automatisch bei jedem Ergebnis berechnet, keine Tabellenkalkulation zu pflegen."
@@ -58,34 +58,34 @@
         "mockRow": "Öffentliche Website erstellt",
         "tag": "Echtzeit",
         "title": "Öffentliche Website pro Turnier",
-        "desc": "Teams, Spielplan, Tabellen und Live-Ergebnisse — ein Link zum Teilen, nichts zu konfigurieren."
+        "desc": "Teams, Spielplan, Tabellen und Live-Ergebnisse: ein Link zum Teilen, nichts zu konfigurieren."
       },
       "branding": {
         "mockRow": "Turnier-Design",
         "tag": "Personalisierung",
         "title": "Logo, Design und Teilen",
-        "desc": "Turnierlogo, 5 auswählbare visuelle Designs, QR-Code und PDF-Export von Spielplan und Tabellen — Ihr Turnier, in Ihrer Farbe."
+        "desc": "Turnierlogo, 5 auswählbare visuelle Designs, QR-Code und PDF-Export von Spielplan und Tabellen: Ihr Turnier, in Ihrer Farbe."
       }
     },
     "sports": {
       "title": "Eine Engine, jede Sportart",
-      "lead": "Rundball oder Schläger, in der Halle oder online — TournArena passt sich dem Format Ihrer Disziplin an, nicht umgekehrt.",
+      "lead": "Rundball oder Schläger, in der Halle oder online: TournArena passt sich dem Format Ihrer Disziplin an, nicht umgekehrt.",
       "description": {
-        "football": "Gruppen dann Endrunde, Elfmeterschießen bei Gleichstand — das klassische Format, vollständig automatisiert.",
+        "football": "Gruppen dann Endrunde, Elfmeterschießen bei Gleichstand: das klassische Format, vollständig automatisiert.",
         "basketball": "Meisterschaft oder Play-offs, Verlängerung spielweise verwaltet, Tabelle bei jedem Korb neu berechnet.",
         "volleyball": "Sätze gezählt, K.-o.-Tabellen für die Endrunden Ihrer Ligen.",
         "handball": "Gruppen und Überkreuztabellen, bis zu den Halbfinals und dem kleinen Finale, falls gespielt.",
-        "rugby": "Jeder-gegen-jeden-Liga oder K.-o.-Turnier — Bonuspunkte-Tabelle, ganz nach Ihrem Wunsch.",
+        "rugby": "Jeder-gegen-jeden-Liga oder K.-o.-Turnier, mit Bonuspunkte-Tabelle, ganz nach Ihrem Wunsch.",
         "tennis": "K.-o.-Tabellen, Setzliste und Freilose automatisch bei jeder Runde verwaltet.",
-        "badminton": "Einzel, Doppel, mehrere Altersklassen in einem Turnier — jede mit eigener Tabelle.",
+        "badminton": "Einzel, Doppel, mehrere Altersklassen in einem Turnier, jede mit eigener Tabelle.",
         "futsal": "Dieselbe Engine wie beim Elf-gegen-elf-Fußball, angepasst an Ihre Hallenformate.",
         "esport": "Online- oder LAN-Turniere, eine Live-Website, um jedes Match wie bei jeder anderen Sportart zu verfolgen.",
-        "default": "Gruppen, Meisterschaft oder K.-o.-System — Ihr Format, Ihre Regeln."
+        "default": "Gruppen, Meisterschaft oder K.-o.-System: Ihr Format, Ihre Regeln."
       }
     },
     "pricing": {
       "title": "Ein Preis, der mit der Größe Ihres Wettbewerbs mitwächst",
-      "lead": "Ein Turnier zu erstellen und vorzubereiten ist immer kostenlos — der Preis gilt erst bei der Veröffentlichung, je nach Anzahl der angemeldeten Teams.",
+      "lead": "Ein Turnier zu erstellen und vorzubereiten ist immer kostenlos. Der Preis gilt erst bei der Veröffentlichung, je nach Anzahl der angemeldeten Teams.",
       "perPublication": "pro Veröffentlichung",
       "perYear": "pro Jahr",
       "free": {
@@ -137,7 +137,7 @@
     },
     "stores": {
       "title": "Überall verfügbar, wo Ihre Spieler zuschauen",
-      "desc": "Live-Verfolgung, Benachrichtigungen für Ihre Lieblingsteams — die TournArena-App für iOS und Android."
+      "desc": "Live-Verfolgung, Benachrichtigungen für Ihre Lieblingsteams: die TournArena-App für iOS und Android."
     },
     "finalCta": {
       "title": "Bereit, Ihr nächstes Turnier oder Ihre nächste Meisterschaft zu organisieren?"
@@ -274,7 +274,7 @@
     "goals": "Tore",
     "upcoming": "Kommende",
     "noMatches": "Kein Spiel für dieses Team geplant.",
-    "poolRound": "Gruppe — Runde {{round}}"
+    "poolRound": "Gruppe (Runde {{round}})"
   },
   "teamSearch": {
     "allCategories": "Alle",
@@ -553,7 +553,7 @@
       "plan": {
         "title": "Plan",
         "loading": "Wird geladen…",
-        "active": "Jahresabonnement aktiv bis {{date}} — jede Turnierveröffentlichung ist kostenlos.",
+        "active": "Jahresabonnement aktiv bis {{date}}. Jede Turnierveröffentlichung ist kostenlos.",
         "pending": "Zahlung des Jahresabonnements wartet auf Bestätigung.",
         "none": "Abrechnung pro Veröffentlichung nach Teamanzahl (kostenlos bis {{count}} Teams). Das Jahresabonnement macht jede Veröffentlichung kostenlos.",
         "manage": "Abonnement verwalten",
@@ -631,7 +631,7 @@
         "add": "Hinzufügen"
       },
       "receipt": {
-        "title": "Quittung — TournArena-Turnierveröffentlichung",
+        "title": "Quittung zur TournArena-Turnierveröffentlichung",
         "tournament": "Turnier",
         "paidAt": "Zahlungsdatum",
         "teams": "Betroffene Teams",
@@ -753,7 +753,7 @@
       "tierModal": {
         "title": "Sie befinden sich im Tarif {{currentPlan}}",
         "body": "Dieses Team würde dieses bereits veröffentlichte Turnier über Ihren Tarif {{currentPlan}} hinausführen. Wechseln Sie in den nächsthöheren Tarif oder schließen Sie das Jahresabonnement ab, um fortzufahren.",
-        "upgradeButton": "Zu {{plan}} wechseln — {{amount}}",
+        "upgradeButton": "Zu {{plan}} wechseln ({{amount}})",
         "subscribeButton": "Zum Jahresabonnement wechseln",
         "cancel": "Abbrechen",
         "close": "Schließen",
@@ -838,7 +838,7 @@
           "poolsAndKnockout": "Richtet auf einmal die Gruppen und den K.-o.-Turnierbaum ein, basierend auf den bereits in dieser Kategorie erstellten Teams."
         },
         "unassignedAvailable": "{{count}} nicht zugewiesene(s) Team(s) hier verfügbar.",
-        "noUnassigned": "Noch keine nicht zugewiesenen Teams — fügen Sie zuerst welche auf der Teams-Seite hinzu.",
+        "noUnassigned": "Noch keine nicht zugewiesenen Teams. Fügen Sie zuerst welche auf der Teams-Seite hinzu.",
         "poolsTitle": "Gruppen",
         "teamCountLabel": "Anzahl der Teams",
         "poolCountLabel": "Anzahl der Gruppen",
@@ -860,15 +860,15 @@
         "successKnockoutOnly": "Struktur erstellt: {{tiersSummary}}. Gehen Sie zur Spielplanseite, um die Turnierbaumspiele zu planen.",
         "successMixed": "Struktur erstellt: {{poolCount}} Gruppen, {{tiersSummary}}. Gehen Sie zur Spielplanseite, um die Gruppen- und K.-o.-Spiele zu planen.",
         "errors": {
-          "knockoutNotPowerOfTwo": "Für einen reinen K.-o.-Turnierbaum muss die Anzahl der Teams eine Zweierpotenz sein (2, 4, 8, 16…) — {{teamCount}} Team(s) passt nicht.",
+          "knockoutNotPowerOfTwo": "Für einen reinen K.-o.-Turnierbaum muss die Anzahl der Teams eine Zweierpotenz sein (2, 4, 8, 16…): {{teamCount}} Team(s) passt nicht.",
           "unassignedMismatch": "{{found}} nicht zugewiesene(s) Team(s) in dieser Kategorie gefunden, {{expected}} erwartet.",
           "poolsExceedTeams": "Die Anzahl der Gruppen darf die Anzahl der Teams nicht überschreiten.",
-          "tooManyQualifiersForSmallestPool": "Bei {{teamCount}} Teams, aufgeteilt in {{poolCount}} Gruppen, hat die kleinste Gruppe nur {{smallestPoolSize}} Team(s) — es ist unmöglich, insgesamt {{totalQualifiers}} über alle Stufen hinweg zu qualifizieren.",
+          "tooManyQualifiersForSmallestPool": "Bei {{teamCount}} Teams, aufgeteilt in {{poolCount}} Gruppen, hat die kleinste Gruppe nur {{smallestPoolSize}} Team(s). Es ist unmöglich, insgesamt {{totalQualifiers}} über alle Stufen hinweg zu qualifizieren.",
           "bestOfPositionExceedsPools": "Es können nicht {{bestCount}} bestplatzierte(s) Team(s) auf Position {{bestPosition}} qualifiziert werden: Es gibt nur {{poolCount}} Gruppe(n).",
-          "bestOfPositionOverlapsDirect": "Position {{bestPosition}} der bestplatzierten Teams überschneidet sich mit den direkten Qualifikanten (Positionen 1 bis {{totalQualifiers}}) — wählen Sie eine strikt höhere Position.",
-          "bestOfPositionNotInSmallestPool": "Position {{bestPosition}} existiert nicht in jeder Gruppe — die kleinste Gruppe hat nur {{smallestPoolSize}} Team(s).",
-          "tierBracketNotPowerOfTwo": "Stufe „{{tierName}}“: {{poolCount}} Gruppe(n) × {{qualifiers}} Qualifikant(en) = {{bracketSize}} qualifizierte(s) Team(s) — diese Zahl muss eine Zweierpotenz sein (2, 4, 8, 16…), um einen K.-o.-Turnierbaum zu bilden.",
-          "tierBracketNotPowerOfTwoWithBest": "Stufe „{{tierName}}“: {{poolCount}} Gruppe(n) × {{qualifiers}} Qualifikant(en) + {{bestCount}} bestplatzierte(s) Team(s) = {{bracketSize}} qualifizierte(s) Team(s) — diese Zahl muss eine Zweierpotenz sein (2, 4, 8, 16…), um einen K.-o.-Turnierbaum zu bilden.",
+          "bestOfPositionOverlapsDirect": "Position {{bestPosition}} der bestplatzierten Teams überschneidet sich mit den direkten Qualifikanten (Positionen 1 bis {{totalQualifiers}}). Wählen Sie eine strikt höhere Position.",
+          "bestOfPositionNotInSmallestPool": "Position {{bestPosition}} existiert nicht in jeder Gruppe: die kleinste Gruppe hat nur {{smallestPoolSize}} Team(s).",
+          "tierBracketNotPowerOfTwo": "Stufe „{{tierName}}“: {{poolCount}} Gruppe(n) × {{qualifiers}} Qualifikant(en) = {{bracketSize}} qualifizierte(s) Team(s). Diese Zahl muss eine Zweierpotenz sein (2, 4, 8, 16…), um einen K.-o.-Turnierbaum zu bilden.",
+          "tierBracketNotPowerOfTwoWithBest": "Stufe „{{tierName}}“: {{poolCount}} Gruppe(n) × {{qualifiers}} Qualifikant(en) + {{bestCount}} bestplatzierte(s) Team(s) = {{bracketSize}} qualifizierte(s) Team(s). Diese Zahl muss eine Zweierpotenz sein (2, 4, 8, 16…), um einen K.-o.-Turnierbaum zu bilden.",
           "generic": "Die Struktur konnte nicht erstellt werden."
         }
       },
@@ -1043,7 +1043,7 @@
         "loadPhases": "Phasen konnten nicht geladen werden.",
         "loadMatches": "Spiele konnten nicht geladen werden.",
         "enterBothScores": "Geben Sie beide Ergebnisse (Heim und Auswärts) ein, bevor Sie speichern.",
-        "matchForfeited": "Dieses Spiel wurde als Aufgabe gewertet — machen Sie die Aufgabe rückgängig, bevor Sie ein Ergebnis eingeben.",
+        "matchForfeited": "Dieses Spiel wurde als Aufgabe gewertet. Machen Sie die Aufgabe rückgängig, bevor Sie ein Ergebnis eingeben.",
         "saveScoreGeneric": "Dieses Ergebnis konnte nicht gespeichert werden, prüfen Sie die eingegebenen Werte.",
         "penaltyShootoutRequired": "Zur Bestätigung dieses Unentschiedens ist ein Elfmeterschießen erforderlich.",
         "validateGeneric": "Dieses Ergebnis konnte nicht bestätigt werden.",
@@ -1087,7 +1087,7 @@
         "result": "Ergebnis"
       },
       "tieTotal": "Vollständige Gleichheit zwischen",
-      "tieQuestion": "— wer soll vor den anderen platziert werden?",
+      "tieQuestion": ", wer soll vor den anderen platziert werden?",
       "chooseTeamAheadLabel": "Das vorzuziehende Team auswählen",
       "resetToAlphabetical": "Zur alphabetischen Reihenfolge zurückkehren",
       "crossGroupTiesTitle": "Zu klärende gruppenübergreifende Gleichstände",
@@ -1115,11 +1115,11 @@
         "pendingPayment": {
           "badgeLabel": "Zahlung ausstehend",
           "body": "Ein Abonnement wird gerade bestätigt. Falls die Zahlung abgebrochen wurde, können Sie eine neue Zahlung starten.",
-          "retryButton": "Zahlung erneut versuchen — 159 €"
+          "retryButton": "Zahlung erneut versuchen (159 €)"
         },
         "none": {
           "body": "Kein aktives Abonnement für diese Organisation.",
-          "subscribeButton": "Abonnieren — 159 € / Jahr"
+          "subscribeButton": "Abonnieren (159 € / Jahr)"
         }
       },
       "history": {
@@ -1136,7 +1136,7 @@
         "print": "Drucken"
       },
       "receipt": {
-        "title": "Quittung — TournArena-Jahresabonnement",
+        "title": "Quittung zum TournArena-Jahresabonnement",
         "organization": "Organisation",
         "paidAt": "Zahlungsdatum",
         "amount": "Betrag",

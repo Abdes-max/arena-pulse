@@ -125,6 +125,6 @@ export class TeamDetailPage {
     if (match.knockoutBracketId && match.knockoutTotalRounds !== null) {
       return roundLabel(match.knockoutTotalRounds - match.round);
     }
-    return `Poule — round ${match.round}`;
+    return `Poule, round ${match.round}`;
   }
 }

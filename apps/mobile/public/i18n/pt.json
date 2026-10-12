@@ -240,7 +240,7 @@
         "paymentHint": "Se ultrapassar o seu plano gratuito, ser-lhe-á proposto um pagamento seguro com Stripe antes da publicação.",
         "planTitle": "Plano",
         "planLoading": "A carregar…",
-        "planActive": "Subscrição anual ativa até {{date}} — todas as suas publicações são gratuitas.",
+        "planActive": "Subscrição anual ativa até {{date}}. Todas as suas publicações são gratuitas.",
         "planPending": "Pagamento da subscrição anual a aguardar confirmação.",
         "planNone": "Faturação por publicação consoante o número de equipas. A subscrição anual torna todas as suas publicações gratuitas.",
         "planManage": "Gerir a minha subscrição",

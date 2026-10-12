@@ -240,7 +240,7 @@
         "paymentHint": "If your free tier is exceeded, a secure Stripe payment will be offered before publishing.",
         "planTitle": "Plan",
         "planLoading": "Loading…",
-        "planActive": "Annual subscription active until {{date}} — every publication of yours is free.",
+        "planActive": "Annual subscription active until {{date}}. Every publication of yours is free.",
         "planPending": "Annual subscription payment awaiting confirmation.",
         "planNone": "Billed per publication based on team count. The annual subscription makes every publication of yours free.",
         "planManage": "Manage my subscription",

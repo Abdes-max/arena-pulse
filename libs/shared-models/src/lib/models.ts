@@ -44,7 +44,7 @@ export interface Sponsor {
   position: number;
 }
 
-/** One row of the public tournament directory (home page card lists) — see PublicTournament for a single tournament's full detail. */
+/** One row of the public tournament directory (home page card lists) -- see PublicTournament for a single tournament's full detail. */
 export interface PublicTournamentSummary {
   id: string;
   name: string;

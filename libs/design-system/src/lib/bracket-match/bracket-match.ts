@@ -7,7 +7,7 @@ export interface BracketMatchTeam {
 
 /**
  * Compact team-vs-team card sized for a bracket tree column rather than a
- * full-width list (see `ap-match-card`) — deliberately left out of the
+ * full-width list (see `ap-match-card`) -- deliberately left out of the
  * design-system foundation until a screen needed it (feat/015's public
  * knockout bracket).
  */

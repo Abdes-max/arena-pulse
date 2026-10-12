@@ -42,7 +42,7 @@ export class RegisterPage {
     { value: '', label: 'Choisir une catégorie', disabled: true },
     ...this.categories().map((category) => ({
       value: category.id,
-      label: `${category.name} — ${formatFee(category)}`,
+      label: `${category.name} · ${formatFee(category)}`,
     })),
   ]);
 

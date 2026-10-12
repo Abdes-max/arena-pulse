@@ -179,7 +179,7 @@ export class TeamListPage {
     this.formManagerEmail.set(team.managerEmail ?? '');
     this.formManagerPhone.set(team.managerPhone ?? '');
     // The division <select>'s options are populated from a computed that
-    // depends on formCategoryId, set just above in this same tick — the
+    // depends on formCategoryId, set just above in this same tick -- the
     // browser only honors a <select> value once its matching <option>
     // exists in the DOM. Set it to empty now (options don't exist yet for
     // the new category) and re-set the real value on the next microtask,

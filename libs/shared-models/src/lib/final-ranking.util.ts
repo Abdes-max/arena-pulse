@@ -25,7 +25,7 @@ interface StageEntry {
 }
 
 /**
- * Ranks teams by (bracket "value", i.e. the order its phase was given —
+ * Ranks teams by (bracket "value", i.e. the order its phase was given --
  * business-rules.md: "valeur du tableau atteint") then by how far they got
  * within that bracket. Not a points cumulative table: a semifinalist in the
  * top bracket always outranks the winner of a lesser one.
@@ -34,7 +34,7 @@ export function computeFinalRanking(
   phasesWithMatches: PhaseMatches[],
   lang: RoundLabelLang = 'fr',
 ): FinalRankingRow[] {
-  // Order is (phase order, i.e. bracket "value") then stage rank within it —
+  // Order is (phase order, i.e. bracket "value") then stage rank within it --
   // phasesWithMatches must already be given in descending bracket-value order.
   const ordered: FinalRankingRow[] = [];
   phasesWithMatches.forEach(({ phase, matches }) => {
