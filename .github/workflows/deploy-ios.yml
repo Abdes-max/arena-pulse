@@ -40,6 +40,16 @@ on:
           Defaults to the GitHub Actions run number.
         required: false
 
+env:
+  # CFBundleShortVersionString -- unlike build_number above, this is NOT
+  # auto-incremented per run: Apple ties a TestFlight "pre-release train" to
+  # one marketing version and happily accepts many build numbers under it,
+  # only rejecting uploads once that train is closed (e.g. after a build
+  # under it reached production/App Store review). Bump this by hand only
+  # when that happens -- last bumped 1.0 -> 1.1 on 2026-10-12 after Apple
+  # closed the 1.0 train (error 90186/90062 on upload).
+  MARKETING_VERSION: '1.1'
+
 jobs:
   ios:
     name: Archive and upload to TestFlight
@@ -114,9 +124,12 @@ jobs:
           NAME=$(security cms -D -i "$PROFILE_PATH" | plutil -extract Name raw -)
           echo "name=$NAME" >> "$GITHUB_OUTPUT"
 
-      - name: Set build number
+      - name: Set marketing version and build number
         working-directory: apps/mobile/ios/App
-        run: agvtool new-version -all "${{ inputs.build_number || github.run_number }}"
+        run: |
+          set -euo pipefail
+          agvtool new-marketing-version "$MARKETING_VERSION"
+          agvtool new-version -all "${{ inputs.build_number || github.run_number }}"
 
       # Without this, every single build sits in App Store Connect with
       # usesNonExemptEncryption unset ("Missing Compliance") until someone
