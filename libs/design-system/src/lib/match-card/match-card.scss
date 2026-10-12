@@ -96,18 +96,21 @@
   font-weight: 600;
 }
 
-// --- compact: dense row for long lists (calendrier complet) ---
+// --- compact: smaller version of the default stacked layout, for the
+// secondary cards below the featured one (home page "prochains matchs")
+// -- flex-direction stays the inherited column: a row here used to put
+// .ap-match-card__meta/__teams/__footer side by side with no wrapping,
+// which overflowed off-screen on narrow viewports as soon as a
+// competitionLabel/venue/kickoff was actually passed in (always the case
+// here), since those three blocks together are far wider than one row.
 :host([data-variant='compact']) .ap-match-card {
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
   padding: var(--ap-space-2) var(--ap-space-3);
   border-radius: var(--ap-radius-sm);
+  gap: var(--ap-space-1);
 }
 
 :host([data-variant='compact']) .ap-match-card__teams {
-  flex-direction: row;
-  gap: var(--ap-space-2);
+  gap: var(--ap-space-1);
 }
 
 :host([data-variant='compact']) .ap-match-card__team {

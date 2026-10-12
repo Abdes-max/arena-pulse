@@ -68,9 +68,9 @@
     <section class="home-page__section">
       <h2>{{ 'home.sections.upcomingMatches' | transloco }}</h2>
       <div class="home-page__upcoming">
-        @for (match of upcomingMatches(); track match.id; let first = $first) {
+        @for (match of upcomingMatches(); track match.id) {
           <ap-match-card
-            [variant]="first ? 'featured' : 'compact'"
+            [variant]="isFeatured(match) ? 'featured' : 'compact'"
             [homeTeam]="teamCardInput(match.homeTeam, '?')"
             [awayTeam]="teamCardInput(match.awayTeam, '?')"
             [kickoff]="match.timeSlot ? formatKickoff(match.timeSlot.startTime) : undefined"

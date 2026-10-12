@@ -66,6 +66,14 @@ export class HomePage {
     return this.assetUrl.resolve(url);
   }
 
+  // Featured highlight goes to every match tied for the earliest kickoff,
+  // not just the first one in the list -- a plateau round routinely starts
+  // several matches at the same time on different fields.
+  protected isFeatured(match: Match): boolean {
+    const earliest = this.upcomingMatches()[0]?.timeSlot?.startTime;
+    return earliest !== undefined && match.timeSlot?.startTime === earliest;
+  }
+
   protected competitionLabel(match: Match): string {
     const lang = this.languageService.language();
     if (match.isThirdPlaceMatch) {
