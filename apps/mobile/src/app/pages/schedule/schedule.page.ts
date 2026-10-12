@@ -70,7 +70,7 @@ export class SchedulePage {
         continue;
       }
       const date = new Date(match.timeSlot.startTime);
-      // Local calendar day — see docs/architecture in public-web's schedule.page.ts
+      // Local calendar day -- see docs/architecture in public-web's schedule.page.ts
       // for why UTC-day grouping would misfile matches near local midnight.
       const key = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
       const entry = days.get(key) ?? {

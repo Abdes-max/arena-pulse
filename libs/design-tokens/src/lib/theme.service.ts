@@ -8,7 +8,7 @@ import { DEFAULT_MODE, DEFAULT_THEME, ThemeMode, ThemeName } from './theme.types
  * The TournArena product shell (apps/web's /admin section, and its own
  * marketing/landing chrome) defaults to `ink-signal` but the organizer can
  * pick any of the three themes for their own dashboard (see `adminTheme`
- * below) — independent of a tournament's public theme, which is read from
+ * below) -- independent of a tournament's public theme, which is read from
  * `PublicPageConfiguration.theme` and applied to its own root element
  * instead, never to the whole document, so it never leaks into the product
  * shell (and vice versa).

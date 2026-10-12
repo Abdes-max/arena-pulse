@@ -17,7 +17,7 @@
     "hero": {
       "titleMain": "Organisez tournois et championnats",
       "titleEmphasis": "suivis en direct par tout le monde.",
-      "subtitle": "Poules, tableaux à élimination, calendrier, arbitrage et classements — et un site public généré automatiquement pour chacune de vos compétitions, mis à jour à la seconde où un score est saisi.",
+      "subtitle": "Poules, tableaux à élimination, calendrier, arbitrage et classements, et un site public généré automatiquement pour chacune de vos compétitions, mis à jour à la seconde où un score est saisi.",
       "ctaCreate": "Créer mon tournoi",
       "storeApple": "Télécharger sur l'App Store",
       "storeGoogle": "Disponible sur Google Play"
@@ -33,9 +33,9 @@
     },
     "features": {
       "title": "Tout ce qu'il faut pour piloter une compétition, rien de superflu",
-      "lead": "Quatre outils qui se parlent — un changement de score met à jour poules, tableaux et calendrier au même instant.",
+      "lead": "Quatre outils qui se parlent entre eux : un changement de score met à jour poules, tableaux et calendrier au même instant.",
       "pools": {
-        "mockRow": "Poule A — U13",
+        "mockRow": "Poule A (U13)",
         "tag": "Classements",
         "title": "Poules et classements",
         "desc": "Qualifications calculées automatiquement à chaque score saisi, aucune feuille de calcul à tenir à jour."
@@ -58,34 +58,34 @@
         "mockRow": "Site public généré",
         "tag": "Temps réel",
         "title": "Site public par tournoi",
-        "desc": "Équipes, calendrier, classements et résultats en direct — un lien à partager, rien à configurer."
+        "desc": "Équipes, calendrier, classements et résultats en direct : un lien à partager, rien à configurer."
       },
       "branding": {
         "mockRow": "Thème du tournoi",
         "tag": "Personnalisation",
         "title": "Logo, thème et partage",
-        "desc": "Logo du tournoi, 5 thèmes visuels au choix, QR code et export PDF du calendrier et des classements — l'image de votre compétition, à votre couleur."
+        "desc": "Logo du tournoi, 5 thèmes visuels au choix, QR code et export PDF du calendrier et des classements : l'image de votre compétition, à votre couleur."
       }
     },
     "sports": {
       "title": "Un moteur, tous les sports",
-      "lead": "Ballon rond ou raquette, en salle ou en ligne — TournArena s'adapte au format de votre discipline, pas l'inverse.",
+      "lead": "Ballon rond ou raquette, en salle ou en ligne : TournArena s'adapte au format de votre discipline, pas l'inverse.",
       "description": {
-        "football": "Poules puis phase finale, tirs au but en cas d'égalité — le format classique, entièrement automatisé.",
+        "football": "Poules puis phase finale, tirs au but en cas d'égalité : le format classique, entièrement automatisé.",
         "basketball": "Championnat ou play-offs, prolongations gérées match par match, classement recalculé à chaque panier.",
         "volleyball": "Sets comptés, tableaux à élimination directe pour les phases finales de vos ligues.",
         "handball": "Poules et tableaux croisés, jusqu'aux demi-finales et à la petite finale si vous la jouez.",
-        "rugby": "Championnat toutes rondes ou tournoi à élimination — classements par bonus, à votre façon.",
+        "rugby": "Championnat toutes rondes ou tournoi à élimination, avec classements par bonus, à votre façon.",
         "tennis": "Tableaux à élimination directe, têtes de série et byes gérés automatiquement à chaque tour.",
-        "badminton": "Simples, doubles, plusieurs catégories d'âge dans un même tournoi — chacune son propre tableau.",
+        "badminton": "Simples, doubles, plusieurs catégories d'âge dans un même tournoi, chacune avec son propre tableau.",
         "futsal": "Le même moteur que le foot à onze, calibré pour vos formats en salle.",
         "esport": "Tournois en ligne ou LAN, un site public en direct pour suivre chaque match comme les autres sports.",
-        "default": "Poules, championnat ou élimination directe — votre format, vos règles."
+        "default": "Poules, championnat ou élimination directe : votre format, vos règles."
       }
     },
     "pricing": {
       "title": "Une tarification qui suit la taille de votre compétition",
-      "lead": "La création d'un tournoi et sa préparation sont toujours gratuites — le tarif ne s'applique qu'au moment de la publication, selon le nombre d'équipes inscrites.",
+      "lead": "La création d'un tournoi et sa préparation sont toujours gratuites. Le tarif ne s'applique qu'au moment de la publication, selon le nombre d'équipes inscrites.",
       "perPublication": "par publication",
       "perYear": "par an",
       "free": {
@@ -137,7 +137,7 @@
     },
     "stores": {
       "title": "Disponible partout où vos joueurs regardent",
-      "desc": "Suivi en direct, notifications de vos équipes favorites — l'app TournArena sur iOS et Android."
+      "desc": "Suivi en direct, notifications de vos équipes favorites : l'app TournArena sur iOS et Android."
     },
     "finalCta": {
       "title": "Prêt à organiser votre prochain tournoi ou championnat ?"
@@ -198,7 +198,7 @@
       },
       "section9": {
         "title": "9. Résiliation",
-        "before": "Vous pouvez cesser d'utiliser le Service à tout moment, y compris en supprimant vous-même votre compte (organisateurs et administrateurs) depuis votre espace — voir notre",
+        "before": "Vous pouvez cesser d'utiliser le Service à tout moment, y compris en supprimant vous-même votre compte (organisateurs et administrateurs) depuis votre espace, voir notre",
         "privacyLinkText": "politique de confidentialité, section 12",
         "after": ". TournArena peut également suspendre ou résilier un compte en cas de non-respect des présentes conditions."
       },
@@ -227,7 +227,7 @@
         "title": "3. Données collectées",
         "item1": "Données de compte : nom, prénom, adresse email, mot de passe (chiffré).",
         "item2": "Données liées aux tournois : nom des équipes, résultats, calendriers publiés par les organisateurs.",
-        "item3": "Données de paiement : traitées directement par notre prestataire Stripe — TournArena ne stocke jamais de numéro de carte bancaire.",
+        "item3": "Données de paiement : traitées directement par notre prestataire Stripe. TournArena ne stocke jamais de numéro de carte bancaire.",
         "item4": "Correspondance : messages envoyés via le formulaire de contact."
       },
       "section4": {
@@ -376,7 +376,7 @@
     "goals": "Buts",
     "upcoming": "À venir",
     "noMatches": "Aucun match planifié pour cette équipe.",
-    "poolRound": "Poule — round {{round}}"
+    "poolRound": "Poule (round {{round}})"
   },
   "teamSearch": {
     "allCategories": "Toutes",
@@ -655,7 +655,7 @@
       "plan": {
         "title": "Plan",
         "loading": "Chargement…",
-        "active": "Abonnement annuel actif jusqu'au {{date}} — toutes les publications de tournois sont gratuites.",
+        "active": "Abonnement annuel actif jusqu'au {{date}}. Toutes les publications de tournois sont gratuites.",
         "pending": "Paiement de l'abonnement annuel en attente de confirmation.",
         "none": "Facturation à l'acte selon le nombre d'équipes (gratuit jusqu'à {{count}} équipes). L'abonnement annuel rend toutes les publications gratuites.",
         "manage": "Gérer mon abonnement",
@@ -733,7 +733,7 @@
         "add": "Ajouter"
       },
       "receipt": {
-        "title": "Reçu — Publication de tournoi TournArena",
+        "title": "Reçu de publication de tournoi TournArena",
         "tournament": "Tournoi",
         "paidAt": "Date de paiement",
         "teams": "Équipes concernées",
@@ -855,7 +855,7 @@
       "tierModal": {
         "title": "Vous êtes sur le plan {{currentPlan}}",
         "body": "Cette équipe ferait passer ce tournoi déjà publié au-delà de votre plan {{currentPlan}}. Passez au palier supérieur ou souscrivez l'abonnement annuel pour continuer.",
-        "upgradeButton": "Passer au plan {{plan}} — {{amount}}",
+        "upgradeButton": "Passer au plan {{plan}} ({{amount}})",
         "subscribeButton": "Passer à l'abonnement annuel",
         "cancel": "Annuler",
         "close": "Fermer",
@@ -940,7 +940,7 @@
           "poolsAndKnockout": "Met en place d'un coup les poules et le tableau à élimination directe, à partir des équipes déjà créées dans cette catégorie."
         },
         "unassignedAvailable": "{{count}} équipe(s) non assignée(s) disponible(s) ici.",
-        "noUnassigned": "Aucune équipe non assignée pour l'instant — ajoutez-en d'abord sur la page Équipes.",
+        "noUnassigned": "Aucune équipe non assignée pour l'instant. Ajoutez-en d'abord sur la page Équipes.",
         "poolsTitle": "Poules",
         "teamCountLabel": "Nombre d'équipes",
         "poolCountLabel": "Nombre de poules",
@@ -962,15 +962,15 @@
         "successKnockoutOnly": "Structure générée : {{tiersSummary}}. Rendez-vous sur la page Calendrier pour planifier les matchs du tableau.",
         "successMixed": "Structure générée : {{poolCount}} poules, {{tiersSummary}}. Rendez-vous sur la page Calendrier pour planifier les matchs des poules et de l'élimination directe.",
         "errors": {
-          "knockoutNotPowerOfTwo": "Pour un tableau à élimination directe seule, le nombre d'équipes doit être une puissance de 2 (2, 4, 8, 16…) — {{teamCount}} équipe(s) ne convient pas.",
+          "knockoutNotPowerOfTwo": "Pour un tableau à élimination directe seule, le nombre d'équipes doit être une puissance de 2 (2, 4, 8, 16…) : {{teamCount}} équipe(s) ne convient pas.",
           "unassignedMismatch": "{{found}} équipe(s) non assignée(s) trouvée(s) dans cette catégorie, {{expected}} attendue(s).",
           "poolsExceedTeams": "Le nombre de poules ne peut pas dépasser le nombre d'équipes.",
-          "tooManyQualifiersForSmallestPool": "Avec {{teamCount}} équipes réparties en {{poolCount}} poules, la plus petite poule ne compte que {{smallestPoolSize}} équipe(s) — impossible d'en qualifier {{totalQualifiers}} au total en cumulant les paliers.",
+          "tooManyQualifiersForSmallestPool": "Avec {{teamCount}} équipes réparties en {{poolCount}} poules, la plus petite poule ne compte que {{smallestPoolSize}} équipe(s). Impossible d'en qualifier {{totalQualifiers}} au total en cumulant les paliers.",
           "bestOfPositionExceedsPools": "Impossible de qualifier {{bestCount}} meilleur(s) classé(s) à la position {{bestPosition}} : il n'y a que {{poolCount}} poule(s).",
-          "bestOfPositionOverlapsDirect": "La position {{bestPosition}} des meilleurs classés chevauche les qualifiés directs (positions 1 à {{totalQualifiers}}) — choisissez une position strictement supérieure.",
-          "bestOfPositionNotInSmallestPool": "La position {{bestPosition}} n'existe pas dans toutes les poules — la plus petite poule ne compte que {{smallestPoolSize}} équipe(s).",
-          "tierBracketNotPowerOfTwo": "Palier \"{{tierName}}\" : {{poolCount}} poule(s) × {{qualifiers}} qualifié(s) = {{bracketSize}} équipe(s) qualifiée(s) — ce nombre doit être une puissance de 2 (2, 4, 8, 16…) pour former un tableau à élimination directe.",
-          "tierBracketNotPowerOfTwoWithBest": "Palier \"{{tierName}}\" : {{poolCount}} poule(s) × {{qualifiers}} qualifié(s) + {{bestCount}} meilleur(s) classé(s) = {{bracketSize}} équipe(s) qualifiée(s) — ce nombre doit être une puissance de 2 (2, 4, 8, 16…) pour former un tableau à élimination directe.",
+          "bestOfPositionOverlapsDirect": "La position {{bestPosition}} des meilleurs classés chevauche les qualifiés directs (positions 1 à {{totalQualifiers}}). Choisissez une position strictement supérieure.",
+          "bestOfPositionNotInSmallestPool": "La position {{bestPosition}} n'existe pas dans toutes les poules : la plus petite poule ne compte que {{smallestPoolSize}} équipe(s).",
+          "tierBracketNotPowerOfTwo": "Palier \"{{tierName}}\" : {{poolCount}} poule(s) × {{qualifiers}} qualifié(s) = {{bracketSize}} équipe(s) qualifiée(s). Ce nombre doit être une puissance de 2 (2, 4, 8, 16…) pour former un tableau à élimination directe.",
+          "tierBracketNotPowerOfTwoWithBest": "Palier \"{{tierName}}\" : {{poolCount}} poule(s) × {{qualifiers}} qualifié(s) + {{bestCount}} meilleur(s) classé(s) = {{bracketSize}} équipe(s) qualifiée(s). Ce nombre doit être une puissance de 2 (2, 4, 8, 16…) pour former un tableau à élimination directe.",
           "generic": "Impossible de générer la structure."
         }
       },
@@ -1145,7 +1145,7 @@
         "loadPhases": "Impossible de charger les phases.",
         "loadMatches": "Impossible de charger les matchs.",
         "enterBothScores": "Renseignez les deux scores (domicile et extérieur) avant d’enregistrer.",
-        "matchForfeited": "Ce match est déclaré forfait — annulez le forfait avant de saisir un score.",
+        "matchForfeited": "Ce match est déclaré forfait. Annulez le forfait avant de saisir un score.",
         "saveScoreGeneric": "Impossible d'enregistrer ce score, vérifiez les valeurs saisies.",
         "penaltyShootoutRequired": "Une séance de tirs au but est requise pour valider ce match nul.",
         "validateGeneric": "Impossible de valider ce score.",
@@ -1189,7 +1189,7 @@
         "result": "Résultat"
       },
       "tieTotal": "Égalité totale entre",
-      "tieQuestion": "— qui doit être classé devant les autres ?",
+      "tieQuestion": ", qui doit être classé devant les autres ?",
       "chooseTeamAheadLabel": "Choisir l'équipe à classer devant",
       "resetToAlphabetical": "Revenir à l'ordre alphabétique",
       "crossGroupTiesTitle": "Égalités inter-poules à départager",
@@ -1217,11 +1217,11 @@
         "pendingPayment": {
           "badgeLabel": "Paiement en attente",
           "body": "Une souscription est en cours de confirmation. Si le paiement a été abandonné, vous pouvez relancer un nouveau paiement.",
-          "retryButton": "Relancer le paiement — 159 €"
+          "retryButton": "Relancer le paiement (159 €)"
         },
         "none": {
           "body": "Aucun abonnement actif pour cette organisation.",
-          "subscribeButton": "Souscrire — 159 € / an"
+          "subscribeButton": "Souscrire (159 € / an)"
         }
       },
       "history": {
@@ -1238,7 +1238,7 @@
         "print": "Imprimer"
       },
       "receipt": {
-        "title": "Reçu — Abonnement annuel TournArena",
+        "title": "Reçu d'abonnement annuel TournArena",
         "organization": "Organisation",
         "paidAt": "Date de paiement",
         "amount": "Montant",

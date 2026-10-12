@@ -39,7 +39,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes, withInMemoryScrolling({ anchorScrolling: 'enabled' })),
     // Each interceptor only ever attaches its own token to its own
     // URL-scoped requests (see player-scoped-request.ts /
-    // super-admin-scoped-request.ts) — a no-op otherwise, so all three are
+    // super-admin-scoped-request.ts) -- a no-op otherwise, so all three are
     // safe to register unconditionally together.
     provideHttpClient(
       withInterceptors([

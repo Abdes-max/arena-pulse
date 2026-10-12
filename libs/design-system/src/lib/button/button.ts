@@ -26,10 +26,10 @@ export class Button {
   readonly disabled = input(false);
   /** Stretches the button to fill its container's width (e.g. stacked CTAs in a narrow hero) instead of the default shrink-to-content sizing. */
   readonly fullWidth = input(false);
-  /** When set, renders an <a> instead of a <button> — same look, but for navigation rather than an action. */
+  /** When set, renders an <a> instead of a <button> -- same look, but for navigation rather than an action. */
   readonly href = input<string | undefined>(undefined);
   readonly target = input<string | undefined>(undefined);
-  /** When set, renders an <a routerLink> instead of a <button> — for in-app navigation (e.g. a tab-style sub-menu), with the active tab highlighted automatically. Takes precedence over `href`. */
+  /** When set, renders an <a routerLink> instead of a <button> -- for in-app navigation (e.g. a tab-style sub-menu), with the active tab highlighted automatically. Takes precedence over `href`. */
   readonly routerLink = input<string | unknown[] | undefined>(undefined);
   readonly routerLinkExact = input(false);
 }

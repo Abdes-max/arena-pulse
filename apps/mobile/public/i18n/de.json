@@ -240,7 +240,7 @@
         "paymentHint": "Wird Ihr kostenloses Kontingent überschritten, wird Ihnen vor der Veröffentlichung eine sichere Stripe-Zahlung angeboten.",
         "planTitle": "Plan",
         "planLoading": "Wird geladen…",
-        "planActive": "Jahresabonnement aktiv bis {{date}} — alle Ihre Veröffentlichungen sind kostenlos.",
+        "planActive": "Jahresabonnement aktiv bis {{date}}. Alle Ihre Veröffentlichungen sind kostenlos.",
         "planPending": "Zahlung des Jahresabonnements wartet auf Bestätigung.",
         "planNone": "Abrechnung pro Veröffentlichung nach Teamanzahl. Das Jahresabonnement macht alle Ihre Veröffentlichungen kostenlos.",
         "planManage": "Abonnement verwalten",

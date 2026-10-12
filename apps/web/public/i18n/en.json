@@ -17,7 +17,7 @@
     "hero": {
       "titleMain": "Run tournaments and championships",
       "titleEmphasis": "followed live by everyone.",
-      "subtitle": "Pools, knockout brackets, schedule, officiating and standings — plus a public site generated automatically for each of your competitions, updated the instant a score is entered.",
+      "subtitle": "Pools, knockout brackets, schedule, officiating and standings, plus a public site generated automatically for each of your competitions, updated the instant a score is entered.",
       "ctaCreate": "Create my tournament",
       "storeApple": "Download on the App Store",
       "storeGoogle": "Get it on Google Play"
@@ -33,9 +33,9 @@
     },
     "features": {
       "title": "Everything you need to run a competition, nothing you don't",
-      "lead": "Four tools that talk to each other — a score change updates pools, brackets and schedule at the same instant.",
+      "lead": "Four tools that talk to each other: a score change updates pools, brackets and schedule at the same instant.",
       "pools": {
-        "mockRow": "Pool A — U13",
+        "mockRow": "Pool A (U13)",
         "tag": "Standings",
         "title": "Pools and standings",
         "desc": "Qualifications calculated automatically with every score, no spreadsheet to keep up to date."
@@ -58,34 +58,34 @@
         "mockRow": "Public site generated",
         "tag": "Real-time",
         "title": "A public site for every tournament",
-        "desc": "Teams, schedule, standings and live results — one link to share, nothing to configure."
+        "desc": "Teams, schedule, standings and live results: one link to share, nothing to configure."
       },
       "branding": {
         "mockRow": "Tournament theme",
         "tag": "Personalization",
         "title": "Logo, theme and sharing",
-        "desc": "Tournament logo, 5 visual themes to choose from, QR code and PDF export of the schedule and standings — your competition, in your colors."
+        "desc": "Tournament logo, 5 visual themes to choose from, QR code and PDF export of the schedule and standings: your competition, in your colors."
       }
     },
     "sports": {
       "title": "One engine, every sport",
-      "lead": "Round ball or racquet, indoors or online — TournArena adapts to your sport's format, not the other way around.",
+      "lead": "Round ball or racquet, indoors or online: TournArena adapts to your sport's format, not the other way around.",
       "description": {
-        "football": "Pools then a final phase, penalty shoot-outs in case of a tie — the classic format, fully automated.",
+        "football": "Pools then a final phase, penalty shoot-outs in case of a tie: the classic format, fully automated.",
         "basketball": "League or play-offs, overtime handled match by match, standings recalculated with every basket.",
         "volleyball": "Sets counted, knockout brackets for your leagues' final phases.",
         "handball": "Pools and cross brackets, all the way to the semi-finals and third-place match if you play one.",
-        "rugby": "Round-robin league or knockout tournament — bonus-point standings, your way.",
+        "rugby": "Round-robin league or knockout tournament, with bonus-point standings, your way.",
         "tennis": "Knockout brackets, seeding and byes handled automatically every round.",
-        "badminton": "Singles, doubles, several age categories in the same tournament — each with its own bracket.",
+        "badminton": "Singles, doubles, several age categories in the same tournament, each with its own bracket.",
         "futsal": "The same engine as 11-a-side football, tuned for your indoor formats.",
         "esport": "Online or LAN tournaments, a live public site to follow every match just like any other sport.",
-        "default": "Pools, league or knockout — your format, your rules."
+        "default": "Pools, league or knockout: your format, your rules."
       }
     },
     "pricing": {
       "title": "Pricing that scales with your competition",
-      "lead": "Creating and setting up a tournament is always free — the fee only applies at publication, based on the number of registered teams.",
+      "lead": "Creating and setting up a tournament is always free. The fee only applies at publication, based on the number of registered teams.",
       "perPublication": "per publication",
       "perYear": "per year",
       "free": {
@@ -137,7 +137,7 @@
     },
     "stores": {
       "title": "Available everywhere your players are watching",
-      "desc": "Live follow-along, notifications for your favorite teams — the TournArena app on iOS and Android."
+      "desc": "Live follow-along, notifications for your favorite teams: the TournArena app on iOS and Android."
     },
     "finalCta": {
       "title": "Ready to run your next tournament or championship?"
@@ -198,7 +198,7 @@
       },
       "section9": {
         "title": "9. Termination",
-        "before": "You may stop using the Service at any time, including by deleting your own account (organizers and administrators) from your dashboard — see our",
+        "before": "You may stop using the Service at any time, including by deleting your own account (organizers and administrators) from your dashboard, see our",
         "privacyLinkText": "privacy policy, section 12",
         "after": ". TournArena may also suspend or terminate an account in case of non-compliance with these terms."
       },
@@ -227,7 +227,7 @@
         "title": "3. Data collected",
         "item1": "Account data: first name, last name, email address, password (encrypted).",
         "item2": "Tournament data: team names, results, schedules published by organizers.",
-        "item3": "Payment data: processed directly by our provider Stripe — TournArena never stores any card number.",
+        "item3": "Payment data: processed directly by our provider Stripe. TournArena never stores any card number.",
         "item4": "Correspondence: messages sent via the contact form."
       },
       "section4": {
@@ -376,7 +376,7 @@
     "goals": "Goals",
     "upcoming": "Upcoming",
     "noMatches": "No match scheduled for this team.",
-    "poolRound": "Pool — round {{round}}"
+    "poolRound": "Pool (round {{round}})"
   },
   "teamSearch": {
     "allCategories": "All",
@@ -655,7 +655,7 @@
       "plan": {
         "title": "Plan",
         "loading": "Loading…",
-        "active": "Annual subscription active until {{date}} — every tournament publication is free.",
+        "active": "Annual subscription active until {{date}}. Every tournament publication is free.",
         "pending": "Annual subscription payment awaiting confirmation.",
         "none": "Billed per publication based on team count (free up to {{count}} teams). The annual subscription makes every publication free.",
         "manage": "Manage my subscription",
@@ -733,7 +733,7 @@
         "add": "Add"
       },
       "receipt": {
-        "title": "Receipt — TournArena tournament publication",
+        "title": "TournArena tournament publication receipt",
         "tournament": "Tournament",
         "paidAt": "Payment date",
         "teams": "Teams involved",
@@ -855,7 +855,7 @@
       "tierModal": {
         "title": "You're on the {{currentPlan}} plan",
         "body": "This team would push this already-published tournament past your {{currentPlan}} plan. Upgrade to the next tier or subscribe annually to continue.",
-        "upgradeButton": "Upgrade to {{plan}} — {{amount}}",
+        "upgradeButton": "Upgrade to {{plan}} ({{amount}})",
         "subscribeButton": "Switch to annual subscription",
         "cancel": "Cancel",
         "close": "Close",
@@ -940,7 +940,7 @@
           "poolsAndKnockout": "Sets up both the pools and the knockout bracket at once, from the teams already created in this category."
         },
         "unassignedAvailable": "{{count}} unassigned team(s) available here.",
-        "noUnassigned": "No unassigned teams yet — add some first on the Teams page.",
+        "noUnassigned": "No unassigned teams yet. Add some first on the Teams page.",
         "poolsTitle": "Pools",
         "teamCountLabel": "Number of teams",
         "poolCountLabel": "Number of pools",
@@ -962,15 +962,15 @@
         "successKnockoutOnly": "Structure generated: {{tiersSummary}}. Head to the Schedule page to plan the bracket matches.",
         "successMixed": "Structure generated: {{poolCount}} pools, {{tiersSummary}}. Head to the Schedule page to plan the pool and knockout matches.",
         "errors": {
-          "knockoutNotPowerOfTwo": "For a knockout-only bracket, the number of teams must be a power of 2 (2, 4, 8, 16…) — {{teamCount}} team(s) doesn't work.",
+          "knockoutNotPowerOfTwo": "For a knockout-only bracket, the number of teams must be a power of 2 (2, 4, 8, 16…): {{teamCount}} team(s) doesn't work.",
           "unassignedMismatch": "{{found}} unassigned team(s) found in this category, {{expected}} expected.",
           "poolsExceedTeams": "The number of pools can't exceed the number of teams.",
-          "tooManyQualifiersForSmallestPool": "With {{teamCount}} teams split into {{poolCount}} pools, the smallest pool only has {{smallestPoolSize}} team(s) — impossible to qualify {{totalQualifiers}} in total across the tiers.",
+          "tooManyQualifiersForSmallestPool": "With {{teamCount}} teams split into {{poolCount}} pools, the smallest pool only has {{smallestPoolSize}} team(s). Impossible to qualify {{totalQualifiers}} in total across the tiers.",
           "bestOfPositionExceedsPools": "Unable to qualify {{bestCount}} best-ranked team(s) at position {{bestPosition}}: there are only {{poolCount}} pool(s).",
-          "bestOfPositionOverlapsDirect": "Position {{bestPosition}} for the best-ranked teams overlaps the direct qualifiers (positions 1 to {{totalQualifiers}}) — choose a strictly higher position.",
-          "bestOfPositionNotInSmallestPool": "Position {{bestPosition}} doesn't exist in every pool — the smallest pool only has {{smallestPoolSize}} team(s).",
-          "tierBracketNotPowerOfTwo": "Tier \"{{tierName}}\": {{poolCount}} pool(s) × {{qualifiers}} qualifier(s) = {{bracketSize}} qualified team(s) — this number must be a power of 2 (2, 4, 8, 16…) to form a knockout bracket.",
-          "tierBracketNotPowerOfTwoWithBest": "Tier \"{{tierName}}\": {{poolCount}} pool(s) × {{qualifiers}} qualifier(s) + {{bestCount}} best-ranked team(s) = {{bracketSize}} qualified team(s) — this number must be a power of 2 (2, 4, 8, 16…) to form a knockout bracket.",
+          "bestOfPositionOverlapsDirect": "Position {{bestPosition}} for the best-ranked teams overlaps the direct qualifiers (positions 1 to {{totalQualifiers}}). Choose a strictly higher position.",
+          "bestOfPositionNotInSmallestPool": "Position {{bestPosition}} doesn't exist in every pool: the smallest pool only has {{smallestPoolSize}} team(s).",
+          "tierBracketNotPowerOfTwo": "Tier \"{{tierName}}\": {{poolCount}} pool(s) × {{qualifiers}} qualifier(s) = {{bracketSize}} qualified team(s). This number must be a power of 2 (2, 4, 8, 16…) to form a knockout bracket.",
+          "tierBracketNotPowerOfTwoWithBest": "Tier \"{{tierName}}\": {{poolCount}} pool(s) × {{qualifiers}} qualifier(s) + {{bestCount}} best-ranked team(s) = {{bracketSize}} qualified team(s). This number must be a power of 2 (2, 4, 8, 16…) to form a knockout bracket.",
           "generic": "Unable to generate the structure."
         }
       },
@@ -1145,7 +1145,7 @@
         "loadPhases": "Unable to load phases.",
         "loadMatches": "Unable to load matches.",
         "enterBothScores": "Enter both scores (home and away) before saving.",
-        "matchForfeited": "This match is declared a forfeit — undo the forfeit before entering a score.",
+        "matchForfeited": "This match is declared a forfeit. Undo the forfeit before entering a score.",
         "saveScoreGeneric": "Unable to save this score, check the values entered.",
         "penaltyShootoutRequired": "A penalty shootout is required to validate this drawn match.",
         "validateGeneric": "Unable to validate this score.",
@@ -1189,7 +1189,7 @@
         "result": "Result"
       },
       "tieTotal": "Complete tie between",
-      "tieQuestion": "— who should rank ahead of the others?",
+      "tieQuestion": ", who should rank ahead of the others?",
       "chooseTeamAheadLabel": "Choose the team to rank ahead",
       "resetToAlphabetical": "Reset to alphabetical order",
       "crossGroupTiesTitle": "Cross-pool ties to resolve",
@@ -1217,11 +1217,11 @@
         "pendingPayment": {
           "badgeLabel": "Payment pending",
           "body": "A subscription is being confirmed. If the payment was abandoned, you can start a new payment.",
-          "retryButton": "Retry payment — €159"
+          "retryButton": "Retry payment (€159)"
         },
         "none": {
           "body": "No active subscription for this organization.",
-          "subscribeButton": "Subscribe — €159 / year"
+          "subscribeButton": "Subscribe (€159 / year)"
         }
       },
       "history": {
@@ -1238,7 +1238,7 @@
         "print": "Print"
       },
       "receipt": {
-        "title": "Receipt — TournArena annual subscription",
+        "title": "TournArena annual subscription receipt",
         "organization": "Organization",
         "paidAt": "Payment date",
         "amount": "Amount",

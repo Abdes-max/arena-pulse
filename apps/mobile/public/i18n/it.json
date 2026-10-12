@@ -240,7 +240,7 @@
         "paymentHint": "Se superi il tuo piano gratuito, prima della pubblicazione ti verrà proposto un pagamento sicuro con Stripe.",
         "planTitle": "Piano",
         "planLoading": "Caricamento…",
-        "planActive": "Abbonamento annuale attivo fino al {{date}} — tutte le tue pubblicazioni sono gratuite.",
+        "planActive": "Abbonamento annuale attivo fino al {{date}}. Tutte le tue pubblicazioni sono gratuite.",
         "planPending": "Pagamento dell'abbonamento annuale in attesa di conferma.",
         "planNone": "Fatturazione per pubblicazione in base al numero di squadre. L'abbonamento annuale rende gratuita ogni tua pubblicazione.",
         "planManage": "Gestisci il mio abbonamento",

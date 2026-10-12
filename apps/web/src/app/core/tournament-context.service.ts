@@ -21,7 +21,7 @@ export class TournamentContextService implements OnDestroy {
   readonly errorMessage = signal<string | null>(null);
 
   /**
-   * Ticks whenever the SSE stream reports a match changed — a plain trigger,
+   * Ticks whenever the SSE stream reports a match changed -- a plain trigger,
    * not the match payload itself, so pages just re-run whatever fetch they
    * already have (docs/architecture/realtime-strategy.md).
    */

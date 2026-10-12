@@ -240,7 +240,7 @@
         "paymentHint": "Si superas tu plan gratuito, se te propondrá un pago seguro con Stripe antes de publicar.",
         "planTitle": "Plan",
         "planLoading": "Cargando…",
-        "planActive": "Suscripción anual activa hasta el {{date}} — todas tus publicaciones son gratuitas.",
+        "planActive": "Suscripción anual activa hasta el {{date}}. Todas tus publicaciones son gratuitas.",
         "planPending": "Pago de la suscripción anual pendiente de confirmación.",
         "planNone": "Facturación por publicación según el número de equipos. La suscripción anual hace que todas tus publicaciones sean gratuitas.",
         "planManage": "Gestionar mi suscripción",

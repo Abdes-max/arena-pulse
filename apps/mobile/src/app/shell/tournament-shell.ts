@@ -118,7 +118,7 @@ export class TournamentShell {
     });
 
     // The tournament's own theme (organizer choice) governs the mobile view
-    // only — applied to <html> here, and reset back to the fixed product
+    // only -- applied to <html> here, and reset back to the fixed product
     // identity on the way out, same pattern as apps/web's TournamentShell.
     // Mode (light/dark) defaults to the system preference but only until the
     // visitor overrides it with the toggle -- see modeManuallySet.

@@ -350,7 +350,7 @@
 }
 
 // Connecteur sortant : du bord droit de la carte vers le point de fusion
-// avec son partenaire de paire — un demi-coin par créneau (haut pour le
+// avec son partenaire de paire -- un demi-coin par créneau (haut pour le
 // premier de la paire, bas pour le second), qui se rejoignent exactement
 // au milieu grâce à la symétrie de `space-around`.
 .standings-page__bracket-round:not(:last-child) .standings-page__bracket-slot::after {

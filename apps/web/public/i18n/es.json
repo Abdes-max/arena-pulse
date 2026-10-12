@@ -17,7 +17,7 @@
     "hero": {
       "titleMain": "Organiza torneos y campeonatos",
       "titleEmphasis": "seguidos en directo por todos.",
-      "subtitle": "Grupos, cuadros de eliminación, calendario, arbitraje y clasificaciones — y un sitio público generado automáticamente para cada una de tus competiciones, actualizado en el instante en que se registra un resultado.",
+      "subtitle": "Grupos, cuadros de eliminación, calendario, arbitraje y clasificaciones, y un sitio público generado automáticamente para cada una de tus competiciones, actualizado en el instante en que se registra un resultado.",
       "ctaCreate": "Crear mi torneo",
       "storeApple": "Descargar en App Store",
       "storeGoogle": "Disponible en Google Play"
@@ -33,9 +33,9 @@
     },
     "features": {
       "title": "Todo lo necesario para dirigir una competición, nada superfluo",
-      "lead": "Cuatro herramientas conectadas entre sí — un cambio de resultado actualiza grupos, cuadros y calendario al mismo instante.",
+      "lead": "Cuatro herramientas conectadas entre sí: un cambio de resultado actualiza grupos, cuadros y calendario al mismo instante.",
       "pools": {
-        "mockRow": "Grupo A — U13",
+        "mockRow": "Grupo A (U13)",
         "tag": "Clasificaciones",
         "title": "Grupos y clasificaciones",
         "desc": "Clasificaciones calculadas automáticamente con cada resultado, sin hojas de cálculo que mantener."
@@ -58,34 +58,34 @@
         "mockRow": "Sitio público generado",
         "tag": "Tiempo real",
         "title": "Sitio público por torneo",
-        "desc": "Equipos, calendario, clasificaciones y resultados en directo — un enlace para compartir, nada que configurar."
+        "desc": "Equipos, calendario, clasificaciones y resultados en directo: un enlace para compartir, nada que configurar."
       },
       "branding": {
         "mockRow": "Tema del torneo",
         "tag": "Personalización",
         "title": "Logo, tema y difusión",
-        "desc": "Logo del torneo, 5 temas visuales a elegir, código QR y exportación PDF del calendario y las clasificaciones — la imagen de tu competición, con tu color."
+        "desc": "Logo del torneo, 5 temas visuales a elegir, código QR y exportación PDF del calendario y las clasificaciones: la imagen de tu competición, con tu color."
       }
     },
     "sports": {
       "title": "Un motor, todos los deportes",
-      "lead": "Balón redondo o raqueta, en pista o en línea — TournArena se adapta al formato de tu disciplina, no al revés.",
+      "lead": "Balón redondo o raqueta, en pista o en línea: TournArena se adapta al formato de tu disciplina, no al revés.",
       "description": {
-        "football": "Grupos y luego fase final, penaltis en caso de empate — el formato clásico, totalmente automatizado.",
+        "football": "Grupos y luego fase final, penaltis en caso de empate: el formato clásico, totalmente automatizado.",
         "basketball": "Liga o playoffs, prórrogas gestionadas partido a partido, clasificación recalculada con cada canasta.",
         "volleyball": "Sets contados, cuadros de eliminación directa para las fases finales de tus ligas.",
         "handball": "Grupos y cuadros cruzados, hasta las semifinales y el partido por el tercer puesto si lo juegas.",
-        "rugby": "Liga de todos contra todos o torneo de eliminación — clasificación por puntos bonus, a tu manera.",
+        "rugby": "Liga de todos contra todos o torneo de eliminación, con clasificación por puntos bonus, a tu manera.",
         "tennis": "Cuadros de eliminación directa, cabezas de serie y byes gestionados automáticamente en cada ronda.",
-        "badminton": "Individuales, dobles, varias categorías de edad en un mismo torneo — cada una con su propio cuadro.",
+        "badminton": "Individuales, dobles, varias categorías de edad en un mismo torneo, cada una con su propio cuadro.",
         "futsal": "El mismo motor que el fútbol once, adaptado a tus formatos de sala.",
         "esport": "Torneos en línea o LAN, un sitio público en directo para seguir cada partida como en cualquier otro deporte.",
-        "default": "Grupos, liga o eliminación directa — tu formato, tus reglas."
+        "default": "Grupos, liga o eliminación directa: tu formato, tus reglas."
       }
     },
     "pricing": {
       "title": "Una tarifa que se adapta al tamaño de tu competición",
-      "lead": "Crear y preparar un torneo es siempre gratis — la tarifa solo se aplica en el momento de la publicación, según el número de equipos inscritos.",
+      "lead": "Crear y preparar un torneo es siempre gratis. La tarifa solo se aplica en el momento de la publicación, según el número de equipos inscritos.",
       "perPublication": "por publicación",
       "perYear": "al año",
       "free": {
@@ -137,7 +137,7 @@
     },
     "stores": {
       "title": "Disponible allá donde miren tus jugadores",
-      "desc": "Seguimiento en directo, notificaciones de tus equipos favoritos — la app TournArena en iOS y Android."
+      "desc": "Seguimiento en directo, notificaciones de tus equipos favoritos: la app TournArena en iOS y Android."
     },
     "finalCta": {
       "title": "¿Listo para organizar tu próximo torneo o campeonato?"
@@ -274,7 +274,7 @@
     "goals": "Goles",
     "upcoming": "Próximos",
     "noMatches": "Ningún partido programado para este equipo.",
-    "poolRound": "Grupo — ronda {{round}}"
+    "poolRound": "Grupo (ronda {{round}})"
   },
   "teamSearch": {
     "allCategories": "Todas",
@@ -553,7 +553,7 @@
       "plan": {
         "title": "Plan",
         "loading": "Cargando…",
-        "active": "Suscripción anual activa hasta el {{date}} — todas las publicaciones de torneos son gratuitas.",
+        "active": "Suscripción anual activa hasta el {{date}}. Todas las publicaciones de torneos son gratuitas.",
         "pending": "Pago de la suscripción anual pendiente de confirmación.",
         "none": "Facturación por publicación según el número de equipos (gratis hasta {{count}} equipos). La suscripción anual hace que todas las publicaciones sean gratuitas.",
         "manage": "Gestionar mi suscripción",
@@ -631,7 +631,7 @@
         "add": "Añadir"
       },
       "receipt": {
-        "title": "Recibo — Publicación de torneo TournArena",
+        "title": "Recibo de publicación de torneo TournArena",
         "tournament": "Torneo",
         "paidAt": "Fecha de pago",
         "teams": "Equipos afectados",
@@ -753,7 +753,7 @@
       "tierModal": {
         "title": "Estás en el plan {{currentPlan}}",
         "body": "Este equipo haría que este torneo, ya publicado, superara tu plan {{currentPlan}}. Pasa al siguiente nivel o suscríbete al plan anual para continuar.",
-        "upgradeButton": "Pasar al plan {{plan}} — {{amount}}",
+        "upgradeButton": "Pasar al plan {{plan}} ({{amount}})",
         "subscribeButton": "Pasar a la suscripción anual",
         "cancel": "Cancelar",
         "close": "Cerrar",
@@ -838,7 +838,7 @@
           "poolsAndKnockout": "Configura de una vez los grupos y el cuadro de eliminación directa, a partir de los equipos ya creados en esta categoría."
         },
         "unassignedAvailable": "{{count}} equipo(s) no asignado(s) disponible(s) aquí.",
-        "noUnassigned": "Todavía no hay equipos sin asignar — añade algunos primero en la página Equipos.",
+        "noUnassigned": "Todavía no hay equipos sin asignar. Añade algunos primero en la página Equipos.",
         "poolsTitle": "Grupos",
         "teamCountLabel": "Número de equipos",
         "poolCountLabel": "Número de grupos",
@@ -860,15 +860,15 @@
         "successKnockoutOnly": "Estructura generada: {{tiersSummary}}. Ve a la página Calendario para planificar los partidos del cuadro.",
         "successMixed": "Estructura generada: {{poolCount}} grupos, {{tiersSummary}}. Ve a la página Calendario para planificar los partidos de grupo y de eliminación directa.",
         "errors": {
-          "knockoutNotPowerOfTwo": "Para un cuadro de solo eliminación directa, el número de equipos debe ser una potencia de 2 (2, 4, 8, 16…) — {{teamCount}} equipo(s) no es válido.",
+          "knockoutNotPowerOfTwo": "Para un cuadro de solo eliminación directa, el número de equipos debe ser una potencia de 2 (2, 4, 8, 16…): {{teamCount}} equipo(s) no es válido.",
           "unassignedMismatch": "Se han encontrado {{found}} equipo(s) sin asignar en esta categoría, se esperaban {{expected}}.",
           "poolsExceedTeams": "El número de grupos no puede superar el número de equipos.",
-          "tooManyQualifiersForSmallestPool": "Con {{teamCount}} equipos repartidos en {{poolCount}} grupos, el grupo más pequeño solo tiene {{smallestPoolSize}} equipo(s) — imposible clasificar a {{totalQualifiers}} en total sumando los niveles.",
+          "tooManyQualifiersForSmallestPool": "Con {{teamCount}} equipos repartidos en {{poolCount}} grupos, el grupo más pequeño solo tiene {{smallestPoolSize}} equipo(s). Imposible clasificar a {{totalQualifiers}} en total sumando los niveles.",
           "bestOfPositionExceedsPools": "No se puede clasificar a {{bestCount}} mejor(es) clasificado(s) en la posición {{bestPosition}}: solo hay {{poolCount}} grupo(s).",
-          "bestOfPositionOverlapsDirect": "La posición {{bestPosition}} de los mejores clasificados se solapa con los clasificados directos (posiciones 1 a {{totalQualifiers}}) — elige una posición estrictamente superior.",
-          "bestOfPositionNotInSmallestPool": "La posición {{bestPosition}} no existe en todos los grupos — el grupo más pequeño solo tiene {{smallestPoolSize}} equipo(s).",
-          "tierBracketNotPowerOfTwo": "Nivel «{{tierName}}»: {{poolCount}} grupo(s) × {{qualifiers}} clasificado(s) = {{bracketSize}} equipo(s) clasificado(s) — este número debe ser una potencia de 2 (2, 4, 8, 16…) para formar un cuadro de eliminación directa.",
-          "tierBracketNotPowerOfTwoWithBest": "Nivel «{{tierName}}»: {{poolCount}} grupo(s) × {{qualifiers}} clasificado(s) + {{bestCount}} mejor(es) clasificado(s) = {{bracketSize}} equipo(s) clasificado(s) — este número debe ser una potencia de 2 (2, 4, 8, 16…) para formar un cuadro de eliminación directa.",
+          "bestOfPositionOverlapsDirect": "La posición {{bestPosition}} de los mejores clasificados se solapa con los clasificados directos (posiciones 1 a {{totalQualifiers}}). Elige una posición estrictamente superior.",
+          "bestOfPositionNotInSmallestPool": "La posición {{bestPosition}} no existe en todos los grupos: el grupo más pequeño solo tiene {{smallestPoolSize}} equipo(s).",
+          "tierBracketNotPowerOfTwo": "Nivel «{{tierName}}»: {{poolCount}} grupo(s) × {{qualifiers}} clasificado(s) = {{bracketSize}} equipo(s) clasificado(s). Este número debe ser una potencia de 2 (2, 4, 8, 16…) para formar un cuadro de eliminación directa.",
+          "tierBracketNotPowerOfTwoWithBest": "Nivel «{{tierName}}»: {{poolCount}} grupo(s) × {{qualifiers}} clasificado(s) + {{bestCount}} mejor(es) clasificado(s) = {{bracketSize}} equipo(s) clasificado(s). Este número debe ser una potencia de 2 (2, 4, 8, 16…) para formar un cuadro de eliminación directa.",
           "generic": "No se ha podido generar la estructura."
         }
       },
@@ -1043,7 +1043,7 @@
         "loadPhases": "No se han podido cargar las fases.",
         "loadMatches": "No se han podido cargar los partidos.",
         "enterBothScores": "Indica ambos resultados (local y visitante) antes de guardar.",
-        "matchForfeited": "Este partido está declarado como renuncia — anula la renuncia antes de introducir un resultado.",
+        "matchForfeited": "Este partido está declarado como renuncia. Anula la renuncia antes de introducir un resultado.",
         "saveScoreGeneric": "No se ha podido guardar este resultado, comprueba los valores introducidos.",
         "penaltyShootoutRequired": "Se requiere una tanda de penaltis para validar este empate.",
         "validateGeneric": "No se ha podido validar este resultado.",
@@ -1087,7 +1087,7 @@
         "result": "Resultado"
       },
       "tieTotal": "Empate total entre",
-      "tieQuestion": "— ¿quién debe clasificarse por delante de los demás?",
+      "tieQuestion": ", ¿quién debe clasificarse por delante de los demás?",
       "chooseTeamAheadLabel": "Elegir el equipo a clasificar por delante",
       "resetToAlphabetical": "Volver al orden alfabético",
       "crossGroupTiesTitle": "Empates entre grupos por resolver",
@@ -1115,11 +1115,11 @@
         "pendingPayment": {
           "badgeLabel": "Pago pendiente",
           "body": "Se está confirmando una suscripción. Si el pago se abandonó, puedes iniciar un nuevo pago.",
-          "retryButton": "Reintentar el pago — 159 €"
+          "retryButton": "Reintentar el pago (159 €)"
         },
         "none": {
           "body": "No hay ninguna suscripción activa para esta organización.",
-          "subscribeButton": "Suscribirse — 159 € / año"
+          "subscribeButton": "Suscribirse (159 € / año)"
         }
       },
       "history": {
@@ -1136,7 +1136,7 @@
         "print": "Imprimir"
       },
       "receipt": {
-        "title": "Recibo — Suscripción anual TournArena",
+        "title": "Recibo de suscripción anual TournArena",
         "organization": "Organización",
         "paidAt": "Fecha de pago",
         "amount": "Importe",

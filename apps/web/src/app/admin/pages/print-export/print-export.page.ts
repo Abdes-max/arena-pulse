@@ -214,7 +214,7 @@ export class PrintExportPage {
     for (const phase of knockoutPhases) {
       const bracketId = phase.knockoutBracket!.id;
       const phaseMatches = allMatches.filter((match) => match.knockoutBracketId === bracketId);
-      const prefix = multipleTiers ? `${phase.knockoutBracket!.name} — ` : '';
+      const prefix = multipleTiers ? `${phase.knockoutBracket!.name} · ` : '';
       for (const section of groupMatchesByPhaseSection(phase, phaseMatches, lang)) {
         sections.push({ label: `${prefix}${section.label}`, matches: section.matches });
       }

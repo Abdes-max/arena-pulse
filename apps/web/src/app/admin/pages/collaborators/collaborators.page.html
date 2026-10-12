@@ -70,7 +70,7 @@
           <ul class="collaborators-page__pending-list">
             @for (invitation of pendingInvitations(); track invitation.id) {
               <li>
-                {{ invitation.email }} —
+                {{ invitation.email }},
                 {{
                   (invitation.role === 'ORG_ADMIN'
                     ? 'admin.collaborators.roleAdmin'
@@ -131,7 +131,7 @@
               <li>
                 {{ administrator.firstName }} {{ administrator.lastName }} ({{
                   administrator.email
-                }}) —
+                }}),
                 {{ administrator.permissionKeys.join(', ') }}
                 <ap-button
                   type="button"

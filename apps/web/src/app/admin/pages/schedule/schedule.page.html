@@ -230,7 +230,7 @@
                 <div class="schedule-page__grid" #gridScroller>
                   @for (field of fields(); track field.id) {
                     <div class="schedule-page__field-column">
-                      <h3>{{ field.venueName }} — {{ field.name }}</h3>
+                      <h3>{{ field.venueName }}, {{ field.name }}</h3>
 
                       @for (slot of timeSlotsByField().get(field.id) ?? []; track slot.id) {
                         <div

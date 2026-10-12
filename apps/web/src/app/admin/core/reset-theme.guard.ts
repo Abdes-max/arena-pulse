@@ -10,11 +10,11 @@ import { ThemeService } from 'design-tokens';
  * back/forward, or a direct bookmark straight into /admin/tournaments where
  * no TournamentShell ever ran to begin with). TournamentShell's own
  * DestroyRef reset remains the first line of defense for the common case;
- * this is the belt-and-braces second line for the /admin side — now
+ * this is the belt-and-braces second line for the /admin side -- now
  * load-bearing since public and admin routes share one running app instead
  * of being two separate origins.
  *
- * Only the theme (art direction) is reset here, not the light/dark mode —
+ * Only the theme (art direction) is reset here, not the light/dark mode --
  * mode is a user preference toggled from anywhere in the app (admin and
  * public alike) and must survive navigating between them.
  */

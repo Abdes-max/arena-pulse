@@ -199,7 +199,7 @@ export class TournamentListPage {
       this.hasTeam.set(teams.length > 0);
       this.hasStructure.set(categories.length > 0);
     } catch {
-      // Onboarding hints are best-effort — a failure here shouldn't block the dashboard.
+      // Onboarding hints are best-effort -- a failure here shouldn't block the dashboard.
     }
   }
 

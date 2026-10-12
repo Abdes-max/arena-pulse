@@ -15,7 +15,7 @@ export interface MatchCardTeam {
  * flagged a single generic card reused for every context (poule, quart de
  * finale, finale) as a weakness (docs/product/opportunities.md). Arena
  * Pulse instead ships distinct treatments per variant (docs/design/
- * component-inventory.md) — `bracket-match`, `team-match-card` and
+ * component-inventory.md) -- `bracket-match`, `team-match-card` and
  * `match-summary` are deliberately out of scope for this foundation PR and
  * will be added alongside the screens that need them (feat/015 and later).
  */

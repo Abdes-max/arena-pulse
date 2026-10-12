@@ -68,13 +68,13 @@
   }
 }
 
-// Reporté : avertissement — peut encore reprendre.
+// Reporté : avertissement -- peut encore reprendre.
 :host([data-status='postponed']) .ap-badge {
   color: var(--ap-color-warning);
   border-color: var(--ap-color-warning);
 }
 
-// Annulé : neutre mais définitif — texte barré, jamais confondu avec une erreur système.
+// Annulé : neutre mais définitif -- texte barré, jamais confondu avec une erreur système.
 :host([data-status='cancelled']) .ap-badge {
   color: var(--ap-color-muted);
 }
@@ -89,13 +89,13 @@
   border-color: var(--ap-color-win);
 }
 
-// Éliminé : résultat sportif neutre — jamais la couleur "error" système (docs/design/colors.md).
+// Éliminé : résultat sportif neutre -- jamais la couleur "error" système (docs/design/colors.md).
 :host([data-status='eliminated']) .ap-badge {
   color: var(--ap-color-loss);
 }
 
 // Statuts de cycle de vie d'un tournoi (draft/published/unpublished/archived).
-// Brouillon : pas encore visible, neutre — comme "upcoming".
+// Brouillon : pas encore visible, neutre -- comme "upcoming".
 :host([data-status='draft']) .ap-badge {
   color: var(--ap-color-muted);
 }
@@ -106,13 +106,13 @@
   border-color: var(--ap-color-win);
 }
 
-// Dépublié : réversible, nécessite attention — comme "postponed".
+// Dépublié : réversible, nécessite attention -- comme "postponed".
 :host([data-status='unpublished']) .ap-badge {
   color: var(--ap-color-warning);
   border-color: var(--ap-color-warning);
 }
 
-// Archivé : définitif mais neutre — jamais la couleur "error" système.
+// Archivé : définitif mais neutre -- jamais la couleur "error" système.
 :host([data-status='archived']) .ap-badge {
   color: var(--ap-color-muted);
 }
