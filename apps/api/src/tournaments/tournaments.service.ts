@@ -187,6 +187,14 @@ export class TournamentsService {
       categoriesCount: order.categoriesCount,
       teamsCount: order.teamsCount,
       amountCents: order.amountCents,
+      // Fixed at order-creation time, never touched by a coupon -- see the
+      // field's own schema comment. Lets the frontend tell "a genuinely
+      // free order" (tierCents 0) apart from "a paid tier discounted to 0
+      // by a coupon" (tierCents > 0, amountCents 0), which amountCents
+      // alone can't distinguish.
+      tierCents: order.tierCents,
+      discountPercent: order.discountPercent,
+      discountAmountCents: order.discountAmountCents,
       currency: order.currency,
       createdAt: order.createdAt,
       paidAt: order.paidAt,
@@ -232,10 +240,10 @@ export class TournamentsService {
             tournamentId,
             status: TournamentPublicationOrderStatus.PAID,
           },
-          _sum: { amountCents: true },
+          _sum: { tierCents: true },
         }),
       ]);
-    // Every PAID order's amountCents is itself already a gap/top-up amount
+    // Every PAID order's tierCents is itself already a gap/top-up amount
     // (requiredCents - alreadyPaidCents at the time it was charged, see
     // amountCents below and payForTeamAdditionTier/payForTournamentTier's
     // own identical pattern) -- so what's actually been paid so far is the
@@ -244,13 +252,18 @@ export class TournamentsService {
     // a second tier (e.g. FREE->STANDARD->LARGE): the LARGE top-up's own
     // amount could be smaller than the STANDARD order that preceded it,
     // making the system think less had been paid than actually had, and
-    // demanding a second, overlapping payment for the same tier.
+    // demanding a second, overlapping payment for the same tier. Summed on
+    // tierCents, not amountCents: a Stripe coupon can discount amountCents
+    // below the tier's actual sticker price (down to 0 for a 100%-off
+    // coupon), but the tier itself was still genuinely unlocked -- see
+    // applyPaidPublicationSession's own comment on why tierCents is never
+    // touched by a discount.
     // Prisma's aggregate _sum is null specifically when zero rows match --
     // distinct from a real $0 order, which is exactly the very-first-publish
     // case below still needs to tell apart from "already published, still
     // within the tier already paid for".
-    const hasPriorPaidOrder = paidTotal._sum.amountCents !== null;
-    const alreadyPaidCents = paidTotal._sum.amountCents ?? 0;
+    const hasPriorPaidOrder = paidTotal._sum.tierCents !== null;
+    const alreadyPaidCents = paidTotal._sum.tierCents ?? 0;
     const requiredCents = hasActiveSubscription
       ? 0
       : this.computePublicationFeeCents(teamsCount);
@@ -275,6 +288,7 @@ export class TournamentsService {
           categoriesCount,
           teamsCount,
           amountCents,
+          tierCents: amountCents,
           currency,
           paidAt: new Date(),
         },
@@ -286,6 +300,7 @@ export class TournamentsService {
       categoriesCount,
       teamsCount,
       amountCents,
+      tierCents: amountCents,
       currency,
       isUpgrade: hasPriorPaidOrder && alreadyPaidCents > 0,
     });
@@ -333,6 +348,7 @@ export class TournamentsService {
       categoriesCount: number;
       teamsCount: number;
       amountCents: number;
+      tierCents: number;
       currency: string;
       isUpgrade: boolean;
     },
@@ -416,12 +432,12 @@ export class TournamentsService {
             tournamentId,
             status: TournamentPublicationOrderStatus.PAID,
           },
-          _sum: { amountCents: true },
+          _sum: { tierCents: true },
         }),
       ]);
-    // See publish()'s own comment on why this is a SUM of every PAID order,
-    // not just the largest one.
-    const alreadyPaidCents = paidTotal._sum.amountCents ?? 0;
+    // See publish()'s own comment on why this is a SUM of every PAID order's
+    // tierCents, not just the largest one, and not amountCents.
+    const alreadyPaidCents = paidTotal._sum.tierCents ?? 0;
     const prospectiveTeamsCount = teamsCount + additionalTeams;
     const requiredCents = hasActiveSubscription
       ? 0
@@ -443,6 +459,7 @@ export class TournamentsService {
       categoriesCount,
       teamsCount: prospectiveTeamsCount,
       amountCents,
+      tierCents: amountCents,
       currency,
       isUpgrade: alreadyPaidCents > 0,
     });
@@ -487,12 +504,12 @@ export class TournamentsService {
       this.prisma.team.count({ where: { tournamentId } }),
       this.prisma.tournamentPublicationOrder.aggregate({
         where: { tournamentId, status: TournamentPublicationOrderStatus.PAID },
-        _sum: { amountCents: true },
+        _sum: { tierCents: true },
       }),
     ]);
-    // See publish()'s own comment on why this is a SUM of every PAID order,
-    // not just the largest one.
-    const alreadyPaidCents = paidTotal._sum.amountCents ?? 0;
+    // See publish()'s own comment on why this is a SUM of every PAID order's
+    // tierCents, not just the largest one, and not amountCents.
+    const alreadyPaidCents = paidTotal._sum.tierCents ?? 0;
     const requiredCents = this.tierPriceCents(tier);
     const currency = 'eur';
 
@@ -505,6 +522,7 @@ export class TournamentsService {
       categoriesCount,
       teamsCount,
       amountCents,
+      tierCents: amountCents,
       currency,
       isUpgrade: alreadyPaidCents > 0,
     });
@@ -602,6 +620,38 @@ export class TournamentsService {
       }
     }
 
+    // Best-effort, same tolerance as the receipt URL above -- display-only
+    // detail (apps/web's payment-history "Réduction" column) of which
+    // coupon (if any) was redeemed on this session, for a human-readable
+    // discount label distinct from the raw cents difference between
+    // tierCents and amountCents. At most one of the two is ever set,
+    // mirroring Stripe's own coupon shape (percent_off XOR amount_off).
+    let discountPercent: number | null = null;
+    let discountAmountCents: number | null = null;
+    try {
+      const detailed = await this.stripeService.retrieveCheckoutSession(
+        session.id,
+        ['total_details.breakdown.discounts.discount.source.coupon'],
+      );
+      const coupon =
+        detailed.total_details?.breakdown?.discounts?.[0]?.discount?.source
+          ?.coupon;
+      // A string (not expanded) rather than the full Coupon object would
+      // mean the expand path above didn't resolve -- defensive, shouldn't
+      // happen given the explicit expand just requested.
+      if (coupon && typeof coupon !== 'string') {
+        if (coupon.percent_off != null) {
+          discountPercent = coupon.percent_off;
+        } else if (coupon.amount_off != null) {
+          discountAmountCents = coupon.amount_off;
+        }
+      }
+    } catch (error) {
+      this.logger.warn(
+        `Failed to retrieve discount breakdown for session ${session.id}: ${(error as Error).message}`,
+      );
+    }
+
     const [updatedOrder] = await this.prisma.$transaction([
       this.prisma.tournamentPublicationOrder.update({
         where: { id: order.id },
@@ -610,6 +660,8 @@ export class TournamentsService {
           paidAt: new Date(),
           stripePaymentIntentId: paymentIntentId,
           stripeReceiptUrl,
+          discountPercent,
+          discountAmountCents,
           // order.amountCents (set at checkout-session creation, see
           // createPendingPublicationCheckout above) is the pre-discount
           // sticker price -- with allowPromotionCodes now enabled, the
@@ -621,6 +673,13 @@ export class TournamentsService {
           // paid session. Same pattern as
           // OrganizationsService.applyPaidSubscriptionSession.
           amountCents: session.amount_total ?? order.amountCents,
+          // tierCents is deliberately NOT touched here -- it was fixed at
+          // order-creation time (createPendingPublicationCheckout / publish's
+          // own $0 branch) and must keep identifying the tier regardless of
+          // any discount applied on this session, so premium-feature access,
+          // the republish shortcut, and team-addition gating all keep
+          // treating this order as "tier genuinely unlocked" even when
+          // amountCents above drops to 0 via a 100%-off coupon.
         },
         include: { tournament: true },
       }),
@@ -822,6 +881,10 @@ export class TournamentsService {
           categoriesCount,
           teamsCount,
           amountCents,
+          // Apple IAP has no coupon/discount concept -- tierCents always
+          // equals amountCents here, same as every other creation site
+          // before any (Stripe-only) discount could apply.
+          tierCents: amountCents,
           currency: 'eur',
           revenueCatTransactionId,
           paidAt: new Date(),
@@ -1568,21 +1631,26 @@ export class TournamentsService {
   }
 
   /**
-   * The total amount actually paid so far toward this tournament's
-   * publication, 0 if none -- what publish() (and assertTeamAdditionAllowed
-   * below) compare the currently-required tier price against. A SUM of
-   * every PAID order, not the largest one -- see publish()'s own comment on
-   * why (each order is itself already a gap/top-up amount, so only the sum
-   * reflects what's actually been paid toward the current tier).
+   * The total tier value unlocked so far by this tournament's publication,
+   * 0 if none -- what publish() (and assertTeamAdditionAllowed/
+   * hasPremiumFeatures below) compare the currently-required tier price
+   * against. A SUM of every PAID order's tierCents, not the largest one --
+   * see publish()'s own comment on why (each order is itself already a
+   * gap/top-up amount, so only the sum reflects what's actually been paid
+   * toward the current tier). Summed on tierCents, not amountCents: a
+   * Stripe coupon can discount the amount actually charged (amountCents)
+   * below the tier's sticker price, down to 0 for a 100%-off coupon, but
+   * the tier itself was still genuinely unlocked -- see
+   * applyPaidPublicationSession's own comment.
    */
-  private async totalPaidPublicationFeeCents(
+  private async totalPaidPublicationTierCents(
     tournamentId: string,
   ): Promise<number> {
     const paidTotal = await this.prisma.tournamentPublicationOrder.aggregate({
       where: { tournamentId, status: TournamentPublicationOrderStatus.PAID },
-      _sum: { amountCents: true },
+      _sum: { tierCents: true },
     });
-    return paidTotal._sum.amountCents ?? 0;
+    return paidTotal._sum.tierCents ?? 0;
   }
 
   /**
@@ -1634,7 +1702,7 @@ export class TournamentsService {
     }
     const [teamsCount, alreadyPaidCents] = await Promise.all([
       this.prisma.team.count({ where: { tournamentId } }),
-      this.totalPaidPublicationFeeCents(tournamentId),
+      this.totalPaidPublicationTierCents(tournamentId),
     ]);
     const nextRequiredCents = this.computePublicationFeeCents(
       teamsCount + additionalCount,
@@ -1655,27 +1723,40 @@ export class TournamentsService {
   /**
    * Team logos, tournament logo, custom theme, QR code and PDF export are
    * premium touches reserved for tournaments past the free publication tier
-   * (see docs/product/pull-request-plan.md) -- unlocked once the
-   * tournament's *current* team count crosses the same
+   * (see docs/product/pull-request-plan.md) -- unlocked by any ONE of:
+   * the tournament's *current* team count crossing the same
    * TOURNAMENT_PUBLICATION_TIER_FREE_MAX_TEAMS boundary already used to
-   * price publication itself (computePublicationFeeCents), or
-   * unconditionally for an organization holding an active annual
-   * subscription (which already covers every publication regardless of
-   * team count). Live-checked, not "has this tournament's publication
+   * price publication itself (computePublicationFeeCents); an organization
+   * holding an active annual subscription (which already covers every
+   * publication regardless of team count); or the tournament itself having
+   * a PAID order for a genuine paid tier (tierCents > 0) -- added so an
+   * organizer who explicitly buys a tier via the "Plan" section on a small
+   * (<= free max) roster, possibly with a 100%-off coupon bringing
+   * amountCents to 0, still gets what they paid for. The first two
+   * conditions are live-checked, not "has this tournament's publication
    * actually been paid for" -- an organizer sees these unlock the moment
    * their roster crosses the threshold, even before publishing, and they'd
    * stay unlocked on an already-published tournament even if teams are
-   * later removed (no reason to claw back access retroactively).
+   * later removed (no reason to claw back access retroactively). The third
+   * condition is tierCents-based specifically (not amountCents) so a
+   * coupon never un-unlocks a tier that was genuinely purchased -- see
+   * totalPaidPublicationTierCents's own comment.
    */
   async hasPremiumFeatures(
     organizationId: string,
     tournamentId: string,
   ): Promise<boolean> {
-    const [teamsCount, hasActiveSubscription] = await Promise.all([
-      this.prisma.team.count({ where: { tournamentId } }),
-      this.organizationsService.hasActiveSubscription(organizationId),
-    ]);
-    return hasActiveSubscription || teamsCount > this.freeMaxTeams();
+    const [teamsCount, hasActiveSubscription, paidTierCents] =
+      await Promise.all([
+        this.prisma.team.count({ where: { tournamentId } }),
+        this.organizationsService.hasActiveSubscription(organizationId),
+        this.totalPaidPublicationTierCents(tournamentId),
+      ]);
+    return (
+      hasActiveSubscription ||
+      teamsCount > this.freeMaxTeams() ||
+      paidTierCents > 0
+    );
   }
 
   async assertPremiumFeaturesUnlocked(

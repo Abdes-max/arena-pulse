@@ -105,6 +105,15 @@ export interface PublicationOrder {
   categoriesCount: number;
   teamsCount: number;
   amountCents: number;
+  // Fixed at order-creation time, never changed afterward by a coupon --
+  // see the API's own schema comment. Lets the UI tell "a genuinely free
+  // order" (tierCents 0) apart from "a paid tier discounted to 0 by a
+  // coupon" (tierCents > 0, amountCents 0), which amountCents alone can't.
+  tierCents: number;
+  // Stripe coupon detail, display-only -- at most one of the two is ever
+  // set. Both null when no coupon was applied.
+  discountPercent: number | null;
+  discountAmountCents: number | null;
   currency: string;
   createdAt: string;
   paidAt: string | null;

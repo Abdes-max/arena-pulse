@@ -644,10 +644,13 @@
         "table": {
           "date": "Date",
           "teams": "Équipes",
+          "plan": "Plan",
           "amount": "Montant",
+          "discount": "Réduction",
           "status": "Statut"
         },
         "paid": "Payé",
+        "free": "Gratuit",
         "pending": "En attente",
         "print": "Imprimer",
         "viewReceipt": "Voir le reçu"

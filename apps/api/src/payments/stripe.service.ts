@@ -67,8 +67,14 @@ export class StripeService {
    * in production (Stripe's own docs recommend this exact reconciliation
    * pattern as a webhook complement, not a replacement).
    */
-  retrieveCheckoutSession(sessionId: string): Promise<Stripe.Checkout.Session> {
-    return this.getClient().checkout.sessions.retrieve(sessionId);
+  retrieveCheckoutSession(
+    sessionId: string,
+    expand?: string[],
+  ): Promise<Stripe.Checkout.Session> {
+    return this.getClient().checkout.sessions.retrieve(
+      sessionId,
+      expand ? { expand } : undefined,
+    );
   }
 
   /**

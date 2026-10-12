@@ -542,10 +542,13 @@
         "table": {
           "date": "Datum",
           "teams": "Teams",
+          "plan": "Plan",
           "amount": "Betrag",
+          "discount": "Rabatt",
           "status": "Status"
         },
         "paid": "Bezahlt",
+        "free": "Kostenlos",
         "pending": "Ausstehend",
         "print": "Drucken",
         "viewReceipt": "Beleg ansehen"
