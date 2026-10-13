@@ -68,15 +68,12 @@
 .home-page__poster {
   display: block;
   width: 100%;
-  // Portrait flyer, not a landscape photo -- a fixed aspect keeps the
-  // layout from jumping around while it loads, and crops a wider image
-  // sanely.
-  aspect-ratio: 3 / 4;
-  object-fit: cover;
-  // Biased toward the bottom of the source image -- a flyer's key info
-  // (date, title) usually sits in the lower half, while the top is often
-  // just background/sky that can afford to be cropped away first.
-  object-position: center 75%;
+  // Unlike a venue/team photo, every pixel of a flyer is designed content
+  // (title, date, lineup) -- no fixed aspect-ratio/object-fit: cover here,
+  // cropping it (as this used to, 3/4 biased toward the bottom) chopped off
+  // whatever the organizer put at the top. Renders at its natural ratio
+  // instead, so the whole poster always stays visible.
+  height: auto;
   border-radius: var(--ap-radius-lg);
   border: var(--ap-border-width) solid var(--ap-color-border);
 }
