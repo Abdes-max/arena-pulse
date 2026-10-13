@@ -6,13 +6,13 @@ describe('isTournamentCurrentOrUpcoming', () => {
   it('keeps a tournament whose endDate is still today or later', () => {
     expect(
       isTournamentCurrentOrUpcoming(
-        { endDate: '2026-10-14T00:00:00.000Z', lastMatchDate: null },
+        { startDate: null, endDate: '2026-10-14T00:00:00.000Z', lastMatchDate: null },
         NOW,
       ),
     ).toBe(true);
     expect(
       isTournamentCurrentOrUpcoming(
-        { endDate: '2026-12-25T00:00:00.000Z', lastMatchDate: null },
+        { startDate: null, endDate: '2026-12-25T00:00:00.000Z', lastMatchDate: null },
         NOW,
       ),
     ).toBe(true);
@@ -25,7 +25,7 @@ describe('isTournamentCurrentOrUpcoming', () => {
     // on the test runner's own timezone offset from the UTC NOW above.
     expect(
       isTournamentCurrentOrUpcoming(
-        { endDate: '2026-10-12T12:00:00.000Z', lastMatchDate: null },
+        { startDate: null, endDate: '2026-10-12T12:00:00.000Z', lastMatchDate: null },
         NOW,
       ),
     ).toBe(false);
@@ -34,26 +34,52 @@ describe('isTournamentCurrentOrUpcoming', () => {
   it('falls back to lastMatchDate when there is no endDate', () => {
     expect(
       isTournamentCurrentOrUpcoming(
-        { endDate: null, lastMatchDate: '2026-10-12T10:20:00.000Z' },
+        { startDate: null, endDate: null, lastMatchDate: '2026-10-12T10:20:00.000Z' },
         NOW,
       ),
     ).toBe(false);
     expect(
       isTournamentCurrentOrUpcoming(
-        { endDate: null, lastMatchDate: '2026-10-14T10:20:00.000Z' },
+        { startDate: null, endDate: null, lastMatchDate: '2026-10-14T10:20:00.000Z' },
         NOW,
       ),
     ).toBe(true);
   });
 
-  it('keeps a tournament with neither an endDate nor a scheduled match', () => {
-    expect(isTournamentCurrentOrUpcoming({ endDate: null, lastMatchDate: null }, NOW)).toBe(true);
+  it('drops a tournament with no date information at all', () => {
+    expect(
+      isTournamentCurrentOrUpcoming(
+        { startDate: null, endDate: null, lastMatchDate: null },
+        NOW,
+      ),
+    ).toBe(false);
+  });
+
+  it('keeps a tournament with only a startDate, regardless of when it is', () => {
+    expect(
+      isTournamentCurrentOrUpcoming(
+        { startDate: '2026-11-01T00:00:00.000Z', endDate: null, lastMatchDate: null },
+        NOW,
+      ),
+    ).toBe(true);
+    // Already started, nothing marks it as over -- still kept, same
+    // reasoning as the "no effectiveEnd" branch for endDate/lastMatchDate.
+    expect(
+      isTournamentCurrentOrUpcoming(
+        { startDate: '2026-01-01T00:00:00.000Z', endDate: null, lastMatchDate: null },
+        NOW,
+      ),
+    ).toBe(true);
   });
 
   it('prefers endDate over lastMatchDate when both are set', () => {
     expect(
       isTournamentCurrentOrUpcoming(
-        { endDate: '2026-12-25T00:00:00.000Z', lastMatchDate: '2026-01-01T00:00:00.000Z' },
+        {
+          startDate: null,
+          endDate: '2026-12-25T00:00:00.000Z',
+          lastMatchDate: '2026-01-01T00:00:00.000Z',
+        },
         NOW,
       ),
     ).toBe(true);
