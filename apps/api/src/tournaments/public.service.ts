@@ -74,24 +74,30 @@ export class PublicService {
 
   async getTournament(slug: string) {
     const tournament = await this.resolveTournament(slug);
-    const [venues, sponsors, wrappedUnlocked] = await Promise.all([
-      this.venuesService.list(
-        tournament.organizationId,
-        tournament.tournamentId,
-      ),
-      this.sponsorsService.list(
-        tournament.organizationId,
-        tournament.tournamentId,
-      ),
-      // Drives whether TournamentShell shows the "Récap" tab at all — the
-      // dedicated GET .../wrapped endpoint enforces the same check
-      // independently, this just avoids an extra round-trip just to find
-      // out the tab shouldn't be there.
-      this.tournamentsService.hasPremiumFeatures(
-        tournament.organizationId,
-        tournament.tournamentId,
-      ),
-    ]);
+    const [venues, sponsors, wrappedUnlocked, firstMatchTime] =
+      await Promise.all([
+        this.venuesService.list(
+          tournament.organizationId,
+          tournament.tournamentId,
+        ),
+        this.sponsorsService.list(
+          tournament.organizationId,
+          tournament.tournamentId,
+        ),
+        // Drives whether TournamentShell shows the "Récap" tab at all — the
+        // dedicated GET .../wrapped endpoint enforces the same check
+        // independently, this just avoids an extra round-trip just to find
+        // out the tab shouldn't be there.
+        this.tournamentsService.hasPremiumFeatures(
+          tournament.organizationId,
+          tournament.tournamentId,
+        ),
+        // Général's startDate carries no real time-of-day (always stored at
+        // UTC midnight) -- this is the actual kickoff time TournamentShell's
+        // own formattedDates() appends next to it, when there's a real
+        // schedule to read one from.
+        this.earliestMatchStartTime(tournament.tournamentId),
+      ]);
     return {
       id: tournament.id,
       name: tournament.name,
@@ -100,6 +106,7 @@ export class PublicService {
       sportName: tournament.sportName,
       startDate: tournament.startDate,
       endDate: tournament.endDate,
+      firstMatchTime,
       isOnline: tournament.isOnline,
       theme: tournament.theme,
       logoUrl: tournament.logoUrl,
@@ -112,6 +119,17 @@ export class PublicService {
       sponsors,
       wrappedUnlocked,
     };
+  }
+
+  /** Earliest scheduled TimeSlot across the whole tournament (every field, via field -> venue -> tournamentId), or null if nothing's scheduled yet. */
+  private async earliestMatchStartTime(
+    tournamentId: string,
+  ): Promise<Date | null> {
+    const result = await this.prisma.timeSlot.aggregate({
+      where: { field: { venue: { tournamentId } } },
+      _min: { startTime: true },
+    });
+    return result._min.startTime;
   }
 
   getWrapped(slug: string) {

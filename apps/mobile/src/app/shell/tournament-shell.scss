@@ -24,7 +24,22 @@ ion-toolbar {
 
 .tournament-shell__hero {
   padding: var(--ap-space-2) var(--ap-space-4) var(--ap-space-4);
-  background: var(--ap-color-surface);
+  background-color: var(--ap-color-surface);
+  color: var(--ap-color-fg);
+  transition:
+    background-color var(--ap-motion-fast) var(--ap-easing-standard),
+    color var(--ap-motion-fast) var(--ap-easing-standard);
+}
+
+// The organizer's own header photo -- background-image itself is set inline
+// (headerBackgroundImage(), already layered under a scrim gradient whose
+// color matches which of these two variants is active), this just adds the
+// sizing/position that can't come from an inline style binding. Mirrors
+// apps/web's own TournamentShell treatment.
+.tournament-shell__hero--has-background {
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
 }
 
 // Slotted into ion-toolbar (slot="start"), alongside the mode toggle
@@ -79,6 +94,31 @@ ion-toolbar {
   letter-spacing: var(--ap-tracking-tight);
   text-transform: var(--ap-title-case);
   color: var(--ap-color-fg);
+}
+
+.tournament-shell__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ap-space-1) var(--ap-space-3);
+  margin: var(--ap-space-1) 0 0;
+  color: var(--ap-color-muted);
+  font-size: 0.75rem;
+}
+
+.tournament-shell__meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ap-space-1);
+}
+
+.tournament-shell__meta-icon {
+  flex: none;
+  color: var(--ap-color-signal-text);
+}
+
+.tournament-shell__meta-more {
+  color: var(--ap-color-muted);
+  font-weight: 600;
 }
 
 .tournament-shell__dates {

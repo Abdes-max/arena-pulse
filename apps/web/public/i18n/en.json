@@ -298,11 +298,14 @@
     "venue": "venue",
     "venues": "venues",
     "shareText": "Follow {{name}} on TournArena",
+    "dates": {
+      "startWithTime": "{{date}} at {{time}}"
+    },
     "nav": {
       "tournament": "Tournament",
       "teams": "Teams",
       "standings": "Standings",
-      "schedule": "Schedule",
+      "schedule": "Matches",
       "wrapped": "Statistics"
     },
     "menu": "Menu"
@@ -681,6 +684,8 @@
         "nameLabel": "Tournament name",
         "sportLabel": "Sport",
         "chooseSport": "Choose a sport",
+        "startDateLabel": "Start date",
+        "endDateLabel": "End date",
         "isOnlineLabel": "Online tournament (esport)",
         "isListedLabel": "Visible in public search",
         "isListedHint": "A private tournament stays reachable via its direct link, but won't appear in the TournArena event search.",
@@ -1100,6 +1105,7 @@
         "loadMatches": "Unable to load the schedule.",
         "selectFieldForSchedule": "Select at least one field before generating the schedule.",
         "enterStartDateForSchedule": "Enter a start date before generating the schedule.",
+      "startDateOutsideTournamentRange": "The chosen date must fall within the tournament's date range (General tab).",
         "noMatchesGenerated": "No match could be generated: assign at least two teams to every pool of this phase on the Structure page, then try again.",
         "matchesAlreadyExist": "Matches already exist for this phase. Clear the schedule before generating a new one.",
         "generateScheduleGeneric": "Unable to generate the schedule.",

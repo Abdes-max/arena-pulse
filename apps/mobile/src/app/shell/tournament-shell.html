@@ -22,13 +22,41 @@
         <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
       </ion-buttons>
     </ion-toolbar>
-    <div class="tournament-shell__hero">
+    <div
+      class="tournament-shell__hero"
+      [class.tournament-shell__hero--has-background]="!!t.headerBackgroundUrl"
+      [style.background-image]="headerBackgroundImage(t.headerBackgroundUrl, heroLight())"
+      [attr.data-theme]="t.headerBackgroundUrl ? heroTheme(t.theme) : null"
+      [attr.data-mode]="t.headerBackgroundUrl ? (heroLight() ? 'light' : 'dark') : null"
+    >
       <div class="tournament-shell__title-row">
         @if (logoUrl(t.logoUrl); as logo) {
           <img class="tournament-shell__logo" [src]="logo" alt="" />
         }
         <h1 class="tournament-shell__title">{{ t.name }}</h1>
       </div>
+      @if (t.venues.length > 0) {
+        <p class="tournament-shell__meta">
+          <span class="tournament-shell__meta-item">
+            <svg
+              class="tournament-shell__meta-icon"
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              aria-hidden="true"
+            >
+              <path
+                fill="currentColor"
+                d="M12 2c-4.4 0-8 3.6-8 8 0 5.4 7 11.5 7.3 11.7.2.2.5.3.7.3s.5-.1.7-.3C12.9 21.5 20 15.4 20 10c0-4.4-3.6-8-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"
+              />
+            </svg>
+            {{ t.venues[0].name }}
+            @if (t.venues.length > 1) {
+              <span class="tournament-shell__meta-more">+{{ t.venues.length - 1 }}</span>
+            }
+          </span>
+        </p>
+      }
       @if (formattedDates(); as dates) {
         <p class="tournament-shell__dates">{{ dates }}</p>
       }
@@ -51,8 +79,6 @@
     <ion-tab-button routerLink="standings" routerLinkActive="tab-selected">
       Classements
     </ion-tab-button>
-    <ion-tab-button routerLink="schedule" routerLinkActive="tab-selected">
-      Calendrier
-    </ion-tab-button>
+    <ion-tab-button routerLink="schedule" routerLinkActive="tab-selected"> Matchs </ion-tab-button>
   </ion-tab-bar>
 }

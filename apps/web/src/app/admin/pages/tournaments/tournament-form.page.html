@@ -493,6 +493,16 @@
           [options]="sportOptions()"
           formControlName="sportId"
         />
+        <ap-text-field
+          [label]="'admin.tournamentForm.form.startDateLabel' | transloco"
+          type="date"
+          formControlName="startDate"
+        />
+        <ap-text-field
+          [label]="'admin.tournamentForm.form.endDateLabel' | transloco"
+          type="date"
+          formControlName="endDate"
+        />
         <label class="tournament-form-page__checkbox-label">
           <input type="checkbox" formControlName="isOnline" />
           {{ 'admin.tournamentForm.form.isOnlineLabel' | transloco }}

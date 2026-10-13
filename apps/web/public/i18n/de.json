@@ -196,11 +196,14 @@
     "venue": "Austragungsort",
     "venues": "Austragungsorte",
     "shareText": "Verfolgen Sie {{name}} auf TournArena",
+    "dates": {
+      "startWithTime": "{{date}} um {{time}}"
+    },
     "nav": {
       "tournament": "Turnier",
       "teams": "Teams",
       "standings": "Tabelle",
-      "schedule": "Spielplan",
+      "schedule": "Spiele",
       "wrapped": "Statistiken"
     },
     "menu": "Menü"
@@ -579,6 +582,8 @@
         "nameLabel": "Turniername",
         "sportLabel": "Sportart",
         "chooseSport": "Sportart wählen",
+        "startDateLabel": "Startdatum",
+        "endDateLabel": "Enddatum",
         "isOnlineLabel": "Online-Turnier (E-Sport)",
         "isListedLabel": "In der öffentlichen Suche sichtbar",
         "isListedHint": "Ein privates Turnier bleibt über seinen direkten Link erreichbar, erscheint aber nicht in der TournArena-Veranstaltungssuche.",
@@ -998,6 +1003,7 @@
         "loadMatches": "Der Spielplan konnte nicht geladen werden.",
         "selectFieldForSchedule": "Wählen Sie mindestens ein Feld, bevor Sie den Spielplan erstellen.",
         "enterStartDateForSchedule": "Geben Sie ein Startdatum ein, bevor Sie den Spielplan erstellen.",
+      "startDateOutsideTournamentRange": "Das gewählte Datum muss im Datumsbereich des Turniers liegen (Registerkarte Allgemein).",
         "noMatchesGenerated": "Es konnte kein Spiel erstellt werden: Weisen Sie jeder Gruppe dieser Phase auf der Strukturseite mindestens zwei Teams zu und versuchen Sie es erneut.",
         "matchesAlreadyExist": "Für diese Phase existieren bereits Spiele. Leeren Sie den Spielplan, bevor Sie einen neuen erstellen.",
         "generateScheduleGeneric": "Der Spielplan konnte nicht erstellt werden.",

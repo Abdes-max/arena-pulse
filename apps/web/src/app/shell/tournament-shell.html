@@ -110,36 +110,13 @@
           </span>
         </p>
       }
-      <!-- Below the venue, not sharing its line -- categories and the date
-           share this second line instead (formattedDates() is null whenever
-           the tournament has no startDate set, e.g. single-day "plateau"
-           tournaments that skip that field, so this whole line just doesn't
-           render when neither has anything to show). -->
-      @if (categories().length > 0 || formattedDates()) {
+      <!-- Below the venue, not sharing its line -- null whenever the
+           tournament has no startDate set (e.g. single-day "plateau"
+           tournaments that skip that field), so this line just doesn't
+           render then. -->
+      @if (formattedDates(); as dates) {
         <p class="tournament-shell__meta">
-          @if (categories().length > 0) {
-            <span class="tournament-shell__meta-item">
-              <svg
-                class="tournament-shell__meta-icon"
-                viewBox="0 0 24 24"
-                width="16"
-                height="16"
-                aria-hidden="true"
-              >
-                <path
-                  fill="currentColor"
-                  d="M21.41 11.58l-9-9A2 2 0 0 0 11 2H4a2 2 0 0 0-2 2v7a2 2 0 0 0 .59 1.41l9 9a2 2 0 0 0 2.82 0l7-7a2 2 0 0 0 0-2.83zM6.5 8A1.5 1.5 0 1 1 8 6.5 1.5 1.5 0 0 1 6.5 8z"
-                />
-              </svg>
-              {{ categories()[0].name }}
-              @if (categories().length > 1) {
-                <span class="tournament-shell__meta-more">+{{ categories().length - 1 }}</span>
-              }
-            </span>
-          }
-          @if (formattedDates(); as dates) {
-            <span>{{ dates }}</span>
-          }
+          <span>{{ dates }}</span>
         </p>
       }
     </div>

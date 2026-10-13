@@ -196,11 +196,14 @@
     "venue": "sede",
     "venues": "sedes",
     "shareText": "Sigue {{name}} en TournArena",
+    "dates": {
+      "startWithTime": "{{date}} a las {{time}}"
+    },
     "nav": {
       "tournament": "Torneo",
       "teams": "Equipos",
       "standings": "Clasificación",
-      "schedule": "Calendario",
+      "schedule": "Partidos",
       "wrapped": "Estadísticas"
     },
     "menu": "Menú"
@@ -579,6 +582,8 @@
         "nameLabel": "Nombre del torneo",
         "sportLabel": "Deporte",
         "chooseSport": "Elige un deporte",
+        "startDateLabel": "Fecha de inicio",
+        "endDateLabel": "Fecha de fin",
         "isOnlineLabel": "Torneo en línea (esport)",
         "isListedLabel": "Visible en la búsqueda pública",
         "isListedHint": "Un torneo privado sigue siendo accesible mediante su enlace directo, pero no aparece en la búsqueda de eventos de TournArena.",
@@ -998,6 +1003,7 @@
         "loadMatches": "No se ha podido cargar el calendario.",
         "selectFieldForSchedule": "Selecciona al menos una pista antes de generar el calendario.",
         "enterStartDateForSchedule": "Indica una fecha de inicio antes de generar el calendario.",
+      "startDateOutsideTournamentRange": "La fecha elegida debe estar dentro del rango de fechas del torneo (pestaña General).",
         "noMatchesGenerated": "No se ha podido generar ningún partido: asigna al menos dos equipos a cada grupo de esta fase en la página Estructura y vuelve a intentarlo.",
         "matchesAlreadyExist": "Ya existen partidos para esta fase. Vacía el calendario antes de generar uno nuevo.",
         "generateScheduleGeneric": "No se ha podido generar el calendario.",

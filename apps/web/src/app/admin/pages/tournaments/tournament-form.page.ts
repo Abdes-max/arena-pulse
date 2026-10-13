@@ -326,6 +326,10 @@ export class TournamentFormPage {
   protected readonly form = this.formBuilder.nonNullable.group({
     name: ['', Validators.required],
     sportId: ['', Validators.required],
+    // <input type="date"> value format (YYYY-MM-DD) -- converted to/from
+    // the API's ISO datetime strings in loadTournament()/submit() below.
+    startDate: [''],
+    endDate: [''],
     isOnline: [false],
     isListed: [true],
     theme: ['INK_SIGNAL' as PublicTheme],
@@ -449,6 +453,11 @@ export class TournamentFormPage {
     this.form.patchValue({
       name: tournament.name,
       sportId: tournament.sportId,
+      // Slice to the date-only part an <input type="date"> expects -- the
+      // API always returns a full ISO datetime string (e.g.
+      // "2026-06-11T00:00:00.000Z"), which always starts with YYYY-MM-DD.
+      startDate: tournament.startDate?.slice(0, 10) ?? '',
+      endDate: tournament.endDate?.slice(0, 10) ?? '',
       isOnline: tournament.isOnline,
       isListed: tournament.isListed,
       theme: tournament.theme,
@@ -499,7 +508,8 @@ export class TournamentFormPage {
     this.submitting.set(true);
     this.errorMessage.set(null);
     try {
-      const { name, sportId, isOnline, isListed, theme } = this.form.getRawValue();
+      const { name, sportId, startDate, endDate, isOnline, isListed, theme } =
+        this.form.getRawValue();
       const tournamentId = this.tournamentId();
       if (this.isEditMode() && tournamentId) {
         const updated = await this.tournamentsService.updateTournament(
@@ -508,6 +518,10 @@ export class TournamentFormPage {
           {
             name,
             sportId,
+            // null (not undefined) clears the date server-side -- an empty
+            // field means "no date", not "leave the existing one alone".
+            startDate: startDate || null,
+            endDate: endDate || null,
             isOnline,
             isListed,
             theme,
@@ -518,6 +532,8 @@ export class TournamentFormPage {
         const created = await this.tournamentsService.createTournament(organizationId, {
           name,
           sportId,
+          startDate: startDate || undefined,
+          endDate: endDate || undefined,
           isOnline,
           isListed,
           theme,

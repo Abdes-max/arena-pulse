@@ -52,6 +52,11 @@ export interface PublicTournamentSummary {
   sportName: string;
   startDate: string | null;
   endDate: string | null;
+  // End time of the latest scheduled match, when the tournament has no
+  // endDate of its own -- lets a card list tell an already-played
+  // undated tournament apart from a genuinely upcoming one (see
+  // landing.page.ts's marqueeTournaments).
+  lastMatchDate: string | null;
   isOnline: boolean;
   // Null for an online tournament, or a physical one with no venue address
   // recorded yet -- the card simply omits the location line in that case.
@@ -87,6 +92,11 @@ export interface PublicTournament {
   sportName: string;
   startDate: string | null;
   endDate: string | null;
+  // Earliest scheduled match's kickoff time, across the whole tournament --
+  // startDate itself carries no real time-of-day (always set at UTC
+  // midnight by the Général form), so TournamentShell's own formattedDates()
+  // appends this one next to the start date when it's known.
+  firstMatchTime: string | null;
   isOnline: boolean;
   theme: PublicTheme;
   logoUrl: string | null;

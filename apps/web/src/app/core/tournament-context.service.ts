@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy, inject, signal } from '@angular/core';
 import { PublicApiService } from 'api-client';
 import { TournamentEventStream } from 'realtime-client';
-import { Category, PublicTournament } from 'shared-models';
+import { PublicTournament } from 'shared-models';
 import { environment } from '../../environments/environment';
 
 /**
@@ -15,11 +15,6 @@ export class TournamentContextService implements OnDestroy {
 
   readonly slug = signal('');
   readonly tournament = signal<PublicTournament | null>(null);
-  // Shared by the shell header (venue name + categories, shown on every
-  // tab) and the "Tournoi" tab's own page -- fetched once here instead of
-  // each separately, same "sibling pages share one fetch" rationale as
-  // `tournament` itself (see this class's own doc comment).
-  readonly categories = signal<Category[]>([]);
   readonly loading = signal(true);
   // Holds a Transloco *key*, not the translated text -- resolved in the
   // template (`| transloco`) so it stays reactive to a language switch.
@@ -40,16 +35,11 @@ export class TournamentContextService implements OnDestroy {
     this.loading.set(true);
     this.errorMessage.set(null);
     try {
-      const [tournament, categories] = await Promise.all([
-        this.api.getTournament(slug),
-        this.api.listCategories(slug),
-      ]);
+      const tournament = await this.api.getTournament(slug);
       this.tournament.set(tournament);
-      this.categories.set(categories);
       this.stream.connect(`${environment.apiUrl}/public/tournaments/${slug}/events`);
     } catch {
       this.tournament.set(null);
-      this.categories.set([]);
       this.errorMessage.set('shell.error.notFound');
     } finally {
       this.loading.set(false);
