@@ -28,9 +28,13 @@
 //                                       already in App Store Connect)
 //   BUILD_NUMBER=42                   (optional -- defaults to the most
 //                                       recently processed TestFlight build)
-//   RELEASE_NOTES="..."               (optional -- "What's New" text for the
-//                                       en-US localization; skipped if the
-//                                       version already has one)
+//   RELEASE_NOTES="..."               (required for a version's first-ever
+//                                       submission -- Apple rejects an empty
+//                                       whatsNew then; optional afterwards,
+//                                       where omitting it just leaves the
+//                                       existing text untouched. Applied to
+//                                       every locale the version's store
+//                                       listing already has.)
 //   RELEASE_TYPE=MANUAL               (optional, default MANUAL -- MANUAL
 //                                       means approval doesn't auto-publish;
 //                                       release stays a deliberate separate
@@ -180,27 +184,38 @@ async function main() {
     data: { type: 'builds', id: build.id },
   });
 
+  // Apple requires every appStoreVersionLocalization to carry a non-empty
+  // whatsNew before a *first-time* version can be submitted (an existing,
+  // already-submitted-once version tolerates leaving it untouched, which is
+  // what RELEASE_NOTES being optional assumes) -- so this isn't purely
+  // optional in practice, just optional when the version already has one.
+  // Previously hardcoded to en-US, which silently matched nothing (and so
+  // silently skipped writing whatsNew at all) for this app's actual locale
+  // (fr-FR) -- loops over whichever locale(s) the version really has
+  // instead, the same text on each.
   if (RELEASE_NOTES) {
-    console.log('Setting release notes (en-US)...');
+    console.log('Setting release notes...');
     const localizations = await api(
       jwt,
       'GET',
-      `/appStoreVersions/${version.id}/appStoreVersionLocalizations?filter[locale]=en-US`,
+      `/appStoreVersions/${version.id}/appStoreVersionLocalizations`,
     );
-    const localization = localizations.data?.[0];
-    if (localization) {
-      await api(jwt, 'PATCH', `/appStoreVersionLocalizations/${localization.id}`, {
-        data: {
-          type: 'appStoreVersionLocalizations',
-          id: localization.id,
-          attributes: { whatsNew: RELEASE_NOTES },
-        },
-      });
-    } else {
+    if (!localizations.data || localizations.data.length === 0) {
       console.warn(
-        '  ⚠ no en-US localization found on this version yet -- skipping release notes. ' +
+        '  ⚠ no localization found on this version yet -- skipping release notes. ' +
           'Create the store listing localization in App Store Connect first.',
       );
+    } else {
+      for (const localization of localizations.data) {
+        await api(jwt, 'PATCH', `/appStoreVersionLocalizations/${localization.id}`, {
+          data: {
+            type: 'appStoreVersionLocalizations',
+            id: localization.id,
+            attributes: { whatsNew: RELEASE_NOTES },
+          },
+        });
+      }
+      console.log(`  → set on ${localizations.data.length} localization(s).`);
     }
   }
 
