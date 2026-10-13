@@ -298,6 +298,9 @@
     "venue": "venue",
     "venues": "venues",
     "shareText": "Follow {{name}} on TournArena",
+    "dates": {
+      "startWithTime": "{{date}} at {{time}}"
+    },
     "nav": {
       "tournament": "Tournament",
       "teams": "Teams",
@@ -1102,6 +1105,7 @@
         "loadMatches": "Unable to load the schedule.",
         "selectFieldForSchedule": "Select at least one field before generating the schedule.",
         "enterStartDateForSchedule": "Enter a start date before generating the schedule.",
+      "startDateOutsideTournamentRange": "The chosen date must fall within the tournament's date range (General tab).",
         "noMatchesGenerated": "No match could be generated: assign at least two teams to every pool of this phase on the Structure page, then try again.",
         "matchesAlreadyExist": "Matches already exist for this phase. Clear the schedule before generating a new one.",
         "generateScheduleGeneric": "Unable to generate the schedule.",

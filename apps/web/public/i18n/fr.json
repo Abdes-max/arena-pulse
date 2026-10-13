@@ -298,6 +298,9 @@
     "venue": "lieu",
     "venues": "lieux",
     "shareText": "Suivez {{name}} sur TournArena",
+    "dates": {
+      "startWithTime": "{{date}} à {{time}}"
+    },
     "nav": {
       "tournament": "Tournoi",
       "teams": "Équipes",
@@ -1102,6 +1105,7 @@
         "loadMatches": "Impossible de charger le calendrier.",
         "selectFieldForSchedule": "Sélectionnez au moins un terrain avant de générer le calendrier.",
         "enterStartDateForSchedule": "Renseignez une date de début avant de générer le calendrier.",
+      "startDateOutsideTournamentRange": "La date choisie doit être comprise dans la plage de dates du tournoi (onglet Général).",
         "noMatchesGenerated": "Aucun match n'a pu être généré : assignez au moins deux équipes à chaque poule de cette phase sur la page Structure, puis réessayez.",
         "matchesAlreadyExist": "Des matchs existent déjà pour cette phase. Videz le calendrier avant d’en générer un nouveau.",
         "generateScheduleGeneric": "Impossible de générer le calendrier.",

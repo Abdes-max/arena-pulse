@@ -244,18 +244,36 @@ export class TournamentShell {
     if (!tournament?.startDate) {
       return null;
     }
+    const lang = this.language();
     // Full weekday + day + month + year (e.g. "samedi 24 octobre 2026") --
     // Intl always lowercases these for French/Spanish/Italian/Portuguese,
     // capitalizeFirst below fixes that without affecting locales (English,
     // German) that already capitalize them.
-    const start = capitalizeFirst(
-      new Date(tournament.startDate).toLocaleDateString(this.language(), DATE_FORMAT_OPTIONS),
+    const startDate = capitalizeFirst(
+      new Date(tournament.startDate).toLocaleDateString(lang, DATE_FORMAT_OPTIONS),
     );
+    // startDate itself carries no real time-of-day (always set at UTC
+    // midnight by the Général form) -- firstMatchTime is the actual kickoff
+    // time, appended right after the start date only when there's a real
+    // schedule to read one from.
+    const start = tournament.firstMatchTime
+      ? this.transloco.translate(
+          'shell.dates.startWithTime',
+          {
+            date: startDate,
+            time: new Date(tournament.firstMatchTime).toLocaleTimeString(lang, {
+              hour: '2-digit',
+              minute: '2-digit',
+            }),
+          },
+          lang,
+        )
+      : startDate;
     if (!tournament.endDate || tournament.endDate === tournament.startDate) {
       return start;
     }
     const end = capitalizeFirst(
-      new Date(tournament.endDate).toLocaleDateString(this.language(), DATE_FORMAT_OPTIONS),
+      new Date(tournament.endDate).toLocaleDateString(lang, DATE_FORMAT_OPTIONS),
     );
     // A plain hyphen, not an em/en dash -- see docs/design/content-guidelines.md.
     return `${start} - ${end}`;

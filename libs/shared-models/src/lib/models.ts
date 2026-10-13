@@ -92,6 +92,11 @@ export interface PublicTournament {
   sportName: string;
   startDate: string | null;
   endDate: string | null;
+  // Earliest scheduled match's kickoff time, across the whole tournament --
+  // startDate itself carries no real time-of-day (always set at UTC
+  // midnight by the Général form), so TournamentShell's own formattedDates()
+  // appends this one next to the start date when it's known.
+  firstMatchTime: string | null;
   isOnline: boolean;
   theme: PublicTheme;
   logoUrl: string | null;

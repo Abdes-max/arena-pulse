@@ -28,6 +28,20 @@ import { NotificationsService } from '../core/notifications.service';
 import { OfflineCacheService } from '../core/offline-cache.service';
 import { TournamentContextService } from '../core/tournament-context.service';
 
+const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+};
+
+// This shell renders hardcoded French throughout (no Transloco/LanguageService
+// wiring here yet, unlike apps/web's own TournamentShell) -- 'fr-FR' matches
+// that existing convention rather than introducing a lone localized piece.
+function capitalizeFirst(value: string): string {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
 /** Maps the backend's PublicTheme enum to design-tokens' ThemeName (data-theme values). */
 const THEME_MAP: Record<PublicTheme, ThemeName> = {
   INK_SIGNAL: 'ink-signal',
@@ -102,11 +116,24 @@ export class TournamentShell {
     if (!tournament?.startDate) {
       return null;
     }
-    const start = new Date(tournament.startDate).toLocaleDateString('fr-FR');
+    const startDate = capitalizeFirst(
+      new Date(tournament.startDate).toLocaleDateString('fr-FR', DATE_FORMAT_OPTIONS),
+    );
+    // startDate itself carries no real time-of-day (always set at UTC
+    // midnight by Général) -- firstMatchTime is the actual kickoff time,
+    // appended right after the start date only when there's a real
+    // schedule to read one from.
+    const start = tournament.firstMatchTime
+      ? `${startDate} à ${new Date(tournament.firstMatchTime).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`
+      : startDate;
     if (!tournament.endDate || tournament.endDate === tournament.startDate) {
       return start;
     }
-    return `${start} – ${new Date(tournament.endDate).toLocaleDateString('fr-FR')}`;
+    const end = capitalizeFirst(
+      new Date(tournament.endDate).toLocaleDateString('fr-FR', DATE_FORMAT_OPTIONS),
+    );
+    // A plain hyphen, not an em/en dash -- see docs/design/content-guidelines.md.
+    return `${start} - ${end}`;
   });
 
   constructor() {

@@ -196,6 +196,9 @@
     "venue": "local",
     "venues": "locais",
     "shareText": "Siga {{name}} na TournArena",
+    "dates": {
+      "startWithTime": "{{date}} às {{time}}"
+    },
     "nav": {
       "tournament": "Torneio",
       "teams": "Equipas",
@@ -1000,6 +1003,7 @@
         "loadMatches": "Não foi possível carregar o calendário.",
         "selectFieldForSchedule": "Selecione pelo menos um campo antes de gerar o calendário.",
         "enterStartDateForSchedule": "Indique uma data de início antes de gerar o calendário.",
+      "startDateOutsideTournamentRange": "A data escolhida deve estar dentro do intervalo de datas do torneio (separador Geral).",
         "noMatchesGenerated": "Não foi possível gerar nenhum jogo: atribua pelo menos duas equipas a cada grupo desta fase na página Estrutura e tente novamente.",
         "matchesAlreadyExist": "Já existem jogos para esta fase. Esvazie o calendário antes de gerar um novo.",
         "generateScheduleGeneric": "Não foi possível gerar o calendário.",

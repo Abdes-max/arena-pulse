@@ -25,6 +25,7 @@ import {
   Referee,
   Team,
   TimeSlot,
+  TournamentDetail,
   Venue,
 } from '../../core/models';
 import { RefereesService } from '../../core/referees.service';
@@ -70,6 +71,13 @@ export class SchedulePage {
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly generating = signal(false);
 
+  // Only startDate/endDate (set on Général) are actually used here, as the
+  // bounds the schedule-generation date must fall within -- see
+  // isStartDateTimeWithinTournamentRange below. Kept as the full
+  // TournamentDetail rather than two bare signals since it's already
+  // fetched as one object alongside categories/venues/referees in
+  // loadCategories.
+  protected readonly tournament = signal<TournamentDetail | null>(null);
   protected readonly categories = signal<Category[]>([]);
   protected readonly selectedCategoryId = signal('');
   protected readonly phases = signal<CompetitionPhase[]>([]);
@@ -202,8 +210,18 @@ export class SchedulePage {
       ]);
       this.categories.set(categories);
       this.venues.set(venues);
+      this.tournament.set(tournament);
       this.teamsCanReferee.set(tournament.teamsCanReferee);
       this.referees.set(referees);
+      // Pre-fills the generation form's own start field with Général's
+      // startDate (date only -- datetime-local still needs a time, left at
+      // midnight for the organizer to adjust) so there's one less thing to
+      // retype when just opening this page, not a default that could ever
+      // clobber something the organizer already typed (load() only runs
+      // once, before startDateTime could hold anything else).
+      if (tournament.startDate) {
+        this.startDateTime.set(`${tournament.startDate.slice(0, 10)}T00:00`);
+      }
       await this.loadTimeSlots();
       if (categories.length > 0) {
         this.selectedCategoryId.set(categories[0].id);
@@ -340,6 +358,28 @@ export class SchedulePage {
     this.startDateTime.set(value);
   }
 
+  // Compares calendar days only, not full instants -- Général's
+  // startDate/endDate carry no real time-of-day (always stored at UTC
+  // midnight, see tournament-form.page.ts's own date fields), so comparing
+  // full Date instants would reject a perfectly valid local morning kickoff
+  // sitting right at that UTC-midnight boundary. true (no rejection) when
+  // the tournament has neither bound set, same "nothing to check against"
+  // reasoning as elsewhere in this codebase.
+  private isStartDateTimeWithinTournamentRange(startDateTime: string): boolean {
+    const tournament = this.tournament();
+    if (!tournament) {
+      return true;
+    }
+    const pickedDay = startDateTime.slice(0, 10);
+    if (tournament.startDate && pickedDay < tournament.startDate.slice(0, 10)) {
+      return false;
+    }
+    if (tournament.endDate && pickedDay > tournament.endDate.slice(0, 10)) {
+      return false;
+    }
+    return true;
+  }
+
   protected onMatchDurationChange(value: string): void {
     this.matchDurationMinutes.set(value);
   }
@@ -370,6 +410,10 @@ export class SchedulePage {
     }
     if (!startDateTime) {
       this.errorMessage.set('admin.schedule.errors.enterStartDateForSchedule');
+      return;
+    }
+    if (!this.isStartDateTimeWithinTournamentRange(startDateTime)) {
+      this.errorMessage.set('admin.schedule.errors.startDateOutsideTournamentRange');
       return;
     }
     this.errorMessage.set(null);
@@ -446,6 +490,10 @@ export class SchedulePage {
     }
     if (!hasPoolPhase && !startDateTime) {
       this.errorMessage.set('admin.schedule.errors.enterStartDateForBrackets');
+      return;
+    }
+    if (!hasPoolPhase && !this.isStartDateTimeWithinTournamentRange(startDateTime)) {
+      this.errorMessage.set('admin.schedule.errors.startDateOutsideTournamentRange');
       return;
     }
     this.errorMessage.set(null);
