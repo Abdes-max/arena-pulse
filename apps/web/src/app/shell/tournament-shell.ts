@@ -35,6 +35,17 @@ import {
 import { TournamentContextService } from '../core/tournament-context.service';
 import { PublicTheme } from 'shared-models';
 
+const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
+  weekday: 'long',
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+};
+
+function capitalizeFirst(value: string): string {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
 /** Maps the backend's PublicTheme enum to design-tokens' ThemeName (data-theme values). */
 const THEME_MAP: Record<PublicTheme, ThemeName> = {
   INK_SIGNAL: 'ink-signal',
@@ -234,11 +245,21 @@ export class TournamentShell {
     if (!tournament?.startDate) {
       return null;
     }
-    const start = new Date(tournament.startDate).toLocaleDateString(this.language());
+    // Full weekday + day + month + year (e.g. "samedi 24 octobre 2026") --
+    // Intl always lowercases these for French/Spanish/Italian/Portuguese,
+    // capitalizeFirst below fixes that without affecting locales (English,
+    // German) that already capitalize them.
+    const start = capitalizeFirst(
+      new Date(tournament.startDate).toLocaleDateString(this.language(), DATE_FORMAT_OPTIONS),
+    );
     if (!tournament.endDate || tournament.endDate === tournament.startDate) {
       return start;
     }
-    return `${start} – ${new Date(tournament.endDate).toLocaleDateString(this.language())}`;
+    const end = capitalizeFirst(
+      new Date(tournament.endDate).toLocaleDateString(this.language(), DATE_FORMAT_OPTIONS),
+    );
+    // A plain hyphen, not an em/en dash -- see docs/design/content-guidelines.md.
+    return `${start} - ${end}`;
   });
 
   constructor() {
