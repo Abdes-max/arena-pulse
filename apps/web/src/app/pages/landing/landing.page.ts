@@ -103,12 +103,17 @@ export class LandingPage {
   // handful) -- same pattern as team-search.page's filteredTeams, and simple
   // enough while the directory stays this size. Revisit with a server-side
   // search param if the published-tournament count ever outgrows one page.
+  // This section's own heading ("Compétitions en cours") promises ongoing/
+  // upcoming only -- a visitor looking for one that already happened has
+  // /discover (its own dateFrom filter) for that, so this stays scoped the
+  // same way marqueeTournaments below is.
   protected readonly filteredTournaments = computed(() => {
+    const current = this.tournaments().filter((t) => isTournamentCurrentOrUpcoming(t));
     const q = this.query().trim().toLowerCase();
     if (!q) {
-      return this.tournaments();
+      return current;
     }
-    return this.tournaments().filter(
+    return current.filter(
       (t) => t.name.toLowerCase().includes(q) || t.sportName.toLowerCase().includes(q),
     );
   });
@@ -116,9 +121,7 @@ export class LandingPage {
   // ap-tournament-marquee's TournamentMarqueeItem needs a resolved (absolute)
   // logoUrl -- it's a dumb presenter, same reason ap-tournament-card gets
   // its own [logoUrl]="logoUrl(t.logoUrl)" binding per-card below instead.
-  // Unlike filteredTournaments above (the searchable grid, where a visitor
-  // might legitimately be looking for a tournament that already happened),
-  // "En ce moment sur TournArena" is a live/upcoming-only strip -- see
+  // Live/upcoming-only, same as filteredTournaments above -- see
   // isTournamentCurrentOrUpcoming's own doc comment (shared with apps/mobile's
   // equivalent strip on tournament-entry.page.ts) for the endDate/
   // lastMatchDate fallback it applies.
