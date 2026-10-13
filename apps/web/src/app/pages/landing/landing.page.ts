@@ -19,11 +19,7 @@ import {
   ThemeMode,
   ThemeService,
 } from 'design-tokens';
-import {
-  PublicSport,
-  PublicTournamentSummary,
-  isTournamentCurrentOrUpcoming,
-} from 'shared-models';
+import { PublicSport, PublicTournamentSummary, isTournamentCurrentOrUpcoming } from 'shared-models';
 import { AuthService } from '../../admin/core/auth.service';
 
 // One concrete, product-true detail per sport (not interchangeable filler)

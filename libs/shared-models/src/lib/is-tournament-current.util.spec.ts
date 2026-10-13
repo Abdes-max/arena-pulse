@@ -48,10 +48,7 @@ describe('isTournamentCurrentOrUpcoming', () => {
 
   it('drops a tournament with no date information at all', () => {
     expect(
-      isTournamentCurrentOrUpcoming(
-        { startDate: null, endDate: null, lastMatchDate: null },
-        NOW,
-      ),
+      isTournamentCurrentOrUpcoming({ startDate: null, endDate: null, lastMatchDate: null }, NOW),
     ).toBe(false);
   });
 
