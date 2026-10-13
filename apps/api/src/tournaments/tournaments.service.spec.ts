@@ -33,6 +33,7 @@ type PrismaMock = {
   category: { findMany: jest.Mock; create: jest.Mock; count: jest.Mock };
   competitionPhase: { count: jest.Mock; findMany: jest.Mock };
   match: { count: jest.Mock };
+  timeSlot: { findMany: jest.Mock };
   team: { count: jest.Mock };
   division: { create: jest.Mock };
   tournamentAdministrator: { findMany: jest.Mock; create: jest.Mock };
@@ -74,6 +75,10 @@ function createPrismaMock(): PrismaMock {
       findMany: jest.fn().mockResolvedValue([{ id: 'phase-1' }]),
     },
     match: { count: jest.fn().mockResolvedValue(1) },
+    // Default: no matches scheduled at all -- listPublished()'s
+    // lastMatchEndTimes() then contributes nothing, same as before this
+    // field existed, for every test below that doesn't care about it.
+    timeSlot: { findMany: jest.fn().mockResolvedValue([]) },
     team: { count: jest.fn() },
     division: { create: jest.fn() },
     tournamentAdministrator: { findMany: jest.fn(), create: jest.fn() },
@@ -1854,6 +1859,39 @@ describe('TournamentsService', () => {
       const [result] = await service.listPublished();
 
       expect(result.location).toBeNull();
+    });
+
+    it('fills lastMatchDate with the latest scheduled match end time', async () => {
+      prisma.tournament.findMany.mockResolvedValue([
+        tournamentFixture({
+          id: 'tournament-1',
+          status: TournamentStatus.PUBLISHED,
+          venues: [],
+        }),
+      ]);
+      const earlier = new Date('2026-10-13T09:00:00.000Z');
+      const latest = new Date('2026-10-13T10:20:00.000Z');
+      prisma.timeSlot.findMany.mockResolvedValue([
+        {
+          endTime: earlier,
+          field: { venue: { tournamentId: 'tournament-1' } },
+        },
+        { endTime: latest, field: { venue: { tournamentId: 'tournament-1' } } },
+      ]);
+
+      const [result] = await service.listPublished();
+
+      expect(result.lastMatchDate).toEqual(latest);
+    });
+
+    it('leaves lastMatchDate null when no matches are scheduled', async () => {
+      prisma.tournament.findMany.mockResolvedValue([
+        tournamentFixture({ status: TournamentStatus.PUBLISHED, venues: [] }),
+      ]);
+
+      const [result] = await service.listPublished();
+
+      expect(result.lastMatchDate).toBeNull();
     });
   });
 

@@ -1343,7 +1343,51 @@ export class TournamentsService {
       orderBy: { createdAt: 'desc' },
       take: limit,
     });
-    return tournaments.map((tournament) => this.toPublicListItem(tournament));
+    const lastMatchDates = await this.lastMatchEndTimes(
+      tournaments.map((tournament) => tournament.id),
+    );
+    return tournaments.map((tournament) =>
+      this.toPublicListItem(
+        tournament,
+        lastMatchDates.get(tournament.id) ?? null,
+      ),
+    );
+  }
+
+  /**
+   * Latest scheduled match end time per tournament, for the ids given --
+   * the landing page's "En ce moment" strip (landing.page.ts's
+   * marqueeTournaments) falls back to this when a tournament has no
+   * startDate/endDate of its own (common for a one-day "plateau" an
+   * organizer never bothered dating), so an already-played one doesn't look
+   * perpetually "current" just because nobody filled that field in. One
+   * query across every TimeSlot of every given tournament (via
+   * field -> venue -> tournamentId, the shortest relation path -- see
+   * schema.prisma), reduced to a max per tournament in memory rather than N
+   * separate queries.
+   */
+  private async lastMatchEndTimes(
+    tournamentIds: string[],
+  ): Promise<Map<string, Date>> {
+    if (tournamentIds.length === 0) {
+      return new Map();
+    }
+    const timeSlots = await this.prisma.timeSlot.findMany({
+      where: { field: { venue: { tournamentId: { in: tournamentIds } } } },
+      select: {
+        endTime: true,
+        field: { select: { venue: { select: { tournamentId: true } } } },
+      },
+    });
+    const lastEndByTournament = new Map<string, Date>();
+    for (const slot of timeSlots) {
+      const tournamentId = slot.field.venue.tournamentId;
+      const current = lastEndByTournament.get(tournamentId);
+      if (!current || slot.endTime > current) {
+        lastEndByTournament.set(tournamentId, slot.endTime);
+      }
+    }
+    return lastEndByTournament;
   }
 
   /**
@@ -1796,7 +1840,10 @@ export class TournamentsService {
     };
   }
 
-  private toPublicListItem(tournament: TournamentWithSportAndVenue) {
+  private toPublicListItem(
+    tournament: TournamentWithSportAndVenue,
+    lastMatchDate: Date | null = null,
+  ) {
     const venue = tournament.venues[0] as
       { name: string; address: string | null } | undefined;
     return {
@@ -1806,6 +1853,7 @@ export class TournamentsService {
       sportName: tournament.sport.name,
       startDate: tournament.startDate,
       endDate: tournament.endDate,
+      lastMatchDate,
       isOnline: tournament.isOnline,
       logoUrl: tournament.logoUrl,
       location: tournament.isOnline

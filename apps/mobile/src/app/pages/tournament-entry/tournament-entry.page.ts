@@ -30,7 +30,12 @@ import {
   ThemeService,
 } from 'design-tokens';
 import { debounceTime } from 'rxjs';
-import { PublicSport, PublicTournamentDirectoryItem, PublicTournamentSummary } from 'shared-models';
+import {
+  PublicSport,
+  PublicTournamentDirectoryItem,
+  PublicTournamentSummary,
+  isTournamentCurrentOrUpcoming,
+} from 'shared-models';
 import { environment } from '../../../environments/environment';
 
 const PAGE_SIZE = 20;
@@ -112,8 +117,13 @@ export class TournamentEntryPage {
   // ap-tournament-marquee's TournamentMarqueeItem needs a resolved (absolute)
   // logoUrl -- it's a dumb presenter, same reason ap-tournament-card gets
   // its own [logoUrl]="logoUrl(t.logoUrl)" binding per-card below instead.
+  // Live/upcoming-only, same as apps/web's landing.page marqueeTournaments --
+  // see isTournamentCurrentOrUpcoming's own doc comment for the endDate/
+  // lastMatchDate fallback it applies.
   protected readonly marqueeTournaments = computed(() =>
-    this.tournaments().map((t) => ({ ...t, logoUrl: this.logoUrl(t.logoUrl) })),
+    this.tournaments()
+      .filter((t) => isTournamentCurrentOrUpcoming(t))
+      .map((t) => ({ ...t, logoUrl: this.logoUrl(t.logoUrl) })),
   );
 
   // --- "Événements publiés" section: server-side directory search (mirrors
@@ -204,7 +214,12 @@ export class TournamentEntryPage {
     this.languageService.setLanguage(code as LanguageCode);
   }
 
-  protected goToTournament(tournament: PublicTournamentSummary): void {
+  // Only ever needs the slug -- narrower than PublicTournamentSummary so it
+  // stays compatible with ap-tournament-marquee's own, deliberately
+  // decoupled TournamentMarqueeItem shape (see that component's doc
+  // comment), which doesn't mirror every field PublicTournamentSummary
+  // happens to carry.
+  protected goToTournament(tournament: { slug: string }): void {
     void this.router.navigate(['/', tournament.slug]);
   }
 
