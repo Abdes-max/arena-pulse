@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@ang
 import { IonContent } from '@ionic/angular/standalone';
 import { MatchCard, MatchCardTeam } from 'design-system';
 import { AssetUrlService, PublicApiService } from 'api-client';
-import { Category, Match } from 'shared-models';
+import { Match } from 'shared-models';
 import { TournamentContextService } from '../../core/tournament-context.service';
 
 /** Mirrors apps/web's home.page.ts (the "Tournoi" tab's content). */
@@ -19,7 +19,6 @@ export class HomePage {
   private readonly assetUrl = inject(AssetUrlService);
 
   protected readonly tournament = this.context.tournament;
-  protected readonly categories = signal<Category[]>([]);
   protected readonly upcomingMatches = signal<Match[]>([]);
 
   constructor() {
@@ -38,7 +37,6 @@ export class HomePage {
     if (!slug) {
       return;
     }
-    this.categories.set(await this.api.listCategories(slug));
     this.upcomingMatches.set(await this.api.listUpcomingMatches(slug, 3));
   }
 
