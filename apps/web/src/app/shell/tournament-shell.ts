@@ -90,7 +90,6 @@ export class TournamentShell {
   private readonly nav = viewChild.required<ElementRef<HTMLElement>>('nav');
 
   protected readonly tournament = this.context.tournament;
-  protected readonly categories = this.context.categories;
   protected readonly loading = this.context.loading;
   // A Transloco *key* (e.g. 'shell.error.notFound'), not the translated
   // string itself -- TournamentContextService has no reason to depend on
