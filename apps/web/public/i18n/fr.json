@@ -681,6 +681,8 @@
         "nameLabel": "Nom du tournoi",
         "sportLabel": "Sport",
         "chooseSport": "Choisir un sport",
+        "startDateLabel": "Date de début",
+        "endDateLabel": "Date de fin",
         "isOnlineLabel": "Tournoi en ligne (eSport)",
         "isListedLabel": "Visible dans la recherche publique",
         "isListedHint": "Un tournoi privé reste accessible via son lien direct, mais n'apparaît pas dans la recherche d'événements TournArena.",

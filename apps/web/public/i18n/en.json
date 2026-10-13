@@ -681,6 +681,8 @@
         "nameLabel": "Tournament name",
         "sportLabel": "Sport",
         "chooseSport": "Choose a sport",
+        "startDateLabel": "Start date",
+        "endDateLabel": "End date",
         "isOnlineLabel": "Online tournament (esport)",
         "isListedLabel": "Visible in public search",
         "isListedHint": "A private tournament stays reachable via its direct link, but won't appear in the TournArena event search.",
