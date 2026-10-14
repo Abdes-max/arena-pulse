@@ -99,17 +99,18 @@ export class LandingPage {
   // handful) -- same pattern as team-search.page's filteredTeams, and simple
   // enough while the directory stays this size. Revisit with a server-side
   // search param if the published-tournament count ever outgrows one page.
-  // This section's own heading ("Compétitions en cours") promises ongoing/
-  // upcoming only -- a visitor looking for one that already happened has
-  // /discover (its own dateFrom filter) for that, so this stays scoped the
-  // same way marqueeTournaments below is.
+  // Unlike marqueeTournaments below, this section ("Événements publiés")
+  // shows every published tournament regardless of date -- no
+  // isTournamentCurrentOrUpcoming filter here, matching apps/mobile's own
+  // "Événements publiés" list (tournament-entry.page.ts's searchItems,
+  // which never applies that filter either).
   protected readonly filteredTournaments = computed(() => {
-    const current = this.tournaments().filter((t) => isTournamentCurrentOrUpcoming(t));
+    const all = this.tournaments();
     const q = this.query().trim().toLowerCase();
     if (!q) {
-      return current;
+      return all;
     }
-    return current.filter(
+    return all.filter(
       (t) => t.name.toLowerCase().includes(q) || t.sportName.toLowerCase().includes(q),
     );
   });
