@@ -163,7 +163,37 @@ export class SuperAdminOrganizationsService {
         select: { logoUrl: true },
       }),
     ]);
-    await this.prisma.organization.delete({ where: { id: organizationId } });
+    // Deleting Match rows up front, before the cascading organization
+    // delete below, works around a Postgres quirk reproduced locally: any
+    // organization with scheduled matches (real teams + time slots
+    // assigned, i.e. any tournament that's actually been played) makes a
+    // plain `organization.delete()` fail with "Match_groupId_fkey ... is
+    // not present in table Group" -- a single DELETE's cascade reaching the
+    // same Match row through two FK actions at once (Group/KnockoutBracket's
+    // ON DELETE CASCADE racing Team/TimeSlot's ON DELETE SET NULL on that
+    // row) trips Postgres's cascade ordering. Deleting Match first removes
+    // the race: no Match row is left for the Group/Team/TimeSlot cascades
+    // to collide over. Both match-source paths (pool-phase via group,
+    // knockout-phase via knockoutBracket) need covering.
+    await this.prisma.$transaction([
+      this.prisma.match.deleteMany({
+        where: {
+          OR: [
+            {
+              group: {
+                phase: { category: { tournament: { organizationId } } },
+              },
+            },
+            {
+              knockoutBracket: {
+                phase: { category: { tournament: { organizationId } } },
+              },
+            },
+          ],
+        },
+      }),
+      this.prisma.organization.delete({ where: { id: organizationId } }),
+    ]);
     await Promise.all([
       ...tournaments.map((t) =>
         this.deleteLogoFile('tournament-logos', t.logoUrl),

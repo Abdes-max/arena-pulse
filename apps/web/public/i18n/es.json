@@ -26,7 +26,7 @@
       "label": "Ahora mismo en TournArena"
     },
     "tournaments": {
-      "title": "Competiciones en curso",
+      "title": "Eventos publicados",
       "searchLabel": "Buscar un torneo",
       "searchPlaceholder": "Buscar un torneo…",
       "empty": "No se encontró ningún torneo."

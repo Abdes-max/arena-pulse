@@ -1,5 +1,5 @@
 <div class="ap-tournament-marquee">
-  <div class="ap-tournament-marquee__track">
+  <div class="ap-tournament-marquee__track" [style.animation-duration.s]="duration()">
     @for (t of loop(); track $index; let i = $index) {
       <button
         type="button"

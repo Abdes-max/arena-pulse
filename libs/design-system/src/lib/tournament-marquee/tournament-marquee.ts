@@ -43,6 +43,13 @@ export class TournamentMarquee {
     return items.length > 0 ? [...items, ...items] : [];
   });
 
+  // Constant scroll speed rather than a fixed duration -- a fixed 90s loop
+  // (the original value) barely moved with only 2-3 tournaments, since the
+  // track is that much shorter. Scaling with item count keeps the same
+  // perceived pace regardless of how many tournaments there are. Floored so
+  // a single tournament still loops at a readable, not frantic, pace.
+  protected readonly duration = computed(() => Math.max(this.tournaments().length * 3.5, 12));
+
   protected accentFor(index: number): 'signal' | 'ember' {
     return index % 2 === 0 ? 'signal' : 'ember';
   }
