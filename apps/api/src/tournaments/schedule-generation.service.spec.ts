@@ -132,7 +132,11 @@ describe('ScheduleGenerationService', () => {
     phasesService = {
       assertPhaseExists: jest.fn().mockResolvedValue({ ...basePhase }),
     };
-    const knownFields = [{ id: 'field-1' }, { id: 'field-2' }];
+    const knownFields = [
+      { id: 'field-1' },
+      { id: 'field-2' },
+      { id: 'field-3' },
+    ];
     prisma.field.findMany.mockImplementation(
       ({ where }: { where: { id: { in: string[] } } }) =>
         Promise.resolve(
@@ -241,6 +245,36 @@ describe('ScheduleGenerationService', () => {
       expect(times).toEqual(sorted);
       const unique = new Set(times.map((t) => t.getTime()));
       expect(unique.size).toBe(times.length);
+    }
+  });
+
+  it('never schedules a team in two simultaneous matches when there are more fields than matches per round', async () => {
+    prisma.group.findMany.mockResolvedValue([
+      {
+        id: 'group-1',
+        teams: ['a', 'b', 'c', 'd'].map((id) => team(id)),
+      },
+    ]);
+
+    // 2 matches per round on 3 fields: field-cursor scheduling used to start a
+    // round-2 match on the third field alongside round 1.
+    await service.generate('org-1', 'tournament-1', 'phase-1', {
+      fieldIds: ['field-1', 'field-2', 'field-3'],
+      startDateTime: '2026-08-01T09:00:00.000Z',
+    });
+
+    const startTimes = timeSlotCreateCalls(prisma).map((data) =>
+      data.startTime.getTime(),
+    );
+    const teamsByStart = new Map<number, string[]>();
+    matchCreateCalls(prisma).forEach((data, index) => {
+      const teams = teamsByStart.get(startTimes[index]) ?? [];
+      teams.push(data.homeTeamId, data.awayTeamId);
+      teamsByStart.set(startTimes[index], teams);
+    });
+    expect(matchCreateCalls(prisma)).toHaveLength(6);
+    for (const teams of teamsByStart.values()) {
+      expect(new Set(teams).size).toBe(teams.length);
     }
   });
 

@@ -8,6 +8,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { GenerateScheduleDto } from './dto/generate-schedule.dto';
 import { MATCH_INCLUDE, toMatchSummary } from './match-summary.util';
 import { PhasesService } from './phases.service';
+import { assignRotations } from './rotation-scheduling.util';
 import { generateRoundRobinFixtures } from './round-robin.util';
 import { TournamentsService } from './tournaments.service';
 
@@ -105,23 +106,19 @@ export class ScheduleGenerationService {
       tournament.teamsCanReferee,
     );
 
-    const fieldCursors = new Map<string, Date>(
-      dto.fieldIds.map((fieldId) => [fieldId, new Date(dto.startDateTime)]),
-    );
+    const startMs = new Date(dto.startDateTime).getTime();
     const slotDurationMs =
       (matchDurationMinutes + breakDurationMinutes) * 60_000;
+    const rotationSlots = assignRotations(fixtures, dto.fieldIds.length);
 
     const createdMatches = await this.prisma.$transaction(async (tx) => {
       const created: Match[] = [];
-      for (const [index, fixture] of fixtures.entries()) {
-        const fieldId = dto.fieldIds[index % dto.fieldIds.length];
-        const startTime = fieldCursors.get(fieldId)!;
+      for (const [index, slot] of rotationSlots.entries()) {
+        const { fixture } = slot;
+        const fieldId = dto.fieldIds[slot.fieldIndex];
+        const startTime = new Date(startMs + slot.rotation * slotDurationMs);
         const endTime = new Date(
           startTime.getTime() + matchDurationMinutes * 60_000,
-        );
-        fieldCursors.set(
-          fieldId,
-          new Date(startTime.getTime() + slotDurationMs),
         );
 
         const timeSlot = await tx.timeSlot.create({
