@@ -34,6 +34,7 @@ import { TeamsService } from '../../core/teams.service';
 import { TimeSlotsService } from '../../core/timeslots.service';
 import { TournamentsService } from '../../core/tournaments.service';
 import { FieldSelector } from '../../shared/field-selector';
+import { summarizeSchedule } from '../../shared/schedule-summary';
 import { matchRoundLabel, RoundLabelLang } from 'shared-models';
 
 interface TimeSlotDraft {
@@ -106,6 +107,7 @@ export class SchedulePage {
   protected readonly selectedMatchId = signal<string | null>(null);
 
   protected readonly selectedFieldIds = signal<string[]>([]);
+  protected readonly summary = computed(() => summarizeSchedule(this.matches()));
   protected readonly startDateTime = signal('');
   protected readonly shifting = signal(false);
   // Knockout stage only -- its start isn't entered by hand, it's the pool
@@ -585,6 +587,15 @@ export class SchedulePage {
       await this.loadTimeSlots();
       this.shifting.set(false);
     }
+  }
+
+  protected formatClock(time: string | null): string {
+    return time
+      ? new Date(time).toLocaleTimeString(this.languageService.language(), {
+          hour: '2-digit',
+          minute: '2-digit',
+        })
+      : '';
   }
 
   protected formatSlotTime(startTime: string): string {

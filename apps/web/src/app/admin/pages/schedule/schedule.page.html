@@ -119,6 +119,20 @@
           @if (matches().length === 0) {
             <p>{{ 'admin.schedule.editor.empty' | transloco }}</p>
           } @else {
+            @if (summary(); as s) {
+              <p class="schedule-page__summary">
+                {{
+                  'admin.schedule.editor.summary'
+                    | transloco
+                      : {
+                          matches: s.matchCount,
+                          rotations: s.rotationCount,
+                          start: formatClock(s.start),
+                          end: formatClock(s.end),
+                        }
+                }}
+              </p>
+            }
             <p class="schedule-page__hint">
               {{ 'admin.schedule.editor.dragHint' | transloco }}
             </p>

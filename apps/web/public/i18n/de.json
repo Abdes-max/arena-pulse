@@ -984,6 +984,7 @@
         "title": "Spielplan-Editor",
         "empty": "Für diese Phase wurden keine Spiele erstellt.",
         "dragHint": "Ziehen Sie ein Spiel per Drag-and-drop auf einen freien Slot, um es umzuplanen, oder auf „Nicht geplant“, um es aus dem Spielplan zu entfernen.",
+        "summary": "{{matches}} Spiele · {{rotations}} Runden · {{start}} → {{end}}",
         "selectMatchAria": "Dieses Spiel zum Umplanen auswählen",
         "removeOfficialAria": "Diesen Offiziellen entfernen",
         "addRefereeLabel": "Schiedsrichter hinzufügen",

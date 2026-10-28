@@ -984,6 +984,7 @@
         "title": "Editor do calendário",
         "empty": "Nenhum jogo gerado para esta fase.",
         "dragHint": "Arraste um jogo para um horário livre para o reagendar, ou para «Não agendados» para o remover do calendário.",
+        "summary": "{{matches}} jogos · {{rotations}} rotações · {{start}} → {{end}}",
         "selectMatchAria": "Selecionar este jogo para o reagendar",
         "removeOfficialAria": "Remover este oficial",
         "addRefereeLabel": "Adicionar um árbitro",

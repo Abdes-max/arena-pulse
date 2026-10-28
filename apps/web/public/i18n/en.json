@@ -1086,6 +1086,7 @@
         "title": "Schedule editor",
         "empty": "No matches generated for this phase.",
         "dragHint": "Drag and drop a match onto a free slot to reschedule it, or onto \"Unscheduled\" to remove it from the schedule.",
+        "summary": "{{matches}} matches · {{rotations}} rotations · {{start}} → {{end}}",
         "selectMatchAria": "Select this match to reschedule it",
         "removeOfficialAria": "Remove this official",
         "addRefereeLabel": "Add a referee",

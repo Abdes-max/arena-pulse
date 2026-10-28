@@ -984,6 +984,7 @@
         "title": "Editor del calendario",
         "empty": "Ningún partido generado para esta fase.",
         "dragHint": "Arrastra y suelta un partido a un turno libre para reprogramarlo, o a «Sin programar» para quitarlo del calendario.",
+        "summary": "{{matches}} partidos · {{rotations}} rotaciones · {{start}} → {{end}}",
         "selectMatchAria": "Seleccionar este partido para reprogramarlo",
         "removeOfficialAria": "Quitar este oficial",
         "addRefereeLabel": "Añadir un árbitro",

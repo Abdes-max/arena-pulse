@@ -1086,6 +1086,7 @@
         "title": "Éditeur du calendrier",
         "empty": "Aucun match généré pour cette phase.",
         "dragHint": "Glissez-déposez un match vers un créneau libre pour le replanifier, ou vers « Non planifiés » pour le retirer du calendrier.",
+        "summary": "{{matches}} matchs · {{rotations}} rotations · {{start}} → {{end}}",
         "selectMatchAria": "Sélectionner ce match pour le replanifier",
         "removeOfficialAria": "Retirer cet officiel",
         "addRefereeLabel": "Ajouter un arbitre",
