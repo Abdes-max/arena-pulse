@@ -975,6 +975,11 @@
         "reset": "Vaciar el calendario",
         "knockoutHint": "Genera de una vez todos los cuadros de eliminación directa (si hay varios, comparten las mismas pistas de forma consecutiva) y reserva un turno para cada ronda (cuartos, semis, final…). Solo la 1.ª ronda de cada cuadro tiene rivales conocidos desde ahora; las siguientes rondas se completarán automáticamente en cuanto se validen los resultados anteriores."
       },
+      "shift": {
+        "label": "Desplazar los próximos partidos",
+        "earlier": "−5 min",
+        "later": "+5 min"
+      },
       "editor": {
         "title": "Editor del calendario",
         "empty": "Ningún partido generado para esta fase.",
@@ -1003,9 +1008,11 @@
         "loadMatches": "No se ha podido cargar el calendario.",
         "selectFieldForSchedule": "Selecciona al menos una pista antes de generar el calendario.",
         "enterStartDateForSchedule": "Indica una fecha de inicio antes de generar el calendario.",
-      "startDateOutsideTournamentRange": "La fecha elegida debe estar dentro del rango de fechas del torneo (pestaña General).",
+        "startDateOutsideTournamentRange": "La fecha elegida debe estar dentro del rango de fechas del torneo (pestaña General).",
         "noMatchesGenerated": "No se ha podido generar ningún partido: asigna al menos dos equipos a cada grupo de esta fase en la página Estructura y vuelve a intentarlo.",
-        "matchesAlreadyExist": "Ya existen partidos para esta fase. Vacía el calendario antes de generar uno nuevo.",
+        "matchesAlreadyExist": "Algunos partidos de esta fase ya han comenzado. Vacía el calendario antes de generar uno nuevo.",
+        "shiftConflict": "Este desplazamiento se solaparía con otra franja en un campo.",
+        "shiftGeneric": "No se pudo desplazar el calendario.",
         "generateScheduleGeneric": "No se ha podido generar el calendario.",
         "selectFieldForBrackets": "Selecciona al menos una pista antes de generar los cuadros.",
         "enterBreakAfterPools": "Indica el tiempo de descanso tras los grupos.",

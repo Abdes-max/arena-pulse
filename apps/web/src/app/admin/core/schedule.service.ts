@@ -42,6 +42,21 @@ export class ScheduleService {
     );
   }
 
+  /** Moves every not-yet-played match of the phase by `minutes` (negative = earlier). */
+  shiftSchedule(
+    organizationId: string,
+    tournamentId: string,
+    phaseId: string,
+    minutes: number,
+  ): Promise<Match[]> {
+    return firstValueFrom(
+      this.http.post<Match[]>(
+        `${this.base(organizationId, tournamentId)}/phases/${phaseId}/schedule/shift`,
+        { minutes },
+      ),
+    );
+  }
+
   listMatches(organizationId: string, tournamentId: string, phaseId: string): Promise<Match[]> {
     return firstValueFrom(
       this.http.get<Match[]>(

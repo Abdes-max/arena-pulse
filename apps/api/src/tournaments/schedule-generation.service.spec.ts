@@ -1,5 +1,8 @@
-import { BadRequestException } from '@nestjs/common';
-import { CompetitionPhaseType } from '../../generated/prisma/client';
+import { BadRequestException, ConflictException } from '@nestjs/common';
+import {
+  CompetitionPhaseType,
+  MatchStatus,
+} from '../../generated/prisma/client';
 import { PhasesService } from './phases.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { ScheduleGenerationService } from './schedule-generation.service';
@@ -17,7 +20,12 @@ type PrismaMock = {
     deleteMany: jest.Mock;
     count: jest.Mock;
   };
-  timeSlot: { create: jest.Mock; deleteMany: jest.Mock };
+  timeSlot: {
+    create: jest.Mock;
+    deleteMany: jest.Mock;
+    findMany: jest.Mock;
+    update: jest.Mock;
+  };
   matchOfficial: { create: jest.Mock; deleteMany: jest.Mock };
   $transaction: jest.Mock;
 };
@@ -65,6 +73,8 @@ function createPrismaMock(): PrismaMock {
         ...data,
       })),
       deleteMany: jest.fn(),
+      findMany: jest.fn().mockResolvedValue([]),
+      update: jest.fn().mockImplementation((args: unknown) => args),
     },
     matchOfficial: { create: jest.fn(), deleteMany: jest.fn() },
     $transaction: jest.fn(),
@@ -175,6 +185,115 @@ describe('ScheduleGenerationService', () => {
         startDateTime: '2026-08-01T09:00:00.000Z',
       }),
     ).rejects.toBeInstanceOf(BadRequestException);
+  });
+
+  it('replaces a not-yet-played calendar when generating again', async () => {
+    prisma.match.findMany.mockResolvedValueOnce([
+      { id: 'old-1', timeSlotId: 'old-slot-1', status: MatchStatus.SCHEDULED },
+    ]);
+    prisma.group.findMany.mockResolvedValue([
+      { id: 'group-1', teams: [team('a'), team('b')] },
+    ]);
+
+    await service.generate('org-1', 'tournament-1', 'phase-1', {
+      fieldIds: ['field-1'],
+      startDateTime: '2026-08-01T09:00:00.000Z',
+    });
+
+    expect(prisma.match.deleteMany).toHaveBeenCalledWith({
+      where: { id: { in: ['old-1'] } },
+    });
+    expect(prisma.timeSlot.deleteMany).toHaveBeenCalledWith({
+      where: { id: { in: ['old-slot-1'] } },
+    });
+    expect(prisma.match.create).toHaveBeenCalledTimes(1);
+  });
+
+  it('refuses to regenerate once a match of the phase has started', async () => {
+    prisma.match.findMany.mockResolvedValueOnce([
+      { id: 'old-1', timeSlotId: 'old-slot-1', status: MatchStatus.LIVE },
+    ]);
+
+    await expect(
+      service.generate('org-1', 'tournament-1', 'phase-1', {
+        fieldIds: ['field-1'],
+        startDateTime: '2026-08-01T09:00:00.000Z',
+      }),
+    ).rejects.toBeInstanceOf(ConflictException);
+    expect(prisma.match.deleteMany).not.toHaveBeenCalled();
+  });
+
+  describe('shift', () => {
+    const slot = (id: string, fieldId: string, start: string, end: string) => ({
+      id,
+      fieldId,
+      startTime: new Date(start),
+      endTime: new Date(end),
+    });
+
+    it('moves every upcoming match of the phase by the given minutes', async () => {
+      prisma.match.findMany.mockResolvedValueOnce([
+        {
+          timeSlot: slot(
+            's1',
+            'field-1',
+            '2026-08-01T09:00:00.000Z',
+            '2026-08-01T09:15:00.000Z',
+          ),
+        },
+        {
+          timeSlot: slot(
+            's2',
+            'field-2',
+            '2026-08-01T09:00:00.000Z',
+            '2026-08-01T09:15:00.000Z',
+          ),
+        },
+      ]);
+
+      await service.shift('org-1', 'tournament-1', 'phase-1', { minutes: 5 });
+
+      expect(prisma.timeSlot.update).toHaveBeenCalledWith({
+        where: { id: 's1' },
+        data: {
+          startTime: new Date('2026-08-01T09:05:00.000Z'),
+          endTime: new Date('2026-08-01T09:20:00.000Z'),
+        },
+      });
+      expect(prisma.timeSlot.update).toHaveBeenCalledTimes(2);
+    });
+
+    it('rejects a shift that would overlap another slot on the same field', async () => {
+      prisma.match.findMany.mockResolvedValueOnce([
+        {
+          timeSlot: slot(
+            's1',
+            'field-1',
+            '2026-08-01T09:00:00.000Z',
+            '2026-08-01T09:15:00.000Z',
+          ),
+        },
+      ]);
+      prisma.timeSlot.findMany.mockResolvedValue([
+        slot(
+          'other',
+          'field-1',
+          '2026-08-01T08:40:00.000Z',
+          '2026-08-01T08:55:00.000Z',
+        ),
+      ]);
+
+      await expect(
+        service.shift('org-1', 'tournament-1', 'phase-1', { minutes: -10 }),
+      ).rejects.toBeInstanceOf(ConflictException);
+      expect(prisma.timeSlot.update).not.toHaveBeenCalled();
+    });
+
+    it('rejects when no upcoming match is left to move', async () => {
+      await expect(
+        service.shift('org-1', 'tournament-1', 'phase-1', { minutes: 5 }),
+      ).rejects.toBeInstanceOf(BadRequestException);
+    });
   });
 
   it('rejects a fieldId that does not belong to the tournament', async () => {
