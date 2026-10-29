@@ -54,23 +54,34 @@
 
 .schedule-page__status-filters {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--ap-space-2);
+  flex: 1 1 100%;
+  gap: var(--ap-space-1);
 }
 
+// Compact enough for the three of them to share one line on a phone.
 .schedule-page__status-filter {
   display: inline-flex;
+  flex: 1 1 0;
   align-items: center;
-  gap: var(--ap-space-2);
-  min-height: 44px;
-  padding: 0 var(--ap-space-4);
+  justify-content: center;
+  gap: var(--ap-space-1);
+  min-width: 0;
+  min-height: 36px;
+  padding: 0 var(--ap-space-2);
   border: var(--ap-border-width) solid var(--ap-color-border);
   border-radius: 999px;
   background: var(--ap-color-surface);
   color: var(--ap-color-fg);
   font: inherit;
+  font-size: 0.8rem;
   font-weight: 600;
+  white-space: nowrap;
   cursor: pointer;
+
+  @media (min-width: 600px) {
+    flex: 0 0 auto;
+    padding: 0 var(--ap-space-3);
+  }
 }
 
 .schedule-page__status-filter--active {
@@ -83,19 +94,20 @@
 // during the day.
 .schedule-page__status-filter--live::before {
   content: '';
-  width: 8px;
-  height: 8px;
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: var(--ap-color-error);
 }
 
 .schedule-page__status-count {
-  min-width: 1.5em;
+  min-width: 1.4em;
   padding: 0 var(--ap-space-1);
   border-radius: 999px;
   background: var(--ap-color-border);
   color: var(--ap-color-fg);
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   text-align: center;
   font-variant-numeric: tabular-nums;
 }
