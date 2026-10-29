@@ -1,3 +1,4 @@
+import { detectMapsPlatform, venueMapsUrl } from 'shared-models';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -378,5 +379,20 @@ export class TournamentShell {
       container.clientWidth / 2 +
       targetRect.width / 2;
     container.scrollTo({ left: offset, behavior: 'smooth' });
+  }
+
+  /**
+   * Tap on the header's venue: hands over to the phone's navigation app
+   * (Plans on iOS, the Android chooser -- Maps, Waze... -- via geo:) or
+   * Google Maps in a new tab on a computer. Same in the native app.
+   */
+  protected openVenueInMaps(venue: { name: string; address: string | null }): void {
+    const platform = detectMapsPlatform(navigator.userAgent, navigator.maxTouchPoints);
+    const url = venueMapsUrl(venue, platform);
+    if (platform === 'desktop') {
+      window.open(url, '_blank', 'noopener');
+    } else {
+      window.location.href = url;
+    }
   }
 }

@@ -288,3 +288,24 @@
   margin: 0 auto;
   padding: var(--ap-space-6);
 }
+
+// Header venue: opens the navigation app (see openVenueInMaps) -- reads as
+// the same meta text, underlined to show it's tappable.
+.tournament-shell__venue-link {
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}

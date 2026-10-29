@@ -216,7 +216,8 @@
       "schedule": "Jogos",
       "wrapped": "Estatísticas"
     },
-    "menu": "Menu"
+    "menu": "Menu",
+    "openInMaps": "Abrir na app de navegação"
   },
   "home": {
     "sections": {

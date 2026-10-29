@@ -318,7 +318,8 @@
       "schedule": "Matches",
       "wrapped": "Statistics"
     },
-    "menu": "Menu"
+    "menu": "Menu",
+    "openInMaps": "Open in your maps app"
   },
   "home": {
     "sections": {

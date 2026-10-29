@@ -216,7 +216,8 @@
       "schedule": "Partidos",
       "wrapped": "Estadísticas"
     },
-    "menu": "Menú"
+    "menu": "Menú",
+    "openInMaps": "Abrir en la app de navegación"
   },
   "home": {
     "sections": {
