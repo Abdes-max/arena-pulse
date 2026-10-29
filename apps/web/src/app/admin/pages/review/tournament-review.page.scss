@@ -69,15 +69,15 @@
   font-size: 0.9rem;
 }
 
+// Numbers are rendered as their own column (not <ol> markers, which sit
+// outside each grid cell and overlapped the previous column's input).
 .review-page__teams {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: var(--ap-space-2);
-  padding-left: var(--ap-space-6);
-
-  li {
-    min-width: 0;
-  }
+  gap: var(--ap-space-3) var(--ap-space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
 
   input {
     box-sizing: border-box;
@@ -88,6 +88,43 @@
     background: var(--ap-color-surface);
     color: var(--ap-color-fg);
     font: inherit;
+  }
+}
+
+.review-page__team {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ap-space-2);
+  min-width: 0;
+}
+
+.review-page__team-number {
+  flex: none;
+  width: 1.75rem;
+  padding-top: var(--ap-space-2);
+  color: var(--ap-color-muted);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.review-page__team-field {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--ap-space-1);
+  min-width: 0;
+}
+
+.review-page__summary-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-3);
+  margin-bottom: var(--ap-space-3);
+
+  p {
+    margin: 0;
   }
 }
 

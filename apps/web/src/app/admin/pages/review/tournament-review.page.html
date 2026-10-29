@@ -39,18 +39,21 @@
         </p>
       }
       <ol class="review-page__teams">
-        @for (team of teams(); track team.id) {
-          <li>
-            <input
-              type="text"
-              [class.review-page__team-input--placeholder]="isPlaceholder(team)"
-              [value]="nameOf(team)"
-              [attr.aria-label]="'admin.review.teams.nameAria' | transloco"
-              (input)="onNameInput(team, $event)"
-            />
-            @if (team.groupName) {
-              <span class="review-page__group">{{ team.groupName }}</span>
-            }
+        @for (team of teams(); track team.id; let i = $index) {
+          <li class="review-page__team">
+            <span class="review-page__team-number" aria-hidden="true">{{ i + 1 }}</span>
+            <div class="review-page__team-field">
+              <input
+                type="text"
+                [class.review-page__team-input--placeholder]="isPlaceholder(team)"
+                [value]="nameOf(team)"
+                [attr.aria-label]="'admin.review.teams.nameAria' | transloco"
+                (input)="onNameInput(team, $event)"
+              />
+              @if (team.groupName) {
+                <span class="review-page__group">{{ team.groupName }}</span>
+              }
+            </div>
           </li>
         }
       </ol>
@@ -81,20 +84,26 @@
         <span class="review-page__step">02</span>
         {{ 'admin.review.schedule.title' | transloco }}
       </h2>
-      <p>
-        {{
-          'admin.review.schedule.summary'
-            | transloco
-              : {
-                  rotations: summary().rotationCount,
-                  start: formatClock(summary().start),
-                  end: formatClock(summary().end),
-                }
-        }}
-        <a [routerLink]="['/admin/tournaments', tournamentId, 'schedule']">{{
-          'admin.review.schedule.edit' | transloco
-        }}</a>
-      </p>
+      <div class="review-page__summary-row">
+        <p>
+          {{
+            'admin.review.schedule.summary'
+              | transloco
+                : {
+                    rotations: summary().rotationCount,
+                    start: formatClock(summary().start),
+                    end: formatClock(summary().end),
+                  }
+          }}
+        </p>
+        <ap-button
+          variant="secondary"
+          size="sm"
+          [routerLink]="['/admin/tournaments', tournamentId, 'schedule']"
+        >
+          {{ 'admin.review.schedule.edit' | transloco }}
+        </ap-button>
+      </div>
       @if (rows().length > 0) {
         <div class="review-page__table-wrap">
           <table class="review-page__table">
@@ -138,12 +147,12 @@
         <p class="review-page__ok">{{ 'admin.review.publish.done' | transloco }}</p>
         @if (publicPath(); as path) {
           <div class="review-page__actions">
-            <a [href]="path" target="_blank" rel="noopener">{{
-              'admin.review.publish.openPublic' | transloco
-            }}</a>
-            <a [href]="path + '/tv'" target="_blank" rel="noopener">{{
-              'admin.review.publish.openTv' | transloco
-            }}</a>
+            <ap-button variant="secondary" [href]="path" target="_blank">
+              {{ 'admin.review.publish.openPublic' | transloco }}
+            </ap-button>
+            <ap-button variant="secondary" [href]="path + '/tv'" target="_blank">
+              {{ 'admin.review.publish.openTv' | transloco }}
+            </ap-button>
           </div>
         }
       } @else {
@@ -164,9 +173,9 @@
           >
             {{ 'admin.review.publish.button' | transloco }}
           </ap-button>
-          <a [routerLink]="['/admin/tournaments']">{{
-            'admin.review.publish.later' | transloco
-          }}</a>
+          <ap-button variant="ghost" [routerLink]="['/admin/tournaments']">
+            {{ 'admin.review.publish.later' | transloco }}
+          </ap-button>
         </div>
         @if (hasDraft()) {
           <p class="review-page__hint">{{ 'admin.review.publish.saveFirst' | transloco }}</p>

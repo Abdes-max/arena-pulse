@@ -606,7 +606,7 @@
         "saveFirst": "Enregistrez d’abord les noms modifiés.",
         "done": "Votre tournoi est public.",
         "openPublic": "Ouvrir la page publique",
-        "openTv": "Ouvrir l’écran TV"
+        "openTv": "Ouvrir le diaporama"
       },
       "errors": {
         "load": "Impossible de charger le tournoi.",

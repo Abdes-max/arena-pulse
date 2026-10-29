@@ -504,7 +504,7 @@
         "saveFirst": "Save the edited names first.",
         "done": "Your tournament is public.",
         "openPublic": "Open the public page",
-        "openTv": "Open the TV screen"
+        "openTv": "Open the slideshow"
       },
       "errors": {
         "load": "Could not load the tournament.",

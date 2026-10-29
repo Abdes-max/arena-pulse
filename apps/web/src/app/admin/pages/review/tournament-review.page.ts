@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Button } from 'design-system';
 import { LanguageService } from 'design-tokens';
@@ -29,7 +29,7 @@ interface ScheduleRow {
  */
 @Component({
   selector: 'app-tournament-review-page',
-  imports: [Button, RouterLink, TranslocoPipe],
+  imports: [Button, TranslocoPipe],
   templateUrl: './tournament-review.page.html',
   styleUrl: './tournament-review.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
