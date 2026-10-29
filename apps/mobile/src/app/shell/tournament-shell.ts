@@ -1,4 +1,4 @@
-import { detectMapsPlatform, venueMapsUrl } from 'shared-models';
+import { detectMapsPlatform, venueMapsUrl, venueNavigationApps } from 'shared-models';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -12,6 +12,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { DEFAULT_THEME, ThemeMode, ThemeName, ThemeService } from 'design-tokens';
 import {
+  ActionSheetController,
   IonButton,
   IonButtons,
   IonContent,
@@ -75,6 +76,7 @@ const THEME_MAP: Record<PublicTheme, ThemeName> = {
 })
 export class TournamentShell {
   private readonly route = inject(ActivatedRoute);
+  private readonly actionSheet = inject(ActionSheetController);
   private readonly themeService = inject(ThemeService);
   private readonly destroyRef = inject(DestroyRef);
   private readonly favorites = inject(FavoritesService);
@@ -283,8 +285,32 @@ export class TournamentShell {
   // Public pages are French-only in the app (same as their other labels).
   protected readonly venueMapsLabel = 'Ouvrir dans l’application de navigation';
 
+  private async chooseNavigationApp(venue: {
+    name: string;
+    address: string | null;
+  }): Promise<void> {
+    const sheet = await this.actionSheet.create({
+      header: 'Ouvrir l’itinéraire avec',
+      buttons: [
+        ...venueNavigationApps(venue).map((app) => ({
+          text: app.label,
+          handler: () => {
+            window.location.href = app.url;
+          },
+        })),
+        { text: 'Annuler', role: 'cancel' },
+      ],
+    });
+    await sheet.present();
+  }
+
   protected openVenueInMaps(venue: { name: string; address: string | null }): void {
     const platform = detectMapsPlatform(navigator.userAgent, navigator.maxTouchPoints);
+    if (platform === 'ios') {
+      // No system "open with" chooser on iOS: offer the GPS apps ourselves.
+      void this.chooseNavigationApp(venue);
+      return;
+    }
     const url = venueMapsUrl(venue, platform);
     if (platform === 'desktop') {
       window.open(url, '_blank', 'noopener');

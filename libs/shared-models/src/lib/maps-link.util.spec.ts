@@ -1,4 +1,9 @@
-import { detectMapsPlatform, venueMapsQuery, venueMapsUrl } from './maps-link.util';
+import {
+  detectMapsPlatform,
+  venueMapsQuery,
+  venueMapsUrl,
+  venueNavigationApps,
+} from './maps-link.util';
 
 const STADIUM = {
   name: 'Stade Marius Requier',
@@ -32,5 +37,11 @@ describe('maps link', () => {
     expect(venueMapsUrl(venue, 'desktop')).toBe(
       'https://www.google.com/maps/search/?api=1&query=Stade',
     );
+  });
+
+  it('offers Plans, Google Maps and Waze on iOS', () => {
+    const apps = venueNavigationApps({ name: 'Stade', address: null });
+    expect(apps.map((app) => app.label)).toEqual(['Plans', 'Google Maps', 'Waze']);
+    expect(apps[2].url).toBe('https://waze.com/ul?q=Stade&navigate=yes');
   });
 });

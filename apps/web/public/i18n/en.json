@@ -319,7 +319,9 @@
       "wrapped": "Statistics"
     },
     "menu": "Menu",
-    "openInMaps": "Open in your maps app"
+    "openInMaps": "Open in your maps app",
+    "navigationTitle": "Get directions with",
+    "navigationCancel": "Cancel"
   },
   "home": {
     "sections": {

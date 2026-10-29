@@ -1,4 +1,9 @@
-import { detectMapsPlatform, venueMapsUrl } from 'shared-models';
+import {
+  NavigationApp,
+  detectMapsPlatform,
+  venueMapsUrl,
+  venueNavigationApps,
+} from 'shared-models';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -386,8 +391,21 @@ export class TournamentShell {
    * (Plans on iOS, the Android chooser -- Maps, Waze... -- via geo:) or
    * Google Maps in a new tab on a computer. Same in the native app.
    */
+  /** iOS only: the GPS apps sheet opened from the header's venue, null when closed. */
+  protected readonly navigationApps = signal<NavigationApp[] | null>(null);
+
+  protected openNavigationApp(app: NavigationApp): void {
+    this.navigationApps.set(null);
+    window.location.href = app.url;
+  }
+
   protected openVenueInMaps(venue: { name: string; address: string | null }): void {
     const platform = detectMapsPlatform(navigator.userAgent, navigator.maxTouchPoints);
+    if (platform === 'ios') {
+      // No system "open with" chooser on iOS: offer the GPS apps ourselves.
+      this.navigationApps.set(venueNavigationApps(venue));
+      return;
+    }
     const url = venueMapsUrl(venue, platform);
     if (platform === 'desktop') {
       window.open(url, '_blank', 'noopener');

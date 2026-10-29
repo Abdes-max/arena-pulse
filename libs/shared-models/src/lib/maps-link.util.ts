@@ -42,3 +42,31 @@ export function venueMapsUrl(
       return `https://www.google.com/maps/search/?api=1&query=${query}`;
   }
 }
+
+export interface NavigationApp {
+  id: 'apple' | 'google' | 'waze';
+  label: string;
+  url: string;
+}
+
+/**
+ * The navigation apps offered on iPhone/iPad, where iOS has no system
+ * "open with" chooser (Android's geo: link already shows every installed
+ * GPS app). Universal https links: each opens its app when installed, its
+ * website otherwise.
+ */
+export function venueNavigationApps(venue: {
+  name: string;
+  address: string | null;
+}): NavigationApp[] {
+  const query = encodeURIComponent(venueMapsQuery(venue));
+  return [
+    { id: 'apple', label: 'Plans', url: `https://maps.apple.com/?q=${query}` },
+    {
+      id: 'google',
+      label: 'Google Maps',
+      url: `https://www.google.com/maps/search/?api=1&query=${query}`,
+    },
+    { id: 'waze', label: 'Waze', url: `https://waze.com/ul?q=${query}&navigate=yes` },
+  ];
+}
