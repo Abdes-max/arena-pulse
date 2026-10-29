@@ -152,10 +152,10 @@
     @if (upcomingMatches().length > 0) {
       <section class="team-detail-page__section">
         <h3 class="team-detail-page__section-title">À venir</h3>
-        <div class="team-detail-page__grid">
+        <div class="team-detail-page__upcoming">
           @for (match of upcomingMatches(); track match.id) {
             <ap-match-card
-              variant="upcoming"
+              [variant]="isFeatured(match) ? 'featured' : 'compact'"
               [homeTeam]="teamCardInput(match.homeTeam, '?')"
               [awayTeam]="teamCardInput(match.awayTeam, '?')"
               [kickoff]="match.timeSlot ? formatKickoff(match.timeSlot.startTime) : undefined"

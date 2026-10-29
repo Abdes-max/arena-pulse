@@ -95,6 +95,22 @@ export class OrganizerTournamentsPage {
     await this.router.navigateByUrl(`/organizer/tournaments/${tournament.id}/standings`);
   }
 
+  // "12 oct. 2026 · Stade" under the name -- same as apps/web's
+  // tournament-list.page.ts metaLine.
+  protected metaLine(tournament: OrganizerTournament): string | null {
+    const format = (iso: string) =>
+      new Date(iso).toLocaleDateString(this.transloco.getActiveLang(), {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        timeZone: 'UTC',
+      });
+    const start = tournament.startDate ? format(tournament.startDate) : null;
+    const end = tournament.endDate ? format(tournament.endDate) : null;
+    const dates = start && end && end !== start ? `${start} – ${end}` : (start ?? end);
+    return [dates, tournament.venueName].filter(Boolean).join(' · ') || null;
+  }
+
   protected statusLabel(status: OrganizerTournament['status']): string {
     return this.transloco.translate(`organizer.tournaments.list.status.${status}`);
   }

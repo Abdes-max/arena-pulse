@@ -66,6 +66,13 @@ export class TeamDetailPage {
     () => this.team()?.matches.filter((match) => !this.isDecided(match)) ?? [],
   );
 
+  // Same highlight as the home page's "Prochains matchs": every match tied
+  // for the earliest kickoff is featured, the rest stay compact.
+  protected isFeatured(match: PublicTeamDetail['matches'][number]): boolean {
+    const earliest = this.upcomingMatches()[0]?.timeSlot?.startTime;
+    return earliest !== undefined && match.timeSlot?.startTime === earliest;
+  }
+
   constructor() {
     void this.load();
     effect(() => {
@@ -160,8 +167,8 @@ export class TeamDetailPage {
   }
 
   // Mirrors web's team-detail.page.ts variantFor exactly -- used for the
-  // "Joués" list only; "À venir" always shows variant="upcoming" regardless
-  // of status, same as web's hardcoded value there.
+  // "Joués" list only; "À venir" uses isFeatured (featured/compact), same
+  // as web.
   protected variantFor(match: PublicTeamDetail['matches'][number]): MatchCardVariant {
     return match.status === 'LIVE' ? 'live' : 'result';
   }

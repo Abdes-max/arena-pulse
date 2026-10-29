@@ -92,6 +92,13 @@ export class TeamDetailPage {
     () => this.team()?.matches.filter((match) => !this.isDecided(match)) ?? [],
   );
 
+  // Same highlight as the home page's "Prochains matchs": every match tied
+  // for the earliest kickoff is featured, the rest stay compact.
+  protected isFeatured(match: PublicTeamDetail['matches'][number]): boolean {
+    const earliest = this.upcomingMatches()[0]?.timeSlot?.startTime;
+    return earliest !== undefined && match.timeSlot?.startTime === earliest;
+  }
+
   constructor() {
     void this.load();
     effect(() => {

@@ -60,7 +60,12 @@
             <p class="tcard__name">{{ t.name }}</p>
             <ap-badge [status]="badgeStatus(t.status)" [label]="statusLabel(t.status)" />
           </div>
-          <p class="tcard__meta">{{ t.sportName }}</p>
+          <p class="tcard__meta">
+            {{ t.sportName }}
+            @if (metaLine(t); as meta) {
+              · {{ meta }}
+            }
+          </p>
           <div class="tcard__actions">
             <button type="button" class="tcard__action" (click)="openLive($event, t)">
               {{ 'organizer.tournaments.list.liveAction' | transloco }}

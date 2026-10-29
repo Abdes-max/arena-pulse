@@ -41,6 +41,10 @@ export interface OrganizerTournament {
   isListed: boolean;
   theme: PublicTheme;
   logoUrl: string | null;
+  startDate?: string | null;
+  endDate?: string | null;
+  // First venue of the tournament, added by the list endpoint only.
+  venueName?: string | null;
   createdAt: string;
 }
 
