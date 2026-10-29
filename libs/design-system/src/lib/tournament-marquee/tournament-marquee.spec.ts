@@ -74,4 +74,26 @@ describe('TournamentMarquee', () => {
 
     expect(fixture.componentInstance.clicked?.id).toBe('1');
   });
+
+  it('scales the scroll duration with item count instead of a fixed loop time', () => {
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.detectChanges();
+
+    const track = fixture.nativeElement.querySelector('.ap-tournament-marquee__track');
+    // 2 items * 3.5s/item = 7s, below the 12s floor -- the floor wins.
+    expect(track.style.animationDuration).toBe('12s');
+  });
+
+  it('floors the duration so a handful of tournaments still scroll at a readable pace', () => {
+    const manyItems = Array.from({ length: 10 }, (_, i) => ({
+      ...ITEMS[0],
+      id: `t${i}`,
+    }));
+    const fixture = TestBed.createComponent(HostComponent);
+    fixture.componentInstance.items = manyItems;
+    fixture.detectChanges();
+
+    const track = fixture.nativeElement.querySelector('.ap-tournament-marquee__track');
+    expect(track.style.animationDuration).toBe('35s');
+  });
 });
