@@ -749,7 +749,8 @@
         "newCategoryLabel": "Nueva categoría",
         "newCategoryPlaceholder": "Nueva categoría (ej. U10)",
         "newFeeLabel": "Cuota (céntimos, opcional)",
-        "addCategory": "Añadir una categoría"
+        "addCategory": "Añadir una categoría",
+        "choose": "Elegir una categoría…"
       },
       "venues": {
         "title": "Sedes y pistas",

@@ -749,7 +749,8 @@
         "newCategoryLabel": "Nuova categoria",
         "newCategoryPlaceholder": "Nuova categoria (es. U10)",
         "newFeeLabel": "Quota (centesimi, facoltativa)",
-        "addCategory": "Aggiungi una categoria"
+        "addCategory": "Aggiungi una categoria",
+        "choose": "Scegli una categoria…"
       },
       "venues": {
         "title": "Sedi e campi",

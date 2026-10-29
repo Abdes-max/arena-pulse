@@ -567,9 +567,10 @@
                     class="tournament-form-page__inline-edit"
                     (submit)="saveEdit(); $event.preventDefault()"
                   >
-                    <ap-text-field
+                    <ap-select
                       [label]="'admin.tournamentForm.edit.nameLabel' | transloco"
                       [hideLabel]="true"
+                      [options]="editCategoryOptions(category.name)"
                       [value]="editDraft()"
                       (valueChange)="onEditDraftChange($event)"
                     />
@@ -637,10 +638,11 @@
             </div>
           }
           <div class="tournament-form-page__inline-form">
-            <ap-text-field
+            <ap-select
+              class="tournament-form-page__category-select"
               [label]="'admin.tournamentForm.categories.newCategoryLabel' | transloco"
               [hideLabel]="true"
-              [placeholder]="'admin.tournamentForm.categories.newCategoryPlaceholder' | transloco"
+              [options]="newCategoryOptions()"
               [value]="newCategoryName()"
               (valueChange)="onNewCategoryNameChange($event)"
             />
