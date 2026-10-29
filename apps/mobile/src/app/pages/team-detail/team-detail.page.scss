@@ -161,6 +161,23 @@
   td:nth-child(2) {
     text-align: left;
   }
+
+  // Phone: same columns as the Classement page's pool tables
+  // (Équipe/Qualifié/J/+/-/Pts) instead of a horizontal scroll.
+  @media (max-width: 600px) {
+    min-width: 0;
+
+    th:nth-child(1),
+    td:nth-child(1),
+    th:nth-child(n + 5):nth-child(-n + 9),
+    td:nth-child(n + 5):nth-child(-n + 9) {
+      display: none;
+    }
+
+    .team-detail-page__row--self td:nth-child(2) {
+      box-shadow: inset 3px 0 0 var(--ap-color-signal);
+    }
+  }
 }
 
 .team-detail-page__row--self {
@@ -204,4 +221,11 @@
 
 .team-detail-page__points {
   font-weight: 700;
+}
+
+// Same stacked layout as the home page's upcoming list.
+.team-detail-page__upcoming {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-3);
 }
