@@ -183,7 +183,19 @@
           "CRIMSON_CHARGE": "Thème Grenat"
         },
         "logoLabel": "Logo du tournoi",
-        "dateLabel": "Date du tournoi"
+        "dateLabel": "Date du tournoi",
+        "headerBackground": {
+          "label": "Fond d'écran de l'entête",
+          "other": "Autre",
+          "presets": {
+            "vert": "Vert",
+            "marron": "Marron",
+            "violet": "Violet",
+            "bleu": "Bleu",
+            "rouge": "Rouge"
+          },
+          "recommended": "Recommandé"
+        }
       },
       "teams": {
         "title": "Équipes participantes",

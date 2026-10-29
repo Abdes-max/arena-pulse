@@ -183,7 +183,19 @@
           "CRIMSON_CHARGE": "Tema Carmesim"
         },
         "logoLabel": "Logótipo do torneio",
-        "dateLabel": "Data do torneio"
+        "dateLabel": "Data do torneio",
+        "headerBackground": {
+          "label": "Fundo do cabeçalho",
+          "other": "Outro",
+          "presets": {
+            "vert": "Verde",
+            "marron": "Castanho",
+            "violet": "Roxo",
+            "bleu": "Azul",
+            "rouge": "Vermelho"
+          },
+          "recommended": "Recomendado"
+        }
       },
       "teams": {
         "title": "Equipas participantes",

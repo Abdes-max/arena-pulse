@@ -183,7 +183,19 @@
           "CRIMSON_CHARGE": "Motiv Karmesin"
         },
         "logoLabel": "Turnier-Logo",
-        "dateLabel": "Turnierdatum"
+        "dateLabel": "Turnierdatum",
+        "headerBackground": {
+          "label": "Kopfzeilen-Hintergrund",
+          "other": "Andere",
+          "presets": {
+            "vert": "Grün",
+            "marron": "Braun",
+            "violet": "Violett",
+            "bleu": "Blau",
+            "rouge": "Rot"
+          },
+          "recommended": "Empfohlen"
+        }
       },
       "teams": {
         "title": "Teilnehmende Teams",

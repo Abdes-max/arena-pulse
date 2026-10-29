@@ -577,3 +577,83 @@ ion-title {
   font-size: 0.85rem;
   font-weight: 600;
 }
+
+// Header background picker: ready-made presets + "Autre" (upload), same
+// tiles as apps/web's tournament-form.page.scss.
+.wizard-page__backgrounds-label {
+  margin: var(--ap-space-4) 0 var(--ap-space-2);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.wizard-page__backgrounds {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  // Tablet/desktop: keep thumbnails thumbnail-sized.
+  max-width: 480px;
+  gap: var(--ap-space-2);
+}
+
+.wizard-page__background {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-1);
+  padding: var(--ap-space-1);
+  border: 2px solid transparent;
+  border-radius: var(--ap-radius-md);
+  background: none;
+  color: var(--ap-color-fg);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+
+  &.is-selected {
+    border-color: var(--ap-color-primary);
+  }
+
+  input[type='file'] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+  }
+}
+
+.wizard-page__background-thumb {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--ap-radius-sm);
+  object-fit: cover;
+}
+
+.wizard-page__background-thumb--other {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: var(--ap-border-width) dashed var(--ap-color-border);
+  color: var(--ap-color-muted);
+  font-size: 1.3rem;
+}
+
+// "Recommand�" pill over the thumbnail of the theme's matching preset.
+.wizard-page__background-badge {
+  position: absolute;
+  top: calc(var(--ap-space-1) + 4px);
+  left: calc(var(--ap-space-1) + 4px);
+  max-width: calc(100% - var(--ap-space-1) * 2 - 8px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  box-sizing: border-box;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: var(--ap-color-surface);
+  color: var(--ap-color-fg);
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  box-shadow: var(--ap-shadow-sm);
+}

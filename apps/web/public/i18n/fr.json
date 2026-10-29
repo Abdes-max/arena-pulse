@@ -914,7 +914,17 @@
         "title": "Fond d'écran de l'entête",
         "change": "Changer",
         "add": "Ajouter un fond d'écran",
-        "remove": "Retirer"
+        "remove": "Retirer",
+        "hint": "Choisissez un fond prêt à l’emploi ou importez votre propre image (Autre).",
+        "other": "Autre",
+        "presets": {
+          "vert": "Vert",
+          "marron": "Marron",
+          "violet": "Violet",
+          "bleu": "Bleu",
+          "rouge": "Rouge"
+        },
+        "recommended": "Recommandé"
       },
       "poster": {
         "title": "Affiche / flyer",

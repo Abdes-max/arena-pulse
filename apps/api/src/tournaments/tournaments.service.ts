@@ -34,6 +34,10 @@ import {
   RevenueCatWebhookEvent,
 } from '../payments/revenuecat.service';
 import { ConfirmIapPurchaseDto } from './dto/confirm-iap-purchase.dto';
+import {
+  HeaderBackgroundPreset,
+  headerBackgroundPresetUrl,
+} from './dto/set-header-background-preset.dto';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { DuplicateTournamentDto } from './dto/duplicate-tournament.dto';
 import { UpdateTournamentDto } from './dto/update-tournament.dto';
@@ -1220,6 +1224,33 @@ export class TournamentsService {
     return this.toDetail(updated);
   }
 
+  /**
+   * One of the ready-made backgrounds (vert, marron, violet...) instead of
+   * an uploaded photo. Free, unlike the upload: nothing is stored on our
+   * side, the image ships with the apps (see SetHeaderBackgroundPresetDto).
+   */
+  async setHeaderBackgroundPreset(
+    organizationId: string,
+    tournamentId: string,
+    preset: HeaderBackgroundPreset,
+  ) {
+    const tournament = await this.assertTournamentIsEditable(
+      organizationId,
+      tournamentId,
+    );
+    await this.deleteImageFile(
+      'tournament-header-backgrounds',
+      tournament.headerBackgroundUrl,
+    );
+
+    const updated = await this.prisma.tournament.update({
+      where: { id: tournamentId },
+      data: { headerBackgroundUrl: headerBackgroundPresetUrl(preset) },
+      include: { sport: true },
+    });
+    return this.toDetail(updated);
+  }
+
   async removeHeaderBackground(organizationId: string, tournamentId: string) {
     const tournament = await this.assertTournamentIsEditable(
       organizationId,
@@ -1347,7 +1378,9 @@ export class TournamentsService {
     subfolder: string,
     imageUrl: string | null,
   ): Promise<void> {
-    if (!imageUrl) {
+    // Only our own uploads live on disk -- a preset header background
+    // (/header-backgrounds/...) ships with the apps, nothing to delete.
+    if (!imageUrl?.startsWith('/uploads/')) {
       return;
     }
     const filename = imageUrl.split('/').pop();

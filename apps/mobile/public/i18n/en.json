@@ -183,7 +183,19 @@
           "CRIMSON_CHARGE": "Crimson theme"
         },
         "logoLabel": "Tournament logo",
-        "dateLabel": "Tournament date"
+        "dateLabel": "Tournament date",
+        "headerBackground": {
+          "label": "Header background",
+          "other": "Other",
+          "presets": {
+            "vert": "Green",
+            "marron": "Brown",
+            "violet": "Purple",
+            "bleu": "Blue",
+            "rouge": "Red"
+          },
+          "recommended": "Recommended"
+        }
       },
       "teams": {
         "title": "Participating teams",

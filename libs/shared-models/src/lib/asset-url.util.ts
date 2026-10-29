@@ -1,3 +1,5 @@
+import { HEADER_BACKGROUND_PRESET_PREFIX } from './header-background-presets';
+
 // Team logos (feat/045) are returned by the API as a path relative to its
 // own origin (e.g. "/uploads/team-logos/x.png"), not a full URL -- the API
 // doesn't know its own public origin at request time (it's set per
@@ -14,6 +16,11 @@
 export function resolveAssetUrl(path: string | null, apiUrl: string): string | null {
   if (!path) {
     return null;
+  }
+  // Preset header backgrounds ship inside each app itself, not on the API --
+  // see header-background-presets.ts.
+  if (path.startsWith(HEADER_BACKGROUND_PRESET_PREFIX)) {
+    return path;
   }
   const origin = apiUrl.replace(/\/api\/v1\/?$/, '');
   return `${origin}${path}`;

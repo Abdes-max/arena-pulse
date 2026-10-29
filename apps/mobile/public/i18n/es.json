@@ -183,7 +183,19 @@
           "CRIMSON_CHARGE": "Tema Carmesí"
         },
         "logoLabel": "Logo del torneo",
-        "dateLabel": "Fecha del torneo"
+        "dateLabel": "Fecha del torneo",
+        "headerBackground": {
+          "label": "Fondo de la cabecera",
+          "other": "Otro",
+          "presets": {
+            "vert": "Verde",
+            "marron": "Marrón",
+            "violet": "Violeta",
+            "bleu": "Azul",
+            "rouge": "Rojo"
+          },
+          "recommended": "Recomendado"
+        }
       },
       "teams": {
         "title": "Equipos participantes",

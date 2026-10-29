@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
+import { HeaderBackgroundPreset } from 'shared-models';
 import { environment } from '../../../environments/environment';
 import {
   CreateTournamentPayload,
@@ -77,6 +78,34 @@ export class OrganizerTournamentsService {
     return firstValueFrom(
       this.http.post<OrganizerTournament>(
         `${this.base(organizationId)}/${tournamentId}/logo`,
+        formData,
+      ),
+    );
+  }
+
+  setHeaderBackgroundPreset(
+    organizationId: string,
+    tournamentId: string,
+    preset: HeaderBackgroundPreset,
+  ): Promise<OrganizerTournament> {
+    return firstValueFrom(
+      this.http.put<OrganizerTournament>(
+        `${this.base(organizationId)}/${tournamentId}/header-background/preset`,
+        { preset },
+      ),
+    );
+  }
+
+  uploadHeaderBackground(
+    organizationId: string,
+    tournamentId: string,
+    file: File,
+  ): Promise<OrganizerTournament> {
+    const formData = new FormData();
+    formData.append('headerBackground', file);
+    return firstValueFrom(
+      this.http.post<OrganizerTournament>(
+        `${this.base(organizationId)}/${tournamentId}/header-background`,
         formData,
       ),
     );

@@ -19,7 +19,16 @@ import {
 import { AssetUrlService, PublicApiService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Button, TextField } from 'design-system';
-import { PublicSport, PublicTheme, matchRoundLabel } from 'shared-models';
+import {
+  PublicSport,
+  PublicTheme,
+  matchRoundLabel,
+  RECOMMENDED_HEADER_BACKGROUND,
+  headerBackgroundPresetsFor,
+  HeaderBackgroundPreset,
+  headerBackgroundPresetOf,
+  headerBackgroundPresetUrl,
+} from 'shared-models';
 import { OrganizerAuthService } from '../../core/auth.service';
 import { IapCancelledError, IapService } from '../../core/iap.service';
 import {
@@ -153,6 +162,21 @@ export class OrganizerTournamentWizardPage {
   ];
   protected readonly logoFile = signal<File | null>(null);
 
+  // Header background: one of the ready-made presets, or "other" with an
+  // uploaded photo (premium, best-effort like the logo). headerBackgroundSaved
+  // is what the server has, so an untouched choice isn't re-sent.
+  // The selected theme's matching preset comes first, flagged "Recommandé".
+  protected readonly headerBackgroundPresets = computed(() =>
+    headerBackgroundPresetsFor(this.theme()),
+  );
+  protected readonly recommendedHeaderBackground = computed(
+    () => RECOMMENDED_HEADER_BACKGROUND[this.theme()],
+  );
+  protected readonly headerBackgroundPresetUrl = headerBackgroundPresetUrl;
+  protected readonly headerBackgroundChoice = signal<HeaderBackgroundPreset | 'other' | null>(null);
+  protected readonly headerBackgroundFile = signal<File | null>(null);
+  private headerBackgroundSaved: HeaderBackgroundPreset | 'other' | null = null;
+
   private tournamentId: string | null = null;
   // Edit mode: the end date already saved (web form only) -- pushed along
   // when the new start date would land after it.
@@ -251,6 +275,10 @@ export class OrganizerTournamentWizardPage {
         this.startDate.set(tournament.startDate.slice(0, 10));
       }
       this.loadedEndDate = tournament.endDate?.slice(0, 10) ?? null;
+      this.headerBackgroundSaved = tournament.headerBackgroundUrl
+        ? (headerBackgroundPresetOf(tournament.headerBackgroundUrl) ?? 'other')
+        : null;
+      this.headerBackgroundChoice.set(this.headerBackgroundSaved);
 
       const categories = await this.creationApi.listCategories(organizationId, tournamentId);
       const category = categories[0];
@@ -390,6 +418,33 @@ export class OrganizerTournamentWizardPage {
       this.errorMessage.set('organizer.wizard.publish.subscribeError');
     } finally {
       this.submitting.set(false);
+    }
+  }
+
+  protected onHeaderBackgroundFileSelected(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0] ?? null;
+    if (file) {
+      this.headerBackgroundFile.set(file);
+      this.headerBackgroundChoice.set('other');
+    }
+  }
+
+  /** Best-effort, same as the logo: a rejected upload (free tier) must not block the wizard. */
+  private async saveHeaderBackground(organizationId: string, tournamentId: string): Promise<void> {
+    const choice = this.headerBackgroundChoice();
+    const file = this.headerBackgroundFile();
+    try {
+      if (choice === 'other' && file) {
+        await this.tournamentsApi.uploadHeaderBackground(organizationId, tournamentId, file);
+      } else if (choice && choice !== 'other' && choice !== this.headerBackgroundSaved) {
+        await this.tournamentsApi.setHeaderBackgroundPreset(organizationId, tournamentId, choice);
+      } else {
+        return;
+      }
+      this.headerBackgroundSaved = choice;
+      this.headerBackgroundFile.set(null);
+    } catch {
+      // Intentionally swallowed -- see comment above.
     }
   }
 
@@ -655,6 +710,7 @@ export class OrganizerTournamentWizardPage {
         // Intentionally swallowed -- see comment above.
       }
     }
+    await this.saveHeaderBackground(organizationId, tournament.id);
   }
 
   /** Edit mode's Infos step -- PATCH instead of POST, no category to (re-)create, logo upload replaces the existing one (already idempotent server-side). */
@@ -689,6 +745,7 @@ export class OrganizerTournamentWizardPage {
         // Best-effort, same reasoning as the create-mode path above.
       }
     }
+    await this.saveHeaderBackground(organizationId, tournamentId);
   }
 
   private async submitTeams(): Promise<void> {
