@@ -304,6 +304,7 @@
       }
     },
     "submenu": {
+      "review": "Review & publish",
       "general": "Geral",
       "teams": "Equipas",
       "referees": "Árbitros",
@@ -456,6 +457,50 @@
       "deleteConfirm": "Confirmar exclusão",
       "deleting": "Excluindo…",
       "errorGeneric": "Ocorreu um erro, tente novamente."
+    },
+    "review": {
+      "loading": "Loading…",
+      "title": "Review my schedule",
+      "intro": "Check the teams and times before sharing the link.",
+      "stats": {
+        "teams": "Teams",
+        "placed": "Matches placed",
+        "fields": "Fields",
+        "end": "Schedule ends"
+      },
+      "teams": {
+        "title": "Your teams",
+        "placeholderWarning": "{{count}} team name(s) still to confirm.",
+        "nameAria": "Team name",
+        "pasteSummary": "Paste a list of names",
+        "pastePlaceholder": "One club per line (or comma separated)",
+        "pasteApply": "Fill the teams to confirm",
+        "save": "Save names",
+        "saved": "Names saved"
+      },
+      "schedule": {
+        "title": "The times",
+        "summary": "{{rotations}} rotations, from {{start}} to {{end}}.",
+        "edit": "Adjust the calendar",
+        "time": "Time",
+        "empty": "No match is scheduled yet."
+      },
+      "publish": {
+        "title": "When you are ready",
+        "placeholderNotice": "Placeholder names still present will be visible to the public.",
+        "verified": "I checked the teams, times and date.",
+        "button": "Make my tournament public",
+        "later": "I will finish later",
+        "saveFirst": "Save the edited names first.",
+        "done": "Your tournament is public.",
+        "openPublic": "Open the public page",
+        "openTv": "Open the TV screen"
+      },
+      "errors": {
+        "load": "Could not load the tournament.",
+        "saveNames": "Could not save the names.",
+        "duplicateName": "Two teams cannot have the same name."
+      }
     },
     "quickPlateau": {
       "back": "My tournaments",

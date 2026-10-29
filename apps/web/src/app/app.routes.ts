@@ -219,6 +219,11 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'tournaments/:tournamentId/review',
+        loadComponent: () =>
+          import('./admin/pages/review/tournament-review.page').then((m) => m.TournamentReviewPage),
+      },
+      {
         path: 'tournaments/:tournamentId/publish/success',
         loadComponent: () =>
           import('./admin/pages/tournaments/tournament-publish-success.page').then(
