@@ -219,6 +219,11 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'tournaments/:tournamentId/review',
+        loadComponent: () =>
+          import('./admin/pages/review/tournament-review.page').then((m) => m.TournamentReviewPage),
+      },
+      {
         path: 'tournaments/:tournamentId/publish/success',
         loadComponent: () =>
           import('./admin/pages/tournaments/tournament-publish-success.page').then(
@@ -250,6 +255,11 @@ export const routes: Routes = [
           ),
       },
     ],
+  },
+  {
+    // Before ':slug' so it renders full screen, outside TournamentShell.
+    path: ':slug/tv',
+    loadComponent: () => import('./pages/tv/tv.page').then((m) => m.TvPage),
   },
   {
     path: ':slug',

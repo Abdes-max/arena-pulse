@@ -1798,6 +1798,28 @@ describe('TournamentsService', () => {
     });
   });
 
+  describe('list', () => {
+    it('adds the first venue name for the admin list, null without venue', async () => {
+      prisma.tournament.findMany.mockResolvedValue([
+        tournamentFixture({
+          id: 't-1',
+          venues: [{ name: 'Stade Marius Réquier' }],
+        }),
+        tournamentFixture({ id: 't-2', venues: [] }),
+      ]);
+
+      const result = await service.list('org-1');
+
+      expect(result).toEqual([
+        expect.objectContaining({
+          id: 't-1',
+          venueName: 'Stade Marius Réquier',
+        }),
+        expect.objectContaining({ id: 't-2', venueName: null }),
+      ]);
+    });
+  });
+
   describe('listPublished', () => {
     it('filters on PUBLISHED status and returns a card-ready shape', async () => {
       prisma.tournament.findMany.mockResolvedValue([

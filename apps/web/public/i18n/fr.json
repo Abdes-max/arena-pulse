@@ -288,6 +288,16 @@
     "loadMore": "Charger plus",
     "loading": "Chargement…"
   },
+  "tv": {
+    "current": "En cours",
+    "next": "À suivre",
+    "finished": "Tous les matchs sont terminés. Merci à tous !",
+    "team": "Équipe",
+    "played": "J",
+    "diff": "+/-",
+    "points": "Pts",
+    "followLive": "Résultats en direct sur"
+  },
   "shell": {
     "loading": "Chargement…",
     "error": {
@@ -406,6 +416,7 @@
       }
     },
     "submenu": {
+      "review": "Vérifier & publier",
       "general": "Général",
       "teams": "Équipes",
       "referees": "Arbitres",
@@ -558,6 +569,50 @@
       "deleteConfirm": "Confirmer la suppression",
       "deleting": "Suppression…",
       "errorGeneric": "Une erreur est survenue, réessayez."
+    },
+    "review": {
+      "loading": "Chargement…",
+      "title": "Vérifier mon programme",
+      "intro": "Relisez les équipes et les horaires avant de partager le lien.",
+      "stats": {
+        "teams": "Équipes",
+        "placed": "Matchs placés",
+        "fields": "Terrains",
+        "end": "Fin du programme"
+      },
+      "teams": {
+        "title": "Vos équipes",
+        "placeholderWarning": "{{count}} nom(s) d’équipe restent à confirmer.",
+        "nameAria": "Nom de l’équipe",
+        "pasteSummary": "Coller une liste de noms",
+        "pastePlaceholder": "Un club par ligne (ou séparés par des virgules)",
+        "pasteApply": "Remplir les équipes à confirmer",
+        "save": "Enregistrer les noms",
+        "saved": "Noms enregistrés"
+      },
+      "schedule": {
+        "title": "Les horaires",
+        "summary": "{{rotations}} rotations, de {{start}} à {{end}}.",
+        "edit": "Ajuster le calendrier",
+        "time": "Horaire",
+        "empty": "Aucun match n’est encore planifié."
+      },
+      "publish": {
+        "title": "Quand vous êtes prêt",
+        "placeholderNotice": "Les noms provisoires encore présents seront visibles par le public.",
+        "verified": "J’ai vérifié les équipes, les horaires et la date.",
+        "button": "Rendre mon tournoi public",
+        "later": "Je terminerai plus tard",
+        "saveFirst": "Enregistrez d’abord les noms modifiés.",
+        "done": "Votre tournoi est public.",
+        "openPublic": "Ouvrir la page publique",
+        "openTv": "Ouvrir le diaporama"
+      },
+      "errors": {
+        "load": "Impossible de charger le tournoi.",
+        "saveNames": "Impossible d’enregistrer les noms.",
+        "duplicateName": "Deux équipes ne peuvent pas porter le même nom."
+      }
     },
     "quickPlateau": {
       "back": "Mes tournois",

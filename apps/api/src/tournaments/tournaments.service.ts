@@ -119,10 +119,22 @@ export class TournamentsService {
     const status = this.parseStatusFilter(statusFilter);
     const tournaments = await this.prisma.tournament.findMany({
       where: { organizationId, ...(status ? { status } : {}) },
-      include: { sport: true },
+      include: {
+        sport: true,
+        venues: {
+          select: { name: true },
+          orderBy: { position: 'asc' },
+          take: 1,
+        },
+      },
       orderBy: { createdAt: 'desc' },
     });
-    return tournaments.map((tournament) => this.toSummary(tournament));
+    // venueName: shown in small under each name in the admin list, next to
+    // the dates, so tournaments with similar names can be told apart.
+    return tournaments.map((tournament) => ({
+      ...this.toSummary(tournament),
+      venueName: tournament.venues[0]?.name ?? null,
+    }));
   }
 
   async getDetail(organizationId: string, tournamentId: string) {

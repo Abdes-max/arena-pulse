@@ -157,3 +157,23 @@
   flex-wrap: wrap;
   gap: var(--ap-space-2);
 }
+
+.tournament-list-page__name {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+// Small date · venue line under each name.
+.tournament-list-page__meta {
+  color: var(--ap-color-muted);
+  font-size: 0.78rem;
+}
+
+@media (max-width: 768px) {
+  .tournament-list-page__name {
+    align-items: flex-end;
+    text-align: right;
+  }
+}

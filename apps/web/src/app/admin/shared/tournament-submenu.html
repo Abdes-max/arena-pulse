@@ -58,6 +58,13 @@
     >
       {{ 'admin.submenu.standings' | transloco }}
     </a>
+    <a
+      [routerLink]="['/admin/tournaments', tournamentId(), 'review']"
+      routerLinkActive="tournament-submenu__link--active"
+      (click)="centerTab($event)"
+    >
+      {{ 'admin.submenu.review' | transloco }}
+    </a>
   </nav>
 
   <div class="tournament-submenu__share">

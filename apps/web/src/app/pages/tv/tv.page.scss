@@ -1,0 +1,166 @@
+// Always dark, whatever the viewer's color scheme: it's meant for a TV in a
+// clubhouse, read from across the room.
+.tv {
+  min-height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 2vh;
+  padding: 3vh 3vw;
+  background: #0d1117;
+  color: #f5f7fa;
+  font-family: var(--ap-font-body);
+  font-size: clamp(16px, 1.6vw, 40px);
+}
+
+.tv__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2vw;
+
+  h1 {
+    margin: 0;
+    font-size: 2.2em;
+  }
+}
+
+.tv__clock {
+  font-size: 2em;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.8;
+}
+
+.tv__body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  gap: 3vw;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.tv__rotation {
+  margin-bottom: 3vh;
+  padding: 2vh 2vw;
+  border-radius: 16px;
+  background: #161b22;
+
+  h2 {
+    margin: 0 0 1.5vh;
+    font-size: 1.1em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.75;
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+}
+
+.tv__rotation--current {
+  outline: 3px solid #f2c94c;
+
+  h2 {
+    color: #f2c94c;
+    opacity: 1;
+  }
+}
+
+.tv__time {
+  margin-left: 0.5em;
+  font-variant-numeric: tabular-nums;
+}
+
+.tv__match {
+  display: grid;
+  grid-template-columns: 7em 1fr auto 1fr;
+  align-items: center;
+  gap: 1vw;
+  padding: 1vh 0;
+  border-bottom: 1px solid #30363d;
+  font-size: 1.3em;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.tv__match--live .tv__score {
+  color: #f2c94c;
+}
+
+.tv__field {
+  font-size: 0.7em;
+  opacity: 0.7;
+}
+
+.tv__team {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tv__team--home {
+  text-align: right;
+}
+
+.tv__score {
+  min-width: 4em;
+  text-align: center;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.tv__standings {
+  article {
+    margin-bottom: 3vh;
+  }
+
+  h2 {
+    margin: 0 0 1vh;
+    font-size: 1.1em;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    padding: 0.6vh 0.6vw;
+    border-bottom: 1px solid #30363d;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  th {
+    font-size: 0.75em;
+    opacity: 0.7;
+  }
+}
+
+.tv__standing-team {
+  text-align: left !important;
+}
+
+.tv__points {
+  font-weight: 700;
+}
+
+.tv__empty {
+  font-size: 1.4em;
+  opacity: 0.8;
+}
+
+.tv__footer {
+  font-size: 0.9em;
+  opacity: 0.7;
+  text-align: center;
+}

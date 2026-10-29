@@ -1,0 +1,186 @@
+<main class="review-page">
+  @if (loading() && !tournament()) {
+    <p>{{ 'admin.review.loading' | transloco }}</p>
+  } @else {
+    <h1>{{ 'admin.review.title' | transloco }}</h1>
+    <p class="review-page__intro">{{ 'admin.review.intro' | transloco }}</p>
+
+    @if (errorMessage(); as message) {
+      <p class="review-page__error" role="alert">{{ message | transloco }}</p>
+    }
+
+    <dl class="review-page__stats">
+      <div>
+        <dt>{{ 'admin.review.stats.teams' | transloco }}</dt>
+        <dd>{{ teams().length }}</dd>
+      </div>
+      <div>
+        <dt>{{ 'admin.review.stats.placed' | transloco }}</dt>
+        <dd>{{ summary().placedCount }} / {{ summary().matchCount }}</dd>
+      </div>
+      <div>
+        <dt>{{ 'admin.review.stats.fields' | transloco }}</dt>
+        <dd>{{ fields().length }}</dd>
+      </div>
+      <div>
+        <dt>{{ 'admin.review.stats.end' | transloco }}</dt>
+        <dd>{{ formatClock(summary().end) }}</dd>
+      </div>
+    </dl>
+
+    <section class="review-page__section">
+      <h2>
+        <span class="review-page__step">01</span>
+        {{ 'admin.review.teams.title' | transloco }}
+      </h2>
+      @if (placeholderCount() > 0) {
+        <p class="review-page__warning">
+          {{ 'admin.review.teams.placeholderWarning' | transloco: { count: placeholderCount() } }}
+        </p>
+      }
+      <ol class="review-page__teams">
+        @for (team of teams(); track team.id; let i = $index) {
+          <li class="review-page__team">
+            <span class="review-page__team-number" aria-hidden="true">{{ i + 1 }}</span>
+            <div class="review-page__team-field">
+              <input
+                type="text"
+                [class.review-page__team-input--placeholder]="isPlaceholder(team)"
+                [value]="nameOf(team)"
+                [attr.aria-label]="'admin.review.teams.nameAria' | transloco"
+                (input)="onNameInput(team, $event)"
+              />
+              @if (team.groupName) {
+                <span class="review-page__group">{{ team.groupName }}</span>
+              }
+            </div>
+          </li>
+        }
+      </ol>
+      <details class="review-page__paste">
+        <summary>{{ 'admin.review.teams.pasteSummary' | transloco }}</summary>
+        <textarea
+          rows="5"
+          [value]="pasted()"
+          [placeholder]="'admin.review.teams.pastePlaceholder' | transloco"
+          (input)="onPasteInput($event)"
+        ></textarea>
+        <ap-button type="button" variant="ghost" (click)="applyPasted()">
+          {{ 'admin.review.teams.pasteApply' | transloco }}
+        </ap-button>
+      </details>
+      <div class="review-page__actions">
+        <ap-button type="button" [disabled]="!hasDraft() || savingNames()" (click)="saveNames()">
+          {{ 'admin.review.teams.save' | transloco }}
+        </ap-button>
+        @if (namesSaved()) {
+          <span class="review-page__ok">{{ 'admin.review.teams.saved' | transloco }}</span>
+        }
+      </div>
+    </section>
+
+    <section class="review-page__section">
+      <h2>
+        <span class="review-page__step">02</span>
+        {{ 'admin.review.schedule.title' | transloco }}
+      </h2>
+      <div class="review-page__summary-row">
+        <p>
+          {{
+            'admin.review.schedule.summary'
+              | transloco
+                : {
+                    rotations: summary().rotationCount,
+                    start: formatClock(summary().start),
+                    end: formatClock(summary().end),
+                  }
+          }}
+        </p>
+        <ap-button
+          variant="secondary"
+          size="sm"
+          [routerLink]="['/admin/tournaments', tournamentId, 'schedule']"
+        >
+          {{ 'admin.review.schedule.edit' | transloco }}
+        </ap-button>
+      </div>
+      @if (rows().length > 0) {
+        <div class="review-page__table-wrap">
+          <table class="review-page__table">
+            <thead>
+              <tr>
+                <th scope="col">{{ 'admin.review.schedule.time' | transloco }}</th>
+                @for (field of fields(); track field.id) {
+                  <th scope="col">{{ field.name }}</th>
+                }
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of rows(); track row.startTime) {
+                <tr>
+                  <th scope="row">{{ formatClock(row.startTime) }}</th>
+                  @for (match of row.cells; track $index) {
+                    <td>
+                      @if (match) {
+                        <span>{{ teamLabel(match.homeTeam, match.homeSourceLabel) }}</span>
+                        <span class="review-page__vs">–</span>
+                        <span>{{ teamLabel(match.awayTeam, match.awaySourceLabel) }}</span>
+                      }
+                    </td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <p class="review-page__warning">{{ 'admin.review.schedule.empty' | transloco }}</p>
+      }
+    </section>
+
+    <section class="review-page__section">
+      <h2>
+        <span class="review-page__step">03</span>
+        {{ 'admin.review.publish.title' | transloco }}
+      </h2>
+      @if (published()) {
+        <p class="review-page__ok">{{ 'admin.review.publish.done' | transloco }}</p>
+        @if (publicPath(); as path) {
+          <div class="review-page__actions">
+            <ap-button variant="secondary" [href]="path" target="_blank">
+              {{ 'admin.review.publish.openPublic' | transloco }}
+            </ap-button>
+            <ap-button variant="secondary" [href]="path + '/tv'" target="_blank">
+              {{ 'admin.review.publish.openTv' | transloco }}
+            </ap-button>
+          </div>
+        }
+      } @else {
+        @if (placeholderCount() > 0) {
+          <p class="review-page__warning">
+            {{ 'admin.review.publish.placeholderNotice' | transloco }}
+          </p>
+        }
+        <label class="review-page__checkbox">
+          <input type="checkbox" [checked]="verified()" (change)="toggleVerified($event)" />
+          {{ 'admin.review.publish.verified' | transloco }}
+        </label>
+        <div class="review-page__actions">
+          <ap-button
+            type="button"
+            [disabled]="!verified() || hasDraft() || publishing()"
+            (click)="publish()"
+          >
+            {{ 'admin.review.publish.button' | transloco }}
+          </ap-button>
+          <ap-button variant="ghost" [routerLink]="['/admin/tournaments']">
+            {{ 'admin.review.publish.later' | transloco }}
+          </ap-button>
+        </div>
+        @if (hasDraft()) {
+          <p class="review-page__hint">{{ 'admin.review.publish.saveFirst' | transloco }}</p>
+        }
+      }
+    </section>
+  }
+</main>
