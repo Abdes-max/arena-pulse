@@ -1077,10 +1077,16 @@
         "reset": "Vider le calendrier",
         "knockoutHint": "Génère d'un coup tous les tableaux à élimination directe (s'il y en a plusieurs, ils partagent les mêmes terrains à la suite) et réserve un créneau pour tous les tours (quarts, demis, finale…). Seul le 1er tour de chaque tableau a des adversaires connus dès maintenant ; les tours suivants s'y placeront automatiquement dès que les scores précédents seront validés."
       },
+      "shift": {
+        "label": "Décaler les matchs à venir",
+        "earlier": "−5 min",
+        "later": "+5 min"
+      },
       "editor": {
         "title": "Éditeur du calendrier",
         "empty": "Aucun match généré pour cette phase.",
         "dragHint": "Glissez-déposez un match vers un créneau libre pour le replanifier, ou vers « Non planifiés » pour le retirer du calendrier.",
+        "summary": "{{matches}} matchs · {{rotations}} rotations · {{start}} → {{end}}",
         "selectMatchAria": "Sélectionner ce match pour le replanifier",
         "removeOfficialAria": "Retirer cet officiel",
         "addRefereeLabel": "Ajouter un arbitre",
@@ -1105,9 +1111,11 @@
         "loadMatches": "Impossible de charger le calendrier.",
         "selectFieldForSchedule": "Sélectionnez au moins un terrain avant de générer le calendrier.",
         "enterStartDateForSchedule": "Renseignez une date de début avant de générer le calendrier.",
-      "startDateOutsideTournamentRange": "La date choisie doit être comprise dans la plage de dates du tournoi (onglet Général).",
+        "startDateOutsideTournamentRange": "La date choisie doit être comprise dans la plage de dates du tournoi (onglet Général).",
         "noMatchesGenerated": "Aucun match n'a pu être généré : assignez au moins deux équipes à chaque poule de cette phase sur la page Structure, puis réessayez.",
-        "matchesAlreadyExist": "Des matchs existent déjà pour cette phase. Videz le calendrier avant d’en générer un nouveau.",
+        "matchesAlreadyExist": "Des matchs de cette phase ont déjà commencé. Videz le calendrier avant d’en générer un nouveau.",
+        "shiftConflict": "Ce décalage ferait chevaucher un autre créneau sur un terrain.",
+        "shiftGeneric": "Impossible de décaler le calendrier.",
         "generateScheduleGeneric": "Impossible de générer le calendrier.",
         "selectFieldForBrackets": "Sélectionnez au moins un terrain avant de générer les tableaux.",
         "enterBreakAfterPools": "Renseignez le temps de pause après les poules.",

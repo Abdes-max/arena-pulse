@@ -975,10 +975,16 @@
         "reset": "Spielplan leeren",
         "knockoutHint": "Erstellt alle K.-o.-Turnierbäume auf einmal (bei mehreren teilen sie sich nacheinander dieselben Felder) und reserviert einen Slot für jede Runde (Viertelfinale, Halbfinale, Finale…). Nur die 1. Runde jedes Turnierbaums hat von Anfang an bekannte Gegner; spätere Runden füllen sich automatisch, sobald die vorherigen Ergebnisse bestätigt sind."
       },
+      "shift": {
+        "label": "Kommende Spiele verschieben",
+        "earlier": "−5 Min.",
+        "later": "+5 Min."
+      },
       "editor": {
         "title": "Spielplan-Editor",
         "empty": "Für diese Phase wurden keine Spiele erstellt.",
         "dragHint": "Ziehen Sie ein Spiel per Drag-and-drop auf einen freien Slot, um es umzuplanen, oder auf „Nicht geplant“, um es aus dem Spielplan zu entfernen.",
+        "summary": "{{matches}} Spiele · {{rotations}} Runden · {{start}} → {{end}}",
         "selectMatchAria": "Dieses Spiel zum Umplanen auswählen",
         "removeOfficialAria": "Diesen Offiziellen entfernen",
         "addRefereeLabel": "Schiedsrichter hinzufügen",
@@ -1003,9 +1009,11 @@
         "loadMatches": "Der Spielplan konnte nicht geladen werden.",
         "selectFieldForSchedule": "Wählen Sie mindestens ein Feld, bevor Sie den Spielplan erstellen.",
         "enterStartDateForSchedule": "Geben Sie ein Startdatum ein, bevor Sie den Spielplan erstellen.",
-      "startDateOutsideTournamentRange": "Das gewählte Datum muss im Datumsbereich des Turniers liegen (Registerkarte Allgemein).",
+        "startDateOutsideTournamentRange": "Das gewählte Datum muss im Datumsbereich des Turniers liegen (Registerkarte Allgemein).",
         "noMatchesGenerated": "Es konnte kein Spiel erstellt werden: Weisen Sie jeder Gruppe dieser Phase auf der Strukturseite mindestens zwei Teams zu und versuchen Sie es erneut.",
-        "matchesAlreadyExist": "Für diese Phase existieren bereits Spiele. Leeren Sie den Spielplan, bevor Sie einen neuen erstellen.",
+        "matchesAlreadyExist": "Einige Spiele dieser Phase haben bereits begonnen. Leeren Sie den Spielplan, bevor Sie einen neuen erstellen.",
+        "shiftConflict": "Diese Verschiebung würde sich mit einem anderen Zeitfenster auf einem Platz überschneiden.",
+        "shiftGeneric": "Der Spielplan konnte nicht verschoben werden.",
         "generateScheduleGeneric": "Der Spielplan konnte nicht erstellt werden.",
         "selectFieldForBrackets": "Wählen Sie mindestens ein Feld, bevor Sie die Turnierbäume erstellen.",
         "enterBreakAfterPools": "Geben Sie die Pausenzeit nach den Gruppen ein.",

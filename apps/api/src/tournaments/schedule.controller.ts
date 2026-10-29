@@ -15,6 +15,7 @@ import { RequireOrgRole } from '../organizations/decorators/require-org-role.dec
 import { OrganizationRoleGuard } from '../organizations/guards/organization-role.guard';
 import { RequireTournamentPermission } from './decorators/require-tournament-permission.decorator';
 import { GenerateScheduleDto } from './dto/generate-schedule.dto';
+import { ShiftScheduleDto } from './dto/shift-schedule.dto';
 import { TournamentPermissionGuard } from './guards/tournament-permission.guard';
 import { ScheduleGenerationService } from './schedule-generation.service';
 
@@ -56,6 +57,23 @@ export class ScheduleController {
       organizationId,
       tournamentId,
       phaseId,
+    );
+  }
+
+  @RequireOrgRole(OrganizationRole.ORG_MEMBER)
+  @RequireTournamentPermission('MANAGE_SCHEDULE')
+  @Post('phases/:phaseId/schedule/shift')
+  shift(
+    @Param('organizationId') organizationId: string,
+    @Param('tournamentId') tournamentId: string,
+    @Param('phaseId') phaseId: string,
+    @Body() dto: ShiftScheduleDto,
+  ) {
+    return this.scheduleGenerationService.shift(
+      organizationId,
+      tournamentId,
+      phaseId,
+      dto,
     );
   }
 

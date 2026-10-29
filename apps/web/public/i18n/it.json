@@ -975,10 +975,16 @@
         "reset": "Svuota il calendario",
         "knockoutHint": "Genera in una volta tutti i tabelloni a eliminazione diretta (se sono più di uno, condividono gli stessi campi in sequenza) e riserva uno slot per ogni turno (quarti, semifinali, finale…). Solo il 1° turno di ogni tabellone ha avversari noti fin da subito; i turni successivi si completeranno automaticamente non appena i risultati precedenti saranno convalidati."
       },
+      "shift": {
+        "label": "Sposta le prossime partite",
+        "earlier": "−5 min",
+        "later": "+5 min"
+      },
       "editor": {
         "title": "Editor del calendario",
         "empty": "Nessuna partita generata per questa fase.",
         "dragHint": "Trascina una partita su uno slot libero per riprogrammarla, oppure su «Non programmate» per rimuoverla dal calendario.",
+        "summary": "{{matches}} partite · {{rotations}} rotazioni · {{start}} → {{end}}",
         "selectMatchAria": "Seleziona questa partita per riprogrammarla",
         "removeOfficialAria": "Rimuovi questo ufficiale di gara",
         "addRefereeLabel": "Aggiungi un arbitro",
@@ -1003,9 +1009,11 @@
         "loadMatches": "Impossibile caricare il calendario.",
         "selectFieldForSchedule": "Seleziona almeno un campo prima di generare il calendario.",
         "enterStartDateForSchedule": "Inserisci una data di inizio prima di generare il calendario.",
-      "startDateOutsideTournamentRange": "La data scelta deve rientrare nell'intervallo di date del torneo (scheda Generale).",
+        "startDateOutsideTournamentRange": "La data scelta deve rientrare nell'intervallo di date del torneo (scheda Generale).",
         "noMatchesGenerated": "Non è stato possibile generare alcuna partita: assegna almeno due squadre a ciascun girone di questa fase nella pagina Struttura, quindi riprova.",
-        "matchesAlreadyExist": "Esistono già partite per questa fase. Svuota il calendario prima di generarne uno nuovo.",
+        "matchesAlreadyExist": "Alcune partite di questa fase sono già iniziate. Svuota il calendario prima di generarne uno nuovo.",
+        "shiftConflict": "Questo spostamento si sovrapporrebbe a un altro slot su un campo.",
+        "shiftGeneric": "Impossibile spostare il calendario.",
         "generateScheduleGeneric": "Impossibile generare il calendario.",
         "selectFieldForBrackets": "Seleziona almeno un campo prima di generare i tabelloni.",
         "enterBreakAfterPools": "Inserisci il tempo di pausa dopo i gironi.",

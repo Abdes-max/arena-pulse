@@ -310,3 +310,15 @@
     padding: var(--ap-space-1);
   }
 }
+
+.schedule-page__shift {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ap-space-2);
+  margin-block: var(--ap-space-3);
+}
+
+.schedule-page__summary {
+  font-weight: 600;
+}

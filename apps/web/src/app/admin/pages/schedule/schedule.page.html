@@ -119,9 +119,47 @@
           @if (matches().length === 0) {
             <p>{{ 'admin.schedule.editor.empty' | transloco }}</p>
           } @else {
+            @if (summary(); as s) {
+              <p class="schedule-page__summary">
+                {{
+                  'admin.schedule.editor.summary'
+                    | transloco
+                      : {
+                          matches: s.matchCount,
+                          rotations: s.rotationCount,
+                          start: formatClock(s.start),
+                          end: formatClock(s.end),
+                        }
+                }}
+              </p>
+            }
             <p class="schedule-page__hint">
               {{ 'admin.schedule.editor.dragHint' | transloco }}
             </p>
+
+            <div
+              class="schedule-page__shift"
+              role="group"
+              [attr.aria-label]="'admin.schedule.shift.label' | transloco"
+            >
+              <span>{{ 'admin.schedule.shift.label' | transloco }}</span>
+              <ap-button
+                type="button"
+                variant="ghost"
+                [disabled]="shifting()"
+                (click)="shiftSchedule(-5)"
+              >
+                {{ 'admin.schedule.shift.earlier' | transloco }}
+              </ap-button>
+              <ap-button
+                type="button"
+                variant="ghost"
+                [disabled]="shifting()"
+                (click)="shiftSchedule(5)"
+              >
+                {{ 'admin.schedule.shift.later' | transloco }}
+              </ap-button>
+            </div>
 
             <ng-template
               #matchCard

@@ -3,12 +3,19 @@ import {
   ConflictException,
   Injectable,
 } from '@nestjs/common';
-import { CompetitionPhaseType, Match } from '../../generated/prisma/client';
+import {
+  CompetitionPhaseType,
+  Match,
+  MatchStatus,
+} from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { GenerateScheduleDto } from './dto/generate-schedule.dto';
+import { ShiftScheduleDto } from './dto/shift-schedule.dto';
 import { MATCH_INCLUDE, toMatchSummary } from './match-summary.util';
 import { PhasesService } from './phases.service';
+import { assignRotations } from './rotation-scheduling.util';
 import { generateRoundRobinFixtures } from './round-robin.util';
+import { timeRangesOverlap } from './time-overlap.util';
 import { TournamentsService } from './tournaments.service';
 
 interface FlatFixture {
@@ -49,15 +56,19 @@ export class ScheduleGenerationService {
         'Le calendrier ne peut être généré que pour une phase de poules.',
       );
     }
-    // Generating again without resetting first used to silently create a
-    // second, fully duplicate set of matches on top of the existing ones --
-    // reject outright instead, and point at the explicit reset endpoint.
-    const existingMatchCount = await this.prisma.match.count({
+    // Generating again replaces the previous calendar (in the same
+    // transaction as the new one, below) as long as nothing has been played
+    // yet -- once a match has left SCHEDULED its score/status would be lost,
+    // so that case still has to go through an explicit reset.
+    const existingMatches = await this.prisma.match.findMany({
       where: { group: { phaseId } },
+      select: { id: true, timeSlotId: true, status: true },
     });
-    if (existingMatchCount > 0) {
+    if (
+      existingMatches.some((match) => match.status !== MatchStatus.SCHEDULED)
+    ) {
       throw new ConflictException(
-        'Des matchs existent déjà pour cette phase. Videz le calendrier avant d’en générer un nouveau.',
+        'Des matchs de cette phase ont déjà commencé. Videz le calendrier avant d’en générer un nouveau.',
       );
     }
     await this.assertFieldsBelongToTournament(tournamentId, dto.fieldIds);
@@ -105,23 +116,36 @@ export class ScheduleGenerationService {
       tournament.teamsCanReferee,
     );
 
-    const fieldCursors = new Map<string, Date>(
-      dto.fieldIds.map((fieldId) => [fieldId, new Date(dto.startDateTime)]),
-    );
+    const startMs = new Date(dto.startDateTime).getTime();
     const slotDurationMs =
       (matchDurationMinutes + breakDurationMinutes) * 60_000;
+    const rotationSlots = assignRotations(fixtures, dto.fieldIds.length);
 
     const createdMatches = await this.prisma.$transaction(async (tx) => {
+      if (existingMatches.length > 0) {
+        const existingIds = existingMatches.map((match) => match.id);
+        await tx.matchOfficial.deleteMany({
+          where: { matchId: { in: existingIds } },
+        });
+        await tx.match.deleteMany({ where: { id: { in: existingIds } } });
+        await tx.timeSlot.deleteMany({
+          where: {
+            id: {
+              in: existingMatches
+                .map((match) => match.timeSlotId)
+                .filter((id): id is string => id !== null),
+            },
+          },
+        });
+      }
+
       const created: Match[] = [];
-      for (const [index, fixture] of fixtures.entries()) {
-        const fieldId = dto.fieldIds[index % dto.fieldIds.length];
-        const startTime = fieldCursors.get(fieldId)!;
+      for (const [index, slot] of rotationSlots.entries()) {
+        const { fixture } = slot;
+        const fieldId = dto.fieldIds[slot.fieldIndex];
+        const startTime = new Date(startMs + slot.rotation * slotDurationMs);
         const endTime = new Date(
           startTime.getTime() + matchDurationMinutes * 60_000,
-        );
-        fieldCursors.set(
-          fieldId,
-          new Date(startTime.getTime() + slotDurationMs),
         );
 
         const timeSlot = await tx.timeSlot.create({
@@ -195,6 +219,84 @@ export class ScheduleGenerationService {
       this.prisma.match.deleteMany({ where: phaseMatchFilter }),
       this.prisma.timeSlot.deleteMany({ where: { id: { in: timeSlotIds } } }),
     ]);
+  }
+
+  /**
+   * Moves every not-yet-played match of the phase by the same number of
+   * minutes (the "on a 10 minutes de retard" button), keeping their relative
+   * order and fields. Rejected if a moved slot would overlap a slot this
+   * shift doesn't move on the same field.
+   */
+  async shift(
+    organizationId: string,
+    tournamentId: string,
+    phaseId: string,
+    dto: ShiftScheduleDto,
+  ) {
+    await this.tournamentsService.assertTournamentIsEditable(
+      organizationId,
+      tournamentId,
+    );
+    await this.phasesService.assertPhaseExists(tournamentId, phaseId);
+
+    const matches = await this.prisma.match.findMany({
+      where: {
+        OR: [{ group: { phaseId } }, { knockoutBracket: { phaseId } }],
+        status: MatchStatus.SCHEDULED,
+        timeSlotId: { not: null },
+      },
+      include: { timeSlot: true },
+    });
+    const slots = matches
+      .map((match) => match.timeSlot)
+      .filter((slot): slot is NonNullable<typeof slot> => slot !== null);
+    if (slots.length === 0) {
+      throw new BadRequestException(
+        'Aucun match à venir à décaler dans cette phase.',
+      );
+    }
+
+    const offsetMs = dto.minutes * 60_000;
+    const moved = slots.map((slot) => ({
+      id: slot.id,
+      fieldId: slot.fieldId,
+      startTime: new Date(slot.startTime.getTime() + offsetMs),
+      endTime: new Date(slot.endTime.getTime() + offsetMs),
+    }));
+
+    const others = await this.prisma.timeSlot.findMany({
+      where: {
+        fieldId: { in: [...new Set(moved.map((slot) => slot.fieldId))] },
+        id: { notIn: moved.map((slot) => slot.id) },
+      },
+    });
+    const clash = moved.some((slot) =>
+      others.some(
+        (other) =>
+          other.fieldId === slot.fieldId &&
+          timeRangesOverlap(
+            slot.startTime,
+            slot.endTime,
+            other.startTime,
+            other.endTime,
+          ),
+      ),
+    );
+    if (clash) {
+      throw new ConflictException(
+        'Ce décalage ferait chevaucher un autre créneau sur un terrain.',
+      );
+    }
+
+    await this.prisma.$transaction(
+      moved.map((slot) =>
+        this.prisma.timeSlot.update({
+          where: { id: slot.id },
+          data: { startTime: slot.startTime, endTime: slot.endTime },
+        }),
+      ),
+    );
+    return this.list(organizationId, tournamentId, phaseId);
   }
 
   async list(organizationId: string, tournamentId: string, phaseId: string) {

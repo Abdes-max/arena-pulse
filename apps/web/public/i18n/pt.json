@@ -975,10 +975,16 @@
         "reset": "Esvaziar o calendário",
         "knockoutHint": "Gera de uma vez todos os quadros de eliminação direta (se houver vários, partilham os mesmos campos em sequência) e reserva um horário para cada ronda (quartos, meias, final…). Apenas a 1.ª ronda de cada quadro tem adversários conhecidos desde já; as rondas seguintes preenchem-se automaticamente assim que os resultados anteriores forem validados."
       },
+      "shift": {
+        "label": "Deslocar os próximos jogos",
+        "earlier": "−5 min",
+        "later": "+5 min"
+      },
       "editor": {
         "title": "Editor do calendário",
         "empty": "Nenhum jogo gerado para esta fase.",
         "dragHint": "Arraste um jogo para um horário livre para o reagendar, ou para «Não agendados» para o remover do calendário.",
+        "summary": "{{matches}} jogos · {{rotations}} rotações · {{start}} → {{end}}",
         "selectMatchAria": "Selecionar este jogo para o reagendar",
         "removeOfficialAria": "Remover este oficial",
         "addRefereeLabel": "Adicionar um árbitro",
@@ -1003,9 +1009,11 @@
         "loadMatches": "Não foi possível carregar o calendário.",
         "selectFieldForSchedule": "Selecione pelo menos um campo antes de gerar o calendário.",
         "enterStartDateForSchedule": "Indique uma data de início antes de gerar o calendário.",
-      "startDateOutsideTournamentRange": "A data escolhida deve estar dentro do intervalo de datas do torneio (separador Geral).",
+        "startDateOutsideTournamentRange": "A data escolhida deve estar dentro do intervalo de datas do torneio (separador Geral).",
         "noMatchesGenerated": "Não foi possível gerar nenhum jogo: atribua pelo menos duas equipas a cada grupo desta fase na página Estrutura e tente novamente.",
-        "matchesAlreadyExist": "Já existem jogos para esta fase. Esvazie o calendário antes de gerar um novo.",
+        "matchesAlreadyExist": "Alguns jogos desta fase já começaram. Esvazie o calendário antes de gerar um novo.",
+        "shiftConflict": "Este deslocamento sobreporia outro horário num campo.",
+        "shiftGeneric": "Não foi possível deslocar o calendário.",
         "generateScheduleGeneric": "Não foi possível gerar o calendário.",
         "selectFieldForBrackets": "Selecione pelo menos um campo antes de gerar os quadros.",
         "enterBreakAfterPools": "Indique o tempo de pausa após os grupos.",

@@ -1077,10 +1077,16 @@
         "reset": "Clear the schedule",
         "knockoutHint": "Generates all knockout brackets at once (if there are several, they share the same fields in sequence) and reserves a slot for every round (quarters, semis, final…). Only the 1st round of each bracket has known opponents right away; later rounds fill in automatically once the previous scores are validated."
       },
+      "shift": {
+        "label": "Shift upcoming matches",
+        "earlier": "−5 min",
+        "later": "+5 min"
+      },
       "editor": {
         "title": "Schedule editor",
         "empty": "No matches generated for this phase.",
         "dragHint": "Drag and drop a match onto a free slot to reschedule it, or onto \"Unscheduled\" to remove it from the schedule.",
+        "summary": "{{matches}} matches · {{rotations}} rotations · {{start}} → {{end}}",
         "selectMatchAria": "Select this match to reschedule it",
         "removeOfficialAria": "Remove this official",
         "addRefereeLabel": "Add a referee",
@@ -1105,9 +1111,11 @@
         "loadMatches": "Unable to load the schedule.",
         "selectFieldForSchedule": "Select at least one field before generating the schedule.",
         "enterStartDateForSchedule": "Enter a start date before generating the schedule.",
-      "startDateOutsideTournamentRange": "The chosen date must fall within the tournament's date range (General tab).",
+        "startDateOutsideTournamentRange": "The chosen date must fall within the tournament's date range (General tab).",
         "noMatchesGenerated": "No match could be generated: assign at least two teams to every pool of this phase on the Structure page, then try again.",
-        "matchesAlreadyExist": "Matches already exist for this phase. Clear the schedule before generating a new one.",
+        "matchesAlreadyExist": "Some matches of this phase have already started. Clear the schedule before generating a new one.",
+        "shiftConflict": "This shift would overlap another slot on a field.",
+        "shiftGeneric": "Could not shift the schedule.",
         "generateScheduleGeneric": "Unable to generate the schedule.",
         "selectFieldForBrackets": "Select at least one field before generating the brackets.",
         "enterBreakAfterPools": "Enter the break time after the pools.",

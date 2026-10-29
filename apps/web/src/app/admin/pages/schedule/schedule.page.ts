@@ -34,6 +34,7 @@ import { TeamsService } from '../../core/teams.service';
 import { TimeSlotsService } from '../../core/timeslots.service';
 import { TournamentsService } from '../../core/tournaments.service';
 import { FieldSelector } from '../../shared/field-selector';
+import { summarizeSchedule } from '../../shared/schedule-summary';
 import { matchRoundLabel, RoundLabelLang } from 'shared-models';
 
 interface TimeSlotDraft {
@@ -106,7 +107,9 @@ export class SchedulePage {
   protected readonly selectedMatchId = signal<string | null>(null);
 
   protected readonly selectedFieldIds = signal<string[]>([]);
+  protected readonly summary = computed(() => summarizeSchedule(this.matches()));
   protected readonly startDateTime = signal('');
+  protected readonly shifting = signal(false);
   // Knockout stage only -- its start isn't entered by hand, it's the pool
   // phase's last scheduled match plus this pause (see generateAllBracketMatches).
   protected readonly breakAfterPoolsMinutes = signal('');
@@ -214,13 +217,13 @@ export class SchedulePage {
       this.teamsCanReferee.set(tournament.teamsCanReferee);
       this.referees.set(referees);
       // Pre-fills the generation form's own start field with Général's
-      // startDate (date only -- datetime-local still needs a time, left at
-      // midnight for the organizer to adjust) so there's one less thing to
+      // startDate (date only -- datetime-local still needs a time, defaulted to a
+      // typical 09:00 kickoff for the organizer to adjust) so there's one less thing to
       // retype when just opening this page, not a default that could ever
       // clobber something the organizer already typed (load() only runs
       // once, before startDateTime could hold anything else).
       if (tournament.startDate) {
-        this.startDateTime.set(`${tournament.startDate.slice(0, 10)}T00:00`);
+        this.startDateTime.set(`${tournament.startDate.slice(0, 10)}T09:00`);
       }
       await this.loadTimeSlots();
       if (categories.length > 0) {
@@ -546,6 +549,53 @@ export class SchedulePage {
     } catch {
       this.errorMessage.set('admin.schedule.errors.resetSchedule');
     }
+  }
+
+  /**
+   * "On a 5 minutes de retard": moves every upcoming match of the phases in
+   * view. Phases can share fields, so a later phase is moved first when
+   * pushing back (and last when pulling forward) -- otherwise the first move
+   * would briefly overlap the next phase's slots and be rejected.
+   */
+  protected async shiftSchedule(minutes: number): Promise<void> {
+    const organizationId = this.organization()?.id;
+    if (!organizationId || this.shifting()) {
+      return;
+    }
+    const phases = minutes > 0 ? [...this.activePhases()].reverse() : this.activePhases();
+    this.errorMessage.set(null);
+    this.shifting.set(true);
+    try {
+      for (const phase of phases) {
+        await this.scheduleService
+          .shiftSchedule(organizationId, this.tournamentId, phase.id, minutes)
+          .catch((error: unknown) => {
+            // A phase with nothing left to play (400) is simply skipped.
+            if (!(error instanceof HttpErrorResponse && error.status === 400)) {
+              throw error;
+            }
+          });
+      }
+    } catch (error) {
+      this.errorMessage.set(
+        error instanceof HttpErrorResponse && error.status === 409
+          ? 'admin.schedule.errors.shiftConflict'
+          : 'admin.schedule.errors.shiftGeneric',
+      );
+    } finally {
+      await this.loadMatches();
+      await this.loadTimeSlots();
+      this.shifting.set(false);
+    }
+  }
+
+  protected formatClock(time: string | null): string {
+    return time
+      ? new Date(time).toLocaleTimeString(this.languageService.language(), {
+          hour: '2-digit',
+          minute: '2-digit',
+        })
+      : '';
   }
 
   protected formatSlotTime(startTime: string): string {
