@@ -1,3 +1,4 @@
+import { detectMapsPlatform, venueMapsUrl } from 'shared-models';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -272,5 +273,23 @@ export class TournamentShell {
   protected onModeChange(next: ThemeMode): void {
     this.modeManuallySet.set(true);
     this.themeService.setMode(document.documentElement, next);
+  }
+
+  /**
+   * Tap on the header's venue: hands over to the phone's navigation app
+   * (Plans on iOS, the Android chooser -- Maps, Waze... -- via geo:) or
+   * Google Maps in a new tab on a computer. Same in the native app.
+   */
+  // Public pages are French-only in the app (same as their other labels).
+  protected readonly venueMapsLabel = 'Ouvrir dans l’application de navigation';
+
+  protected openVenueInMaps(venue: { name: string; address: string | null }): void {
+    const platform = detectMapsPlatform(navigator.userAgent, navigator.maxTouchPoints);
+    const url = venueMapsUrl(venue, platform);
+    if (platform === 'desktop') {
+      window.open(url, '_blank', 'noopener');
+    } else {
+      window.location.href = url;
+    }
   }
 }

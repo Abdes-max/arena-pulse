@@ -103,7 +103,15 @@
                 d="M12 2c-4.4 0-8 3.6-8 8 0 5.4 7 11.5 7.3 11.7.2.2.5.3.7.3s.5-.1.7-.3C12.9 21.5 20 15.4 20 10c0-4.4-3.6-8-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"
               />
             </svg>
-            {{ t.venues[0].name }}
+            <button
+              type="button"
+              class="tournament-shell__venue-link"
+              [attr.aria-label]="t.venues[0].name + ' — ' + ('shell.openInMaps' | transloco)"
+              [title]="'shell.openInMaps' | transloco"
+              (click)="openVenueInMaps(t.venues[0])"
+            >
+              {{ t.venues[0].name }}
+            </button>
             @if (t.venues.length > 1) {
               <span class="tournament-shell__meta-more">+{{ t.venues.length - 1 }}</span>
             }
