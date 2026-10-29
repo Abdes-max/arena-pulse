@@ -13,7 +13,11 @@
   display: flex;
   gap: var(--ap-space-3);
   width: max-content;
-  animation: ap-tournament-marquee-scroll 90s linear infinite;
+  animation-name: ap-tournament-marquee-scroll;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  // animation-duration is set inline per-instance (scales with item count),
+  // see tournament-marquee.ts's duration().
 }
 
 .ap-tournament-marquee:hover .ap-tournament-marquee__track,

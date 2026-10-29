@@ -250,7 +250,7 @@ describe('Schedule generation (e2e)', () => {
     expect(afterResetRes.body as MatchResponseBody[]).toHaveLength(0);
   });
 
-  it('rejects a second generation while matches already exist, without resetting first', async () => {
+  it('replaces an unplayed calendar on a second generation, but refuses once a match has started', async () => {
     const { accessToken, organizationId } = await registerOrganizer(app);
     const sportId = await firstSportId(app, accessToken);
     const auth = (req: request.Test) =>
@@ -276,7 +276,36 @@ describe('Schedule generation (e2e)', () => {
       .send({ fieldIds, startDateTime: '2026-08-01T09:00:00.000Z' })
       .expect(201);
 
-    // A second click without resetting must not silently double every match.
+    // Generating again (e.g. with a new kickoff) replaces the calendar
+    // instead of doubling every match.
+    await auth(
+      request(app.getHttpServer()).post(
+        `${base}/${tournamentId}/phases/${phaseId}/generate-schedule`,
+      ),
+    )
+      .send({ fieldIds, startDateTime: '2026-08-01T10:00:00.000Z' })
+      .expect(201);
+
+    const listRes = await auth(
+      request(app.getHttpServer()).get(
+        `${base}/${tournamentId}/phases/${phaseId}/matches`,
+      ),
+    ).expect(200);
+    const matches = listRes.body as MatchResponseBody[];
+    expect(matches).toHaveLength(6);
+    const firstKickoff = matches
+      .map((match) => match.timeSlot!.startTime)
+      .sort()[0];
+    expect(firstKickoff).toBe('2026-08-01T10:00:00.000Z');
+
+    // Once a score is in, regenerating would lose it -- explicit reset only.
+    await auth(
+      request(app.getHttpServer()).put(
+        `${base}/${tournamentId}/matches/${matches[0].id}/score`,
+      ),
+    )
+      .send({ homeScore: 1, awayScore: 0 })
+      .expect(200);
     await auth(
       request(app.getHttpServer()).post(
         `${base}/${tournamentId}/phases/${phaseId}/generate-schedule`,
@@ -284,13 +313,6 @@ describe('Schedule generation (e2e)', () => {
     )
       .send({ fieldIds, startDateTime: '2026-08-01T09:00:00.000Z' })
       .expect(409);
-
-    const listRes = await auth(
-      request(app.getHttpServer()).get(
-        `${base}/${tournamentId}/phases/${phaseId}/matches`,
-      ),
-    ).expect(200);
-    expect(listRes.body as MatchResponseBody[]).toHaveLength(6);
   });
 
   it('doubles the fixtures with home/away swapped when the phase has doubleRoundRobin enabled', async () => {
