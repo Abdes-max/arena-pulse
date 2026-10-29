@@ -1,0 +1,83 @@
+<main class="tv">
+  @if (errorMessage(); as message) {
+    <p class="tv__empty">{{ message | transloco }}</p>
+  } @else if (tournament(); as t) {
+    <header class="tv__header">
+      <h1>{{ t.name }}</h1>
+      <span class="tv__clock">{{ formatClock(now()) }}</span>
+    </header>
+
+    <div class="tv__body">
+      <section class="tv__rotations">
+        @for (
+          entry of [
+            { key: 'tv.current', rotation: picked().current },
+            { key: 'tv.next', rotation: picked().next },
+          ];
+          track entry.key
+        ) {
+          @if (entry.rotation; as rotation) {
+            <article
+              class="tv__rotation"
+              [class.tv__rotation--current]="entry.key === 'tv.current'"
+            >
+              <h2>
+                {{ entry.key | transloco }}
+                <span class="tv__time">{{ formatClock(rotation.startTime) }}</span>
+              </h2>
+              <ul>
+                @for (match of rotation.matches; track match.id) {
+                  <li class="tv__match" [class.tv__match--live]="match.status === 'LIVE'">
+                    <span class="tv__field">{{ match.timeSlot?.field?.name }}</span>
+                    <span class="tv__team tv__team--home">{{
+                      teamName(match.homeTeam, match.homeSourceLabel)
+                    }}</span>
+                    <span class="tv__score">{{ scoreOf(match) }}</span>
+                    <span class="tv__team">{{
+                      teamName(match.awayTeam, match.awaySourceLabel)
+                    }}</span>
+                  </li>
+                }
+              </ul>
+            </article>
+          }
+        }
+        @if (!picked().current && !picked().next) {
+          <p class="tv__empty">{{ 'tv.finished' | transloco }}</p>
+        }
+      </section>
+
+      <section class="tv__standings">
+        @for (entry of groupStandings(); track entry.group.id) {
+          <article>
+            <h2>{{ entry.group.name }}</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">{{ 'tv.team' | transloco }}</th>
+                  <th scope="col">{{ 'tv.played' | transloco }}</th>
+                  <th scope="col">{{ 'tv.diff' | transloco }}</th>
+                  <th scope="col">{{ 'tv.points' | transloco }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of entry.standings.rows; track row.teamId) {
+                  <tr>
+                    <td>{{ row.position }}</td>
+                    <td class="tv__standing-team">{{ row.teamName }}</td>
+                    <td>{{ row.played }}</td>
+                    <td>{{ row.goalDifference > 0 ? '+' : '' }}{{ row.goalDifference }}</td>
+                    <td class="tv__points">{{ row.points }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </article>
+        }
+      </section>
+    </div>
+
+    <footer class="tv__footer">{{ 'tv.followLive' | transloco }} {{ publicUrl() }}</footer>
+  }
+</main>

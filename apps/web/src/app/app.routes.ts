@@ -257,6 +257,11 @@ export const routes: Routes = [
     ],
   },
   {
+    // Before ':slug' so it renders full screen, outside TournamentShell.
+    path: ':slug/tv',
+    loadComponent: () => import('./pages/tv/tv.page').then((m) => m.TvPage),
+  },
+  {
     path: ':slug',
     loadComponent: () => import('./shell/tournament-shell').then((m) => m.TournamentShell),
     children: [

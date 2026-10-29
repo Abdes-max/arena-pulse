@@ -288,6 +288,16 @@
     "loadMore": "Load more",
     "loading": "Loading…"
   },
+  "tv": {
+    "current": "Now playing",
+    "next": "Up next",
+    "finished": "All matches are over. Thanks everyone!",
+    "team": "Team",
+    "played": "P",
+    "diff": "+/-",
+    "points": "Pts",
+    "followLive": "Live results at"
+  },
   "shell": {
     "loading": "Loading…",
     "error": {

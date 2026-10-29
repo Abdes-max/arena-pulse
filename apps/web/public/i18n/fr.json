@@ -288,6 +288,16 @@
     "loadMore": "Charger plus",
     "loading": "Chargement…"
   },
+  "tv": {
+    "current": "En cours",
+    "next": "À suivre",
+    "finished": "Tous les matchs sont terminés. Merci à tous !",
+    "team": "Équipe",
+    "played": "J",
+    "diff": "+/-",
+    "points": "Pts",
+    "followLive": "Résultats en direct sur"
+  },
   "shell": {
     "loading": "Chargement…",
     "error": {
