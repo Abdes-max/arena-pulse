@@ -16,7 +16,74 @@
     }
   </p>
 
-  @if (t.standing; as standing) {
+  @if (groupStandings()?.rows?.length) {
+    <section class="team-detail-page__section">
+      <h3>
+        {{ 'teamDetail.groupStanding' | transloco }}
+        @if (t.groupName) {
+          · {{ t.groupName }}
+        }
+      </h3>
+      <div class="team-detail-page__table-scroll">
+        <table class="team-detail-page__table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>{{ 'standings.table.team' | transloco }}</th>
+              <th [title]="'standings.table.playedFull' | transloco">
+                {{ 'standings.table.played' | transloco }}
+              </th>
+              <th [title]="'standings.table.wonFull' | transloco">
+                {{ 'standings.table.won' | transloco }}
+              </th>
+              <th [title]="'standings.table.drawnFull' | transloco">
+                {{ 'standings.table.drawn' | transloco }}
+              </th>
+              <th [title]="'standings.table.lostFull' | transloco">
+                {{ 'standings.table.lost' | transloco }}
+              </th>
+              <th [title]="'standings.table.goalsForFull' | transloco">
+                {{ 'standings.table.goalsFor' | transloco }}
+              </th>
+              <th [title]="'standings.table.goalsAgainstFull' | transloco">
+                {{ 'standings.table.goalsAgainst' | transloco }}
+              </th>
+              <th>+/-</th>
+              <th [title]="'standings.table.pointsFull' | transloco">
+                {{ 'standings.table.points' | transloco }}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of groupStandings()!.rows; track row.teamId) {
+              <tr
+                [class.team-detail-page__row--self]="row.teamId === t.id"
+                [attr.aria-current]="row.teamId === t.id ? 'true' : null"
+              >
+                <td>{{ row.position }}</td>
+                <td>
+                  <span class="team-detail-page__team-cell">
+                    @if (assetUrl.resolve(row.teamLogoUrl); as logo) {
+                      <img class="team-detail-page__team-logo" [src]="logo" alt="" />
+                    }
+                    {{ row.teamName }}
+                  </span>
+                </td>
+                <td>{{ row.played }}</td>
+                <td>{{ row.won }}</td>
+                <td>{{ row.drawn }}</td>
+                <td>{{ row.lost }}</td>
+                <td>{{ row.goalsFor }}</td>
+                <td>{{ row.goalsAgainst }}</td>
+                <td>{{ row.goalDifference > 0 ? '+' : '' }}{{ row.goalDifference }}</td>
+                <td class="team-detail-page__points">{{ row.points }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  } @else if (t.standing; as standing) {
     <section class="team-detail-page__section">
       <h3>{{ 'teamDetail.groupStanding' | transloco }}</h3>
       <div class="team-detail-page__stats">

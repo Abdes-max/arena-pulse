@@ -13,7 +13,7 @@ import { AssetUrlService, PublicApiService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { LanguageService } from 'design-tokens';
 import { TournamentContextService } from '../../core/tournament-context.service';
-import { PublicTeamDetail, RoundLabelLang, roundLabel } from 'shared-models';
+import { PublicTeamDetail, RoundLabelLang, roundLabel, Standings } from 'shared-models';
 
 @Component({
   selector: 'app-team-detail-page',
@@ -36,6 +36,7 @@ export class TeamDetailPage {
   // identical errorMessage for why (stays reactive to a language switch).
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly team = signal<PublicTeamDetail | null>(null);
+  protected readonly groupStandings = signal<Standings | null>(null);
 
   private readonly isDecided = (match: PublicTeamDetail['matches'][number]) =>
     match.score !== null || match.status === 'FORFEITED';
@@ -61,7 +62,14 @@ export class TeamDetailPage {
     const teamId = this.route.snapshot.paramMap.get('teamId')!;
     this.loading.set(true);
     try {
-      this.team.set(await this.api.getTeam(slug, teamId));
+      const team = await this.api.getTeam(slug, teamId);
+      this.team.set(team);
+      // The whole pool's table, so the team's numbers read in context (its
+      // row is highlighted) -- a failure here just falls back to the
+      // team's own figures, it never blanks the page.
+      this.groupStandings.set(
+        team.groupId ? await this.api.getStandings(slug, team.groupId).catch(() => null) : null,
+      );
     } catch {
       this.errorMessage.set('teamDetail.loadError');
     } finally {
