@@ -240,6 +240,17 @@
     }
   },
   "schedule": {
+    "statusFilter": {
+      "label": "Nach Status filtern",
+      "upcoming": "Anstehend",
+      "live": "Läuft",
+      "finished": "Beendet",
+      "empty": {
+        "upcoming": "Keine anstehenden Spiele.",
+        "live": "Kein laufendes Spiel.",
+        "finished": "Keine beendeten Spiele."
+      }
+    },
     "noCategories": "Keine Kategorie für dieses Turnier.",
     "categoryLabel": "Kategorie",
     "phaseLabel": "Phase",

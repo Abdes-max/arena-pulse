@@ -240,6 +240,17 @@
     }
   },
   "schedule": {
+    "statusFilter": {
+      "label": "Filtra per stato",
+      "upcoming": "In programma",
+      "live": "In corso",
+      "finished": "Terminate",
+      "empty": {
+        "upcoming": "Nessuna partita in programma.",
+        "live": "Nessuna partita in corso.",
+        "finished": "Nessuna partita terminata."
+      }
+    },
     "noCategories": "Nessuna categoria per questo torneo.",
     "categoryLabel": "Categoria",
     "phaseLabel": "Fase",
