@@ -39,6 +39,20 @@ export class OrganizerTeamsService {
     );
   }
 
+  /** Renames a team in place -- the quick plateau's "Équipe N" placeholders, once the clubs are known. */
+  renameTeam(
+    organizationId: string,
+    tournamentId: string,
+    teamId: string,
+    name: string,
+  ): Promise<OrganizerTeam> {
+    return firstValueFrom(
+      this.http.patch<OrganizerTeam>(`${this.base(organizationId, tournamentId)}/${teamId}`, {
+        name,
+      }),
+    );
+  }
+
   removeTeam(organizationId: string, tournamentId: string, teamId: string): Promise<void> {
     return firstValueFrom(
       this.http.delete<void>(`${this.base(organizationId, tournamentId)}/${teamId}`),

@@ -1,0 +1,147 @@
+<ion-header>
+  <ion-toolbar>
+    <button
+      type="button"
+      class="quick-plateau-page__back"
+      slot="start"
+      (click)="cancel()"
+      [attr.aria-label]="'organizer.wizard.cancelAria' | transloco"
+    >
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+        <path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+      </svg>
+    </button>
+    <ion-title>{{ 'organizer.quickPlateau.title' | transloco }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="quick-plateau-page">
+  <form class="quick-plateau-page__form" (submit)="submit(); $event.preventDefault()">
+    <p class="quick-plateau-page__intro">{{ 'organizer.quickPlateau.intro' | transloco }}</p>
+
+    @if (errorMessage(); as message) {
+      <p class="quick-plateau-page__error" role="alert">{{ message | transloco }}</p>
+    }
+
+    <ap-text-field
+      [label]="'organizer.quickPlateau.name' | transloco"
+      [placeholder]="'organizer.quickPlateau.namePlaceholder' | transloco"
+      [value]="name()"
+      (valueChange)="name.set($event)"
+    />
+    <div class="quick-plateau-page__row">
+      <ap-text-field
+        [label]="'organizer.quickPlateau.category' | transloco"
+        placeholder="U11"
+        [value]="categoryName()"
+        (valueChange)="categoryName.set($event)"
+      />
+      <ap-select
+        [label]="'organizer.quickPlateau.sport' | transloco"
+        [options]="sportOptions()"
+        [value]="sportId()"
+        (valueChange)="sportId.set($event)"
+      />
+    </div>
+    <div class="quick-plateau-page__row">
+      <ap-text-field
+        type="date"
+        [label]="'organizer.quickPlateau.date' | transloco"
+        [value]="date()"
+        (valueChange)="date.set($event)"
+      />
+      <ap-text-field
+        type="time"
+        [label]="'organizer.quickPlateau.startTime' | transloco"
+        [value]="startTime()"
+        (valueChange)="startTime.set($event)"
+      />
+    </div>
+    <div class="quick-plateau-page__row quick-plateau-page__row--3">
+      <ap-text-field
+        type="number"
+        [min]="2"
+        [label]="'organizer.quickPlateau.teamCount' | transloco"
+        [value]="teamCount()"
+        (valueChange)="teamCount.set($event)"
+      />
+      <ap-text-field
+        type="number"
+        [min]="1"
+        [label]="'organizer.quickPlateau.fieldCount' | transloco"
+        [value]="fieldCount()"
+        (valueChange)="fieldCount.set($event)"
+      />
+      <ap-text-field
+        type="number"
+        [min]="1"
+        [label]="'organizer.quickPlateau.poolCount' | transloco"
+        [value]="poolCount()"
+        (valueChange)="poolCount.set($event)"
+      />
+    </div>
+    <div class="quick-plateau-page__row">
+      <ap-text-field
+        type="number"
+        [min]="1"
+        [label]="'organizer.quickPlateau.matchDuration' | transloco"
+        [value]="matchDurationMinutes()"
+        (valueChange)="matchDurationMinutes.set($event)"
+      />
+      <ap-text-field
+        type="number"
+        [min]="0"
+        [label]="'organizer.quickPlateau.breakDuration' | transloco"
+        [value]="breakDurationMinutes()"
+        (valueChange)="breakDurationMinutes.set($event)"
+      />
+    </div>
+    <label class="quick-plateau-page__checkbox">
+      <input
+        type="checkbox"
+        [checked]="withFinal()"
+        [disabled]="+poolCount() > 2"
+        (change)="toggleFinal($event)"
+      />
+      {{ 'organizer.quickPlateau.withFinal' | transloco }}
+    </label>
+
+    <section class="quick-plateau-page__preview" aria-live="polite">
+      @if (preview(); as p) {
+        <dl>
+          <div>
+            <dt>{{ 'organizer.quickPlateau.preview.matches' | transloco }}</dt>
+            <dd>{{ p.matchCount }}</dd>
+          </div>
+          <div>
+            <dt>{{ 'organizer.quickPlateau.preview.perTeam' | transloco }}</dt>
+            <dd>
+              @if (p.minMatchesPerTeam === p.maxMatchesPerTeam) {
+                {{ p.minMatchesPerTeam }}
+              } @else {
+                {{ p.minMatchesPerTeam }}–{{ p.maxMatchesPerTeam }}
+              }
+            </dd>
+          </div>
+          <div>
+            <dt>{{ 'organizer.quickPlateau.preview.rotations' | transloco }}</dt>
+            <dd>{{ p.rotationCount }}</dd>
+          </div>
+          <div>
+            <dt>{{ 'organizer.quickPlateau.preview.end' | transloco }}</dt>
+            <dd>{{ endTime() }}</dd>
+          </div>
+        </dl>
+      } @else {
+        <p>{{ 'organizer.quickPlateau.preview.invalid' | transloco }}</p>
+      }
+    </section>
+
+    <ap-button type="submit" [disabled]="!canSubmit()">
+      {{
+        (submitting() ? 'organizer.quickPlateau.submitting' : 'organizer.quickPlateau.submit')
+          | transloco
+      }}
+    </ap-button>
+  </form>
+</ion-content>

@@ -513,3 +513,55 @@ ion-title {
   margin: 0;
   letter-spacing: var(--ap-tracking-tight);
 }
+
+.wizard-page__warning {
+  margin: 0;
+  padding: var(--ap-space-2) var(--ap-space-3);
+  border-left: 3px solid var(--ap-color-warning);
+  background: var(--ap-color-signal-soft);
+  font-size: 0.82rem;
+}
+
+.wizard-page__paste,
+.wizard-page__regen {
+  font-size: 0.86rem;
+
+  summary {
+    cursor: pointer;
+    font-weight: 600;
+    padding: var(--ap-space-2) 0;
+  }
+
+  textarea {
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+    margin: var(--ap-space-2) 0;
+    padding: var(--ap-space-2);
+    border: 1px solid var(--ap-color-border);
+    border-radius: var(--ap-radius-md);
+    background: var(--ap-color-surface);
+    color: var(--ap-color-fg);
+    font: inherit;
+  }
+}
+
+.wizard-page__schedule-settings {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-3);
+  text-align: start;
+}
+
+.wizard-page__row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  gap: var(--ap-space-2);
+}
+
+.wizard-page__shift {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  font-size: 0.86rem;
+}

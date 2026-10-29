@@ -130,7 +130,9 @@
           "PUBLISHED": "Pubblicato",
           "UNPUBLISHED": "Non pubblicato",
           "ARCHIVED": "Archiviato"
-        }
+        },
+        "newPlateau": "Create a plateau",
+        "liveAction": "Match day"
       }
     },
     "account": {
@@ -192,7 +194,13 @@
         "remove": "Rimuovi {{name}}",
         "minHint": "Servono almeno 3 squadre per passare al passaggio successivo.",
         "errorAdd": "Impossibile aggiungere questa squadra, riprova.",
-        "errorRemove": "Impossibile rimuovere questa squadra, riprova."
+        "errorRemove": "Impossibile rimuovere questa squadra, riprova.",
+        "placeholderWarning": "{{count}} team name(s) still to confirm.",
+        "pasteSummary": "Paste a list of names",
+        "pastePlaceholder": "One club per line (or comma separated)",
+        "pasteRename": "Rename the teams to confirm",
+        "pasteAdd": "Add these teams",
+        "errorPaste": "Could not save these names, try again."
       },
       "structure": {
         "title": "Formato della competizione",
@@ -224,7 +232,16 @@
         "generating": "Generazione…",
         "noScheduleHint": "Nessun calendario da generare per questo formato -- il tabellone a eliminazione diretta si completa partita dopo partita, man mano che si conoscono i risultati.",
         "editLaterHint": "Orari e luoghi esatti potranno essere modificati più avanti da \"I miei tornei\".",
-        "errorGeneric": "Si è verificato un errore, riprova."
+        "errorGeneric": "Si è verificato un errore, riprova.",
+        "dateLabel": "Date",
+        "timeLabel": "First match",
+        "fieldCountLabel": "Fields",
+        "matchDurationLabel": "Length (min)",
+        "breakDurationLabel": "Break (min)",
+        "regenerate": "Regenerate the calendar",
+        "regenerateSummary": "Change the date, time or fields",
+        "shiftLabel": "Shift upcoming matches",
+        "shiftError": "Could not shift the calendar."
       },
       "publish": {
         "visibilityTitle": "Visibilità",
@@ -332,6 +349,57 @@
         "loadGeneric": "Impossibile caricare le classifiche.",
         "saveTieChoice": "Impossibile salvare questa scelta.",
         "resetTieChoice": "Impossibile azzerare questo spareggio."
+      }
+    },
+    "quickPlateau": {
+      "title": "Create a plateau",
+      "intro": "One day, several teams rotating on your fields. \"Team 1, 2…\" teams, fields, pools and the schedule are created in one go; you rename the teams right after.",
+      "name": "Plateau name",
+      "namePlaceholder": "U11 autumn plateau",
+      "category": "Category",
+      "sport": "Sport",
+      "date": "Date",
+      "startTime": "First match",
+      "teamCount": "Teams",
+      "fieldCount": "Fields",
+      "poolCount": "Pools",
+      "matchDuration": "Length (min)",
+      "breakDuration": "Break (min)",
+      "withFinal": "Add a final (1st vs 2nd)",
+      "preview": {
+        "matches": "Matches",
+        "perTeam": "Per team",
+        "rotations": "Rotations",
+        "end": "End",
+        "invalid": "You need at least 2 teams per pool and 1 field."
+      },
+      "submit": "Create the plateau",
+      "submitting": "Creating…",
+      "errors": {
+        "loadSports": "Could not load sports.",
+        "invalid": "This format is not possible: check teams, pools and fields.",
+        "generic": "Could not create the plateau."
+      }
+    },
+    "live": {
+      "title": "Match day",
+      "loading": "Loading…",
+      "empty": "No match scheduled yet.",
+      "rotation": "Rotation {{number}}",
+      "now": "Now",
+      "next": "Up next",
+      "done": "Done",
+      "minus": "Remove a goal",
+      "plus": "Add a goal",
+      "teamsUnknown": "teams known after the previous phase",
+      "validate": "Validate rotation",
+      "saveRunning": "Save running score",
+      "shiftLabel": "Shift",
+      "errors": {
+        "load": "Could not load the matches.",
+        "save": "Could not save the scores.",
+        "shift": "Could not shift the calendar.",
+        "shiftConflict": "This shift would overlap another slot on a field."
       }
     }
   }

@@ -328,6 +328,36 @@
           @if (mode() === 'create' && teams().length < 3) {
             <p class="wizard-page__hint">{{ 'organizer.wizard.teams.minHint' | transloco }}</p>
           }
+          @if (placeholderCount() > 0) {
+            <p class="wizard-page__warning">
+              {{
+                'organizer.wizard.teams.placeholderWarning'
+                  | transloco: { count: placeholderCount() }
+              }}
+            </p>
+          }
+          <details class="wizard-page__paste" [open]="placeholderCount() > 0">
+            <summary>{{ 'organizer.wizard.teams.pasteSummary' | transloco }}</summary>
+            <textarea
+              rows="5"
+              [value]="pastedNames()"
+              [placeholder]="'organizer.wizard.teams.pastePlaceholder' | transloco"
+              (input)="pastedNames.set($any($event.target).value)"
+            ></textarea>
+            <ap-button
+              type="button"
+              variant="ghost"
+              [disabled]="submitting()"
+              (click)="applyPastedNames()"
+            >
+              {{
+                (placeholderCount() > 0
+                  ? 'organizer.wizard.teams.pasteRename'
+                  : 'organizer.wizard.teams.pasteAdd'
+                ) | transloco
+              }}
+            </ap-button>
+          </details>
         }
         @case (3) {
           <h3 class="wizard-page__section-title">
@@ -415,6 +445,25 @@
               {{ 'organizer.wizard.calendar.noScheduleHint' | transloco }}
             </p>
           } @else if (matches(); as generatedMatches) {
+            <div class="wizard-page__shift" role="group">
+              <span>{{ 'organizer.wizard.calendar.shiftLabel' | transloco }}</span>
+              <ap-button
+                type="button"
+                variant="ghost"
+                size="sm"
+                [disabled]="shiftingSchedule()"
+                (click)="shiftSchedule(-5)"
+                >−5 min</ap-button
+              >
+              <ap-button
+                type="button"
+                variant="ghost"
+                size="sm"
+                [disabled]="shiftingSchedule()"
+                (click)="shiftSchedule(5)"
+                >+5 min</ap-button
+              >
+            </div>
             <div class="wizard-page__matchlist">
               @for (match of generatedMatches; track match.id) {
                 <div class="wizard-page__matchcard">
@@ -446,9 +495,58 @@
             <p class="wizard-page__hint">
               {{ 'organizer.wizard.calendar.editLaterHint' | transloco }}
             </p>
+            <details class="wizard-page__regen">
+              <summary>{{ 'organizer.wizard.calendar.regenerateSummary' | transloco }}</summary>
+              <ng-container *ngTemplateOutlet="scheduleSettings" />
+            </details>
           } @else {
             <div class="wizard-page__gen-cta">
               <p class="wizard-page__lede">{{ 'organizer.wizard.calendar.lede' | transloco }}</p>
+              <ng-container *ngTemplateOutlet="scheduleSettings" />
+            </div>
+          }
+
+          <ng-template #scheduleSettings>
+            <div class="wizard-page__schedule-settings">
+              <div class="wizard-page__row">
+                <ap-text-field
+                  type="date"
+                  [label]="'organizer.wizard.calendar.dateLabel' | transloco"
+                  [value]="scheduleDate()"
+                  (valueChange)="scheduleDate.set($event)"
+                />
+                <ap-text-field
+                  type="time"
+                  [label]="'organizer.wizard.calendar.timeLabel' | transloco"
+                  [value]="scheduleTime()"
+                  (valueChange)="scheduleTime.set($event)"
+                />
+              </div>
+              <div class="wizard-page__row">
+                <ap-text-field
+                  type="number"
+                  [min]="1"
+                  [label]="'organizer.wizard.calendar.fieldCountLabel' | transloco"
+                  [value]="fieldCount()"
+                  (valueChange)="fieldCount.set($event)"
+                />
+                <ap-text-field
+                  type="number"
+                  [min]="1"
+                  [label]="'organizer.wizard.calendar.matchDurationLabel' | transloco"
+                  [placeholder]="'15'"
+                  [value]="matchDurationMinutes()"
+                  (valueChange)="matchDurationMinutes.set($event)"
+                />
+                <ap-text-field
+                  type="number"
+                  [min]="0"
+                  [label]="'organizer.wizard.calendar.breakDurationLabel' | transloco"
+                  [placeholder]="'5'"
+                  [value]="breakDurationMinutes()"
+                  (valueChange)="breakDurationMinutes.set($event)"
+                />
+              </div>
               <ap-button
                 type="button"
                 [disabled]="generatingSchedule()"
@@ -457,12 +555,14 @@
                 {{
                   (generatingSchedule()
                     ? 'organizer.wizard.calendar.generating'
-                    : 'organizer.wizard.calendar.generate'
+                    : matches()
+                      ? 'organizer.wizard.calendar.regenerate'
+                      : 'organizer.wizard.calendar.generate'
                   ) | transloco
                 }}
               </ap-button>
             </div>
-          }
+          </ng-template>
         }
         @case (5) {
           <h3 class="wizard-page__section-title">

@@ -1,0 +1,96 @@
+ion-toolbar {
+  --padding-start: var(--ap-space-2);
+  --padding-end: var(--ap-space-4);
+}
+
+ion-title {
+  padding-inline: 0;
+  text-align: start;
+  font-family: var(--ap-font-heading);
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.quick-plateau-page__back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--ap-color-fg);
+  cursor: pointer;
+}
+
+.quick-plateau-page {
+  --padding-top: var(--ap-space-4);
+  --padding-bottom: var(--ap-space-6);
+  --padding-start: var(--ap-space-4);
+  --padding-end: var(--ap-space-4);
+}
+
+.quick-plateau-page__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-3);
+}
+
+.quick-plateau-page__intro {
+  margin: 0;
+  color: var(--ap-color-muted);
+  font-size: 0.86rem;
+}
+
+.quick-plateau-page__error {
+  margin: 0;
+  color: var(--ap-color-error);
+  font-size: 0.85rem;
+}
+
+.quick-plateau-page__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--ap-space-2);
+}
+
+.quick-plateau-page__row--3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.quick-plateau-page__checkbox {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  font-size: 0.86rem;
+}
+
+.quick-plateau-page__preview {
+  padding: var(--ap-space-3);
+  border-radius: var(--ap-radius-lg);
+  background: var(--ap-color-signal-soft);
+
+  dl {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--ap-space-2);
+    margin: 0;
+  }
+
+  dt {
+    color: var(--ap-color-muted);
+    font-size: 0.7rem;
+  }
+
+  dd {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.86rem;
+  }
+}
