@@ -46,10 +46,10 @@ env:
   # one marketing version and happily accepts many build numbers under it,
   # only rejecting uploads once that train is closed (e.g. after a build
   # under it reached production/App Store review). Bump this by hand only
-  # when that happens -- last bumped 1.1 -> 1.2 on 2026-10-13, same reason
-  # (error 90186/90062 on upload) after Apple closed the 1.1 train following
-  # its submission to App Store review.
-  MARKETING_VERSION: '1.2'
+  # when that happens -- last bumped 1.2 -> 1.3 on 2026-10-29, same reason
+  # (error 90186/90062 on upload) after Apple approved 1.2 and closed its
+  # train.
+  MARKETING_VERSION: '1.3'
 
 jobs:
   ios:
