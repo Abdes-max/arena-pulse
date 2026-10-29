@@ -4,7 +4,8 @@
   </ion-content>
 } @else {
   <ion-content class="team-search-page">
-    @if (categories().length > 0) {
+    <!-- A single category needs no picker, same as web's team-search. -->
+    @if (categories().length > 1) {
       <ion-segment
         class="team-search-page__filters"
         [value]="selectedCategoryId()"

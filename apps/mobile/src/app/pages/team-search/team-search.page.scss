@@ -23,6 +23,12 @@
   padding: 0 var(--ap-space-4) var(--ap-space-4);
 }
 
+// No category/phase picker above it (single category): keep it off the
+// header.
+.team-search-page__search:first-child {
+  padding-top: var(--ap-space-4);
+}
+
 // Bordered/background card, mirroring apps/web's .team-search-page__team --
 // not an ion-item row.
 .team-search-page__grid {
