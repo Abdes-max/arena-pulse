@@ -8,18 +8,21 @@
   </ion-content>
 } @else {
   <ion-content class="schedule-page">
-    <ion-segment
-      class="schedule-page__filters"
-      [value]="selectedCategoryId()"
-      (ionChange)="onCategoryChange(asString($event.detail.value))"
-      scrollable
-    >
-      @for (category of categories(); track category.id) {
-        <ion-segment-button [value]="category.id">
-          <ion-label>{{ category.name }}</ion-label>
-        </ion-segment-button>
-      }
-    </ion-segment>
+    <!-- A single category needs no picker: nothing to choose between. -->
+    @if (categories().length > 1) {
+      <ion-segment
+        class="schedule-page__filters"
+        [value]="selectedCategoryId()"
+        (ionChange)="onCategoryChange(asString($event.detail.value))"
+        scrollable
+      >
+        @for (category of categories(); track category.id) {
+          <ion-segment-button [value]="category.id">
+            <ion-label>{{ category.name }}</ion-label>
+          </ion-segment-button>
+        }
+      </ion-segment>
+    }
     @if (phases().length > 0) {
       <ion-segment
         class="schedule-page__filters"
