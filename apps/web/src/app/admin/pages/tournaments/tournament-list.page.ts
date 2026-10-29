@@ -243,6 +243,25 @@ export class TournamentListPage {
     void this.router.navigateByUrl('/admin/tournaments/new');
   }
 
+  /**
+   * "11 nov. 2026 · Stade Marius Réquier" (or a date range) -- small line
+   * under each name. Dates are calendar days stored at UTC midnight, so
+   * they're formatted in UTC to never shift by a day.
+   */
+  protected metaLine(tournament: Tournament): string | null {
+    const format = (iso: string) =>
+      new Date(iso).toLocaleDateString(this.languageService.language(), {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        timeZone: 'UTC',
+      });
+    const start = tournament.startDate ? format(tournament.startDate) : null;
+    const end = tournament.endDate ? format(tournament.endDate) : null;
+    const dates = start && end && end !== start ? `${start} – ${end}` : (start ?? end);
+    return [dates, tournament.venueName].filter(Boolean).join(' · ') || null;
+  }
+
   protected goToCreatePlateau(): void {
     void this.router.navigateByUrl('/admin/tournaments/new-plateau');
   }

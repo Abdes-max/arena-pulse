@@ -63,7 +63,12 @@
                   }
                 </td>
                 <td class="tournament-list-page__cell tournament-list-page__cell--name">
-                  {{ tournament.name }}
+                  <div class="tournament-list-page__name">
+                    <span>{{ tournament.name }}</span>
+                    @if (metaLine(tournament); as meta) {
+                      <span class="tournament-list-page__meta">{{ meta }}</span>
+                    }
+                  </div>
                 </td>
                 <td class="tournament-list-page__cell tournament-list-page__cell--sport">
                   {{ tournament.sportName }}
