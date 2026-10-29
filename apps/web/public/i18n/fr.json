@@ -400,13 +400,16 @@
     "goals": "Buts",
     "upcoming": "À venir",
     "noMatches": "Aucun match planifié pour cette équipe.",
-    "poolRound": "Poule (round {{round}})"
+    "poolRound": "Poule (round {{round}})",
+    "favorite": "Favori"
   },
   "teamSearch": {
     "allCategories": "Toutes",
     "searchLabel": "Rechercher une équipe",
     "searchPlaceholder": "Rechercher une équipe…",
-    "noTeams": "Aucune équipe trouvée."
+    "noTeams": "Aucune équipe trouvée.",
+    "addFavorite": "Ajouter aux favoris",
+    "removeFavorite": "Retirer des favoris"
   },
   "admin": {
     "shell": {

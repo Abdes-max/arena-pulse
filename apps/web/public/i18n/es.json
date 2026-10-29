@@ -298,13 +298,16 @@
     "goals": "Goles",
     "upcoming": "Próximos",
     "noMatches": "Ningún partido programado para este equipo.",
-    "poolRound": "Grupo (ronda {{round}})"
+    "poolRound": "Grupo (ronda {{round}})",
+    "favorite": "Favorito"
   },
   "teamSearch": {
     "allCategories": "Todas",
     "searchLabel": "Buscar un equipo",
     "searchPlaceholder": "Buscar un equipo…",
-    "noTeams": "No se encontró ningún equipo."
+    "noTeams": "No se encontró ningún equipo.",
+    "addFavorite": "Añadir a favoritos",
+    "removeFavorite": "Quitar de favoritos"
   },
   "admin": {
     "shell": {

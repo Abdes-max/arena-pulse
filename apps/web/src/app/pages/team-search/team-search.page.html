@@ -28,18 +28,36 @@
   } @else {
     <div class="team-search-page__grid">
       @for (team of filteredTeams(); track team.id) {
-        <a class="team-search-page__team" [routerLink]="['../team', team.id]">
-          @if (assetUrl.resolve(team.logoUrl); as logo) {
-            <img class="team-search-page__team-logo" [src]="logo" alt="" />
-          }
-          <span class="team-search-page__team-name">{{ team.name }}</span>
-          <span class="team-search-page__team-meta">
-            {{ team.categoryName }}
-            @if (team.divisionName) {
-              , {{ team.divisionName }}
+        <div
+          class="team-search-page__team-wrapper"
+          [class.team-search-page__team-wrapper--favorite]="isFavorite(team)"
+        >
+          <a class="team-search-page__team" [routerLink]="['../team', team.id]">
+            @if (assetUrl.resolve(team.logoUrl); as logo) {
+              <img class="team-search-page__team-logo" [src]="logo" alt="" />
             }
-          </span>
-        </a>
+            <span class="team-search-page__team-name">{{ team.name }}</span>
+            <span class="team-search-page__team-meta">
+              {{ team.categoryName }}
+              @if (team.divisionName) {
+                , {{ team.divisionName }}
+              }
+            </span>
+          </a>
+          <!-- A sibling of the link, not inside it, so the star never navigates. -->
+          <button
+            type="button"
+            class="team-search-page__favorite"
+            [attr.aria-label]="
+              (isFavorite(team) ? 'teamSearch.removeFavorite' : 'teamSearch.addFavorite')
+                | transloco
+            "
+            [attr.aria-pressed]="isFavorite(team)"
+            (click)="toggleFavorite(team)"
+          >
+            {{ isFavorite(team) ? '★' : '☆' }}
+          </button>
+        </div>
       }
     </div>
   }

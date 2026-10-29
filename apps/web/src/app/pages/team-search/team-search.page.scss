@@ -68,3 +68,46 @@
   font-size: 0.8rem;
   color: var(--ap-color-muted);
 }
+
+.team-search-page__team-wrapper {
+  position: relative;
+  display: flex;
+
+  .team-search-page__team {
+    flex: 1;
+    padding-right: calc(var(--ap-space-4) + 32px);
+  }
+}
+
+// Same accent as apps/mobile's team-search favorite card.
+.team-search-page__team-wrapper--favorite .team-search-page__team {
+  border-color: var(--ap-color-signal-text);
+  box-shadow: var(--ap-shadow-sm);
+}
+
+.team-search-page__favorite {
+  position: absolute;
+  top: var(--ap-space-2);
+  right: var(--ap-space-2);
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: var(--ap-radius-md);
+  background: transparent;
+  color: var(--ap-color-signal-text);
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--ap-color-signal-soft);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ap-color-primary);
+    outline-offset: 2px;
+  }
+}
