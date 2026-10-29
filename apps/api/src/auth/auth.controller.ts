@@ -28,6 +28,10 @@ import type { AuthenticatedUser } from './strategies/jwt.strategy';
 
 export const REFRESH_TOKEN_COOKIE = 'refresh_token';
 export const REFRESH_TOKEN_PATH = '/api/v1/auth';
+// Set (as a session cookie itself) when the user logged in without "Se
+// souvenir de moi" -- tells refresh() to keep re-issuing the refresh cookie
+// as a session cookie too, instead of turning it persistent on rotation.
+export const SESSION_ONLY_COOKIE = 'session_only';
 
 // Well below the app-wide default (100/min, see app.module.ts) -- these are
 // the credential-stuffing/brute-force-sensitive endpoints. Relaxed under
@@ -117,11 +121,21 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const result = await this.authService.login(dto);
+    const persistent = dto.rememberMe !== false;
     this.setRefreshCookie(
       res,
       result.refreshToken,
       result.refreshTokenExpiresAt,
+      persistent,
     );
+    if (persistent) {
+      res.clearCookie(SESSION_ONLY_COOKIE, { path: REFRESH_TOKEN_PATH });
+    } else {
+      res.cookie(SESSION_ONLY_COOKIE, '1', {
+        ...this.cookieBaseOptions(),
+        path: REFRESH_TOKEN_PATH,
+      });
+    }
     return {
       accessToken: result.accessToken,
       expiresIn: result.expiresIn,
@@ -142,10 +156,12 @@ export class AuthController {
       throw new UnauthorizedException('Session invalide.');
     }
     const result = await this.authService.refresh(presented);
+    const cookies = req.cookies as Record<string, string> | undefined;
     this.setRefreshCookie(
       res,
       result.refreshToken,
       result.refreshTokenExpiresAt,
+      !cookies?.[SESSION_ONLY_COOKIE],
     );
     return { accessToken: result.accessToken, expiresIn: result.expiresIn };
   }
@@ -159,6 +175,7 @@ export class AuthController {
       await this.authService.logout(presented);
     }
     res.clearCookie(REFRESH_TOKEN_COOKIE, { path: REFRESH_TOKEN_PATH });
+    res.clearCookie(SESSION_ONLY_COOKIE, { path: REFRESH_TOKEN_PATH });
   }
 
   @Get('me')
@@ -203,9 +220,19 @@ export class AuthController {
     res: Response,
     token: string,
     expiresAt: Date,
+    persistent = true,
   ): void {
+    res.cookie(REFRESH_TOKEN_COOKIE, token, {
+      ...this.cookieBaseOptions(),
+      path: REFRESH_TOKEN_PATH,
+      // No expires = browser-session cookie ("Se souvenir de moi" unchecked).
+      ...(persistent ? { expires: expiresAt } : {}),
+    });
+  }
+
+  private cookieBaseOptions(): CookieOptions {
     const isProduction = process.env.NODE_ENV === 'production';
-    const options: CookieOptions = {
+    return {
       httpOnly: true,
       // 'none' in production: the mobile app (Capacitor, origin
       // capacitor://localhost / https://localhost) calls this API
@@ -217,9 +244,6 @@ export class AuthController {
       // cookie dropped instead.
       sameSite: isProduction ? 'none' : 'lax',
       secure: isProduction,
-      path: REFRESH_TOKEN_PATH,
-      expires: expiresAt,
     };
-    res.cookie(REFRESH_TOKEN_COOKIE, token, options);
   }
 }

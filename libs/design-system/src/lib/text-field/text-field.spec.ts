@@ -125,4 +125,32 @@ describe('TextField', () => {
 
     expect(input.value).toBe('via-form-control@example.com');
   });
+
+  it('reveals and hides a password with the eye button', () => {
+    @Component({
+      imports: [TextField],
+      template: `<ap-text-field label="Mot de passe" type="password" value="secret" />`,
+    })
+    class PasswordHostComponent {}
+
+    const fixture = TestBed.createComponent(PasswordHostComponent);
+    fixture.detectChanges();
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+    const toggle = fixture.nativeElement.querySelector(
+      '.ap-text-field__password-toggle',
+    ) as HTMLButtonElement;
+
+    expect(input.type).toBe('password');
+    expect(toggle.getAttribute('aria-label')).toBe('Afficher le mot de passe');
+
+    toggle.click();
+    fixture.detectChanges();
+    expect(input.type).toBe('text');
+    expect(toggle.getAttribute('aria-pressed')).toBe('true');
+    expect(toggle.getAttribute('aria-label')).toBe('Masquer le mot de passe');
+
+    toggle.click();
+    fixture.detectChanges();
+    expect(input.type).toBe('password');
+  });
 });

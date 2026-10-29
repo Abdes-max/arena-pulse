@@ -110,3 +110,19 @@ ion-title {
   font-size: 0.83rem;
   color: var(--ap-color-muted);
 }
+
+// "Se souvenir de moi", right under the password field.
+.organizer-login-page__remember {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  font-size: 0.9rem;
+  cursor: pointer;
+
+  input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--ap-color-primary);
+  }
+}

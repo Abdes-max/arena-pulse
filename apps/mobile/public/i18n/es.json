@@ -93,7 +93,8 @@
         "errorCredentials": "Correo o contraseña incorrectos.",
         "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo.",
         "sessionExpired": "Tu sesión ha caducado, inicia sesión de nuevo.",
-        "forgotPassword": "¿Has olvidado tu contraseña?"
+        "forgotPassword": "¿Has olvidado tu contraseña?",
+        "rememberMe": "Recordarme"
       },
       "sessionTimeout": {
         "title": "¿Sigues ahí?",
@@ -112,7 +113,9 @@
         "sentHint": "Abre el enlace que contiene para elegir una nueva contraseña y luego vuelve aquí para iniciar sesión.",
         "login": "Iniciar sesión",
         "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo."
-      }
+      },
+      "showPassword": "Mostrar contraseña",
+      "hidePassword": "Ocultar contraseña"
     },
     "tournaments": {
       "list": {

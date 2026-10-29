@@ -462,7 +462,8 @@
         "errorCredentials": "Email ou mot de passe incorrect.",
         "errorGeneric": "Une erreur est survenue, réessayez.",
         "sessionExpired": "Votre session a expiré, reconnectez-vous.",
-        "forgotPassword": "Mot de passe oublié ?"
+        "forgotPassword": "Mot de passe oublié ?",
+        "rememberMe": "Se souvenir de moi"
       },
       "register": {
         "title": "Inscrivez-vous",
@@ -529,7 +530,9 @@
         "errorExpired": "Ce lien de réinitialisation est invalide, expiré ou déjà utilisé.",
         "errorGeneric": "Une erreur est survenue, réessayez.",
         "retry": "Demander un nouveau lien"
-      }
+      },
+      "showPassword": "Afficher le mot de passe",
+      "hidePassword": "Masquer le mot de passe"
     },
     "collaborators": {
       "title": "Collaborateurs",

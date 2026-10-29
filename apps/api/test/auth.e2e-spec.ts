@@ -226,6 +226,45 @@ describe('Auth (e2e)', () => {
     expect(meBody.organizations).toHaveLength(1);
   });
 
+  it('keeps the refresh cookie session-only, across rotations, without "Se souvenir de moi"', async () => {
+    await request(app.getHttpServer())
+      .post('/api/v1/auth/register')
+      .send(credentials)
+      .expect(201);
+    await prisma.user.update({
+      where: { email: credentials.email },
+      data: { emailVerifiedAt: new Date() },
+    });
+    const rawCookie = (res: request.Response, name: string) =>
+      res.get('Set-Cookie')?.find((c) => c.startsWith(`${name}=`));
+
+    const remembered = await request(app.getHttpServer())
+      .post('/api/v1/auth/login')
+      .send({ email: credentials.email, password: credentials.password })
+      .expect(200);
+    expect(rawCookie(remembered, 'refresh_token')).toMatch(/Expires=/);
+
+    const sessionOnly = await request(app.getHttpServer())
+      .post('/api/v1/auth/login')
+      .send({
+        email: credentials.email,
+        password: credentials.password,
+        rememberMe: false,
+      })
+      .expect(200);
+    expect(rawCookie(sessionOnly, 'refresh_token')).not.toMatch(/Expires=/);
+    expect(rawCookie(sessionOnly, 'session_only')).toBeDefined();
+
+    const refreshed = await request(app.getHttpServer())
+      .post('/api/v1/auth/refresh')
+      .set('Cookie', [
+        extractRefreshCookie(sessionOnly),
+        rawCookie(sessionOnly, 'session_only')!.split(';')[0],
+      ])
+      .expect(200);
+    expect(rawCookie(refreshed, 'refresh_token')).not.toMatch(/Expires=/);
+  });
+
   it('rotates the refresh token and rejects reuse of the old one', async () => {
     await request(app.getHttpServer())
       .post('/api/v1/auth/register')

@@ -48,9 +48,15 @@
       <ap-text-field
         [label]="'organizer.auth.login.passwordLabel' | transloco"
         type="password"
+        [showPasswordLabel]="'organizer.auth.showPassword' | transloco"
+        [hidePasswordLabel]="'organizer.auth.hidePassword' | transloco"
         formControlName="password"
         autocomplete="current-password"
       />
+      <label class="organizer-login-page__remember">
+        <input type="checkbox" formControlName="rememberMe" />
+        {{ 'organizer.auth.login.rememberMe' | transloco }}
+      </label>
       <a class="organizer-login-page__forgot" routerLink="/organizer/forgot-password">{{
         'organizer.auth.login.forgotPassword' | transloco
       }}</a>

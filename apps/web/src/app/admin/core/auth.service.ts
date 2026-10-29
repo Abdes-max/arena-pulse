@@ -83,11 +83,12 @@ export class AuthService {
     );
   }
 
-  async login(email: string, password: string): Promise<void> {
+  /** rememberMe false: the API sets a session-only refresh cookie (gone once the browser closes). */
+  async login(email: string, password: string, rememberMe = true): Promise<void> {
     const response = await firstValueFrom(
       this.http.post<TokenResponse>(
         `${environment.apiUrl}/auth/login`,
-        { email, password },
+        { email, password, rememberMe },
         { withCredentials: true },
       ),
     );

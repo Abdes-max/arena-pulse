@@ -93,7 +93,8 @@
         "errorCredentials": "Email o password errati.",
         "errorGeneric": "Si è verificato un errore, riprova.",
         "sessionExpired": "La tua sessione è scaduta, accedi di nuovo.",
-        "forgotPassword": "Password dimenticata?"
+        "forgotPassword": "Password dimenticata?",
+        "rememberMe": "Ricordami"
       },
       "sessionTimeout": {
         "title": "Sei ancora lì?",
@@ -112,7 +113,9 @@
         "sentHint": "Apri il link contenuto per scegliere una nuova password, poi torna qui per accedere.",
         "login": "Accedi",
         "errorGeneric": "Si è verificato un errore, riprova."
-      }
+      },
+      "showPassword": "Mostra password",
+      "hidePassword": "Nascondi password"
     },
     "tournaments": {
       "list": {

@@ -360,7 +360,8 @@
         "errorCredentials": "Email o password errati.",
         "errorGeneric": "Si è verificato un errore, riprova.",
         "sessionExpired": "La tua sessione è scaduta, accedi di nuovo.",
-        "forgotPassword": "Password dimenticata?"
+        "forgotPassword": "Password dimenticata?",
+        "rememberMe": "Ricordami"
       },
       "register": {
         "title": "Registrati",
@@ -427,7 +428,9 @@
         "errorExpired": "Questo link di reimpostazione non è valido, è scaduto o è già stato usato.",
         "errorGeneric": "Si è verificato un errore, riprova.",
         "retry": "Richiedi un nuovo link"
-      }
+      },
+      "showPassword": "Mostra password",
+      "hidePassword": "Nascondi password"
     },
     "collaborators": {
       "title": "Collaboratori",
