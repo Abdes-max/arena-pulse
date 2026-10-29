@@ -17,3 +17,4 @@ export * from './lib/theme-mode-toggle/theme-mode-toggle';
 export * from './lib/type-to-confirm/type-to-confirm';
 export * from './lib/tournament-card/tournament-card';
 export * from './lib/tournament-marquee/tournament-marquee';
+export * from './lib/autocomplete-field/autocomplete-field';

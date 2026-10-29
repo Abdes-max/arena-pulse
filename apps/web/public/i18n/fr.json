@@ -653,7 +653,7 @@
     },
     "quickPlateau": {
       "back": "Mes tournois",
-      "title": "Créer un plateau",
+      "title": "Créer un événement",
       "intro": "Une journée, plusieurs équipes qui tournent sur vos terrains. Indiquez le format : les équipes « Équipe 1, 2… », les terrains, les poules et le planning sont créés d’un coup. Vous renommerez les équipes ensuite.",
       "sections": {
         "event": "L’événement",
@@ -679,17 +679,17 @@
         "end": "Fin prévue",
         "invalid": "Il faut au moins 2 équipes par poule et au moins 1 terrain."
       },
-      "submit": "Créer le plateau",
+      "submit": "Créer l'événement",
       "submitting": "Création…",
       "fullFlow": "Plutôt un tournoi complet ?",
       "errors": {
         "loadSports": "Impossible de charger les sports.",
         "invalid": "Ce format n’est pas possible. Vérifiez le nombre d’équipes, de poules et de terrains.",
-        "generic": "Impossible de créer le plateau."
+        "generic": "Impossible de créer l'événement."
       }
     },
     "tournamentList": {
-      "createPlateau": "Créer un plateau (rapide)",
+      "createPlateau": "Créer un événement (rapide)",
       "title": "Tournois",
       "create": "Créer un tournoi",
       "loading": "Chargement…",
@@ -844,8 +844,9 @@
         "newFieldLabel": "Nouveau terrain",
         "addField": "Ajouter",
         "newVenueLabel": "Nouveau site",
-        "newVenuePlaceholder": "Nouveau site (ex. Stade municipal)",
-        "addVenue": "Ajouter un site"
+        "newVenuePlaceholder": "Rechercher un stade, un gymnase ou une adresse…",
+        "addVenue": "Ajouter un site",
+        "searchFailed": "Recherche d'adresse indisponible : le nom saisi sera utilisé tel quel."
       },
       "description": {
         "title": "Description",

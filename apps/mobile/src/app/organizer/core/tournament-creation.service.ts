@@ -119,6 +119,7 @@ export class TournamentCreationService {
     tournamentId: string,
     venueName: string,
     count: number,
+    venueAddress?: string | null,
   ): Promise<string[]> {
     const base = this.tournamentBase(organizationId, tournamentId);
     const venues = await firstValueFrom(
@@ -129,6 +130,7 @@ export class TournamentCreationService {
       (await firstValueFrom(
         this.http.post<{ id: string; fields: { id: string }[] }>(`${base}/venues`, {
           name: venueName,
+          ...(venueAddress ? { address: venueAddress } : {}),
         }),
       ));
     const fieldIds = venues.flatMap((v) => v.fields.map((field) => field.id));

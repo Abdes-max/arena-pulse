@@ -17,9 +17,17 @@ import {
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AssetUrlService } from 'api-client';
+import { AddressSearchService, AssetUrlService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { Badge, BadgeStatus, Button, Select, SelectOption, TextField } from 'design-system';
+import {
+  AutocompleteField,
+  Badge,
+  BadgeStatus,
+  Button,
+  Select,
+  SelectOption,
+  TextField,
+} from 'design-system';
 import { LanguageService, ThemeService } from 'design-tokens';
 import { AuthService } from '../../core/auth.service';
 import {
@@ -70,7 +78,15 @@ const STATUS_LABEL_KEYS: Record<TournamentStatus, string> = {
 
 @Component({
   selector: 'app-tournament-form-page',
-  imports: [ReactiveFormsModule, Button, TextField, Select, Badge, TranslocoPipe],
+  imports: [
+    ReactiveFormsModule,
+    AutocompleteField,
+    Button,
+    TextField,
+    Select,
+    Badge,
+    TranslocoPipe,
+  ],
   templateUrl: './tournament-form.page.html',
   styleUrl: './tournament-form.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -364,6 +380,12 @@ export class TournamentFormPage {
   protected readonly categoryFeeDraftById = signal<Record<string, string>>({});
   protected readonly newDivisionNameByCategory = signal<Record<string, string>>({});
   protected readonly newVenueName = signal('');
+  // Full postal address of the suggestion picked for the new venue (saved
+  // as Venue.address) -- dropped as soon as the name is retyped by hand.
+  private readonly newVenueAddress = signal<string | null>(null);
+  protected readonly venueSearch = inject(AddressSearchService).autocomplete(() =>
+    this.languageService.language(),
+  );
   protected readonly newFieldNameByVenue = signal<Record<string, string>>({});
 
   // Draft text for the free-text content sections (Description/Règlement/
@@ -1088,6 +1110,18 @@ export class TournamentFormPage {
 
   protected onNewVenueNameChange(value: string): void {
     this.newVenueName.set(value);
+    this.newVenueAddress.set(null);
+    this.venueSearch.query(value);
+  }
+
+  protected onVenueSuggestionSelect(index: number): void {
+    const suggestion = this.venueSearch.suggestions()[index];
+    if (!suggestion) {
+      return;
+    }
+    this.newVenueName.set(suggestion.name);
+    this.newVenueAddress.set(suggestion.address);
+    this.venueSearch.clear();
   }
 
   protected async addVenue(): Promise<void> {
@@ -1100,9 +1134,12 @@ export class TournamentFormPage {
     try {
       const venue = await this.tournamentsService.createVenue(organizationId, tournamentId, {
         name,
+        address: this.newVenueAddress() ?? undefined,
       });
       this.venues.update((venues) => [...venues, venue]);
       this.newVenueName.set('');
+      this.newVenueAddress.set(null);
+      this.venueSearch.clear();
     } catch {
       this.errorMessage.set('admin.tournamentForm.errors.addVenue');
     }

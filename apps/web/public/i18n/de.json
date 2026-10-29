@@ -551,7 +551,7 @@
     },
     "quickPlateau": {
       "back": "My tournaments",
-      "title": "Create a plateau",
+      "title": "Create an event",
       "intro": "One day, several teams rotating on your fields. Pick the format: \"Team 1, 2…\" teams, fields, pools and the schedule are created in one go. You rename the teams afterwards.",
       "sections": {
         "event": "The event",
@@ -577,17 +577,17 @@
         "end": "Expected end",
         "invalid": "You need at least 2 teams per pool and at least 1 field."
       },
-      "submit": "Create the plateau",
+      "submit": "Create the event",
       "submitting": "Creating…",
       "fullFlow": "Need a full tournament instead?",
       "errors": {
         "loadSports": "Could not load sports.",
         "invalid": "This format is not possible. Check the number of teams, pools and fields.",
-        "generic": "Could not create the plateau."
+        "generic": "Could not create the event."
       }
     },
     "tournamentList": {
-      "createPlateau": "Create a plateau (quick)",
+      "createPlateau": "Create an event (quick)",
       "title": "Turniere",
       "create": "Turnier erstellen",
       "loading": "Wird geladen…",
@@ -742,8 +742,9 @@
         "newFieldLabel": "Neues Feld",
         "addField": "Hinzufügen",
         "newVenueLabel": "Neuer Austragungsort",
-        "newVenuePlaceholder": "Neuer Austragungsort (z. B. Städtisches Stadion)",
-        "addVenue": "Austragungsort hinzufügen"
+        "newVenuePlaceholder": "Stadion, Halle oder Adresse suchen…",
+        "addVenue": "Austragungsort hinzufügen",
+        "searchFailed": "Adresssuche nicht verfügbar: Der eingegebene Name wird so verwendet."
       },
       "description": {
         "title": "Beschreibung",

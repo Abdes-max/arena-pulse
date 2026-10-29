@@ -1,0 +1,53 @@
+<label
+  [for]="inputId"
+  class="ap-autocomplete__label"
+  [class.ap-autocomplete__label--hidden]="hideLabel()"
+>
+  {{ label() }}
+</label>
+<div class="ap-autocomplete__control">
+  <input
+    [id]="inputId"
+    class="ap-autocomplete__input"
+    type="text"
+    role="combobox"
+    autocomplete="off"
+    aria-autocomplete="list"
+    [attr.aria-expanded]="open()"
+    [attr.aria-controls]="listId"
+    [attr.aria-activedescendant]="activeIndex() >= 0 ? optionId(activeIndex()) : null"
+    [attr.aria-busy]="loading()"
+    [attr.placeholder]="placeholder()"
+    [value]="value()"
+    (input)="onInput($event)"
+    (keydown)="onKeydown($event)"
+    (focus)="focused.set(true)"
+    (blur)="focused.set(false)"
+  />
+  @if (loading()) {
+    <span class="ap-autocomplete__spinner" aria-hidden="true"></span>
+  }
+  @if (open()) {
+    <ul [id]="listId" class="ap-autocomplete__list" role="listbox" [attr.aria-label]="label()">
+      @for (suggestion of suggestions(); track $index) {
+        <!-- mousedown, not click: fires before the input's blur closes the list. -->
+        <li
+          [id]="optionId($index)"
+          class="ap-autocomplete__option"
+          [class.ap-autocomplete__option--active]="$index === activeIndex()"
+          role="option"
+          [attr.aria-selected]="$index === activeIndex()"
+          (mousedown)="$event.preventDefault(); pick($index)"
+        >
+          <span class="ap-autocomplete__option-label">{{ suggestion.label }}</span>
+          @if (suggestion.detail) {
+            <span class="ap-autocomplete__option-detail">{{ suggestion.detail }}</span>
+          }
+        </li>
+      }
+    </ul>
+  }
+</div>
+@if (hint(); as text) {
+  <p class="ap-autocomplete__hint">{{ text }}</p>
+}
