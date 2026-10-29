@@ -100,7 +100,7 @@
 
 .team-detail-page__table {
   width: 100%;
-  min-width: 480px;
+  min-width: 560px;
   border-collapse: collapse;
   font-size: 0.85rem;
   font-variant-numeric: tabular-nums;
@@ -126,7 +126,6 @@
 }
 
 .team-detail-page__row--self {
-  background: var(--ap-color-signal-soft);
   font-weight: 700;
 
   td:first-child {
@@ -151,4 +150,22 @@
 
 .team-detail-page__points {
   font-weight: 700;
+}
+
+// Same as standings.page.scss's qualified row / tier badge.
+.team-detail-page__row--qualified {
+  background: var(--ap-color-signal-soft);
+}
+
+.team-detail-page__tier-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--ap-font-body);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: var(--ap-space-1) var(--ap-space-2);
+  border-radius: var(--ap-radius-sm);
+  border: var(--ap-border-width) solid;
 }

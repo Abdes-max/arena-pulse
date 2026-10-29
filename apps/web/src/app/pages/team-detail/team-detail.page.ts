@@ -8,16 +8,25 @@ import {
   signal,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { MatchCard, MatchCardTeam, MatchCardVariant } from 'design-system';
+import { Badge, MatchCard, MatchCardTeam, MatchCardVariant } from 'design-system';
 import { AssetUrlService, PublicApiService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { LanguageService } from 'design-tokens';
 import { TournamentContextService } from '../../core/tournament-context.service';
-import { PublicTeamDetail, RoundLabelLang, roundLabel, Standings } from 'shared-models';
+import {
+  CompetitionPhase,
+  PublicTeamDetail,
+  Qualification,
+  QualificationTierColor,
+  RoundLabelLang,
+  roundLabel,
+  qualificationTierColor,
+  Standings,
+} from 'shared-models';
 
 @Component({
   selector: 'app-team-detail-page',
-  imports: [DecimalPipe, MatchCard, TranslocoPipe],
+  imports: [Badge, DecimalPipe, MatchCard, TranslocoPipe],
   templateUrl: './team-detail.page.html',
   styleUrl: './team-detail.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,6 +46,41 @@ export class TeamDetailPage {
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly team = signal<PublicTeamDetail | null>(null);
   protected readonly groupStandings = signal<Standings | null>(null);
+  private readonly qualifications = signal<Qualification[]>([]);
+  private readonly phases = signal<CompetitionPhase[]>([]);
+
+  // Same rules as the Classement page (standings.page.ts): a plain
+  // "Qualifié" badge with a single knockout tier, a colored per-tier label
+  // (e.g. "Ligue des Champions") once there are several.
+  private readonly tierPhases = computed(() =>
+    this.phases()
+      .filter((phase) => phase.type === 'KNOCKOUT')
+      .sort((a, b) => a.position - b.position),
+  );
+  protected readonly hasSeveralTiers = computed(() => this.tierPhases().length >= 2);
+
+  protected isQualified(teamId: string): boolean {
+    return this.qualifications().some((qualification) =>
+      qualification.qualifiedTeams.some((team) => team.id === teamId),
+    );
+  }
+
+  protected qualificationTier(teamId: string): (QualificationTierColor & { label: string }) | null {
+    if (!this.hasSeveralTiers()) {
+      return null;
+    }
+    const qualification = this.qualifications().find((qual) =>
+      qual.qualifiedTeams.some((team) => team.id === teamId),
+    );
+    if (!qualification) {
+      return null;
+    }
+    const tiers = this.tierPhases();
+    const index = tiers.findIndex((phase) => phase.id === qualification.targetPhaseId);
+    return index >= 0
+      ? { label: qualification.targetPhaseName, ...qualificationTierColor(index, tiers.length) }
+      : null;
+  }
 
   private readonly isDecided = (match: PublicTeamDetail['matches'][number]) =>
     match.score !== null || match.status === 'FORFEITED';
@@ -67,9 +111,19 @@ export class TeamDetailPage {
       // The whole pool's table, so the team's numbers read in context (its
       // row is highlighted) -- a failure here just falls back to the
       // team's own figures, it never blanks the page.
-      this.groupStandings.set(
-        team.groupId ? await this.api.getStandings(slug, team.groupId).catch(() => null) : null,
-      );
+      const groupId = team.groupId;
+      const [standings, qualifications, phases] = groupId
+        ? await Promise.all([
+            this.api.getStandings(slug, groupId).catch(() => null),
+            // Qualification badges are a bonus on top of the table -- never
+            // a reason to drop it.
+            this.api.getQualifications(slug, groupId).catch(() => []),
+            this.api.listPhases(slug, team.categoryId).catch(() => []),
+          ])
+        : [null, [], []];
+      this.groupStandings.set(standings);
+      this.qualifications.set(qualifications);
+      this.phases.set(phases);
     } catch {
       this.errorMessage.set('teamDetail.loadError');
     } finally {

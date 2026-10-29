@@ -30,6 +30,7 @@
             <tr>
               <th>#</th>
               <th>{{ 'standings.table.team' | transloco }}</th>
+              <th></th>
               <th [title]="'standings.table.playedFull' | transloco">
                 {{ 'standings.table.played' | transloco }}
               </th>
@@ -56,8 +57,13 @@
           </thead>
           <tbody>
             @for (row of groupStandings()!.rows; track row.teamId) {
+              @let tier = qualificationTier(row.teamId);
               <tr
                 [class.team-detail-page__row--self]="row.teamId === t.id"
+                [class.team-detail-page__row--qualified]="
+                  !hasSeveralTiers() && isQualified(row.teamId)
+                "
+                [style.background]="tier?.soft ?? null"
                 [attr.aria-current]="row.teamId === t.id ? 'true' : null"
               >
                 <td>{{ row.position }}</td>
@@ -68,6 +74,17 @@
                     }
                     {{ row.teamName }}
                   </span>
+                </td>
+                <td>
+                  @if (!hasSeveralTiers()) {
+                    @if (isQualified(row.teamId)) {
+                      <ap-badge status="qualified" />
+                    }
+                  } @else if (tier) {
+                    <span class="team-detail-page__tier-badge" [style.color]="tier.color">{{
+                      tier.label
+                    }}</span>
+                  }
                 </td>
                 <td>{{ row.played }}</td>
                 <td>{{ row.won }}</td>
