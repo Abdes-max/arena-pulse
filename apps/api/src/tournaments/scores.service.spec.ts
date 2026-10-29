@@ -372,6 +372,109 @@ describe('ScoresService', () => {
     });
   });
 
+  describe('upsertScores', () => {
+    const score = {
+      homeScore: 1,
+      awayScore: 1,
+      homePenaltyScore: null,
+      awayPenaltyScore: null,
+    };
+
+    beforeEach(() => {
+      prisma.match.findUnique.mockImplementation(
+        ({ where }: { where: { id: string } }) =>
+          Promise.resolve(baseMatch({ id: where.id, score })),
+      );
+      prisma.match.update.mockImplementation(
+        ({ where }: { where: { id: string } }) =>
+          Promise.resolve(baseMatch({ id: where.id, status: 'COMPLETED' })),
+      );
+    });
+
+    it('saves and validates every match of the rotation', async () => {
+      const results = await service.upsertScores(
+        'org-1',
+        TOURNAMENT_ID,
+        {
+          validate: true,
+          scores: [
+            { matchId: 'match-1', homeScore: 1, awayScore: 1 },
+            { matchId: 'match-2', homeScore: 3, awayScore: 0 },
+          ],
+        },
+        USER_ID,
+      );
+
+      expect(prisma.matchScore.upsert).toHaveBeenCalledTimes(2);
+      expect(prisma.matchScore.update).toHaveBeenCalledTimes(2);
+      expect(results).toHaveLength(2);
+      expect(realtimeService.emit).toHaveBeenCalled();
+    });
+
+    it('only saves running scores when not validating', async () => {
+      await service.upsertScores(
+        'org-1',
+        TOURNAMENT_ID,
+        { scores: [{ matchId: 'match-1', homeScore: 0, awayScore: 0 }] },
+        USER_ID,
+      );
+
+      expect(prisma.matchScore.upsert).toHaveBeenCalledTimes(1);
+      expect(prisma.matchScore.update).not.toHaveBeenCalled();
+    });
+
+    it('writes nothing when one entry cannot be validated', async () => {
+      prisma.match.findUnique.mockImplementation(
+        ({ where }: { where: { id: string } }) =>
+          Promise.resolve(
+            where.id === 'match-2'
+              ? baseMatch({
+                  id: 'match-2',
+                  knockoutBracketId: 'bracket-1',
+                  knockoutBracket: {
+                    phase: { category: { tournamentId: TOURNAMENT_ID } },
+                  },
+                  group: null,
+                })
+              : baseMatch({ id: where.id }),
+          ),
+      );
+
+      await expect(
+        service.upsertScores(
+          'org-1',
+          TOURNAMENT_ID,
+          {
+            validate: true,
+            scores: [
+              { matchId: 'match-1', homeScore: 2, awayScore: 0 },
+              // A knockout draw without a shootout can't be a final result.
+              { matchId: 'match-2', homeScore: 1, awayScore: 1 },
+            ],
+          },
+          USER_ID,
+        ),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(prisma.matchScore.upsert).not.toHaveBeenCalled();
+    });
+
+    it('rejects the same match twice', async () => {
+      await expect(
+        service.upsertScores(
+          'org-1',
+          TOURNAMENT_ID,
+          {
+            scores: [
+              { matchId: 'match-1', homeScore: 1, awayScore: 0 },
+              { matchId: 'match-1', homeScore: 2, awayScore: 0 },
+            ],
+          },
+          USER_ID,
+        ),
+      ).rejects.toBeInstanceOf(BadRequestException);
+    });
+  });
+
   describe('clearScore', () => {
     it('rejects when there is no score to clear', async () => {
       prisma.match.findUnique.mockResolvedValue(baseMatch());

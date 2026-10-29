@@ -15,6 +15,7 @@ import { RequireOrgRole } from '../organizations/decorators/require-org-role.dec
 import { OrganizationRoleGuard } from '../organizations/guards/organization-role.guard';
 import { RequireTournamentPermission } from './decorators/require-tournament-permission.decorator';
 import { ForfeitMatchDto } from './dto/forfeit-match.dto';
+import { BatchMatchScoresDto } from './dto/batch-match-scores.dto';
 import { UpsertMatchScoreDto } from './dto/upsert-match-score.dto';
 import { TournamentPermissionGuard } from './guards/tournament-permission.guard';
 import { ScoresService } from './scores.service';
@@ -24,6 +25,23 @@ import { ScoresService } from './scores.service';
 @Controller('organizations/:organizationId/tournaments/:tournamentId')
 export class ScoresController {
   constructor(private readonly scoresService: ScoresService) {}
+
+  @RequireOrgRole(OrganizationRole.ORG_MEMBER)
+  @RequireTournamentPermission('MANAGE_SCORES')
+  @Post('matches/scores/batch')
+  upsertScores(
+    @Param('organizationId') organizationId: string,
+    @Param('tournamentId') tournamentId: string,
+    @Body() dto: BatchMatchScoresDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    return this.scoresService.upsertScores(
+      organizationId,
+      tournamentId,
+      dto,
+      user.id,
+    );
+  }
 
   @RequireOrgRole(OrganizationRole.ORG_MEMBER)
   @RequireTournamentPermission('MANAGE_SCORES')

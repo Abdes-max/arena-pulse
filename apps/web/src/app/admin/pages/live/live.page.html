@@ -1,0 +1,124 @@
+<main class="live-page">
+  <h1>{{ 'admin.live.title' | transloco }}</h1>
+  <p class="live-page__intro">{{ 'admin.live.intro' | transloco }}</p>
+
+  @if (errorMessage(); as message) {
+    <p class="live-page__error" role="alert">{{ message | transloco }}</p>
+  }
+
+  @if (loading()) {
+    <p>{{ 'admin.live.loading' | transloco }}</p>
+  } @else if (rotations().length === 0) {
+    <p>{{ 'admin.live.empty' | transloco }}</p>
+  } @else {
+    <ol class="live-page__rotations">
+      @for (rotation of rotations(); track rotation.startTime; let i = $index) {
+        <li
+          class="live-page__rotation"
+          [class.live-page__rotation--focus]="isFocus(rotation)"
+          [class.live-page__rotation--done]="isDone(rotation)"
+        >
+          <button
+            type="button"
+            class="live-page__rotation-header"
+            [attr.aria-expanded]="openStart() === rotation.startTime"
+            (click)="toggle(rotation)"
+          >
+            <span class="live-page__rotation-title">
+              {{ 'admin.live.rotation' | transloco: { number: i + 1 } }}
+              <span class="live-page__time">{{ formatClock(rotation.startTime) }}</span>
+            </span>
+            @if (isDone(rotation)) {
+              <span class="live-page__results">{{ resultsOf(rotation) }}</span>
+              <span class="live-page__badge live-page__badge--done">{{
+                'admin.live.done' | transloco
+              }}</span>
+            } @else if (isFocus(rotation)) {
+              <span class="live-page__badge">{{
+                (focusIsCurrent() ? 'admin.live.now' : 'admin.live.next') | transloco
+              }}</span>
+            }
+          </button>
+
+          @if (openStart() === rotation.startTime) {
+            <div class="live-page__matches">
+              @for (match of rotation.matches; track match.id) {
+                <div class="live-page__match">
+                  <span class="live-page__field">{{ match.timeSlot?.field?.name }}</span>
+                  @if (isPlayable(match)) {
+                    <div class="live-page__side">
+                      <span class="live-page__team">{{
+                        teamName(match.homeTeam, match.homeSourceLabel)
+                      }}</span>
+                      <div class="live-page__stepper">
+                        <button
+                          type="button"
+                          [attr.aria-label]="'admin.live.minus' | transloco"
+                          (click)="bump(match, 'home', -1)"
+                        >
+                          −
+                        </button>
+                        <output>{{ scoreOf(match).home }}</output>
+                        <button
+                          type="button"
+                          [attr.aria-label]="'admin.live.plus' | transloco"
+                          (click)="bump(match, 'home', 1)"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                    <div class="live-page__side">
+                      <span class="live-page__team">{{
+                        teamName(match.awayTeam, match.awaySourceLabel)
+                      }}</span>
+                      <div class="live-page__stepper">
+                        <button
+                          type="button"
+                          [attr.aria-label]="'admin.live.minus' | transloco"
+                          (click)="bump(match, 'away', -1)"
+                        >
+                          −
+                        </button>
+                        <output>{{ scoreOf(match).away }}</output>
+                        <button
+                          type="button"
+                          [attr.aria-label]="'admin.live.plus' | transloco"
+                          (click)="bump(match, 'away', 1)"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  } @else {
+                    <p class="live-page__pending">
+                      {{ teamName(match.homeTeam, match.homeSourceLabel) }} –
+                      {{ teamName(match.awayTeam, match.awaySourceLabel) }}
+                      · {{ 'admin.live.teamsUnknown' | transloco }}
+                    </p>
+                  }
+                </div>
+              }
+              @if (apiError(); as message) {
+                <p class="live-page__error" role="alert">{{ message }}</p>
+              }
+              <div class="live-page__actions">
+                <ap-button type="button" [disabled]="saving()" (click)="save(rotation, true)">
+                  {{ 'admin.live.validate' | transloco }}
+                </ap-button>
+                <ap-button
+                  type="button"
+                  variant="ghost"
+                  [disabled]="saving()"
+                  (click)="save(rotation, false)"
+                >
+                  {{ 'admin.live.saveRunning' | transloco }}
+                </ap-button>
+              </div>
+            </div>
+          }
+        </li>
+      }
+    </ol>
+  }
+</main>
