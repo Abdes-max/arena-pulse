@@ -1,4 +1,5 @@
 import {
+  AGE_CATEGORIES,
   RECOMMENDED_HEADER_BACKGROUND,
   HeaderBackgroundPreset,
   headerBackgroundPresetOf,
@@ -388,6 +389,25 @@ export class TournamentFormPage {
   });
 
   protected readonly newCategoryName = signal('');
+  // Predefined categories (U5..U20, Senior, Vétéran) -- same list as the
+  // quick event form; the ones the tournament already has are left out.
+  protected readonly newCategoryOptions = computed<SelectOption[]>(() => {
+    const used = new Set(this.categories().map((category) => category.name));
+    return [
+      {
+        value: '',
+        label: this.transloco.translate(
+          'admin.tournamentForm.categories.choose',
+          {},
+          this.languageService.language(),
+        ),
+      },
+      ...AGE_CATEGORIES.filter((name) => !used.has(name)).map((name) => ({
+        value: name,
+        label: name,
+      })),
+    ];
+  });
   protected readonly newCategoryFeeCents = signal('');
   protected readonly categoryFeeDraftById = signal<Record<string, string>>({});
   protected readonly newDivisionNameByCategory = signal<Record<string, string>>({});
@@ -1200,6 +1220,19 @@ export class TournamentFormPage {
     } catch {
       this.errorMessage.set('admin.tournamentForm.errors.addField');
     }
+  }
+
+  /** Rename choices for a category: the predefined list, plus its current name if custom. */
+  protected editCategoryOptions(currentName: string): SelectOption[] {
+    const used = new Set(
+      this.categories()
+        .map((category) => category.name)
+        .filter((name) => name !== currentName),
+    );
+    const names = (AGE_CATEGORIES as readonly string[]).includes(currentName)
+      ? [...AGE_CATEGORIES]
+      : [currentName, ...AGE_CATEGORIES];
+    return names.filter((name) => !used.has(name)).map((name) => ({ value: name, label: name }));
   }
 
   protected isEditing(kind: 'category' | 'venue' | 'field', id: string): boolean {

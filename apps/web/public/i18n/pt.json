@@ -749,7 +749,8 @@
         "newCategoryLabel": "Nova categoria",
         "newCategoryPlaceholder": "Nova categoria (ex. U10)",
         "newFeeLabel": "Taxa (cêntimos, opcional)",
-        "addCategory": "Adicionar uma categoria"
+        "addCategory": "Adicionar uma categoria",
+        "choose": "Escolher uma categoria…"
       },
       "venues": {
         "title": "Locais e campos",

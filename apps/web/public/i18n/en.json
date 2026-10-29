@@ -851,7 +851,8 @@
         "newCategoryLabel": "New category",
         "newCategoryPlaceholder": "New category (e.g. U10)",
         "newFeeLabel": "Fee (cents, optional)",
-        "addCategory": "Add a category"
+        "addCategory": "Add a category",
+        "choose": "Choose a category…"
       },
       "venues": {
         "title": "Venues and fields",

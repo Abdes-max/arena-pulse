@@ -749,7 +749,8 @@
         "newCategoryLabel": "Neue Kategorie",
         "newCategoryPlaceholder": "Neue Kategorie (z. B. U10)",
         "newFeeLabel": "Gebühr (Cent, optional)",
-        "addCategory": "Kategorie hinzufügen"
+        "addCategory": "Kategorie hinzufügen",
+        "choose": "Kategorie wählen…"
       },
       "venues": {
         "title": "Austragungsorte und Felder",

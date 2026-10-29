@@ -851,7 +851,8 @@
         "newCategoryLabel": "Nouvelle catégorie",
         "newCategoryPlaceholder": "Nouvelle catégorie (ex. U10)",
         "newFeeLabel": "Tarif (centimes, optionnel)",
-        "addCategory": "Ajouter une catégorie"
+        "addCategory": "Ajouter une catégorie",
+        "choose": "Choisir une catégorie…"
       },
       "venues": {
         "title": "Sites et terrains",
