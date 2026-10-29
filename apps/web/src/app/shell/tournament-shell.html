@@ -185,3 +185,32 @@
     <router-outlet />
   </main>
 }
+
+@if (navigationApps(); as apps) {
+  <button
+    type="button"
+    class="tournament-shell__nav-backdrop"
+    [attr.aria-label]="'shell.navigationCancel' | transloco"
+    (click)="navigationApps.set(null)"
+  ></button>
+  <div
+    class="tournament-shell__nav-sheet"
+    role="dialog"
+    aria-modal="true"
+    [attr.aria-label]="'shell.navigationTitle' | transloco"
+  >
+    <p class="tournament-shell__nav-title">{{ 'shell.navigationTitle' | transloco }}</p>
+    @for (app of apps; track app.id) {
+      <button type="button" class="tournament-shell__nav-option" (click)="openNavigationApp(app)">
+        {{ app.label }}
+      </button>
+    }
+    <button
+      type="button"
+      class="tournament-shell__nav-option tournament-shell__nav-option--cancel"
+      (click)="navigationApps.set(null)"
+    >
+      {{ 'shell.navigationCancel' | transloco }}
+    </button>
+  </div>
+}

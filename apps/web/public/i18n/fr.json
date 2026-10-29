@@ -319,7 +319,9 @@
       "wrapped": "Statistiques"
     },
     "menu": "Menu",
-    "openInMaps": "Ouvrir dans l'application de navigation"
+    "openInMaps": "Ouvrir dans l'application de navigation",
+    "navigationTitle": "Ouvrir l'itinéraire avec",
+    "navigationCancel": "Annuler"
   },
   "home": {
     "sections": {

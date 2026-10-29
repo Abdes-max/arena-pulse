@@ -217,7 +217,9 @@
       "wrapped": "Estatísticas"
     },
     "menu": "Menu",
-    "openInMaps": "Abrir na app de navegação"
+    "openInMaps": "Abrir na app de navegação",
+    "navigationTitle": "Abrir o percurso com",
+    "navigationCancel": "Cancelar"
   },
   "home": {
     "sections": {

@@ -309,3 +309,55 @@
     border-radius: 2px;
   }
 }
+
+// iOS GPS app choice (Plans / Google Maps / Waze), bottom sheet like the
+// native one.
+.tournament-shell__nav-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--ap-z-modal);
+  border: none;
+  padding: 0;
+  background: rgb(0 0 0 / 40%);
+}
+
+.tournament-shell__nav-sheet {
+  position: fixed;
+  left: var(--ap-space-2);
+  right: var(--ap-space-2);
+  bottom: calc(var(--ap-space-2) + env(safe-area-inset-bottom, 0px));
+  z-index: calc(var(--ap-z-modal) + 1);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-1);
+  max-width: 420px;
+  margin: 0 auto;
+  padding: var(--ap-space-2);
+  border-radius: var(--ap-radius-lg);
+  background: var(--ap-color-surface);
+  box-shadow: 0 8px 32px rgb(0 0 0 / 25%);
+}
+
+.tournament-shell__nav-title {
+  margin: var(--ap-space-1) 0 var(--ap-space-2);
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--ap-color-muted);
+}
+
+.tournament-shell__nav-option {
+  min-height: 48px;
+  border: none;
+  border-radius: var(--ap-radius-md);
+  background: var(--ap-color-bg);
+  color: var(--ap-color-primary);
+  font: inherit;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tournament-shell__nav-option--cancel {
+  margin-top: var(--ap-space-1);
+  color: var(--ap-color-fg);
+}
