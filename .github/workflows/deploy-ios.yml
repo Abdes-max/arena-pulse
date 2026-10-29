@@ -39,17 +39,11 @@ on:
           last build TestFlight has for the current marketing version.
           Defaults to the GitHub Actions run number.
         required: false
-
-env:
-  # CFBundleShortVersionString -- unlike build_number above, this is NOT
-  # auto-incremented per run: Apple ties a TestFlight "pre-release train" to
-  # one marketing version and happily accepts many build numbers under it,
-  # only rejecting uploads once that train is closed (e.g. after a build
-  # under it reached production/App Store review). Bump this by hand only
-  # when that happens -- last bumped 1.2 -> 1.3 on 2026-10-29, same reason
-  # (error 90186/90062 on upload) after Apple approved 1.2 and closed its
-  # train.
-  MARKETING_VERSION: '1.3'
+      marketing_version:
+        description: >-
+          CFBundleShortVersionString override (e.g. 2.0). Leave empty to let
+          the "Resolve marketing version" step pick it from App Store Connect.
+        required: false
 
 jobs:
   ios:
@@ -125,8 +119,34 @@ jobs:
           NAME=$(security cms -D -i "$PROFILE_PATH" | plutil -extract Name raw -)
           echo "name=$NAME" >> "$GITHUB_OUTPUT"
 
+      # CFBundleShortVersionString -- no longer bumped by hand. Apple ties
+      # TestFlight builds to a "pre-release train" per marketing version and
+      # closes it for good once a build under it goes to App Store review
+      # (error 90186/90062 on every later upload -- hit for 1.0, 1.1 and
+      # 1.2). This asks App Store Connect and keeps the highest version while
+      # its store version is still editable, else moves to the next minor
+      # (see infra/scripts/lib/ios-version.mjs).
+      - name: Resolve marketing version
+        id: version
+        env:
+          APP_STORE_CONNECT_API_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          BUNDLE_ID: com.arenapulse.mobile
+          OVERRIDE: ${{ inputs.marketing_version }}
+        run: |
+          set -euo pipefail
+          if [ -n "$OVERRIDE" ]; then
+            echo "Marketing version: $OVERRIDE (manual override)"
+            echo "version=$OVERRIDE" >> "$GITHUB_OUTPUT"
+          else
+            node infra/scripts/resolve-ios-marketing-version.mjs
+          fi
+
       - name: Set marketing version and build number
         working-directory: apps/mobile/ios/App
+        env:
+          MARKETING_VERSION: ${{ steps.version.outputs.version }}
         run: |
           set -euo pipefail
           agvtool new-marketing-version "$MARKETING_VERSION"
