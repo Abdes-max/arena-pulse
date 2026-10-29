@@ -182,7 +182,18 @@
           "FRESH_PITCH": "Tema Relvado",
           "CRIMSON_CHARGE": "Tema Carmesim"
         },
-        "logoLabel": "Logótipo do torneio"
+        "logoLabel": "Logótipo do torneio",
+        "headerBackground": {
+          "label": "Fundo do cabeçalho",
+          "other": "Outro",
+          "presets": {
+            "vert": "Verde",
+            "marron": "Castanho",
+            "violet": "Roxo",
+            "bleu": "Azul",
+            "rouge": "Vermelho"
+          }
+        }
       },
       "teams": {
         "title": "Equipas participantes",

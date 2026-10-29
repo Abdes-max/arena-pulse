@@ -182,7 +182,18 @@
           "FRESH_PITCH": "Thème Pelouse",
           "CRIMSON_CHARGE": "Thème Grenat"
         },
-        "logoLabel": "Logo du tournoi"
+        "logoLabel": "Logo du tournoi",
+        "headerBackground": {
+          "label": "Fond d'écran de l'entête",
+          "other": "Autre",
+          "presets": {
+            "vert": "Vert",
+            "marron": "Marron",
+            "violet": "Violet",
+            "bleu": "Bleu",
+            "rouge": "Rouge"
+          }
+        }
       },
       "teams": {
         "title": "Équipes participantes",

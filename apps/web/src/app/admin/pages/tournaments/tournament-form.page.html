@@ -336,22 +336,50 @@
 
           <section class="tournament-form-page__personalization-section">
             <h3>{{ 'admin.tournamentForm.headerBackground.title' | transloco }}</h3>
-            <div class="tournament-form-page__logo-row">
-              @if (logoUrl(t.headerBackgroundUrl); as background) {
-                <img class="tournament-form-page__logo" [src]="background" alt="" />
-              } @else {
-                <span class="tournament-form-page__logo-placeholder" aria-hidden="true"></span>
+            <p class="tournament-form-page__hint">
+              {{ 'admin.tournamentForm.headerBackground.hint' | transloco }}
+            </p>
+            <div
+              class="tournament-form-page__backgrounds"
+              role="radiogroup"
+              [attr.aria-label]="'admin.tournamentForm.headerBackground.title' | transloco"
+            >
+              @for (preset of headerBackgroundPresets; track preset) {
+                <button
+                  type="button"
+                  role="radio"
+                  class="tournament-form-page__background"
+                  [class.tournament-form-page__background--selected]="
+                    selectedHeaderBackgroundPreset() === preset
+                  "
+                  [attr.aria-checked]="selectedHeaderBackgroundPreset() === preset"
+                  (click)="selectHeaderBackgroundPreset(preset)"
+                >
+                  <img
+                    class="tournament-form-page__background-thumb"
+                    [src]="headerBackgroundPresetUrl(preset)"
+                    alt=""
+                  />
+                  <span>{{
+                    'admin.tournamentForm.headerBackground.presets.' + preset | transloco
+                  }}</span>
+                </button>
               }
               <label
-                class="tournament-form-page__logo-upload"
-                [class.tournament-form-page__logo-upload--locked]="!premiumUnlocked()"
+                class="tournament-form-page__background"
+                [class.tournament-form-page__background--selected]="hasCustomHeaderBackground()"
+                [class.tournament-form-page__background--locked]="!premiumUnlocked()"
               >
-                {{
-                  (t.headerBackgroundUrl
-                    ? 'admin.tournamentForm.headerBackground.change'
-                    : 'admin.tournamentForm.headerBackground.add'
-                  ) | transloco
-                }}
+                @if (hasCustomHeaderBackground() && logoUrl(t.headerBackgroundUrl); as background) {
+                  <img class="tournament-form-page__background-thumb" [src]="background" alt="" />
+                } @else {
+                  <span
+                    class="tournament-form-page__background-thumb tournament-form-page__background-thumb--other"
+                    aria-hidden="true"
+                    >+</span
+                  >
+                }
+                <span>{{ 'admin.tournamentForm.headerBackground.other' | transloco }}</span>
                 <input
                   type="file"
                   accept="image/png,image/jpeg,image/webp"
@@ -359,18 +387,17 @@
                   (change)="onHeaderBackgroundFileSelected($event)"
                 />
               </label>
-              @if (t.headerBackgroundUrl) {
-                <button
-                  type="button"
-                  class="tournament-form-page__logo-remove"
-                  (click)="removeHeaderBackground()"
-                >
-                  {{ 'admin.tournamentForm.headerBackground.remove' | transloco }}
-                </button>
-              }
             </div>
+            @if (t.headerBackgroundUrl) {
+              <button
+                type="button"
+                class="tournament-form-page__logo-remove"
+                (click)="removeHeaderBackground()"
+              >
+                {{ 'admin.tournamentForm.headerBackground.remove' | transloco }}
+              </button>
+            }
           </section>
-
           <section class="tournament-form-page__personalization-section">
             <h3>{{ 'admin.tournamentForm.poster.title' | transloco }}</h3>
             <div class="tournament-form-page__logo-row">

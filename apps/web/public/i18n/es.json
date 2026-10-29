@@ -812,7 +812,16 @@
         "title": "Fondo de la cabecera",
         "change": "Cambiar",
         "add": "Añadir un fondo",
-        "remove": "Quitar"
+        "remove": "Quitar",
+        "hint": "Elige un fondo listo para usar o sube tu propia imagen (Otro).",
+        "other": "Otro",
+        "presets": {
+          "vert": "Verde",
+          "marron": "Marrón",
+          "violet": "Violeta",
+          "bleu": "Azul",
+          "rouge": "Rojo"
+        }
       },
       "poster": {
         "title": "Cartel / flyer",

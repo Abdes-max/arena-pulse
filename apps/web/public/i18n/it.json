@@ -812,7 +812,16 @@
         "title": "Sfondo dell'intestazione",
         "change": "Cambia",
         "add": "Aggiungi uno sfondo",
-        "remove": "Rimuovi"
+        "remove": "Rimuovi",
+        "hint": "Scegli uno sfondo pronto o carica la tua immagine (Altro).",
+        "other": "Altro",
+        "presets": {
+          "vert": "Verde",
+          "marron": "Marrone",
+          "violet": "Viola",
+          "bleu": "Blu",
+          "rouge": "Rosso"
+        }
       },
       "poster": {
         "title": "Locandina / flyer",

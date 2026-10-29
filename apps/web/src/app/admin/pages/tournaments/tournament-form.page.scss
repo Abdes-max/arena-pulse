@@ -581,3 +581,82 @@
     }
   }
 }
+
+.tournament-form-page__hint {
+  margin: 0 0 var(--ap-space-3);
+  font-size: 0.85rem;
+  color: var(--ap-color-muted);
+}
+
+// Ready-made header backgrounds + "Autre" (upload), as 16:9 tiles.
+.tournament-form-page__backgrounds {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: var(--ap-space-2);
+  margin-bottom: var(--ap-space-3);
+}
+
+.tournament-form-page__background {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-1);
+  padding: var(--ap-space-1);
+  border: 2px solid transparent;
+  border-radius: var(--ap-radius-md);
+  background: none;
+  color: var(--ap-color-fg);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--ap-color-border);
+  }
+
+  &:focus-within,
+  &:focus-visible {
+    outline: 2px solid var(--ap-color-primary);
+    outline-offset: 2px;
+  }
+
+  input[type='file'] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+}
+
+.tournament-form-page__background--selected,
+.tournament-form-page__background--selected:hover {
+  border-color: var(--ap-color-primary);
+}
+
+.tournament-form-page__background--locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+
+  input[type='file'] {
+    cursor: not-allowed;
+  }
+}
+
+.tournament-form-page__background-thumb {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--ap-radius-sm);
+  object-fit: cover;
+}
+
+.tournament-form-page__background-thumb--other {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: var(--ap-border-width) dashed var(--ap-color-border);
+  color: var(--ap-color-muted);
+  font-size: 1.4rem;
+}

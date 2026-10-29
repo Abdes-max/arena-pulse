@@ -914,7 +914,16 @@
         "title": "Header background",
         "change": "Change",
         "add": "Add a background",
-        "remove": "Remove"
+        "remove": "Remove",
+        "hint": "Pick a ready-made background or upload your own image (Other).",
+        "other": "Other",
+        "presets": {
+          "vert": "Green",
+          "marron": "Brown",
+          "violet": "Purple",
+          "bleu": "Blue",
+          "rouge": "Red"
+        }
       },
       "poster": {
         "title": "Poster / flyer",

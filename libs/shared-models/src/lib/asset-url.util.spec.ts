@@ -22,4 +22,9 @@ describe('resolveAssetUrl', () => {
       'http://localhost:3000/uploads/team-logos/x.png',
     );
   });
+  it('leaves a preset header background app-relative, even on mobile', () => {
+    expect(resolveAssetUrl('/header-backgrounds/vert.jpg', 'https://tournarena.com/api/v1')).toBe(
+      '/header-backgrounds/vert.jpg',
+    );
+  });
 });
