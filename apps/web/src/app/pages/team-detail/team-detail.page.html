@@ -8,6 +8,15 @@
       <img class="team-detail-page__logo" [src]="logo" alt="" />
     }
     <h2>{{ t.name }}</h2>
+    <ap-button
+      class="team-detail-page__favorite"
+      type="button"
+      size="sm"
+      [variant]="isFavorite() ? 'primary' : 'secondary'"
+      (click)="toggleFavorite()"
+    >
+      {{ (isFavorite() ? '★ ' : '☆ ') + ('teamDetail.favorite' | transloco) }}
+    </ap-button>
   </div>
   <p class="team-detail-page__meta">
     {{ t.categoryName }}

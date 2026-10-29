@@ -400,13 +400,16 @@
     "goals": "Goals",
     "upcoming": "Upcoming",
     "noMatches": "No match scheduled for this team.",
-    "poolRound": "Pool (round {{round}})"
+    "poolRound": "Pool (round {{round}})",
+    "favorite": "Favourite"
   },
   "teamSearch": {
     "allCategories": "All",
     "searchLabel": "Search a team",
     "searchPlaceholder": "Search a team…",
-    "noTeams": "No team found."
+    "noTeams": "No team found.",
+    "addFavorite": "Add to favourites",
+    "removeFavorite": "Remove from favourites"
   },
   "admin": {
     "shell": {

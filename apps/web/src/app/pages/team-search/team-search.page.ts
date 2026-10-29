@@ -4,6 +4,7 @@ import { Tabs, TextField } from 'design-system';
 import { AssetUrlService, PublicApiService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { LanguageService } from 'design-tokens';
+import { FavoritesService } from '../../core/favorites.service';
 import { TournamentContextService } from '../../core/tournament-context.service';
 import { Category, PublicTeam } from 'shared-models';
 
@@ -17,6 +18,7 @@ import { Category, PublicTeam } from 'shared-models';
 export class TeamSearchPage {
   private readonly api = inject(PublicApiService);
   private readonly context = inject(TournamentContextService);
+  private readonly favorites = inject(FavoritesService);
   protected readonly assetUrl = inject(AssetUrlService);
   private readonly languageService = inject(LanguageService);
   private readonly transloco = inject(TranslocoService);
@@ -30,7 +32,16 @@ export class TeamSearchPage {
 
   protected readonly filteredTeams = computed(() => {
     const query = this.query().trim().toLowerCase();
-    const teams = [...this.teams()].sort((a, b) => a.name.localeCompare(b.name));
+    // Favorites first (alphabetical among themselves), then the rest --
+    // same order as apps/mobile's team-search.page.ts.
+    const teams = [...this.teams()].sort((a, b) => {
+      const aFavorite = this.isFavorite(a);
+      const bFavorite = this.isFavorite(b);
+      if (aFavorite !== bFavorite) {
+        return aFavorite ? -1 : 1;
+      }
+      return a.name.localeCompare(b.name);
+    });
     return query ? teams.filter((team) => team.name.toLowerCase().includes(query)) : teams;
   });
 
@@ -66,5 +77,13 @@ export class TeamSearchPage {
 
   protected onQueryChange(query: string): void {
     this.query.set(query);
+  }
+
+  protected isFavorite(team: PublicTeam): boolean {
+    return this.favorites.isFavorite(this.context.slug(), team.id);
+  }
+
+  protected toggleFavorite(team: PublicTeam): void {
+    this.favorites.toggle(this.context.slug(), team.id, team.name);
   }
 }

@@ -298,13 +298,16 @@
     "goals": "Gol",
     "upcoming": "Prossime",
     "noMatches": "Nessuna partita programmata per questa squadra.",
-    "poolRound": "Girone (turno {{round}})"
+    "poolRound": "Girone (turno {{round}})",
+    "favorite": "Preferita"
   },
   "teamSearch": {
     "allCategories": "Tutte",
     "searchLabel": "Cerca una squadra",
     "searchPlaceholder": "Cerca una squadra…",
-    "noTeams": "Nessuna squadra trovata."
+    "noTeams": "Nessuna squadra trovata.",
+    "addFavorite": "Aggiungi ai preferiti",
+    "removeFavorite": "Rimuovi dai preferiti"
   },
   "admin": {
     "shell": {

@@ -8,10 +8,11 @@ import {
   signal,
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Badge, MatchCard, MatchCardTeam, MatchCardVariant } from 'design-system';
+import { Badge, Button, MatchCard, MatchCardTeam, MatchCardVariant } from 'design-system';
 import { AssetUrlService, PublicApiService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { LanguageService } from 'design-tokens';
+import { FavoritesService } from '../../core/favorites.service';
 import { TournamentContextService } from '../../core/tournament-context.service';
 import {
   CompetitionPhase,
@@ -26,7 +27,7 @@ import {
 
 @Component({
   selector: 'app-team-detail-page',
-  imports: [Badge, DecimalPipe, MatchCard, TranslocoPipe],
+  imports: [Badge, Button, DecimalPipe, MatchCard, TranslocoPipe],
   templateUrl: './team-detail.page.html',
   styleUrl: './team-detail.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -35,6 +36,7 @@ export class TeamDetailPage {
   private readonly route = inject(ActivatedRoute);
   private readonly api = inject(PublicApiService);
   private readonly context = inject(TournamentContextService);
+  private readonly favorites = inject(FavoritesService);
   protected readonly assetUrl = inject(AssetUrlService);
   private readonly languageService = inject(LanguageService);
   private readonly transloco = inject(TranslocoService);
@@ -80,6 +82,18 @@ export class TeamDetailPage {
     return index >= 0
       ? { label: qualification.targetPhaseName, ...qualificationTierColor(index, tiers.length) }
       : null;
+  }
+
+  protected readonly isFavorite = computed(() => {
+    const team = this.team();
+    return team ? this.favorites.isFavorite(this.context.slug(), team.id) : false;
+  });
+
+  protected toggleFavorite(): void {
+    const team = this.team();
+    if (team) {
+      this.favorites.toggle(this.context.slug(), team.id, team.name);
+    }
   }
 
   private readonly isDecided = (match: PublicTeamDetail['matches'][number]) =>
