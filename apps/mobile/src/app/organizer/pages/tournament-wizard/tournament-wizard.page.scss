@@ -630,13 +630,18 @@ ion-title {
   position: absolute;
   top: calc(var(--ap-space-1) + 4px);
   left: calc(var(--ap-space-1) + 4px);
+  max-width: calc(100% - var(--ap-space-1) * 2 - 8px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  box-sizing: border-box;
   padding: 2px 6px;
   border-radius: 999px;
   background: var(--ap-color-surface);
   color: var(--ap-color-fg);
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
   box-shadow: var(--ap-shadow-sm);
 }

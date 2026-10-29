@@ -161,7 +161,9 @@
 .tournament-form-page__personalization-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 100;
+  // Above the sticky admin header/submenu (--ap-z-sticky), which used to
+  // cover the dialog's top.
+  z-index: var(--ap-z-modal);
   padding: 0;
   border: none;
   background: rgb(0 0 0 / 50%);
@@ -173,7 +175,10 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 101;
+  z-index: calc(var(--ap-z-modal) + 1);
+  // border-box: the padding used to be added on top of the width, pushing
+  // the dialog past the right edge of a phone screen.
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: var(--ap-space-4);
@@ -181,10 +186,14 @@
   background: var(--ap-color-surface);
   border: var(--ap-border-width) solid var(--ap-color-border);
   border-radius: var(--ap-radius-lg);
-  max-width: 560px;
-  width: calc(100% - var(--ap-space-8));
-  max-height: calc(100vh - var(--ap-space-8));
+  width: min(560px, calc(100vw - var(--ap-space-6)));
+  max-height: calc(100dvh - var(--ap-space-6));
+  overflow-x: hidden;
   overflow-y: auto;
+
+  @media (max-width: 480px) {
+    padding: var(--ap-space-4);
+  }
 }
 
 .tournament-form-page__personalization-title {
@@ -205,7 +214,7 @@
 
 .tournament-form-page__theme-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(130px, 100%), 1fr));
   gap: var(--ap-space-3);
 }
 
@@ -216,6 +225,7 @@
 // to a handful of cards at once instead of the whole page, so a real theme
 // preview never needs to duplicate hex values here.
 .tournament-form-page__theme-card {
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: var(--ap-space-2);
@@ -392,7 +402,10 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  z-index: 101;
+  z-index: calc(var(--ap-z-modal) + 1);
+  // border-box: the padding used to be added on top of the width, pushing
+  // the dialog past the right edge of a phone screen.
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: var(--ap-space-4);
@@ -591,12 +604,13 @@
 // Ready-made header backgrounds + "Autre" (upload), as 16:9 tiles.
 .tournament-form-page__backgrounds {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(92px, 100%), 1fr));
   gap: var(--ap-space-2);
   margin-bottom: var(--ap-space-3);
 }
 
 .tournament-form-page__background {
+  min-width: 0;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -666,13 +680,18 @@
   position: absolute;
   top: calc(var(--ap-space-1) + 4px);
   left: calc(var(--ap-space-1) + 4px);
+  max-width: calc(100% - var(--ap-space-1) * 2 - 8px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  box-sizing: border-box;
   padding: 2px 6px;
   border-radius: 999px;
   background: var(--ap-color-surface);
   color: var(--ap-color-fg);
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
   box-shadow: var(--ap-shadow-sm);
 }
