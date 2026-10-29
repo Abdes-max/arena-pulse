@@ -44,6 +44,7 @@
 // node infra/scripts/submit-ios-app-store.mjs
 
 import { createSign } from 'node:crypto';
+import { replaceScreenshots } from './lib/app-store-screenshots.mjs';
 
 const {
   APP_STORE_CONNECT_API_KEY_BASE64,
@@ -54,6 +55,7 @@ const {
   BUILD_NUMBER,
   RELEASE_NOTES,
   RELEASE_TYPE = 'MANUAL',
+  SCREENSHOTS_DIR,
 } = process.env;
 
 for (const [name, value] of Object.entries({
@@ -167,6 +169,11 @@ async function main() {
       );
     }
     console.log(`  → found existing version in state "${state}", reusing it.`);
+    // Created with whatever release type the first run used -- keep it in
+    // line with this run's choice (MANUAL / AFTER_APPROVAL).
+    await api(jwt, 'PATCH', `/appStoreVersions/${version.id}`, {
+      data: { type: 'appStoreVersions', id: version.id, attributes: { releaseType: RELEASE_TYPE } },
+    });
   } else {
     console.log('  → none found, creating a new one.');
     const created = await api(jwt, 'POST', '/appStoreVersions', {
@@ -217,6 +224,22 @@ async function main() {
       }
       console.log(`  → set on ${localizations.data.length} localization(s).`);
     }
+  }
+
+  // Screenshots are locked once the version is in review -- replace them
+  // first when asked (SCREENSHOTS_DIR = apps/mobile/store-assets/app-store).
+  if (SCREENSHOTS_DIR) {
+    console.log(`Replacing screenshots from ${SCREENSHOTS_DIR}...`);
+    const localizations = await api(
+      jwt,
+      'GET',
+      `/appStoreVersions/${version.id}/appStoreVersionLocalizations`,
+    );
+    await replaceScreenshots(
+      (method, path, body) => api(jwt, method, path, body),
+      (localizations.data ?? []).map((localization) => localization.id),
+      SCREENSHOTS_DIR,
+    );
   }
 
   // Apple replaced the old one-step "appStoreVersionSubmissions" endpoint
