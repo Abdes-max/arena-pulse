@@ -360,7 +360,8 @@
         "errorCredentials": "Email o contraseña incorrectos.",
         "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo.",
         "sessionExpired": "Tu sesión ha caducado, inicia sesión de nuevo.",
-        "forgotPassword": "¿Has olvidado tu contraseña?"
+        "forgotPassword": "¿Has olvidado tu contraseña?",
+        "rememberMe": "Recordarme"
       },
       "register": {
         "title": "Regístrate",
@@ -427,7 +428,9 @@
         "errorExpired": "Este enlace de restablecimiento no es válido, ha caducado o ya se ha usado.",
         "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo.",
         "retry": "Solicitar un nuevo enlace"
-      }
+      },
+      "showPassword": "Mostrar contraseña",
+      "hidePassword": "Ocultar contraseña"
     },
     "collaborators": {
       "title": "Colaboradores",

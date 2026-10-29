@@ -46,6 +46,12 @@ export class TextField implements ControlValueAccessor {
   readonly min = input<number | string | null>(null);
   /** type="number" only -- amount +/- steps by. */
   readonly step = input<number>(1);
+  /** type="password" only -- the eye button's accessible names (French by default, like the stepper's). */
+  readonly showPasswordLabel = input('Afficher le mot de passe');
+  readonly hidePasswordLabel = input('Masquer le mot de passe');
+
+  /** type="password" only -- toggled by the eye button, swaps the input to type="text". */
+  protected readonly passwordVisible = signal(false);
 
   /**
    * Controlled-component inputs, for pages that render from plain signals

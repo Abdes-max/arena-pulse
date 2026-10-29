@@ -462,7 +462,8 @@
         "errorCredentials": "Incorrect email or password.",
         "errorGeneric": "Something went wrong, please try again.",
         "sessionExpired": "Your session has expired, please sign in again.",
-        "forgotPassword": "Forgot password?"
+        "forgotPassword": "Forgot password?",
+        "rememberMe": "Remember me"
       },
       "register": {
         "title": "Sign up",
@@ -529,7 +530,9 @@
         "errorExpired": "This reset link is invalid, expired, or already used.",
         "errorGeneric": "Something went wrong, please try again.",
         "retry": "Request a new link"
-      }
+      },
+      "showPassword": "Show password",
+      "hidePassword": "Hide password"
     },
     "collaborators": {
       "title": "Collaborators",

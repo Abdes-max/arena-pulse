@@ -49,6 +49,8 @@ export class OrganizerLoginPage {
   protected readonly form = this.formBuilder.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', Validators.required],
+    // Checked by default: same persistent session as before this option existed.
+    rememberMe: [true],
   });
 
   protected readonly submitting = signal(false);
@@ -69,8 +71,8 @@ export class OrganizerLoginPage {
     this.needsVerification.set(false);
     this.resent.set(false);
     try {
-      const { email, password } = this.form.getRawValue();
-      await this.auth.login(email, password);
+      const { email, password, rememberMe } = this.form.getRawValue();
+      await this.auth.login(email, password, rememberMe);
       const requestedReturnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
       const returnUrl = isSafeReturnUrl(requestedReturnUrl)
         ? requestedReturnUrl

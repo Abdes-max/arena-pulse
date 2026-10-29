@@ -42,6 +42,55 @@
       </button>
     </span>
   </div>
+} @else if (type() === 'password') {
+  <div class="ap-text-field__password-wrapper">
+    <input
+      [id]="inputId"
+      class="ap-text-field__input"
+      [type]="passwordVisible() ? 'text' : 'password'"
+      [value]="displayValue()"
+      [disabled]="disabled()"
+      [attr.placeholder]="placeholder()"
+      [attr.autocomplete]="autocomplete()"
+      [attr.aria-invalid]="errorMessage() ? true : null"
+      [attr.aria-describedby]="errorMessage() ? errorId : null"
+      (input)="handleInput($event)"
+      (blur)="handleBlur()"
+    />
+    <button
+      type="button"
+      class="ap-text-field__password-toggle"
+      [attr.aria-label]="passwordVisible() ? hidePasswordLabel() : showPasswordLabel()"
+      [attr.aria-pressed]="passwordVisible()"
+      [attr.aria-controls]="inputId"
+      [disabled]="disabled()"
+      (click)="passwordVisible.set(!passwordVisible())"
+    >
+      @if (passwordVisible()) {
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path
+            d="M3 3l18 18M10.6 10.6a2 2 0 0 0 2.8 2.8M9.9 5.1A9.8 9.8 0 0 1 12 5c5 0 9 4.5 10 7-.4 1-1.3 2.4-2.6 3.7M6.6 6.6C4.6 8 3.3 10 2 12c1 2.5 5 7 10 7 1.8 0 3.4-.5 4.8-1.3"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+      } @else {
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path
+            d="M2 12c1-2.5 5-7 10-7s9 4.5 10 7c-1 2.5-5 7-10 7S3 14.5 2 12Z"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linejoin="round"
+          />
+          <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.8" />
+        </svg>
+      }
+    </button>
+  </div>
 } @else {
   <input
     [id]="inputId"

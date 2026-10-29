@@ -14,9 +14,15 @@
     <ap-text-field
       [label]="'admin.auth.login.passwordLabel' | transloco"
       type="password"
+      [showPasswordLabel]="'admin.auth.showPassword' | transloco"
+      [hidePasswordLabel]="'admin.auth.hidePassword' | transloco"
       formControlName="password"
       autocomplete="current-password"
     />
+    <label class="login-page__remember">
+      <input type="checkbox" formControlName="rememberMe" />
+      {{ 'admin.auth.login.rememberMe' | transloco }}
+    </label>
     <a class="login-page__forgot" routerLink="/forgot-password">{{
       'admin.auth.login.forgotPassword' | transloco
     }}</a>

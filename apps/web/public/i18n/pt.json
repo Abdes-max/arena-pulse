@@ -360,7 +360,8 @@
         "errorCredentials": "Email ou palavra-passe incorretos.",
         "errorGeneric": "Ocorreu um erro, tente novamente.",
         "sessionExpired": "A sua sessão expirou, inicie sessão novamente.",
-        "forgotPassword": "Esqueceu-se da palavra-passe?"
+        "forgotPassword": "Esqueceu-se da palavra-passe?",
+        "rememberMe": "Lembrar-me"
       },
       "register": {
         "title": "Registe-se",
@@ -427,7 +428,9 @@
         "errorExpired": "Este link de redefinição é inválido, expirou ou já foi utilizado.",
         "errorGeneric": "Ocorreu um erro, tente novamente.",
         "retry": "Pedir um novo link"
-      }
+      },
+      "showPassword": "Mostrar palavra-passe",
+      "hidePassword": "Ocultar palavra-passe"
     },
     "collaborators": {
       "title": "Colaboradores",

@@ -134,6 +134,48 @@
   }
 }
 
+// type="password": eye button inside the field's right edge to reveal the
+// value -- the input keeps its own border, padded so text never runs under it.
+.ap-text-field__password-wrapper {
+  position: relative;
+
+  .ap-text-field__input {
+    padding-right: calc(var(--ap-space-4) + 32px);
+  }
+}
+
+.ap-text-field__password-toggle {
+  position: absolute;
+  top: 50%;
+  right: var(--ap-space-2);
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  border-radius: var(--ap-radius-sm);
+  background: transparent;
+  color: var(--ap-color-muted);
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    color: var(--ap-color-fg);
+  }
+
+  &:focus-visible {
+    outline: var(--ap-border-width-strong) solid var(--ap-color-focus);
+    outline-offset: 0;
+  }
+
+  &:disabled {
+    opacity: var(--ap-opacity-disabled);
+    cursor: not-allowed;
+  }
+}
+
 .ap-text-field__error {
   margin-top: var(--ap-space-2);
   font-size: 0.85rem;

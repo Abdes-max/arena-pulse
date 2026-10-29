@@ -360,7 +360,8 @@
         "errorCredentials": "Falsche E-Mail oder falsches Passwort.",
         "errorGeneric": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut.",
         "sessionExpired": "Ihre Sitzung ist abgelaufen, bitte melden Sie sich erneut an.",
-        "forgotPassword": "Passwort vergessen?"
+        "forgotPassword": "Passwort vergessen?",
+        "rememberMe": "Angemeldet bleiben"
       },
       "register": {
         "title": "Registrieren",
@@ -427,7 +428,9 @@
         "errorExpired": "Dieser Link zum Zurücksetzen ist ungültig, abgelaufen oder bereits verwendet.",
         "errorGeneric": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut.",
         "retry": "Neuen Link anfordern"
-      }
+      },
+      "showPassword": "Passwort anzeigen",
+      "hidePassword": "Passwort verbergen"
     },
     "collaborators": {
       "title": "Mitarbeiter",

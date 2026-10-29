@@ -93,7 +93,8 @@
         "errorCredentials": "Email ou mot de passe incorrect.",
         "errorGeneric": "Une erreur est survenue, réessayez.",
         "sessionExpired": "Votre session a expiré, reconnectez-vous.",
-        "forgotPassword": "Mot de passe oublié ?"
+        "forgotPassword": "Mot de passe oublié ?",
+        "rememberMe": "Se souvenir de moi"
       },
       "sessionTimeout": {
         "title": "Toujours là ?",
@@ -112,7 +113,9 @@
         "sentHint": "Ouvrez le lien qu'il contient pour choisir un nouveau mot de passe, puis revenez ici pour vous connecter.",
         "login": "Se connecter",
         "errorGeneric": "Une erreur est survenue, réessayez."
-      }
+      },
+      "showPassword": "Afficher le mot de passe",
+      "hidePassword": "Masquer le mot de passe"
     },
     "tournaments": {
       "list": {

@@ -60,6 +60,8 @@
           <ap-text-field
             [label]="'organizer.auth.register.passwordLabel' | transloco"
             type="password"
+            [showPasswordLabel]="'organizer.auth.showPassword' | transloco"
+            [hidePasswordLabel]="'organizer.auth.hidePassword' | transloco"
             formControlName="password"
             autocomplete="new-password"
             [errorMessage]="fieldError('password') | transloco"

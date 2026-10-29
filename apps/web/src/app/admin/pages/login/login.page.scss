@@ -62,3 +62,19 @@
     color: var(--ap-color-primary);
   }
 }
+
+// "Se souvenir de moi", right under the password field.
+.login-page__remember {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  font-size: 0.9rem;
+  cursor: pointer;
+
+  input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--ap-color-primary);
+  }
+}
