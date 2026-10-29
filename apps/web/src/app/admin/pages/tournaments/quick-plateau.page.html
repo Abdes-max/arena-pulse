@@ -1,0 +1,141 @@
+<main class="quick-plateau-page">
+  <a class="quick-plateau-page__back" routerLink="/admin/tournaments">
+    ‹ {{ 'admin.quickPlateau.back' | transloco }}
+  </a>
+  <h1>{{ 'admin.quickPlateau.title' | transloco }}</h1>
+  <p class="quick-plateau-page__intro">{{ 'admin.quickPlateau.intro' | transloco }}</p>
+
+  @if (errorMessage(); as message) {
+    <p class="quick-plateau-page__error" role="alert">{{ message | transloco }}</p>
+  }
+
+  <form class="quick-plateau-page__form" (submit)="submit(); $event.preventDefault()">
+    <fieldset class="quick-plateau-page__group">
+      <legend>{{ 'admin.quickPlateau.sections.event' | transloco }}</legend>
+      <ap-text-field
+        [label]="'admin.quickPlateau.name' | transloco"
+        [placeholder]="'admin.quickPlateau.namePlaceholder' | transloco"
+        [value]="name()"
+        (valueChange)="name.set($event)"
+      />
+      <ap-text-field
+        [label]="'admin.quickPlateau.category' | transloco"
+        [placeholder]="'admin.quickPlateau.categoryPlaceholder' | transloco"
+        [value]="categoryName()"
+        (valueChange)="categoryName.set($event)"
+      />
+      <ap-select
+        [label]="'admin.quickPlateau.sport' | transloco"
+        [options]="sportOptions()"
+        [value]="sportId()"
+        (valueChange)="sportId.set($event)"
+      />
+      <div class="quick-plateau-page__row">
+        <ap-text-field
+          [label]="'admin.quickPlateau.date' | transloco"
+          type="date"
+          [value]="date()"
+          (valueChange)="date.set($event)"
+        />
+        <ap-text-field
+          [label]="'admin.quickPlateau.startTime' | transloco"
+          type="time"
+          [value]="startTime()"
+          (valueChange)="startTime.set($event)"
+        />
+      </div>
+    </fieldset>
+
+    <fieldset class="quick-plateau-page__group">
+      <legend>{{ 'admin.quickPlateau.sections.format' | transloco }}</legend>
+      <div class="quick-plateau-page__row">
+        <ap-text-field
+          [label]="'admin.quickPlateau.teamCount' | transloco"
+          type="number"
+          [min]="2"
+          [value]="teamCount()"
+          (valueChange)="teamCount.set($event)"
+        />
+        <ap-text-field
+          [label]="'admin.quickPlateau.fieldCount' | transloco"
+          type="number"
+          [min]="1"
+          [value]="fieldCount()"
+          (valueChange)="fieldCount.set($event)"
+        />
+        <ap-text-field
+          [label]="'admin.quickPlateau.poolCount' | transloco"
+          type="number"
+          [min]="1"
+          [value]="poolCount()"
+          (valueChange)="poolCount.set($event)"
+        />
+      </div>
+      <div class="quick-plateau-page__row">
+        <ap-text-field
+          [label]="'admin.quickPlateau.matchDuration' | transloco"
+          type="number"
+          [min]="1"
+          [value]="matchDurationMinutes()"
+          (valueChange)="matchDurationMinutes.set($event)"
+        />
+        <ap-text-field
+          [label]="'admin.quickPlateau.breakDuration' | transloco"
+          type="number"
+          [min]="0"
+          [value]="breakDurationMinutes()"
+          (valueChange)="breakDurationMinutes.set($event)"
+        />
+      </div>
+      <label class="quick-plateau-page__checkbox">
+        <input
+          type="checkbox"
+          [checked]="withFinal()"
+          [disabled]="+poolCount() > 2"
+          (change)="toggleFinal($event)"
+        />
+        {{ 'admin.quickPlateau.withFinal' | transloco }}
+      </label>
+    </fieldset>
+
+    <section class="quick-plateau-page__preview" aria-live="polite">
+      @if (preview(); as p) {
+        <dl>
+          <div>
+            <dt>{{ 'admin.quickPlateau.preview.matches' | transloco }}</dt>
+            <dd>{{ p.matchCount }}</dd>
+          </div>
+          <div>
+            <dt>{{ 'admin.quickPlateau.preview.perTeam' | transloco }}</dt>
+            <dd>
+              @if (p.minMatchesPerTeam === p.maxMatchesPerTeam) {
+                {{ p.minMatchesPerTeam }}
+              } @else {
+                {{ p.minMatchesPerTeam }}–{{ p.maxMatchesPerTeam }}
+              }
+            </dd>
+          </div>
+          <div>
+            <dt>{{ 'admin.quickPlateau.preview.rotations' | transloco }}</dt>
+            <dd>{{ p.rotationCount }}</dd>
+          </div>
+          <div>
+            <dt>{{ 'admin.quickPlateau.preview.end' | transloco }}</dt>
+            <dd>{{ endTime() }}</dd>
+          </div>
+        </dl>
+      } @else {
+        <p>{{ 'admin.quickPlateau.preview.invalid' | transloco }}</p>
+      }
+    </section>
+
+    <div class="quick-plateau-page__actions">
+      <ap-button type="submit" [disabled]="!canSubmit()">
+        {{
+          (submitting() ? 'admin.quickPlateau.submitting' : 'admin.quickPlateau.submit') | transloco
+        }}
+      </ap-button>
+      <a routerLink="/admin/tournaments/new">{{ 'admin.quickPlateau.fullFlow' | transloco }}</a>
+    </div>
+  </form>
+</main>

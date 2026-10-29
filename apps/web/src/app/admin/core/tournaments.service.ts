@@ -25,6 +25,23 @@ export interface CreateTournamentPayload {
   theme?: PublicTheme;
 }
 
+export interface CreateQuickPlateauPayload {
+  name: string;
+  sportId: string;
+  /** YYYY-MM-DD */
+  date: string;
+  /** Absolute ISO instant of the first kickoff. */
+  startDateTime: string;
+  teamCount: number;
+  fieldCount: number;
+  matchDurationMinutes: number;
+  breakDurationMinutes: number;
+  poolCount?: number;
+  withFinal?: boolean;
+  categoryName?: string;
+  venueName?: string;
+}
+
 export interface UpdateTournamentPayload {
   name?: string;
   sportId?: string;
@@ -100,6 +117,16 @@ export class TournamentsService {
     payload: CreateTournamentPayload,
   ): Promise<TournamentDetail> {
     return firstValueFrom(this.http.post<TournamentDetail>(this.base(organizationId), payload));
+  }
+
+  /** One-call plateau: tournament, placeholder teams, fields, pools and calendar (see QuickPlateauService). */
+  createQuickPlateau(
+    organizationId: string,
+    payload: CreateQuickPlateauPayload,
+  ): Promise<TournamentDetail> {
+    return firstValueFrom(
+      this.http.post<TournamentDetail>(`${this.base(organizationId)}/quick-plateau`, payload),
+    );
   }
 
   updateTournament(

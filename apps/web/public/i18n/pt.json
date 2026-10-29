@@ -457,7 +457,45 @@
       "deleting": "Excluindo…",
       "errorGeneric": "Ocorreu um erro, tente novamente."
     },
+    "quickPlateau": {
+      "back": "My tournaments",
+      "title": "Create a plateau",
+      "intro": "One day, several teams rotating on your fields. Pick the format: \"Team 1, 2…\" teams, fields, pools and the schedule are created in one go. You rename the teams afterwards.",
+      "sections": {
+        "event": "The event",
+        "format": "The format"
+      },
+      "name": "Plateau name",
+      "namePlaceholder": "U11 autumn plateau",
+      "category": "Category (optional)",
+      "categoryPlaceholder": "U11",
+      "sport": "Sport",
+      "date": "Date",
+      "startTime": "First kickoff",
+      "teamCount": "Teams",
+      "fieldCount": "Fields",
+      "poolCount": "Pools",
+      "matchDuration": "Match length (min)",
+      "breakDuration": "Break between matches (min)",
+      "withFinal": "Add a final (1st vs 2nd, or both pool winners)",
+      "preview": {
+        "matches": "Matches",
+        "perTeam": "Matches per team",
+        "rotations": "Rotations",
+        "end": "Expected end",
+        "invalid": "You need at least 2 teams per pool and at least 1 field."
+      },
+      "submit": "Create the plateau",
+      "submitting": "Creating…",
+      "fullFlow": "Need a full tournament instead?",
+      "errors": {
+        "loadSports": "Could not load sports.",
+        "invalid": "This format is not possible. Check the number of teams, pools and fields.",
+        "generic": "Could not create the plateau."
+      }
+    },
     "tournamentList": {
+      "createPlateau": "Create a plateau (quick)",
       "title": "Torneios",
       "create": "Criar um torneio",
       "loading": "A carregar…",

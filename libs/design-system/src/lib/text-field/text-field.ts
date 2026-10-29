@@ -10,7 +10,7 @@ import {
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 export type TextFieldType =
-  'text' | 'email' | 'password' | 'search' | 'tel' | 'number' | 'date' | 'datetime-local';
+  'text' | 'email' | 'password' | 'search' | 'tel' | 'number' | 'date' | 'datetime-local' | 'time';
 
 let nextId = 0;
 

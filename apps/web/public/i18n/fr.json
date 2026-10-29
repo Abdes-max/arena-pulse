@@ -559,7 +559,45 @@
       "deleting": "Suppression…",
       "errorGeneric": "Une erreur est survenue, réessayez."
     },
+    "quickPlateau": {
+      "back": "Mes tournois",
+      "title": "Créer un plateau",
+      "intro": "Une journée, plusieurs équipes qui tournent sur vos terrains. Indiquez le format : les équipes « Équipe 1, 2… », les terrains, les poules et le planning sont créés d’un coup. Vous renommerez les équipes ensuite.",
+      "sections": {
+        "event": "L’événement",
+        "format": "Le format"
+      },
+      "name": "Nom du plateau",
+      "namePlaceholder": "Plateau U11 de la Toussaint",
+      "category": "Catégorie (facultatif)",
+      "categoryPlaceholder": "U11",
+      "sport": "Sport",
+      "date": "Date",
+      "startTime": "Premier coup d’envoi",
+      "teamCount": "Équipes",
+      "fieldCount": "Terrains",
+      "poolCount": "Poules",
+      "matchDuration": "Durée d’un match (min)",
+      "breakDuration": "Pause entre matchs (min)",
+      "withFinal": "Ajouter une finale (1er contre 2e, ou vainqueurs des 2 poules)",
+      "preview": {
+        "matches": "Matchs",
+        "perTeam": "Matchs par équipe",
+        "rotations": "Rotations",
+        "end": "Fin prévue",
+        "invalid": "Il faut au moins 2 équipes par poule et au moins 1 terrain."
+      },
+      "submit": "Créer le plateau",
+      "submitting": "Création…",
+      "fullFlow": "Plutôt un tournoi complet ?",
+      "errors": {
+        "loadSports": "Impossible de charger les sports.",
+        "invalid": "Ce format n’est pas possible. Vérifiez le nombre d’équipes, de poules et de terrains.",
+        "generic": "Impossible de créer le plateau."
+      }
+    },
     "tournamentList": {
+      "createPlateau": "Créer un plateau (rapide)",
       "title": "Tournois",
       "create": "Créer un tournoi",
       "loading": "Chargement…",

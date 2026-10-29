@@ -35,6 +35,8 @@ import { RealtimeService } from './realtime.service';
 import { RefereesController } from './referees.controller';
 import { RefereesService } from './referees.service';
 import { ScheduleController } from './schedule.controller';
+import { QuickPlateauController } from './quick-plateau.controller';
+import { QuickPlateauService } from './quick-plateau.service';
 import { ScheduleGenerationService } from './schedule-generation.service';
 import { ScoresController } from './scores.controller';
 import { ScoresService } from './scores.service';
@@ -78,6 +80,7 @@ import { WrappedService } from './wrapped.service';
     CrossGroupQualificationRulesController,
     StructurePresetsController,
     ScheduleController,
+    QuickPlateauController,
     MatchesController,
     ScoresController,
     StandingsController,
@@ -104,6 +107,7 @@ import { WrappedService } from './wrapped.service';
     CrossGroupQualificationRulesService,
     StructurePresetsService,
     ScheduleGenerationService,
+    QuickPlateauService,
     MatchesService,
     RecapRenderService,
     ScoresService,

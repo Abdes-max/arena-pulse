@@ -151,3 +151,9 @@
     }
   }
 }
+
+.tournament-list-page__create {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ap-space-2);
+}

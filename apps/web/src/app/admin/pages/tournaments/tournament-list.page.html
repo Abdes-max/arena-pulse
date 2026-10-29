@@ -1,9 +1,14 @@
 <main class="tournament-list-page">
   <div class="tournament-list-page__header">
     <h1>{{ 'admin.tournamentList.title' | transloco }}</h1>
-    <ap-button type="button" (click)="goToCreate()">{{
-      'admin.tournamentList.create' | transloco
-    }}</ap-button>
+    <div class="tournament-list-page__create">
+      <ap-button type="button" (click)="goToCreatePlateau()">{{
+        'admin.tournamentList.createPlateau' | transloco
+      }}</ap-button>
+      <ap-button type="button" variant="ghost" (click)="goToCreate()">{{
+        'admin.tournamentList.create' | transloco
+      }}</ap-button>
+    </div>
   </div>
 
   @if (loading()) {
