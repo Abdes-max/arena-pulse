@@ -1,7 +1,21 @@
 import { DatePipe, NgTemplateOutlet } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { IonContent, IonFooter, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import {
+  IonContent,
+  IonFooter,
+  IonHeader,
+  IonTitle,
+  IonToolbar,
+  NavController,
+} from '@ionic/angular/standalone';
 import { AssetUrlService, PublicApiService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Button, TextField } from 'design-system';
@@ -17,7 +31,12 @@ import {
 } from 'shared-models';
 import { OrganizerAuthService } from '../../core/auth.service';
 import { IapCancelledError, IapService } from '../../core/iap.service';
-import { OrganizerPhase, TournamentStatus, WizardStructureFormat } from '../../core/models';
+import {
+  OrganizerPhase,
+  PublicationQuote,
+  TournamentStatus,
+  WizardStructureFormat,
+} from '../../core/models';
 import {
   OrganizationSubscriptionStatus,
   OrganizerOrganizationsService,
@@ -94,6 +113,7 @@ export class OrganizerTournamentWizardPage {
   private readonly assetUrl = inject(AssetUrlService);
   private readonly iap = inject(IapService);
   private readonly transloco = inject(TranslocoService);
+  private readonly navController = inject(NavController);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
@@ -129,6 +149,9 @@ export class OrganizerTournamentWizardPage {
   protected readonly sportId = signal('');
   protected readonly isOnline = signal(false);
   protected readonly venueName = signal('');
+  // Tournament day (yyyy-mm-dd), shown in the public header. Also the
+  // Calendrier step's default first-match day.
+  protected readonly startDate = signal(tomorrowIsoDate());
   protected readonly theme = signal<PublicTheme>(DEFAULT_THEME);
   protected readonly themes: PublicTheme[] = [
     'INK_SIGNAL',
@@ -155,6 +178,9 @@ export class OrganizerTournamentWizardPage {
   private headerBackgroundSaved: HeaderBackgroundPreset | 'other' | null = null;
 
   private tournamentId: string | null = null;
+  // Edit mode: the end date already saved (web form only) -- pushed along
+  // when the new start date would land after it.
+  private loadedEndDate: string | null = null;
   private organizationId: string | null = null;
   private categoryId: string | null = null;
 
@@ -192,6 +218,15 @@ export class OrganizerTournamentWizardPage {
   // on the native iOS build -- see isIosNative's own comment (App Review
   // guideline 3.1.1, no in-app purchase flow other than IAP on iOS).
   protected readonly paymentBlockedOnIos = signal(false);
+  // Edit mode on an already-published tournament: "Republier" pushes the
+  // changes through publish() again, which charges the gap if they crossed
+  // a paid tier (e.g. teams added) -- quoted up front so the organizer
+  // knows before tapping. Null while loading / not applicable.
+  protected readonly publicationQuote = signal<PublicationQuote | null>(null);
+  protected readonly republished = signal(false);
+  protected readonly isRepublish = computed(
+    () => this.mode() === 'edit' && this.currentStatus() === 'PUBLISHED',
+  );
   protected readonly publishedTournamentName = signal('');
   // Computed once (the platform never changes mid-session), not re-evaluated
   // per template read -- same "resolved once, plain field" style as this
@@ -204,6 +239,11 @@ export class OrganizerTournamentWizardPage {
   protected readonly subscriptionStatus = signal<OrganizationSubscriptionStatus | null>(null);
 
   constructor() {
+    effect(() => {
+      if (this.step() === 5 && this.isRepublish()) {
+        void this.loadPublicationQuote();
+      }
+    });
     const organizationId = this.auth.organizations()[0]?.id;
     this.organizationId = organizationId ?? null;
     void this.publicApi.listSports().then((sports) => this.sports.set(sports));
@@ -231,6 +271,10 @@ export class OrganizerTournamentWizardPage {
       this.isListed.set(tournament.isListed);
       this.theme.set(tournament.theme);
       this.currentStatus.set(tournament.status);
+      if (tournament.startDate) {
+        this.startDate.set(tournament.startDate.slice(0, 10));
+      }
+      this.loadedEndDate = tournament.endDate?.slice(0, 10) ?? null;
       this.headerBackgroundSaved = tournament.headerBackgroundUrl
         ? (headerBackgroundPresetOf(tournament.headerBackgroundUrl) ?? 'other')
         : null;
@@ -552,7 +596,7 @@ export class OrganizerTournamentWizardPage {
   protected canAdvance(): boolean {
     switch (this.step()) {
       case 1:
-        return this.name().trim().length > 0 && this.sportId() !== '';
+        return this.name().trim().length > 0 && this.sportId() !== '' && this.startDate() !== '';
       case 2:
         // The "≥3 teams" nudge only makes sense while building a tournament
         // from scratch -- an existing one may legitimately have any team
@@ -577,7 +621,7 @@ export class OrganizerTournamentWizardPage {
       return;
     }
     if (current === 1) {
-      await this.router.navigateByUrl('/organizer/tournaments');
+      await this.backToList();
       return;
     }
     this.step.set((current - 1) as 1 | 2 | 3 | 4);
@@ -602,11 +646,10 @@ export class OrganizerTournamentWizardPage {
         // nothing to submit (see the template's own guard).
         await this.submitStructure();
       } else if (current === 5) {
-        if (this.mode() === 'edit' && this.currentStatus() === 'PUBLISHED') {
-          await this.submitUnpublish();
-        } else {
-          await this.submitPublish();
-        }
+        // Already published (edit mode): this is "Republier" -- same
+        // publish() call, which charges only if the changes need it.
+        this.republished.set(this.isRepublish());
+        await this.submitPublish();
         return;
       }
       this.step.set((current + 1) as 2 | 3 | 4 | 5);
@@ -638,8 +681,10 @@ export class OrganizerTournamentWizardPage {
       name: this.name().trim(),
       sportId: this.sportId(),
       isOnline: this.isOnline(),
+      startDate: this.startDate(),
     });
     this.tournamentId = tournament.id;
+    this.scheduleDate.set(this.startDate());
     if (this.theme() !== DEFAULT_THEME) {
       try {
         await this.tournamentsApi.updateTournament(organizationId, tournament.id, {
@@ -674,10 +719,13 @@ export class OrganizerTournamentWizardPage {
     if (!tournamentId) {
       throw new Error('Wizard state not initialized');
     }
+    const startDate = this.startDate();
     await this.tournamentsApi.updateTournament(organizationId, tournamentId, {
       name: this.name().trim(),
       sportId: this.sportId(),
       isOnline: this.isOnline(),
+      startDate,
+      ...(this.loadedEndDate && this.loadedEndDate < startDate ? { endDate: startDate } : {}),
     });
     // Sent separately from the core fields above -- a theme change can be
     // rejected on its own (still free tier, see PremiumFeaturesStatus), and
@@ -897,6 +945,45 @@ export class OrganizerTournamentWizardPage {
     this.currentStatus.set(tournament.status);
   }
 
+  private async loadPublicationQuote(): Promise<void> {
+    const organizationId = this.organizationId;
+    const tournamentId = this.tournamentId;
+    if (!organizationId || !tournamentId) {
+      return;
+    }
+    this.publicationQuote.set(null);
+    try {
+      this.publicationQuote.set(
+        await this.tournamentsApi.getPublicationQuote(organizationId, tournamentId),
+      );
+    } catch {
+      // Best-effort hint only -- publish() itself still charges correctly.
+    }
+  }
+
+  protected formatAmount(quote: PublicationQuote): string {
+    return new Intl.NumberFormat(this.transloco.getActiveLang(), {
+      style: 'currency',
+      currency: quote.currency.toUpperCase(),
+    }).format(quote.amountCents / 100);
+  }
+
+  /** Publication step, already-published tournament: secondary action next to "Republier". */
+  protected async unpublish(): Promise<void> {
+    if (this.submitting()) {
+      return;
+    }
+    this.submitting.set(true);
+    this.errorMessage.set(null);
+    try {
+      await this.submitUnpublish();
+    } catch {
+      this.errorMessage.set('organizer.wizard.errorGeneric');
+    } finally {
+      this.submitting.set(false);
+    }
+  }
+
   /** Publication step's footer button label -- "Payer et publier" only makes sense for a genuine first publish; edit mode relabels it to match what the tap will actually do. */
   protected footerNextLabel(): string {
     if (this.step() !== 5) {
@@ -904,7 +991,9 @@ export class OrganizerTournamentWizardPage {
     }
     if (this.mode() === 'edit') {
       if (this.currentStatus() === 'PUBLISHED') {
-        return 'organizer.wizard.publish.unpublish';
+        return (this.publicationQuote()?.amountCents ?? 0) > 0
+          ? 'organizer.wizard.publish.payAndRepublish'
+          : 'organizer.wizard.publish.republish';
       }
       if (this.currentStatus() === 'UNPUBLISHED') {
         return 'organizer.wizard.publish.republish';
@@ -913,8 +1002,12 @@ export class OrganizerTournamentWizardPage {
     return 'organizer.wizard.payAndPublish';
   }
 
+  // navigateRoot, not a plain forward navigation: Ionic keeps this page
+  // alive in its stack otherwise, and reopening the same tournament from
+  // the list then landed back on the stale 'done' screen instead of a
+  // fresh wizard (only a page refresh got out of it).
   protected async backToList(): Promise<void> {
-    await this.router.navigateByUrl('/organizer/tournaments');
+    await this.navController.navigateRoot('/organizer/tournaments', { animationDirection: 'back' });
   }
 }
 

@@ -55,6 +55,7 @@ export interface CreateTournamentPayload {
   isOnline?: boolean;
   isListed?: boolean;
   theme?: PublicTheme;
+  startDate?: string;
 }
 
 // Publishing may require a Stripe payment first once past the free tier
@@ -84,6 +85,12 @@ export type IapProductId =
   | 'annual_subscription';
 
 export type PublishTournamentResult = OrganizerTournament | PublishPendingPayment;
+
+export interface PublicationQuote {
+  teamsCount: number;
+  amountCents: number;
+  currency: string;
+}
 
 export interface PremiumFeaturesStatus {
   unlocked: boolean;

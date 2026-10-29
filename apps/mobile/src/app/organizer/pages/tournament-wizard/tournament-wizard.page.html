@@ -241,6 +241,12 @@
               </button>
             }
           </div>
+          <ap-text-field
+            [label]="'organizer.wizard.infos.dateLabel' | transloco"
+            type="date"
+            [value]="startDate()"
+            (valueChange)="startDate.set($event)"
+          />
           @if (!isOnline()) {
             <ap-text-field
               [label]="'organizer.wizard.infos.venueLabel' | transloco"
@@ -654,7 +660,38 @@
           <h3 class="wizard-page__section-title">
             {{ 'organizer.wizard.publish.publishTitle' | transloco }}
           </h3>
-          <p class="wizard-page__hint">{{ 'organizer.wizard.publish.paymentHint' | transloco }}</p>
+          @if (isRepublish()) {
+            <p class="wizard-page__hint">
+              {{ 'organizer.wizard.publish.republishHint' | transloco }}
+            </p>
+            @if (publicationQuote(); as quote) {
+              @if (quote.amountCents > 0) {
+                <p class="wizard-page__payment-notice" role="status">
+                  {{
+                    'organizer.wizard.publish.republishPaymentNeeded'
+                      | transloco: { amount: formatAmount(quote), teams: quote.teamsCount }
+                  }}
+                </p>
+              } @else {
+                <p class="wizard-page__hint">
+                  {{ 'organizer.wizard.publish.republishFree' | transloco }}
+                </p>
+              }
+            }
+            <ap-button
+              type="button"
+              variant="secondary"
+              [fullWidth]="true"
+              [disabled]="submitting()"
+              (click)="unpublish()"
+            >
+              {{ 'organizer.wizard.publish.unpublish' | transloco }}
+            </ap-button>
+          } @else {
+            <p class="wizard-page__hint">
+              {{ 'organizer.wizard.publish.paymentHint' | transloco }}
+            </p>
+          }
 
           <h3 class="wizard-page__section-title">
             {{ 'organizer.wizard.publish.planTitle' | transloco }}
@@ -726,6 +763,16 @@
           </h2>
           <p class="wizard-page__lede">
             {{ 'organizer.wizard.done.pendingPaymentBody' | transloco }}
+          </p>
+        } @else if (republished()) {
+          <h2 class="wizard-page__confirm-title">
+            {{ 'organizer.wizard.done.republishedTitle' | transloco }}
+          </h2>
+          <p class="wizard-page__lede">
+            {{
+              'organizer.wizard.done.republishedBody'
+                | transloco: { name: publishedTournamentName() }
+            }}
           </p>
         } @else {
           <h2 class="wizard-page__confirm-title">
