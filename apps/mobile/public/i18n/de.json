@@ -183,6 +183,7 @@
           "CRIMSON_CHARGE": "Motiv Karmesin"
         },
         "logoLabel": "Turnier-Logo",
+        "dateLabel": "Turnierdatum",
         "headerBackground": {
           "label": "Kopfzeilen-Hintergrund",
           "other": "Andere",
@@ -276,7 +277,11 @@
         "planSubscribe": "Abonnieren",
         "subscribeError": "Ihr Abonnement konnte nicht bestätigt werden. Bitte versuchen Sie es in Kürze erneut.",
         "unpublish": "Veröffentlichung aufheben",
-        "republish": "Erneut veröffentlichen"
+        "republish": "Erneut veröffentlichen",
+        "republishHint": "Ihre Änderungen sind bereits sichtbar. Veröffentlichen Sie erneut, um sie zu bestätigen: Überschreiten sie das bereits Bezahlte, wird eine Zahlung angefordert.",
+        "republishPaymentNeeded": "Diese Änderungen erfordern eine Zahlung von {{amount}} ({{teams}} Teams) für die erneute Veröffentlichung.",
+        "republishFree": "Keine Zahlung nötig: Diese Änderungen sind abgedeckt.",
+        "payAndRepublish": "Bezahlen und erneut veröffentlichen"
       },
       "done": {
         "title": "Turnier veröffentlicht!",
@@ -285,7 +290,9 @@
         "pendingPaymentBody": "Ein sicherer Zahlungstab wurde geöffnet. Nach Abschluss der Zahlung wird Ihr Turnier veröffentlicht -- prüfen Sie den Status später unter Meine Turniere.",
         "paymentBlockedIosTitle": "Veröffentlichung im Web abschließen",
         "paymentBlockedIosBody": "Dieses Turnier übersteigt das kostenlose Kontingent. Um die Zahlung abzuschließen und zu veröffentlichen, besuchen Sie tournarena.com über einen Browser -- in der iOS-App nicht verfügbar.",
-        "backToList": "Zurück zu Meine Turniere"
+        "backToList": "Zurück zu Meine Turniere",
+        "republishedTitle": "Turnier aktualisiert!",
+        "republishedBody": "{{name}} wurde mit Ihren Änderungen erneut veröffentlicht."
       }
     },
     "scores": {

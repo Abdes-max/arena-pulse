@@ -183,6 +183,7 @@
           "CRIMSON_CHARGE": "Tema Carmesí"
         },
         "logoLabel": "Logo del torneo",
+        "dateLabel": "Fecha del torneo",
         "headerBackground": {
           "label": "Fondo de la cabecera",
           "other": "Otro",
@@ -276,7 +277,11 @@
         "planSubscribe": "Suscribirme",
         "subscribeError": "No se pudo confirmar tu suscripción. Inténtalo de nuevo en unos instantes.",
         "unpublish": "Anular publicación",
-        "republish": "Volver a publicar"
+        "republish": "Volver a publicar",
+        "republishHint": "Tus cambios ya son visibles. Vuelve a publicar para confirmarlos: si superan lo ya pagado, se te pedirá el pago.",
+        "republishPaymentNeeded": "Estos cambios requieren un pago de {{amount}} ({{teams}} equipos) para volver a publicarse.",
+        "republishFree": "No se necesita pago: estos cambios están cubiertos por tu plan.",
+        "payAndRepublish": "Pagar y volver a publicar"
       },
       "done": {
         "title": "¡Torneo publicado!",
@@ -285,7 +290,9 @@
         "pendingPaymentBody": "Se ha abierto una pestaña de pago seguro. Una vez completado el pago, tu torneo se publicará -- vuelve a Mis torneos para comprobar su estado.",
         "paymentBlockedIosTitle": "Finaliza la publicación en la web",
         "paymentBlockedIosBody": "Este torneo supera el plan gratuito. Para completar el pago y publicarlo, ve a tournarena.com desde un navegador -- no disponible en la app de iOS.",
-        "backToList": "Volver a Mis torneos"
+        "backToList": "Volver a Mis torneos",
+        "republishedTitle": "¡Torneo actualizado!",
+        "republishedBody": "{{name}} se ha vuelto a publicar con tus cambios."
       }
     },
     "scores": {

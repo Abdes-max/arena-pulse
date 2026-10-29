@@ -183,6 +183,7 @@
           "CRIMSON_CHARGE": "Tema Cremisi"
         },
         "logoLabel": "Logo del torneo",
+        "dateLabel": "Data del torneo",
         "headerBackground": {
           "label": "Sfondo dell'intestazione",
           "other": "Altro",
@@ -276,7 +277,11 @@
         "planSubscribe": "Abbonati",
         "subscribeError": "Impossibile confermare il tuo abbonamento. Riprova tra qualche istante.",
         "unpublish": "Annulla pubblicazione",
-        "republish": "Ripubblica"
+        "republish": "Ripubblica",
+        "republishHint": "Le modifiche sono già visibili. Ripubblica per confermarle: se superano quanto già pagato, ti verrà chiesto il pagamento.",
+        "republishPaymentNeeded": "Queste modifiche richiedono un pagamento di {{amount}} ({{teams}} squadre) per essere ripubblicate.",
+        "republishFree": "Nessun pagamento necessario: queste modifiche sono coperte dal tuo piano.",
+        "payAndRepublish": "Paga e ripubblica"
       },
       "done": {
         "title": "Torneo pubblicato!",
@@ -285,7 +290,9 @@
         "pendingPaymentBody": "Si è aperta una scheda di pagamento sicuro. Una volta completato il pagamento, il tuo torneo sarà pubblicato -- torna su I miei tornei per verificarne lo stato.",
         "paymentBlockedIosTitle": "Completa la pubblicazione sul web",
         "paymentBlockedIosBody": "Questo torneo supera il piano gratuito. Per completare il pagamento e pubblicarlo, vai su tournarena.com da un browser -- non disponibile nell'app iOS.",
-        "backToList": "Torna a I miei tornei"
+        "backToList": "Torna a I miei tornei",
+        "republishedTitle": "Torneo aggiornato!",
+        "republishedBody": "{{name}} è stato ripubblicato con le tue modifiche."
       }
     },
     "scores": {

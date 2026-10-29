@@ -566,6 +566,18 @@ ion-title {
   font-size: 0.86rem;
 }
 
+// Republish of an already-published tournament whose changes cross a paid
+// tier -- said before the tap, not discovered at checkout.
+.wizard-page__payment-notice {
+  margin: 0 0 var(--ap-space-3);
+  padding: var(--ap-space-3);
+  border-radius: var(--ap-radius-md);
+  background: var(--ap-color-signal-soft);
+  color: var(--ap-color-fg);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
 // Header background picker: ready-made presets + "Autre" (upload), same
 // tiles as apps/web's tournament-form.page.scss.
 .wizard-page__backgrounds-label {

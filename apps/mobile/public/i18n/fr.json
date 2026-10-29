@@ -183,6 +183,7 @@
           "CRIMSON_CHARGE": "Thème Grenat"
         },
         "logoLabel": "Logo du tournoi",
+        "dateLabel": "Date du tournoi",
         "headerBackground": {
           "label": "Fond d'écran de l'entête",
           "other": "Autre",
@@ -276,7 +277,11 @@
         "planSubscribe": "S'abonner",
         "subscribeError": "Impossible de confirmer votre abonnement. Réessayez dans quelques instants.",
         "unpublish": "Dépublier",
-        "republish": "Republier"
+        "republish": "Republier",
+        "republishHint": "Vos modifications sont déjà visibles. Republiez pour les valider : si elles dépassent l'offre déjà payée, le paiement vous sera demandé.",
+        "republishPaymentNeeded": "Ces modifications nécessitent un paiement de {{amount}} ({{teams}} équipes) pour être republiées.",
+        "republishFree": "Aucun paiement nécessaire : ces modifications sont couvertes par votre offre.",
+        "payAndRepublish": "Payer et republier"
       },
       "done": {
         "title": "Tournoi publié !",
@@ -285,7 +290,9 @@
         "pendingPaymentBody": "Un onglet de paiement sécurisé s'est ouvert. Une fois le paiement effectué, votre tournoi sera publié -- revenez à Mes tournois pour vérifier son statut.",
         "paymentBlockedIosTitle": "Finalisez la publication sur le web",
         "paymentBlockedIosBody": "Ce tournoi dépasse l'offre gratuite. Pour finaliser le paiement et le publier, rendez-vous depuis un navigateur sur tournarena.com -- indisponible dans l'app iOS.",
-        "backToList": "Retour à Mes tournois"
+        "backToList": "Retour à Mes tournois",
+        "republishedTitle": "Tournoi mis à jour !",
+        "republishedBody": "{{name}} a été republié avec vos modifications."
       }
     },
     "scores": {

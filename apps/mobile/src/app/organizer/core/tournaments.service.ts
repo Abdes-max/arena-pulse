@@ -8,6 +8,7 @@ import {
   IapProductId,
   OrganizerTournament,
   PremiumFeaturesStatus,
+  PublicationQuote,
   PublicTheme,
   PublishTournamentResult,
 } from './models';
@@ -131,6 +132,8 @@ export class OrganizerTournamentsService {
       isOnline?: boolean;
       isListed?: boolean;
       theme?: PublicTheme;
+      startDate?: string | null;
+      endDate?: string | null;
     },
   ): Promise<OrganizerTournament> {
     return firstValueFrom(
@@ -148,6 +151,13 @@ export class OrganizerTournamentsService {
   }
 
   /** Edit-mode wizard's "Dépublier" action (Publication step) -- a published tournament stops being publicly reachable but keeps all its data, same as apps/web's own unpublish button. */
+  /** What publishing right now would cost (0 = covered by what's already paid). */
+  getPublicationQuote(organizationId: string, tournamentId: string): Promise<PublicationQuote> {
+    return firstValueFrom(
+      this.http.get<PublicationQuote>(`${this.base(organizationId)}/${tournamentId}/publish/quote`),
+    );
+  }
+
   unpublish(organizationId: string, tournamentId: string): Promise<OrganizerTournament> {
     return firstValueFrom(
       this.http.post<OrganizerTournament>(
