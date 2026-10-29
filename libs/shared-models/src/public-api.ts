@@ -10,3 +10,4 @@ export * from './lib/final-ranking.util';
 export * from './lib/qualification-tier-color.util';
 export * from './lib/is-tournament-current.util';
 export * from './lib/header-background-presets';
+export * from './lib/age-categories';

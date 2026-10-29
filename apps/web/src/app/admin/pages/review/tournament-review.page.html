@@ -27,6 +27,15 @@
         <dd>{{ formatClock(summary().end) }}</dd>
       </div>
     </dl>
+    @if (venueLabel(); as venue) {
+      <p class="review-page__venue">
+        <span class="review-page__venue-label">{{ 'admin.review.stats.venue' | transloco }}</span>
+        <strong>{{ venue.name }}</strong>
+        @if (venue.address) {
+          <span class="review-page__venue-address">{{ venue.address }}</span>
+        }
+      </p>
+    }
 
     <section class="review-page__section">
       <h2>
@@ -122,6 +131,9 @@
                   @for (match of row.cells; track $index) {
                     <td>
                       @if (match) {
+                        @if (phaseLabel(match); as phase) {
+                          <span class="review-page__phase">{{ phase }}</span>
+                        }
                         <span>{{ teamLabel(match.homeTeam, match.homeSourceLabel) }}</span>
                         <span class="review-page__vs">–</span>
                         <span>{{ teamLabel(match.awayTeam, match.awaySourceLabel) }}</span>
@@ -133,6 +145,13 @@
             </tbody>
           </table>
         </div>
+        @if (summary().end) {
+          <p class="review-page__end">
+            {{
+              'admin.review.schedule.endOfProgram' | transloco: { end: formatClock(summary().end) }
+            }}
+          </p>
+        }
       } @else {
         <p class="review-page__warning">{{ 'admin.review.schedule.empty' | transloco }}</p>
       }

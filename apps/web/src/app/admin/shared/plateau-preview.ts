@@ -9,7 +9,9 @@ export interface PlateauPreviewInput {
   poolCount: number;
   matchDurationMinutes: number;
   breakDurationMinutes: number;
-  withFinal: boolean;
+  /** Teams in the knockout phase after the pools (2 = final, 4 = semis...), or null. */
+  knockoutSize: number | null;
+  thirdPlaceMatch?: boolean;
 }
 
 export interface PlateauPreview {
@@ -72,6 +74,45 @@ function countRotations(fixtures: Fixture[], fieldCount: number): number {
   return rotations;
 }
 
+// Knockout phase after the pools -- same rules as apps/api's
+// knockout-phase.util.ts (keep in sync): a classic single-elimination
+// bracket of 2/4/8... teams, the pools' top places plus, when pools don't
+// divide it evenly, the best teams at the next place.
+export const KNOCKOUT_SIZES = [2, 4, 8, 16, 32] as const;
+
+export function knockoutSizesFor(teamCount: number, poolCount: number): number[] {
+  if (poolCount < 1) {
+    return [];
+  }
+  const smallestPool = Math.floor(teamCount / poolCount);
+  return KNOCKOUT_SIZES.filter((size) => {
+    const qualifiersPerPool = Math.floor(size / poolCount);
+    const bestCount = size % poolCount;
+    return (
+      size <= teamCount &&
+      qualifiersPerPool >= 1 &&
+      qualifiersPerPool + (bestCount > 0 ? 1 : 0) <= smallestPool
+    );
+  });
+}
+
+/** Rounds of a bracket of size, each spread over the fields; the 3rd-place match joins the final's round. */
+function knockoutRounds(size: number | null, thirdPlace: boolean, fieldCount: number) {
+  if (!size) {
+    return { matches: 0, rotations: 0, rounds: 0 };
+  }
+  let matches = 0;
+  let rotations = 0;
+  let rounds = 0;
+  for (let teams = size; teams >= 2; teams /= 2) {
+    const inRound = teams / 2 + (teams === 2 && thirdPlace && size >= 4 ? 1 : 0);
+    matches += inRound;
+    rotations += Math.ceil(inRound / fieldCount);
+    rounds++;
+  }
+  return { matches, rotations, rounds };
+}
+
 /** Null when the inputs can't make a valid plateau (e.g. a pool of one team). */
 export function previewPlateau(input: PlateauPreviewInput): PlateauPreview | null {
   const { teamCount, fieldCount, poolCount } = input;
@@ -85,15 +126,15 @@ export function previewPlateau(input: PlateauPreviewInput): PlateauPreview | nul
   }
   const fixtures = pools.flatMap((pool) => roundRobin(pool)).sort((a, b) => a.round - b.round);
   const poolRotations = countRotations(fixtures, fieldCount);
-  const rotationCount = poolRotations + (input.withFinal ? 1 : 0);
+  const knockout = knockoutRounds(input.knockoutSize, !!input.thirdPlaceMatch, fieldCount);
+  const rotationCount = poolRotations + knockout.rotations;
   const slot = input.matchDurationMinutes + input.breakDurationMinutes;
   const sizes = pools.map((pool) => pool.length - 1);
-  const extra = input.withFinal ? 1 : 0;
   return {
-    matchCount: fixtures.length + extra,
+    matchCount: fixtures.length + knockout.matches,
     rotationCount,
     minMatchesPerTeam: Math.min(...sizes),
-    maxMatchesPerTeam: Math.max(...sizes) + extra,
+    maxMatchesPerTeam: Math.max(...sizes) + knockout.rounds,
     durationMinutes: rotationCount * slot - input.breakDurationMinutes,
   };
 }

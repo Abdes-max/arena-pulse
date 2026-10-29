@@ -39,8 +39,12 @@ export interface CreateQuickPlateauPayload {
   breakDurationMinutes: number;
   poolCount?: number;
   withFinal?: boolean;
+  /** Phase finale: teams in the knockout bracket (2 = final, 4 = semis...). */
+  knockoutSize?: number;
+  thirdPlaceMatch?: boolean;
   categoryName?: string;
   venueName?: string;
+  venueAddress?: string;
 }
 
 export interface UpdateTournamentPayload {

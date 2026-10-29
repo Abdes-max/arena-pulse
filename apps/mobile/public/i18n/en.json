@@ -403,7 +403,19 @@
         "loadSports": "Could not load sports.",
         "invalid": "This format is not possible: check teams, pools and fields.",
         "generic": "Could not create the event."
-      }
+      },
+      "venue": "Venue",
+      "knockout": {
+        "2": "Final (2 teams)",
+        "4": "Semi-finals (4 teams)",
+        "8": "Quarter-finals (8 teams)",
+        "16": "Round of 16 (16 teams)",
+        "32": "Round of 32 (32 teams)",
+        "label": "Knockout phase",
+        "none": "None (pools only)",
+        "thirdPlace": "Third-place match"
+      },
+      "categoryNone": "Not specified"
     },
     "live": {
       "title": "Match day",

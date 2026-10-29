@@ -615,7 +615,8 @@
         "teams": "Teams",
         "placed": "Matches placed",
         "fields": "Fields",
-        "end": "Schedule ends"
+        "end": "Schedule ends",
+        "venue": "Venue"
       },
       "teams": {
         "title": "Your teams",
@@ -632,7 +633,8 @@
         "summary": "{{rotations}} rotations, from {{start}} to {{end}}.",
         "edit": "Adjust the calendar",
         "time": "Time",
-        "empty": "No match is scheduled yet."
+        "empty": "No match is scheduled yet.",
+        "endOfProgram": "Programme ends at {{end}}"
       },
       "publish": {
         "title": "When you are ready",
@@ -661,8 +663,7 @@
       },
       "name": "Plateau name",
       "namePlaceholder": "U11 autumn plateau",
-      "category": "Category (optional)",
-      "categoryPlaceholder": "U11",
+      "category": "Category",
       "sport": "Sport",
       "date": "Date",
       "startTime": "First kickoff",
@@ -686,7 +687,19 @@
         "loadSports": "Could not load sports.",
         "invalid": "This format is not possible. Check the number of teams, pools and fields.",
         "generic": "Could not create the event."
-      }
+      },
+      "venue": "Venue",
+      "knockout": {
+        "2": "Final (2 teams)",
+        "4": "Semi-finals (4 teams)",
+        "8": "Quarter-finals (8 teams)",
+        "16": "Round of 16 (16 teams)",
+        "32": "Round of 32 (32 teams)",
+        "label": "Knockout phase",
+        "none": "None (pools only)",
+        "thirdPlace": "Third-place match"
+      },
+      "categoryNone": "Not specified"
     },
     "tournamentList": {
       "createPlateau": "Create an event (quick)",

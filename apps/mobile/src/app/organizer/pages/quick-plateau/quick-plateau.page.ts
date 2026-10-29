@@ -2,12 +2,12 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
-import { PublicApiService } from 'api-client';
-import { TranslocoPipe } from '@jsverse/transloco';
-import { Button, Select, SelectOption, TextField } from 'design-system';
-import { PublicSport } from 'shared-models';
+import { AddressSearchService, PublicApiService } from 'api-client';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { AutocompleteField, Button, Select, SelectOption, TextField } from 'design-system';
+import { AGE_CATEGORIES, PublicSport } from 'shared-models';
 import { OrganizerAuthService } from '../../core/auth.service';
-import { previewPlateau } from '../../core/plateau-preview';
+import { knockoutSizesFor, previewPlateau } from '../../core/plateau-preview';
 import { OrganizerTournamentsService } from '../../core/tournaments.service';
 
 function toInt(value: string): number {
@@ -30,7 +30,17 @@ function todayIsoDate(): string {
  */
 @Component({
   selector: 'app-organizer-quick-plateau-page',
-  imports: [Button, IonContent, IonHeader, IonTitle, IonToolbar, Select, TextField, TranslocoPipe],
+  imports: [
+    AutocompleteField,
+    Button,
+    IonContent,
+    IonHeader,
+    IonTitle,
+    IonToolbar,
+    Select,
+    TextField,
+    TranslocoPipe,
+  ],
   templateUrl: './quick-plateau.page.html',
   styleUrl: './quick-plateau.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,6 +50,7 @@ export class OrganizerQuickPlateauPage {
   private readonly publicApi = inject(PublicApiService);
   private readonly tournamentsApi = inject(OrganizerTournamentsService);
   private readonly router = inject(Router);
+  private readonly transloco = inject(TranslocoService);
 
   protected readonly name = signal('');
   protected readonly categoryName = signal('');
@@ -51,7 +62,35 @@ export class OrganizerQuickPlateauPage {
   protected readonly poolCount = signal('1');
   protected readonly matchDurationMinutes = signal('15');
   protected readonly breakDurationMinutes = signal('5');
-  protected readonly withFinal = signal(false);
+  // Phase finale: '' = none, else the bracket size (2 = final, 4 = semis...)
+  // -- same choices as apps/web's quick-plateau.page.ts.
+  protected readonly knockoutSize = signal('');
+  // Predefined list (U5..U20, Senior, Vétéran) -- same as apps/web's; '' = not specified.
+  protected readonly categoryOptions = computed<SelectOption[]>(() => [
+    { value: '', label: this.transloco.translate('organizer.quickPlateau.categoryNone') },
+    ...AGE_CATEGORIES.map((category) => ({ value: category, label: category })),
+  ]);
+  protected readonly thirdPlaceMatch = signal(false);
+  protected readonly venueName = signal('');
+  private readonly venueAddress = signal<string | null>(null);
+  protected readonly venueSearch = inject(AddressSearchService).autocomplete(() =>
+    this.transloco.getActiveLang(),
+  );
+
+  private readonly knockoutSizes = computed(() =>
+    knockoutSizesFor(toInt(this.teamCount()), toInt(this.poolCount())),
+  );
+  protected readonly knockoutOptions = computed<SelectOption[]>(() => {
+    const t = (key: string) => this.transloco.translate('organizer.quickPlateau.knockout.' + key);
+    return [
+      { value: '', label: t('none') },
+      ...this.knockoutSizes().map((size) => ({ value: String(size), label: t(String(size)) })),
+    ];
+  });
+  private readonly effectiveKnockoutSize = computed(() => {
+    const size = toInt(this.knockoutSize());
+    return this.knockoutSizes().includes(size) ? size : null;
+  });
 
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
@@ -68,7 +107,8 @@ export class OrganizerQuickPlateauPage {
       poolCount: toInt(this.poolCount()),
       matchDurationMinutes: toInt(this.matchDurationMinutes()),
       breakDurationMinutes: toInt(this.breakDurationMinutes()),
-      withFinal: this.withFinal() && toInt(this.poolCount()) <= 2,
+      knockoutSize: this.effectiveKnockoutSize(),
+      thirdPlaceMatch: this.thirdPlaceMatch(),
     }),
   );
 
@@ -108,8 +148,28 @@ export class OrganizerQuickPlateauPage {
     );
   }
 
-  protected toggleFinal(event: Event): void {
-    this.withFinal.set((event.target as HTMLInputElement).checked);
+  protected hasThirdPlaceOption(): boolean {
+    return (this.effectiveKnockoutSize() ?? 0) >= 4;
+  }
+
+  protected toggleThirdPlace(event: Event): void {
+    this.thirdPlaceMatch.set((event.target as HTMLInputElement).checked);
+  }
+
+  protected onVenueInput(value: string): void {
+    this.venueName.set(value);
+    this.venueAddress.set(null);
+    this.venueSearch.query(value);
+  }
+
+  protected onVenueSuggestionSelect(index: number): void {
+    const suggestion = this.venueSearch.suggestions()[index];
+    if (!suggestion) {
+      return;
+    }
+    this.venueName.set(suggestion.name);
+    this.venueAddress.set(suggestion.address);
+    this.venueSearch.clear();
   }
 
   protected async cancel(): Promise<void> {
@@ -135,7 +195,12 @@ export class OrganizerQuickPlateauPage {
         poolCount,
         matchDurationMinutes: toInt(this.matchDurationMinutes()),
         breakDurationMinutes: toInt(this.breakDurationMinutes()),
-        withFinal: this.withFinal() && poolCount <= 2,
+        ...(this.effectiveKnockoutSize() && {
+          knockoutSize: this.effectiveKnockoutSize()!,
+          thirdPlaceMatch: this.hasThirdPlaceOption() && this.thirdPlaceMatch(),
+        }),
+        ...(this.venueName().trim() && { venueName: this.venueName().trim() }),
+        ...(this.venueAddress() && { venueAddress: this.venueAddress()! }),
         ...(this.categoryName().trim() && { categoryName: this.categoryName().trim() }),
       });
       await this.router.navigate(['/organizer/tournaments', tournament.id, 'edit'], {

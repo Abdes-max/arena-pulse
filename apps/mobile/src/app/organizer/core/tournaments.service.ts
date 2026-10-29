@@ -60,7 +60,11 @@ export class OrganizerTournamentsService {
       breakDurationMinutes: number;
       poolCount?: number;
       withFinal?: boolean;
+      knockoutSize?: number;
+      thirdPlaceMatch?: boolean;
       categoryName?: string;
+      venueName?: string;
+      venueAddress?: string;
     },
   ): Promise<OrganizerTournament> {
     return firstValueFrom(

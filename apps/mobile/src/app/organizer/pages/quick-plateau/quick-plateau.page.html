@@ -30,9 +30,9 @@
       (valueChange)="name.set($event)"
     />
     <div class="quick-plateau-page__row">
-      <ap-text-field
+      <ap-select
         [label]="'organizer.quickPlateau.category' | transloco"
-        placeholder="U11"
+        [options]="categoryOptions()"
         [value]="categoryName()"
         (valueChange)="categoryName.set($event)"
       />
@@ -57,6 +57,18 @@
         (valueChange)="startTime.set($event)"
       />
     </div>
+    <ap-autocomplete-field
+      [label]="'organizer.quickPlateau.venue' | transloco"
+      [placeholder]="'organizer.wizard.infos.venuePlaceholder' | transloco"
+      [value]="venueName()"
+      [suggestions]="venueSearch.suggestions()"
+      [loading]="venueSearch.loading()"
+      [hint]="
+        venueSearch.failed() ? ('organizer.wizard.infos.venueSearchFailed' | transloco) : null
+      "
+      (valueChange)="onVenueInput($event)"
+      (suggestionSelect)="onVenueSuggestionSelect($event)"
+    />
     <div class="quick-plateau-page__row quick-plateau-page__row--3">
       <ap-text-field
         type="number"
@@ -96,15 +108,18 @@
         (valueChange)="breakDurationMinutes.set($event)"
       />
     </div>
-    <label class="quick-plateau-page__checkbox">
-      <input
-        type="checkbox"
-        [checked]="withFinal()"
-        [disabled]="+poolCount() > 2"
-        (change)="toggleFinal($event)"
-      />
-      {{ 'organizer.quickPlateau.withFinal' | transloco }}
-    </label>
+    <ap-select
+      [label]="'organizer.quickPlateau.knockout.label' | transloco"
+      [options]="knockoutOptions()"
+      [value]="knockoutSize()"
+      (valueChange)="knockoutSize.set($event)"
+    />
+    @if (hasThirdPlaceOption()) {
+      <label class="quick-plateau-page__checkbox">
+        <input type="checkbox" [checked]="thirdPlaceMatch()" (change)="toggleThirdPlace($event)" />
+        {{ 'organizer.quickPlateau.knockout.thirdPlace' | transloco }}
+      </label>
+    }
 
     <section class="quick-plateau-page__preview" aria-live="polite">
       @if (preview(); as p) {
