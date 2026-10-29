@@ -11,6 +11,11 @@ import { IonContent, IonLabel, IonSegment, IonSegmentButton } from '@ionic/angul
 import { MatchCard, MatchCardTeam, MatchCardVariant, TextField } from 'design-system';
 import { Category, CompetitionPhase, Match, roundLabel } from 'shared-models';
 import { TournamentContextService } from '../../core/tournament-context.service';
+import {
+  MATCH_STATUS_FILTERS,
+  MatchStatusFilter,
+  matchStatusFilterOf,
+} from './match-status-filter';
 
 @Component({
   selector: 'app-schedule-page',
@@ -32,7 +37,40 @@ export class SchedulePage {
   protected readonly matches = signal<Match[]>([]);
   protected readonly query = signal('');
 
+  /** Null = every match; otherwise only the matches under that button. */
+  protected readonly statusFilter = signal<MatchStatusFilter | null>(null);
+  protected readonly statusFilters = MATCH_STATUS_FILTERS;
+  protected readonly statusLabels: Record<MatchStatusFilter, string> = {
+    upcoming: 'À venir',
+    live: 'En cours',
+    finished: 'Terminés',
+  };
+  protected readonly emptyLabels: Record<MatchStatusFilter, string> = {
+    upcoming: 'Aucun match à venir.',
+    live: 'Aucun match en cours.',
+    finished: 'Aucun match terminé.',
+  };
+
+  /** How many matches each button would show, given the current search. */
+  protected readonly statusCounts = computed(() => {
+    const counts: Record<MatchStatusFilter, number> = { upcoming: 0, live: 0, finished: 0 };
+    for (const match of this.searchedMatches()) {
+      counts[matchStatusFilterOf(match)]++;
+    }
+    return counts;
+  });
+
   protected readonly filteredMatches = computed(() => {
+    const filter = this.statusFilter();
+    const matches = this.searchedMatches();
+    return filter ? matches.filter((match) => matchStatusFilterOf(match) === filter) : matches;
+  });
+
+  protected toggleStatusFilter(filter: MatchStatusFilter): void {
+    this.statusFilter.update((current) => (current === filter ? null : filter));
+  }
+
+  private readonly searchedMatches = computed(() => {
     const query = this.query().trim().toLowerCase();
     const sorted = [...this.matches()].sort((a, b) => {
       const aTime = a.timeSlot?.startTime ?? '';
