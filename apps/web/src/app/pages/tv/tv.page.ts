@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { PublicApiService } from 'api-client';
+import { AssetUrlService, PublicApiService } from 'api-client';
 import { LanguageService } from 'design-tokens';
 import { CompetitionGroup, Match, Standings } from 'shared-models';
 import { TournamentContextService } from '../../core/tournament-context.service';
@@ -39,6 +39,7 @@ const REFRESH_MS = 60_000;
 })
 export class TvPage {
   private readonly api = inject(PublicApiService);
+  protected readonly assetUrl = inject(AssetUrlService);
   private readonly context = inject(TournamentContextService);
   private readonly languageService = inject(LanguageService);
   private readonly slug = inject(ActivatedRoute).snapshot.paramMap.get('slug') ?? '';
