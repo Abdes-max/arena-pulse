@@ -426,6 +426,20 @@ export class TournamentsService {
     );
   }
 
+  updateVenue(
+    organizationId: string,
+    tournamentId: string,
+    venueId: string,
+    payload: { name?: string; address?: string },
+  ): Promise<Venue> {
+    return firstValueFrom(
+      this.http.patch<Venue>(
+        `${this.base(organizationId)}/${tournamentId}/venues/${venueId}`,
+        payload,
+      ),
+    );
+  }
+
   deleteVenue(organizationId: string, tournamentId: string, venueId: string): Promise<void> {
     return firstValueFrom(
       this.http.delete<void>(`${this.base(organizationId)}/${tournamentId}/venues/${venueId}`),
@@ -441,6 +455,20 @@ export class TournamentsService {
     return firstValueFrom(
       this.http.post<Field>(
         `${this.base(organizationId)}/${tournamentId}/venues/${venueId}/fields`,
+        payload,
+      ),
+    );
+  }
+
+  updateField(
+    organizationId: string,
+    tournamentId: string,
+    fieldId: string,
+    payload: { name: string },
+  ): Promise<Field> {
+    return firstValueFrom(
+      this.http.patch<Field>(
+        `${this.base(organizationId)}/${tournamentId}/fields/${fieldId}`,
         payload,
       ),
     );

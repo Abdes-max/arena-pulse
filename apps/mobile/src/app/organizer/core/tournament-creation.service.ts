@@ -114,6 +114,31 @@ export class TournamentCreationService {
    * or the edit-mode wizard) and only creates the missing "Terrain N",
    * under the existing venue or a new one named `venueName`.
    */
+  listVenues(
+    organizationId: string,
+    tournamentId: string,
+  ): Promise<{ id: string; name: string; address: string | null }[]> {
+    return firstValueFrom(
+      this.http.get<{ id: string; name: string; address: string | null }[]>(
+        `${this.tournamentBase(organizationId, tournamentId)}/venues`,
+      ),
+    );
+  }
+
+  updateVenue(
+    organizationId: string,
+    tournamentId: string,
+    venueId: string,
+    payload: { name: string; address?: string },
+  ): Promise<unknown> {
+    return firstValueFrom(
+      this.http.patch(
+        `${this.tournamentBase(organizationId, tournamentId)}/venues/${venueId}`,
+        payload,
+      ),
+    );
+  }
+
   async ensureFields(
     organizationId: string,
     tournamentId: string,

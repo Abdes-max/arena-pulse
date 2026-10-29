@@ -920,7 +920,8 @@
         "imageInvalid": "Invalid file format or size (PNG, JPEG or WebP, 4 MB maximum).",
         "imageUpload": "Unable to upload this image, please try again.",
         "imageRemove": "Unable to remove this image.",
-        "imagePremiumLocked": "Reserved for tournaments with more than {{count}} teams, or an active annual subscription."
+        "imagePremiumLocked": "Reserved for tournaments with more than {{count}} teams, or an active annual subscription.",
+        "rename": "Could not save the change."
       },
       "personalization": {
         "title": "Personalization",
@@ -949,6 +950,12 @@
         "change": "Change",
         "add": "Add a poster",
         "remove": "Remove"
+      },
+      "edit": {
+        "edit": "Edit",
+        "save": "Save",
+        "cancel": "Cancel",
+        "nameLabel": "New name"
       }
     },
     "teamList": {

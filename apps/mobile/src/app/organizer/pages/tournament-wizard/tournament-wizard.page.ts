@@ -188,6 +188,7 @@ export class OrganizerTournamentWizardPage {
   // Edit mode: the end date already saved (web form only) -- pushed along
   // when the new start date would land after it.
   private loadedEndDate: string | null = null;
+  private existingVenue: { id: string; name: string; address: string | null } | null = null;
   private organizationId: string | null = null;
   private categoryId: string | null = null;
 
@@ -282,6 +283,14 @@ export class OrganizerTournamentWizardPage {
         this.startDate.set(tournament.startDate.slice(0, 10));
       }
       this.loadedEndDate = tournament.endDate?.slice(0, 10) ?? null;
+      // The existing venue, so Infos shows it and a rename is saved on it
+      // (it used to be ignored once the tournament existed).
+      const [venue] = await this.creationApi.listVenues(organizationId, tournamentId);
+      if (venue) {
+        this.existingVenue = venue;
+        this.venueName.set(venue.name);
+        this.venueAddress.set(venue.address);
+      }
       this.headerBackgroundSaved = tournament.headerBackgroundUrl
         ? (headerBackgroundPresetOf(tournament.headerBackgroundUrl) ?? 'other')
         : null;
@@ -750,6 +759,21 @@ export class OrganizerTournamentWizardPage {
       startDate,
       ...(this.loadedEndDate && this.loadedEndDate < startDate ? { endDate: startDate } : {}),
     });
+    const venue = this.existingVenue;
+    const venueName = this.venueName().trim();
+    const venueAddress = this.venueAddress();
+    if (
+      venue &&
+      !this.isOnline() &&
+      venueName &&
+      (venueName !== venue.name || (venueAddress && venueAddress !== venue.address))
+    ) {
+      await this.creationApi.updateVenue(organizationId, tournamentId, venue.id, {
+        name: venueName,
+        ...(venueAddress && { address: venueAddress }),
+      });
+      this.existingVenue = { ...venue, name: venueName, address: venueAddress ?? venue.address };
+    }
     // Sent separately from the core fields above -- a theme change can be
     // rejected on its own (still free tier, see PremiumFeaturesStatus), and
     // that shouldn't take a plain rename/sport change down with it.

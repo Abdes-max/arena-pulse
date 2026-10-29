@@ -818,7 +818,8 @@
         "imageInvalid": "Formato o tamaño de archivo no válido (PNG, JPEG o WebP, 4 MB máximo).",
         "imageUpload": "No se ha podido enviar esta imagen, inténtalo de nuevo.",
         "imageRemove": "No se ha podido quitar esta imagen.",
-        "imagePremiumLocked": "Reservado a torneos con más de {{count}} equipos o con una suscripción anual activa."
+        "imagePremiumLocked": "Reservado a torneos con más de {{count}} equipos o con una suscripción anual activa.",
+        "rename": "No se pudo guardar el cambio."
       },
       "personalization": {
         "title": "Personalización",
@@ -847,6 +848,12 @@
         "change": "Cambiar",
         "add": "Añadir un cartel",
         "remove": "Quitar"
+      },
+      "edit": {
+        "edit": "Editar",
+        "save": "Guardar",
+        "cancel": "Cancelar",
+        "nameLabel": "Nuevo nombre"
       }
     },
     "teamList": {
