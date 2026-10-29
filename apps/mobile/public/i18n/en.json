@@ -182,7 +182,8 @@
           "FRESH_PITCH": "Pitch theme",
           "CRIMSON_CHARGE": "Crimson theme"
         },
-        "logoLabel": "Tournament logo"
+        "logoLabel": "Tournament logo",
+        "dateLabel": "Tournament date"
       },
       "teams": {
         "title": "Participating teams",
@@ -264,7 +265,11 @@
         "planSubscribe": "Subscribe",
         "subscribeError": "Could not confirm your subscription. Please try again shortly.",
         "unpublish": "Unpublish",
-        "republish": "Republish"
+        "republish": "Republish",
+        "republishHint": "Your changes are already visible. Republish to confirm them: if they exceed what has been paid, payment will be requested.",
+        "republishPaymentNeeded": "These changes require a payment of {{amount}} ({{teams}} teams) to be republished.",
+        "republishFree": "No payment needed: these changes are covered by your plan.",
+        "payAndRepublish": "Pay and republish"
       },
       "done": {
         "title": "Tournament published!",
@@ -273,7 +278,9 @@
         "pendingPaymentBody": "A secure payment tab has opened. Once payment is complete, your tournament will be published -- check back from My tournaments to see its status.",
         "paymentBlockedIosTitle": "Finish publishing on the web",
         "paymentBlockedIosBody": "This tournament goes beyond the free tier. To complete payment and publish it, go to tournarena.com from a browser -- not available in the iOS app.",
-        "backToList": "Back to My tournaments"
+        "backToList": "Back to My tournaments",
+        "republishedTitle": "Tournament updated!",
+        "republishedBody": "{{name}} has been republished with your changes."
       }
     },
     "scores": {

@@ -209,6 +209,18 @@ export class TournamentsController {
   }
 
   @RequireOrgRole(OrganizationRole.ORG_ADMIN)
+  @Get(':tournamentId/publish/quote')
+  publicationQuote(
+    @Param('organizationId') organizationId: string,
+    @Param('tournamentId') tournamentId: string,
+  ) {
+    return this.tournamentsService.publicationQuote(
+      organizationId,
+      tournamentId,
+    );
+  }
+
+  @RequireOrgRole(OrganizationRole.ORG_ADMIN)
   @HttpCode(HttpStatus.OK)
   @Post(':tournamentId/publish')
   publish(

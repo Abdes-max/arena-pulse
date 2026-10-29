@@ -182,7 +182,8 @@
           "FRESH_PITCH": "Tema Relvado",
           "CRIMSON_CHARGE": "Tema Carmesim"
         },
-        "logoLabel": "Logótipo do torneio"
+        "logoLabel": "Logótipo do torneio",
+        "dateLabel": "Data do torneio"
       },
       "teams": {
         "title": "Equipas participantes",
@@ -264,7 +265,11 @@
         "planSubscribe": "Subscrever",
         "subscribeError": "Não foi possível confirmar a sua subscrição. Tente novamente dentro de instantes.",
         "unpublish": "Cancelar publicação",
-        "republish": "Publicar novamente"
+        "republish": "Publicar novamente",
+        "republishHint": "As suas alterações já estão visíveis. Volte a publicar para as confirmar: se ultrapassarem o que já foi pago, será pedido o pagamento.",
+        "republishPaymentNeeded": "Estas alterações exigem um pagamento de {{amount}} ({{teams}} equipas) para voltar a publicar.",
+        "republishFree": "Nenhum pagamento necessário: estas alterações estão cobertas pelo seu plano.",
+        "payAndRepublish": "Pagar e voltar a publicar"
       },
       "done": {
         "title": "Torneio publicado!",
@@ -273,7 +278,9 @@
         "pendingPaymentBody": "Abriu-se um separador de pagamento seguro. Assim que o pagamento for concluído, o seu torneio será publicado -- volte a Os meus torneios para verificar o estado.",
         "paymentBlockedIosTitle": "Finalize a publicação na web",
         "paymentBlockedIosBody": "Este torneio ultrapassa o plano gratuito. Para concluir o pagamento e publicá-lo, aceda a tournarena.com a partir de um navegador -- não disponível na aplicação iOS.",
-        "backToList": "Voltar a Os meus torneios"
+        "backToList": "Voltar a Os meus torneios",
+        "republishedTitle": "Torneio atualizado!",
+        "republishedBody": "{{name}} foi novamente publicado com as suas alterações."
       }
     },
     "scores": {

@@ -236,6 +236,36 @@ export class TournamentsService {
    * An organization with an active annual subscription pays nothing here
    * regardless of team count, same as before.
    */
+  /**
+   * What publish() would charge right now, without charging anything --
+   * lets a "Republier" button say up front that the changes (e.g. teams
+   * added past the paid tier) need a payment, and how much. Same formula
+   * as publish(): the gap between the current tier and what's been paid.
+   */
+  async publicationQuote(organizationId: string, tournamentId: string) {
+    await this.getOrThrow(organizationId, tournamentId);
+    const [teamsCount, hasActiveSubscription, paidTotal] = await Promise.all([
+      this.prisma.team.count({ where: { tournamentId } }),
+      this.organizationsService.hasActiveSubscription(organizationId),
+      this.prisma.tournamentPublicationOrder.aggregate({
+        where: {
+          tournamentId,
+          status: TournamentPublicationOrderStatus.PAID,
+        },
+        _sum: { tierCents: true },
+      }),
+    ]);
+    const requiredCents = hasActiveSubscription
+      ? 0
+      : this.computePublicationFeeCents(teamsCount);
+    const alreadyPaidCents = paidTotal._sum.tierCents ?? 0;
+    return {
+      teamsCount,
+      amountCents: Math.max(0, requiredCents - alreadyPaidCents),
+      currency: 'eur',
+    };
+  }
+
   async publish(organizationId: string, tournamentId: string) {
     await this.organizationsService.assertNotSuspended(organizationId);
     const tournament = await this.getOrThrow(organizationId, tournamentId);
