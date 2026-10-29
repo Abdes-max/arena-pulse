@@ -308,6 +308,8 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.error('✗', err.message);
+  // fetch's own "fetch failed" says nothing -- the network reason is in cause.
+  const cause = err.cause ? ` (${err.cause.code ?? err.cause.message})` : '';
+  console.error('✗', `${err.message}${cause}`);
   process.exit(1);
 });

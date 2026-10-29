@@ -24,15 +24,38 @@ async function uploadOne(api, setId, filePath) {
     },
   });
   const screenshot = reserved.data;
-  for (const op of screenshot.attributes.uploadOperations) {
-    const headers = Object.fromEntries((op.requestHeaders ?? []).map((h) => [h.name, h.value]));
-    const res = await fetch(op.url, {
-      method: op.method,
-      headers,
-      body: bytes.subarray(op.offset, op.offset + op.length),
-    });
-    if (!res.ok) {
-      throw new Error(`Upload of ${fileName} failed: ${res.status} ${await res.text()}`);
+  const operations = screenshot.attributes.uploadOperations ?? [];
+  console.log(`    ${fileName}: ${bytes.length} bytes, ${operations.length} upload part(s)`);
+  for (const [index, op] of operations.entries()) {
+    // Node's fetch sets Content-Length itself from the body (and rejects a
+    // hand-set one), so Apple's own value is left out.
+    const headers = Object.fromEntries(
+      (op.requestHeaders ?? [])
+        .filter((h) => h.name.toLowerCase() !== 'content-length')
+        .map((h) => [h.name, h.value]),
+    );
+    const body = bytes.subarray(op.offset, op.offset + op.length);
+    for (let attempt = 1; ; attempt++) {
+      try {
+        const res = await fetch(op.url, {
+          method: op.method,
+          headers,
+          body,
+          signal: AbortSignal.timeout(60_000),
+        });
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status} ${await res.text()}`);
+        }
+        break;
+      } catch (error) {
+        const cause = error.cause ? ` (${error.cause.code ?? error.cause.message})` : '';
+        const message = `Upload of ${fileName} part ${index + 1} failed: ${error.message}${cause}`;
+        if (attempt >= 3) {
+          throw new Error(message);
+        }
+        console.warn(`    ${message} -- retrying`);
+        await new Promise((resolve) => setTimeout(resolve, 3000 * attempt));
+      }
     }
   }
   await api('PATCH', `/appScreenshots/${screenshot.id}`, {
