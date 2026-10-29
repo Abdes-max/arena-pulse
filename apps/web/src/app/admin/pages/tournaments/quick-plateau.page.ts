@@ -1,13 +1,16 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
-import { TranslocoPipe } from '@jsverse/transloco';
-import { Button, Select, SelectOption, TextField } from 'design-system';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { AddressSearchService } from 'api-client';
+import { AGE_CATEGORIES } from 'shared-models';
+import { AutocompleteField, Button, Select, SelectOption, TextField } from 'design-system';
+import { LanguageService } from 'design-tokens';
 import { AuthService } from '../../core/auth.service';
 import { Sport } from '../../core/models';
 import { SportsService } from '../../core/sports.service';
 import { TournamentsService } from '../../core/tournaments.service';
-import { previewPlateau } from '../../shared/plateau-preview';
+import { knockoutSizesFor, previewPlateau } from '../../shared/plateau-preview';
 
 function toInt(value: string): number {
   const parsed = Number.parseInt(value, 10);
@@ -28,7 +31,7 @@ function todayIsoDate(): string {
  */
 @Component({
   selector: 'app-quick-plateau-page',
-  imports: [Button, Select, TextField, TranslocoPipe, RouterLink],
+  imports: [AutocompleteField, Button, Select, TextField, TranslocoPipe, RouterLink],
   templateUrl: './quick-plateau.page.html',
   styleUrl: './quick-plateau.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -38,6 +41,8 @@ export class QuickPlateauPage {
   private readonly sportsService = inject(SportsService);
   private readonly tournamentsService = inject(TournamentsService);
   private readonly router = inject(Router);
+  private readonly transloco = inject(TranslocoService);
+  private readonly languageService = inject(LanguageService);
 
   protected readonly name = signal('');
   protected readonly categoryName = signal('');
@@ -49,7 +54,45 @@ export class QuickPlateauPage {
   protected readonly poolCount = signal('1');
   protected readonly matchDurationMinutes = signal('15');
   protected readonly breakDurationMinutes = signal('5');
-  protected readonly withFinal = signal(false);
+  // Phase finale: '' = none, else the bracket size (2 = final, 4 = semis...).
+  protected readonly knockoutSize = signal('');
+  // Predefined list (U5..U20, Senior, Vétéran); '' = not specified.
+  protected readonly categoryOptions = computed<SelectOption[]>(() => [
+    {
+      value: '',
+      label: this.transloco.translate(
+        'admin.quickPlateau.categoryNone',
+        {},
+        this.languageService.language(),
+      ),
+    },
+    ...AGE_CATEGORIES.map((category) => ({ value: category, label: category })),
+  ]);
+  protected readonly thirdPlaceMatch = signal(false);
+  protected readonly venueName = signal('');
+  private readonly venueAddress = signal<string | null>(null);
+  protected readonly venueSearch = inject(AddressSearchService).autocomplete(() =>
+    this.languageService.language(),
+  );
+
+  /** Bracket sizes the current pools can feed -- the "Phase finale" choices. */
+  private readonly knockoutSizes = computed(() =>
+    knockoutSizesFor(toInt(this.teamCount()), toInt(this.poolCount())),
+  );
+  protected readonly knockoutOptions = computed<SelectOption[]>(() => {
+    const lang = this.languageService.language();
+    const t = (key: string) =>
+      this.transloco.translate(`admin.quickPlateau.knockout.${key}`, {}, lang);
+    return [
+      { value: '', label: t('none') },
+      ...this.knockoutSizes().map((size) => ({ value: String(size), label: t(String(size)) })),
+    ];
+  });
+  /** The chosen size, or null if none / no longer possible with the current pools. */
+  private readonly effectiveKnockoutSize = computed(() => {
+    const size = toInt(this.knockoutSize());
+    return this.knockoutSizes().includes(size) ? size : null;
+  });
 
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
@@ -66,7 +109,8 @@ export class QuickPlateauPage {
       poolCount: toInt(this.poolCount()),
       matchDurationMinutes: toInt(this.matchDurationMinutes()),
       breakDurationMinutes: toInt(this.breakDurationMinutes()),
-      withFinal: this.withFinal() && toInt(this.poolCount()) <= 2,
+      knockoutSize: this.effectiveKnockoutSize(),
+      thirdPlaceMatch: this.thirdPlaceMatch(),
     }),
   );
 
@@ -111,8 +155,28 @@ export class QuickPlateauPage {
     }
   }
 
-  protected toggleFinal(event: Event): void {
-    this.withFinal.set((event.target as HTMLInputElement).checked);
+  protected hasThirdPlaceOption(): boolean {
+    return (this.effectiveKnockoutSize() ?? 0) >= 4;
+  }
+
+  protected toggleThirdPlace(event: Event): void {
+    this.thirdPlaceMatch.set((event.target as HTMLInputElement).checked);
+  }
+
+  protected onVenueInput(value: string): void {
+    this.venueName.set(value);
+    this.venueAddress.set(null);
+    this.venueSearch.query(value);
+  }
+
+  protected onVenueSuggestionSelect(index: number): void {
+    const suggestion = this.venueSearch.suggestions()[index];
+    if (!suggestion) {
+      return;
+    }
+    this.venueName.set(suggestion.name);
+    this.venueAddress.set(suggestion.address);
+    this.venueSearch.clear();
   }
 
   protected async submit(): Promise<void> {
@@ -135,7 +199,12 @@ export class QuickPlateauPage {
         poolCount,
         matchDurationMinutes: toInt(this.matchDurationMinutes()),
         breakDurationMinutes: toInt(this.breakDurationMinutes()),
-        withFinal: this.withFinal() && poolCount <= 2,
+        ...(this.effectiveKnockoutSize() && {
+          knockoutSize: this.effectiveKnockoutSize()!,
+          thirdPlaceMatch: this.hasThirdPlaceOption() && this.thirdPlaceMatch(),
+        }),
+        ...(this.venueName().trim() && { venueName: this.venueName().trim() }),
+        ...(this.venueAddress() && { venueAddress: this.venueAddress()! }),
         ...(this.categoryName().trim() && { categoryName: this.categoryName().trim() }),
       });
       await this.router.navigate(['/admin/tournaments', tournament.id, 'review']);

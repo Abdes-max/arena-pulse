@@ -403,7 +403,19 @@
         "loadSports": "Impossible de charger les sports.",
         "invalid": "Ce format n’est pas possible : vérifiez équipes, poules et terrains.",
         "generic": "Impossible de créer l'événement."
-      }
+      },
+      "venue": "Lieu",
+      "knockout": {
+        "2": "Finale (2 équipes)",
+        "4": "Demi-finales (4 équipes)",
+        "8": "Quarts de finale (8 équipes)",
+        "16": "Huitièmes de finale (16 équipes)",
+        "32": "Seizièmes de finale (32 équipes)",
+        "label": "Phase finale",
+        "none": "Aucune (poules uniquement)",
+        "thirdPlace": "Match pour la 3e place"
+      },
+      "categoryNone": "Non précisée"
     },
     "live": {
       "title": "Jour J",

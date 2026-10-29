@@ -513,7 +513,8 @@
         "teams": "Teams",
         "placed": "Matches placed",
         "fields": "Fields",
-        "end": "Schedule ends"
+        "end": "Schedule ends",
+        "venue": "Luogo"
       },
       "teams": {
         "title": "Your teams",
@@ -530,7 +531,8 @@
         "summary": "{{rotations}} rotations, from {{start}} to {{end}}.",
         "edit": "Adjust the calendar",
         "time": "Time",
-        "empty": "No match is scheduled yet."
+        "empty": "No match is scheduled yet.",
+        "endOfProgram": "Fine del programma: {{end}}"
       },
       "publish": {
         "title": "When you are ready",
@@ -559,8 +561,7 @@
       },
       "name": "Plateau name",
       "namePlaceholder": "U11 autumn plateau",
-      "category": "Category (optional)",
-      "categoryPlaceholder": "U11",
+      "category": "Categoria",
       "sport": "Sport",
       "date": "Date",
       "startTime": "First kickoff",
@@ -584,7 +585,19 @@
         "loadSports": "Could not load sports.",
         "invalid": "This format is not possible. Check the number of teams, pools and fields.",
         "generic": "Could not create the event."
-      }
+      },
+      "venue": "Luogo",
+      "knockout": {
+        "2": "Finale (2 squadre)",
+        "4": "Semifinali (4 squadre)",
+        "8": "Quarti di finale (8 squadre)",
+        "16": "Ottavi di finale (16 squadre)",
+        "32": "Sedicesimi (32 squadre)",
+        "label": "Fase finale",
+        "none": "Nessuna (solo gironi)",
+        "thirdPlace": "Finale 3º posto"
+      },
+      "categoryNone": "Non specificata"
     },
     "tournamentList": {
       "createPlateau": "Create an event (quick)",

@@ -615,7 +615,8 @@
         "teams": "Équipes",
         "placed": "Matchs placés",
         "fields": "Terrains",
-        "end": "Fin du programme"
+        "end": "Fin du programme",
+        "venue": "Lieu"
       },
       "teams": {
         "title": "Vos équipes",
@@ -632,7 +633,8 @@
         "summary": "{{rotations}} rotations, de {{start}} à {{end}}.",
         "edit": "Ajuster le calendrier",
         "time": "Horaire",
-        "empty": "Aucun match n’est encore planifié."
+        "empty": "Aucun match n’est encore planifié.",
+        "endOfProgram": "Fin du programme : {{end}}"
       },
       "publish": {
         "title": "Quand vous êtes prêt",
@@ -661,8 +663,7 @@
       },
       "name": "Nom du plateau",
       "namePlaceholder": "Plateau U11 de la Toussaint",
-      "category": "Catégorie (facultatif)",
-      "categoryPlaceholder": "U11",
+      "category": "Catégorie",
       "sport": "Sport",
       "date": "Date",
       "startTime": "Premier coup d’envoi",
@@ -686,7 +687,19 @@
         "loadSports": "Impossible de charger les sports.",
         "invalid": "Ce format n’est pas possible. Vérifiez le nombre d’équipes, de poules et de terrains.",
         "generic": "Impossible de créer l'événement."
-      }
+      },
+      "venue": "Lieu",
+      "knockout": {
+        "2": "Finale (2 équipes)",
+        "4": "Demi-finales (4 équipes)",
+        "8": "Quarts de finale (8 équipes)",
+        "16": "Huitièmes de finale (16 équipes)",
+        "32": "Seizièmes de finale (32 équipes)",
+        "label": "Phase finale",
+        "none": "Aucune (poules uniquement)",
+        "thirdPlace": "Match pour la 3e place"
+      },
+      "categoryNone": "Non précisée"
     },
     "tournamentList": {
       "createPlateau": "Créer un événement (rapide)",

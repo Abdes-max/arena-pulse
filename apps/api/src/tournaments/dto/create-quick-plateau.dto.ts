@@ -1,5 +1,6 @@
 import {
   IsBoolean,
+  IsIn,
   IsInt,
   IsISO8601,
   IsOptional,
@@ -10,6 +11,7 @@ import {
   Min,
   MinLength,
 } from 'class-validator';
+import { KNOCKOUT_SIZES } from '../knockout-phase.util';
 
 // One-screen "plateau" creation: a single-day event with N teams rotating on
 // K fields. Everything the regular flow asks for on separate pages (category,
@@ -58,11 +60,21 @@ export class CreateQuickPlateauDto {
   @Max(16)
   poolCount?: number;
 
-  // A final between the two best teams (1st vs 2nd of a single pool, or the
-  // two pool winners) -- only offered for 1 or 2 pools.
+  // Older clients: a plain final (same as knockoutSize: 2).
   @IsOptional()
   @IsBoolean()
   withFinal?: boolean;
+
+  // "Phase finale": number of teams in a classic single-elimination bracket
+  // after the pools (2 = final, 4 = semi-finals, 8 = quarter-finals...).
+  @IsOptional()
+  @IsIn(KNOCKOUT_SIZES)
+  knockoutSize?: number;
+
+  // Third-place match in the phase finale (4+ teams only).
+  @IsOptional()
+  @IsBoolean()
+  thirdPlaceMatch?: boolean;
 
   @IsOptional()
   @IsString()
@@ -75,4 +87,10 @@ export class CreateQuickPlateauDto {
   @MinLength(1)
   @MaxLength(200)
   venueName?: string;
+
+  // Full postal address of the venue picked in the address search.
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  venueAddress?: string;
 }

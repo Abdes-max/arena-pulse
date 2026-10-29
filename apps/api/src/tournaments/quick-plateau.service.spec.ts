@@ -130,8 +130,56 @@ describe('QuickPlateauService', () => {
       'org-1',
       'tournament-1',
       'category-1',
-      expect.objectContaining({ fieldIds: ['field-1'] }),
+      expect.objectContaining({ fieldIds: ['field-1', 'field-2'] }),
     );
+  });
+
+  it('builds a classic knockout phase (semi-finals + 3rd place) from 2 pools', async () => {
+    await service.create('org-1', {
+      ...baseDto,
+      teamCount: 8,
+      poolCount: 2,
+      knockoutSize: 4,
+      thirdPlaceMatch: true,
+    });
+
+    expect(presets.create).toHaveBeenCalledWith(
+      'org-1',
+      'tournament-1',
+      'category-1',
+      expect.objectContaining({
+        format: StructurePresetFormat.POOLS_AND_KNOCKOUT,
+        tiers: [
+          { name: 'Phase finale', qualifiersPerPool: 2, hasRankingMatch: true },
+        ],
+      }),
+    );
+    expect(brackets.generateAllMatches).toHaveBeenCalled();
+  });
+
+  it('fills an uneven bracket with the best runners-up', async () => {
+    await service.create('org-1', {
+      ...baseDto,
+      teamCount: 9,
+      poolCount: 3,
+      knockoutSize: 4,
+    });
+
+    expect(presets.create).toHaveBeenCalledWith(
+      'org-1',
+      'tournament-1',
+      'category-1',
+      expect.objectContaining({
+        bestOfPosition: { position: 2, bestCount: 1 },
+      }),
+    );
+  });
+
+  it('rejects a knockout phase the pools cannot feed', async () => {
+    await expect(
+      service.create('org-1', { ...baseDto, teamCount: 5, knockoutSize: 8 }),
+    ).rejects.toBeInstanceOf(BadRequestException);
+    expect(tournaments.create).not.toHaveBeenCalled();
   });
 
   it('rejects pools of fewer than 2 teams before creating anything', async () => {

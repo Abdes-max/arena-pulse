@@ -4,7 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Button } from 'design-system';
 import { LanguageService } from 'design-tokens';
-import { Match, Venue } from 'shared-models';
+import { CompetitionPhase, Match, RoundLabelLang, Venue, matchRoundLabel } from 'shared-models';
 import { AuthService } from '../../core/auth.service';
 import { CompetitionFormatsService } from '../../core/competition-formats.service';
 import { Team, TournamentDetail } from '../../core/models';
@@ -52,6 +52,8 @@ export class TournamentReviewPage {
   protected readonly teams = signal<Team[]>([]);
   protected readonly matches = signal<Match[]>([]);
   protected readonly venues = signal<Venue[]>([]);
+  /** Phase each loaded match belongs to, to label it (pool / knockout round). */
+  private readonly phaseByMatchId = signal<Map<string, CompetitionPhase>>(new Map());
 
   /** Edited names keyed by team id -- only what differs from the saved name. */
   protected readonly draftNames = signal<Map<string, string>>(new Map());
@@ -131,6 +133,13 @@ export class TournamentReviewPage {
           this.scheduleService.listMatches(organizationId, this.tournamentId, phase.id),
         ),
       );
+      const phaseByMatchId = new Map<string, CompetitionPhase>();
+      matches.forEach((list, index) => {
+        for (const match of list) {
+          phaseByMatchId.set(match.id, phases[index]);
+        }
+      });
+      this.phaseByMatchId.set(phaseByMatchId);
       this.matches.set(matches.flat());
     } catch {
       this.errorMessage.set('admin.review.errors.load');
@@ -138,6 +147,33 @@ export class TournamentReviewPage {
       this.loading.set(false);
     }
   }
+
+  /** "Poule A", "Demi-finale", "Finale"... -- shown on each match of the grid. */
+  protected phaseLabel(match: Match): string {
+    const phase = this.phaseByMatchId().get(match.id);
+    if (phase?.type === 'GROUP_STAGE' && match.groupId) {
+      const groupName = this.teams().find((team) => team.groupId === match.groupId)?.groupName;
+      if (groupName) {
+        return groupName;
+      }
+    }
+    return phase
+      ? matchRoundLabel(phase, match, 'full', this.languageService.language() as RoundLabelLang)
+      : '';
+  }
+
+  /** Venue line for the stats: names (and address of the first one). */
+  protected readonly venueLabel = computed(() => {
+    const venues = this.venues();
+    if (venues.length === 0) {
+      return null;
+    }
+    const first = venues[0];
+    return {
+      name: venues.map((venue) => venue.name).join(', '),
+      address: first.address && first.address !== first.name ? first.address : null,
+    };
+  });
 
   protected nameOf(team: Team): string {
     return this.draftNames().get(team.id) ?? team.name;

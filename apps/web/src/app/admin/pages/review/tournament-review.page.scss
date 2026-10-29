@@ -194,3 +194,40 @@
   margin: 0 var(--ap-space-2);
   color: var(--ap-color-muted);
 }
+
+// Phase of each match in the grid ("Poule A", "Demi-finale"...).
+.review-page__phase {
+  display: block;
+  margin-bottom: 2px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ap-color-muted);
+}
+
+.review-page__venue {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--ap-space-1) var(--ap-space-2);
+  margin: var(--ap-space-3) 0 0;
+}
+
+.review-page__venue-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ap-color-muted);
+}
+
+.review-page__venue-address {
+  font-size: 0.85rem;
+  color: var(--ap-color-muted);
+}
+
+.review-page__end {
+  margin: var(--ap-space-3) 0 0;
+  font-weight: 700;
+}

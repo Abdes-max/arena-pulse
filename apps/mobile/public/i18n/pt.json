@@ -380,7 +380,7 @@
       "intro": "One day, several teams rotating on your fields. \"Team 1, 2…\" teams, fields, pools and the schedule are created in one go; you rename the teams right after.",
       "name": "Plateau name",
       "namePlaceholder": "U11 autumn plateau",
-      "category": "Category",
+      "category": "Categoria",
       "sport": "Sport",
       "date": "Date",
       "startTime": "First match",
@@ -403,7 +403,19 @@
         "loadSports": "Could not load sports.",
         "invalid": "This format is not possible: check teams, pools and fields.",
         "generic": "Could not create the event."
-      }
+      },
+      "venue": "Local",
+      "knockout": {
+        "2": "Final (2 equipas)",
+        "4": "Meias-finais (4 equipas)",
+        "8": "Quartos de final (8 equipas)",
+        "16": "Oitavos de final (16 equipas)",
+        "32": "Dezasseis-avos (32 equipas)",
+        "label": "Fase final",
+        "none": "Nenhuma (só grupos)",
+        "thirdPlace": "Jogo do 3.º lugar"
+      },
+      "categoryNone": "Não especificada"
     },
     "live": {
       "title": "Match day",

@@ -6,6 +6,10 @@ import { CategoriesService } from './categories.service';
 import { CreateQuickPlateauDto } from './dto/create-quick-plateau.dto';
 import { StructurePresetFormat } from './dto/create-structure-preset.dto';
 import { FieldsService } from './fields.service';
+import {
+  KnockoutQualification,
+  knockoutQualification,
+} from './knockout-phase.util';
 import { ScheduleGenerationService } from './schedule-generation.service';
 import { StructurePresetsService } from './structure-presets.service';
 import { TeamsService } from './teams.service';
@@ -42,9 +46,16 @@ export class QuickPlateauService {
     if (poolCount * 2 > dto.teamCount) {
       throw new BadRequestException('Il faut au moins 2 équipes par poule.');
     }
-    if (dto.withFinal && poolCount > 2) {
+    // knockoutSize: classic single-elimination "phase finale" (2 = final,
+    // 4 = semis, 8 = quarters...). withFinal is the older client's way of
+    // asking for a plain final.
+    const knockoutSize = dto.knockoutSize ?? (dto.withFinal ? 2 : null);
+    const knockout = knockoutSize
+      ? knockoutQualification(knockoutSize, dto.teamCount, poolCount)
+      : null;
+    if (knockoutSize && !knockout) {
       throw new BadRequestException(
-        'La finale n’est proposée qu’avec 1 ou 2 poules.',
+        `Impossible de former une phase finale à ${knockoutSize} équipes avec ${dto.teamCount} équipes en ${poolCount} poule(s).`,
       );
     }
 
@@ -55,7 +66,7 @@ export class QuickPlateauService {
       endDate: dto.date,
     });
     try {
-      await this.build(organizationId, tournament.id, dto, poolCount);
+      await this.build(organizationId, tournament.id, dto, poolCount, knockout);
     } catch (error) {
       await this.prisma.tournament.delete({ where: { id: tournament.id } });
       throw error;
@@ -68,6 +79,7 @@ export class QuickPlateauService {
     tournamentId: string,
     dto: CreateQuickPlateauDto,
     poolCount: number,
+    knockout: KnockoutQualification | null,
   ) {
     const category = await this.categoriesService.create(
       organizationId,
@@ -80,6 +92,7 @@ export class QuickPlateauService {
       tournamentId,
       {
         name: dto.venueName ?? 'Stade',
+        ...(dto.venueAddress && { address: dto.venueAddress }),
       },
     );
     const fieldIds: string[] = [];
@@ -105,19 +118,22 @@ export class QuickPlateauService {
       tournamentId,
       category.id,
       {
-        format: dto.withFinal
+        format: knockout
           ? StructurePresetFormat.POOLS_AND_KNOCKOUT
           : StructurePresetFormat.POOLS_ONLY,
         teamCount: dto.teamCount,
         poolCount,
-        ...(dto.withFinal && {
+        ...(knockout && {
           tiers: [
             {
-              name: 'Finale',
-              qualifiersPerPool: poolCount === 1 ? 2 : 1,
-              hasRankingMatch: false,
+              name: knockout.size === 2 ? 'Finale' : 'Phase finale',
+              qualifiersPerPool: knockout.qualifiersPerPool,
+              hasRankingMatch: !!dto.thirdPlaceMatch && knockout.size >= 4,
             },
           ],
+          ...(knockout.bestOfPosition && {
+            bestOfPosition: knockout.bestOfPosition,
+          }),
         }),
         matchDurationMinutes: dto.matchDurationMinutes,
         breakDurationMinutes: dto.breakDurationMinutes,
@@ -137,14 +153,14 @@ export class QuickPlateauService {
       { fieldIds, startDateTime: dto.startDateTime },
     );
 
-    if (dto.withFinal) {
+    if (knockout) {
       await this.bracketsService.generateAllMatches(
         organizationId,
         tournamentId,
         category.id,
         {
-          // A single final: played on the first field, right after the pools.
-          fieldIds: [fieldIds[0]],
+          // Right after the pools, round by round, on every field.
+          fieldIds,
           breakAfterPoolsMinutes: dto.breakDurationMinutes,
           matchDurationMinutes: dto.matchDurationMinutes,
           breakDurationMinutes: dto.breakDurationMinutes,
