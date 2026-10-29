@@ -134,7 +134,7 @@
           "UNPUBLISHED": "Zurückgezogen",
           "ARCHIVED": "Archiviert"
         },
-        "newPlateau": "Create a plateau",
+        "newPlateau": "Create an event",
         "liveAction": "Match day"
       }
     },
@@ -198,7 +198,9 @@
             "rouge": "Rot"
           },
           "recommended": "Empfohlen"
-        }
+        },
+        "venuePlaceholder": "Stadion, Halle oder Adresse suchen…",
+        "venueSearchFailed": "Adresssuche nicht verfügbar: Der eingegebene Name wird so verwendet."
       },
       "teams": {
         "title": "Teilnehmende Teams",
@@ -374,7 +376,7 @@
       }
     },
     "quickPlateau": {
-      "title": "Create a plateau",
+      "title": "Create an event",
       "intro": "One day, several teams rotating on your fields. \"Team 1, 2…\" teams, fields, pools and the schedule are created in one go; you rename the teams right after.",
       "name": "Plateau name",
       "namePlaceholder": "U11 autumn plateau",
@@ -395,12 +397,12 @@
         "end": "End",
         "invalid": "You need at least 2 teams per pool and 1 field."
       },
-      "submit": "Create the plateau",
+      "submit": "Create the event",
       "submitting": "Creating…",
       "errors": {
         "loadSports": "Could not load sports.",
         "invalid": "This format is not possible: check teams, pools and fields.",
-        "generic": "Could not create the plateau."
+        "generic": "Could not create the event."
       }
     },
     "live": {

@@ -695,3 +695,20 @@
   letter-spacing: 0.03em;
   box-shadow: var(--ap-shadow-sm);
 }
+
+// Venue search (address autocomplete) takes the row's free width.
+.tournament-form-page__venue-search {
+  flex: 1 1 260px;
+}
+
+.tournament-form-page__venue-title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.tournament-form-page__venue-address {
+  font-size: 0.8rem;
+  color: var(--ap-color-muted);
+}

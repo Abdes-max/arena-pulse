@@ -16,9 +16,9 @@ import {
   IonToolbar,
   NavController,
 } from '@ionic/angular/standalone';
-import { AssetUrlService, PublicApiService } from 'api-client';
+import { AddressSearchService, AssetUrlService, PublicApiService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { Button, TextField } from 'design-system';
+import { AutocompleteField, Button, TextField } from 'design-system';
 import {
   PublicSport,
   PublicTheme,
@@ -88,6 +88,7 @@ const DEFAULT_THEME: PublicTheme = 'INK_SIGNAL';
 @Component({
   selector: 'app-organizer-tournament-wizard-page',
   imports: [
+    AutocompleteField,
     Button,
     DatePipe,
     NgTemplateOutlet,
@@ -149,6 +150,12 @@ export class OrganizerTournamentWizardPage {
   protected readonly sportId = signal('');
   protected readonly isOnline = signal(false);
   protected readonly venueName = signal('');
+  // Full address of the picked search suggestion (saved as Venue.address),
+  // dropped as soon as the name is retyped by hand.
+  protected readonly venueAddress = signal<string | null>(null);
+  protected readonly venueSearch = inject(AddressSearchService).autocomplete(() =>
+    this.transloco.getActiveLang(),
+  );
   // Tournament day (yyyy-mm-dd), shown in the public header. Also the
   // Calendrier step's default first-match day.
   protected readonly startDate = signal(tomorrowIsoDate());
@@ -446,6 +453,22 @@ export class OrganizerTournamentWizardPage {
     } catch {
       // Intentionally swallowed -- see comment above.
     }
+  }
+
+  protected onVenueInput(value: string): void {
+    this.venueName.set(value);
+    this.venueAddress.set(null);
+    this.venueSearch.query(value);
+  }
+
+  protected onVenueSuggestionSelect(index: number): void {
+    const suggestion = this.venueSearch.suggestions()[index];
+    if (!suggestion) {
+      return;
+    }
+    this.venueName.set(suggestion.name);
+    this.venueAddress.set(suggestion.address);
+    this.venueSearch.clear();
   }
 
   protected onLogoFileSelected(event: Event): void {
@@ -800,6 +823,7 @@ export class OrganizerTournamentWizardPage {
         tournamentId,
         this.isOnline() ? 'En ligne' : this.venueName().trim() || 'Lieu principal',
         Math.max(1, Number.parseInt(this.fieldCount(), 10) || 1),
+        this.isOnline() ? null : this.venueAddress(),
       );
       // Local date + time, so the kickoff is in the organizer's timezone.
       const start = new Date(`${this.scheduleDate()}T${this.scheduleTime() || '09:00'}`);

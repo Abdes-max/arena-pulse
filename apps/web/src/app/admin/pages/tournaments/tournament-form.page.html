@@ -635,7 +635,12 @@
           @for (venue of venues(); track venue.id) {
             <div class="tournament-form-page__category">
               <div class="tournament-form-page__category-header">
-                <strong>{{ venue.name }}</strong>
+                <span class="tournament-form-page__venue-title">
+                  <strong>{{ venue.name }}</strong>
+                  @if (venue.address && venue.address !== venue.name) {
+                    <span class="tournament-form-page__venue-address">{{ venue.address }}</span>
+                  }
+                </span>
                 <ap-button type="button" variant="ghost" (click)="removeVenue(venue)">
                   {{ 'admin.tournamentForm.venues.remove' | transloco }}
                 </ap-button>
@@ -665,12 +670,21 @@
             </div>
           }
           <div class="tournament-form-page__inline-form">
-            <ap-text-field
+            <ap-autocomplete-field
+              class="tournament-form-page__venue-search"
               [label]="'admin.tournamentForm.venues.newVenueLabel' | transloco"
               [hideLabel]="true"
               [placeholder]="'admin.tournamentForm.venues.newVenuePlaceholder' | transloco"
               [value]="newVenueName()"
+              [suggestions]="venueSearch.suggestions()"
+              [loading]="venueSearch.loading()"
+              [hint]="
+                venueSearch.failed()
+                  ? ('admin.tournamentForm.venues.searchFailed' | transloco)
+                  : null
+              "
               (valueChange)="onNewVenueNameChange($event)"
+              (suggestionSelect)="onVenueSuggestionSelect($event)"
             />
             <ap-button type="button" variant="ghost" (click)="addVenue()">{{
               'admin.tournamentForm.venues.addVenue' | transloco

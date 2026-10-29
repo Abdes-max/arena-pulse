@@ -248,10 +248,19 @@
             (valueChange)="startDate.set($event)"
           />
           @if (!isOnline()) {
-            <ap-text-field
+            <ap-autocomplete-field
               [label]="'organizer.wizard.infos.venueLabel' | transloco"
+              [placeholder]="'organizer.wizard.infos.venuePlaceholder' | transloco"
               [value]="venueName()"
-              (valueChange)="venueName.set($event)"
+              [suggestions]="venueSearch.suggestions()"
+              [loading]="venueSearch.loading()"
+              [hint]="
+                venueSearch.failed()
+                  ? ('organizer.wizard.infos.venueSearchFailed' | transloco)
+                  : null
+              "
+              (valueChange)="onVenueInput($event)"
+              (suggestionSelect)="onVenueSuggestionSelect($event)"
             />
           }
           <label class="wizard-page__switchrow">

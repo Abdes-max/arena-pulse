@@ -134,7 +134,7 @@
           "UNPUBLISHED": "Dépublié",
           "ARCHIVED": "Archivé"
         },
-        "newPlateau": "Créer un plateau",
+        "newPlateau": "Créer un événement",
         "liveAction": "Jour J"
       }
     },
@@ -198,7 +198,9 @@
             "rouge": "Rouge"
           },
           "recommended": "Recommandé"
-        }
+        },
+        "venuePlaceholder": "Rechercher un stade, un gymnase ou une adresse…",
+        "venueSearchFailed": "Recherche d'adresse indisponible : le nom saisi sera utilisé tel quel."
       },
       "teams": {
         "title": "Équipes participantes",
@@ -374,7 +376,7 @@
       }
     },
     "quickPlateau": {
-      "title": "Créer un plateau",
+      "title": "Créer un événement",
       "intro": "Une journée, plusieurs équipes qui tournent sur vos terrains. Équipes « Équipe 1, 2… », terrains, poules et planning sont créés d’un coup ; vous renommez les équipes juste après.",
       "name": "Nom du plateau",
       "namePlaceholder": "Plateau U11 de la Toussaint",
@@ -395,12 +397,12 @@
         "end": "Fin",
         "invalid": "Il faut au moins 2 équipes par poule et 1 terrain."
       },
-      "submit": "Créer le plateau",
+      "submit": "Créer l'événement",
       "submitting": "Création…",
       "errors": {
         "loadSports": "Impossible de charger les sports.",
         "invalid": "Ce format n’est pas possible : vérifiez équipes, poules et terrains.",
-        "generic": "Impossible de créer le plateau."
+        "generic": "Impossible de créer l'événement."
       }
     },
     "live": {
