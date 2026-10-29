@@ -15,7 +15,7 @@
 
 .tv__header {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 2vw;
 
@@ -100,14 +100,58 @@
   opacity: 0.7;
 }
 
+// Name + logo side by side; the name alone is what gets truncated.
 .tv__team {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  min-width: 0;
+
+  // Up to two lines before truncating -- the logo takes some of the width.
+  > span {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-height: 1.15;
+    overflow-wrap: break-word;
+  }
 }
 
 .tv__team--home {
+  justify-content: flex-end;
   text-align: right;
+}
+
+.tv__team-logo {
+  flex: none;
+  width: 1.4em;
+  height: 1.4em;
+  object-fit: contain;
+  // Pre-colored logos on a white background stay as drawn in dark mode.
+  color-scheme: light;
+}
+
+.tv__standing-team-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+}
+
+.tv__brand {
+  display: flex;
+  align-items: center;
+  gap: 1vw;
+  min-width: 0;
+}
+
+.tv__tournament-logo {
+  flex: none;
+  width: 2.6em;
+  height: 2.6em;
+  border-radius: 0.3em;
+  object-fit: cover;
+  color-scheme: light;
 }
 
 .tv__score {
