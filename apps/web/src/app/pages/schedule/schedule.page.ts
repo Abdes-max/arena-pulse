@@ -11,6 +11,11 @@ import { AssetUrlService, PublicApiService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { LanguageService } from 'design-tokens';
 import { TournamentContextService } from '../../core/tournament-context.service';
+import {
+  MATCH_STATUS_FILTERS,
+  MatchStatusFilter,
+  matchStatusFilterOf,
+} from './match-status-filter';
 import { Category, CompetitionPhase, Match, RoundLabelLang, roundLabel } from 'shared-models';
 
 @Component({
@@ -70,7 +75,30 @@ export class SchedulePage {
     };
   });
 
+  /** Null = every match; otherwise only the matches under that button. */
+  protected readonly statusFilter = signal<MatchStatusFilter | null>(null);
+  protected readonly statusFilters = MATCH_STATUS_FILTERS;
+
+  /** How many matches each button would show, given the current search. */
+  protected readonly statusCounts = computed(() => {
+    const counts: Record<MatchStatusFilter, number> = { upcoming: 0, live: 0, finished: 0 };
+    for (const match of this.searchedMatches()) {
+      counts[matchStatusFilterOf(match)]++;
+    }
+    return counts;
+  });
+
   protected readonly filteredMatches = computed(() => {
+    const filter = this.statusFilter();
+    const matches = this.searchedMatches();
+    return filter ? matches.filter((match) => matchStatusFilterOf(match) === filter) : matches;
+  });
+
+  protected toggleStatusFilter(filter: MatchStatusFilter): void {
+    this.statusFilter.update((current) => (current === filter ? null : filter));
+  }
+
+  private readonly searchedMatches = computed(() => {
     const query = this.query().trim().toLowerCase();
     const sorted = [...this.matches()].sort((a, b) => {
       const aTime = a.timeSlot?.startTime ?? '';

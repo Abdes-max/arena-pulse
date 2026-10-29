@@ -59,6 +59,20 @@ describe('pickCurrentAndNext', () => {
     expect(picked.next?.startTime).toBe(T2);
   });
 
+  it('skips already finished rotations when picking "next"', () => {
+    // Rotation 2 was played (and validated) before rotation 1 was entered.
+    const outOfOrder = groupRotations([
+      match('1', T1, 'T1'),
+      match('2', T2, 'T1', 'COMPLETED'),
+      match('3', T3, 'T1'),
+    ]);
+
+    const picked = pickCurrentAndNext(outOfOrder, new Date('2026-11-11T09:40:00.000Z'));
+
+    expect(picked.current?.startTime).toBe(T1);
+    expect(picked.next?.startTime).toBe(T3);
+  });
+
   it('returns nothing once every match is finished', () => {
     const done = groupRotations([match('1', T1, 'T1', 'COMPLETED')]);
 

@@ -53,7 +53,10 @@ export function pickCurrentAndNext(
     }
   }
   if (currentIndex >= 0) {
-    return { current: rotations[currentIndex], next: rotations[currentIndex + 1] ?? null };
+    // Rotations aren't always entered in order -- skip any later one that
+    // was already played instead of announcing it as "up next".
+    const next = rotations.slice(currentIndex + 1).find((rotation) => !isFinished(rotation));
+    return { current: rotations[currentIndex], next: next ?? null };
   }
   const nextIndex = rotations.findIndex(
     (rotation) => new Date(rotation.startTime) > now && !isFinished(rotation),

@@ -39,7 +39,77 @@
       </ion-button>
     </div>
 
-    @if (t.standing; as standing) {
+    @if (groupStandings()?.rows?.length) {
+      <section class="team-detail-page__section">
+        <h3 class="team-detail-page__section-title">
+          Classement de poule
+          @if (t.groupName) {
+            · {{ t.groupName }}
+          }
+        </h3>
+        <div class="team-detail-page__table-scroll">
+          <table class="team-detail-page__table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Équipe</th>
+                <th></th>
+                <th title="Joués">J</th>
+                <th title="Gagnés">G</th>
+                <th title="Nuls">N</th>
+                <th title="Perdus">P</th>
+                <th title="Buts pour">BP</th>
+                <th title="Buts contre">BC</th>
+                <th>+/-</th>
+                <th title="Points">Pts</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of groupStandings()!.rows; track row.teamId) {
+                @let tier = qualificationTier(row.teamId);
+                <tr
+                  [class.team-detail-page__row--self]="row.teamId === t.id"
+                  [class.team-detail-page__row--qualified]="
+                    !hasSeveralTiers() && isQualified(row.teamId)
+                  "
+                  [style.background]="tier?.soft ?? null"
+                  [attr.aria-current]="row.teamId === t.id ? 'true' : null"
+                >
+                  <td>{{ row.position }}</td>
+                  <td>
+                    <span class="team-detail-page__team-cell">
+                      @if (assetUrl.resolve(row.teamLogoUrl); as logo) {
+                        <img class="team-detail-page__team-logo" [src]="logo" alt="" />
+                      }
+                      {{ row.teamName }}
+                    </span>
+                  </td>
+                  <td>
+                    @if (!hasSeveralTiers()) {
+                      @if (isQualified(row.teamId)) {
+                        <ap-badge status="qualified" />
+                      }
+                    } @else if (tier) {
+                      <span class="team-detail-page__tier-badge" [style.color]="tier.color">{{
+                        tier.label
+                      }}</span>
+                    }
+                  </td>
+                  <td>{{ row.played }}</td>
+                  <td>{{ row.won }}</td>
+                  <td>{{ row.drawn }}</td>
+                  <td>{{ row.lost }}</td>
+                  <td>{{ row.goalsFor }}</td>
+                  <td>{{ row.goalsAgainst }}</td>
+                  <td>{{ row.goalDifference > 0 ? '+' : '' }}{{ row.goalDifference }}</td>
+                  <td class="team-detail-page__points">{{ row.points }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </section>
+    } @else if (t.standing; as standing) {
       <section class="team-detail-page__section">
         <h3 class="team-detail-page__section-title">Classement de poule</h3>
         <div class="team-detail-page__stats">

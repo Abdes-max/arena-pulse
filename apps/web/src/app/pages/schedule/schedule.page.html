@@ -3,13 +3,16 @@
 } @else if (categories().length === 0) {
   <p>{{ 'schedule.noCategories' | transloco }}</p>
 } @else {
-  <ap-tabs
-    class="schedule-page__filters"
-    [label]="'schedule.categoryLabel' | transloco"
-    [value]="selectedCategoryId()"
-    [options]="categoryOptions()"
-    (valueChange)="onCategoryChange($event)"
-  />
+  <!-- A single category needs no picker: nothing to choose between. -->
+  @if (categories().length > 1) {
+    <ap-tabs
+      class="schedule-page__filters"
+      [label]="'schedule.categoryLabel' | transloco"
+      [value]="selectedCategoryId()"
+      [options]="categoryOptions()"
+      (valueChange)="onCategoryChange($event)"
+    />
+  }
 
   @if (phases().length > 0) {
     <ap-tabs
@@ -31,10 +34,34 @@
       [value]="query()"
       (valueChange)="onQueryChange($event)"
     />
+    <div
+      class="schedule-page__status-filters"
+      role="group"
+      [attr.aria-label]="'schedule.statusFilter.label' | transloco"
+    >
+      @for (filter of statusFilters; track filter) {
+        <button
+          type="button"
+          class="schedule-page__status-filter"
+          [class.schedule-page__status-filter--active]="statusFilter() === filter"
+          [class.schedule-page__status-filter--live]="filter === 'live'"
+          [attr.aria-pressed]="statusFilter() === filter"
+          (click)="toggleStatusFilter(filter)"
+        >
+          {{ 'schedule.statusFilter.' + filter | transloco }}
+          <span class="schedule-page__status-count">{{ statusCounts()[filter] }}</span>
+        </button>
+      }
+    </div>
   </div>
 
   @if (filteredMatches().length === 0) {
-    <p class="schedule-page__empty">{{ 'schedule.noMatches' | transloco }}</p>
+    <p class="schedule-page__empty">
+      {{
+        (statusFilter() ? 'schedule.statusFilter.empty.' + statusFilter() : 'schedule.noMatches')
+          | transloco
+      }}
+    </p>
   } @else {
     @for (day of matchesByDay().days; track day.label) {
       <section class="schedule-page__day">

@@ -10,15 +10,23 @@ import {
 import { ActivatedRoute } from '@angular/router';
 import { AssetUrlService, PublicApiService } from 'api-client';
 import { IonButton, IonContent } from '@ionic/angular/standalone';
-import { MatchCard, MatchCardTeam, MatchCardVariant } from 'design-system';
-import { PublicTeamDetail, roundLabel } from 'shared-models';
+import { Badge, MatchCard, MatchCardTeam, MatchCardVariant } from 'design-system';
+import {
+  CompetitionPhase,
+  PublicTeamDetail,
+  Qualification,
+  QualificationTierColor,
+  qualificationTierColor,
+  roundLabel,
+  Standings,
+} from 'shared-models';
 import { FavoritesService } from '../../core/favorites.service';
 import { OfflineCacheService } from '../../core/offline-cache.service';
 import { TournamentContextService } from '../../core/tournament-context.service';
 
 @Component({
   selector: 'app-team-detail-page',
-  imports: [DecimalPipe, IonContent, MatchCard, IonButton],
+  imports: [Badge, DecimalPipe, IonContent, MatchCard, IonButton],
   templateUrl: './team-detail.page.html',
   styleUrl: './team-detail.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -35,6 +43,18 @@ export class TeamDetailPage {
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly team = signal<PublicTeamDetail | null>(null);
   protected readonly cachedAt = signal<number | null>(null);
+  protected readonly groupStandings = signal<Standings | null>(null);
+  private readonly qualifications = signal<Qualification[]>([]);
+  private readonly phases = signal<CompetitionPhase[]>([]);
+
+  // Same rules as the Classement page: a plain "Qualifié" badge with a
+  // single knockout tier, a colored per-tier label once there are several.
+  private readonly tierPhases = computed(() =>
+    this.phases()
+      .filter((phase) => phase.type === 'KNOCKOUT')
+      .sort((a, b) => a.position - b.position),
+  );
+  protected readonly hasSeveralTiers = computed(() => this.tierPhases().length >= 2);
 
   private readonly isDecided = (match: PublicTeamDetail['matches'][number]) =>
     match.score !== null || match.status === 'FORFEITED';
@@ -55,6 +75,49 @@ export class TeamDetailPage {
     });
   }
 
+  /**
+   * The whole pool's table + qualification badges, same as apps/web's team
+   * page. Best effort: offline or on any failure the page falls back to the
+   * team's own figures (t.standing) instead of erroring.
+   */
+  private async loadGroupTable(slug: string, team: PublicTeamDetail): Promise<void> {
+    if (!team.groupId) {
+      this.groupStandings.set(null);
+      return;
+    }
+    const [standings, qualifications, phases] = await Promise.all([
+      this.api.getStandings(slug, team.groupId).catch(() => null),
+      this.api.getQualifications(slug, team.groupId).catch(() => []),
+      this.api.listPhases(slug, team.categoryId).catch(() => []),
+    ]);
+    this.groupStandings.set(standings);
+    this.qualifications.set(qualifications);
+    this.phases.set(phases);
+  }
+
+  protected isQualified(teamId: string): boolean {
+    return this.qualifications().some((qualification) =>
+      qualification.qualifiedTeams.some((team) => team.id === teamId),
+    );
+  }
+
+  protected qualificationTier(teamId: string): (QualificationTierColor & { label: string }) | null {
+    if (!this.hasSeveralTiers()) {
+      return null;
+    }
+    const qualification = this.qualifications().find((qual) =>
+      qual.qualifiedTeams.some((team) => team.id === teamId),
+    );
+    if (!qualification) {
+      return null;
+    }
+    const tiers = this.tierPhases();
+    const index = tiers.findIndex((phase) => phase.id === qualification.targetPhaseId);
+    return index >= 0
+      ? { label: qualification.targetPhaseName, ...qualificationTierColor(index, tiers.length) }
+      : null;
+  }
+
   private async load(): Promise<void> {
     const slug = this.context.slug();
     const teamId = this.route.snapshot.paramMap.get('teamId')!;
@@ -66,6 +129,7 @@ export class TeamDetailPage {
       this.team.set(team);
       this.cachedAt.set(null);
       this.cache.set(cacheKey, team);
+      await this.loadGroupTable(slug, team);
     } catch (error) {
       const cached = this.cache.get<PublicTeamDetail>(cacheKey);
       if (this.cache.isNetworkFailure(error) && cached) {

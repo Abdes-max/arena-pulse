@@ -90,3 +90,82 @@
   color: var(--ap-color-muted);
   margin-top: var(--ap-space-4);
 }
+
+// Same look as the Classement page's pool tables (standings.page.scss), with
+// this team's own row highlighted.
+.team-detail-page__table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.team-detail-page__table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+
+  th,
+  td {
+    padding: var(--ap-space-2);
+    text-align: center;
+    border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+  }
+
+  th {
+    color: var(--ap-color-muted);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  th:nth-child(2),
+  td:nth-child(2) {
+    text-align: left;
+  }
+}
+
+.team-detail-page__row--self {
+  font-weight: 700;
+
+  td:first-child {
+    box-shadow: inset 3px 0 0 var(--ap-color-signal);
+  }
+}
+
+.team-detail-page__team-cell {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+}
+
+.team-detail-page__team-logo {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  // Keeps pre-colored logos on a white background from being inverted by
+  // the page-wide color-scheme in dark mode.
+  color-scheme: light;
+}
+
+.team-detail-page__points {
+  font-weight: 700;
+}
+
+// Same as standings.page.scss's qualified row / tier badge.
+.team-detail-page__row--qualified {
+  background: var(--ap-color-signal-soft);
+}
+
+.team-detail-page__tier-badge {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--ap-font-body);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: var(--ap-space-1) var(--ap-space-2);
+  border-radius: var(--ap-radius-sm);
+  border: var(--ap-border-width) solid;
+}

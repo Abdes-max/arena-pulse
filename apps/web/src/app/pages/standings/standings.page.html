@@ -3,13 +3,16 @@
 } @else if (categories().length === 0) {
   <p>{{ 'schedule.noCategories' | transloco }}</p>
 } @else {
-  <ap-tabs
-    class="standings-page__category-tabs"
-    [label]="'schedule.categoryLabel' | transloco"
-    [value]="selectedCategoryId()"
-    [options]="categoryOptions()"
-    (valueChange)="onCategoryChange($event)"
-  />
+  <!-- A single category needs no picker: nothing to choose between. -->
+  @if (categories().length > 1) {
+    <ap-tabs
+      class="standings-page__category-tabs"
+      [label]="'schedule.categoryLabel' | transloco"
+      [value]="selectedCategoryId()"
+      [options]="categoryOptions()"
+      (valueChange)="onCategoryChange($event)"
+    />
+  }
 
   @if (tabs().length === 0) {
     <p>{{ 'standings.noPhase' | transloco }}</p>

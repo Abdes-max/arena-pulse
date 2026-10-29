@@ -342,6 +342,17 @@
     }
   },
   "schedule": {
+    "statusFilter": {
+      "label": "Filtrer par état",
+      "upcoming": "À venir",
+      "live": "En cours",
+      "finished": "Terminés",
+      "empty": {
+        "upcoming": "Aucun match à venir.",
+        "live": "Aucun match en cours.",
+        "finished": "Aucun match terminé."
+      }
+    },
     "noCategories": "Aucune catégorie pour ce tournoi.",
     "categoryLabel": "Catégorie",
     "phaseLabel": "Phase",
