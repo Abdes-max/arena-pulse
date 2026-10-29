@@ -815,7 +815,17 @@
         "title": "Fundo do cabeçalho",
         "change": "Alterar",
         "add": "Adicionar um fundo",
-        "remove": "Remover"
+        "remove": "Remover",
+        "hint": "Escolha um fundo pronto ou envie a sua própria imagem (Outro).",
+        "other": "Outro",
+        "presets": {
+          "vert": "Verde",
+          "marron": "Castanho",
+          "violet": "Roxo",
+          "bleu": "Azul",
+          "rouge": "Vermelho"
+        },
+        "recommended": "Recomendado"
       },
       "poster": {
         "title": "Cartaz / flyer",

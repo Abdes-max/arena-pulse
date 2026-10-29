@@ -282,6 +282,54 @@
               <span class="wizard-page__logo-filename">{{ file.name }}</span>
             }
           </label>
+          <p class="wizard-page__backgrounds-label">
+            {{ 'organizer.wizard.infos.headerBackground.label' | transloco }}
+          </p>
+          <div class="wizard-page__backgrounds" role="radiogroup">
+            @for (preset of headerBackgroundPresets(); track preset) {
+              <button
+                type="button"
+                role="radio"
+                class="wizard-page__background"
+                [class.is-selected]="headerBackgroundChoice() === preset"
+                [attr.aria-checked]="headerBackgroundChoice() === preset"
+                (click)="headerBackgroundChoice.set(preset)"
+              >
+                <img
+                  class="wizard-page__background-thumb"
+                  [src]="headerBackgroundPresetUrl(preset)"
+                  alt=""
+                />
+                @if (preset === recommendedHeaderBackground()) {
+                  <span class="wizard-page__background-badge">{{
+                    'organizer.wizard.infos.headerBackground.recommended' | transloco
+                  }}</span>
+                }
+                <span>{{
+                  'organizer.wizard.infos.headerBackground.presets.' + preset | transloco
+                }}</span>
+              </button>
+            }
+            <label
+              class="wizard-page__background"
+              [class.is-selected]="headerBackgroundChoice() === 'other'"
+            >
+              <span
+                class="wizard-page__background-thumb wizard-page__background-thumb--other"
+                aria-hidden="true"
+                >+</span
+              >
+              <span>{{ 'organizer.wizard.infos.headerBackground.other' | transloco }}</span>
+              <input
+                type="file"
+                accept="image/png,image/jpeg,image/webp"
+                (change)="onHeaderBackgroundFileSelected($event)"
+              />
+            </label>
+          </div>
+          @if (headerBackgroundFile(); as file) {
+            <span class="wizard-page__logo-filename">{{ file.name }}</span>
+          }
         }
         @case (2) {
           <h3 class="wizard-page__section-title">

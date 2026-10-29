@@ -1,3 +1,10 @@
+import {
+  RECOMMENDED_HEADER_BACKGROUND,
+  HeaderBackgroundPreset,
+  headerBackgroundPresetOf,
+  headerBackgroundPresetUrl,
+  headerBackgroundPresetsFor,
+} from 'shared-models';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
   ChangeDetectionStrategy,
@@ -134,6 +141,23 @@ export class TournamentFormPage {
   // side by side instead of picking a name off a dropdown blind.
   protected readonly personalizationOpen = signal(false);
   protected readonly tournament = signal<TournamentDetail | null>(null);
+
+  // Ready-made header backgrounds (shared-models' HEADER_BACKGROUND_PRESETS),
+  // picked with one click; "Autre" stays the premium photo upload.
+  // The selected theme's matching preset comes first, flagged "Recommandé".
+  protected readonly headerBackgroundPresets = computed(() =>
+    headerBackgroundPresetsFor(this.selectedTheme()),
+  );
+  protected readonly recommendedHeaderBackground = computed(
+    () => RECOMMENDED_HEADER_BACKGROUND[this.selectedTheme()],
+  );
+  protected readonly headerBackgroundPresetUrl = headerBackgroundPresetUrl;
+  protected readonly selectedHeaderBackgroundPreset = computed(() =>
+    headerBackgroundPresetOf(this.tournament()?.headerBackgroundUrl),
+  );
+  protected readonly hasCustomHeaderBackground = computed(
+    () => !!this.tournament()?.headerBackgroundUrl && !this.selectedHeaderBackgroundPreset(),
+  );
   protected readonly categories = signal<Category[]>([]);
   protected readonly venues = signal<Venue[]>([]);
   protected readonly sponsors = signal<Sponsor[]>([]);
@@ -699,6 +723,25 @@ export class TournamentFormPage {
       );
     } catch (error) {
       this.errorMessage.set(this.imageUploadErrorKey(error));
+    }
+  }
+
+  protected async selectHeaderBackgroundPreset(preset: HeaderBackgroundPreset): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const tournamentId = this.tournamentId();
+    if (!organizationId || !tournamentId) {
+      return;
+    }
+    try {
+      this.tournament.set(
+        await this.tournamentsService.setHeaderBackgroundPreset(
+          organizationId,
+          tournamentId,
+          preset,
+        ),
+      );
+    } catch {
+      this.errorMessage.set('admin.tournamentForm.errors.imageUpload');
     }
   }
 

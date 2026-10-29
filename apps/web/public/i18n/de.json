@@ -815,7 +815,17 @@
         "title": "Kopfzeilen-Hintergrund",
         "change": "Ändern",
         "add": "Hintergrund hinzufügen",
-        "remove": "Entfernen"
+        "remove": "Entfernen",
+        "hint": "Wählen Sie einen fertigen Hintergrund oder laden Sie Ihr eigenes Bild hoch (Andere).",
+        "other": "Andere",
+        "presets": {
+          "vert": "Grün",
+          "marron": "Braun",
+          "violet": "Violett",
+          "bleu": "Blau",
+          "rouge": "Rot"
+        },
+        "recommended": "Empfohlen"
       },
       "poster": {
         "title": "Plakat / Flyer",

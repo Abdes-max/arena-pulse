@@ -9,6 +9,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   Query,
   UploadedFile,
   UseGuards,
@@ -25,6 +26,7 @@ import type { MailLanguage } from '../mail/mail-language';
 import { RequireOrgRole } from '../organizations/decorators/require-org-role.decorator';
 import { OrganizationRoleGuard } from '../organizations/guards/organization-role.guard';
 import { ConfirmIapPurchaseDto } from './dto/confirm-iap-purchase.dto';
+import { SetHeaderBackgroundPresetDto } from './dto/set-header-background-preset.dto';
 import { ConfirmPublicationPaymentDto } from './dto/confirm-publication-payment.dto';
 import { PayForTeamAdditionDto } from './dto/pay-for-team-addition.dto';
 import { PayForTournamentTierDto } from './dto/pay-for-tournament-tier.dto';
@@ -128,6 +130,20 @@ export class TournamentsController {
       organizationId,
       tournamentId,
       file,
+    );
+  }
+
+  @RequireOrgRole(OrganizationRole.ORG_ADMIN)
+  @Put(':tournamentId/header-background/preset')
+  setHeaderBackgroundPreset(
+    @Param('organizationId') organizationId: string,
+    @Param('tournamentId') tournamentId: string,
+    @Body() dto: SetHeaderBackgroundPresetDto,
+  ) {
+    return this.tournamentsService.setHeaderBackgroundPreset(
+      organizationId,
+      tournamentId,
+      dto.preset,
     );
   }
 

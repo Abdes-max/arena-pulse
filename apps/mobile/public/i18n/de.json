@@ -185,7 +185,19 @@
           "FRESH_PITCH": "Motiv Rasen",
           "CRIMSON_CHARGE": "Motiv Karmesin"
         },
-        "logoLabel": "Turnier-Logo"
+        "logoLabel": "Turnier-Logo",
+        "headerBackground": {
+          "label": "Kopfzeilen-Hintergrund",
+          "other": "Andere",
+          "presets": {
+            "vert": "Grün",
+            "marron": "Braun",
+            "violet": "Violett",
+            "bleu": "Blau",
+            "rouge": "Rot"
+          },
+          "recommended": "Empfohlen"
+        }
       },
       "teams": {
         "title": "Teilnehmende Teams",
