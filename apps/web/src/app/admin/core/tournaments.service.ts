@@ -1,3 +1,4 @@
+import { HeaderBackgroundPreset } from 'shared-models';
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
@@ -167,6 +168,19 @@ export class TournamentsService {
       this.http.post<TournamentDetail>(
         `${this.base(organizationId)}/${tournamentId}/header-background`,
         formData,
+      ),
+    );
+  }
+
+  setHeaderBackgroundPreset(
+    organizationId: string,
+    tournamentId: string,
+    preset: HeaderBackgroundPreset,
+  ): Promise<TournamentDetail> {
+    return firstValueFrom(
+      this.http.put<TournamentDetail>(
+        `${this.base(organizationId)}/${tournamentId}/header-background/preset`,
+        { preset },
       ),
     );
   }

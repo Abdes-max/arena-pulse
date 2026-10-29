@@ -182,7 +182,19 @@
           "FRESH_PITCH": "Tema Prato",
           "CRIMSON_CHARGE": "Tema Cremisi"
         },
-        "logoLabel": "Logo del torneo"
+        "logoLabel": "Logo del torneo",
+        "headerBackground": {
+          "label": "Sfondo dell'intestazione",
+          "other": "Altro",
+          "presets": {
+            "vert": "Verde",
+            "marron": "Marrone",
+            "violet": "Viola",
+            "bleu": "Blu",
+            "rouge": "Rosso"
+          },
+          "recommended": "Consigliato"
+        }
       },
       "teams": {
         "title": "Squadre partecipanti",

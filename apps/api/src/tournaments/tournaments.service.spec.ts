@@ -273,6 +273,44 @@ describe('TournamentsService', () => {
     });
   });
 
+  describe('setHeaderBackgroundPreset', () => {
+    it('stores the preset image path, without the premium gate', async () => {
+      prisma.tournament.findUnique.mockResolvedValue(
+        tournamentFixture({ headerBackgroundUrl: null }),
+      );
+      prisma.tournament.update.mockResolvedValue(
+        tournamentFixture({
+          headerBackgroundUrl: '/header-backgrounds/violet.jpg',
+        }),
+      );
+
+      const result = await service.setHeaderBackgroundPreset(
+        'org-1',
+        'tournament-1',
+        'violet',
+      );
+
+      expect(prisma.tournament.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: { headerBackgroundUrl: '/header-backgrounds/violet.jpg' },
+        }),
+      );
+      expect(result.headerBackgroundUrl).toBe('/header-backgrounds/violet.jpg');
+      expect(organizationsService.hasActiveSubscription).not.toHaveBeenCalled();
+    });
+
+    it('rejects a change on an archived tournament', async () => {
+      prisma.tournament.findUnique.mockResolvedValue(
+        tournamentFixture({ status: TournamentStatus.ARCHIVED }),
+      );
+
+      await expect(
+        service.setHeaderBackgroundPreset('org-1', 'tournament-1', 'bleu'),
+      ).rejects.toBeInstanceOf(ConflictException);
+      expect(prisma.tournament.update).not.toHaveBeenCalled();
+    });
+  });
+
   describe('update / editability', () => {
     it('rejects any update on an archived tournament', async () => {
       prisma.tournament.findUnique.mockResolvedValue(
