@@ -43,6 +43,14 @@ on:
         options:
           - MANUAL
           - AFTER_APPROVAL
+      update_screenshots:
+        description: >-
+          Replace the version's iPhone 6.5" and iPad 13" screenshots with the
+          ones committed in apps/mobile/store-assets/app-store (see
+          infra/scripts/build-store-screenshots.mjs) before submitting.
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   submit:
@@ -65,4 +73,5 @@ jobs:
           BUILD_NUMBER: ${{ inputs.build_number }}
           RELEASE_NOTES: ${{ inputs.release_notes }}
           RELEASE_TYPE: ${{ inputs.release_type }}
+          SCREENSHOTS_DIR: ${{ inputs.update_screenshots && 'apps/mobile/store-assets/app-store' || '' }}
         run: node infra/scripts/submit-ios-app-store.mjs
