@@ -923,7 +923,8 @@
           "violet": "Purple",
           "bleu": "Blue",
           "rouge": "Red"
-        }
+        },
+        "recommended": "Recommended"
       },
       "poster": {
         "title": "Poster / flyer",

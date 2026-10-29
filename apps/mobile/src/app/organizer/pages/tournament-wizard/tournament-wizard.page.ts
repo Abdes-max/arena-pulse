@@ -9,7 +9,8 @@ import {
   PublicSport,
   PublicTheme,
   matchRoundLabel,
-  HEADER_BACKGROUND_PRESETS,
+  RECOMMENDED_HEADER_BACKGROUND,
+  headerBackgroundPresetsFor,
   HeaderBackgroundPreset,
   headerBackgroundPresetOf,
   headerBackgroundPresetUrl,
@@ -141,7 +142,13 @@ export class OrganizerTournamentWizardPage {
   // Header background: one of the ready-made presets, or "other" with an
   // uploaded photo (premium, best-effort like the logo). headerBackgroundSaved
   // is what the server has, so an untouched choice isn't re-sent.
-  protected readonly headerBackgroundPresets = HEADER_BACKGROUND_PRESETS;
+  // The selected theme's matching preset comes first, flagged "Recommandé".
+  protected readonly headerBackgroundPresets = computed(() =>
+    headerBackgroundPresetsFor(this.theme()),
+  );
+  protected readonly recommendedHeaderBackground = computed(
+    () => RECOMMENDED_HEADER_BACKGROUND[this.theme()],
+  );
   protected readonly headerBackgroundPresetUrl = headerBackgroundPresetUrl;
   protected readonly headerBackgroundChoice = signal<HeaderBackgroundPreset | 'other' | null>(null);
   protected readonly headerBackgroundFile = signal<File | null>(null);

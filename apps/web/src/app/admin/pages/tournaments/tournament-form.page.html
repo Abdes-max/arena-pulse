@@ -344,7 +344,7 @@
               role="radiogroup"
               [attr.aria-label]="'admin.tournamentForm.headerBackground.title' | transloco"
             >
-              @for (preset of headerBackgroundPresets; track preset) {
+              @for (preset of headerBackgroundPresets(); track preset) {
                 <button
                   type="button"
                   role="radio"
@@ -360,6 +360,11 @@
                     [src]="headerBackgroundPresetUrl(preset)"
                     alt=""
                   />
+                  @if (preset === recommendedHeaderBackground()) {
+                    <span class="tournament-form-page__background-badge">{{
+                      'admin.tournamentForm.headerBackground.recommended' | transloco
+                    }}</span>
+                  }
                   <span>{{
                     'admin.tournamentForm.headerBackground.presets.' + preset | transloco
                   }}</span>

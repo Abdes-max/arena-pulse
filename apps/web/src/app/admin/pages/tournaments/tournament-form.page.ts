@@ -1,8 +1,9 @@
 import {
-  HEADER_BACKGROUND_PRESETS,
+  RECOMMENDED_HEADER_BACKGROUND,
   HeaderBackgroundPreset,
   headerBackgroundPresetOf,
   headerBackgroundPresetUrl,
+  headerBackgroundPresetsFor,
 } from 'shared-models';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
@@ -143,7 +144,13 @@ export class TournamentFormPage {
 
   // Ready-made header backgrounds (shared-models' HEADER_BACKGROUND_PRESETS),
   // picked with one click; "Autre" stays the premium photo upload.
-  protected readonly headerBackgroundPresets = HEADER_BACKGROUND_PRESETS;
+  // The selected theme's matching preset comes first, flagged "Recommandé".
+  protected readonly headerBackgroundPresets = computed(() =>
+    headerBackgroundPresetsFor(this.selectedTheme()),
+  );
+  protected readonly recommendedHeaderBackground = computed(
+    () => RECOMMENDED_HEADER_BACKGROUND[this.selectedTheme()],
+  );
   protected readonly headerBackgroundPresetUrl = headerBackgroundPresetUrl;
   protected readonly selectedHeaderBackgroundPreset = computed(() =>
     headerBackgroundPresetOf(this.tournament()?.headerBackgroundUrl),

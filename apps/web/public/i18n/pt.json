@@ -821,7 +821,8 @@
           "violet": "Roxo",
           "bleu": "Azul",
           "rouge": "Vermelho"
-        }
+        },
+        "recommended": "Recomendado"
       },
       "poster": {
         "title": "Cartaz / flyer",

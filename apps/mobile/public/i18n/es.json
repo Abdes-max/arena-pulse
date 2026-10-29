@@ -192,7 +192,8 @@
             "violet": "Violeta",
             "bleu": "Azul",
             "rouge": "Rojo"
-          }
+          },
+          "recommended": "Recomendado"
         }
       },
       "teams": {

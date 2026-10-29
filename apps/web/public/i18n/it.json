@@ -821,7 +821,8 @@
           "violet": "Viola",
           "bleu": "Blu",
           "rouge": "Rosso"
-        }
+        },
+        "recommended": "Consigliato"
       },
       "poster": {
         "title": "Locandina / flyer",

@@ -821,7 +821,8 @@
           "violet": "Violeta",
           "bleu": "Azul",
           "rouge": "Rojo"
-        }
+        },
+        "recommended": "Recomendado"
       },
       "poster": {
         "title": "Cartel / flyer",

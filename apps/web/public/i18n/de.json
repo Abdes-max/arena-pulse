@@ -821,7 +821,8 @@
           "violet": "Violett",
           "bleu": "Blau",
           "rouge": "Rot"
-        }
+        },
+        "recommended": "Empfohlen"
       },
       "poster": {
         "title": "Plakat / Flyer",

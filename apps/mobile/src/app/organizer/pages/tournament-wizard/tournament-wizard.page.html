@@ -286,7 +286,7 @@
             {{ 'organizer.wizard.infos.headerBackground.label' | transloco }}
           </p>
           <div class="wizard-page__backgrounds" role="radiogroup">
-            @for (preset of headerBackgroundPresets; track preset) {
+            @for (preset of headerBackgroundPresets(); track preset) {
               <button
                 type="button"
                 role="radio"
@@ -300,6 +300,11 @@
                   [src]="headerBackgroundPresetUrl(preset)"
                   alt=""
                 />
+                @if (preset === recommendedHeaderBackground()) {
+                  <span class="wizard-page__background-badge">{{
+                    'organizer.wizard.infos.headerBackground.recommended' | transloco
+                  }}</span>
+                }
                 <span>{{
                   'organizer.wizard.infos.headerBackground.presets.' + preset | transloco
                 }}</span>
