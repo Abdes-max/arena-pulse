@@ -159,6 +159,11 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'tournaments/new-plateau',
+        loadComponent: () =>
+          import('./admin/pages/tournaments/quick-plateau.page').then((m) => m.QuickPlateauPage),
+      },
+      {
         path: 'tournaments/new',
         loadComponent: () =>
           import('./admin/pages/tournaments/tournament-form.page').then(

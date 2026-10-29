@@ -243,6 +243,10 @@ export class TournamentListPage {
     void this.router.navigateByUrl('/admin/tournaments/new');
   }
 
+  protected goToCreatePlateau(): void {
+    void this.router.navigateByUrl('/admin/tournaments/new-plateau');
+  }
+
   protected editTournament(tournament: Tournament): void {
     void this.router.navigate(['/admin/tournaments', tournament.id]);
   }
