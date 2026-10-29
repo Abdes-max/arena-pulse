@@ -1,0 +1,130 @@
+<ion-header>
+  <ion-toolbar>
+    <button
+      type="button"
+      class="live-page__back"
+      slot="start"
+      (click)="goBack()"
+      [attr.aria-label]="'organizer.wizard.cancelAria' | transloco"
+    >
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+        <path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+      </svg>
+    </button>
+    <ion-title>{{ 'organizer.live.title' | transloco }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="live-page">
+  <div class="live-page__scroll">
+    @if (errorMessage(); as message) {
+      <p class="live-page__error" role="alert">{{ message | transloco }}</p>
+    }
+
+    @if (loading()) {
+      <p class="live-page__hint">{{ 'organizer.live.loading' | transloco }}</p>
+    } @else if (rotations().length === 0) {
+      <p class="live-page__hint">{{ 'organizer.live.empty' | transloco }}</p>
+    } @else {
+      <div class="live-page__shift" role="group">
+        <span>{{ 'organizer.live.shiftLabel' | transloco }}</span>
+        <ap-button type="button" variant="ghost" size="sm" [disabled]="saving()" (click)="shift(-5)"
+          >−5 min</ap-button
+        >
+        <ap-button type="button" variant="ghost" size="sm" [disabled]="saving()" (click)="shift(5)"
+          >+5 min</ap-button
+        >
+      </div>
+
+      @for (rotation of rotations(); track rotation.startTime; let i = $index) {
+        <section
+          class="live-page__rotation"
+          [class.live-page__rotation--focus]="isFocus(rotation)"
+          [class.live-page__rotation--done]="isDone(rotation)"
+        >
+          <button
+            type="button"
+            class="live-page__rotation-header"
+            [attr.aria-expanded]="openStart() === rotation.startTime"
+            (click)="toggle(rotation)"
+          >
+            <span>
+              {{ 'organizer.live.rotation' | transloco: { number: i + 1 } }}
+              <span class="live-page__time">{{ formatClock(rotation.startTime) }}</span>
+            </span>
+            @if (isDone(rotation)) {
+              <span class="live-page__results">{{ resultsOf(rotation) }}</span>
+              <span class="live-page__badge live-page__badge--done">{{
+                'organizer.live.done' | transloco
+              }}</span>
+            } @else if (isFocus(rotation)) {
+              <span class="live-page__badge">{{
+                (focusIsCurrent() ? 'organizer.live.now' : 'organizer.live.next') | transloco
+              }}</span>
+            }
+          </button>
+
+          @if (openStart() === rotation.startTime) {
+            <div class="live-page__matches">
+              @for (match of rotation.matches; track match.id) {
+                <div class="live-page__match">
+                  <span class="live-page__field">{{ match.timeSlot?.field?.name }}</span>
+                  @if (isPlayable(match)) {
+                    @for (side of ['home', 'away']; track side) {
+                      <div class="live-page__side">
+                        <span class="live-page__team">{{
+                          side === 'home'
+                            ? teamName(match.homeTeam, match.homeSourceLabel)
+                            : teamName(match.awayTeam, match.awaySourceLabel)
+                        }}</span>
+                        <div class="live-page__stepper">
+                          <button
+                            type="button"
+                            [attr.aria-label]="'organizer.live.minus' | transloco"
+                            (click)="bump(match, $any(side), -1)"
+                          >
+                            −
+                          </button>
+                          <output>{{
+                            side === 'home' ? scoreOf(match).home : scoreOf(match).away
+                          }}</output>
+                          <button
+                            type="button"
+                            [attr.aria-label]="'organizer.live.plus' | transloco"
+                            (click)="bump(match, $any(side), 1)"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                    }
+                  } @else {
+                    <p class="live-page__hint">
+                      {{ teamName(match.homeTeam, match.homeSourceLabel) }} –
+                      {{ teamName(match.awayTeam, match.awaySourceLabel) }}
+                      · {{ 'organizer.live.teamsUnknown' | transloco }}
+                    </p>
+                  }
+                </div>
+              }
+              @if (apiError(); as message) {
+                <p class="live-page__error" role="alert">{{ message }}</p>
+              }
+              <ap-button type="button" [disabled]="saving()" (click)="save(rotation, true)">
+                {{ 'organizer.live.validate' | transloco }}
+              </ap-button>
+              <ap-button
+                type="button"
+                variant="ghost"
+                [disabled]="saving()"
+                (click)="save(rotation, false)"
+              >
+                {{ 'organizer.live.saveRunning' | transloco }}
+              </ap-button>
+            </div>
+          }
+        </section>
+      }
+    }
+  </div>
+</ion-content>

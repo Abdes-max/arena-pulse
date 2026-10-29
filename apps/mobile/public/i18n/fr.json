@@ -130,7 +130,9 @@
           "PUBLISHED": "Publié",
           "UNPUBLISHED": "Dépublié",
           "ARCHIVED": "Archivé"
-        }
+        },
+        "newPlateau": "Créer un plateau",
+        "liveAction": "Jour J"
       }
     },
     "account": {
@@ -192,7 +194,13 @@
         "remove": "Retirer {{name}}",
         "minHint": "Minimum 3 équipes pour passer à l'étape suivante.",
         "errorAdd": "Impossible d'ajouter cette équipe, réessayez.",
-        "errorRemove": "Impossible de retirer cette équipe, réessayez."
+        "errorRemove": "Impossible de retirer cette équipe, réessayez.",
+        "placeholderWarning": "{{count}} nom(s) d’équipe restent à confirmer.",
+        "pasteSummary": "Coller une liste de noms",
+        "pastePlaceholder": "Un club par ligne (ou séparés par des virgules)",
+        "pasteRename": "Renommer les équipes à confirmer",
+        "pasteAdd": "Ajouter ces équipes",
+        "errorPaste": "Impossible d’enregistrer ces noms, réessayez."
       },
       "structure": {
         "title": "Format de la compétition",
@@ -224,7 +232,16 @@
         "generating": "Génération…",
         "noScheduleHint": "Pas de calendrier à générer pour ce format -- le tableau à élimination directe se complète match après match, une fois les résultats connus.",
         "editLaterHint": "Les horaires et lieux exacts pourront être ajustés depuis \"Mes tournois\".",
-        "errorGeneric": "Une erreur est survenue, réessayez."
+        "errorGeneric": "Une erreur est survenue, réessayez.",
+        "dateLabel": "Date",
+        "timeLabel": "Premier match",
+        "fieldCountLabel": "Terrains",
+        "matchDurationLabel": "Durée (min)",
+        "breakDurationLabel": "Pause (min)",
+        "regenerate": "Régénérer le calendrier",
+        "regenerateSummary": "Modifier la date, l’heure ou les terrains",
+        "shiftLabel": "Décaler les matchs à venir",
+        "shiftError": "Impossible de décaler le calendrier."
       },
       "publish": {
         "visibilityTitle": "Visibilité",
@@ -332,6 +349,57 @@
         "loadGeneric": "Impossible de charger les classements.",
         "saveTieChoice": "Impossible d'enregistrer ce choix.",
         "resetTieChoice": "Impossible de réinitialiser ce départage."
+      }
+    },
+    "quickPlateau": {
+      "title": "Créer un plateau",
+      "intro": "Une journée, plusieurs équipes qui tournent sur vos terrains. Équipes « Équipe 1, 2… », terrains, poules et planning sont créés d’un coup ; vous renommez les équipes juste après.",
+      "name": "Nom du plateau",
+      "namePlaceholder": "Plateau U11 de la Toussaint",
+      "category": "Catégorie",
+      "sport": "Sport",
+      "date": "Date",
+      "startTime": "Premier match",
+      "teamCount": "Équipes",
+      "fieldCount": "Terrains",
+      "poolCount": "Poules",
+      "matchDuration": "Durée (min)",
+      "breakDuration": "Pause (min)",
+      "withFinal": "Ajouter une finale (1er contre 2e)",
+      "preview": {
+        "matches": "Matchs",
+        "perTeam": "Par équipe",
+        "rotations": "Rotations",
+        "end": "Fin",
+        "invalid": "Il faut au moins 2 équipes par poule et 1 terrain."
+      },
+      "submit": "Créer le plateau",
+      "submitting": "Création…",
+      "errors": {
+        "loadSports": "Impossible de charger les sports.",
+        "invalid": "Ce format n’est pas possible : vérifiez équipes, poules et terrains.",
+        "generic": "Impossible de créer le plateau."
+      }
+    },
+    "live": {
+      "title": "Jour J",
+      "loading": "Chargement…",
+      "empty": "Aucun match planifié pour l’instant.",
+      "rotation": "Série {{number}}",
+      "now": "En cours",
+      "next": "À suivre",
+      "done": "Terminée",
+      "minus": "Retirer un but",
+      "plus": "Ajouter un but",
+      "teamsUnknown": "équipes connues après la phase précédente",
+      "validate": "Valider la série",
+      "saveRunning": "Enregistrer le score en cours",
+      "shiftLabel": "Décaler",
+      "errors": {
+        "load": "Impossible de charger les matchs.",
+        "save": "Impossible d’enregistrer les scores.",
+        "shift": "Impossible de décaler le calendrier.",
+        "shiftConflict": "Ce décalage ferait chevaucher un autre créneau sur un terrain."
       }
     }
   }

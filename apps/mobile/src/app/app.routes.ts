@@ -46,6 +46,14 @@ export const routes: Routes = [
   // (there are none yet, but this keeps the static 'new' segment safely out
   // of a future ':tournamentId' param's way, same reasoning as ':slug' below).
   {
+    path: 'organizer/tournaments/new-plateau',
+    canActivate: [organizerAuthGuard],
+    loadComponent: () =>
+      import('./organizer/pages/quick-plateau/quick-plateau.page').then(
+        (m) => m.OrganizerQuickPlateauPage,
+      ),
+  },
+  {
     path: 'organizer/tournaments/new',
     canActivate: [organizerAuthGuard],
     loadComponent: () =>
@@ -70,6 +78,12 @@ export const routes: Routes = [
     canActivate: [organizerAuthGuard],
     loadComponent: () =>
       import('./organizer/pages/scores/scores.page').then((m) => m.OrganizerScoresPage),
+  },
+  {
+    path: 'organizer/tournaments/:id/live',
+    canActivate: [organizerAuthGuard],
+    loadComponent: () =>
+      import('./organizer/pages/live/live.page').then((m) => m.OrganizerLivePage),
   },
   {
     path: 'organizer/tournaments/:id/standings',

@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonContent, IonFooter, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
@@ -14,6 +14,7 @@ import {
   OrganizerOrganizationsService,
 } from '../../core/organizations.service';
 import { MatchSummary, TournamentCreationService } from '../../core/tournament-creation.service';
+import { assignPastedNames, isPlaceholderTeamName } from '../../core/placeholder-teams';
 import { OrganizerTeamsService } from '../../core/teams.service';
 import { OrganizerTournamentsService } from '../../core/tournaments.service';
 import { environment } from '../../../../environments/environment';
@@ -61,6 +62,7 @@ const DEFAULT_THEME: PublicTheme = 'INK_SIGNAL';
   imports: [
     Button,
     DatePipe,
+    NgTemplateOutlet,
     IonContent,
     IonFooter,
     IonHeader,
@@ -148,6 +150,16 @@ export class OrganizerTournamentWizardPage {
   protected readonly matches = signal<MatchSummary[] | null>(null);
   protected readonly generatingSchedule = signal(false);
   private groupPhaseId: string | null = null;
+  // Generation settings -- used to be a hard-coded "tomorrow 09:00, one
+  // field". Several fields now play in shared rotations (see
+  // rotation-scheduling.util.ts, apps/api), so a plateau on 2-3 fields gets
+  // a calendar that actually fits its morning.
+  protected readonly scheduleDate = signal(tomorrowIsoDate());
+  protected readonly scheduleTime = signal('09:00');
+  protected readonly fieldCount = signal('1');
+  protected readonly matchDurationMinutes = signal('');
+  protected readonly breakDurationMinutes = signal('');
+  protected readonly shiftingSchedule = signal(false);
 
   // ---- Step 5: Publication ----
   protected readonly isListed = signal(true);
@@ -230,11 +242,33 @@ export class OrganizerTournamentWizardPage {
       );
       if (matches.length > 0) {
         this.matches.set(matches);
+        // Prefill the generation settings from the calendar that exists, so
+        // "Régénérer" keeps its day, kickoff and fields unless changed.
+        const starts = matches
+          .map((match) => match.timeSlot?.startTime)
+          .filter((start): start is string => !!start)
+          .sort();
+        if (starts[0]) {
+          const first = new Date(starts[0]);
+          this.scheduleDate.set(toIsoDate(first));
+          this.scheduleTime.set(
+            `${String(first.getHours()).padStart(2, '0')}:${String(first.getMinutes()).padStart(2, '0')}`,
+          );
+        }
+        const fieldNames = new Set(matches.map((match) => match.timeSlot?.field.name));
+        fieldNames.delete(undefined);
+        this.fieldCount.set(String(Math.max(1, fieldNames.size)));
       }
     } catch {
       this.errorMessage.set('organizer.wizard.errorGeneric');
     } finally {
       this.initializing.set(false);
+      // ?step=2 -- the quick plateau flow lands straight on Équipes to
+      // rename its "Équipe N" placeholders.
+      const step = Number(this.route.snapshot.queryParamMap.get('step'));
+      if (step >= 1 && step <= 5) {
+        this.step.set(step as 1 | 2 | 3 | 4 | 5);
+      }
     }
   }
 
@@ -348,6 +382,79 @@ export class OrganizerTournamentWizardPage {
       this.teamInput.set('');
     } catch {
       this.errorMessage.set('organizer.wizard.teams.errorAdd');
+    } finally {
+      this.submitting.set(false);
+    }
+  }
+
+  protected readonly pastedNames = signal('');
+  protected readonly placeholderCount = computed(
+    () => this.teams().filter((team) => isPlaceholderTeamName(team.name)).length,
+  );
+
+  /**
+   * One club per line (or comma separated). Edit mode renames the quick
+   * plateau's "Équipe N" placeholders first, in order, then adds whatever
+   * names are left as new teams; create mode just queues them all, same as
+   * typing them one by one.
+   */
+  protected async applyPastedNames(): Promise<void> {
+    const names = this.pastedNames()
+      .split(/[\n;,]/)
+      .map((name) => name.trim())
+      .filter((name) => name.length > 0);
+    if (names.length === 0 || this.submitting()) {
+      return;
+    }
+    if (this.mode() === 'create') {
+      this.teams.update((teams) => [...teams, ...names.map((name) => ({ id: null, name }))]);
+      this.pastedNames.set('');
+      return;
+    }
+    const organizationId = this.organizationId;
+    const tournamentId = this.tournamentId;
+    const categoryId = this.categoryId;
+    if (!organizationId || !tournamentId || !categoryId) {
+      return;
+    }
+    const renames = assignPastedNames(
+      this.teams().filter((team): team is { id: string; name: string } => team.id !== null),
+      names.join('\n'),
+    );
+    const placeholders = this.placeholderCount();
+    const renamed = [...renames].slice(0, placeholders);
+    const extra = names.slice(renamed.length);
+    this.submitting.set(true);
+    this.errorMessage.set(null);
+    try {
+      for (const [teamId, name] of renamed) {
+        await this.teamsApi.renameTeam(organizationId, tournamentId, teamId, name);
+        this.teams.update((teams) =>
+          teams.map((team) => (team.id === teamId ? { ...team, name } : team)),
+        );
+      }
+      // The Calendrier step's cards were preloaded with the old names.
+      const newNames = new Map(renamed);
+      const rename = <T extends { id: string; name: string } | null>(team: T): T =>
+        team && newNames.has(team.id) ? { ...team, name: newNames.get(team.id)! } : team;
+      this.matches.update(
+        (matches) =>
+          matches?.map((match) => ({
+            ...match,
+            homeTeam: rename(match.homeTeam),
+            awayTeam: rename(match.awayTeam),
+          })) ?? null,
+      );
+      for (const name of extra) {
+        const team = await this.teamsApi.createTeam(organizationId, tournamentId, {
+          name,
+          categoryId,
+        });
+        this.teams.update((teams) => [...teams, { id: team.id, name: team.name }]);
+      }
+      this.pastedNames.set('');
+    } catch {
+      this.errorMessage.set('organizer.wizard.teams.errorPaste');
     } finally {
       this.submitting.set(false);
     }
@@ -583,29 +690,53 @@ export class OrganizerTournamentWizardPage {
     this.generatingSchedule.set(true);
     this.errorMessage.set(null);
     try {
-      const fieldId = await this.creationApi.createDefaultVenueField(
+      const fieldIds = await this.creationApi.ensureFields(
         organizationId,
         tournamentId,
         this.isOnline() ? 'En ligne' : this.venueName().trim() || 'Lieu principal',
+        Math.max(1, Number.parseInt(this.fieldCount(), 10) || 1),
       );
-      // Starts tomorrow at 9:00 local time -- a placeholder the organizer
-      // can adjust later from the real match-management pages (out of this
-      // wizard's scope, see tournament-creation.service.ts's own comment).
-      const start = new Date();
-      start.setDate(start.getDate() + 1);
-      start.setHours(9, 0, 0, 0);
+      // Local date + time, so the kickoff is in the organizer's timezone.
+      const start = new Date(`${this.scheduleDate()}T${this.scheduleTime() || '09:00'}`);
+      const matchDuration = Number.parseInt(this.matchDurationMinutes(), 10);
+      const breakDuration = Number.parseInt(this.breakDurationMinutes(), 10);
       const matches = await this.creationApi.generateSchedule(
         organizationId,
         tournamentId,
         groupPhaseId,
-        fieldId,
-        start.toISOString(),
+        {
+          fieldIds,
+          startDateTime: start.toISOString(),
+          ...(matchDuration > 0 && { matchDurationMinutes: matchDuration }),
+          ...(breakDuration >= 0 && { breakDurationMinutes: breakDuration }),
+        },
       );
       this.matches.set(matches);
     } catch {
       this.errorMessage.set('organizer.wizard.calendar.errorGeneric');
     } finally {
       this.generatingSchedule.set(false);
+    }
+  }
+
+  /** "On a 5 minutes de retard": moves every not-yet-played pool match. */
+  protected async shiftSchedule(minutes: number): Promise<void> {
+    const organizationId = this.organizationId;
+    const tournamentId = this.tournamentId;
+    const groupPhaseId = this.groupPhaseId;
+    if (!organizationId || !tournamentId || !groupPhaseId || this.shiftingSchedule()) {
+      return;
+    }
+    this.shiftingSchedule.set(true);
+    this.errorMessage.set(null);
+    try {
+      this.matches.set(
+        await this.creationApi.shiftSchedule(organizationId, tournamentId, groupPhaseId, minutes),
+      );
+    } catch {
+      this.errorMessage.set('organizer.wizard.calendar.shiftError');
+    } finally {
+      this.shiftingSchedule.set(false);
     }
   }
 
@@ -728,4 +859,16 @@ export class OrganizerTournamentWizardPage {
   protected async backToList(): Promise<void> {
     await this.router.navigateByUrl('/organizer/tournaments');
   }
+}
+
+function toIsoDate(date: Date): string {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+/** Default day for a new calendar -- same "tomorrow" the wizard always used. */
+function tomorrowIsoDate(): string {
+  const date = new Date();
+  date.setDate(date.getDate() + 1);
+  return toIsoDate(date);
 }

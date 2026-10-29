@@ -27,7 +27,7 @@ export interface MatchSummary {
 // generated calendar": one implicit category (the tournament's only one, so
 // it never surfaces in the UI -- apps/api requires a categoryId everywhere
 // below it, but this wizard doesn't model multi-category tournaments), one
-// implicit venue+field (from the "Lieu" the organizer typed in the Infos
+// implicit venue with one or more fields (from the "Lieu" the organizer typed in the Infos
 // step -- apps/api's real Venue/Field entities, not a free-text field on
 // Tournament itself), then the structure preset (which also assigns the
 // already-created teams into pools/groups server-side) and schedule
@@ -89,27 +89,6 @@ export class TournamentCreationService {
     );
   }
 
-  /** Creates one venue with one field under it, returning just the field's id -- the only thing generateSchedule() needs. */
-  async createDefaultVenueField(
-    organizationId: string,
-    tournamentId: string,
-    venueName: string,
-  ): Promise<string> {
-    const venue = await firstValueFrom(
-      this.http.post<{ id: string }>(
-        `${this.tournamentBase(organizationId, tournamentId)}/venues`,
-        { name: venueName },
-      ),
-    );
-    const field = await firstValueFrom(
-      this.http.post<{ id: string }>(
-        `${this.tournamentBase(organizationId, tournamentId)}/venues/${venue.id}/fields`,
-        { name: 'Terrain 1' },
-      ),
-    );
-    return field.id;
-  }
-
   createStructurePreset(
     organizationId: string,
     tournamentId: string,
@@ -129,18 +108,73 @@ export class TournamentCreationService {
     );
   }
 
-  /** Only meaningful on the pool/seed phase (groupPhaseId) -- knockout tier phases are scheduled round by round later, not pre-generated (see the API's own guard: "Le calendrier ne peut être généré que pour une phase de poules"). */
+  /**
+   * Makes sure the tournament has at least `count` fields and returns that
+   * many field ids -- reuses the ones already there (a second "Générer" tap,
+   * or the edit-mode wizard) and only creates the missing "Terrain N",
+   * under the existing venue or a new one named `venueName`.
+   */
+  async ensureFields(
+    organizationId: string,
+    tournamentId: string,
+    venueName: string,
+    count: number,
+  ): Promise<string[]> {
+    const base = this.tournamentBase(organizationId, tournamentId);
+    const venues = await firstValueFrom(
+      this.http.get<{ id: string; fields: { id: string }[] }[]>(`${base}/venues`),
+    );
+    const venue =
+      venues[0] ??
+      (await firstValueFrom(
+        this.http.post<{ id: string; fields: { id: string }[] }>(`${base}/venues`, {
+          name: venueName,
+        }),
+      ));
+    const fieldIds = venues.flatMap((v) => v.fields.map((field) => field.id));
+    for (let i = fieldIds.length; i < count; i++) {
+      const field = await firstValueFrom(
+        this.http.post<{ id: string }>(`${base}/venues/${venue.id}/fields`, {
+          name: `Terrain ${i + 1}`,
+          position: i,
+        }),
+      );
+      fieldIds.push(field.id);
+    }
+    return fieldIds.slice(0, count);
+  }
+
+  /** Only meaningful on the pool/seed phase (groupPhaseId) -- knockout tier phases are scheduled round by round later, not pre-generated (see the API's own guard: "Le calendrier ne peut être généré que pour une phase de poules"). Generating again replaces a calendar nobody has played yet. */
   async generateSchedule(
     organizationId: string,
     tournamentId: string,
     phaseId: string,
-    fieldId: string,
-    startDateTime: string,
+    options: {
+      fieldIds: string[];
+      startDateTime: string;
+      matchDurationMinutes?: number;
+      breakDurationMinutes?: number;
+    },
   ): Promise<MatchSummary[]> {
     return firstValueFrom(
       this.http.post<MatchSummary[]>(
         `${this.tournamentBase(organizationId, tournamentId)}/phases/${phaseId}/generate-schedule`,
-        { fieldIds: [fieldId], startDateTime },
+        options,
+      ),
+    );
+  }
+
+  /** Moves every not-yet-played match of the phase by `minutes` (negative = earlier). */
+  shiftSchedule(
+    organizationId: string,
+    tournamentId: string,
+    phaseId: string,
+    minutes: number,
+  ): Promise<MatchSummary[]> {
+    return firstValueFrom(
+      this.http.post<MatchSummary[]>(
+        `${this.tournamentBase(organizationId, tournamentId)}/phases/${phaseId}/schedule/shift`,
+        { minutes },
       ),
     );
   }

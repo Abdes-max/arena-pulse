@@ -44,6 +44,28 @@ export class OrganizerTournamentsService {
     return firstValueFrom(this.http.post<OrganizerTournament>(this.base(organizationId), payload));
   }
 
+  /** One-call plateau: tournament, "Équipe N" placeholder teams, fields, pools and calendar (QuickPlateauService, apps/api). */
+  createQuickPlateau(
+    organizationId: string,
+    payload: {
+      name: string;
+      sportId: string;
+      date: string;
+      startDateTime: string;
+      teamCount: number;
+      fieldCount: number;
+      matchDurationMinutes: number;
+      breakDurationMinutes: number;
+      poolCount?: number;
+      withFinal?: boolean;
+      categoryName?: string;
+    },
+  ): Promise<OrganizerTournament> {
+    return firstValueFrom(
+      this.http.post<OrganizerTournament>(`${this.base(organizationId)}/quick-plateau`, payload),
+    );
+  }
+
   uploadLogo(
     organizationId: string,
     tournamentId: string,
