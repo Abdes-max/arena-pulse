@@ -712,3 +712,23 @@
   font-size: 0.8rem;
   color: var(--ap-color-muted);
 }
+
+// Inline rename (category / venue / field) and the Modifier + Supprimer pair.
+.tournament-form-page__item-actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: var(--ap-space-1);
+}
+
+.tournament-form-page__inline-edit {
+  display: flex;
+  flex: 1 1 100%;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ap-space-2);
+
+  > ap-text-field,
+  > ap-autocomplete-field {
+    flex: 1 1 220px;
+  }
+}

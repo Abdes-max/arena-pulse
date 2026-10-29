@@ -817,7 +817,8 @@
         "imageInvalid": "Formato o dimensione del file non valido (PNG, JPEG o WebP, 4 MB massimo).",
         "imageUpload": "Impossibile caricare questa immagine, riprova.",
         "imageRemove": "Impossibile rimuovere questa immagine.",
-        "imagePremiumLocked": "Riservato ai tornei con più di {{count}} squadre o con un abbonamento annuale attivo."
+        "imagePremiumLocked": "Riservato ai tornei con più di {{count}} squadre o con un abbonamento annuale attivo.",
+        "rename": "Impossibile salvare la modifica."
       },
       "personalization": {
         "title": "Personalizzazione",
@@ -846,6 +847,12 @@
         "change": "Cambia",
         "add": "Aggiungi una locandina",
         "remove": "Rimuovi"
+      },
+      "edit": {
+        "edit": "Modifica",
+        "save": "Salva",
+        "cancel": "Annulla",
+        "nameLabel": "Nuovo nome"
       }
     },
     "teamList": {

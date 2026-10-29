@@ -919,7 +919,8 @@
         "imageInvalid": "Format ou taille de fichier invalide (PNG, JPEG ou WebP, 4 Mo maximum).",
         "imageUpload": "Impossible d'envoyer cette image, réessayez.",
         "imageRemove": "Impossible de retirer cette image.",
-        "imagePremiumLocked": "Réservé aux tournois de plus de {{count}} équipes ou à un abonnement annuel actif."
+        "imagePremiumLocked": "Réservé aux tournois de plus de {{count}} équipes ou à un abonnement annuel actif.",
+        "rename": "Impossible d’enregistrer la modification."
       },
       "personalization": {
         "title": "Personnalisation",
@@ -948,6 +949,12 @@
         "change": "Changer",
         "add": "Ajouter une affiche",
         "remove": "Retirer"
+      },
+      "edit": {
+        "edit": "Modifier",
+        "save": "Enregistrer",
+        "cancel": "Annuler",
+        "nameLabel": "Nouveau nom"
       }
     },
     "teamList": {

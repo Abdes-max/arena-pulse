@@ -176,6 +176,18 @@ export class TournamentFormPage {
   );
   protected readonly categories = signal<Category[]>([]);
   protected readonly venues = signal<Venue[]>([]);
+
+  // Inline rename of a category, a venue (name + address via the address
+  // search) or a field -- one at a time.
+  protected readonly editing = signal<{ kind: 'category' | 'venue' | 'field'; id: string } | null>(
+    null,
+  );
+  protected readonly editDraft = signal('');
+  /** Address picked in the venue search while editing; undefined = keep the current one. */
+  private readonly editAddress = signal<string | undefined>(undefined);
+  protected readonly editVenueSearch = inject(AddressSearchService).autocomplete(() =>
+    this.languageService.language(),
+  );
   protected readonly sponsors = signal<Sponsor[]>([]);
   protected readonly publicationOrders = signal<PublicationOrder[]>([]);
   protected readonly publicationOrdersLoading = signal(true);
@@ -1187,6 +1199,92 @@ export class TournamentFormPage {
       this.newFieldNameByVenue.update((names) => ({ ...names, [venue.id]: '' }));
     } catch {
       this.errorMessage.set('admin.tournamentForm.errors.addField');
+    }
+  }
+
+  protected isEditing(kind: 'category' | 'venue' | 'field', id: string): boolean {
+    const editing = this.editing();
+    return editing?.kind === kind && editing.id === id;
+  }
+
+  protected startEdit(kind: 'category' | 'venue' | 'field', id: string, name: string): void {
+    this.editing.set({ kind, id });
+    this.editDraft.set(name);
+    this.editAddress.set(undefined);
+    this.editVenueSearch.clear();
+  }
+
+  protected cancelEdit(): void {
+    this.editing.set(null);
+    this.editVenueSearch.clear();
+  }
+
+  protected onEditDraftChange(value: string): void {
+    this.editDraft.set(value);
+    if (this.editing()?.kind === 'venue') {
+      this.editVenueSearch.query(value);
+    }
+  }
+
+  protected onEditVenueSuggestionSelect(index: number): void {
+    const suggestion = this.editVenueSearch.suggestions()[index];
+    if (!suggestion) {
+      return;
+    }
+    this.editDraft.set(suggestion.name);
+    this.editAddress.set(suggestion.address);
+    this.editVenueSearch.clear();
+  }
+
+  protected async saveEdit(): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const tournamentId = this.tournamentId();
+    const editing = this.editing();
+    const name = this.editDraft().trim();
+    if (!organizationId || !tournamentId || !editing || !name) {
+      return;
+    }
+    try {
+      if (editing.kind === 'category') {
+        const updated = await this.tournamentsService.updateCategory(
+          organizationId,
+          tournamentId,
+          editing.id,
+          name,
+        );
+        this.categories.update((categories) =>
+          categories.map((c) => (c.id === editing.id ? { ...c, name: updated.name } : c)),
+        );
+      } else if (editing.kind === 'venue') {
+        const address = this.editAddress();
+        const updated = await this.tournamentsService.updateVenue(
+          organizationId,
+          tournamentId,
+          editing.id,
+          { name, ...(address !== undefined && { address }) },
+        );
+        this.venues.update((venues) =>
+          venues.map((v) =>
+            v.id === editing.id ? { ...v, name: updated.name, address: updated.address } : v,
+          ),
+        );
+      } else {
+        const updated = await this.tournamentsService.updateField(
+          organizationId,
+          tournamentId,
+          editing.id,
+          { name },
+        );
+        this.venues.update((venues) =>
+          venues.map((v) => ({
+            ...v,
+            fields: v.fields.map((f) => (f.id === editing.id ? { ...f, name: updated.name } : f)),
+          })),
+        );
+      }
+      this.cancelEdit();
+    } catch {
+      this.errorMessage.set('admin.tournamentForm.errors.rename');
     }
   }
 

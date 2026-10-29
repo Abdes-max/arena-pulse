@@ -817,7 +817,8 @@
         "imageInvalid": "Formato ou tamanho de ficheiro inválido (PNG, JPEG ou WebP, 4 MB máximo).",
         "imageUpload": "Não foi possível enviar esta imagem, tente novamente.",
         "imageRemove": "Não foi possível remover esta imagem.",
-        "imagePremiumLocked": "Reservado a torneios com mais de {{count}} equipas ou com uma subscrição anual ativa."
+        "imagePremiumLocked": "Reservado a torneios com mais de {{count}} equipas ou com uma subscrição anual ativa.",
+        "rename": "Não foi possível guardar a alteração."
       },
       "personalization": {
         "title": "Personalização",
@@ -846,6 +847,12 @@
         "change": "Alterar",
         "add": "Adicionar um cartaz",
         "remove": "Remover"
+      },
+      "edit": {
+        "edit": "Editar",
+        "save": "Guardar",
+        "cancel": "Cancelar",
+        "nameLabel": "Novo nome"
       }
     },
     "teamList": {
