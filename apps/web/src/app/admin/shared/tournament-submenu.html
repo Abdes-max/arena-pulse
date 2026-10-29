@@ -52,6 +52,13 @@
       {{ 'admin.submenu.scores' | transloco }}
     </a>
     <a
+      [routerLink]="['/admin/tournaments', tournamentId(), 'live']"
+      routerLinkActive="tournament-submenu__link--active"
+      (click)="centerTab($event)"
+    >
+      {{ 'admin.submenu.live' | transloco }}
+    </a>
+    <a
       [routerLink]="['/admin/tournaments', tournamentId(), 'standings']"
       routerLinkActive="tournament-submenu__link--active"
       (click)="centerTab($event)"

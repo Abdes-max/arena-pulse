@@ -416,6 +416,7 @@
       }
     },
     "submenu": {
+      "live": "Jour J",
       "review": "Vérifier & publier",
       "general": "Général",
       "teams": "Équipes",
@@ -569,6 +570,25 @@
       "deleteConfirm": "Confirmer la suppression",
       "deleting": "Suppression…",
       "errorGeneric": "Une erreur est survenue, réessayez."
+    },
+    "live": {
+      "title": "Jour J",
+      "intro": "Saisissez les scores série par série. La série en cours est ouverte ; « Valider la série » enregistre tous les résultats d’un coup.",
+      "loading": "Chargement…",
+      "empty": "Aucun match planifié pour l’instant.",
+      "rotation": "Série {{number}}",
+      "now": "En cours",
+      "next": "À suivre",
+      "done": "Terminée",
+      "minus": "Retirer un but",
+      "plus": "Ajouter un but",
+      "teamsUnknown": "équipes connues après la phase précédente",
+      "validate": "Valider la série",
+      "saveRunning": "Enregistrer le score en cours",
+      "errors": {
+        "load": "Impossible de charger les matchs.",
+        "save": "Impossible d’enregistrer les scores."
+      }
     },
     "review": {
       "loading": "Chargement…",

@@ -8,6 +8,7 @@ import { Match, MatchScore } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { BracketsService } from './brackets.service';
 import { ForfeitMatchDto } from './dto/forfeit-match.dto';
+import { BatchMatchScoresDto } from './dto/batch-match-scores.dto';
 import { UpsertMatchScoreDto } from './dto/upsert-match-score.dto';
 import { matchBelongsToTournament } from './match-ownership.util';
 import { MATCH_INCLUDE, toMatchSummary } from './match-summary.util';
@@ -98,26 +99,7 @@ export class ScoresService {
     if (!match.score) {
       throw new BadRequestException('Aucun score saisi pour ce match.');
     }
-    const isDraw = match.score.homeScore === match.score.awayScore;
-    // A knockout match must always produce a winner; a group-stage draw only
-    // needs a shootout if the group's StandingRule opts into one.
-    const needsShootout =
-      isDraw &&
-      (match.knockoutBracket !== null ||
-        Boolean(match.group?.standingRule?.penaltyShootoutEnabled));
-    if (needsShootout && match.score.homePenaltyScore === null) {
-      throw new BadRequestException(
-        'Une séance de tirs au but est requise pour départager ce match nul.',
-      );
-    }
-    if (
-      match.score.homePenaltyScore !== null &&
-      match.score.homePenaltyScore === match.score.awayPenaltyScore
-    ) {
-      throw new BadRequestException(
-        'La séance de tirs au but doit désigner un vainqueur.',
-      );
-    }
+    this.assertValidatable(match, match.score);
 
     await this.prisma.matchScore.update({
       where: { matchId },
@@ -148,6 +130,74 @@ export class ScoresService {
     await this.ratingsService.recordMatchResult(organizationId, updated);
     this.realtimeService.emit({ tournamentId, type: 'match-updated', matchId });
     return toMatchSummary(updated);
+  }
+
+  /**
+   * Saves (and, with `validate`, validates) the scores of a whole rotation in
+   * one call -- the "Valider la série" button of the day-of page. Every entry
+   * is checked before anything is written, so a mistake on one field doesn't
+   * leave the rotation half-saved; the writes then go through upsertScore /
+   * validateScore one by one so bracket advancement, ratings and realtime
+   * events behave exactly as with single-match entry.
+   */
+  async upsertScores(
+    organizationId: string,
+    tournamentId: string,
+    dto: BatchMatchScoresDto,
+    userId: string,
+  ) {
+    await this.tournamentsService.assertTournamentIsEditable(
+      organizationId,
+      tournamentId,
+    );
+    if (
+      new Set(dto.scores.map((entry) => entry.matchId)).size !==
+      dto.scores.length
+    ) {
+      throw new BadRequestException('Un même match apparaît deux fois.');
+    }
+    for (const entry of dto.scores) {
+      const match = await this.getOrThrowForTournament(
+        tournamentId,
+        entry.matchId,
+      );
+      if (match.status === 'FORFEITED') {
+        throw new ConflictException(
+          'Un match de la série est déclaré forfait — annulez le forfait avant de saisir un score.',
+        );
+      }
+      this.assertPenaltyScoreShape(entry);
+      if (dto.validate) {
+        this.assertValidatable(match, {
+          homeScore: entry.homeScore,
+          awayScore: entry.awayScore,
+          homePenaltyScore: entry.homePenaltyScore ?? null,
+          awayPenaltyScore: entry.awayPenaltyScore ?? null,
+        });
+      }
+    }
+
+    const results: Awaited<ReturnType<ScoresService['upsertScore']>>[] = [];
+    for (const { matchId, ...score } of dto.scores) {
+      const saved = await this.upsertScore(
+        organizationId,
+        tournamentId,
+        matchId,
+        score,
+        userId,
+      );
+      results.push(
+        dto.validate
+          ? await this.validateScore(
+              organizationId,
+              tournamentId,
+              matchId,
+              userId,
+            )
+          : saved,
+      );
+    }
+    return results;
   }
 
   async clearScore(
@@ -241,6 +291,38 @@ export class ScoresService {
     });
     this.realtimeService.emit({ tournamentId, type: 'match-updated', matchId });
     return toMatchSummary(updated);
+  }
+
+  /** Whether a score (saved or about to be) can be validated as a final result. */
+  private assertValidatable(
+    match: MatchWithScoringData,
+    score: {
+      homeScore: number;
+      awayScore: number;
+      homePenaltyScore: number | null;
+      awayPenaltyScore: number | null;
+    },
+  ): void {
+    const isDraw = score.homeScore === score.awayScore;
+    // A knockout match must always produce a winner; a group-stage draw only
+    // needs a shootout if the group's StandingRule opts into one.
+    const needsShootout =
+      isDraw &&
+      (match.knockoutBracket !== null ||
+        Boolean(match.group?.standingRule?.penaltyShootoutEnabled));
+    if (needsShootout && score.homePenaltyScore === null) {
+      throw new BadRequestException(
+        'Une séance de tirs au but est requise pour départager ce match nul.',
+      );
+    }
+    if (
+      score.homePenaltyScore !== null &&
+      score.homePenaltyScore === score.awayPenaltyScore
+    ) {
+      throw new BadRequestException(
+        'La séance de tirs au but doit désigner un vainqueur.',
+      );
+    }
   }
 
   private assertPenaltyScoreShape(dto: UpsertMatchScoreDto): void {

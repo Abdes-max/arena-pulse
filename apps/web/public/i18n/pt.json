@@ -314,6 +314,7 @@
       }
     },
     "submenu": {
+      "live": "Match day",
       "review": "Review & publish",
       "general": "Geral",
       "teams": "Equipas",
@@ -467,6 +468,25 @@
       "deleteConfirm": "Confirmar exclusão",
       "deleting": "Excluindo…",
       "errorGeneric": "Ocorreu um erro, tente novamente."
+    },
+    "live": {
+      "title": "Match day",
+      "intro": "Enter scores one rotation at a time. The current rotation is open; \"Validate rotation\" records every result at once.",
+      "loading": "Loading…",
+      "empty": "No match scheduled yet.",
+      "rotation": "Rotation {{number}}",
+      "now": "Now",
+      "next": "Up next",
+      "done": "Done",
+      "minus": "Remove a goal",
+      "plus": "Add a goal",
+      "teamsUnknown": "teams known after the previous phase",
+      "validate": "Validate rotation",
+      "saveRunning": "Save running score",
+      "errors": {
+        "load": "Could not load the matches.",
+        "save": "Could not save the scores."
+      }
     },
     "review": {
       "loading": "Loading…",

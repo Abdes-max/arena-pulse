@@ -33,6 +33,21 @@ export class ScoresService {
     );
   }
 
+  /** A whole rotation at once; `validate` makes them final results (see ScoresService.upsertScores in the API). */
+  upsertScores(
+    organizationId: string,
+    tournamentId: string,
+    scores: (UpsertMatchScorePayload & { matchId: string })[],
+    validate: boolean,
+  ): Promise<Match[]> {
+    return firstValueFrom(
+      this.http.post<Match[]>(`${this.base(organizationId, tournamentId)}/matches/scores/batch`, {
+        scores,
+        validate,
+      }),
+    );
+  }
+
   validateScore(organizationId: string, tournamentId: string, matchId: string): Promise<Match> {
     return firstValueFrom(
       this.http.post<Match>(
