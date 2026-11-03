@@ -114,6 +114,9 @@ export interface PublicTournament {
   // TournamentsService.hasPremiumFeatures check as theme/logo/QR/export
   // (active annual subscription, or more teams than the free tier allows).
   wrappedUnlocked: boolean;
+  // Every match played (or forfeited/cancelled): the public site then
+  // opens on Classement > Classement final instead of the home page.
+  isFinished: boolean;
 }
 
 /** One highlighted match on the Wrapped recap (biggest score, closest game, etc.) -- see WrappedMatchStats server-side. */

@@ -9,7 +9,13 @@ import {
   signal,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import {
+  ActivatedRoute,
+  Router,
+  RouterLink,
+  RouterLinkActive,
+  RouterOutlet,
+} from '@angular/router';
 import { DEFAULT_THEME, ThemeMode, ThemeName, ThemeService } from 'design-tokens';
 import {
   ActionSheetController,
@@ -76,6 +82,7 @@ const THEME_MAP: Record<PublicTheme, ThemeName> = {
 })
 export class TournamentShell {
   private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
   private readonly actionSheet = inject(ActionSheetController);
   private readonly themeService = inject(ThemeService);
   private readonly destroyRef = inject(DestroyRef);
@@ -213,7 +220,7 @@ export class TournamentShell {
     this.route.paramMap.pipe(takeUntilDestroyed()).subscribe((params) => {
       const slug = params.get('slug');
       if (slug) {
-        void this.context.load(slug);
+        void this.context.load(slug).then(() => this.openFinishedOnStandings(slug));
       }
     });
 
@@ -316,6 +323,21 @@ export class TournamentShell {
       window.open(url, '_blank', 'noopener');
     } else {
       window.location.href = url;
+    }
+  }
+
+  /**
+   * Opening a finished tournament (its home page) lands on Classement, which
+   * then shows the final ranking -- once, when the tournament is entered:
+   * the "Tournoi" tab stays reachable afterwards.
+   */
+  private openFinishedOnStandings(slug: string): void {
+    const path = this.router.url.split(/[?#]/)[0];
+    if (
+      this.context.tournament()?.isFinished &&
+      (path === `/${slug}` || path === `/${slug}/home`)
+    ) {
+      void this.router.navigate(['/', slug, 'standings'], { replaceUrl: true });
     }
   }
 }

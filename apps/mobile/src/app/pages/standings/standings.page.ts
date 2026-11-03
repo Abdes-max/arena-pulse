@@ -279,7 +279,12 @@ export class StandingsPage {
   // category (no real pool phase to show, see hasGroupStagePhase) -- landing
   // there would leave nothing selected, so fall back to whichever tab this
   // category actually has.
+  // A finished tournament opens on its final ranking instead.
   private syncActiveTabToAvailability(): void {
+    if (this.context.tournament()?.isFinished && this.hasFinalPhase()) {
+      this.activeTab.set('ranking');
+      return;
+    }
     this.activeTab.set(this.hasGroupStagePhase() ? 'pools' : 'final');
   }
 
