@@ -94,6 +94,7 @@
     position: fixed;
     inset: 0;
     z-index: -1;
+    overflow: hidden;
     background:
       radial-gradient(680px 480px at 82% -8%, rgba(192, 138, 78, 0.16), transparent 60%),
       radial-gradient(600px 500px at -10% 30%, rgba(111, 146, 128, 0.12), transparent 60%),
@@ -882,7 +883,292 @@
     color: var(--bronze-bright);
     text-decoration: underline;
   }
+
+  /* ---------- couche de mouvement (motion.js) ----------
+     Même grammaire que la vitrine EvolyFoot (halo qui respire, entrée
+     échelonnée du hero, bandeau défilant, révélation au scroll, compteurs),
+     traduite dans la palette bronze / mousse de l'atelier. Tout s'arrête
+     avec « réduire les animations » (bloc en fin de feuille). */
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+  }
+
+  @keyframes breathe {
+    to {
+      transform: scale(1.15) translate(-4%, 5%);
+    }
+  }
+
+  @keyframes ticker {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @keyframes spin-slow {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes shimmer {
+    to {
+      background-position: 200% center;
+    }
+  }
+
+  @keyframes live-pulse {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 rgba(78, 227, 154, 0.45);
+    }
+    50% {
+      box-shadow: 0 0 0 7px rgba(78, 227, 154, 0);
+    }
+  }
+
+  @keyframes flash {
+    from {
+      color: #fff;
+      transform: scale(1.18);
+    }
+  }
+
+  .field::before,
+  .field::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: breathe 9s ease-in-out infinite alternate;
+  }
+
+  .field::before {
+    top: -12%;
+    right: -6%;
+    width: 640px;
+    height: 640px;
+    background: radial-gradient(circle, rgba(227, 164, 99, 0.18), transparent 65%);
+  }
+
+  .field::after {
+    bottom: -10%;
+    left: -8%;
+    width: 560px;
+    height: 560px;
+    background: radial-gradient(circle, rgba(111, 146, 128, 0.16), transparent 65%);
+    animation-delay: -4.5s;
+  }
+
+  .hero > div:first-child > * {
+    animation: rise 640ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  }
+
+  .hero > div:first-child > :nth-child(2) { animation-delay: 90ms; }
+  .hero > div:first-child > :nth-child(3) { animation-delay: 180ms; }
+  .hero > div:first-child > :nth-child(4) { animation-delay: 270ms; }
+
+  .hero-mark {
+    position: relative;
+    animation: rise 800ms 200ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+  }
+
+  /* Anneau pointillé qui tourne lentement derrière le triskèle. */
+  .hero-mark::before {
+    content: "";
+    position: absolute;
+    inset: -6%;
+    z-index: -1;
+    border: 1px dashed rgba(227, 164, 99, 0.35);
+    border-radius: 50%;
+    animation: spin-slow 60s linear infinite;
+  }
+
+  .hero h1 em {
+    background-image: linear-gradient(100deg, var(--bronze-bright), var(--moss), var(--bronze-bright));
+    background-size: 200% auto;
+    animation: shimmer 7s linear infinite;
+  }
+
+  .btn-primary:hover,
+  .contact-disclosure summary:hover {
+    box-shadow: 0 24px 60px -18px rgba(227, 164, 99, 0.6);
+  }
+
+  .btn:active {
+    transform: scale(0.97);
+  }
+
+  main {
+    overflow-x: clip;
+  }
+
+  /* Bandeau défilant entre le hero et les ateliers. */
+  .ticker {
+    overflow: hidden;
+    padding: 16px 0;
+    border-block: 1px solid var(--line);
+    background: color-mix(in srgb, var(--bronze) 7%, transparent);
+    transform: rotate(-1.2deg) scale(1.03);
+    margin: 8px 0 clamp(24px, 4vw, 48px);
+  }
+
+  .ticker > div {
+    display: flex;
+    gap: 34px;
+    width: max-content;
+    animation: ticker 38s linear infinite;
+  }
+
+  .ticker span {
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--parchment-dim);
+  }
+
+  .ticker span:nth-child(4n + 3) {
+    color: var(--bronze-bright);
+  }
+
+  .ticker span.sep {
+    color: var(--moss);
+    font-size: 0.9rem;
+    align-self: center;
+  }
+
+  /* Cartes : la bordure bronze se dessine au survol. */
+  .service {
+    transition: background 0.25s ease, transform 0.25s ease;
+  }
+
+  .service::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, var(--bronze), var(--bronze-bright), var(--moss));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .service:hover {
+    background: var(--ink-softer);
+  }
+
+  .service:hover::before {
+    transform: scaleX(1);
+  }
+
+  .service .num {
+    display: inline-block;
+    transition: transform 0.25s ease;
+  }
+
+  .service:hover .num {
+    transform: translateX(4px);
+  }
+
+  /* Étapes de la méthode : le filet bronze se trace quand l'étape entre. */
+  .step {
+    position: relative;
+    border-top-color: var(--line);
+  }
+
+  .step::before {
+    content: "";
+    position: absolute;
+    top: -2px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: var(--bronze);
+    transform-origin: left;
+    transition: transform 0.8s 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  .step.reveal-pending::before {
+    transform: scaleX(0);
+  }
+
+  .case {
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .case:hover {
+    border-color: var(--line-strong);
+    box-shadow: var(--shadow-bronze);
+  }
+
+  .mock {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .mock-dot {
+    animation: live-pulse 1.8s ease-in-out infinite;
+  }
+
+  .mock-row {
+    transition: background 0.2s ease, transform 0.2s ease;
+  }
+
+  .mock-row:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateX(4px);
+  }
+
+  .score-flash {
+    display: inline-block;
+    animation: flash 700ms ease-out;
+  }
+
+  .fact {
+    transition: border-color 0.25s ease, transform 0.25s ease;
+  }
+
+  .fact:hover {
+    border-color: var(--bronze);
+    transform: translateY(-3px);
+  }
+
+  .reveal {
+    transition:
+      opacity 0.6s ease var(--delay, 0ms),
+      transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) var(--delay, 0ms);
+  }
+
+  .services > :nth-child(2), .approach > :nth-child(2) { --delay: 90ms; }
+  .services > :nth-child(3), .approach > :nth-child(3) { --delay: 180ms; }
+  .approach > :nth-child(4) { --delay: 270ms; }
+
+  .reveal-pending {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation: none !important;
+      transition: none !important;
+    }
+
+    .reveal-pending {
+      opacity: 1;
+      transform: none;
+    }
+  }
 </style>
+<script src="/motion.js" defer></script>
 </head>
 <body>
 
@@ -942,15 +1228,19 @@
 
   <div class="torc"></div>
 
+  <div class="ticker" aria-hidden="true">
+    <div><span>Applications iOS</span><span class="sep">✦</span><span>Android</span><span class="sep">✦</span><span>Web</span><span class="sep">✦</span><span>Design system</span><span class="sep">✦</span><span>Identité de marque</span><span class="sep">✦</span><span>Temps réel</span><span class="sep">✦</span><span>Mise en production</span><span class="sep">✦</span><span>Évolutions</span><span class="sep">✦</span><span>Applications iOS</span><span class="sep">✦</span><span>Android</span><span class="sep">✦</span><span>Web</span><span class="sep">✦</span><span>Design system</span><span class="sep">✦</span><span>Identité de marque</span><span class="sep">✦</span><span>Temps réel</span><span class="sep">✦</span><span>Mise en production</span><span class="sep">✦</span><span>Évolutions</span><span class="sep">✦</span></div>
+  </div>
+
   <section id="services" class="wrap">
     <p class="eyebrow">Ce que nous taillons</p>
-    <h2 class="section-title">Trois façons d'entrer en matière</h2>
-    <p class="section-lede">
+    <h2 class="section-title reveal">Trois façons d'entrer en matière</h2>
+    <p class="section-lede reveal">
       Comme le triskèle qui nous sert d'enseigne, l'atelier tient sur trois branches - chacune
       peut avancer seule ou s'enrouler avec les deux autres selon où en est votre projet.
     </p>
     <div class="services">
-      <div class="service">
+      <div class="service reveal">
         <span class="num">01 - Produit</span>
         <h3>Applications mobiles &amp; web</h3>
         <p>
@@ -958,7 +1248,7 @@
           prototype cliquable jusqu'au store. Une seule base de code pensée pour durer.
         </p>
       </div>
-      <div class="service">
+      <div class="service reveal">
         <span class="num">02 - Identité</span>
         <h3>Marque &amp; interface</h3>
         <p>
@@ -966,7 +1256,7 @@
           comme sur une affiche, cohérente du premier écran au dernier.
         </p>
       </div>
-      <div class="service">
+      <div class="service reveal">
         <span class="num">03 - Suite</span>
         <h3>Exploitation &amp; évolutions</h3>
         <p>
@@ -979,29 +1269,29 @@
 
   <section id="approche" class="wrap">
     <p class="eyebrow">Méthode</p>
-    <h2 class="section-title">Un atelier, pas une agence</h2>
-    <p class="section-lede">
+    <h2 class="section-title reveal">Un atelier, pas une agence</h2>
+    <p class="section-lede reveal">
       Kelto Studio est un atelier à taille humaine - des artisans du logiciel français, du
       premier appel jusqu'à la mise en production. Pas de passation d'équipe, pas de couches
       de gestion de projet : ce que vous décidez un lundi peut être en ligne le vendredi.
     </p>
     <div class="approach">
-      <div class="step">
+      <div class="step reveal">
         <span class="step-label">Semaine 1</span>
         <h4>Cadrage</h4>
         <p>On clarifie qui utilise le produit, pour faire quoi, et ce qui compte vraiment pour la V1.</p>
       </div>
-      <div class="step">
+      <div class="step reveal">
         <span class="step-label">Semaine 2–3</span>
         <h4>Maquette</h4>
         <p>Écrans cliquables, identité visuelle posée - on valide l'expérience avant d'écrire une ligne de code.</p>
       </div>
-      <div class="step">
+      <div class="step reveal">
         <span class="step-label">Selon le projet</span>
         <h4>Développement</h4>
         <p>Construction par lots livrables, testés et déployables à chaque étape - jamais une boîte noire.</p>
       </div>
-      <div class="step">
+      <div class="step reveal">
         <span class="step-label">Et après</span>
         <h4>Mise en orbite</h4>
         <p>Publication, suivi des premiers usages, ajustements. Le lancement est un début, pas une ligne d'arrivée.</p>
@@ -1013,9 +1303,9 @@
 
   <section id="realisation" class="wrap">
     <p class="eyebrow">Réalisation</p>
-    <h2 class="section-title">TournArena</h2>
-    <p class="section-lede">Une application conçue et développée par Kelto Studio.</p>
-    <div class="case">
+    <h2 class="section-title reveal">TournArena</h2>
+    <p class="section-lede reveal">Une application conçue et développée par Kelto Studio.</p>
+    <div class="case reveal">
       <div class="case-copy">
         <h3>Organiser un tournoi ne devrait pas être un second travail.</h3>
         <p>
@@ -1025,8 +1315,8 @@
           Android et web organisateur, une seule plateforme.
         </p>
         <div class="case-stats">
-          <div><strong>3</strong><span>Plateformes</span></div>
-          <div><strong>6</strong><span>Langues</span></div>
+          <div><strong data-count="3">3</strong><span>Plateformes</span></div>
+          <div><strong data-count="6">6</strong><span>Langues</span></div>
           <div><strong>Live</strong><span>Classements en direct</span></div>
         </div>
         <a class="case-link" href="https://tournarena.com" target="_blank" rel="noopener">
@@ -1041,7 +1331,7 @@
         <h5>U11 Super League</h5>
         <p class="mock-sub">Football · Vancouver · Poule A</p>
         <div class="mock-row"><strong>Les Aigles</strong><span class="score">3 – 1</span></div>
-        <div class="mock-row"><strong>Faucons FC</strong><span class="score">2 – 2</span></div>
+        <div class="mock-row"><strong>Faucons FC</strong><span class="score" data-live-score>2 – 2</span></div>
         <div class="mock-row"><strong>Étoile Nord</strong><span class="score">à venir</span></div>
       </div>
     </div>
@@ -1049,7 +1339,7 @@
 
   <footer id="contact">
     <div class="wrap">
-      <div class="contact-grid">
+      <div class="contact-grid reveal">
         <div>
           <h2>Un projet en tête ?</h2>
           <p>
