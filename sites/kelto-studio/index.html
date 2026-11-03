@@ -1112,6 +1112,80 @@
     animation: float 6s ease-in-out infinite;
   }
 
+  /* EvolyFoot : maquette à gauche (alternance), aux couleurs de l'app. */
+  .case-evoly {
+    margin-top: 28px;
+  }
+
+  .case-evoly .mock-evoly {
+    order: -1;
+    background: #070b12;
+    animation-delay: -3s;
+  }
+
+  .case-evoly .mock-badge {
+    color: #c6ff3d;
+  }
+
+  .case-evoly .score.evoly {
+    color: #2fd4ff;
+  }
+
+  .pitch {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+  }
+
+  .pitch-lines {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.28);
+    stroke-width: 2;
+  }
+
+  .pitch-run {
+    fill: none;
+    stroke: #c6ff3d;
+    stroke-width: 2.5;
+    stroke-dasharray: 8 8;
+    animation: pitch-dash 1.6s linear infinite;
+  }
+
+  .pitch-player circle {
+    fill: #2fd4ff;
+  }
+
+  .pitch-player text {
+    fill: #062330;
+    font-size: 12px;
+    font-weight: 800;
+    text-anchor: middle;
+  }
+
+  .pitch-ball {
+    animation: pitch-ball 6s ease-in-out infinite;
+  }
+
+  @keyframes pitch-dash {
+    to {
+      stroke-dashoffset: -32;
+    }
+  }
+
+  @keyframes pitch-ball {
+    0%, 12% { transform: translate(0, 0); }
+    36%, 48% { transform: translate(90px, -110px); }
+    72%, 84% { transform: translate(220px, -70px); }
+    100% { transform: translate(0, 0); }
+  }
+
+  @media (max-width: 860px) {
+    .case-evoly .mock-evoly {
+      order: 0;
+    }
+  }
+
   .mock-dot {
     animation: live-pulse 1.8s ease-in-out infinite;
   }
@@ -1184,7 +1258,7 @@
     <div class="nav-links">
       <a href="#services">Ateliers</a>
       <a href="#approche">Méthode</a>
-      <a href="#realisation">Réalisation</a>
+      <a href="#realisation">Réalisations</a>
       <a href="#contact">Contact</a>
     </div>
     <a href="#contact" class="btn btn-ghost cta-nav" style="padding:10px 22px;font-size:0.85rem;">Discutons</a>
@@ -1200,7 +1274,7 @@
   <div class="mobile-menu wrap">
     <a href="#services">Ateliers</a>
     <a href="#approche">Méthode</a>
-    <a href="#realisation">Réalisation</a>
+    <a href="#realisation">Réalisations</a>
     <a href="#contact">Contact</a>
     <a href="#contact" class="btn btn-primary">Discutons</a>
   </div>
@@ -1218,7 +1292,7 @@
       </p>
       <div class="cta-row">
         <a href="#contact" class="btn btn-primary">Démarrer un projet</a>
-        <a href="#realisation" class="btn btn-ghost">Voir une réalisation ↓</a>
+        <a href="#realisation" class="btn btn-ghost">Voir nos réalisations ↓</a>
       </div>
     </div>
     <div class="hero-mark">
@@ -1302,11 +1376,12 @@
   <div class="torc"></div>
 
   <section id="realisation" class="wrap">
-    <p class="eyebrow">Réalisation</p>
-    <h2 class="section-title reveal">TournArena</h2>
-    <p class="section-lede reveal">Une application conçue et développée par Kelto Studio.</p>
+    <p class="eyebrow">Réalisations</p>
+    <h2 class="section-title reveal">TournArena &amp; EvolyFoot</h2>
+    <p class="section-lede reveal">Deux applications sportives conçues et développées par Kelto Studio, du premier croquis aux stores.</p>
     <div class="case reveal">
       <div class="case-copy">
+        <p class="eyebrow">TournArena</p>
         <h3>Organiser un tournoi ne devrait pas être un second travail.</h3>
         <p>
           TournArena gère poules, tableaux à élimination, calendrier, arbitrage et
@@ -1333,6 +1408,52 @@
         <div class="mock-row"><strong>Les Aigles</strong><span class="score">3 – 1</span></div>
         <div class="mock-row"><strong>Faucons FC</strong><span class="score" data-live-score>2 – 2</span></div>
         <div class="mock-row"><strong>Étoile Nord</strong><span class="score">à venir</span></div>
+      </div>
+    </div>
+
+    <div class="case case-evoly reveal">
+      <div class="case-copy">
+        <p class="eyebrow">EvolyFoot</p>
+        <h3>Des séances qui font progresser, sans y passer ses soirées.</h3>
+        <p>
+          EvolyFoot accompagne les éducateurs de football U10–U13 : un diagnostic d'équipe
+          devient un cycle de 4 semaines, des séances prêtes à l'emploi et des ajustements
+          expliqués après chaque match. Préparation de match, présences, fiches joueurs -
+          sur le web pour préparer, sur mobile au bord du terrain.
+        </p>
+        <div class="case-stats">
+          <div><strong data-count="4">4</strong><span>Semaines de cycle</span></div>
+          <div><strong data-count="7">7</strong><span>Aspects suivis</span></div>
+          <div><strong>0 €</strong><span>Pour démarrer</span></div>
+        </div>
+        <a class="case-link" href="https://evolyfoot.com" target="_blank" rel="noopener">
+          Voir evolyfoot.com ↗
+        </a>
+      </div>
+      <div class="mock mock-evoly">
+        <div class="mock-top">
+          <span class="mock-badge">Semaine 1 · Découvrir</span>
+          <span class="mock-dot"></span>
+        </div>
+        <svg class="pitch" viewBox="0 0 400 300" aria-hidden="true">
+          <rect width="400" height="300" rx="16" fill="#0f3b2f" />
+          <g class="pitch-lines">
+            <rect x="14" y="14" width="372" height="272" rx="6" />
+            <path d="M200 14 V286" />
+            <circle cx="200" cy="150" r="40" />
+            <rect x="14" y="95" width="48" height="110" />
+            <rect x="338" y="95" width="48" height="110" />
+          </g>
+          <path class="pitch-run" d="M80 200 L170 90 L300 130" />
+          <circle cx="250" cy="70" r="11" fill="#ffb073" />
+          <circle cx="310" cy="210" r="11" fill="#ffb073" />
+          <g class="pitch-player"><circle cx="80" cy="200" r="13" /><text x="80" y="204">2</text></g>
+          <g class="pitch-player"><circle cx="170" cy="90" r="13" /><text x="170" y="94">6</text></g>
+          <g class="pitch-player"><circle cx="230" cy="220" r="13" /><text x="230" y="224">8</text></g>
+          <g class="pitch-player"><circle cx="300" cy="130" r="13" /><text x="300" y="134">10</text></g>
+          <circle class="pitch-ball" cx="80" cy="200" r="6" fill="#c6ff3d" />
+        </svg>
+        <div class="mock-row"><strong>Récupérer rapidement</strong><span class="score evoly">Pourquoi ?</span></div>
       </div>
     </div>
   </section>
