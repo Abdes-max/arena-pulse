@@ -17,6 +17,8 @@ import {
   matchStatusFilterOf,
 } from './match-status-filter';
 
+const KNOCKOUT_TAB = 'knockout';
+
 @Component({
   selector: 'app-schedule-page',
   imports: [IonContent, IonSegment, IonSegmentButton, IonLabel, MatchCard, TextField],
@@ -34,6 +36,21 @@ export class SchedulePage {
   protected readonly selectedCategoryId = signal('');
   protected readonly phases = signal<CompetitionPhase[]>([]);
   protected readonly selectedPhaseId = signal('');
+
+  // Every knockout phase sits under a single "Phases finales" segment, with
+  // its own sub-picker when there are several (main cup, consolation...) --
+  // same as apps/web's schedule.page.ts.
+  protected readonly nonKnockoutPhases = computed(() =>
+    this.phases().filter((phase) => phase.type !== 'KNOCKOUT'),
+  );
+  protected readonly knockoutPhases = computed(() =>
+    this.phases().filter((phase) => phase.type === 'KNOCKOUT'),
+  );
+  protected readonly phaseTab = computed(() =>
+    this.knockoutPhases().some((phase) => phase.id === this.selectedPhaseId())
+      ? KNOCKOUT_TAB
+      : this.selectedPhaseId(),
+  );
   protected readonly matches = signal<Match[]>([]);
   protected readonly query = signal('');
 
@@ -156,7 +173,7 @@ export class SchedulePage {
     const phases = await this.api.listPhases(slug, categoryId);
     this.phases.set(phases);
     if (phases.length > 0) {
-      this.selectedPhaseId.set(phases[0].id);
+      this.selectedPhaseId.set((this.nonKnockoutPhases()[0] ?? this.knockoutPhases()[0]).id);
       await this.loadMatches();
     } else {
       this.selectedPhaseId.set('');
@@ -165,7 +182,13 @@ export class SchedulePage {
   }
 
   protected async onPhaseChange(phaseId: string): Promise<void> {
-    this.selectedPhaseId.set(phaseId);
+    if (
+      phaseId === this.selectedPhaseId() ||
+      (phaseId === KNOCKOUT_TAB && this.phaseTab() === KNOCKOUT_TAB)
+    ) {
+      return;
+    }
+    this.selectedPhaseId.set(phaseId === KNOCKOUT_TAB ? this.knockoutPhases()[0].id : phaseId);
     await this.loadMatches();
   }
 

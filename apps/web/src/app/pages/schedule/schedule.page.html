@@ -18,10 +18,19 @@
     <ap-tabs
       class="schedule-page__filters"
       [label]="'schedule.phaseLabel' | transloco"
-      [value]="selectedPhaseId()"
+      [value]="phaseTab()"
       [options]="phaseOptions()"
       (valueChange)="onPhaseChange($event)"
     />
+    @if (phaseTab() === 'knockout' && knockoutOptions().length > 1) {
+      <ap-tabs
+        class="schedule-page__filters"
+        [label]="'schedule.knockoutTab' | transloco"
+        [value]="selectedPhaseId()"
+        [options]="knockoutOptions()"
+        (valueChange)="onPhaseChange($event)"
+      />
+    }
   }
 
   <div class="schedule-page__controls">

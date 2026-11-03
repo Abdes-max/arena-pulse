@@ -18,6 +18,8 @@ import {
 } from './match-status-filter';
 import { Category, CompetitionPhase, Match, RoundLabelLang, roundLabel } from 'shared-models';
 
+const KNOCKOUT_TAB = 'knockout';
+
 @Component({
   selector: 'app-schedule-page',
   imports: [MatchCard, Tabs, TextField, TranslocoPipe],
@@ -151,8 +153,35 @@ export class SchedulePage {
     this.categories().map((category) => ({ value: category.id, label: category.name })),
   );
 
-  protected readonly phaseOptions = computed(() =>
-    this.phases().map((phase) => ({ value: phase.id, label: phase.name })),
+  // Every knockout phase sits under a single "Phases finales" tab, with its
+  // own sub-picker when there are several (main cup, consolation...).
+  private readonly knockoutPhases = computed(() =>
+    this.phases().filter((phase) => phase.type === 'KNOCKOUT'),
+  );
+  protected readonly phaseOptions = computed(() => [
+    ...this.phases()
+      .filter((phase) => phase.type !== 'KNOCKOUT')
+      .map((phase) => ({ value: phase.id, label: phase.name })),
+    ...(this.knockoutPhases().length > 0
+      ? [
+          {
+            value: KNOCKOUT_TAB,
+            label: this.transloco.translate(
+              'schedule.knockoutTab',
+              {},
+              this.languageService.language(),
+            ),
+          },
+        ]
+      : []),
+  ]);
+  protected readonly phaseTab = computed(() =>
+    this.knockoutPhases().some((phase) => phase.id === this.selectedPhaseId())
+      ? KNOCKOUT_TAB
+      : this.selectedPhaseId(),
+  );
+  protected readonly knockoutOptions = computed(() =>
+    this.knockoutPhases().map((phase) => ({ value: phase.id, label: phase.name })),
   );
 
   // matches() only ever holds one phase's matches at a time (the currently
@@ -174,7 +203,8 @@ export class SchedulePage {
     const phases = await this.api.listPhases(slug, categoryId);
     this.phases.set(phases);
     if (phases.length > 0) {
-      this.selectedPhaseId.set(phases[0].id);
+      const first = this.phaseOptions()[0].value;
+      this.selectedPhaseId.set(first === KNOCKOUT_TAB ? this.knockoutPhases()[0].id : first);
       await this.loadMatches();
     } else {
       this.selectedPhaseId.set('');
@@ -183,7 +213,7 @@ export class SchedulePage {
   }
 
   protected async onPhaseChange(phaseId: string): Promise<void> {
-    this.selectedPhaseId.set(phaseId);
+    this.selectedPhaseId.set(phaseId === KNOCKOUT_TAB ? this.knockoutPhases()[0].id : phaseId);
     await this.loadMatches();
   }
 

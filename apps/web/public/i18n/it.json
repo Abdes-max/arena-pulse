@@ -261,7 +261,8 @@
     "searchPlaceholder": "Cerca una squadra o un arbitro…",
     "noMatches": "Nessuna partita per questa fase.",
     "unscheduled": "Non pianificato",
-    "forfeit": "a tavolino"
+    "forfeit": "a tavolino",
+    "knockoutTab": "Fase finale"
   },
   "standings": {
     "noPhase": "Nessuna fase per questa categoria.",

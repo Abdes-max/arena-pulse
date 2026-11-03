@@ -20,10 +20,19 @@
     <ap-tabs
       class="standings-page__phase-tabs"
       [label]="'schedule.phaseLabel' | transloco"
-      [value]="selectedTab()"
+      [value]="phaseTab()"
       [options]="tabs()"
       (valueChange)="selectTab($event)"
     />
+    @if (phaseTab() === 'knockout' && knockoutOptions().length > 1) {
+      <ap-tabs
+        class="standings-page__phase-tabs"
+        [label]="'schedule.knockoutTab' | transloco"
+        [value]="selectedTab()"
+        [options]="knockoutOptions()"
+        (valueChange)="selectTab($event)"
+      />
+    }
 
     @if (groupStandingsByPhase().get(selectedTab()); as groups) {
       @for (group of groups; track group.groupId) {

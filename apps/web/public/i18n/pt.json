@@ -261,7 +261,8 @@
     "searchPlaceholder": "Procurar uma equipa ou um árbitro…",
     "noMatches": "Nenhum jogo para esta fase.",
     "unscheduled": "Por agendar",
-    "forfeit": "desistência"
+    "forfeit": "desistência",
+    "knockoutTab": "Fase final"
   },
   "standings": {
     "noPhase": "Nenhuma fase para esta categoria.",
