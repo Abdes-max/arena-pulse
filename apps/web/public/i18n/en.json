@@ -363,7 +363,8 @@
     "searchPlaceholder": "Search a team or referee…",
     "noMatches": "No match for this phase.",
     "unscheduled": "Unscheduled",
-    "forfeit": "forfeit"
+    "forfeit": "forfeit",
+    "knockoutTab": "Knockout stage"
   },
   "standings": {
     "noPhase": "No phase for this category.",

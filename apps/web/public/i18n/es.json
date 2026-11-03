@@ -261,7 +261,8 @@
     "searchPlaceholder": "Buscar un equipo o un árbitro…",
     "noMatches": "Ningún partido para esta fase.",
     "unscheduled": "Sin programar",
-    "forfeit": "renuncia"
+    "forfeit": "renuncia",
+    "knockoutTab": "Fase final"
   },
   "standings": {
     "noPhase": "Ninguna fase para esta categoría.",

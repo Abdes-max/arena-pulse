@@ -26,16 +26,35 @@
     @if (phases().length > 0) {
       <ion-segment
         class="schedule-page__filters"
-        [value]="selectedPhaseId()"
+        [value]="phaseTab()"
         (ionChange)="onPhaseChange(asString($event.detail.value))"
         scrollable
       >
-        @for (phase of phases(); track phase.id) {
+        @for (phase of nonKnockoutPhases(); track phase.id) {
           <ion-segment-button [value]="phase.id">
             <ion-label>{{ phase.name }}</ion-label>
           </ion-segment-button>
         }
+        @if (knockoutPhases().length > 0) {
+          <ion-segment-button value="knockout">
+            <ion-label>Phases finales</ion-label>
+          </ion-segment-button>
+        }
       </ion-segment>
+      @if (phaseTab() === 'knockout' && knockoutPhases().length > 1) {
+        <ion-segment
+          class="schedule-page__filters"
+          [value]="selectedPhaseId()"
+          (ionChange)="onPhaseChange(asString($event.detail.value))"
+          scrollable
+        >
+          @for (phase of knockoutPhases(); track phase.id) {
+            <ion-segment-button [value]="phase.id">
+              <ion-label>{{ phase.name }}</ion-label>
+            </ion-segment-button>
+          }
+        </ion-segment>
+      }
     }
 
     <ap-text-field

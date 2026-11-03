@@ -76,6 +76,8 @@ interface PagerDragState {
   direction: 'horizontal' | 'vertical' | null;
 }
 
+const KNOCKOUT_TAB = 'knockout';
+
 @Component({
   selector: 'app-standings-page',
   imports: [Badge, BracketMatch, MatchCard, DecimalPipe, Tabs, TranslocoPipe],
@@ -161,9 +163,19 @@ export class StandingsPage {
     return map;
   });
 
+  // Every knockout bracket sits under a single "Phases finales" tab, with
+  // its own sub-picker when there are several (main cup, consolation...).
+  // selectedTab() keeps holding the actual bracket phase id.
   protected readonly tabs = computed(() => [
     ...this.groupStagePhases().map((phase) => ({ value: phase.id, label: phase.name })),
-    ...this.knockoutPhases().map((phase) => ({ value: phase.id, label: phase.name })),
+    ...(this.knockoutPhases().length > 0
+      ? [
+          {
+            value: KNOCKOUT_TAB,
+            label: this.transloco.translate('schedule.knockoutTab', {}, this.language()),
+          },
+        ]
+      : []),
     ...(this.knockoutPhases().length > 0
       ? [
           {
@@ -173,6 +185,15 @@ export class StandingsPage {
         ]
       : []),
   ]);
+
+  protected readonly phaseTab = computed(() =>
+    this.knockoutPhases().some((phase) => phase.id === this.selectedTab())
+      ? KNOCKOUT_TAB
+      : this.selectedTab(),
+  );
+  protected readonly knockoutOptions = computed(() =>
+    this.knockoutPhases().map((phase) => ({ value: phase.id, label: phase.name })),
+  );
 
   // Quick-jump row above the connected bracket tree, and also this bracket's
   // "accordion" focus state: clicking a round both scrolls it into view and
@@ -328,12 +349,12 @@ export class StandingsPage {
       this.finalRankingRaw.set([]);
     }
 
-    const tabs = this.tabs();
-    this.selectedTab.set(tabs[0]?.value ?? '');
+    this.selectTab(this.tabs()[0]?.value ?? '');
   }
 
   protected selectTab(tabId: string): void {
-    this.selectedTab.set(tabId);
+    this.selectedRoundView.set('');
+    this.selectedTab.set(tabId === KNOCKOUT_TAB ? this.knockoutPhases()[0].id : tabId);
   }
 
   protected onRoundJump(value: string): void {

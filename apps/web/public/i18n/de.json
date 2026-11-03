@@ -261,7 +261,8 @@
     "searchPlaceholder": "Team oder Schiedsrichter suchen…",
     "noMatches": "Kein Spiel für diese Phase.",
     "unscheduled": "Nicht geplant",
-    "forfeit": "Forfait"
+    "forfeit": "Forfait",
+    "knockoutTab": "Finalrunde"
   },
   "standings": {
     "noPhase": "Keine Phase für diese Kategorie.",
