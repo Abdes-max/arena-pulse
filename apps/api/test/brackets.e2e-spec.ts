@@ -292,7 +292,7 @@ describe('Knockout bracket generation and advancement (e2e)', () => {
         .every((m) => m.homeTeam === null && m.awayTeam === null),
     ).toBe(true);
 
-    // Validating the second semifinal completes the round - the final and
+    // Validating the second semifinal completes the round — the final and
     // the 3rd-place match (Gamma, the loser, is the only prior loser besides
     // Delta) should both appear automatically.
     await auth(

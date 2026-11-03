@@ -49,12 +49,12 @@ const MAIL_COPY: Record<MailLanguage, MailCopy> = {
       `Vous avez été invité·e à rejoindre <strong>${org}</strong> sur TournArena.`,
     invitationCta: "Accepter l'invitation",
     invitationExpiry: 'Ce lien expire dans 7 jours.',
-    verifySubject: 'Vérifiez votre adresse email - TournArena',
+    verifySubject: 'Vérifiez votre adresse email — TournArena',
     verifyIntro:
       'Encore une étape avant de pouvoir utiliser votre compte organisateur·rice : confirmez que cette adresse email vous appartient bien.',
     verifyCta: 'Vérifier mon email',
     verifyExpiry: 'Ce lien expire dans 24 heures.',
-    resetSubject: 'Réinitialisez votre mot de passe - TournArena',
+    resetSubject: 'Réinitialisez votre mot de passe — TournArena',
     resetIntro:
       'Vous avez demandé à réinitialiser le mot de passe de votre compte organisateur·rice TournArena.',
     resetCta: 'Choisir un nouveau mot de passe',
@@ -67,7 +67,7 @@ const MAIL_COPY: Record<MailLanguage, MailCopy> = {
     welcomeBody2:
       "Vous pouvez dès à présent créer votre premier tournoi depuis votre espace d'administration.",
     publicationReceiptSubject: (name) =>
-      `Reçu de paiement - Publication de ${name}`,
+      `Reçu de paiement — Publication de ${name}`,
     publicationReceiptBody1: (name) =>
       `Nous vous confirmons la réception de votre paiement pour la publication du tournoi <strong>${name}</strong>.`,
     amountPaidLabel: 'Montant réglé :',
@@ -80,7 +80,7 @@ const MAIL_COPY: Record<MailLanguage, MailCopy> = {
       `Nous vous confirmons la souscription de <strong>${org}</strong> à l'abonnement annuel TournArena.`,
     subscriptionReceiptBody2: (expiry) =>
       `Votre abonnement est actif jusqu'au <strong>${expiry}</strong> et couvre la publication de tous vos tournois sur cette période.`,
-    footerTagline: 'TournArena - le pouls de la compétition',
+    footerTagline: 'TournArena — le pouls de la compétition',
   },
   en: {
     greeting: (firstName) => `Hi ${firstName},`,
@@ -89,12 +89,12 @@ const MAIL_COPY: Record<MailLanguage, MailCopy> = {
       `You've been invited to join <strong>${org}</strong> on TournArena.`,
     invitationCta: 'Accept invitation',
     invitationExpiry: 'This link expires in 7 days.',
-    verifySubject: 'Verify your email - TournArena',
+    verifySubject: 'Verify your email — TournArena',
     verifyIntro:
       'One more step before you can use your organizer account: confirm that this email address is yours.',
     verifyCta: 'Verify my email',
     verifyExpiry: 'This link expires in 24 hours.',
-    resetSubject: 'Reset your password - TournArena',
+    resetSubject: 'Reset your password — TournArena',
     resetIntro:
       'You requested to reset the password for your TournArena organizer account.',
     resetCta: 'Choose a new password',
@@ -106,7 +106,7 @@ const MAIL_COPY: Record<MailLanguage, MailCopy> = {
       `Your organizer account has been created, along with your organization <strong>${org}</strong> on TournArena.`,
     welcomeBody2:
       'You can now create your first tournament from your admin dashboard.',
-    publicationReceiptSubject: (name) => `Payment receipt - Publishing ${name}`,
+    publicationReceiptSubject: (name) => `Payment receipt — Publishing ${name}`,
     publicationReceiptBody1: (name) =>
       `We confirm receipt of your payment for publishing the tournament <strong>${name}</strong>.`,
     amountPaidLabel: 'Amount paid:',
@@ -119,7 +119,7 @@ const MAIL_COPY: Record<MailLanguage, MailCopy> = {
       `We confirm <strong>${org}</strong>'s subscription to the TournArena annual plan.`,
     subscriptionReceiptBody2: (expiry) =>
       `Your subscription is active until <strong>${expiry}</strong> and covers publishing all your tournaments during this period.`,
-    footerTagline: 'TournArena - the pulse of competition',
+    footerTagline: 'TournArena — the pulse of competition',
   },
   es: {
     greeting: (firstName) => `Hola ${firstName},`,
@@ -128,12 +128,12 @@ const MAIL_COPY: Record<MailLanguage, MailCopy> = {
       `Te han invitado a unirte a <strong>${org}</strong> en TournArena.`,
     invitationCta: 'Aceptar la invitación',
     invitationExpiry: 'Este enlace caduca en 7 días.',
-    verifySubject: 'Verifica tu correo electrónico - TournArena',
+    verifySubject: 'Verifica tu correo electrónico — TournArena',
     verifyIntro:
       'Un paso más antes de poder usar tu cuenta de organizador·a: confirma que esta dirección de correo te pertenece.',
     verifyCta: 'Verificar mi correo',
     verifyExpiry: 'Este enlace caduca en 24 horas.',
-    resetSubject: 'Restablece tu contraseña - TournArena',
+    resetSubject: 'Restablece tu contraseña — TournArena',
     resetIntro:
       'Has solicitado restablecer la contraseña de tu cuenta de organizador·a TournArena.',
     resetCta: 'Elegir una nueva contraseña',
@@ -146,7 +146,7 @@ const MAIL_COPY: Record<MailLanguage, MailCopy> = {
     welcomeBody2:
       'Ya puedes crear tu primer torneo desde tu panel de administración.',
     publicationReceiptSubject: (name) =>
-      `Recibo de pago - Publicación de ${name}`,
+      `Recibo de pago — Publicación de ${name}`,
     publicationReceiptBody1: (name) =>
       `Confirmamos la recepción de tu pago para la publicación del torneo <strong>${name}</strong>.`,
     amountPaidLabel: 'Importe pagado:',
@@ -159,7 +159,7 @@ const MAIL_COPY: Record<MailLanguage, MailCopy> = {
       `Confirmamos la suscripción de <strong>${org}</strong> al plan anual de TournArena.`,
     subscriptionReceiptBody2: (expiry) =>
       `Tu suscripción está activa hasta el <strong>${expiry}</strong> y cubre la publicación de todos tus torneos durante ese período.`,
-    footerTagline: 'TournArena - el pulso de la competición',
+    footerTagline: 'TournArena — el pulso de la competición',
   },
   de: {
     greeting: (firstName) => `Hallo ${firstName},`,
@@ -168,12 +168,12 @@ const MAIL_COPY: Record<MailLanguage, MailCopy> = {
       `Sie wurden eingeladen, <strong>${org}</strong> auf TournArena beizutreten.`,
     invitationCta: 'Einladung annehmen',
     invitationExpiry: 'Dieser Link läuft in 7 Tagen ab.',
-    verifySubject: 'Bestätigen Sie Ihre E-Mail-Adresse - TournArena',
+    verifySubject: 'Bestätigen Sie Ihre E-Mail-Adresse — TournArena',
     verifyIntro:
       'Noch ein Schritt, bevor Sie Ihr Organisator·innen-Konto nutzen können: Bestätigen Sie, dass diese E-Mail-Adresse Ihnen gehört.',
     verifyCta: 'Meine E-Mail bestätigen',
     verifyExpiry: 'Dieser Link läuft in 24 Stunden ab.',
-    resetSubject: 'Setzen Sie Ihr Passwort zurück - TournArena',
+    resetSubject: 'Setzen Sie Ihr Passwort zurück — TournArena',
     resetIntro:
       'Sie haben beantragt, das Passwort Ihres TournArena-Organisator·innen-Kontos zurückzusetzen.',
     resetCta: 'Neues Passwort wählen',
@@ -186,7 +186,7 @@ const MAIL_COPY: Record<MailLanguage, MailCopy> = {
     welcomeBody2:
       'Sie können jetzt Ihr erstes Turnier über Ihren Admin-Bereich erstellen.',
     publicationReceiptSubject: (name) =>
-      `Zahlungsbeleg - Veröffentlichung von ${name}`,
+      `Zahlungsbeleg — Veröffentlichung von ${name}`,
     publicationReceiptBody1: (name) =>
       `Wir bestätigen den Eingang Ihrer Zahlung für die Veröffentlichung des Turniers <strong>${name}</strong>.`,
     amountPaidLabel: 'Bezahlter Betrag:',
@@ -199,7 +199,7 @@ const MAIL_COPY: Record<MailLanguage, MailCopy> = {
       `Wir bestätigen den Abschluss des TournArena-Jahresabonnements für <strong>${org}</strong>.`,
     subscriptionReceiptBody2: (expiry) =>
       `Ihr Abonnement ist bis zum <strong>${expiry}</strong> aktiv und deckt die Veröffentlichung aller Ihrer Turniere in diesem Zeitraum ab.`,
-    footerTagline: 'TournArena - der Puls des Wettbewerbs',
+    footerTagline: 'TournArena — der Puls des Wettbewerbs',
   },
   it: {
     greeting: (firstName) => `Ciao ${firstName},`,
@@ -208,12 +208,12 @@ const MAIL_COPY: Record<MailLanguage, MailCopy> = {
       `Sei stato invitato a unirti a <strong>${org}</strong> su TournArena.`,
     invitationCta: "Accetta l'invito",
     invitationExpiry: 'Questo link scade tra 7 giorni.',
-    verifySubject: 'Verifica la tua email - TournArena',
+    verifySubject: 'Verifica la tua email — TournArena',
     verifyIntro:
       'Ancora un passo prima di poter usare il tuo account organizzatore·rice: conferma che questo indirizzo email è tuo.',
     verifyCta: 'Verifica la mia email',
     verifyExpiry: 'Questo link scade tra 24 ore.',
-    resetSubject: 'Reimposta la tua password - TournArena',
+    resetSubject: 'Reimposta la tua password — TournArena',
     resetIntro:
       'Hai richiesto di reimpostare la password del tuo account organizzatore·rice TournArena.',
     resetCta: 'Scegli una nuova password',
@@ -226,7 +226,7 @@ const MAIL_COPY: Record<MailLanguage, MailCopy> = {
     welcomeBody2:
       'Puoi già creare il tuo primo torneo dal tuo pannello di amministrazione.',
     publicationReceiptSubject: (name) =>
-      `Ricevuta di pagamento - Pubblicazione di ${name}`,
+      `Ricevuta di pagamento — Pubblicazione di ${name}`,
     publicationReceiptBody1: (name) =>
       `Confermiamo la ricezione del tuo pagamento per la pubblicazione del torneo <strong>${name}</strong>.`,
     amountPaidLabel: 'Importo pagato:',
@@ -239,7 +239,7 @@ const MAIL_COPY: Record<MailLanguage, MailCopy> = {
       `Confermiamo la sottoscrizione di <strong>${org}</strong> all'abbonamento annuale TournArena.`,
     subscriptionReceiptBody2: (expiry) =>
       `Il tuo abbonamento è attivo fino al <strong>${expiry}</strong> e copre la pubblicazione di tutti i tuoi tornei in questo periodo.`,
-    footerTagline: 'TournArena - il battito della competizione',
+    footerTagline: 'TournArena — il battito della competizione',
   },
   pt: {
     greeting: (firstName) => `Olá ${firstName},`,
@@ -248,12 +248,12 @@ const MAIL_COPY: Record<MailLanguage, MailCopy> = {
       `Foi convidado·a a juntar-se a <strong>${org}</strong> no TournArena.`,
     invitationCta: 'Aceitar o convite',
     invitationExpiry: 'Este link expira em 7 dias.',
-    verifySubject: 'Verifique o seu email - TournArena',
+    verifySubject: 'Verifique o seu email — TournArena',
     verifyIntro:
       'Mais um passo antes de poder usar a sua conta de organizador·a: confirme que este endereço de email lhe pertence.',
     verifyCta: 'Verificar o meu email',
     verifyExpiry: 'Este link expira em 24 horas.',
-    resetSubject: 'Redefina a sua palavra-passe - TournArena',
+    resetSubject: 'Redefina a sua palavra-passe — TournArena',
     resetIntro:
       'Pediu para redefinir a palavra-passe da sua conta de organizador·a TournArena.',
     resetCta: 'Escolher uma nova palavra-passe',
@@ -266,7 +266,7 @@ const MAIL_COPY: Record<MailLanguage, MailCopy> = {
     welcomeBody2:
       'Já pode criar o seu primeiro torneio a partir do seu painel de administração.',
     publicationReceiptSubject: (name) =>
-      `Recibo de pagamento - Publicação de ${name}`,
+      `Recibo de pagamento — Publicação de ${name}`,
     publicationReceiptBody1: (name) =>
       `Confirmamos a receção do seu pagamento para a publicação do torneio <strong>${name}</strong>.`,
     amountPaidLabel: 'Valor pago:',
@@ -279,7 +279,7 @@ const MAIL_COPY: Record<MailLanguage, MailCopy> = {
       `Confirmamos a assinatura de <strong>${org}</strong> ao plano anual TournArena.`,
     subscriptionReceiptBody2: (expiry) =>
       `A sua assinatura está ativa até <strong>${expiry}</strong> e cobre a publicação de todos os seus torneios durante este período.`,
-    footerTagline: 'TournArena - o pulso da competição',
+    footerTagline: 'TournArena — o pulso da competição',
   },
 };
 
@@ -542,7 +542,7 @@ export class MailService {
       from: this.from,
       to: this.keltoContactRecipient,
       replyTo: `${data.nom} <${data.email}>`,
-      subject: `[Kelto Studio] ${data.typeDemandeLabel} - ${data.nom}`,
+      subject: `[Kelto Studio] ${data.typeDemandeLabel} — ${data.nom}`,
       html: this.wrapKeltoEmail(`
         <p><strong>De :</strong> ${this.escapeHtml(data.nom)} (${this.escapeHtml(data.email)})</p>
         <p><strong>Type de demande :</strong> ${this.escapeHtml(data.typeDemandeLabel)}</p>

@@ -118,7 +118,7 @@ describe('computeStandings', () => {
     const rows = computeStandings(teams, matches, SCHEME, TIE_BREAK_ORDER);
 
     // Alpha won the only match played between them, and has the only points/GD
-    // in this dataset, so it should rank first without needing head-to-head -
+    // in this dataset, so it should rank first without needing head-to-head —
     // exercised more meaningfully by the 3-way tie test below.
     expect(rows[0].teamId).toBe('a');
   });
@@ -130,7 +130,7 @@ describe('computeStandings', () => {
       { id: 'c', name: 'Gamma' },
     ];
     // A round-robin where each team beats one and loses to another by the same
-    // scoreline, so points and goal difference are all level for the trio -
+    // scoreline, so points and goal difference are all level for the trio —
     // head-to-head among just these three must decide the order.
     const matches = [
       { homeTeamId: 'a', awayTeamId: 'b', homeScore: 2, awayScore: 1 },

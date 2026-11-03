@@ -3,7 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 
 /**
  * Used on routes that behave differently for anonymous vs. authenticated
- * callers (e.g. accepting an invitation) - never throws on a missing/invalid
+ * callers (e.g. accepting an invitation) — never throws on a missing/invalid
  * token, just leaves `request.user` unset.
  */
 @Injectable()

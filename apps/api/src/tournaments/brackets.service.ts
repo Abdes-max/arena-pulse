@@ -451,7 +451,7 @@ export class BracketsService {
   /**
    * Called after a knockout match's score is validated or it's forfeited.
    * Once every match in a round has a decided winner, seeds the next round
-   * (and the 3rd-place match, if the bracket has one) from those winners -
+   * (and the 3rd-place match, if the bracket has one) from those winners —
    * a no-op if the round isn't finished yet, is already the final, or the
    * next round already exists (safe to call more than once per match).
    */

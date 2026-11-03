@@ -5,22 +5,22 @@ web (Angular servi par nginx, qui fait aussi reverse-proxy vers l'API) + Caddy (
 terminant le TLS, devant tout le reste). Voir `docs/architecture/adr/0004-deployment-strategy.md`
 pour les décisions et leurs justifications.
 
-Aucune cible d'hébergement n'est imposée par ces fichiers - ils fonctionnent sur n'importe quel
+Aucune cible d'hébergement n'est imposée par ces fichiers — ils fonctionnent sur n'importe quel
 hôte Docker (VPS, offre "Docker Compose" d'un PaaS, etc.).
 
 ## Prérequis sur l'hôte cible
 
 - Docker + Docker Compose v2 (`docker compose version` doit fonctionner).
 - Un nom de domaine dont les enregistrements DNS (`A`, pour le domaine nu **et** `www.`) pointent
-  déjà vers l'IP publique de cet hôte - Caddy en a besoin pour obtenir un certificat Let's Encrypt
+  déjà vers l'IP publique de cet hôte — Caddy en a besoin pour obtenir un certificat Let's Encrypt
   au premier démarrage. Si un template d'hébergeur propose déjà Traefik (ou un autre reverse-proxy)
-  préinstallé, ne pas le combiner avec cette stack : les deux voudraient les ports 80/443 - choisir
+  préinstallé, ne pas le combiner avec cette stack : les deux voudraient les ports 80/443 — choisir
   un template "Docker" nu à la place.
-- Ports **80 et 443 ouverts** vers l'extérieur (pare-feu / groupe de sécurité) - 80 sert au défi
+- Ports **80 et 443 ouverts** vers l'extérieur (pare-feu / groupe de sécurité) — 80 sert au défi
   ACME HTTP-01 de Let's Encrypt, pas seulement à rediriger vers 443.
 - Un fournisseur SMTP transactionnel (Brevo par défaut : `smtp-relay.brevo.com`, port 587
-  STARTTLS - créer une clé SMTP dédiée dans Brevo, et vérifier le domaine `DOMAIN` côté Brevo
-  pour le SPF/DKIM) - voir `SMTP_*` dans `.env.example`.
+  STARTTLS — créer une clé SMTP dédiée dans Brevo, et vérifier le domaine `DOMAIN` côté Brevo
+  pour le SPF/DKIM) — voir `SMTP_*` dans `.env.example`.
 
 ## Déployer
 
@@ -37,7 +37,7 @@ docker compose -f infra/deployment/docker-compose.prod.yml --env-file infra/depl
 
 Ceci construit les images localement sur l'hôte. Les images `api`/`web` sont aussi publiées sur
 `ghcr.io/<owner>/arena-pulse-api` et `ghcr.io/<owner>/arena-pulse-web` à chaque fusion sur
-`master` (job `docker-publish` de la CI) - pour déployer depuis ces images pré-construites plutôt
+`master` (job `docker-publish` de la CI) — pour déployer depuis ces images pré-construites plutôt
 que de reconstruire sur l'hôte, remplacer les blocs `build:` correspondants dans
 `docker-compose.prod.yml` par `image: ghcr.io/<owner>/arena-pulse-api:latest` (et `-web`) avant le
 `docker compose up`.
@@ -60,7 +60,7 @@ curl -f https://${DOMAIN}/api/v1/health
 ```
 
 `docker compose -f infra/deployment/docker-compose.prod.yml logs -f api` affiche les logs JSON
-structurés (voir ADR 0003) - chaque ligne HTTP porte un `requestId` corrélé à toute erreur
+structurés (voir ADR 0003) — chaque ligne HTTP porte un `requestId` corrélé à toute erreur
 associée. `docker compose -f infra/deployment/docker-compose.prod.yml logs -f caddy` montre
 l'obtention/le renouvellement du certificat.
 
@@ -73,14 +73,14 @@ docker compose -f infra/deployment/docker-compose.prod.yml --env-file infra/depl
 ```
 
 Le service `migrate` s'exécute avant `api` à chaque `up`, applique les migrations Prisma en
-attente puis peuple/rafraîchit les données de référence (sports, permissions - idempotent, sans
+attente puis peuple/rafraîchit les données de référence (sports, permissions — idempotent, sans
 effet si déjà à jour) ; `api` ne démarre que si `migrate` s'est terminé avec succès.
 
 ## Déployer en continu (GitHub Actions)
 
 Le workflow `.github/workflows/deploy-prod.yml` reproduit la section
 "Mettre à jour" ci-dessus par SSH, déclenché manuellement ("Run workflow"
-depuis l'onglet Actions du dépôt - un clic).
+depuis l'onglet Actions du dépôt — un clic).
 
 Prérequis, à faire une seule fois :
 
@@ -95,11 +95,11 @@ Prérequis, à faire une seule fois :
    SSH sur le VPS.
 3. Dans les settings GitHub du dépôt (Settings → Secrets and variables →
    Actions), ajouter :
-   - `DEPLOY_HOST` - IP ou nom d'hôte du VPS
-   - `DEPLOY_USER` - utilisateur SSH (éviter `root` si possible)
-   - `DEPLOY_SSH_KEY` - la **clé privée** générée à l'étape 2
-   - `DEPLOY_PATH` - chemin absolu du clone sur le VPS (ex. `/opt/arena-pulse`)
-   - `DEPLOY_PORT` - optionnel, si le SSH du VPS n'écoute pas sur 22
+   - `DEPLOY_HOST` — IP ou nom d'hôte du VPS
+   - `DEPLOY_USER` — utilisateur SSH (éviter `root` si possible)
+   - `DEPLOY_SSH_KEY` — la **clé privée** générée à l'étape 2
+   - `DEPLOY_PATH` — chemin absolu du clone sur le VPS (ex. `/opt/arena-pulse`)
+   - `DEPLOY_PORT` — optionnel, si le SSH du VPS n'écoute pas sur 22
 4. Optionnel mais recommandé : créer un environment GitHub `production`
    (Settings → Environments) avec des "required reviewers", pour qu'un
    déploiement demande une validation humaine avant de s'exécuter.
@@ -107,6 +107,6 @@ Prérequis, à faire une seule fois :
 ## Sauvegarder
 
 Les données PostgreSQL vivent dans le volume nommé `arena-pulse-postgres-prod` (déclaré dans
-`docker-compose.prod.yml`) - sauvegarder ce volume (ou faire des dumps réguliers via
+`docker-compose.prod.yml`) — sauvegarder ce volume (ou faire des dumps réguliers via
 `docker compose exec postgres pg_dump ...`) selon la politique de sauvegarde de l'hôte choisi ;
 rien n'est automatisé ici.

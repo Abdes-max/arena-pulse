@@ -1,5 +1,5 @@
 // Pure helpers behind the public "Tournoi Wrapped" recap
-// (GET /public/tournaments/:slug/wrapped, see wrapped.service.ts) - no
+// (GET /public/tournaments/:slug/wrapped, see wrapped.service.ts) — no
 // Prisma/IO here, only plain data in/out, so every rule below is testable
 // in isolation (wrapped.util.spec.ts) the same way glicko2.util.ts and
 // standings.util.ts already are.
@@ -13,7 +13,7 @@ import {
 } from './glicko2.util';
 
 /** A grassroots team's very first counted match still needs 3+ games before
- * "fewest goals conceded" means anything - otherwise a team that played (and
+ * "fewest goals conceded" means anything — otherwise a team that played (and
  * won) a single match 1-0 would always top the defense ranking. */
 export const MIN_MATCHES_FOR_DEFENSE_RANKING = 3;
 
@@ -73,7 +73,7 @@ export interface WrappedMatchStats {
 
 /**
  * Aggregates every "raw" (non-rating) Wrapped stat from a tournament's
- * validated matches - one pass, plain arithmetic, no external state. Matches
+ * validated matches — one pass, plain arithmetic, no external state. Matches
  * missing a team name (an unresolved knockout placeholder can't happen here
  * in practice, since only *validated* matches are ever passed in, but is
  * skipped defensively rather than assumed away) are ignored everywhere.
@@ -164,7 +164,7 @@ export function computeMatchStats(
       outcomes.awayWin += 1;
     }
 
-    // "Closest match" only makes sense among *decided* matches - a plain
+    // "Closest match" only makes sense among *decided* matches — a plain
     // draw has no winner to have nearly lost.
     if (margin > 0 || decidedByShootout) {
       const rankedMargin = decidedByShootout ? 0 : margin;
@@ -222,7 +222,7 @@ export function computeMatchStats(
 /**
  * One validated match, anywhere in the organization's history, in the exact
  * chronological order RatingsService.recordMatchResult already applied it in
- * production (MatchScore.validatedAt) - the only thing that makes the replay
+ * production (MatchScore.validatedAt) — the only thing that makes the replay
  * below reproduce real historical ratings instead of guessing at them.
  */
 export interface RatingHistoryEntry {
@@ -256,7 +256,7 @@ function outcomeScore(
 
 /**
  * Replays every one of the involved teams' validated matches, across their
- * whole organization history (TeamRating has no per-tournament reset - see
+ * whole organization history (TeamRating has no per-tournament reset — see
  * this feature's plan doc for why), applying the exact same Glicko-2 update
  * as RatingsService.recordMatchResult. While replaying, whenever a match
  * `inScope` is reached, its *pre-match* ratings are known and compared: the
@@ -265,7 +265,7 @@ function outcomeScore(
  * in-scope match was ever an upset (favourite always won, or no decided
  * match exists at all).
  *
- * `history` must already be sorted ascending by validatedAt - the caller
+ * `history` must already be sorted ascending by validatedAt — the caller
  * owns the Prisma query, this function only owns the math.
  */
 export function findBiggestUpset(

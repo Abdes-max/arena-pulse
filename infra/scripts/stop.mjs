@@ -33,13 +33,13 @@ function killTree(pid) {
 }
 
 async function main() {
-  console.log('1/3 - Stopping native processes (api, web)');
+  console.log('1/3 — Stopping native processes (api, web)');
   if (existsSync(pidsFile)) {
     const pids = JSON.parse(readFileSync(pidsFile, 'utf8'));
     for (const [name, info] of Object.entries(pids)) {
       const stillUp = await isPortInUse(info.port);
       if (!stillUp) {
-        console.log(`  → ${name} was not running - nothing to do.`);
+        console.log(`  → ${name} was not running — nothing to do.`);
         continue;
       }
       console.log(`  → stopping ${name} (pid ${info.pid})`);
@@ -47,10 +47,10 @@ async function main() {
     }
     rmSync(pidsFile, { force: true });
   } else {
-    console.log('  → no tracked processes (.run/pids.json not found) - nothing to do.');
+    console.log('  → no tracked processes (.run/pids.json not found) — nothing to do.');
   }
 
-  console.log('2/3 - Stopping Docker infrastructure (postgres, minio, mailhog)');
+  console.log('2/3 — Stopping Docker infrastructure (postgres, minio, mailhog)');
   spawnSync('docker', ['compose', '-f', composeFile, 'stop'], {
     stdio: 'inherit',
     shell: process.platform === 'win32',
@@ -64,7 +64,7 @@ async function main() {
   // session that outlived its terminal, or a Docker container that failed
   // to release its port on `stop`) is invisible to the steps above and
   // would otherwise keep serving stale code/data indefinitely.
-  console.log(`3/3 - Force-stopping anything still on ${Object.values(ALL_PORTS).join('/')}`);
+  console.log(`3/3 — Force-stopping anything still on ${Object.values(ALL_PORTS).join('/')}`);
   for (const [name, port] of Object.entries(ALL_PORTS)) {
     const killedPids = killProcessOnPort(port);
     console.log(

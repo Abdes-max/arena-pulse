@@ -100,7 +100,7 @@ export class InvitationsService {
       );
     } catch (error) {
       // The invitation itself is valid regardless of whether the email made
-      // it out - failing the whole request here would leave a PENDING
+      // it out — failing the whole request here would leave a PENDING
       // invitation the admin can't see or retry (it already exists, so a
       // second attempt would just hit the duplicate-pending-invite check).
       this.logger.warn(

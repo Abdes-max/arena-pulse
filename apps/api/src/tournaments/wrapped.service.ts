@@ -63,8 +63,8 @@ export type TournamentWrapped =
 
 /**
  * Builds the public "Tournoi Wrapped" recap (GET /public/tournaments/:slug/wrapped)
- * entirely from data that already exists - validated scores, referees, fields
- * and the Glicko-2 ratings ratings.service.ts already maintains - see this
+ * entirely from data that already exists — validated scores, referees, fields
+ * and the Glicko-2 ratings ratings.service.ts already maintains — see this
  * feature's plan doc (adaptive-leaping-elephant.md, "Tournoi Wrapped") for
  * the reasoning behind the rating replay and the champion-detection split
  * between knockout and pools-only categories.
@@ -266,7 +266,7 @@ export class WrappedService {
     }
 
     // Champions' *current* level reuses the live TeamRating table directly
-    // (no replay needed - only the historical "rating just before a specific
+    // (no replay needed — only the historical "rating just before a specific
     // past match" below needs one).
     const championRatings = await this.ratingsService.getRatingsForTeamNames(
       tournament.organizationId,
@@ -314,7 +314,7 @@ export class WrappedService {
 
   /**
    * See wrapped.util.ts's findBiggestUpset doc comment for the full
-   * reasoning - this just owns the Prisma query (every validated match, for
+   * reasoning — this just owns the Prisma query (every validated match, for
    * every team that appears in this tournament, across the WHOLE
    * organization, chronologically by MatchScore.validatedAt) that the pure
    * replay function needs.

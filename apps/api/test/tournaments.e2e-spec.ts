@@ -274,7 +274,7 @@ describe('Tournaments (e2e)', () => {
     const tournament = createRes.body as TournamentResponseBody;
 
     // orgB's admin is a legitimate member of orgB (guard passes), but the
-    // tournament belongs to orgA - 404, not 403, so as not to leak whether a
+    // tournament belongs to orgA — 404, not 403, so as not to leak whether a
     // given tournament id exists at all outside the caller's organization.
     await request(app.getHttpServer())
       .get(

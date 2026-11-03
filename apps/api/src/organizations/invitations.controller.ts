@@ -37,7 +37,7 @@ export class InvitationsController {
     @Param('token') token: string,
     @Body() dto: AcceptInvitationDto,
     // OptionalJwtAuthGuard leaves request.user unset (null) rather than
-    // throwing when there's no/invalid token - this route is reachable both
+    // throwing when there's no/invalid token — this route is reachable both
     // anonymously and authenticated, and the service branches on which.
     @CurrentUser() user: AuthenticatedUser | null,
     @Res({ passthrough: true }) res: Response,

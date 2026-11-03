@@ -12,7 +12,7 @@ import { Public } from '../auth/decorators/public.decorator';
 import { PublicService } from './public.service';
 
 /**
- * Read-only, unauthenticated endpoints for the public tournament site -
+ * Read-only, unauthenticated endpoints for the public tournament site —
  * everything is looked up by slug (never id/organizationId, which visitors
  * don't know), and only a PUBLISHED tournament is ever reachable here.
  */

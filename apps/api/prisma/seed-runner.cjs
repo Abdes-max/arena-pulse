@@ -1,5 +1,5 @@
 // Prisma's seed runner splits the `migrations.seed` command on spaces without
-// a shell, so "&&" isn't interpreted as a chain operator - it silently drops
+// a shell, so "&&" isn't interpreted as a chain operator — it silently drops
 // everything after the first command instead of erroring. This wrapper does
 // the two steps (build, then run the compiled seed) itself via execSync,
 // which does use a real shell.
