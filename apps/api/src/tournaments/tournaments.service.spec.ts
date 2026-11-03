@@ -144,6 +144,7 @@ function createRevenueCatServiceMock() {
 function createOrganizationsServiceMock() {
   return {
     hasActiveSubscription: jest.fn().mockResolvedValue(false),
+    launchPromoCoversTournament: jest.fn().mockResolvedValue(false),
     getAdminEmails: jest.fn().mockResolvedValue([]),
     assertNotSuspended: jest.fn().mockResolvedValue(undefined),
   };
@@ -749,6 +750,48 @@ describe('TournamentsService', () => {
 
       expect(result).toEqual({ status: 'PUBLISHED' });
       expect(stripeService.createCheckoutSession).not.toHaveBeenCalled();
+    });
+
+    it('records a free launch-promo order instead of charging when the promo covers the tournament', async () => {
+      const paidService = new TournamentsService(
+        prisma as unknown as PrismaService,
+        stripeService as unknown as StripeService,
+        createRevenueCatServiceMock() as unknown as RevenueCatService,
+        createConfigServiceMock({
+          TOURNAMENT_PUBLICATION_TIER_MID_PRICE_CENTS: '2500',
+          TOURNAMENT_PUBLICATION_TIER_HIGH_PRICE_CENTS: '8000',
+        }),
+        organizationsService as unknown as OrganizationsService,
+        mailService as unknown as MailService,
+      );
+      prisma.tournament.findUnique.mockResolvedValue(tournamentFixture());
+      prisma.tournamentPublicationOrder.aggregate.mockResolvedValue({
+        _sum: { tierCents: 2500 },
+      });
+      prisma.category.count.mockResolvedValue(1);
+      prisma.team.count.mockResolvedValue(3);
+      organizationsService.launchPromoCoversTournament.mockResolvedValue(true);
+
+      const result = await paidService.payForTournamentTier(
+        'org-1',
+        'tournament-1',
+        'LARGE',
+      );
+
+      expect(result).toEqual({ status: 'PUBLISHED' });
+      expect(stripeService.createCheckoutSession).not.toHaveBeenCalled();
+      const [[createCall]] = prisma.tournamentPublicationOrder.create.mock
+        .calls as [[{ data: Record<string, unknown> }]];
+      expect(createCall.data).toEqual(
+        expect.objectContaining({
+          tournamentId: 'tournament-1',
+          status: TournamentPublicationOrderStatus.PAID,
+          amountCents: 0,
+          tierCents: 5500, // the gap still counts as unlocked
+          discountPercent: 100,
+          launchPromo: true,
+        }),
+      );
     });
   });
 

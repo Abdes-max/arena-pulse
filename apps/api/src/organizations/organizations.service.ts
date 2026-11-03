@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   Injectable,
@@ -142,6 +143,128 @@ export class OrganizationsService {
   }
 
   /**
+   * Launch offer (LAUNCH_PROMO_CODE, "TOURNARENA2026" by default): one code,
+   * redeemed once per organization from the web admin, that unlocks two
+   * independent perks --
+   * - LAUNCH_PROMO_FREE_TOURNAMENTS (3) tournaments published for free,
+   *   counted per organization by our own DB (Stripe can only cap a code
+   *   globally, never per customer), see launchPromoCoversTournament;
+   * - the Stripe coupon STRIPE_LAUNCH_SUBSCRIPTION_COUPON_ID on the annual
+   *   subscription (-50%, max_redemptions 50 set on the coupon itself in the
+   *   Stripe Dashboard -- Stripe enforces the "50 premiers" cap, see
+   *   subscribe()).
+   * LAUNCH_PROMO_ENDS_AT (ISO date, optional) closes new redemptions only:
+   * an organization that already redeemed keeps its remaining perks.
+   */
+  async redeemLaunchPromo(organizationId: string, code: string) {
+    await this.assertNotSuspended(organizationId);
+    const expected = this.configService
+      .get<string>('LAUNCH_PROMO_CODE', 'TOURNARENA2026')
+      .trim()
+      .toUpperCase();
+    const endsAt = this.configService.get<string>('LAUNCH_PROMO_ENDS_AT');
+    const closed = !!endsAt && new Date(endsAt).getTime() < Date.now();
+    if (!expected || closed || code.trim().toUpperCase() !== expected) {
+      throw new BadRequestException('Code promo invalide ou expiré.');
+    }
+    await this.prisma.organization.updateMany({
+      where: { id: organizationId, launchPromoRedeemedAt: null },
+      data: { launchPromoRedeemedAt: new Date() },
+    });
+    return this.getLaunchPromoStatus(organizationId);
+  }
+
+  async getLaunchPromoStatus(organizationId: string) {
+    const organization = await this.prisma.organization.findUnique({
+      where: { id: organizationId },
+      select: { launchPromoRedeemedAt: true },
+    });
+    const freeTournamentsTotal = this.launchPromoFreeTournaments();
+    const used = organization?.launchPromoRedeemedAt
+      ? await this.countLaunchPromoTournaments(organizationId)
+      : 0;
+    return {
+      redeemed: !!organization?.launchPromoRedeemedAt,
+      freeTournamentsTotal,
+      freeTournamentsRemaining: Math.max(0, freeTournamentsTotal - used),
+      subscriptionDiscountPercent: this.configService.get<string>(
+        'STRIPE_LAUNCH_SUBSCRIPTION_COUPON_ID',
+      )
+        ? Number(
+            this.configService.get<string>(
+              'LAUNCH_PROMO_SUBSCRIPTION_DISCOUNT_PERCENT',
+              '50',
+            ),
+          )
+        : null,
+    };
+  }
+
+  /**
+   * Whether the launch promo pays for this tournament's publication (any
+   * tier, top-ups included): yes once a tournament already consumed one of
+   * the organization's free slots, otherwise only while slots remain.
+   * Checked by TournamentsService before every Stripe checkout it would
+   * otherwise start.
+   */
+  async launchPromoCoversTournament(
+    organizationId: string,
+    tournamentId: string,
+  ): Promise<boolean> {
+    const organization = await this.prisma.organization.findUnique({
+      where: { id: organizationId },
+      select: { launchPromoRedeemedAt: true },
+    });
+    if (!organization?.launchPromoRedeemedAt) {
+      return false;
+    }
+    const alreadyCovered =
+      await this.prisma.tournamentPublicationOrder.findFirst({
+        where: { tournamentId, launchPromo: true },
+        select: { id: true },
+      });
+    if (alreadyCovered) {
+      return true;
+    }
+    return (
+      (await this.countLaunchPromoTournaments(organizationId)) <
+      this.launchPromoFreeTournaments()
+    );
+  }
+
+  private async launchPromoSubscriptionCouponId(
+    organizationId: string,
+  ): Promise<string | null> {
+    const couponId = this.configService.get<string>(
+      'STRIPE_LAUNCH_SUBSCRIPTION_COUPON_ID',
+    );
+    if (!couponId) {
+      return null;
+    }
+    const organization = await this.prisma.organization.findUnique({
+      where: { id: organizationId },
+      select: { launchPromoRedeemedAt: true },
+    });
+    return organization?.launchPromoRedeemedAt ? couponId : null;
+  }
+
+  private launchPromoFreeTournaments(): number {
+    return Number(
+      this.configService.get<string>('LAUNCH_PROMO_FREE_TOURNAMENTS', '3'),
+    );
+  }
+
+  private async countLaunchPromoTournaments(
+    organizationId: string,
+  ): Promise<number> {
+    const tournaments = await this.prisma.tournamentPublicationOrder.groupBy({
+      by: ['tournamentId'],
+      where: { launchPromo: true, tournament: { organizationId } },
+    });
+    return tournaments.length;
+  }
+
+  /**
    * Alternative to paying per publication (TournamentsService.publish()):
    * one active subscription per organization covers every tournament it
    * publishes for a year, regardless of team count/tier -- see
@@ -251,7 +374,7 @@ export class OrganizationsService {
       'ADMIN_WEB_URL',
       'http://localhost:4200',
     );
-    const session = await this.stripeService.createCheckoutSession({
+    const checkoutParams = {
       amountCents,
       currency,
       productName: 'Abonnement annuel TournArena',
@@ -263,7 +386,29 @@ export class OrganizationsService {
       // CreateCheckoutSessionParams.allowPromotionCodes for where that
       // coupon actually gets created and managed.
       allowPromotionCodes: true,
-    });
+    };
+    const launchCouponId =
+      await this.launchPromoSubscriptionCouponId(organizationId);
+    let session: Stripe.Checkout.Session;
+    if (launchCouponId) {
+      try {
+        session = await this.stripeService.createCheckoutSession({
+          ...checkoutParams,
+          couponId: launchCouponId,
+        });
+      } catch (error) {
+        // The coupon's own max_redemptions (the "50 premiers" cap) is
+        // reached, or it was deleted/expired in the Dashboard -- the offer
+        // is simply over, fall back to the regular price.
+        this.logger.warn(
+          `Launch coupon not applied for org ${organizationId}: ${(error as Error).message}`,
+        );
+        session =
+          await this.stripeService.createCheckoutSession(checkoutParams);
+      }
+    } else {
+      session = await this.stripeService.createCheckoutSession(checkoutParams);
+    }
 
     await this.prisma.organizationSubscription.update({
       where: { id: subscription.id },

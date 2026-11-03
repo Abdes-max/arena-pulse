@@ -10,6 +10,11 @@
       "login": "Iniciar sesión",
       "menu": "Menú"
     },
+    "launchPromo": {
+      "badge": "Oferta de lanzamiento",
+      "text": "3 primeros torneos gratis y -50 % en la suscripción anual para los 50 primeros, con el código",
+      "cta": "Lo quiero"
+    },
     "eyebrow": {
       "brand": "TournArena",
       "count": "{{count}} eventos deportivos publicados"
@@ -1335,6 +1340,16 @@
       "errors": {
         "loadStatus": "No se pudo cargar el estado de la suscripción.",
         "subscribe": "No se pudo suscribir, inténtalo de nuevo."
+      },
+      "promo": {
+        "title": "Código promocional",
+        "intro": "¿Tienes un código de lanzamiento? Introdúcelo para desbloquear tus ventajas.",
+        "label": "Código promocional",
+        "apply": "Aplicar",
+        "invalid": "Código promocional no válido o caducado.",
+        "activeBadge": "Oferta de lanzamiento activa",
+        "freeTournaments": "Torneos gratis restantes: {{remaining}} de {{total}} (publicados gratis, sea cual sea el número de equipos).",
+        "subscriptionDiscount": "-{{percent}} % aplicado automáticamente al pagar la suscripción anual (solo las 50 primeras suscripciones)."
       }
     },
     "subscriptionSuccess": {

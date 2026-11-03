@@ -69,6 +69,12 @@ model Organization {
   // organization can still reach support.
   suspendedAt DateTime?
 
+  // Set the first time an ORG_ADMIN redeems the launch promo code
+  // (LAUNCH_PROMO_CODE, see OrganizationsService.redeemLaunchPromo): unlocks
+  // LAUNCH_PROMO_FREE_TOURNAMENTS free publications and the Stripe launch
+  // coupon on the annual subscription. Null = never redeemed.
+  launchPromoRedeemedAt DateTime?
+
   members       OrganizationMember[]
   invitations   Invitation[]
   tournaments   Tournament[]
@@ -846,6 +852,10 @@ model TournamentPublicationOrder {
   // Both null when no coupon was applied.
   discountPercent         Int?
   discountAmountCents     Int?
+  // True when this order was covered by the launch promo (amountCents 0,
+  // discountPercent 100) rather than paid -- counted per tournament against
+  // LAUNCH_PROMO_FREE_TOURNAMENTS, see OrganizationsService.launchPromoCoversTournament.
+  launchPromo             Boolean                          @default(false)
   currency                String
   stripeCheckoutSessionId String?                          @unique
   stripePaymentIntentId   String?

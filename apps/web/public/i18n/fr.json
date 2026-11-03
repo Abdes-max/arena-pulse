@@ -10,6 +10,11 @@
       "login": "Connexion",
       "menu": "Menu"
     },
+    "launchPromo": {
+      "badge": "Offre de lancement",
+      "text": "3 premiers tournois offerts et -50 % sur l’abonnement annuel pour les 50 premiers, avec le code",
+      "cta": "J’en profite"
+    },
     "eyebrow": {
       "brand": "TournArena",
       "count": "{{count}} événements sportifs publiés"
@@ -1437,6 +1442,16 @@
       "errors": {
         "loadStatus": "Impossible de charger l'état de l'abonnement.",
         "subscribe": "Impossible de souscrire à l'abonnement, réessayez."
+      },
+      "promo": {
+        "title": "Code promo",
+        "intro": "Vous avez un code de lancement ? Saisissez-le pour débloquer vos avantages.",
+        "label": "Code promo",
+        "apply": "Appliquer",
+        "invalid": "Code promo invalide ou expiré.",
+        "activeBadge": "Offre de lancement active",
+        "freeTournaments": "Tournois offerts restants : {{remaining}} sur {{total}} (publiés gratuitement, quel que soit le nombre d’équipes).",
+        "subscriptionDiscount": "-{{percent}} % appliqués automatiquement au paiement de l’abonnement annuel (dans la limite des 50 premiers abonnements)."
       }
     },
     "subscriptionSuccess": {

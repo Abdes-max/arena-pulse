@@ -10,6 +10,11 @@
       "login": "Accedi",
       "menu": "Menu"
     },
+    "launchPromo": {
+      "badge": "Offerta di lancio",
+      "text": "Primi 3 tornei gratis e -50% sull’abbonamento annuale per i primi 50, con il codice",
+      "cta": "Approfittane"
+    },
     "eyebrow": {
       "brand": "TournArena",
       "count": "{{count}} eventi sportivi pubblicati"
@@ -1335,6 +1340,16 @@
       "errors": {
         "loadStatus": "Impossibile caricare lo stato dell'abbonamento.",
         "subscribe": "Impossibile sottoscrivere l'abbonamento, riprova."
+      },
+      "promo": {
+        "title": "Codice promozionale",
+        "intro": "Hai un codice di lancio? Inseriscilo per sbloccare i tuoi vantaggi.",
+        "label": "Codice promozionale",
+        "apply": "Applica",
+        "invalid": "Codice promozionale non valido o scaduto.",
+        "activeBadge": "Offerta di lancio attiva",
+        "freeTournaments": "Tornei gratuiti rimanenti: {{remaining}} su {{total}} (pubblicati gratis, qualunque sia il numero di squadre).",
+        "subscriptionDiscount": "-{{percent}}% applicato automaticamente al pagamento dell’abbonamento annuale (solo i primi 50 abbonamenti)."
       }
     },
     "subscriptionSuccess": {
