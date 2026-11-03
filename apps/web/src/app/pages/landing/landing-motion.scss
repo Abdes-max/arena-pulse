@@ -1,0 +1,261 @@
+// ================= Motion layer (scroll reveals, stats strip, ticker) --
+// same playbook as evolyfoot.com's vitrine (Kelto Studio), applied with this
+// page's own Ink & Signal tokens. Every effect below stops under
+// prefers-reduced-motion (block at the end), and nothing is hidden unless
+// the Reveal directive (landing-motion.ts) explicitly marks it pending. =================
+
+@keyframes landing-page-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+
+@keyframes landing-page-glow {
+  to {
+    transform: scale(1.12) translate(-3%, 4%);
+  }
+}
+
+@keyframes landing-page-float {
+  to {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes landing-page-shimmer {
+  to {
+    background-position: 200% center;
+  }
+}
+
+@keyframes landing-page-ticker {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.landing-page__hero::before {
+  animation: landing-page-glow 7s ease-in-out infinite alternate;
+}
+
+.landing-page__hero h1 em {
+  background-image: linear-gradient(
+    100deg,
+    var(--ap-color-signal),
+    var(--ap-color-ember),
+    var(--ap-color-signal)
+  );
+  background-size: 200% auto;
+  animation: landing-page-shimmer 6s linear infinite;
+}
+
+.landing-page__hero-inner > * {
+  animation: landing-page-rise 620ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+}
+
+@for $i from 2 through 5 {
+  .landing-page__hero-inner > :nth-child(#{$i}) {
+    animation-delay: #{($i - 1) * 80}ms;
+  }
+}
+
+.landing-page__marquee {
+  animation: landing-page-rise 760ms 400ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+}
+
+.landing-page__hero-figure {
+  animation: landing-page-float 5s ease-in-out infinite alternate;
+}
+
+.landing-page__hero-figure--right {
+  animation-delay: -2.5s;
+}
+
+// The hero figures' own transform (scaleX(-1) mirror) would be overwritten by
+// the float keyframes -- mirror the SVG's contents instead.
+.landing-page__hero-figure--left {
+  transform: none;
+
+  > * {
+    transform: scaleX(-1);
+    transform-origin: center;
+    transform-box: view-box;
+  }
+}
+
+.landing-page__cta {
+  transition:
+    filter var(--ap-motion-fast) var(--ap-easing-standard),
+    transform var(--ap-motion-fast) var(--ap-easing-standard),
+    box-shadow var(--ap-motion-fast) var(--ap-easing-standard);
+  box-shadow: 0 10px 30px -8px var(--ap-color-signal);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 36px -6px var(--ap-color-signal);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+// Stats strip -- pulled up over the hero's bottom padding so it reads as
+// the hinge between the dark brand moment and the themed page below.
+.landing-page__stats {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--ap-border-width);
+  max-width: 1000px;
+  margin: calc(var(--ap-space-8) * -1) auto var(--ap-space-8);
+  padding: 0;
+  overflow: hidden;
+  list-style: none;
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-lg);
+  background: var(--ap-color-border);
+  box-shadow: var(--ap-shadow-md);
+  animation: landing-page-rise 760ms 300ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+
+  li {
+    display: grid;
+    gap: var(--ap-space-1);
+    padding: var(--ap-space-4) var(--ap-space-6);
+    background: var(--ap-color-surface);
+    text-align: center;
+  }
+
+  strong {
+    font-family: var(--ap-font-heading);
+    font-size: clamp(1.9rem, 4vw, 2.6rem);
+    line-height: 1;
+    color: var(--ap-color-signal-text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  li:nth-child(even) strong {
+    color: var(--ap-color-ember);
+  }
+
+  span {
+    color: var(--ap-color-muted);
+    font-size: 0.82rem;
+  }
+}
+
+@media (max-width: 1048px) {
+  .landing-page__stats {
+    margin-inline: var(--ap-space-6);
+  }
+}
+
+@media (max-width: 720px) {
+  .landing-page__stats {
+    grid-template-columns: repeat(2, 1fr);
+    margin-inline: var(--ap-space-4);
+  }
+}
+
+// Slanted sport ticker.
+.landing-page__ticker {
+  overflow: hidden;
+  margin: 0 0 var(--ap-space-16);
+  padding: var(--ap-space-3) 0;
+  border-block: var(--ap-border-width) solid var(--ap-color-border);
+  background: var(--ap-color-signal-soft);
+  transform: rotate(-1.5deg) scale(1.03);
+}
+
+.landing-page__ticker-track {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-6);
+  width: max-content;
+  animation: landing-page-ticker 40s linear infinite;
+
+  span {
+    font-family: var(--ap-font-heading);
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    color: var(--ap-color-fg);
+  }
+
+  span:nth-child(4n + 3) {
+    color: var(--ap-color-ember);
+  }
+
+  .landing-page__ticker-sep {
+    font-size: 0.8rem;
+    color: var(--ap-color-signal-text);
+  }
+}
+
+// Cards: give the non-clickable articles a soft glow on hover (still no
+// lift, see .landing-page__feature's own comment), and fill the feature
+// mocks' progress bars when the card scrolls in.
+.landing-page__feature,
+.landing-page__pricing-tier {
+  transition:
+    border-color var(--ap-motion-fast) var(--ap-easing-standard),
+    box-shadow var(--ap-motion-base) var(--ap-easing-standard);
+
+  &:hover {
+    box-shadow: 0 18px 40px -18px var(--accent);
+  }
+}
+
+.landing-page__feature-mock-bar:not(.landing-page__feature-mock-bar--track) {
+  transform-origin: left center;
+  transition: transform 900ms 250ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.app-reveal--pending .landing-page__feature-mock-bar:not(.landing-page__feature-mock-bar--track) {
+  transform: scaleX(0);
+}
+
+.landing-page__feature-mock-dot {
+  animation: landing-page-pulse 2.4s ease-in-out infinite;
+}
+
+.landing-page__sport-icon {
+  transition: transform var(--ap-motion-base) var(--ap-easing-standard);
+}
+
+.landing-page__sport-card:hover .landing-page__sport-icon {
+  transform: rotate(-8deg) scale(1.08);
+}
+
+// Scroll reveal (see Reveal in landing-motion.ts).
+.app-reveal {
+  transition:
+    opacity 600ms ease var(--app-reveal-delay, 0ms),
+    transform 600ms cubic-bezier(0.2, 0.8, 0.2, 1) var(--app-reveal-delay, 0ms);
+}
+
+.app-reveal--pending {
+  opacity: 0;
+  transform: translateY(28px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-page__hero::before,
+  .landing-page__hero h1 em,
+  .landing-page__hero-inner > *,
+  .landing-page__marquee,
+  .landing-page__hero-figure,
+  .landing-page__stats,
+  .landing-page__ticker-track,
+  .landing-page__feature-mock-dot {
+    animation: none;
+  }
+
+  .app-reveal--pending {
+    opacity: 1;
+    transform: none;
+  }
+}

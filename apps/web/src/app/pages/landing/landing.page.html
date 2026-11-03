@@ -194,9 +194,34 @@
   }
 </header>
 
+<!-- Proof strip straddling the hero's bottom edge -- counts up once on
+     screen (appCountUp). Live numbers only where they're real data
+     (published tournaments, sports); the other two are product facts. -->
+<ul class="landing-page__stats">
+  <li>
+    <strong
+      [appCountUp]="tournaments().length"
+      [appCountUpSuffix]="tournamentCountSuffix()"
+    ></strong>
+    <span>{{ 'landing.stats.events' | transloco }}</span>
+  </li>
+  <li>
+    <strong [appCountUp]="sports().length"></strong>
+    <span>{{ 'landing.stats.sports' | transloco }}</span>
+  </li>
+  <li>
+    <strong [appCountUp]="languages.length"></strong>
+    <span>{{ 'landing.stats.languages' | transloco }}</span>
+  </li>
+  <li>
+    <strong [appCountUp]="8"></strong>
+    <span>{{ 'landing.stats.freeTeams' | transloco }}</span>
+  </li>
+</ul>
+
 @if (tournaments().length > 0) {
   <section id="tournois" class="landing-page__tournaments">
-    <h2>{{ 'landing.tournaments.title' | transloco }}</h2>
+    <h2 appReveal>{{ 'landing.tournaments.title' | transloco }}</h2>
     <ap-text-field
       class="landing-page__tournaments-search"
       type="search"
@@ -211,7 +236,12 @@
     } @else {
       <div class="landing-page__tournaments-grid">
         @for (t of filteredTournaments(); track t.id) {
-          <a class="landing-page__tournament-link" [routerLink]="['/', t.slug]">
+          <a
+            class="landing-page__tournament-link"
+            [routerLink]="['/', t.slug]"
+            appReveal
+            [appRevealDelay]="$index % 4"
+          >
             <ap-tournament-card
               [name]="t.name"
               [sportName]="t.sportName"
@@ -229,12 +259,12 @@
 }
 
 <section id="fonctionnalites" class="landing-page__features">
-  <h2>{{ 'landing.features.title' | transloco }}</h2>
+  <h2 appReveal>{{ 'landing.features.title' | transloco }}</h2>
   <p class="landing-page__features-lead">
     {{ 'landing.features.lead' | transloco }}
   </p>
   <div class="landing-page__feature-grid">
-    <article class="landing-page__feature" data-accent="signal">
+    <article class="landing-page__feature" appReveal [appRevealDelay]="0" data-accent="signal">
       <div class="landing-page__feature-mock" aria-hidden="true">
         <div class="landing-page__feature-mock-row">
           <span class="landing-page__feature-mock-dot"></span>
@@ -256,7 +286,7 @@
       </p>
     </article>
 
-    <article class="landing-page__feature" data-accent="ember">
+    <article class="landing-page__feature" appReveal [appRevealDelay]="1" data-accent="ember">
       <div class="landing-page__feature-mock" aria-hidden="true">
         <div class="landing-page__feature-mock-row">
           <span class="landing-page__feature-mock-dot"></span>
@@ -278,7 +308,7 @@
       </p>
     </article>
 
-    <article class="landing-page__feature" data-accent="signal">
+    <article class="landing-page__feature" appReveal [appRevealDelay]="0" data-accent="signal">
       <div class="landing-page__feature-mock" aria-hidden="true">
         <div class="landing-page__feature-mock-row">
           <span class="landing-page__feature-mock-dot"></span>
@@ -302,7 +332,7 @@
       </p>
     </article>
 
-    <article class="landing-page__feature" data-accent="ember">
+    <article class="landing-page__feature" appReveal [appRevealDelay]="1" data-accent="ember">
       <div class="landing-page__feature-mock" aria-hidden="true">
         <div class="landing-page__feature-mock-row">
           <span class="landing-page__feature-mock-dot"></span>
@@ -324,7 +354,7 @@
       </p>
     </article>
 
-    <article class="landing-page__feature" data-accent="signal">
+    <article class="landing-page__feature" appReveal [appRevealDelay]="0" data-accent="signal">
       <div class="landing-page__feature-mock" aria-hidden="true">
         <div class="landing-page__feature-mock-row">
           <span class="landing-page__feature-mock-dot"></span>
@@ -359,8 +389,24 @@
   </div>
 </section>
 
+<!-- Slanted sport-name ticker between features and sports, rendered twice
+     back to back so the -50% translate loops seamlessly. Decorative: the
+     same names are listed (and linked) in the grid right below. -->
+@if (sports().length > 0) {
+  <div class="landing-page__ticker" aria-hidden="true">
+    <div class="landing-page__ticker-track">
+      @for (pass of [0, 1]; track pass) {
+        @for (sport of sports(); track sport.id) {
+          <span>{{ sport.name }}</span>
+          <span class="landing-page__ticker-sep">✦</span>
+        }
+      }
+    </div>
+  </div>
+}
+
 <section id="sports" class="landing-page__sports">
-  <h2>{{ 'landing.sports.title' | transloco }}</h2>
+  <h2 appReveal>{{ 'landing.sports.title' | transloco }}</h2>
   <p class="landing-page__sports-lead">
     {{ 'landing.sports.lead' | transloco }}
   </p>
@@ -368,6 +414,8 @@
     @for (sport of sports(); track sport.id; let i = $index) {
       <a
         class="landing-page__sport-card"
+        appReveal
+        [appRevealDelay]="i % 3"
         [attr.data-accent]="i % 2 === 0 ? 'signal' : 'ember'"
         href="#tournois"
         (click)="onSportNavClick(sport.name)"
@@ -528,12 +576,12 @@
 </section>
 
 <section id="tarifs" class="landing-page__pricing">
-  <h2>{{ 'landing.pricing.title' | transloco }}</h2>
+  <h2 appReveal>{{ 'landing.pricing.title' | transloco }}</h2>
   <p class="landing-page__pricing-lead">
     {{ 'landing.pricing.lead' | transloco }}
   </p>
   <div class="landing-page__pricing-grid">
-    <article class="landing-page__pricing-tier">
+    <article class="landing-page__pricing-tier" appReveal [appRevealDelay]="0">
       <span class="landing-page__pricing-tier-tag">{{
         'landing.pricing.free.tag' | transloco
       }}</span>
@@ -590,7 +638,7 @@
       </ul>
     </article>
 
-    <article class="landing-page__pricing-tier" data-accent="signal">
+    <article class="landing-page__pricing-tier" appReveal [appRevealDelay]="1" data-accent="signal">
       <span class="landing-page__pricing-tier-tag">{{
         'landing.pricing.standard.tag' | transloco
       }}</span>
@@ -633,7 +681,7 @@
       </ul>
     </article>
 
-    <article class="landing-page__pricing-tier" data-accent="ember">
+    <article class="landing-page__pricing-tier" appReveal [appRevealDelay]="2" data-accent="ember">
       <span class="landing-page__pricing-tier-tag">{{
         'landing.pricing.large.tag' | transloco
       }}</span>
@@ -667,7 +715,12 @@
       </ul>
     </article>
 
-    <article class="landing-page__pricing-tier" data-accent="signal-fill">
+    <article
+      class="landing-page__pricing-tier"
+      appReveal
+      [appRevealDelay]="3"
+      data-accent="signal-fill"
+    >
       <span class="landing-page__pricing-tier-tag">{{
         'landing.pricing.subscription.tag' | transloco
       }}</span>
@@ -710,7 +763,7 @@
   </div>
 </section>
 
-<section class="landing-page__stores">
+<section class="landing-page__stores" appReveal>
   <h2>{{ 'landing.stores.title' | transloco }}</h2>
   <p>
     {{ 'landing.stores.desc' | transloco }}
@@ -734,7 +787,7 @@
   </div>
 </section>
 
-<footer class="landing-page__final-cta">
+<footer class="landing-page__final-cta" appReveal>
   <h2>{{ 'landing.finalCta.title' | transloco }}</h2>
   <a class="landing-page__cta" routerLink="/register">{{ 'landing.hero.ctaCreate' | transloco }}</a>
 </footer>
