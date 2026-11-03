@@ -76,7 +76,7 @@ export class RegistrationsService {
     const session = await this.stripeService.createCheckoutSession({
       amountCents,
       currency,
-      productName: `Inscription — ${category.name} — ${dto.teamName}`,
+      productName: `Inscription - ${category.name} - ${dto.teamName}`,
       successUrl: `${webUrl}/${slug}/register/success?session_id={CHECKOUT_SESSION_ID}`,
       cancelUrl: `${webUrl}/${slug}/register?cancelled=1`,
       metadata: { registrationId: registration.id },
