@@ -107,12 +107,15 @@ services:
       TOURNAMENT_PUBLICATION_TIER_HIGH_PRICE_CENTS: ${TOURNAMENT_PUBLICATION_TIER_HIGH_PRICE_CENTS:-0}
       ORGANIZATION_ANNUAL_SUBSCRIPTION_PRICE_CENTS: ${ORGANIZATION_ANNUAL_SUBSCRIPTION_PRICE_CENTS:-0}
       # Launch offer (OrganizationsService.redeemLaunchPromo) -- see
-      # .env.example for what each one does. An empty coupon id simply
-      # leaves the subscription discount off.
+      # .env.example for what each one does. The coupon id (live Stripe
+      # coupon, -50% once, max 50 redemptions) is not a secret -- it is only
+      # usable with STRIPE_SECRET_KEY -- so it defaults here; a value in the
+      # server .env overrides it. Once its 50 redemptions are used up, Stripe
+      # refuses it and subscribe() falls back to the regular price.
       LAUNCH_PROMO_CODE: ${LAUNCH_PROMO_CODE:-TOURNARENA2026}
       LAUNCH_PROMO_FREE_TOURNAMENTS: ${LAUNCH_PROMO_FREE_TOURNAMENTS:-3}
       LAUNCH_PROMO_ENDS_AT: ${LAUNCH_PROMO_ENDS_AT:-}
-      STRIPE_LAUNCH_SUBSCRIPTION_COUPON_ID: ${STRIPE_LAUNCH_SUBSCRIPTION_COUPON_ID:-}
+      STRIPE_LAUNCH_SUBSCRIPTION_COUPON_ID: ${STRIPE_LAUNCH_SUBSCRIPTION_COUPON_ID:-ZWO28iwV}
       LAUNCH_PROMO_SUBSCRIPTION_DISCOUNT_PERCENT: ${LAUNCH_PROMO_SUBSCRIPTION_DISCOUNT_PERCENT:-50}
       # Team logos (feat/045) -- must match the volume mount below, and
       # infra/docker/api.Dockerfile's WORKDIR (/app).
