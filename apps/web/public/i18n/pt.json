@@ -25,6 +25,12 @@
     "marquee": {
       "label": "A acontecer agora na TournArena"
     },
+    "stats": {
+      "events": "eventos publicados",
+      "sports": "desportos abrangidos",
+      "languages": "idiomas",
+      "freeTeams": "equipas grátis por torneio"
+    },
     "tournaments": {
       "title": "Eventos publicados",
       "searchLabel": "Procurar um torneio",

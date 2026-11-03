@@ -25,6 +25,12 @@
     "marquee": {
       "label": "In questo momento su TournArena"
     },
+    "stats": {
+      "events": "eventi pubblicati",
+      "sports": "sport coperti",
+      "languages": "lingue",
+      "freeTeams": "squadre gratuite per torneo"
+    },
     "tournaments": {
       "title": "Eventi pubblicati",
       "searchLabel": "Cerca un torneo",

@@ -25,6 +25,12 @@
     "marquee": {
       "label": "Happening now on TournArena"
     },
+    "stats": {
+      "events": "published events",
+      "sports": "sports covered",
+      "languages": "languages",
+      "freeTeams": "free teams per tournament"
+    },
     "tournaments": {
       "title": "Published events",
       "searchLabel": "Search a tournament",

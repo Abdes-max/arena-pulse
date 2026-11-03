@@ -21,6 +21,7 @@ import {
 } from 'design-tokens';
 import { PublicSport, PublicTournamentSummary, isTournamentCurrentOrUpcoming } from 'shared-models';
 import { AuthService } from '../../admin/core/auth.service';
+import { CountUp, Reveal } from './landing-motion';
 
 // One concrete, product-true detail per sport (not interchangeable filler)
 // for the #sports section -- each names a real TournArena capability
@@ -62,9 +63,11 @@ const APP_STORE_URL = 'https://apps.apple.com/app/tournarena/id6800457795';
     TournamentMarquee,
     TextField,
     TranslocoPipe,
+    Reveal,
+    CountUp,
   ],
   templateUrl: './landing.page.html',
-  styleUrl: './landing.page.scss',
+  styleUrls: ['./landing.page.scss', './landing-motion.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LandingPage {
@@ -126,6 +129,12 @@ export class LandingPage {
     this.tournaments()
       .filter((t) => isTournamentCurrentOrUpcoming(t))
       .map((t) => ({ ...t, logoUrl: this.logoUrl(t.logoUrl) })),
+  );
+
+  // listTournaments(50) caps the fetch, so a full page means "at least 50"
+  // -- shown as "50+" in the stats strip rather than understating it.
+  protected readonly tournamentCountSuffix = computed(() =>
+    this.tournaments().length >= 50 ? '+' : '',
   );
 
   constructor() {
