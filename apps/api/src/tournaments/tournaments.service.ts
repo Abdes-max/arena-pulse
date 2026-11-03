@@ -211,6 +211,7 @@ export class TournamentsService {
       tierCents: order.tierCents,
       discountPercent: order.discountPercent,
       discountAmountCents: order.discountAmountCents,
+      launchPromo: order.launchPromo,
       currency: order.currency,
       createdAt: order.createdAt,
       paidAt: order.paidAt,
@@ -263,9 +264,18 @@ export class TournamentsService {
       ? 0
       : this.computePublicationFeeCents(teamsCount);
     const alreadyPaidCents = paidTotal._sum.tierCents ?? 0;
+    const gapCents = Math.max(0, requiredCents - alreadyPaidCents);
+    // Same check publish() makes before charging -- a gap the launch promo
+    // will cover costs the organizer nothing.
+    const coveredByLaunchPromo =
+      gapCents > 0 &&
+      (await this.organizationsService.launchPromoCoversTournament(
+        organizationId,
+        tournamentId,
+      ));
     return {
       teamsCount,
-      amountCents: Math.max(0, requiredCents - alreadyPaidCents),
+      amountCents: coveredByLaunchPromo ? 0 : gapCents,
       currency: 'eur',
     };
   }
@@ -342,6 +352,16 @@ export class TournamentsService {
       return this.setStatus(tournamentId, TournamentStatus.PUBLISHED);
     }
 
+    if (
+      await this.coverWithLaunchPromo(organizationId, tournamentId, {
+        categoriesCount,
+        teamsCount,
+        amountCents,
+        currency,
+      })
+    ) {
+      return this.setStatus(tournamentId, TournamentStatus.PUBLISHED);
+    }
     return this.createPendingPublicationCheckout(tournament, {
       categoriesCount,
       teamsCount,
@@ -501,6 +521,16 @@ export class TournamentsService {
     }
 
     const amountCents = requiredCents - alreadyPaidCents;
+    if (
+      await this.coverWithLaunchPromo(organizationId, tournamentId, {
+        categoriesCount,
+        teamsCount: prospectiveTeamsCount,
+        amountCents,
+        currency,
+      })
+    ) {
+      return { status: 'PUBLISHED' };
+    }
     return this.createPendingPublicationCheckout(tournament, {
       categoriesCount,
       teamsCount: prospectiveTeamsCount,
@@ -564,6 +594,16 @@ export class TournamentsService {
     }
 
     const amountCents = requiredCents - alreadyPaidCents;
+    if (
+      await this.coverWithLaunchPromo(organizationId, tournamentId, {
+        categoriesCount,
+        teamsCount,
+        amountCents,
+        currency,
+      })
+    ) {
+      return { status: 'PUBLISHED' };
+    }
     return this.createPendingPublicationCheckout(tournament, {
       categoriesCount,
       teamsCount,
@@ -572,6 +612,49 @@ export class TournamentsService {
       currency,
       isUpgrade: alreadyPaidCents > 0,
     });
+  }
+
+  /**
+   * Launch offer (see OrganizationsService.redeemLaunchPromo): when the
+   * organization's promo covers this tournament, records the gap as a $0
+   * PAID order instead of starting a Stripe checkout -- tierCents still
+   * carries the full gap, so the tier counts as unlocked everywhere it's
+   * summed (same reasoning as a 100%-off Stripe coupon), and launchPromo
+   * marks the tournament as having consumed one of the free slots.
+   */
+  private async coverWithLaunchPromo(
+    organizationId: string,
+    tournamentId: string,
+    data: {
+      categoriesCount: number;
+      teamsCount: number;
+      amountCents: number;
+      currency: string;
+    },
+  ): Promise<boolean> {
+    if (
+      !(await this.organizationsService.launchPromoCoversTournament(
+        organizationId,
+        tournamentId,
+      ))
+    ) {
+      return false;
+    }
+    await this.prisma.tournamentPublicationOrder.create({
+      data: {
+        tournamentId,
+        status: TournamentPublicationOrderStatus.PAID,
+        categoriesCount: data.categoriesCount,
+        teamsCount: data.teamsCount,
+        amountCents: 0,
+        tierCents: data.amountCents,
+        discountPercent: 100,
+        launchPromo: true,
+        currency: data.currency,
+        paidAt: new Date(),
+      },
+    });
+    return true;
   }
 
   /** Called by PaymentsWebhookController after Stripe signature verification. */

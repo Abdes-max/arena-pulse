@@ -18,6 +18,11 @@ export interface CreateCheckoutSessionParams {
   // track. Left off (undefined/false) by default so existing callers keep
   // today's behavior unchanged.
   allowPromotionCodes?: boolean;
+  // Pre-applies this Stripe coupon (e.g. the launch offer's
+  // STRIPE_LAUNCH_SUBSCRIPTION_COUPON_ID) -- Stripe rejects the session if
+  // the coupon is exhausted. Mutually exclusive with allowPromotionCodes on
+  // Stripe's side, so it takes precedence when both are given.
+  couponId?: string;
 }
 
 /**
@@ -52,7 +57,9 @@ export class StripeService {
       success_url: params.successUrl,
       cancel_url: params.cancelUrl,
       metadata: params.metadata,
-      allow_promotion_codes: params.allowPromotionCodes,
+      ...(params.couponId
+        ? { discounts: [{ coupon: params.couponId }] }
+        : { allow_promotion_codes: params.allowPromotionCodes }),
     });
   }
 

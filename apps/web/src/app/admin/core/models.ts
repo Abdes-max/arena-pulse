@@ -298,3 +298,13 @@ export interface CrossGroupQualificationRule {
   targetPhaseId: string;
   targetPhaseName: string;
 }
+
+// Launch offer state for one organization -- see the API's
+// OrganizationsService.redeemLaunchPromo. subscriptionDiscountPercent is
+// null when no Stripe launch coupon is configured.
+export interface LaunchPromoStatus {
+  redeemed: boolean;
+  freeTournamentsTotal: number;
+  freeTournamentsRemaining: number;
+  subscriptionDiscountPercent: number | null;
+}

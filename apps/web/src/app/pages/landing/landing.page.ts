@@ -67,7 +67,7 @@ const APP_STORE_URL = 'https://apps.apple.com/app/tournarena/id6800457795';
     CountUp,
   ],
   templateUrl: './landing.page.html',
-  styleUrls: ['./landing.page.scss', './landing-motion.scss'],
+  styleUrls: ['./landing.page.scss', './landing-motion.scss', './landing-promo.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LandingPage {

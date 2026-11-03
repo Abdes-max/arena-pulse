@@ -1,0 +1,72 @@
+// Launch offer pill at the top of the hero (always dark, Ink & Signal) --
+// ember-tinted so it reads as an event, distinct from the signal-cyan CTA.
+.landing-page__launch-promo {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ap-space-2) var(--ap-space-3);
+  max-width: 100%;
+  margin: 0 auto var(--ap-space-6);
+  padding: var(--ap-space-2) var(--ap-space-4) var(--ap-space-2) var(--ap-space-2);
+  border: var(--ap-border-width) solid var(--ap-color-ember);
+  border-radius: 999px;
+  background:
+    linear-gradient(100deg, var(--ap-color-ember-soft), transparent 60%), var(--ap-color-surface);
+  color: var(--ap-color-fg);
+  font-size: 0.85rem;
+  text-decoration: none;
+  box-shadow: 0 0 0 0 var(--ap-color-ember-soft);
+  animation: landing-page-promo-glow 2.6s ease-in-out infinite;
+  transition: transform var(--ap-motion-fast) var(--ap-easing-standard);
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+
+  strong {
+    font-family: var(--ap-font-heading);
+    letter-spacing: 0.06em;
+    color: var(--ap-color-ember);
+    margin-left: var(--ap-space-1);
+    padding: 1px var(--ap-space-2);
+    border: 1px dashed var(--ap-color-ember);
+    border-radius: var(--ap-radius-md);
+    white-space: nowrap;
+  }
+}
+
+.landing-page__launch-promo-badge {
+  padding: 2px var(--ap-space-3);
+  border-radius: 999px;
+  background: var(--ap-color-ember);
+  color: var(--ap-color-bg);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.landing-page__launch-promo-cta {
+  font-weight: 700;
+  color: var(--ap-color-signal);
+}
+
+@keyframes landing-page-promo-glow {
+  50% {
+    box-shadow: 0 0 0 6px transparent;
+  }
+}
+
+@media (max-width: 560px) {
+  .landing-page__launch-promo {
+    border-radius: var(--ap-radius-lg);
+    padding: var(--ap-space-3);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-page__launch-promo {
+    animation: none;
+  }
+}

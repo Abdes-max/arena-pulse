@@ -104,6 +104,70 @@
     color: #7dd3fc;
   }
 
+  /* Deux offres côte à côte + coupon (TOURNARENA2026). */
+  .offers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-top: 44px;
+  }
+
+  .offers .pct {
+    font-size: 180px;
+  }
+
+  .offers .pct-signal {
+    background: linear-gradient(100deg, #38bdf8, #a5e4ff 55%, #38bdf8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    filter: drop-shadow(0 24px 50px rgba(56, 189, 248, 0.25));
+  }
+
+  .offers .sub {
+    font-size: 38px;
+    line-height: 1.1;
+  }
+
+  .offer-note {
+    margin-top: 18px;
+    font-size: 22px;
+    color: #9aa6bd;
+    max-width: 24ch;
+  }
+
+  .offers .scarcity {
+    margin-top: 18px;
+    padding: 10px 20px;
+    font-size: 21px;
+  }
+
+  .coupon {
+    margin-top: 34px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 22px 30px;
+    border: 3px dashed #f5b942;
+    border-radius: 22px;
+    background: rgba(245, 185, 66, 0.08);
+  }
+
+  .coupon-label {
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #fbd28a;
+  }
+
+  .coupon-code {
+    font-family: 'Space Grotesk', -apple-system, 'Segoe UI', sans-serif;
+    font-weight: 800;
+    font-size: 58px;
+    letter-spacing: 0.06em;
+    color: #ffffff;
+  }
+
   .scarcity .dot {
     width: 10px;
     height: 10px;
@@ -113,14 +177,14 @@
   }
 
   .argument {
-    margin-top: 64px;
+    margin-top: 34px;
     display: flex;
     align-items: center;
     gap: 40px;
     background: #141b2e;
     border: 1px solid #1f2a44;
     border-radius: 28px;
-    padding: 40px 44px;
+    padding: 30px 40px;
   }
 
   .argument-copy {
@@ -205,7 +269,7 @@
   }
 
   .features {
-    margin-top: 32px;
+    margin-top: 26px;
     display: flex;
     gap: 14px;
     flex-wrap: wrap;
@@ -224,6 +288,7 @@
   .spacer { flex: 1; }
 
   .bottom {
+    margin-top: 28px;
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
@@ -275,18 +340,29 @@
     </div>
   </div>
 
-  <div class="hero">
-    <div class="pct">-50%</div>
-    <div class="sub">sur l'abonnement annuel organisateur</div>
+  <div class="hero offers">
+    <div class="offer">
+      <div class="pct pct-signal">3</div>
+      <div class="sub">premiers tournois<br />offerts</div>
+      <div class="offer-note">par organisateur, quel que soit le nombre d'équipes</div>
+    </div>
+    <div class="offer">
+      <div class="pct">-50%</div>
+      <div class="sub">sur l'abonnement<br />annuel</div>
+      <div class="scarcity"><span class="dot"></span> 50 premiers abonnements</div>
+    </div>
   </div>
 
-  <div class="scarcity"><span class="dot"></span> Réservé aux 50 premiers organisateurs</div>
+  <div class="coupon">
+    <span class="coupon-label">Code promo</span>
+    <span class="coupon-code">TOURNARENA2026</span>
+  </div>
 
   <div class="argument">
     <div class="argument-copy">
       <div class="label">L'argument qui compte</div>
       <h2>Classements en direct.<br />Zéro rafraîchissement.</h2>
-      <p>Le score est saisi côté organisateur — le public le voit à l'instant, sur le site du tournoi.</p>
+      <p>Le score est saisi côté organisateur, le public le voit à l'instant, sur le site du tournoi.</p>
     </div>
     <div class="mock">
       <div class="mock-top">
@@ -310,7 +386,7 @@
   <div class="bottom">
     <div>
       <div class="cta">tournarena.com</div>
-      <div class="fine-print">Offre limitée aux 50 premières organisations abonnées. Non cumulable.</div>
+      <div class="fine-print">Code à saisir dans votre espace organisateur (Abonnement). -50 % limité aux 50 premiers abonnements annuels. Non cumulable.</div>
     </div>
     <div class="credit">
       <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxMDAgMTAwIj4NCiAgPGRlZnM+DQogICAgPGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+DQogICAgICA8c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiNlM2E0NjMiIC8+DQogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNiODU5MmYiIC8+DQogICAgPC9saW5lYXJHcmFkaWVudD4NCiAgICA8Y2xpcFBhdGggaWQ9ImMiPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiByeD0iMjQiIC8+PC9jbGlwUGF0aD4NCiAgPC9kZWZzPg0KICA8ZyBjbGlwLXBhdGg9InVybCgjYykiPg0KICAgIDxyZWN0IHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIiBmaWxsPSJ1cmwoI2cpIiAvPg0KICAgIDxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDUwLDUwKSBzY2FsZSgwLjc0KSB0cmFuc2xhdGUoLTUwLC01MCkiPg0KICAgICAgPGcgc3Ryb2tlPSIjN2EzZjFlIiBzdHJva2Utb3BhY2l0eT0iMC41IiBzdHJva2Utd2lkdGg9IjE3IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGZpbGw9Im5vbmUiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDQsNSkiPg0KICAgICAgICA8cGF0aCBkPSJNMzAgMjIgTDMwIDc4IiAvPg0KICAgICAgICA8cGF0aCBkPSJNMzAgNTIgTDY4IDIwIiAvPg0KICAgICAgICA8cGF0aCBkPSJNMzAgNTAgTDcwIDgwIiAvPg0KICAgICAgPC9nPg0KICAgICAgPGcgc3Ryb2tlPSIjMTQxNjFhIiBzdHJva2Utd2lkdGg9IjE3IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIGZpbGw9Im5vbmUiPg0KICAgICAgICA8cGF0aCBkPSJNMzAgMjIgTDMwIDc4IiAvPg0KICAgICAgICA8cGF0aCBkPSJNMzAgNTIgTDY4IDIwIiAvPg0KICAgICAgICA8cGF0aCBkPSJNMzAgNTAgTDcwIDgwIiAvPg0KICAgICAgPC9nPg0KICAgICAgPGcgc3Ryb2tlPSIjMTQxNjFhIiBzdHJva2Utd2lkdGg9IjciIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgZmlsbD0ibm9uZSI+DQogICAgICAgIDxwYXRoIGQ9Ik03NCAyOCBMODUgMTkiIG9wYWNpdHk9IjAuNTUiIC8+DQogICAgICAgIDxwYXRoIGQ9Ik04MSAzNSBMODkgMjkiIG9wYWNpdHk9IjAuMyIgLz4NCiAgICAgIDwvZz4NCiAgICA8L2c+DQogIDwvZz4NCjwvc3ZnPg0K" alt="" />

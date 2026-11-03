@@ -182,7 +182,7 @@ export function MatchRecap({
                 alignSelf: 'center',
               }}
             >
-              —
+              -
             </span>
             <TeamRow
               name={awayTeamName}

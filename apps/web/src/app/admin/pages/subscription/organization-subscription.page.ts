@@ -7,15 +7,19 @@ import {
   signal,
 } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { Badge, Button } from 'design-system';
+import { Badge, Button, TextField } from 'design-system';
 import { DEFAULT_THEME, LanguageService, ThemeService } from 'design-tokens';
 import { AuthService } from '../../core/auth.service';
-import { OrganizationSubscriptionStatus, SubscriptionHistoryEntry } from '../../core/models';
+import {
+  LaunchPromoStatus,
+  OrganizationSubscriptionStatus,
+  SubscriptionHistoryEntry,
+} from '../../core/models';
 import { OrganizationsService } from '../../core/organizations.service';
 
 @Component({
   selector: 'app-organization-subscription-page',
-  imports: [Badge, Button, TranslocoPipe],
+  imports: [Badge, Button, TextField, TranslocoPipe],
   templateUrl: './organization-subscription.page.html',
   styleUrl: './organization-subscription.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -38,6 +42,13 @@ export class OrganizationSubscriptionPage {
   protected readonly history = signal<SubscriptionHistoryEntry[]>([]);
   protected readonly historyLoading = signal(true);
   protected readonly printingEntry = signal<SubscriptionHistoryEntry | null>(null);
+
+  // Launch offer code (TOURNARENA2026) -- see the API's
+  // OrganizationsService.redeemLaunchPromo for what it unlocks.
+  protected readonly launchPromo = signal<LaunchPromoStatus | null>(null);
+  protected readonly promoCode = signal('');
+  protected readonly redeemingPromo = signal(false);
+  protected readonly promoError = signal<string | null>(null);
 
   constructor() {
     void this.load();
@@ -66,6 +77,37 @@ export class OrganizationSubscriptionPage {
       this.loading.set(false);
     }
     void this.loadHistory();
+    void this.loadLaunchPromo();
+  }
+
+  private async loadLaunchPromo(): Promise<void> {
+    const organizationId = this.organization()?.id;
+    if (!organizationId || !this.isAdmin()) {
+      return;
+    }
+    try {
+      this.launchPromo.set(await this.organizationsService.getLaunchPromoStatus(organizationId));
+    } catch {
+      // Non-blocking, same as the history table: the code field still works.
+    }
+  }
+
+  protected async redeemPromo(): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const code = this.promoCode().trim();
+    if (!organizationId || !code || this.redeemingPromo()) {
+      return;
+    }
+    this.redeemingPromo.set(true);
+    this.promoError.set(null);
+    try {
+      this.launchPromo.set(await this.organizationsService.redeemLaunchPromo(organizationId, code));
+      this.promoCode.set('');
+    } catch {
+      this.promoError.set('admin.subscription.promo.invalid');
+    } finally {
+      this.redeemingPromo.set(false);
+    }
   }
 
   private async loadHistory(): Promise<void> {
@@ -122,7 +164,7 @@ export class OrganizationSubscriptionPage {
 
   protected formatDate(iso: string | null): string {
     if (!iso) {
-      return '—';
+      return '-';
     }
     return new Date(iso).toLocaleDateString(this.languageService.language(), {
       day: 'numeric',

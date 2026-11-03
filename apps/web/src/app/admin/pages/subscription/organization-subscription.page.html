@@ -59,6 +59,53 @@
       }
 
       @if (isAdmin()) {
+        <section class="subscription-page__card subscription-page__promo">
+          <h2>{{ 'admin.subscription.promo.title' | transloco }}</h2>
+          @if (launchPromo()?.redeemed) {
+            <ap-badge
+              status="published"
+              [label]="'admin.subscription.promo.activeBadge' | transloco"
+            />
+            <p>
+              {{
+                'admin.subscription.promo.freeTournaments'
+                  | transloco
+                    : {
+                        remaining: launchPromo()!.freeTournamentsRemaining,
+                        total: launchPromo()!.freeTournamentsTotal,
+                      }
+              }}
+            </p>
+            @if (launchPromo()!.subscriptionDiscountPercent; as percent) {
+              <p class="subscription-page__note">
+                {{ 'admin.subscription.promo.subscriptionDiscount' | transloco: { percent } }}
+              </p>
+            }
+          } @else {
+            <p class="subscription-page__note">
+              {{ 'admin.subscription.promo.intro' | transloco }}
+            </p>
+            <form
+              class="subscription-page__promo-form"
+              (submit)="$event.preventDefault(); redeemPromo()"
+            >
+              <ap-text-field
+                [label]="'admin.subscription.promo.label' | transloco"
+                [hideLabel]="true"
+                placeholder="TOURNARENA2026"
+                [value]="promoCode()"
+                (valueChange)="promoCode.set($event)"
+              />
+              <ap-button type="submit" [disabled]="redeemingPromo() || !promoCode().trim()">
+                {{ 'admin.subscription.promo.apply' | transloco }}
+              </ap-button>
+            </form>
+            @if (promoError(); as message) {
+              <p class="subscription-page__error" role="alert">{{ message | transloco }}</p>
+            }
+          }
+        </section>
+
         <section class="subscription-page__history">
           <h2>{{ 'admin.subscription.history.title' | transloco }}</h2>
           @if (historyLoading()) {

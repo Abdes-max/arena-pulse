@@ -9,6 +9,7 @@ import {
   PendingInvitation,
   SubscribeResult,
   SubscriptionHistoryEntry,
+  LaunchPromoStatus,
 } from './models';
 
 @Injectable({ providedIn: 'root' })
@@ -115,6 +116,23 @@ export class OrganizationsService {
     return firstValueFrom(
       this.http.get<SubscriptionHistoryEntry[]>(
         `${environment.apiUrl}/organizations/${organizationId}/subscription/history`,
+      ),
+    );
+  }
+
+  getLaunchPromoStatus(organizationId: string): Promise<LaunchPromoStatus> {
+    return firstValueFrom(
+      this.http.get<LaunchPromoStatus>(
+        `${environment.apiUrl}/organizations/${organizationId}/launch-promo`,
+      ),
+    );
+  }
+
+  redeemLaunchPromo(organizationId: string, code: string): Promise<LaunchPromoStatus> {
+    return firstValueFrom(
+      this.http.post<LaunchPromoStatus>(
+        `${environment.apiUrl}/organizations/${organizationId}/launch-promo`,
+        { code },
       ),
     );
   }

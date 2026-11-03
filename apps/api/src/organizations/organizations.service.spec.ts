@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   NotFoundException,
@@ -16,7 +17,8 @@ import { RevenueCatService } from '../payments/revenuecat.service';
 import { OrganizationsService } from './organizations.service';
 
 type PrismaMock = {
-  organization: { findUnique: jest.Mock };
+  organization: { findUnique: jest.Mock; updateMany: jest.Mock };
+  tournamentPublicationOrder: { findFirst: jest.Mock; groupBy: jest.Mock };
   organizationMember: {
     findUnique: jest.Mock;
     findMany: jest.Mock;
@@ -35,7 +37,8 @@ type PrismaMock = {
 
 function createPrismaMock(): PrismaMock {
   return {
-    organization: { findUnique: jest.fn() },
+    organization: { findUnique: jest.fn(), updateMany: jest.fn() },
+    tournamentPublicationOrder: { findFirst: jest.fn(), groupBy: jest.fn() },
     organizationMember: {
       findUnique: jest.fn(),
       findMany: jest.fn(),
@@ -787,6 +790,181 @@ describe('OrganizationsService', () => {
           service.confirmSubscriptionPaymentViaIap('org-1', 'user-1'),
         ).rejects.toBeInstanceOf(ConflictException);
         expect(prisma.organizationSubscription.create).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('launch promo', () => {
+    function promoService(overrides: Record<string, string> = {}) {
+      return new OrganizationsService(
+        prisma as unknown as PrismaService,
+        stripeService as unknown as StripeService,
+        createRevenueCatServiceMock() as unknown as RevenueCatService,
+        createConfigServiceMock({
+          ORGANIZATION_ANNUAL_SUBSCRIPTION_PRICE_CENTS: '15900',
+          STRIPE_LAUNCH_SUBSCRIPTION_COUPON_ID: 'coupon_launch50',
+          ...overrides,
+        }),
+        mailService as unknown as MailService,
+      );
+    }
+
+    it('redeems the code case-insensitively, once per organization', async () => {
+      prisma.organization.findUnique.mockResolvedValue({
+        id: 'org-1',
+        suspendedAt: null,
+        launchPromoRedeemedAt: new Date(),
+      });
+      prisma.tournamentPublicationOrder.groupBy.mockResolvedValue([
+        { tournamentId: 't-1' },
+      ]);
+
+      const status = await promoService().redeemLaunchPromo(
+        'org-1',
+        ' tournarena2026 ',
+      );
+
+      const [[updateCall]] = prisma.organization.updateMany.mock.calls as [
+        [{ where: unknown; data: { launchPromoRedeemedAt: unknown } }],
+      ];
+      expect(updateCall.where).toEqual({
+        id: 'org-1',
+        launchPromoRedeemedAt: null,
+      });
+      expect(updateCall.data.launchPromoRedeemedAt).toBeInstanceOf(Date);
+      expect(status).toEqual({
+        redeemed: true,
+        freeTournamentsTotal: 3,
+        freeTournamentsRemaining: 2,
+        subscriptionDiscountPercent: 50,
+      });
+    });
+
+    it('rejects a wrong code', async () => {
+      await expect(
+        promoService().redeemLaunchPromo('org-1', 'NOPE'),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(prisma.organization.updateMany).not.toHaveBeenCalled();
+    });
+
+    it('rejects the right code once LAUNCH_PROMO_ENDS_AT has passed', async () => {
+      await expect(
+        promoService({
+          LAUNCH_PROMO_ENDS_AT: '2020-01-01T00:00:00Z',
+        }).redeemLaunchPromo('org-1', 'TOURNARENA2026'),
+      ).rejects.toBeInstanceOf(BadRequestException);
+    });
+
+    describe('launchPromoCoversTournament', () => {
+      it('is false when the organization never redeemed the code', async () => {
+        prisma.organization.findUnique.mockResolvedValue({
+          launchPromoRedeemedAt: null,
+        });
+
+        await expect(
+          promoService().launchPromoCoversTournament('org-1', 't-9'),
+        ).resolves.toBe(false);
+      });
+
+      it('covers a new tournament while free slots remain', async () => {
+        prisma.organization.findUnique.mockResolvedValue({
+          launchPromoRedeemedAt: new Date(),
+        });
+        prisma.tournamentPublicationOrder.findFirst.mockResolvedValue(null);
+        prisma.tournamentPublicationOrder.groupBy.mockResolvedValue([
+          { tournamentId: 't-1' },
+          { tournamentId: 't-2' },
+        ]);
+
+        await expect(
+          promoService().launchPromoCoversTournament('org-1', 't-3'),
+        ).resolves.toBe(true);
+      });
+
+      it('refuses a 4th tournament once the 3 free slots are used', async () => {
+        prisma.organization.findUnique.mockResolvedValue({
+          launchPromoRedeemedAt: new Date(),
+        });
+        prisma.tournamentPublicationOrder.findFirst.mockResolvedValue(null);
+        prisma.tournamentPublicationOrder.groupBy.mockResolvedValue([
+          { tournamentId: 't-1' },
+          { tournamentId: 't-2' },
+          { tournamentId: 't-3' },
+        ]);
+
+        await expect(
+          promoService().launchPromoCoversTournament('org-1', 't-4'),
+        ).resolves.toBe(false);
+      });
+
+      it('keeps covering top-ups of a tournament that already used a slot', async () => {
+        prisma.organization.findUnique.mockResolvedValue({
+          launchPromoRedeemedAt: new Date(),
+        });
+        prisma.tournamentPublicationOrder.findFirst.mockResolvedValue({
+          id: 'order-promo-1',
+        });
+
+        await expect(
+          promoService().launchPromoCoversTournament('org-1', 't-1'),
+        ).resolves.toBe(true);
+        expect(
+          prisma.tournamentPublicationOrder.groupBy,
+        ).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('subscribe', () => {
+      beforeEach(() => {
+        prisma.organizationSubscription.findFirst.mockResolvedValue(null);
+        prisma.organizationSubscription.create.mockResolvedValue({
+          id: 'sub-1',
+        });
+      });
+
+      it('pre-applies the launch coupon for an organization that redeemed the code', async () => {
+        prisma.organization.findUnique.mockResolvedValue({
+          id: 'org-1',
+          suspendedAt: null,
+          launchPromoRedeemedAt: new Date(),
+        });
+
+        await promoService().subscribe('org-1');
+
+        expect(stripeService.createCheckoutSession).toHaveBeenCalledTimes(1);
+        expect(stripeService.createCheckoutSession).toHaveBeenCalledWith(
+          expect.objectContaining({
+            amountCents: 15900,
+            couponId: 'coupon_launch50',
+          }),
+        );
+      });
+
+      it('falls back to the regular price when Stripe refuses the coupon (50 redemptions reached)', async () => {
+        prisma.organization.findUnique.mockResolvedValue({
+          id: 'org-1',
+          suspendedAt: null,
+          launchPromoRedeemedAt: new Date(),
+        });
+        stripeService.createCheckoutSession.mockRejectedValueOnce(
+          new Error('Coupon max_redemptions reached'),
+        );
+
+        const result = await promoService().subscribe('org-1');
+
+        expect(stripeService.createCheckoutSession).toHaveBeenCalledTimes(2);
+        expect(
+          (stripeService.createCheckoutSession.mock.calls as unknown[][])[1][0],
+        ).not.toHaveProperty('couponId');
+        expect(result).toMatchObject({ status: 'PENDING_PAYMENT' });
+      });
+
+      it('does not apply the coupon to an organization that never redeemed the code', async () => {
+        await promoService().subscribe('org-1');
+
+        expect(
+          (stripeService.createCheckoutSession.mock.calls as unknown[][])[0][0],
+        ).not.toHaveProperty('couponId');
       });
     });
   });

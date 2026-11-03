@@ -10,6 +10,11 @@
       "login": "Log in",
       "menu": "Menu"
     },
+    "launchPromo": {
+      "badge": "Launch offer",
+      "text": "First 3 tournaments free and 50% off the annual subscription for the first 50, with code",
+      "cta": "Claim it"
+    },
     "eyebrow": {
       "brand": "TournArena",
       "count": "{{count}} published sporting events"
@@ -1437,6 +1442,16 @@
       "errors": {
         "loadStatus": "Could not load the subscription status.",
         "subscribe": "Could not subscribe, please try again."
+      },
+      "promo": {
+        "title": "Promo code",
+        "intro": "Got a launch code? Enter it to unlock your perks.",
+        "label": "Promo code",
+        "apply": "Apply",
+        "invalid": "Invalid or expired promo code.",
+        "activeBadge": "Launch offer active",
+        "freeTournaments": "Free tournaments left: {{remaining}} of {{total}} (published for free, whatever the number of teams).",
+        "subscriptionDiscount": "-{{percent}}% applied automatically when paying for the annual subscription (first 50 subscriptions only)."
       }
     },
     "subscriptionSuccess": {

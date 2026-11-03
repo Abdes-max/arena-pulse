@@ -1,4 +1,4 @@
-# Assets de lancement — offre -50% (50 premiers organisateurs)
+# Assets de lancement — code TOURNARENA2026 (3 tournois offerts, -50 % pour les 50 premiers abonnements)
 
 Assets de la campagne de lancement TournArena, produits par Kelto Studio.
 Même argument central que le Reel en préparation (`videos/tournarena-zero-latence/`) :

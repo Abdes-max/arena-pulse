@@ -79,7 +79,7 @@ export class SuperAdminPaymentsPage {
 
   protected formatDate(iso: string | null): string {
     if (!iso) {
-      return '—';
+      return '-';
     }
     return new Date(iso).toLocaleDateString('fr-FR', {
       day: 'numeric',

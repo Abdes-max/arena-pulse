@@ -138,3 +138,28 @@
     }
   }
 }
+
+.subscription-page__promo {
+  margin-top: var(--ap-space-6);
+
+  h2 {
+    font-size: 1.1rem;
+    margin: 0;
+  }
+
+  p {
+    margin: 0;
+  }
+}
+
+.subscription-page__promo-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--ap-space-3);
+  width: 100%;
+
+  ap-text-field {
+    flex: 1 1 220px;
+  }
+}

@@ -10,6 +10,11 @@
       "login": "Anmelden",
       "menu": "Menü"
     },
+    "launchPromo": {
+      "badge": "Launch-Angebot",
+      "text": "Die ersten 3 Turniere gratis und -50 % auf das Jahresabo für die ersten 50, mit dem Code",
+      "cta": "Jetzt sichern"
+    },
     "eyebrow": {
       "brand": "TournArena",
       "count": "{{count}} veröffentlichte Sportveranstaltungen"
@@ -1335,6 +1340,16 @@
       "errors": {
         "loadStatus": "Der Abonnementstatus konnte nicht geladen werden.",
         "subscribe": "Abonnement konnte nicht abgeschlossen werden, bitte erneut versuchen."
+      },
+      "promo": {
+        "title": "Aktionscode",
+        "intro": "Du hast einen Launch-Code? Gib ihn ein, um deine Vorteile freizuschalten.",
+        "label": "Aktionscode",
+        "apply": "Einlösen",
+        "invalid": "Ungültiger oder abgelaufener Aktionscode.",
+        "activeBadge": "Launch-Angebot aktiv",
+        "freeTournaments": "Verbleibende Gratis-Turniere: {{remaining}} von {{total}} (kostenlos veröffentlicht, unabhängig von der Teamanzahl).",
+        "subscriptionDiscount": "-{{percent}} % werden beim Bezahlen des Jahresabos automatisch abgezogen (nur für die ersten 50 Abos)."
       }
     },
     "subscriptionSuccess": {

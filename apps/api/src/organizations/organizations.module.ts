@@ -5,6 +5,7 @@ import { PaymentsModule } from '../payments/payments.module';
 import { InvitationsController } from './invitations.controller';
 import { InvitationsService } from './invitations.service';
 import { OrganizationInvitationsController } from './organization-invitations.controller';
+import { OrganizationLaunchPromoController } from './organization-launch-promo.controller';
 import { OrganizationSubscriptionController } from './organization-subscription.controller';
 import { OrganizationsController } from './organizations.controller';
 import { OrganizationsService } from './organizations.service';
@@ -17,6 +18,7 @@ import { OrganizationRoleGuard } from './guards/organization-role.guard';
     OrganizationInvitationsController,
     InvitationsController,
     OrganizationSubscriptionController,
+    OrganizationLaunchPromoController,
   ],
   providers: [OrganizationsService, InvitationsService, OrganizationRoleGuard],
   exports: [OrganizationRoleGuard, OrganizationsService],
