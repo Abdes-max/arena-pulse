@@ -155,9 +155,10 @@ export class TeamDetailPage {
     void this.load();
   }
 
-  /** Back to the team list -- ?list=1 so the favorite redirect doesn't bounce back here. */
+  /** Back to the team list, without the Équipes tab bouncing back to the favorite team. */
   protected backToTeams(): void {
-    void this.router.navigate(['/', this.context.slug(), 'team'], { queryParams: { list: 1 } });
+    this.favorites.showTeamListOnce();
+    void this.router.navigate(['/', this.context.slug(), 'team']);
   }
 
   protected isFavorite(): boolean {

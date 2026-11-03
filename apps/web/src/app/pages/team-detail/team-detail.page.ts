@@ -89,6 +89,13 @@ export class TeamDetailPage {
     return team ? this.favorites.isFavorite(this.context.slug(), team.id) : false;
   });
 
+  /** "Toutes les équipes": the list once, without bouncing back to the favorite team. */
+  protected readonly teamsLink = computed(() => ['/', this.context.slug(), 'team']);
+
+  protected showTeamList(): void {
+    this.favorites.showTeamListOnce();
+  }
+
   protected toggleFavorite(): void {
     const team = this.team();
     if (team) {

@@ -28,6 +28,23 @@ export class FavoritesService {
     );
   }
 
+  // Set by the team page's "Toutes les équipes" button so the Équipes tab
+  // shows the list once instead of jumping back to the favorite team.
+  private skipFavoriteRedirect = false;
+
+  showTeamListOnce(): void {
+    this.skipFavoriteRedirect = true;
+  }
+
+  /** The favorite team to open the Équipes tab on, or null (consumes showTeamListOnce). */
+  favoriteToOpen(tournamentSlug: string): FavoriteTeam | null {
+    if (this.skipFavoriteRedirect) {
+      this.skipFavoriteRedirect = false;
+      return null;
+    }
+    return this.favoritesFor(tournamentSlug)[0] ?? null;
+  }
+
   favoritesFor(tournamentSlug: string): FavoriteTeam[] {
     return this.favoritesState().filter((favorite) => favorite.tournamentSlug === tournamentSlug);
   }

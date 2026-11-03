@@ -49,4 +49,14 @@ describe('FavoritesService', () => {
 
     expect(TestBed.inject(FavoritesService).favorites()).toEqual([]);
   });
+
+  it('opens the favorite team, except once after "Toutes les équipes"', () => {
+    const service = TestBed.inject(FavoritesService);
+    service.toggle('coupe-a1b2', 't1', 'Les Aigles');
+
+    expect(service.favoriteToOpen('coupe-a1b2')?.teamId).toBe('t1');
+    service.showTeamListOnce();
+    expect(service.favoriteToOpen('coupe-a1b2')).toBeNull();
+    expect(service.favoriteToOpen('coupe-a1b2')?.teamId).toBe('t1');
+  });
 });
