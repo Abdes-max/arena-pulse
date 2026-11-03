@@ -323,7 +323,7 @@ describe('Schedule editor (e2e)', () => {
       .send({ refereeId })
       .expect(201);
 
-    // Delta already plays Alpha at this exact window — moving Delta-vs-Beta there conflicts.
+    // Delta already plays Alpha at this exact window - moving Delta-vs-Beta there conflicts.
     await auth(
       request(app.getHttpServer()).patch(
         `${base}/${tournamentId}/matches/${deltaBeta.id}/timeslot`,

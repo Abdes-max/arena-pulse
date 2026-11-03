@@ -44,8 +44,8 @@
               <tbody>
                 @for (match of day.matches; track match.id) {
                   <tr>
-                    <td>{{ match.timeSlot ? formatTime(match.timeSlot.startTime) : '—' }}</td>
-                    <td>{{ match.timeSlot?.field?.name ?? '—' }}</td>
+                    <td>{{ match.timeSlot ? formatTime(match.timeSlot.startTime) : '-' }}</td>
+                    <td>{{ match.timeSlot?.field?.name ?? '-' }}</td>
                     <td>{{ teamLabel(match.homeTeam, match.homeSourceLabel) }}</td>
                     <td class="print-export-page__score">
                       {{ scoreLabel(match) ?? ('admin.printExport.vs' | transloco) }}

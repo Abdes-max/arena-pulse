@@ -57,7 +57,7 @@ function getOnce(port, host, path, timeoutMs) {
 }
 
 /**
- * Dev machines running several projects often share the common ports 3000/4200 —
+ * Dev machines running several projects often share the common ports 3000/4200 -
  * a raw "is the port open" check can't tell *our* dev server from someone else's.
  * This does a GET request (tried on both loopback addresses) and reports whether
  * the body matches what we expect, so `npm run run` can tell "already running"

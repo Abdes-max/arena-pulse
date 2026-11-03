@@ -115,7 +115,7 @@ async function ensureEmulatorRunning() {
 async function startMobileDevServer() {
   if (await isPortInUse(MOBILE_PORT)) {
     if (!(await fetchMatches(MOBILE_PORT, '/', '<title>Mobile</title>'))) {
-      console.error(`✗ Port ${MOBILE_PORT} is in use by something else — stop it first.`);
+      console.error(`✗ Port ${MOBILE_PORT} is in use by something else - stop it first.`);
       process.exit(1);
     }
     console.log(`  → restarting ng serve mobile (picking up the just-built libs)...`);
@@ -151,17 +151,17 @@ async function ensureApi() {
 }
 
 async function main() {
-  console.log('1/6 — Android emulator');
+  console.log('1/6 - Android emulator');
   const deviceId = await ensureEmulatorRunning();
 
-  console.log('2/6 — API');
+  console.log('2/6 - API');
   await ensureApi();
 
-  console.log('3/6 — adb reverse (emulator "localhost" → this machine)');
+  console.log('3/6 - adb reverse (emulator "localhost" → this machine)');
   run(adb, ['-s', deviceId, 'reverse', `tcp:${MOBILE_PORT}`, `tcp:${MOBILE_PORT}`]);
   run(adb, ['-s', deviceId, 'reverse', `tcp:${API_PORT}`, `tcp:${API_PORT}`]);
 
-  console.log('4/6 — Building the debug APK');
+  console.log('4/6 - Building the debug APK');
   const originalEnvDev = readFileSync(envDevFile, 'utf8');
   const patchedEnvDev = originalEnvDev.replace(
     /apiUrl:\s*'[^']*'/,
@@ -170,7 +170,7 @@ async function main() {
   writeFileSync(envDevFile, patchedEnvDev);
   if (patchedEnvDev !== originalEnvDev) {
     console.log(
-      `  (environment.development.ts now points at :${API_PORT} for ng serve mobile — ` +
+      `  (environment.development.ts now points at :${API_PORT} for ng serve mobile - ` +
         'revert it with "git checkout apps/mobile/src/environments/environment.development.ts" once done)',
     );
   }
@@ -245,10 +245,10 @@ async function main() {
     writeFileSync(capacitorConfigFile, originalCapacitorConfig);
   }
 
-  console.log('5/6 — Mobile dev server');
+  console.log('5/6 - Mobile dev server');
   await startMobileDevServer();
 
-  console.log('6/6 — Install & launch');
+  console.log('6/6 - Install & launch');
   const apk = path.join(androidDir, 'app/build/outputs/apk/debug/app-debug.apk');
   run(adb, ['-s', deviceId, 'install', '-r', apk]);
   run(adb, ['-s', deviceId, 'shell', 'am', 'force-stop', APP_ID]);
@@ -266,7 +266,7 @@ async function main() {
 
   console.log(`\n✓ Arena Pulse mobile is running on ${deviceId}.`);
   console.log(
-    `  Live-reloading from http://localhost:${MOBILE_PORT} — edit apps/mobile and it reloads.`,
+    `  Live-reloading from http://localhost:${MOBILE_PORT} - edit apps/mobile and it reloads.`,
   );
   console.log('  Re-run this script any time; already-running pieces are left alone.');
 }

@@ -252,7 +252,7 @@ describe('Standings and qualifications (e2e)', () => {
         ),
       ).expect(201);
     }
-    // Gamma-vs-Delta stays provisional — must not affect the table.
+    // Gamma-vs-Delta stays provisional - must not affect the table.
     await auth(
       request(app.getHttpServer()).put(
         `${base}/${tournamentId}/matches/${gammaDelta.id}/score`,

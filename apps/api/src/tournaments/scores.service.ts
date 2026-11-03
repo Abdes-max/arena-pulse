@@ -49,7 +49,7 @@ export class ScoresService {
     const match = await this.getOrThrowForTournament(tournamentId, matchId);
     if (match.status === 'FORFEITED') {
       throw new ConflictException(
-        'Ce match est déclaré forfait — annulez le forfait avant de saisir un score.',
+        'Ce match est déclaré forfait - annulez le forfait avant de saisir un score.',
       );
     }
     this.assertPenaltyScoreShape(dto);
@@ -163,7 +163,7 @@ export class ScoresService {
       );
       if (match.status === 'FORFEITED') {
         throw new ConflictException(
-          'Un match de la série est déclaré forfait — annulez le forfait avant de saisir un score.',
+          'Un match de la série est déclaré forfait - annulez le forfait avant de saisir un score.',
         );
       }
       this.assertPenaltyScoreShape(entry);

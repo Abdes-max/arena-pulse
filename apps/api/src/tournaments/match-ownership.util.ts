@@ -1,6 +1,6 @@
 /**
  * A match belongs to exactly one of a group-stage Group or a knockout
- * KnockoutBracket, never both — this include/assert pair resolves the owning
+ * KnockoutBracket, never both - this include/assert pair resolves the owning
  * tournamentId whichever one is set, so callers don't need two code paths.
  */
 export const MATCH_TOURNAMENT_INCLUDE = {

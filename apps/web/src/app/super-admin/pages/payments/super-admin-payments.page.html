@@ -42,7 +42,7 @@
             <td>{{ formatDate(payment.paidAt ?? payment.createdAt) }}</td>
             <td>
               @if (annotatingId() !== payment.id) {
-                {{ payment.note ?? '—' }}
+                {{ payment.note ?? '-' }}
               }
             </td>
             <td>

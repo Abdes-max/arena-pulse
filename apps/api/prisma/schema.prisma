@@ -206,7 +206,7 @@ enum TournamentStatus {
   ARCHIVED
 }
 
-// Visual theme applied to a tournament's public site + slideshow only —
+// Visual theme applied to a tournament's public site + slideshow only -
 // the /admin dashboard and the marketing site always stay on Ink & Signal
 // regardless of what an organizer picks here (docs/design/visual-language.md).
 enum PublicTheme {
@@ -217,7 +217,7 @@ enum PublicTheme {
   CRIMSON_CHARGE
 }
 
-// Global reference data (not scoped by organization) — seeded, no CRUD in this PR.
+// Global reference data (not scoped by organization) - seeded, no CRUD in this PR.
 model Sport {
   id        String   @id @default(uuid())
   name      String   @unique
@@ -670,7 +670,7 @@ model MatchScore {
 }
 
 // Catalog (not a fixed enum) so new permissions can be added without a schema
-// migration — 10 seeded rows matching docs/product/roles-and-permissions.md.
+// migration - 10 seeded rows matching docs/product/roles-and-permissions.md.
 model Permission {
   id       String @id @default(uuid())
   key      String @unique

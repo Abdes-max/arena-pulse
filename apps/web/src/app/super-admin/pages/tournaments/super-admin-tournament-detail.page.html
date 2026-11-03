@@ -153,15 +153,15 @@
           <tbody>
             @for (match of t.matches; track match.id) {
               <tr>
-                <td>{{ match.homeTeamName ?? '—' }}</td>
+                <td>{{ match.homeTeamName ?? '-' }}</td>
                 <td>
                   @if (match.homeScore !== null && match.awayScore !== null) {
                     {{ match.homeScore }} – {{ match.awayScore }}
                   } @else {
-                    —
+                    -
                   }
                 </td>
-                <td>{{ match.awayTeamName ?? '—' }}</td>
+                <td>{{ match.awayTeamName ?? '-' }}</td>
                 <td><ap-badge [status]="matchStatusBadge[match.status]" /></td>
               </tr>
             }

@@ -275,7 +275,7 @@ describe('Venues, fields and time slots (e2e)', () => {
       .expect(201);
     const venueId = (venueRes.body as { id: string }).id;
 
-    // MANAGE_GENERAL alone isn't enough to manage fields — that needs MANAGE_SCHEDULE.
+    // MANAGE_GENERAL alone isn't enough to manage fields - that needs MANAGE_SCHEDULE.
     await authAsMember(
       request(app.getHttpServer()).post(
         `${base}/${tournamentId}/venues/${venueId}/fields`,

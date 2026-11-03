@@ -1117,7 +1117,7 @@ export class TournamentsService {
         'Seul un tournoi archivé peut être désarchivé.',
       );
     }
-    // Always back to DRAFT — the previous status isn't remembered, matching
+    // Always back to DRAFT - the previous status isn't remembered, matching
     // the rule that a duplicated tournament also always starts as DRAFT.
     const updated = await this.prisma.tournament.update({
       where: { id: tournamentId },
@@ -1482,7 +1482,7 @@ export class TournamentsService {
   /**
    * Public directory: every PUBLISHED *and* isListed tournament across every
    * organization. isListed is the organizer's own opt-out of discoverability
-   * only — a tournament with isListed: false is still fully reachable by
+   * only - a tournament with isListed: false is still fully reachable by
    * anyone who has its direct slug link (see getPublicBySlug below, which is
    * not gated by this field), it just doesn't appear here. Most recent
    * first, capped well below "everything" so a homepage card list stays a
@@ -1549,11 +1549,11 @@ export class TournamentsService {
   }
 
   /**
-   * Public directory search — every filter is optional and AND-combined.
+   * Public directory search - every filter is optional and AND-combined.
    * Same isListed/PUBLISHED gate as listPublished above, this is just the
    * filterable/paginated sibling of it (a dedicated method rather than
-   * extending listPublished itself, so its existing simple contract —
-   * PublicTournamentSummary[], no pagination envelope — stays untouched for
+   * extending listPublished itself, so its existing simple contract -
+   * PublicTournamentSummary[], no pagination envelope - stays untouched for
    * its current callers, the landing page and the mobile home screen).
    */
   async searchPublished(params: PublicTournamentSearchParams) {
@@ -1617,7 +1617,7 @@ export class TournamentsService {
 
   /**
    * Public-site lookup: no organizationId (visitors don't know it), and only
-   * a PUBLISHED tournament is findable — everything else (draft, unpublished,
+   * a PUBLISHED tournament is findable - everything else (draft, unpublished,
    * archived, or no such slug) reads identically as "not found" so the public
    * site never leaks whether a private tournament exists.
    */

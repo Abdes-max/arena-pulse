@@ -9,7 +9,7 @@ export interface TournamentEvent {
 
 /**
  * In-process event bus for the public site's SSE stream
- * (docs/architecture/realtime-strategy.md) — a single Subject shared by
+ * (docs/architecture/realtime-strategy.md) - a single Subject shared by
  * every tournament, filtered per-subscriber by tournamentId. Deliberately
  * not a distributed broker: this only works correctly with a single API
  * instance, a documented limitation until horizontal scaling is needed.

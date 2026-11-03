@@ -10,24 +10,24 @@ const MOBILE_PORT = 4400;
 async function main() {
   const sdk = resolveAndroidSdk();
 
-  console.log('1/2 — Android emulator');
+  console.log('1/2 - Android emulator');
   if (!sdk) {
-    console.log('  → ANDROID_HOME/ANDROID_SDK_ROOT not set — nothing to do.');
+    console.log('  → ANDROID_HOME/ANDROID_SDK_ROOT not set - nothing to do.');
   } else {
     const deviceId = connectedEmulatorId(sdk.adb);
     if (!deviceId) {
-      console.log('  → no emulator running — nothing to do.');
+      console.log('  → no emulator running - nothing to do.');
     } else {
       console.log(`  → stopping ${deviceId}...`);
       run(sdk.adb, ['-s', deviceId, 'emu', 'kill']);
     }
   }
 
-  console.log('2/2 — Mobile dev server (ng serve mobile)');
+  console.log('2/2 - Mobile dev server (ng serve mobile)');
   console.log(
     killPort(MOBILE_PORT)
       ? `  → stopped (was on port ${MOBILE_PORT}).`
-      : '  → was not running — nothing to do.',
+      : '  → was not running - nothing to do.',
   );
 
   console.log('\nMobile emulator stopped. Note: environment.development.ts / capacitor.config.ts');

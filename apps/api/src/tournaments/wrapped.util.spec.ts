@@ -278,7 +278,7 @@ describe('findBiggestUpset', () => {
   });
 
   it('returns null when the higher-rated team always wins (no upset)', () => {
-    // Two brand-new teams (both default 1500) — "Favourite" wins every match
+    // Two brand-new teams (both default 1500) - "Favourite" wins every match
     // first, building a lead, then always wins again: never an upset.
     const entries: RatingHistoryEntry[] = [
       history({

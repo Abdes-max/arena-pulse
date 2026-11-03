@@ -2,7 +2,7 @@ name: arena-pulse
 
 # Local development infrastructure only (feat/005-local-infrastructure).
 # Application code (public-web, admin-web, api) runs natively via `npm run run`
-# for fast hot-reload — only the infrastructure it depends on is containerized here.
+# for fast hot-reload - only the infrastructure it depends on is containerized here.
 
 services:
   postgres:

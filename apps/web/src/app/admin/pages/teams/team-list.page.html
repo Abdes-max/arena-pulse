@@ -248,10 +248,10 @@
                   {{ team.categoryName }}
                 </td>
                 <td class="team-list-page__cell team-list-page__cell--division">
-                  {{ team.divisionName ?? '—' }}
+                  {{ team.divisionName ?? '-' }}
                 </td>
                 <td class="team-list-page__cell team-list-page__cell--manager">
-                  {{ team.managerName ?? '—' }}
+                  {{ team.managerName ?? '-' }}
                 </td>
                 <td class="team-list-page__cell team-list-page__actions">
                   @if (confirmingTeamId() === team.id) {

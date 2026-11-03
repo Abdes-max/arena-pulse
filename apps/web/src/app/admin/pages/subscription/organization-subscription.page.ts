@@ -164,7 +164,7 @@ export class OrganizationSubscriptionPage {
 
   protected formatDate(iso: string | null): string {
     if (!iso) {
-      return '—';
+      return '-';
     }
     return new Date(iso).toLocaleDateString(this.languageService.language(), {
       day: 'numeric',

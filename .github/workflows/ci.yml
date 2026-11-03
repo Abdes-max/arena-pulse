@@ -8,7 +8,7 @@ on:
 
 jobs:
   web:
-    name: Web (Angular) — lint, build, test
+    name: Web (Angular) - lint, build, test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -34,7 +34,7 @@ jobs:
       - run: npm run test:mobile
 
   api:
-    name: API (NestJS) — lint, build, test
+    name: API (NestJS) - lint, build, test
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -114,7 +114,7 @@ jobs:
       - name: Check for committed .env files
         run: |
           if git ls-files | grep -E '(^|/)\.env$'; then
-            echo "A .env file is tracked by git — remove it and use .env.example instead."
+            echo "A .env file is tracked by git - remove it and use .env.example instead."
             exit 1
           fi
           echo "No committed .env files found."

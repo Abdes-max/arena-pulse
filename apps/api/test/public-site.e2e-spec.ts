@@ -77,7 +77,7 @@ describe('Public tournament site (e2e)', () => {
     await request(app.getHttpServer())
       .get(`/api/v1/public/tournaments/${slug}`)
       .expect(404);
-    // Nor is a slug that doesn't exist at all — same 404, no leak either way.
+    // Nor is a slug that doesn't exist at all - same 404, no leak either way.
     await request(app.getHttpServer())
       .get('/api/v1/public/tournaments/does-not-exist')
       .expect(404);
@@ -173,7 +173,7 @@ describe('Public tournament site (e2e)', () => {
       request(app.getHttpServer()).post(`${base}/${tournamentId}/publish`),
     ).expect(200);
 
-    // Every public read below is unauthenticated — no Authorization header.
+    // Every public read below is unauthenticated - no Authorization header.
     const publicBase = `/api/v1/public/tournaments/${slug}`;
 
     const tournamentPublicRes = await request(app.getHttpServer())
@@ -186,7 +186,7 @@ describe('Public tournament site (e2e)', () => {
     expect(
       (tournamentPublicRes.body as { venues: { name: string }[] }).venues,
     ).toEqual([expect.objectContaining({ name: 'Stade municipal' })]);
-    // organizationId/tournamentId are internal — must not leak to visitors.
+    // organizationId/tournamentId are internal - must not leak to visitors.
     expect(tournamentPublicRes.body).not.toHaveProperty('organizationId');
     expect(tournamentPublicRes.body).not.toHaveProperty('tournamentId');
 

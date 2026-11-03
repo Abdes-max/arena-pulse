@@ -3,7 +3,7 @@
 // different sports, public themes, and competition formats (pure knockout,
 // pure round-robin/championship, groups + knockout, groups-only/multi-pool,
 // a larger bracket, and a multi-category tournament). Meant for manual UI
-// verification — safe to re-run any time the local dev database is reset
+// verification - safe to re-run any time the local dev database is reset
 // (each run creates a fresh organization and fresh tournaments).
 //
 // Usage: node infra/scripts/seed-demo-data.mjs
@@ -353,7 +353,7 @@ async function main() {
 
   const results = [];
 
-  // 1. Football — pure knockout showcase (8 teams, 3rd-place match) — INK_SIGNAL
+  // 1. Football - pure knockout showcase (8 teams, 3rd-place match) - INK_SIGNAL
   {
     const sportName = 'Football';
     const tournament = await createTournament(token, orgId, {
@@ -386,7 +386,7 @@ async function main() {
     results.push({ tournament, sportName, theme: 'INK_SIGNAL', format: 'Élimination directe (8 équipes + petite finale)' });
   }
 
-  // 2. Basketball — pure round-robin championship (6 teams) — PULSE_EMBER
+  // 2. Basketball - pure round-robin championship (6 teams) - PULSE_EMBER
   {
     const sportName = 'Basketball';
     const tournament = await createTournament(token, orgId, {
@@ -413,7 +413,7 @@ async function main() {
     results.push({ tournament, sportName, theme: 'PULSE_EMBER', format: 'Championnat (poule unique, toutes rondes, pas de phase finale)' });
   }
 
-  // 3. Handball — groups + knockout (2 groups of 4 -> top 2 -> bracket of 4) — NEON_COURT
+  // 3. Handball - groups + knockout (2 groups of 4 -> top 2 -> bracket of 4) - NEON_COURT
   {
     const sportName = 'Handball';
     const tournament = await createTournament(token, orgId, {
@@ -443,7 +443,7 @@ async function main() {
     results.push({ tournament, sportName, theme: 'NEON_COURT', format: 'Poules (2x4) + phase finale à élimination directe' });
   }
 
-  // 4. Volleyball — groups only, no knockout (2 pools, each its own mini-championship) — INK_SIGNAL
+  // 4. Volleyball - groups only, no knockout (2 pools, each its own mini-championship) - INK_SIGNAL
   {
     const sportName = 'Volleyball';
     const tournament = await createTournament(token, orgId, {
@@ -471,7 +471,7 @@ async function main() {
     results.push({ tournament, sportName, theme: 'INK_SIGNAL', format: 'Poules uniquement (2 groupes), pas de phase finale' });
   }
 
-  // 5. Tennis — larger bracket (16 players, no ranking match) — PULSE_EMBER
+  // 5. Tennis - larger bracket (16 players, no ranking match) - PULSE_EMBER
   {
     const sportName = 'Tennis';
     const tournament = await createTournament(token, orgId, {
@@ -512,7 +512,7 @@ async function main() {
     results.push({ tournament, sportName, theme: 'PULSE_EMBER', format: 'Élimination directe, tableau de 16' });
   }
 
-  // 6. Rugby — multi-category tournament (Senior: groups+knockout; Vétérans: championship) — NEON_COURT
+  // 6. Rugby - multi-category tournament (Senior: groups+knockout; Vétérans: championship) - NEON_COURT
   {
     const sportName = 'Rugby';
     const tournament = await createTournament(token, orgId, {

@@ -20,7 +20,7 @@ import {
 import { VenuesService } from './venues.service';
 import { WrappedService } from './wrapped.service';
 
-/** Team fields visible to the public — never a manager's personal contact details. */
+/** Team fields visible to the public - never a manager's personal contact details. */
 function toPublicTeam(team: {
   id: string;
   name: string;
@@ -85,7 +85,7 @@ export class PublicService {
           tournament.organizationId,
           tournament.tournamentId,
         ),
-        // Drives whether TournamentShell shows the "Récap" tab at all — the
+        // Drives whether TournamentShell shows the "Récap" tab at all - the
         // dedicated GET .../wrapped endpoint enforces the same check
         // independently, this just avoids an extra round-trip just to find
         // out the tab shouldn't be there.
@@ -331,7 +331,7 @@ export class PublicService {
   /**
    * SSE stream for a tournament's public site (docs/architecture/realtime-strategy.md).
    * Emits a minimal "something changed" signal per match, never the match
-   * payload itself — the client already has REST endpoints for that shape.
+   * payload itself - the client already has REST endpoints for that shape.
    */
   streamMatchEvents(slug: string): Observable<MessageEvent> {
     return from(this.resolveTournament(slug)).pipe(
