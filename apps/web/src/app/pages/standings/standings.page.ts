@@ -349,7 +349,12 @@ export class StandingsPage {
       this.finalRankingRaw.set([]);
     }
 
-    this.selectTab(this.tabs()[0]?.value ?? '');
+    // A finished tournament opens on its final ranking.
+    const finished = this.context.tournament()?.isFinished;
+    const tabs = this.tabs();
+    this.selectTab(
+      finished && tabs.some((tab) => tab.value === 'final') ? 'final' : (tabs[0]?.value ?? ''),
+    );
   }
 
   protected selectTab(tabId: string): void {

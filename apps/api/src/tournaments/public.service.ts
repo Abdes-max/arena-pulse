@@ -1,4 +1,5 @@
 import { Injectable, MessageEvent } from '@nestjs/common';
+import { Prisma } from '../../generated/prisma/client';
 import { Observable, from, map, switchMap } from 'rxjs';
 import { PrismaService } from '../prisma/prisma.service';
 import { BracketsService } from './brackets.service';
@@ -74,7 +75,7 @@ export class PublicService {
 
   async getTournament(slug: string) {
     const tournament = await this.resolveTournament(slug);
-    const [venues, sponsors, wrappedUnlocked, firstMatchTime] =
+    const [venues, sponsors, wrappedUnlocked, firstMatchTime, isFinished] =
       await Promise.all([
         this.venuesService.list(
           tournament.organizationId,
@@ -97,6 +98,7 @@ export class PublicService {
         // own formattedDates() appends next to it, when there's a real
         // schedule to read one from.
         this.earliestMatchStartTime(tournament.tournamentId),
+        this.allMatchesPlayed(tournament.tournamentId),
       ]);
     return {
       id: tournament.id,
@@ -118,6 +120,7 @@ export class PublicService {
       venues,
       sponsors,
       wrappedUnlocked,
+      isFinished,
     };
   }
 
@@ -130,6 +133,32 @@ export class PublicService {
       _min: { startTime: true },
     });
     return result._min.startTime;
+  }
+
+  /**
+   * Whether every match of the tournament (pools and brackets) has been
+   * played, forfeited or cancelled -- the public site then opens on the
+   * final ranking instead of the home page. False while nothing exists yet.
+   */
+  private async allMatchesPlayed(tournamentId: string): Promise<boolean> {
+    const inTournament: Prisma.MatchWhereInput = {
+      OR: [
+        { group: { phase: { category: { tournamentId } } } },
+        { knockoutBracket: { phase: { category: { tournamentId } } } },
+      ],
+    };
+    const [total, open] = await Promise.all([
+      this.prisma.match.count({ where: inTournament }),
+      this.prisma.match.count({
+        where: {
+          AND: [
+            inTournament,
+            { status: { in: ['SCHEDULED', 'LIVE', 'POSTPONED'] } },
+          ],
+        },
+      }),
+    ]);
+    return total > 0 && open === 0;
   }
 
   getWrapped(slug: string) {

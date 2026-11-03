@@ -289,7 +289,7 @@ export class TournamentShell {
     this.route.paramMap.pipe(takeUntilDestroyed()).subscribe((params) => {
       const slug = params.get('slug');
       if (slug) {
-        void this.context.load(slug);
+        void this.context.load(slug).then(() => this.openFinishedOnStandings(slug));
       }
     });
 
@@ -411,6 +411,18 @@ export class TournamentShell {
       window.open(url, '_blank', 'noopener');
     } else {
       window.location.href = url;
+    }
+  }
+
+  /**
+   * Opening a finished tournament (its home page) lands on Classement, which
+   * then shows the final ranking -- once, when the tournament is entered:
+   * the "Tournoi" tab stays reachable afterwards.
+   */
+  private openFinishedOnStandings(slug: string): void {
+    const path = this.router.url.split(/[?#]/)[0];
+    if (this.context.tournament()?.isFinished && path === `/${slug}`) {
+      void this.router.navigate(['/', slug, 'standings'], { replaceUrl: true });
     }
   }
 }
