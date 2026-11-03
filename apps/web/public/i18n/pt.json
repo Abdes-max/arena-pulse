@@ -302,7 +302,8 @@
     "upcoming": "Próximos",
     "noMatches": "Nenhum jogo agendado para esta equipa.",
     "poolRound": "Grupo (ronda {{round}})",
-    "favorite": "Favorita"
+    "favorite": "Favorita",
+    "allTeams": "Todas as equipas"
   },
   "teamSearch": {
     "allCategories": "Todas",

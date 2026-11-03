@@ -53,6 +53,21 @@ export class TeamSearchPage {
     void this.load();
   }
 
+  /**
+   * Every time the Équipes tab opens (Ionic keeps this page alive between
+   * visits, so not in the constructor): a visitor following a favorite
+   * team lands straight on its page. The page's "Toutes les équipes" link
+   * comes back here with ?list=1 to stay on the list.
+   */
+  ionViewWillEnter(): void {
+    const favorite = this.favorites.favoritesFor(this.context.slug())[0];
+    if (favorite && !this.router.url.includes('list=1')) {
+      void this.router.navigate(['/', this.context.slug(), 'team', favorite.teamId], {
+        replaceUrl: true,
+      });
+    }
+  }
+
   private async load(): Promise<void> {
     const slug = this.context.slug();
     this.loading.set(true);

@@ -7,7 +7,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AssetUrlService, PublicApiService } from 'api-client';
 import { IonButton, IonContent } from '@ionic/angular/standalone';
 import { Badge, MatchCard, MatchCardTeam, MatchCardVariant } from 'design-system';
@@ -36,6 +36,7 @@ export class TeamDetailPage {
   private readonly api = inject(PublicApiService);
   private readonly context = inject(TournamentContextService);
   protected readonly favorites = inject(FavoritesService);
+  private readonly router = inject(Router);
   protected readonly cache = inject(OfflineCacheService);
   protected readonly assetUrl = inject(AssetUrlService);
 
@@ -152,6 +153,11 @@ export class TeamDetailPage {
 
   protected retry(): void {
     void this.load();
+  }
+
+  /** Back to the team list -- ?list=1 so the favorite redirect doesn't bounce back here. */
+  protected backToTeams(): void {
+    void this.router.navigate(['/', this.context.slug(), 'team'], { queryParams: { list: 1 } });
   }
 
   protected isFavorite(): boolean {

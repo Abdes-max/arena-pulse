@@ -302,7 +302,8 @@
     "upcoming": "Prossime",
     "noMatches": "Nessuna partita programmata per questa squadra.",
     "poolRound": "Girone (turno {{round}})",
-    "favorite": "Preferita"
+    "favorite": "Preferita",
+    "allTeams": "Tutte le squadre"
   },
   "teamSearch": {
     "allCategories": "Tutte",
