@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Tabs, TextField } from 'design-system';
 import { AssetUrlService, PublicApiService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
@@ -19,6 +19,8 @@ export class TeamSearchPage {
   private readonly api = inject(PublicApiService);
   private readonly context = inject(TournamentContextService);
   private readonly favorites = inject(FavoritesService);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
   protected readonly assetUrl = inject(AssetUrlService);
   private readonly languageService = inject(LanguageService);
   private readonly transloco = inject(TranslocoService);
@@ -46,6 +48,16 @@ export class TeamSearchPage {
   });
 
   constructor() {
+    // A visitor following a favorite team lands straight on its page; the
+    // page's "Toutes les équipes" link comes back here with ?list=1.
+    const favorite = this.favorites.favoritesFor(this.context.slug())[0];
+    if (favorite && !this.route.snapshot.queryParamMap.has('list')) {
+      void this.router.navigate(['../team', favorite.teamId], {
+        relativeTo: this.route,
+        replaceUrl: true,
+      });
+      return;
+    }
     void this.load();
   }
 

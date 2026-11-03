@@ -7,12 +7,9 @@
   flex-wrap: wrap;
   gap: var(--ap-space-4);
   align-items: flex-end;
-  position: sticky;
-  top: 0;
-  z-index: var(--ap-z-sticky);
-  padding: var(--ap-space-4) 0;
-  margin: calc(var(--ap-space-4) * -1) 0 var(--ap-space-3);
-  background: var(--ap-color-bg);
+  // Not sticky: the tournament header above already sticks to the top, and
+  // a second sticky bar at the same spot slid over it while scrolling.
+  margin-bottom: var(--ap-space-3);
 }
 
 .team-search-page__search {

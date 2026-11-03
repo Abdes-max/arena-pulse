@@ -229,3 +229,16 @@
   flex-direction: column;
   gap: var(--ap-space-3);
 }
+
+// Back to the team list (the �quipes tab opens on a favorite team directly).
+.team-detail-page__back {
+  margin: var(--ap-space-3) var(--ap-space-4) 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ap-color-primary);
+  cursor: pointer;
+}

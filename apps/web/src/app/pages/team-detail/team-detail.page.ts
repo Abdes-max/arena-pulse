@@ -7,7 +7,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Badge, Button, MatchCard, MatchCardTeam, MatchCardVariant } from 'design-system';
 import { AssetUrlService, PublicApiService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
@@ -27,7 +27,7 @@ import {
 
 @Component({
   selector: 'app-team-detail-page',
-  imports: [Badge, Button, DecimalPipe, MatchCard, TranslocoPipe],
+  imports: [Badge, Button, DecimalPipe, MatchCard, RouterLink, TranslocoPipe],
   templateUrl: './team-detail.page.html',
   styleUrl: './team-detail.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

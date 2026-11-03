@@ -404,7 +404,8 @@
     "upcoming": "À venir",
     "noMatches": "Aucun match planifié pour cette équipe.",
     "poolRound": "Poule (round {{round}})",
-    "favorite": "Favori"
+    "favorite": "Favori",
+    "allTeams": "Toutes les équipes"
   },
   "teamSearch": {
     "allCategories": "Toutes",

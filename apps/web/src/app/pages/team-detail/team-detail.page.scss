@@ -197,3 +197,16 @@
 .team-detail-page__favorite {
   margin-left: auto;
 }
+
+.team-detail-page__back {
+  display: inline-block;
+  margin-bottom: var(--ap-space-3);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ap-color-primary);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

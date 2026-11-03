@@ -3,6 +3,10 @@
 } @else if (errorMessage(); as message) {
   <p class="team-detail-page__error" role="alert">{{ message | transloco }}</p>
 } @else if (team(); as t) {
+  <!-- ?list=1: back to the list without being sent to the favorite team again. -->
+  <a class="team-detail-page__back" [routerLink]="['../team']" [queryParams]="{ list: 1 }">
+    ‹ {{ 'teamDetail.allTeams' | transloco }}
+  </a>
   <div class="team-detail-page__header">
     @if (assetUrl.resolve(t.logoUrl); as logo) {
       <img class="team-detail-page__logo" [src]="logo" alt="" />
