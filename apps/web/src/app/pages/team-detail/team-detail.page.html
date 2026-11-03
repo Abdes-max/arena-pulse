@@ -3,8 +3,7 @@
 } @else if (errorMessage(); as message) {
   <p class="team-detail-page__error" role="alert">{{ message | transloco }}</p>
 } @else if (team(); as t) {
-  <!-- ?list=1: back to the list without being sent to the favorite team again. -->
-  <a class="team-detail-page__back" [routerLink]="['../team']" [queryParams]="{ list: 1 }">
+  <a class="team-detail-page__back" [routerLink]="teamsLink()" (click)="showTeamList()">
     ‹ {{ 'teamDetail.allTeams' | transloco }}
   </a>
   <div class="team-detail-page__header">

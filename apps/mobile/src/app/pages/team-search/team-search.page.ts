@@ -50,24 +50,20 @@ export class TeamSearchPage {
   });
 
   constructor() {
-    void this.load();
-  }
-
-  /**
-   * Every time the Équipes tab opens (Ionic keeps this page alive between
-   * visits, so not in the constructor): a visitor following a favorite
-   * team lands straight on its page. The page's "Toutes les équipes" link
-   * comes back here with ?list=1 to stay on the list.
-   */
-  ionViewWillEnter(): void {
-    const favorite = this.favorites.favoritesFor(this.context.slug())[0];
-    if (favorite && !this.router.url.includes('list=1')) {
+    // A visitor following a favorite team lands straight on its page. These
+    // tournament pages sit in the shell's plain <router-outlet> (not Ionic's),
+    // so they're recreated on every visit -- the constructor is the right
+    // place (ionViewWillEnter never fires here). The team page's "Toutes les
+    // équipes" button sets FavoritesService.showTeamListOnce() to stay here.
+    const favorite = this.favorites.favoriteToOpen(this.context.slug());
+    if (favorite) {
       void this.router.navigate(['/', this.context.slug(), 'team', favorite.teamId], {
         replaceUrl: true,
       });
+      return;
     }
+    void this.load();
   }
-
   private async load(): Promise<void> {
     const slug = this.context.slug();
     this.loading.set(true);

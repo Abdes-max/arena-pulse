@@ -49,9 +49,9 @@ export class TeamSearchPage {
 
   constructor() {
     // A visitor following a favorite team lands straight on its page; the
-    // page's "Toutes les équipes" link comes back here with ?list=1.
-    const favorite = this.favorites.favoritesFor(this.context.slug())[0];
-    if (favorite && !this.route.snapshot.queryParamMap.has('list')) {
+    // page's "Toutes les équipes" link sets showTeamListOnce() to stay here.
+    const favorite = this.favorites.favoriteToOpen(this.context.slug());
+    if (favorite) {
       void this.router.navigate(['../team', favorite.teamId], {
         relativeTo: this.route,
         replaceUrl: true,
