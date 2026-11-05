@@ -16,6 +16,7 @@ import { Tournament, TournamentStatus } from '../../core/models';
 import { TeamsService } from '../../core/teams.service';
 import { TournamentsService } from '../../core/tournaments.service';
 import { OnboardingChecklist, OnboardingStep } from './onboarding-checklist';
+import { OrganizationDashboard } from './organization-dashboard';
 
 const STATUS_TO_BADGE: Record<TournamentStatus, BadgeStatus> = {
   DRAFT: 'draft',
@@ -47,7 +48,7 @@ const DISMISSED_STORAGE_PREFIX = 'arena-pulse:onboarding-dismissed:';
 
 @Component({
   selector: 'app-tournament-list-page',
-  imports: [Badge, Button, OnboardingChecklist, Select, TranslocoPipe],
+  imports: [Badge, Button, OnboardingChecklist, OrganizationDashboard, Select, TranslocoPipe],
   templateUrl: './tournament-list.page.html',
   styleUrl: './tournament-list.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

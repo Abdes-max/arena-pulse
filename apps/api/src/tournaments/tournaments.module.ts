@@ -7,6 +7,8 @@ import { RecapRenderService } from '../recap/recap-render.service';
 import { BracketsService } from './brackets.service';
 import { CategoriesController } from './categories.controller';
 import { CategoriesService } from './categories.service';
+import { DashboardStatsController } from './dashboard-stats.controller';
+import { DashboardStatsService } from './dashboard-stats.service';
 import { CrossGroupQualificationRulesController } from './cross-group-qualification-rules.controller';
 import { CrossGroupQualificationRulesService } from './cross-group-qualification-rules.service';
 import { DivisionsController } from './divisions.controller';
@@ -85,6 +87,7 @@ import { WrappedService } from './wrapped.service';
     ScoresController,
     StandingsController,
     PublicController,
+    DashboardStatsController,
   ],
   providers: [
     TournamentsService,
@@ -117,6 +120,7 @@ import { WrappedService } from './wrapped.service';
     PublicService,
     RealtimeService,
     WrappedService,
+    DashboardStatsService,
   ],
   // TournamentsService/CategoriesService additionally exported for
   // RegistrationsModule (feat/036), which resolves a public tournament by

@@ -1,0 +1,64 @@
+.tournament-stats-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: var(--ap-space-6);
+  color: var(--ap-color-fg);
+  font-family: var(--ap-font-body);
+
+  h1 {
+    margin: 0 0 var(--ap-space-6);
+  }
+
+  @media (max-width: 600px) {
+    padding: var(--ap-space-4);
+  }
+}
+
+.tournament-stats-page__error {
+  color: var(--ap-color-error);
+  font-size: 0.9rem;
+}
+
+.tournament-stats-page__subheading {
+  margin-top: var(--ap-space-6) !important;
+}
+
+.tournament-stats-page__facts {
+  list-style: none;
+  margin: var(--ap-space-4) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-1);
+  font-size: 0.85rem;
+  color: var(--ap-color-muted);
+  text-align: center;
+
+  a {
+    color: var(--ap-color-primary);
+  }
+}
+
+.tournament-stats-page__highlights {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-1);
+
+  dt {
+    font-size: 0.8rem;
+    color: var(--ap-color-muted);
+  }
+
+  dd {
+    margin: 0 0 var(--ap-space-3);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.tournament-stats-page__note {
+  margin: calc(-1 * var(--ap-space-3)) 0 var(--ap-space-3);
+  font-size: 0.8rem;
+  color: var(--ap-color-muted);
+}
