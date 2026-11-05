@@ -26,6 +26,10 @@
       />
     }
 
+    @if (tournaments().length > 0 && organization(); as org) {
+      <app-organization-dashboard [organizationId]="org.id" />
+    }
+
     @if (tournaments().length === 0) {
       <p>{{ 'admin.tournamentList.empty' | transloco }}</p>
     } @else {

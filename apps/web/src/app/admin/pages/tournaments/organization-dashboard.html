@@ -1,0 +1,119 @@
+@if (stats(); as s) {
+  <section class="org-dashboard" [attr.aria-label]="'admin.dashboard.title' | transloco">
+    <div class="org-dashboard__header">
+      <h2>{{ 'admin.dashboard.title' | transloco }}</h2>
+      <button
+        type="button"
+        class="org-dashboard__toggle"
+        [attr.aria-expanded]="!collapsed()"
+        aria-controls="org-dashboard-body"
+        (click)="toggle()"
+      >
+        {{ (collapsed() ? 'admin.dashboard.show' : 'admin.dashboard.hide') | transloco }}
+      </button>
+    </div>
+
+    @if (!collapsed()) {
+      <div id="org-dashboard-body">
+        <div class="stats-dashboard__tiles">
+          <div class="stats-dashboard__tile">
+            <span class="stats-dashboard__tile-label">{{
+              'admin.dashboard.tournaments' | transloco
+            }}</span>
+            <span class="stats-dashboard__tile-value">{{ s.tournaments.total }}</span>
+            <span class="stats-dashboard__tile-hint">{{
+              'admin.dashboard.publishedCount'
+                | transloco: { count: s.tournaments.byStatus.PUBLISHED }
+            }}</span>
+          </div>
+          <div class="stats-dashboard__tile stats-dashboard__tile--signal">
+            <span class="stats-dashboard__tile-label">{{
+              'admin.dashboard.teams' | transloco
+            }}</span>
+            <span class="stats-dashboard__tile-value">{{ s.teamsCount }}</span>
+            <span class="stats-dashboard__tile-hint">{{
+              'admin.dashboard.playersCount' | transloco: { count: s.playersCount }
+            }}</span>
+          </div>
+          <div class="stats-dashboard__tile stats-dashboard__tile--success">
+            <span class="stats-dashboard__tile-label">{{
+              'admin.dashboard.matchesPlayed' | transloco
+            }}</span>
+            <span class="stats-dashboard__tile-value">{{ s.matches.played }}</span>
+            <span class="stats-dashboard__tile-hint">
+              {{ 'admin.dashboard.ofTotal' | transloco: { total: s.matches.total } }}
+              @if (s.matches.live > 0) {
+                · {{ 'admin.dashboard.liveCount' | transloco: { count: s.matches.live } }}
+              }
+            </span>
+          </div>
+          <div class="stats-dashboard__tile">
+            <span class="stats-dashboard__tile-label">{{
+              'admin.dashboard.goals' | transloco
+            }}</span>
+            <span class="stats-dashboard__tile-value">{{ s.totalGoals }}</span>
+            <span class="stats-dashboard__tile-hint">{{
+              'admin.dashboard.goalsPerMatch'
+                | transloco
+                  : {
+                      average:
+                        (s.matches.played > 0 ? s.totalGoals / s.matches.played : 0)
+                        | number: '1.1-1',
+                    }
+            }}</span>
+          </div>
+          <div class="stats-dashboard__tile stats-dashboard__tile--warning">
+            <span class="stats-dashboard__tile-label">{{
+              'admin.dashboard.registrations' | transloco
+            }}</span>
+            <span class="stats-dashboard__tile-value">{{ s.registrations.paid }}</span>
+            <span class="stats-dashboard__tile-hint">
+              {{ formatAmount(s.registrations.revenueCents, s.registrations.currency) }}
+              @if (s.registrations.pending > 0) {
+                ·
+                {{ 'admin.dashboard.pendingCount' | transloco: { count: s.registrations.pending } }}
+              }
+            </span>
+          </div>
+          <div class="stats-dashboard__tile stats-dashboard__tile--signal">
+            <span class="stats-dashboard__tile-label">{{
+              'admin.dashboard.upcoming' | transloco
+            }}</span>
+            @if (s.upcoming; as upcoming) {
+              <a
+                class="stats-dashboard__tile-value stats-dashboard__tile-value--text org-dashboard__link"
+                [routerLink]="['/admin/tournaments', upcoming.id]"
+                >{{ upcoming.name }}</a
+              >
+              <span class="stats-dashboard__tile-hint">{{ formatDate(upcoming.startDate) }}</span>
+            } @else {
+              <span class="stats-dashboard__tile-value stats-dashboard__tile-value--text">-</span>
+              <span class="stats-dashboard__tile-hint">{{
+                'admin.dashboard.noUpcoming' | transloco
+              }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="stats-dashboard__panels">
+          <div class="stats-dashboard__panel">
+            <h3>{{ 'admin.dashboard.matchesByMonth' | transloco }}</h3>
+            <app-stats-columns [items]="monthColumns()" tone="success" />
+          </div>
+          <div class="stats-dashboard__panel">
+            <h3>{{ 'admin.dashboard.tournamentsByStatus' | transloco }}</h3>
+            <app-stats-segments [items]="statusSegments()" />
+          </div>
+          <div class="stats-dashboard__panel stats-dashboard__panel--wide">
+            <h3>{{ 'admin.dashboard.teamsByTournament' | transloco }}</h3>
+            <app-stats-bars
+              [items]="tournamentBars()"
+              tone="signal"
+              [emptyLabel]="'admin.dashboard.noActiveTournament' | transloco"
+            />
+          </div>
+        </div>
+      </div>
+    }
+  </section>
+}

@@ -462,7 +462,8 @@
       "close": "Fermer",
       "exportPdf": "Export PDF",
       "share": "Partager",
-      "premiumLocked": "Réservé aux tournois de plus de {{count}} équipes ou à un abonnement annuel actif."
+      "premiumLocked": "Réservé aux tournois de plus de {{count}} équipes ou à un abonnement annuel actif.",
+      "stats": "Statistiques"
     },
     "auth": {
       "login": {
@@ -1482,6 +1483,77 @@
       "errors": {
         "load": "Impossible de charger l'export."
       }
+    },
+    "dashboard": {
+      "title": "Vue d'ensemble",
+      "show": "Afficher",
+      "hide": "Masquer",
+      "tournaments": "Tournois",
+      "publishedCount": "{{count}} publié(s)",
+      "teams": "Équipes",
+      "playersCount": "{{count}} joueurs",
+      "matchesPlayed": "Matchs joués",
+      "ofTotal": "sur {{total}}",
+      "liveCount": "{{count}} en direct",
+      "goals": "Buts marqués",
+      "goalsPerMatch": "{{average}} par match",
+      "registrations": "Inscriptions payées",
+      "pendingCount": "{{count}} en attente",
+      "upcoming": "Prochain tournoi",
+      "noUpcoming": "Aucune date à venir",
+      "matchesByMonth": "Matchs joués par mois",
+      "tournamentsByStatus": "Tournois par statut",
+      "teamsByTournament": "Équipes par tournoi",
+      "matchesProgress": "{{played}}/{{total}} matchs",
+      "noActiveTournament": "Aucun tournoi actif."
+    },
+    "tournamentStats": {
+      "title": "Statistiques",
+      "loading": "Chargement…",
+      "errorLoad": "Impossible de charger les statistiques.",
+      "teams": "Équipes",
+      "playersCount": "{{count}} joueurs",
+      "matchesPlayed": "Matchs joués",
+      "ofTotal": "sur {{total}}",
+      "goals": "Buts marqués",
+      "goalsPerMatch": "{{average}} par match",
+      "categories": "Catégories",
+      "refereesCount": "{{count}} arbitres",
+      "registrations": "Inscriptions payées",
+      "pendingCount": "{{count}} en attente",
+      "progress": "Avancement",
+      "scheduledCount": "{{count}}/{{total}} matchs programmés",
+      "awaitingValidation": "{{count}} score(s) à valider",
+      "matchStatus": "Statut des matchs",
+      "outcomesTitle": "Issues des matchs",
+      "status": {
+        "completed": "Terminés",
+        "live": "En direct",
+        "scheduled": "À venir",
+        "postponed": "Reportés",
+        "cancelled": "Annulés / forfaits"
+      },
+      "outcomes": {
+        "homeWin": "Victoire équipe 1",
+        "awayWin": "Victoire équipe 2",
+        "draw": "Nul",
+        "shootout": "Tirs au but"
+      },
+      "highlights": "Faits marquants",
+      "highestScoring": "Match le plus prolifique",
+      "biggestWin": "Plus large victoire",
+      "penalties": "({{home}}-{{away}} t.a.b.)",
+      "topAttack": "Meilleures attaques",
+      "topDefense": "Meilleures défenses",
+      "topDefenseNote": "Buts encaissés, équipes avec au moins 3 matchs.",
+      "matchesCount": "{{count}} matchs",
+      "teamsByCategory": "Équipes par catégorie",
+      "matchesByHour": "Matchs par heure",
+      "fields": "Matchs par terrain",
+      "noMatches": "Aucun match pour l'instant.",
+      "noResults": "Aucun score validé pour le moment.",
+      "noDefense": "Pas encore assez de matchs joués.",
+      "noCategories": "Aucune catégorie."
     }
   },
   "wrapped": {
