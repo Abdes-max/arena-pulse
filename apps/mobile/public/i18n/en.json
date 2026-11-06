@@ -135,7 +135,8 @@
           "ARCHIVED": "Archived"
         },
         "newPlateau": "Create an event",
-        "liveAction": "Match day"
+        "liveAction": "Match day",
+        "statsAction": "Statistics"
       }
     },
     "account": {
@@ -437,6 +438,77 @@
         "shift": "Could not shift the calendar.",
         "shiftConflict": "This shift would overlap another slot on a field."
       }
+    },
+    "dashboard": {
+      "title": "Overview",
+      "show": "Show",
+      "hide": "Hide",
+      "tournaments": "Tournaments",
+      "publishedCount": "{{count}} published",
+      "teams": "Teams",
+      "playersCount": "{{count}} players",
+      "matchesPlayed": "Matches played",
+      "ofTotal": "of {{total}}",
+      "liveCount": "{{count}} live",
+      "goals": "Goals scored",
+      "goalsPerMatch": "{{average}} per match",
+      "registrations": "Paid registrations",
+      "pendingCount": "{{count}} pending",
+      "upcoming": "Next tournament",
+      "noUpcoming": "No upcoming date",
+      "matchesByMonth": "Matches played per month",
+      "tournamentsByStatus": "Tournaments by status",
+      "teamsByTournament": "Teams per tournament",
+      "matchesProgress": "{{played}}/{{total}} matches",
+      "noActiveTournament": "No active tournament."
+    },
+    "stats": {
+      "title": "Statistics",
+      "loading": "Loading…",
+      "errorLoad": "Unable to load statistics.",
+      "teams": "Teams",
+      "playersCount": "{{count}} players",
+      "matchesPlayed": "Matches played",
+      "ofTotal": "of {{total}}",
+      "goals": "Goals scored",
+      "goalsPerMatch": "{{average}} per match",
+      "categories": "Categories",
+      "refereesCount": "{{count}} referees",
+      "registrations": "Paid registrations",
+      "pendingCount": "{{count}} pending",
+      "progress": "Progress",
+      "scheduledCount": "{{count}}/{{total}} matches scheduled",
+      "awaitingValidation": "{{count}} score(s) to validate",
+      "matchStatus": "Match status",
+      "outcomesTitle": "Match outcomes",
+      "status": {
+        "completed": "Completed",
+        "live": "Live",
+        "scheduled": "Upcoming",
+        "postponed": "Postponed",
+        "cancelled": "Cancelled / forfeits"
+      },
+      "outcomes": {
+        "homeWin": "Team 1 win",
+        "awayWin": "Team 2 win",
+        "draw": "Draw",
+        "shootout": "Penalty shootout"
+      },
+      "highlights": "Highlights",
+      "highestScoring": "Highest-scoring match",
+      "biggestWin": "Biggest win",
+      "penalties": "({{home}}-{{away}} pens)",
+      "topAttack": "Best attacks",
+      "topDefense": "Best defences",
+      "topDefenseNote": "Goals conceded, teams with at least 3 matches.",
+      "matchesCount": "{{count}} matches",
+      "teamsByCategory": "Teams per category",
+      "matchesByHour": "Matches per hour",
+      "fields": "Matches per field",
+      "noMatches": "No matches yet.",
+      "noResults": "No validated score yet.",
+      "noDefense": "Not enough matches played yet.",
+      "noCategories": "No category."
     }
   }
 }

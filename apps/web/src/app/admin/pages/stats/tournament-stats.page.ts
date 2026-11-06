@@ -6,13 +6,7 @@ import { LanguageService } from 'design-tokens';
 import { AuthService } from '../../core/auth.service';
 import { StatsMatchHighlight, TournamentDashboardStats } from '../../core/models';
 import { StatsService } from '../../core/stats.service';
-import {
-  StatsBars,
-  StatsColumns,
-  StatsDatum,
-  StatsRing,
-  StatsSegments,
-} from '../../shared/stats-charts';
+import { StatsBars, StatsColumns, StatsDatum, StatsRing, StatsSegments } from 'design-system';
 
 /**
  * "Statistiques" tab of a tournament -- the organizer's dashboard view of

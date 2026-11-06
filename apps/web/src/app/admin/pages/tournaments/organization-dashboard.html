@@ -98,15 +98,15 @@
         <div class="stats-dashboard__panels">
           <div class="stats-dashboard__panel">
             <h3>{{ 'admin.dashboard.matchesByMonth' | transloco }}</h3>
-            <app-stats-columns [items]="monthColumns()" tone="success" />
+            <ap-stats-columns [items]="monthColumns()" tone="success" />
           </div>
           <div class="stats-dashboard__panel">
             <h3>{{ 'admin.dashboard.tournamentsByStatus' | transloco }}</h3>
-            <app-stats-segments [items]="statusSegments()" />
+            <ap-stats-segments [items]="statusSegments()" />
           </div>
           <div class="stats-dashboard__panel stats-dashboard__panel--wide">
             <h3>{{ 'admin.dashboard.teamsByTournament' | transloco }}</h3>
-            <app-stats-bars
+            <ap-stats-bars
               [items]="tournamentBars()"
               tone="signal"
               [emptyLabel]="'admin.dashboard.noActiveTournament' | transloco"

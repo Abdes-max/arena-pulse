@@ -1,0 +1,121 @@
+// Same tile/panel layout as apps/web/src/app/admin/shared/stats-dashboard.scss,
+// tightened for phone width (two tiles per row) -- pulled in through
+// styleUrls by OrganizerStatsPage and OrganizerDashboard.
+
+.stats-dashboard__tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--ap-space-3);
+}
+
+.stats-dashboard__tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-1);
+  min-width: 0;
+  padding: var(--ap-space-4);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-lg);
+  overflow: hidden;
+  animation: stats-dashboard-rise 500ms var(--ap-easing-standard) both;
+
+  // Thin accent line on top, the tile's only color -- keeps a grid of six
+  // tiles calm while still telling them apart at a glance.
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 3px;
+    background: var(--ap-color-primary);
+    opacity: 0.8;
+  }
+
+  @for $i from 1 through 8 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{($i - 1) * 50}ms;
+    }
+  }
+}
+
+.stats-dashboard__tile--success::before {
+  background: var(--ap-color-success);
+}
+
+.stats-dashboard__tile--warning::before {
+  background: var(--ap-color-warning);
+}
+
+.stats-dashboard__tile--signal::before {
+  background: var(--ap-color-signal);
+}
+
+.stats-dashboard__tile-label {
+  font-size: 0.8rem;
+  color: var(--ap-color-muted);
+}
+
+.stats-dashboard__tile-value {
+  font-family: var(--ap-font-heading);
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.stats-dashboard__tile-value--text {
+  font-size: 1.05rem;
+}
+
+.stats-dashboard__tile-hint {
+  font-size: 0.8rem;
+  color: var(--ap-color-muted);
+}
+
+.stats-dashboard__panels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--ap-space-3);
+  margin-top: var(--ap-space-3);
+}
+
+.stats-dashboard__panel {
+  min-width: 0;
+  padding: var(--ap-space-4);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-lg);
+  animation: stats-dashboard-rise 500ms 200ms var(--ap-easing-standard) both;
+
+  h3 {
+    margin: 0 0 var(--ap-space-4);
+    font-family: var(--ap-font-heading);
+    font-size: 0.95rem;
+  }
+}
+
+.stats-dashboard__panel--wide {
+  grid-column: 1 / -1;
+}
+
+.stats-dashboard__empty {
+  margin: 0;
+  color: var(--ap-color-muted);
+  font-size: 0.9rem;
+}
+
+@keyframes stats-dashboard-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stats-dashboard__tile,
+  .stats-dashboard__panel {
+    animation: none;
+  }
+}

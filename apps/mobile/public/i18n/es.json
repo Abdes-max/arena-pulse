@@ -135,7 +135,8 @@
           "ARCHIVED": "Archivado"
         },
         "newPlateau": "Create an event",
-        "liveAction": "Match day"
+        "liveAction": "Match day",
+        "statsAction": "Estadísticas"
       }
     },
     "account": {
@@ -437,6 +438,77 @@
         "shift": "Could not shift the calendar.",
         "shiftConflict": "This shift would overlap another slot on a field."
       }
+    },
+    "dashboard": {
+      "title": "Resumen",
+      "show": "Mostrar",
+      "hide": "Ocultar",
+      "tournaments": "Torneos",
+      "publishedCount": "{{count}} publicado(s)",
+      "teams": "Equipos",
+      "playersCount": "{{count}} jugadores",
+      "matchesPlayed": "Partidos jugados",
+      "ofTotal": "de {{total}}",
+      "liveCount": "{{count}} en directo",
+      "goals": "Goles marcados",
+      "goalsPerMatch": "{{average}} por partido",
+      "registrations": "Inscripciones pagadas",
+      "pendingCount": "{{count}} pendientes",
+      "upcoming": "Próximo torneo",
+      "noUpcoming": "Ninguna fecha próxima",
+      "matchesByMonth": "Partidos jugados por mes",
+      "tournamentsByStatus": "Torneos por estado",
+      "teamsByTournament": "Equipos por torneo",
+      "matchesProgress": "{{played}}/{{total}} partidos",
+      "noActiveTournament": "Ningún torneo activo."
+    },
+    "stats": {
+      "title": "Estadísticas",
+      "loading": "Cargando…",
+      "errorLoad": "No se pudieron cargar las estadísticas.",
+      "teams": "Equipos",
+      "playersCount": "{{count}} jugadores",
+      "matchesPlayed": "Partidos jugados",
+      "ofTotal": "de {{total}}",
+      "goals": "Goles marcados",
+      "goalsPerMatch": "{{average}} por partido",
+      "categories": "Categorías",
+      "refereesCount": "{{count}} árbitros",
+      "registrations": "Inscripciones pagadas",
+      "pendingCount": "{{count}} pendientes",
+      "progress": "Progreso",
+      "scheduledCount": "{{count}}/{{total}} partidos programados",
+      "awaitingValidation": "{{count}} resultado(s) por validar",
+      "matchStatus": "Estado de los partidos",
+      "outcomesTitle": "Resultados de los partidos",
+      "status": {
+        "completed": "Terminados",
+        "live": "En directo",
+        "scheduled": "Próximos",
+        "postponed": "Aplazados",
+        "cancelled": "Cancelados / incomparecencias"
+      },
+      "outcomes": {
+        "homeWin": "Victoria equipo 1",
+        "awayWin": "Victoria equipo 2",
+        "draw": "Empate",
+        "shootout": "Penaltis"
+      },
+      "highlights": "Destacados",
+      "highestScoring": "Partido con más goles",
+      "biggestWin": "Mayor victoria",
+      "penalties": "({{home}}-{{away}} pen.)",
+      "topAttack": "Mejores ataques",
+      "topDefense": "Mejores defensas",
+      "topDefenseNote": "Goles encajados, equipos con al menos 3 partidos.",
+      "matchesCount": "{{count}} partidos",
+      "teamsByCategory": "Equipos por categoría",
+      "matchesByHour": "Partidos por hora",
+      "fields": "Partidos por campo",
+      "noMatches": "Todavía no hay partidos.",
+      "noResults": "Aún no hay resultados validados.",
+      "noDefense": "Aún no hay suficientes partidos jugados.",
+      "noCategories": "Ninguna categoría."
     }
   }
 }

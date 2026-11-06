@@ -115,6 +115,7 @@ ion-title {
 
 .tcard__actions {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--ap-space-2);
 }
 

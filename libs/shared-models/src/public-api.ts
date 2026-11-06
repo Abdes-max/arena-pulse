@@ -12,3 +12,4 @@ export * from './lib/is-tournament-current.util';
 export * from './lib/header-background-presets';
 export * from './lib/age-categories';
 export * from './lib/maps-link.util';
+export * from './lib/dashboard-stats';

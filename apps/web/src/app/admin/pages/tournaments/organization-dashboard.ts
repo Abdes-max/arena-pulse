@@ -13,7 +13,7 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { LanguageService } from 'design-tokens';
 import { OrganizationDashboardStats } from '../../core/models';
 import { StatsService } from '../../core/stats.service';
-import { StatsBars, StatsColumns, StatsDatum, StatsSegments } from '../../shared/stats-charts';
+import { StatsBars, StatsColumns, StatsDatum, StatsSegments } from 'design-system';
 
 const COLLAPSED_STORAGE_KEY = 'arena-pulse:org-dashboard-collapsed';
 
