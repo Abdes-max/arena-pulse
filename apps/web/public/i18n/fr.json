@@ -91,7 +91,8 @@
         "badminton": "Simples, doubles, plusieurs catégories d'âge dans un même tournoi, chacune avec son propre tableau.",
         "futsal": "Le même moteur que le foot à onze, calibré pour vos formats en salle.",
         "esport": "Tournois en ligne ou LAN, un site public en direct pour suivre chaque match comme les autres sports.",
-        "default": "Poules, championnat ou élimination directe : votre format, vos règles."
+        "default": "Poules, championnat ou élimination directe : votre format, vos règles.",
+        "padel": "Tournois par paires, poules puis phases finales, scores en sets et classements en direct sur chaque piste."
       }
     },
     "pricing": {

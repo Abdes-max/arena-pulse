@@ -91,7 +91,8 @@
         "badminton": "Einzel, Doppel, mehrere Altersklassen in einem Turnier, jede mit eigener Tabelle.",
         "futsal": "Dieselbe Engine wie beim Elf-gegen-elf-Fußball, angepasst an Ihre Hallenformate.",
         "esport": "Online- oder LAN-Turniere, eine Live-Website, um jedes Match wie bei jeder anderen Sportart zu verfolgen.",
-        "default": "Gruppen, Meisterschaft oder K.-o.-System: Ihr Format, Ihre Regeln."
+        "default": "Gruppen, Meisterschaft oder K.-o.-System: Ihr Format, Ihre Regeln.",
+        "padel": "Turniere im Doppel, Gruppen und dann K.-o.-Runden, Ergebnisse in Sätzen und Live-Tabellen auf jedem Court."
       }
     },
     "pricing": {

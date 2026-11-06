@@ -43,6 +43,7 @@ const SPORT_DESCRIPTION_KEYS: Record<string, string> = {
   Badminton: 'landing.sports.description.badminton',
   Futsal: 'landing.sports.description.futsal',
   Esport: 'landing.sports.description.esport',
+  Padel: 'landing.sports.description.padel',
 };
 const DEFAULT_SPORT_DESCRIPTION_KEY = 'landing.sports.description.default';
 

@@ -91,7 +91,8 @@
         "badminton": "Singolare, doppio, più categorie d'età nello stesso torneo, ognuna con il proprio tabellone.",
         "futsal": "Lo stesso motore del calcio a undici, calibrato per i tuoi formati al chiuso.",
         "esport": "Tornei online o LAN, un sito pubblico in diretta per seguire ogni partita come in ogni altro sport.",
-        "default": "Gironi, campionato o eliminazione diretta: il tuo formato, le tue regole."
+        "default": "Gironi, campionato o eliminazione diretta: il tuo formato, le tue regole.",
+        "padel": "Tornei a coppie, gironi poi fasi finali, punteggi in set e classifiche in diretta su ogni campo."
       }
     },
     "pricing": {
