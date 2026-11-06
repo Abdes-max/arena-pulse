@@ -15,6 +15,7 @@ const SPORTS = [
   'Badminton',
   'Futsal',
   'Esport',
+  'Padel',
 ];
 
 // Order and labels match docs/product/roles-and-permissions.md exactly.

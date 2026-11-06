@@ -1,0 +1,32 @@
+# Manual, one-off: seeds the "Open Padel Sainte-Victoire 2026" example
+# tournament in production (apps/api/prisma/seed-padel-example.ts) -- same
+# mechanics as seed-world-cup-2026.yml: the already-built `migrate` image
+# (script compiled into dist/, logo/poster under prisma/assets/padel/),
+# API_URL pointed at the api service on the Compose network. The Padel sport
+# itself comes from prisma/seed.ts, which the migrate service already runs on
+# every deploy -- deploy first, then run this.
+name: Seed padel example tournament
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  seed:
+    name: Seed on Hostinger VPS
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Run seed-padel-example.ts inside the migrate image
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          timeout: 90s
+          # ~200 API calls paced 650ms apart -- a few minutes.
+          command_timeout: 10m
+          script: |
+            set -euo pipefail
+            cd "${{ secrets.DEPLOY_PATH }}"
+            docker compose -f infra/deployment/docker-compose.prod.yml --env-file infra/deployment/.env run --rm -e API_URL=http://api:3000/api/v1 migrate node dist/prisma/seed-padel-example.js

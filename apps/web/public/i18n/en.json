@@ -91,7 +91,8 @@
         "badminton": "Singles, doubles, several age categories in the same tournament, each with its own bracket.",
         "futsal": "The same engine as 11-a-side football, tuned for your indoor formats.",
         "esport": "Online or LAN tournaments, a live public site to follow every match just like any other sport.",
-        "default": "Pools, league or knockout: your format, your rules."
+        "default": "Pools, league or knockout: your format, your rules.",
+        "padel": "Pairs tournaments, pools then knockout rounds, scores in sets and live standings on every court."
       }
     },
     "pricing": {

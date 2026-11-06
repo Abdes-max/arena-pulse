@@ -91,7 +91,8 @@
         "badminton": "Individuais, pares, várias categorias etárias no mesmo torneio, cada uma com o seu próprio quadro.",
         "futsal": "O mesmo motor do futebol de onze, adaptado aos seus formatos de pavilhão.",
         "esport": "Torneios online ou LAN, um site público ao vivo para seguir cada partida como em qualquer outro desporto.",
-        "default": "Grupos, campeonato ou eliminação direta: o seu formato, as suas regras."
+        "default": "Grupos, campeonato ou eliminação direta: o seu formato, as suas regras.",
+        "padel": "Torneios por pares, grupos e depois eliminatórias, resultados em sets e classificações em direto em cada campo."
       }
     },
     "pricing": {
