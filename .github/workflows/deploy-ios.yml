@@ -5,8 +5,9 @@
 # to TestFlight via xcodebuild's built-in "destination: upload" export
 # (Xcode 13+ -- no Fastlane/altool dependency needed).
 #
-# Runs automatically on every push to master (same "merge = deployed to
-# test" model as deploy-prod.yml/deploy-android.yml) -- this is TestFlight
+# Runs automatically on every push to master that touches the app (paths
+# filter below; same "merge = deployed to test" model as
+# deploy-prod.yml/deploy-android.yml) -- this is TestFlight
 # only, never the public App Store. Submitting a build that passed
 # TestFlight for App Store review is a deliberate, separate manual step:
 # submit-ios-app-store.yml (workflow_dispatch-only, see
@@ -31,6 +32,17 @@ name: Deploy iOS to TestFlight
 on:
   push:
     branches: [master]
+    # Only merges that can change the app binary -- a docs/API/admin-web-only
+    # merge used to rebuild and re-upload an identical app (macOS minutes are
+    # 10x Linux ones). workflow_dispatch below still forces a build anytime.
+    paths:
+      - 'apps/mobile/**'
+      - 'libs/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'angular.json'
+      - 'tsconfig.json'
+      - '.github/workflows/deploy-ios.yml'
   workflow_dispatch:
     inputs:
       build_number:
