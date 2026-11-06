@@ -32,6 +32,17 @@ name: Deploy Android to Play Console (internal track)
 on:
   push:
     branches: [master]
+    # Only merges that can change the app binary -- a docs/API/admin-web-only
+    # merge used to rebuild and re-upload an identical app (macOS minutes are
+    # 10x Linux ones). workflow_dispatch below still forces a build anytime.
+    paths:
+      - 'apps/mobile/**'
+      - 'libs/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'angular.json'
+      - 'tsconfig.json'
+      - '.github/workflows/deploy-android.yml'
   workflow_dispatch:
     inputs:
       version_code:
