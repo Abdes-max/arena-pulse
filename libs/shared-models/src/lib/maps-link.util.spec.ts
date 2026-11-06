@@ -1,5 +1,7 @@
 import {
   detectMapsPlatform,
+  venueCityLine,
+  venueDisplayLabel,
   venueMapsQuery,
   venueMapsUrl,
   venueNavigationApps,
@@ -28,6 +30,15 @@ describe('maps link', () => {
     expect(venueMapsQuery({ name: '12 rue X', address: '12 rue X, 75001 Paris' })).toBe(
       '12 rue X, 75001 Paris',
     );
+  });
+
+  it('shows postcode and city next to the venue name', () => {
+    expect(venueCityLine(STADIUM.address)).toBe('13547 Aix-en-Provence');
+    expect(venueDisplayLabel(STADIUM)).toBe('Stade Marius Requier, 13547 Aix-en-Provence');
+    expect(venueCityLine('Gymnase, Lyon')).toBeNull();
+    expect(venueDisplayLabel({ name: 'Gymnase', address: null })).toBe('Gymnase');
+    expect(venueDisplayLabel({ name: 'Gymnase', address: 'Gymnase, Lyon' })).toBe('Gymnase');
+    expect(venueCityLine('Sporthalle, 8001 Zürich, Schweiz')).toBe('8001 Zürich');
   });
 
   it('builds the right link per platform', () => {

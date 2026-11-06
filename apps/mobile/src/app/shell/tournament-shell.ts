@@ -1,4 +1,9 @@
-import { detectMapsPlatform, venueMapsUrl, venueNavigationApps } from 'shared-models';
+import {
+  detectMapsPlatform,
+  venueDisplayLabel,
+  venueMapsUrl,
+  venueNavigationApps,
+} from 'shared-models';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -310,6 +315,9 @@ export class TournamentShell {
     });
     await sheet.present();
   }
+
+  // "Stade X, 13100 Aix-en-Provence" -- one link with the name, postcode and city.
+  protected readonly venueLabel = venueDisplayLabel;
 
   protected openVenueInMaps(venue: { name: string; address: string | null }): void {
     const platform = detectMapsPlatform(navigator.userAgent, navigator.maxTouchPoints);
