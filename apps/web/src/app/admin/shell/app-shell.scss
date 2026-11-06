@@ -58,6 +58,36 @@
   gap: var(--ap-space-3);
 }
 
+// Simple / complet -- a two-option segmented control rather than a single
+// on/off switch, so both modes stay named on screen.
+.app-shell__ui-mode {
+  display: inline-flex;
+  padding: 2px;
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-pill);
+}
+
+.app-shell__ui-mode-option {
+  padding: var(--ap-space-1) var(--ap-space-3);
+  border: none;
+  border-radius: var(--ap-radius-pill);
+  background: transparent;
+  color: var(--ap-color-muted);
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--ap-color-focus);
+    outline-offset: 2px;
+  }
+}
+
+.app-shell__ui-mode-option--active {
+  background: var(--ap-color-primary);
+  color: var(--ap-color-on-primary);
+}
+
 // Hidden by default (desktop) -- shown only under the mobile breakpoint
 // below, top-right of the topbar. Same pattern as the landing page's own
 // hamburger toggle (landing.page.scss's .landing-page__nav-toggle).

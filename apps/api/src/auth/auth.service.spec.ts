@@ -586,4 +586,43 @@ describe('AuthService', () => {
       });
     });
   });
+
+  describe('updatePreferences', () => {
+    it('stores the admin UI mode and returns the refreshed profile', async () => {
+      prisma.user.update.mockResolvedValue({});
+      prisma.user.findUniqueOrThrow.mockResolvedValue({
+        id: 'user-1',
+        email: 'organizer@example.com',
+        firstName: 'Ada',
+        lastName: 'Lovelace',
+        adminUiMode: 'FULL',
+        memberships: [
+          {
+            role: OrganizationRole.ORG_ADMIN,
+            organization: { id: 'org-1', name: 'Ada Tournaments' },
+          },
+        ],
+      });
+
+      const profile = await service.updatePreferences('user-1', {
+        adminUiMode: 'FULL',
+      });
+
+      expect(prisma.user.update).toHaveBeenCalledWith({
+        where: { id: 'user-1' },
+        data: { adminUiMode: 'FULL' },
+      });
+      expect(profile).toMatchObject({
+        id: 'user-1',
+        adminUiMode: 'FULL',
+        organizations: [
+          {
+            id: 'org-1',
+            name: 'Ada Tournaments',
+            role: OrganizationRole.ORG_ADMIN,
+          },
+        ],
+      });
+    });
+  });
 });

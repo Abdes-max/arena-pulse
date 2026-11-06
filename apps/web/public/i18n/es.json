@@ -341,6 +341,11 @@
         "body": "Tu sesión caducará en {{seconds}} segundos por inactividad.",
         "stayConnected": "Permanecer conectado",
         "logout": "Cerrar sesión"
+      },
+      "uiMode": {
+        "label": "Modo de visualización",
+        "simple": "Simple",
+        "full": "Completo"
       }
     },
     "submenu": {
@@ -871,7 +876,9 @@
         "save": "Guardar",
         "cancel": "Cancelar",
         "nameLabel": "Nuevo nombre"
-      }
+      },
+      "simpleModeNotice": "Modo simple: algunos ajustes avanzados están ocultos.",
+      "simpleModeSwitch": "Cambiar al modo completo"
     },
     "teamList": {
       "title": "Equipos",

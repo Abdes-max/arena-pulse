@@ -443,6 +443,11 @@
         "body": "Votre session va expirer dans {{seconds}} secondes pour inactivité.",
         "stayConnected": "Rester connecté",
         "logout": "Se déconnecter"
+      },
+      "uiMode": {
+        "label": "Mode d'affichage",
+        "simple": "Simple",
+        "full": "Complet"
       }
     },
     "submenu": {
@@ -973,7 +978,9 @@
         "save": "Enregistrer",
         "cancel": "Annuler",
         "nameLabel": "Nouveau nom"
-      }
+      },
+      "simpleModeNotice": "Mode simple : certains réglages avancés sont masqués.",
+      "simpleModeSwitch": "Passer en mode complet"
     },
     "teamList": {
       "title": "Équipes",

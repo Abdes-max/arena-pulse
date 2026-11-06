@@ -10,11 +10,15 @@ export * from 'shared-models';
 
 export type OrganizationRole = 'ORG_ADMIN' | 'ORG_MEMBER';
 
+// Admin web navigation density -- see the API's User.adminUiMode.
+export type AdminUiMode = 'SIMPLE' | 'FULL';
+
 export interface User {
   id: string;
   email: string;
   firstName: string;
   lastName: string;
+  adminUiMode: AdminUiMode;
 }
 
 export interface OrganizationSummary {

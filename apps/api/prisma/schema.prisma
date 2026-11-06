@@ -25,6 +25,11 @@ enum InvitationStatus {
   REVOKED
 }
 
+enum AdminUiMode {
+  SIMPLE
+  FULL
+}
+
 model User {
   id           String   @id @default(uuid())
   email        String   @unique
@@ -48,6 +53,13 @@ model User {
   // grants account takeover if intercepted, not just "confirm an address".
   passwordResetTokenHash String?   @unique
   passwordResetExpiresAt DateTime?
+
+  // Admin web navigation density (simple = essential tabs/sections only,
+  // full = everything) -- a display preference only, nothing is locked:
+  // hidden pages stay reachable by URL. New accounts start SIMPLE; accounts
+  // that existed before this field were migrated to FULL so nothing they
+  // already used disappears (see migration 20261106120000_add_admin_ui_mode).
+  adminUiMode AdminUiMode @default(SIMPLE)
 
   memberships                  OrganizationMember[]
   refreshTokens                RefreshToken[]

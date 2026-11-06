@@ -28,6 +28,22 @@
   font-size: 0.9rem;
 }
 
+.tournament-form-page__simple-notice {
+  margin: 0 0 var(--ap-space-4);
+  color: var(--ap-color-muted);
+  font-size: 0.85rem;
+}
+
+.tournament-form-page__simple-switch {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--ap-color-primary);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .tournament-form-page__lifecycle {
   display: flex;
   align-items: center;

@@ -341,6 +341,11 @@
         "body": "Ihre Sitzung läuft in {{seconds}} Sekunden wegen Inaktivität ab.",
         "stayConnected": "Verbunden bleiben",
         "logout": "Abmelden"
+      },
+      "uiMode": {
+        "label": "Anzeigemodus",
+        "simple": "Einfach",
+        "full": "Vollständig"
       }
     },
     "submenu": {
@@ -871,7 +876,9 @@
         "save": "Speichern",
         "cancel": "Abbrechen",
         "nameLabel": "Neuer Name"
-      }
+      },
+      "simpleModeNotice": "Einfacher Modus: Einige erweiterte Einstellungen sind ausgeblendet.",
+      "simpleModeSwitch": "Zum vollständigen Modus wechseln"
     },
     "teamList": {
       "title": "Teams",

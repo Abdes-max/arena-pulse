@@ -66,6 +66,7 @@ export class TournamentListPage {
 
   protected readonly organization = computed(() => this.authService.organizations()[0] ?? null);
   protected readonly statusBadge = STATUS_TO_BADGE;
+  protected readonly simpleMode = this.authService.simpleMode;
 
   protected readonly tournaments = signal<Tournament[]>([]);
   protected readonly loading = signal(true);
@@ -125,13 +126,18 @@ export class TournamentListPage {
         done: this.hasTeam(),
         actionLabel: t('addTeam.action'),
       },
-      {
-        key: 'structure',
-        title: t('structure.title'),
-        description: t('structure.description'),
-        done: this.hasStructure(),
-        actionLabel: t('structure.action'),
-      },
+      // Simple mode hides the Structure tab -- no step pointing at it.
+      ...(this.simpleMode()
+        ? []
+        : [
+            {
+              key: 'structure',
+              title: t('structure.title'),
+              description: t('structure.description'),
+              done: this.hasStructure(),
+              actionLabel: t('structure.action'),
+            },
+          ]),
       {
         key: 'publish',
         title: t('publish.title'),

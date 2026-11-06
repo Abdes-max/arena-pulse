@@ -443,6 +443,11 @@
         "body": "Your session will expire in {{seconds}} seconds due to inactivity.",
         "stayConnected": "Stay connected",
         "logout": "Log out"
+      },
+      "uiMode": {
+        "label": "Display mode",
+        "simple": "Simple",
+        "full": "Full"
       }
     },
     "submenu": {
@@ -973,7 +978,9 @@
         "save": "Save",
         "cancel": "Cancel",
         "nameLabel": "New name"
-      }
+      },
+      "simpleModeNotice": "Simple mode: some advanced settings are hidden.",
+      "simpleModeSwitch": "Switch to full mode"
     },
     "teamList": {
       "title": "Teams",
