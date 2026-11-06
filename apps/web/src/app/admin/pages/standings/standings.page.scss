@@ -78,7 +78,10 @@
   }
 }
 
-.standings-page__team-cell {
+// Flex on an inner span, not on the <td> itself -- a display:flex cell
+// stops being a table-cell, so it no longer lines up with its column
+// (same fix as the public standings page).
+.standings-page__team-cell-inner {
   display: flex;
   align-items: center;
   gap: var(--ap-space-1);
@@ -158,10 +161,20 @@
     // columns. Narrowing the widest remaining fixed column (the Qualifié
     // badge, previously sized for its full desktop label) hands that room
     // back to Équipe, which has no explicit width and absorbs whatever's
-    // left in a fixed-layout table.
+    // left in a fixed-layout table. Not below the pill's own width though
+    // (~100px for "QUALIFIÉ") -- at 80px it spilled over the team name.
     th:nth-child(3),
     td:nth-child(3) {
-      width: 80px;
+      width: 104px;
+    }
+  }
+
+  // Phone width: no room for both a readable team name and the badge, so
+  // the badge column goes -- the row's own qualified/tier tint still marks it.
+  @media (max-width: 480px) {
+    th:nth-child(3),
+    td:nth-child(3) {
+      display: none;
     }
   }
 }
@@ -199,6 +212,7 @@
 }
 
 .standings-page__tie {
+  max-width: 100%;
   margin: 0;
   font-size: 0.85rem;
   display: flex;
@@ -215,7 +229,7 @@
 }
 
 .standings-page__tie-select {
-  min-width: 180px;
+  min-width: min(180px, 100%);
 }
 
 .standings-page__points {
