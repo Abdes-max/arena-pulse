@@ -3,9 +3,9 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 
 /**
  * Small dependency-free chart primitives for the admin dashboards
- * (TournamentListPage's organization strip, TournamentStatsPage) -- plain
- * SVG/CSS bound to design tokens, so they follow the active theme and dark
- * mode like the rest of the admin. Every chart keeps its numbers as visible
+ * (organization overview + per-tournament stats, admin web and organizer
+ * app) -- plain SVG/CSS bound to design tokens, so they follow the active
+ * theme and dark mode like the rest of the admin. Every chart keeps its numbers as visible
  * text (or an aria-label for the purely graphical ring) so nothing is
  * conveyed by shape or color alone.
  */
@@ -37,7 +37,7 @@ const SHARED_STYLES = `
 
 /** Completion ring: `value` out of `total`, percentage in the middle. */
 @Component({
-  selector: 'app-stats-ring',
+  selector: 'ap-stats-ring',
   imports: [DecimalPipe],
   template: `
     <div class="ring" [class]="'ring tone-' + tone()">
@@ -128,7 +128,7 @@ export class StatsRing {
 
 /** Horizontal bars, one row per datum, scaled to the largest value. */
 @Component({
-  selector: 'app-stats-bars',
+  selector: 'ap-stats-bars',
   template: `
     @if (items().length === 0) {
       <p class="bars__empty">{{ emptyLabel() }}</p>
@@ -223,7 +223,7 @@ export class StatsBars {
 
 /** Vertical columns over a short ordered series (months, hours). */
 @Component({
-  selector: 'app-stats-columns',
+  selector: 'ap-stats-columns',
   template: `
     <ol class="columns" [class]="'columns tone-' + tone()">
       @for (item of items(); track $index) {
@@ -304,7 +304,7 @@ export class StatsColumns {
 
 /** One stacked bar split into parts of a whole, with a legend below. */
 @Component({
-  selector: 'app-stats-segments',
+  selector: 'ap-stats-segments',
   template: `
     <div class="segments__bar" aria-hidden="true">
       @for (item of visibleItems(); track item.label) {

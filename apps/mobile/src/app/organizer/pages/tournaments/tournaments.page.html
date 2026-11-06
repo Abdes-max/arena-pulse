@@ -44,6 +44,9 @@
         {{ 'organizer.tournaments.list.empty' | transloco }}
       </p>
     } @else {
+      @if (organizations()[0]; as org) {
+        <app-organizer-dashboard [organizationId]="org.id" />
+      }
       @for (t of tournaments(); track t.id) {
         <div
           class="tcard"
@@ -75,6 +78,9 @@
             </button>
             <button type="button" class="tcard__action" (click)="openStandings($event, t)">
               {{ 'organizer.tournaments.list.standingsAction' | transloco }}
+            </button>
+            <button type="button" class="tcard__action" (click)="openStats($event, t)">
+              {{ 'organizer.tournaments.list.statsAction' | transloco }}
             </button>
           </div>
         </div>

@@ -92,6 +92,12 @@ export const routes: Routes = [
       import('./organizer/pages/standings/standings.page').then((m) => m.OrganizerStandingsPage),
   },
   {
+    path: 'organizer/tournaments/:id/stats',
+    canActivate: [organizerAuthGuard],
+    loadComponent: () =>
+      import('./organizer/pages/stats/stats.page').then((m) => m.OrganizerStatsPage),
+  },
+  {
     path: ':slug',
     loadComponent: () => import('./shell/tournament-shell').then((m) => m.TournamentShell),
     children: [

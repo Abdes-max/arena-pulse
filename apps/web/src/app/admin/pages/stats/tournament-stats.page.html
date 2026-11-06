@@ -64,7 +64,7 @@
     <div class="stats-dashboard__panels">
       <div class="stats-dashboard__panel">
         <h3>{{ 'admin.tournamentStats.progress' | transloco }}</h3>
-        <app-stats-ring
+        <ap-stats-ring
           [value]="s.matches.validated"
           [total]="s.matches.total"
           [label]="'admin.tournamentStats.matchesPlayed' | transloco"
@@ -91,7 +91,7 @@
       <div class="stats-dashboard__panel">
         <h3>{{ 'admin.tournamentStats.matchStatus' | transloco }}</h3>
         @if (s.matches.total > 0) {
-          <app-stats-segments [items]="statusSegments()" />
+          <ap-stats-segments [items]="statusSegments()" />
         } @else {
           <p class="stats-dashboard__empty">{{ 'admin.tournamentStats.noMatches' | transloco }}</p>
         }
@@ -99,7 +99,7 @@
           {{ 'admin.tournamentStats.outcomesTitle' | transloco }}
         </h3>
         @if (s.matches.validated > 0) {
-          <app-stats-segments [items]="outcomeSegments()" />
+          <ap-stats-segments [items]="outcomeSegments()" />
         } @else {
           <p class="stats-dashboard__empty">{{ 'admin.tournamentStats.noResults' | transloco }}</p>
         }
@@ -125,7 +125,7 @@
 
       <div class="stats-dashboard__panel">
         <h3>{{ 'admin.tournamentStats.topAttack' | transloco }}</h3>
-        <app-stats-bars
+        <ap-stats-bars
           [items]="attackBars()"
           tone="success"
           [emptyLabel]="'admin.tournamentStats.noResults' | transloco"
@@ -137,7 +137,7 @@
         <p class="tournament-stats-page__note">
           {{ 'admin.tournamentStats.topDefenseNote' | transloco }}
         </p>
-        <app-stats-bars
+        <ap-stats-bars
           [items]="defenseBars()"
           tone="signal"
           [emptyLabel]="'admin.tournamentStats.noDefense' | transloco"
@@ -146,7 +146,7 @@
 
       <div class="stats-dashboard__panel">
         <h3>{{ 'admin.tournamentStats.teamsByCategory' | transloco }}</h3>
-        <app-stats-bars
+        <ap-stats-bars
           [items]="categoryBars()"
           [emptyLabel]="'admin.tournamentStats.noCategories' | transloco"
         />
@@ -155,14 +155,14 @@
       @if (hourColumns().length > 0) {
         <div class="stats-dashboard__panel stats-dashboard__panel--wide">
           <h3>{{ 'admin.tournamentStats.matchesByHour' | transloco }}</h3>
-          <app-stats-columns [items]="hourColumns()" />
+          <ap-stats-columns [items]="hourColumns()" />
         </div>
       }
 
       @if (fieldBars().length > 0) {
         <div class="stats-dashboard__panel stats-dashboard__panel--wide">
           <h3>{{ 'admin.tournamentStats.fields' | transloco }}</h3>
-          <app-stats-bars [items]="fieldBars()" tone="warning" />
+          <ap-stats-bars [items]="fieldBars()" tone="warning" />
         </div>
       }
     </div>

@@ -7,6 +7,7 @@ import { Badge, Logo } from 'design-system';
 import { OrganizerAuthService } from '../../core/auth.service';
 import { OrganizerTournament } from '../../core/models';
 import { OrganizerTournamentsService } from '../../core/tournaments.service';
+import { OrganizerDashboard } from './organizer-dashboard';
 
 // Real "Mes tournois" list -- replaces the PR 1 placeholder (register ->
 // verify -> login -> land somewhere real) now that the creation wizard
@@ -20,7 +21,17 @@ import { OrganizerTournamentsService } from '../../core/tournaments.service';
 // in the plan file's "PR 4+ -- parité complète" section.
 @Component({
   selector: 'app-organizer-tournaments-page',
-  imports: [Badge, IonContent, IonHeader, IonTitle, IonToolbar, Logo, RouterLink, TranslocoPipe],
+  imports: [
+    Badge,
+    IonContent,
+    IonHeader,
+    IonTitle,
+    IonToolbar,
+    Logo,
+    OrganizerDashboard,
+    RouterLink,
+    TranslocoPipe,
+  ],
   templateUrl: './tournaments.page.html',
   styleUrl: './tournaments.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -93,6 +104,12 @@ export class OrganizerTournamentsPage {
   protected async openStandings(event: Event, tournament: OrganizerTournament): Promise<void> {
     event.stopPropagation();
     await this.router.navigateByUrl(`/organizer/tournaments/${tournament.id}/standings`);
+  }
+
+  /** Same as openScores() above. */
+  protected async openStats(event: Event, tournament: OrganizerTournament): Promise<void> {
+    event.stopPropagation();
+    await this.router.navigateByUrl(`/organizer/tournaments/${tournament.id}/stats`);
   }
 
   // "12 oct. 2026 · Stade" under the name -- same as apps/web's

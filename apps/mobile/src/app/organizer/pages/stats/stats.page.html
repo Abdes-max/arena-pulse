@@ -1,0 +1,179 @@
+<ion-header>
+  <ion-toolbar>
+    <button
+      type="button"
+      class="stats-page__back"
+      slot="start"
+      (click)="goBack()"
+      [attr.aria-label]="'organizer.wizard.cancelAria' | transloco"
+    >
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+        <path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+      </svg>
+    </button>
+    <ion-title>{{ 'organizer.stats.title' | transloco }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="stats-page">
+  @if (loading()) {
+    <p class="stats-page__hint">{{ 'organizer.stats.loading' | transloco }}</p>
+  } @else if (errorMessage(); as message) {
+    <p class="stats-page__error" role="alert">{{ message | transloco }}</p>
+  } @else if (stats(); as s) {
+    <div class="stats-dashboard__tiles">
+      <div class="stats-dashboard__tile stats-dashboard__tile--signal">
+        <span class="stats-dashboard__tile-label">{{ 'organizer.stats.teams' | transloco }}</span>
+        <span class="stats-dashboard__tile-value">{{ s.teamsCount }}</span>
+        <span class="stats-dashboard__tile-hint">{{
+          'organizer.stats.playersCount' | transloco: { count: s.playersCount }
+        }}</span>
+      </div>
+      <div class="stats-dashboard__tile stats-dashboard__tile--success">
+        <span class="stats-dashboard__tile-label">{{
+          'organizer.stats.matchesPlayed' | transloco
+        }}</span>
+        <span class="stats-dashboard__tile-value">{{ s.matches.validated }}</span>
+        <span class="stats-dashboard__tile-hint">{{
+          'organizer.stats.ofTotal' | transloco: { total: s.matches.total }
+        }}</span>
+      </div>
+      <div class="stats-dashboard__tile">
+        <span class="stats-dashboard__tile-label">{{ 'organizer.stats.goals' | transloco }}</span>
+        <span class="stats-dashboard__tile-value">{{ s.goals.total }}</span>
+        <span class="stats-dashboard__tile-hint">{{
+          'organizer.stats.goalsPerMatch'
+            | transloco: { average: s.goals.averagePerMatch | number: '1.1-1' }
+        }}</span>
+      </div>
+      <div class="stats-dashboard__tile">
+        <span class="stats-dashboard__tile-label">{{
+          'organizer.stats.categories' | transloco
+        }}</span>
+        <span class="stats-dashboard__tile-value">{{ s.categoriesCount }}</span>
+        <span class="stats-dashboard__tile-hint">{{
+          'organizer.stats.refereesCount' | transloco: { count: s.refereesCount }
+        }}</span>
+      </div>
+      <div class="stats-dashboard__tile stats-dashboard__tile--warning">
+        <span class="stats-dashboard__tile-label">{{
+          'organizer.stats.registrations' | transloco
+        }}</span>
+        <span class="stats-dashboard__tile-value">{{ s.registrations.paid }}</span>
+        <span class="stats-dashboard__tile-hint">
+          {{ formatAmount(s.registrations.revenueCents, s.registrations.currency) }}
+          @if (s.registrations.pending > 0) {
+            ·
+            {{ 'organizer.stats.pendingCount' | transloco: { count: s.registrations.pending } }}
+          }
+        </span>
+      </div>
+    </div>
+
+    <div class="stats-dashboard__panels">
+      <div class="stats-dashboard__panel">
+        <h3>{{ 'organizer.stats.progress' | transloco }}</h3>
+        <ap-stats-ring
+          [value]="s.matches.validated"
+          [total]="s.matches.total"
+          [label]="'organizer.stats.matchesPlayed' | transloco"
+          tone="success"
+        />
+        <ul class="stats-page__facts">
+          <li>
+            {{
+              'organizer.stats.scheduledCount'
+                | transloco: { count: s.matches.scheduled, total: s.matches.total }
+            }}
+          </li>
+          @if (s.matches.awaitingValidation > 0) {
+            <li>
+              <a [routerLink]="['/organizer/tournaments', tournamentId, 'scores']">{{
+                'organizer.stats.awaitingValidation'
+                  | transloco: { count: s.matches.awaitingValidation }
+              }}</a>
+            </li>
+          }
+        </ul>
+      </div>
+
+      <div class="stats-dashboard__panel">
+        <h3>{{ 'organizer.stats.matchStatus' | transloco }}</h3>
+        @if (s.matches.total > 0) {
+          <ap-stats-segments [items]="statusSegments()" />
+        } @else {
+          <p class="stats-dashboard__empty">{{ 'organizer.stats.noMatches' | transloco }}</p>
+        }
+        <h3 class="stats-page__subheading">
+          {{ 'organizer.stats.outcomesTitle' | transloco }}
+        </h3>
+        @if (s.matches.validated > 0) {
+          <ap-stats-segments [items]="outcomeSegments()" />
+        } @else {
+          <p class="stats-dashboard__empty">{{ 'organizer.stats.noResults' | transloco }}</p>
+        }
+      </div>
+
+      <div class="stats-dashboard__panel">
+        <h3>{{ 'organizer.stats.highlights' | transloco }}</h3>
+        @if (s.goals.highestScoringMatch || s.goals.biggestWinMargin) {
+          <dl class="stats-page__highlights">
+            @if (s.goals.highestScoringMatch; as match) {
+              <dt>{{ 'organizer.stats.highestScoring' | transloco }}</dt>
+              <dd>{{ scoreLine(match) }}</dd>
+            }
+            @if (s.goals.biggestWinMargin; as match) {
+              <dt>{{ 'organizer.stats.biggestWin' | transloco }}</dt>
+              <dd>{{ scoreLine(match) }}</dd>
+            }
+          </dl>
+        } @else {
+          <p class="stats-dashboard__empty">{{ 'organizer.stats.noResults' | transloco }}</p>
+        }
+      </div>
+
+      <div class="stats-dashboard__panel">
+        <h3>{{ 'organizer.stats.topAttack' | transloco }}</h3>
+        <ap-stats-bars
+          [items]="attackBars()"
+          tone="success"
+          [emptyLabel]="'organizer.stats.noResults' | transloco"
+        />
+      </div>
+
+      <div class="stats-dashboard__panel">
+        <h3>{{ 'organizer.stats.topDefense' | transloco }}</h3>
+        <p class="stats-page__note">
+          {{ 'organizer.stats.topDefenseNote' | transloco }}
+        </p>
+        <ap-stats-bars
+          [items]="defenseBars()"
+          tone="signal"
+          [emptyLabel]="'organizer.stats.noDefense' | transloco"
+        />
+      </div>
+
+      <div class="stats-dashboard__panel">
+        <h3>{{ 'organizer.stats.teamsByCategory' | transloco }}</h3>
+        <ap-stats-bars
+          [items]="categoryBars()"
+          [emptyLabel]="'organizer.stats.noCategories' | transloco"
+        />
+      </div>
+
+      @if (hourColumns().length > 0) {
+        <div class="stats-dashboard__panel stats-dashboard__panel--wide">
+          <h3>{{ 'organizer.stats.matchesByHour' | transloco }}</h3>
+          <ap-stats-columns [items]="hourColumns()" />
+        </div>
+      }
+
+      @if (fieldBars().length > 0) {
+        <div class="stats-dashboard__panel stats-dashboard__panel--wide">
+          <h3>{{ 'organizer.stats.fields' | transloco }}</h3>
+          <ap-stats-bars [items]="fieldBars()" tone="warning" />
+        </div>
+      }
+    </div>
+  }
+</ion-content>
