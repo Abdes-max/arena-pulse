@@ -341,6 +341,11 @@
         "body": "La tua sessione scadrà tra {{seconds}} secondi per inattività.",
         "stayConnected": "Resta connesso",
         "logout": "Disconnetti"
+      },
+      "uiMode": {
+        "label": "Modalità di visualizzazione",
+        "simple": "Semplice",
+        "full": "Completa"
       }
     },
     "submenu": {
@@ -871,7 +876,9 @@
         "save": "Salva",
         "cancel": "Annulla",
         "nameLabel": "Nuovo nome"
-      }
+      },
+      "simpleModeNotice": "Modalità semplice: alcune impostazioni avanzate sono nascoste.",
+      "simpleModeSwitch": "Passa alla modalità completa"
     },
     "teamList": {
       "title": "Squadre",

@@ -23,20 +23,22 @@
     >
       {{ 'admin.submenu.teams' | transloco }}
     </a>
-    <a
-      [routerLink]="['/admin/tournaments', tournamentId(), 'referees']"
-      routerLinkActive="tournament-submenu__link--active"
-      (click)="centerTab($event)"
-    >
-      {{ 'admin.submenu.referees' | transloco }}
-    </a>
-    <a
-      [routerLink]="['/admin/tournaments', tournamentId(), 'structure']"
-      routerLinkActive="tournament-submenu__link--active"
-      (click)="centerTab($event)"
-    >
-      {{ 'admin.submenu.structure' | transloco }}
-    </a>
+    @if (!simpleMode()) {
+      <a
+        [routerLink]="['/admin/tournaments', tournamentId(), 'referees']"
+        routerLinkActive="tournament-submenu__link--active"
+        (click)="centerTab($event)"
+      >
+        {{ 'admin.submenu.referees' | transloco }}
+      </a>
+      <a
+        [routerLink]="['/admin/tournaments', tournamentId(), 'structure']"
+        routerLinkActive="tournament-submenu__link--active"
+        (click)="centerTab($event)"
+      >
+        {{ 'admin.submenu.structure' | transloco }}
+      </a>
+    }
     <a
       [routerLink]="['/admin/tournaments', tournamentId(), 'schedule']"
       routerLinkActive="tournament-submenu__link--active"
@@ -44,13 +46,15 @@
     >
       {{ 'admin.submenu.schedule' | transloco }}
     </a>
-    <a
-      [routerLink]="['/admin/tournaments', tournamentId(), 'scores']"
-      routerLinkActive="tournament-submenu__link--active"
-      (click)="centerTab($event)"
-    >
-      {{ 'admin.submenu.scores' | transloco }}
-    </a>
+    @if (!simpleMode()) {
+      <a
+        [routerLink]="['/admin/tournaments', tournamentId(), 'scores']"
+        routerLinkActive="tournament-submenu__link--active"
+        (click)="centerTab($event)"
+      >
+        {{ 'admin.submenu.scores' | transloco }}
+      </a>
+    }
     <a
       [routerLink]="['/admin/tournaments', tournamentId(), 'live']"
       routerLinkActive="tournament-submenu__link--active"
@@ -72,13 +76,15 @@
     >
       {{ 'admin.submenu.stats' | transloco }}
     </a>
-    <a
-      [routerLink]="['/admin/tournaments', tournamentId(), 'review']"
-      routerLinkActive="tournament-submenu__link--active"
-      (click)="centerTab($event)"
-    >
-      {{ 'admin.submenu.review' | transloco }}
-    </a>
+    @if (!simpleMode()) {
+      <a
+        [routerLink]="['/admin/tournaments', tournamentId(), 'review']"
+        routerLinkActive="tournament-submenu__link--active"
+        (click)="centerTab($event)"
+      >
+        {{ 'admin.submenu.review' | transloco }}
+      </a>
+    }
   </nav>
 
   <div class="tournament-submenu__share">

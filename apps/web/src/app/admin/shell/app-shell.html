@@ -13,9 +13,11 @@
           <a routerLink="/admin/tournaments" routerLinkActive="app-shell__link--active">{{
             'admin.shell.nav.tournaments' | transloco
           }}</a>
-          <a routerLink="/admin/collaborators" routerLinkActive="app-shell__link--active">{{
-            'admin.shell.nav.collaborators' | transloco
-          }}</a>
+          @if (!authService.simpleMode()) {
+            <a routerLink="/admin/collaborators" routerLinkActive="app-shell__link--active">{{
+              'admin.shell.nav.collaborators' | transloco
+            }}</a>
+          }
           <a
             routerLink="/admin/organization/subscription"
             routerLinkActive="app-shell__link--active"
@@ -28,6 +30,30 @@
       </div>
       <div class="app-shell__nav-end">
         <div class="app-shell__controls">
+          <div
+            class="app-shell__ui-mode"
+            role="group"
+            [attr.aria-label]="'admin.shell.uiMode.label' | transloco"
+          >
+            <button
+              type="button"
+              class="app-shell__ui-mode-option"
+              [class.app-shell__ui-mode-option--active]="authService.simpleMode()"
+              [attr.aria-pressed]="authService.simpleMode()"
+              (click)="setUiMode('SIMPLE')"
+            >
+              {{ 'admin.shell.uiMode.simple' | transloco }}
+            </button>
+            <button
+              type="button"
+              class="app-shell__ui-mode-option"
+              [class.app-shell__ui-mode-option--active]="!authService.simpleMode()"
+              [attr.aria-pressed]="!authService.simpleMode()"
+              (click)="setUiMode('FULL')"
+            >
+              {{ 'admin.shell.uiMode.full' | transloco }}
+            </button>
+          </div>
           <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
           <ap-button type="button" variant="ghost" (click)="logout()">{{
             'admin.shell.logout' | transloco
@@ -77,13 +103,15 @@
           (click)="closeMobileMenu()"
           >{{ 'admin.shell.nav.tournaments' | transloco }}</a
         >
-        <a
-          class="app-shell__mobile-menu-link"
-          routerLink="/admin/collaborators"
-          routerLinkActive="app-shell__link--active"
-          (click)="closeMobileMenu()"
-          >{{ 'admin.shell.nav.collaborators' | transloco }}</a
-        >
+        @if (!authService.simpleMode()) {
+          <a
+            class="app-shell__mobile-menu-link"
+            routerLink="/admin/collaborators"
+            routerLinkActive="app-shell__link--active"
+            (click)="closeMobileMenu()"
+            >{{ 'admin.shell.nav.collaborators' | transloco }}</a
+          >
+        }
         <a
           class="app-shell__mobile-menu-link"
           routerLink="/admin/organization/subscription"
@@ -99,6 +127,30 @@
           >{{ 'admin.shell.nav.account' | transloco }}</a
         >
         <div class="app-shell__mobile-menu-controls">
+          <div
+            class="app-shell__ui-mode"
+            role="group"
+            [attr.aria-label]="'admin.shell.uiMode.label' | transloco"
+          >
+            <button
+              type="button"
+              class="app-shell__ui-mode-option"
+              [class.app-shell__ui-mode-option--active]="authService.simpleMode()"
+              [attr.aria-pressed]="authService.simpleMode()"
+              (click)="setUiMode('SIMPLE')"
+            >
+              {{ 'admin.shell.uiMode.simple' | transloco }}
+            </button>
+            <button
+              type="button"
+              class="app-shell__ui-mode-option"
+              [class.app-shell__ui-mode-option--active]="!authService.simpleMode()"
+              [attr.aria-pressed]="!authService.simpleMode()"
+              (click)="setUiMode('FULL')"
+            >
+              {{ 'admin.shell.uiMode.full' | transloco }}
+            </button>
+          </div>
           <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
           <ap-button type="button" variant="ghost" (click)="logout()">{{
             'admin.shell.logout' | transloco

@@ -15,6 +15,7 @@ import { DEFAULT_MAIL_LANGUAGE, MailLanguage } from '../mail/mail-language';
 import { MailService } from '../mail/mail.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { DeleteAccountDto } from './dto/delete-account.dto';
+import { UpdatePreferencesDto } from './dto/update-preferences.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { PasswordService } from './password.service';
@@ -377,12 +378,22 @@ export class AuthService {
     });
     return {
       ...this.toUserSummary(user),
+      adminUiMode: user.adminUiMode,
       organizations: user.memberships.map((membership) => ({
         id: membership.organization.id,
         name: membership.organization.name,
         role: membership.role,
       })),
     };
+  }
+
+  /** Admin web display preferences (simple/full mode) -- returns the refreshed profile. */
+  async updatePreferences(userId: string, dto: UpdatePreferencesDto) {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { adminUiMode: dto.adminUiMode },
+    });
+    return this.getProfile(userId);
   }
 
   /**

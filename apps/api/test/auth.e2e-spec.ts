@@ -18,6 +18,7 @@ interface AuthResponseBody {
 
 interface MeResponseBody {
   email: string;
+  adminUiMode: string;
   organizations: { role: string }[];
 }
 
@@ -127,6 +128,19 @@ describe('Auth (e2e)', () => {
     expect(meBody.email).toBe(credentials.email);
     expect(meBody.organizations).toHaveLength(1);
     expect(meBody.organizations[0].role).toBe('ORG_ADMIN');
+    // New accounts start in the simple admin mode; the preference persists.
+    expect(meBody.adminUiMode).toBe('SIMPLE');
+    const prefRes = await request(app.getHttpServer())
+      .patch('/api/v1/auth/me/preferences')
+      .set('Authorization', `Bearer ${verifyBody.accessToken}`)
+      .send({ adminUiMode: 'FULL' })
+      .expect(200);
+    expect((prefRes.body as MeResponseBody).adminUiMode).toBe('FULL');
+    await request(app.getHttpServer())
+      .patch('/api/v1/auth/me/preferences')
+      .set('Authorization', `Bearer ${verifyBody.accessToken}`)
+      .send({ adminUiMode: 'EXPERT' })
+      .expect(400);
   });
 
   it('rejects an expired or unknown verification token', async () => {

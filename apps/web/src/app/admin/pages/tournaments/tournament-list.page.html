@@ -5,9 +5,11 @@
       <ap-button type="button" (click)="goToCreatePlateau()">{{
         'admin.tournamentList.createPlateau' | transloco
       }}</ap-button>
-      <ap-button type="button" variant="ghost" (click)="goToCreate()">{{
-        'admin.tournamentList.create' | transloco
-      }}</ap-button>
+      @if (!simpleMode()) {
+        <ap-button type="button" variant="ghost" (click)="goToCreate()">{{
+          'admin.tournamentList.create' | transloco
+        }}</ap-button>
+      }
     </div>
   </div>
 
@@ -92,14 +94,16 @@
                   >
                     {{ 'admin.tournamentList.edit' | transloco }}
                   </ap-button>
-                  <ap-button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    (click)="duplicate(tournament)"
-                  >
-                    {{ 'admin.tournamentList.duplicate' | transloco }}
-                  </ap-button>
+                  @if (!simpleMode()) {
+                    <ap-button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      (click)="duplicate(tournament)"
+                    >
+                      {{ 'admin.tournamentList.duplicate' | transloco }}
+                    </ap-button>
+                  }
                   <ap-button
                     variant="ghost"
                     size="sm"

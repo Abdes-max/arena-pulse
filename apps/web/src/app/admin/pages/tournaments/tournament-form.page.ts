@@ -101,6 +101,9 @@ export class TournamentFormPage {
   private readonly sportsService = inject(SportsService);
   private readonly sponsorsService = inject(SponsorsService);
   private readonly authService = inject(AuthService);
+  // Simple mode hides personalization and the long-form text/sponsor
+  // sections -- see AuthService.simpleMode.
+  protected readonly simpleMode = this.authService.simpleMode;
   private readonly themeService = inject(ThemeService);
   private readonly languageService = inject(LanguageService);
   private readonly transloco = inject(TranslocoService);
@@ -282,6 +285,10 @@ export class TournamentFormPage {
   // Per-row mirror of currentTierCode's own threshold logic, for the "Plan"
   // column of the payment-history table -- which tier THIS one order
   // represents, independent of any discount (tierCents, not amountCents).
+  protected switchToFullMode(): void {
+    void this.authService.setAdminUiMode('FULL');
+  }
+
   protected tierLabelForOrder(order: PublicationOrder): string {
     const lang = this.languageService.language();
     if (order.tierCents <= 0) {

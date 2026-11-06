@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Query,
   Req,
@@ -22,6 +23,7 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { RequestPasswordResetDto } from './dto/request-password-reset.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
+import { UpdatePreferencesDto } from './dto/update-preferences.dto';
 import { MailLang } from '../mail/decorators/mail-lang.decorator';
 import type { MailLanguage } from '../mail/mail-language';
 import type { AuthenticatedUser } from './strategies/jwt.strategy';
@@ -181,6 +183,14 @@ export class AuthController {
   @Get('me')
   me(@CurrentUser() user: AuthenticatedUser) {
     return this.authService.getProfile(user.id);
+  }
+
+  @Patch('me/preferences')
+  updatePreferences(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body() dto: UpdatePreferencesDto,
+  ) {
+    return this.authService.updatePreferences(user.id, dto);
   }
 
   /**

@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { MeResponse, OrganizationSummary, User } from './models';
+import { AdminUiMode, MeResponse, OrganizationSummary, User } from './models';
 
 export interface RegisterPayload {
   email: string;
@@ -33,6 +33,11 @@ export class AuthService {
   readonly isAuthenticated = computed(() => this.accessToken() !== null);
   readonly currentUser = this.currentUserSignal.asReadonly();
   readonly organizations = this.organizationsSignal.asReadonly();
+
+  // Simple mode hides advanced navigation (tabs, form sections) -- display
+  // only, every page stays reachable by URL. Anything but an explicit FULL
+  // (including the brief moment before the profile loads) reads as simple.
+  readonly simpleMode = computed(() => this.currentUserSignal()?.adminUiMode !== 'FULL');
 
   getAccessToken(): string | null {
     return this.accessToken();
@@ -159,8 +164,29 @@ export class AuthService {
       email: me.email,
       firstName: me.firstName,
       lastName: me.lastName,
+      adminUiMode: me.adminUiMode,
     });
     this.organizationsSignal.set(me.organizations);
+  }
+
+  /** Optimistic: the UI switches immediately, and reverts if the save fails. */
+  async setAdminUiMode(adminUiMode: AdminUiMode): Promise<void> {
+    const user = this.currentUserSignal();
+    if (!user || user.adminUiMode === adminUiMode) {
+      return;
+    }
+    this.currentUserSignal.set({ ...user, adminUiMode });
+    try {
+      await firstValueFrom(
+        this.http.patch<MeResponse>(
+          `${environment.apiUrl}/auth/me/preferences`,
+          { adminUiMode },
+          { withCredentials: true },
+        ),
+      );
+    } catch {
+      this.currentUserSignal.set(user);
+    }
   }
 
   private clearSession(): void {

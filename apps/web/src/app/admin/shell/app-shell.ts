@@ -28,6 +28,7 @@ import {
   ThemeService,
 } from 'design-tokens';
 import { AuthService } from '../core/auth.service';
+import { AdminUiMode } from '../core/models';
 import { SessionTimeoutService } from '../core/session-timeout.service';
 import { TournamentSubmenu } from '../shared/tournament-submenu';
 import { THEME_MAP } from '../core/theme-map';
@@ -51,7 +52,7 @@ import { TournamentsService } from '../core/tournaments.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppShell {
-  private readonly authService = inject(AuthService);
+  protected readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly themeService = inject(ThemeService);
@@ -114,6 +115,10 @@ export class AppShell {
   // hamburger toggle instead of just wrapping/overflowing, which is what
   // this header did before (no responsive treatment at all).
   protected readonly mobileMenuOpen = signal(false);
+
+  protected setUiMode(mode: AdminUiMode): void {
+    void this.authService.setAdminUiMode(mode);
+  }
 
   constructor() {
     // 30 min idle / 8h absolute session policy, with its own 1-minute
