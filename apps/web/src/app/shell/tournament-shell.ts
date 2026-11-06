@@ -1,6 +1,7 @@
 import {
   NavigationApp,
   detectMapsPlatform,
+  venueDisplayLabel,
   venueMapsUrl,
   venueNavigationApps,
 } from 'shared-models';
@@ -398,6 +399,9 @@ export class TournamentShell {
     this.navigationApps.set(null);
     window.location.href = app.url;
   }
+
+  // "Stade X, 13100 Aix-en-Provence" -- one link with the name, postcode and city.
+  protected readonly venueLabel = venueDisplayLabel;
 
   protected openVenueInMaps(venue: { name: string; address: string | null }): void {
     const platform = detectMapsPlatform(navigator.userAgent, navigator.maxTouchPoints);

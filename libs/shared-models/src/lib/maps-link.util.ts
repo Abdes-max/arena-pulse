@@ -24,6 +24,25 @@ export function venueMapsQuery(venue: { name: string; address: string | null }):
 }
 
 /**
+ * "13100 Aix-en-Provence" pulled out of a stored address ("12 rue X, 13100
+ * Aix-en-Provence, France" -- the shape the geocoding autocomplete saves),
+ * or null when no postcode + city part can be found.
+ */
+export function venueCityLine(address: string | null): string | null {
+  const match = address?.match(/\b(\d{4,5})\s+([^,\d][^,]*)/);
+  return match ? `${match[1]} ${match[2].trim()}` : null;
+}
+
+/** What the tournament header shows: "Stade X, 13100 Aix-en-Provence" (or just the name). */
+export function venueDisplayLabel(venue: { name: string; address: string | null }): string {
+  const cityLine = venueCityLine(venue.address);
+  if (!cityLine || venue.name.toLowerCase().includes(cityLine.toLowerCase())) {
+    return venue.name;
+  }
+  return `${venue.name}, ${cityLine}`;
+}
+
+/**
  * Link that opens the venue in the phone's navigation app: Apple Plans on
  * iOS, the Android app chooser (Google Maps, Waze...) via a geo: URI, and
  * Google Maps in a new tab on a computer.

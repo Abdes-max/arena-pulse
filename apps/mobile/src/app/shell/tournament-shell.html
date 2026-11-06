@@ -53,11 +53,11 @@
             <button
               type="button"
               class="tournament-shell__venue-link"
-              [attr.aria-label]="t.venues[0].name + ' - ' + venueMapsLabel"
+              [attr.aria-label]="venueLabel(t.venues[0]) + ' - ' + venueMapsLabel"
               [title]="venueMapsLabel"
               (click)="openVenueInMaps(t.venues[0])"
             >
-              {{ t.venues[0].name }}
+              {{ venueLabel(t.venues[0]) }}
             </button>
             @if (t.venues.length > 1) {
               <span class="tournament-shell__meta-more">+{{ t.venues.length - 1 }}</span>
