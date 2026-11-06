@@ -104,6 +104,43 @@ Prérequis, à faire une seule fois :
    (Settings → Environments) avec des "required reviewers", pour qu'un
    déploiement demande une validation humaine avant de s'exécuter.
 
+## Modifier les prix (et toute autre variable du `.env`)
+
+Les montants facturés via Stripe ne sont **pas** dans le code : l'API les lit au démarrage dans
+`infra/deployment/.env` sur l'hôte (le fichier n'est pas versionné et le workflow de déploiement
+ne le touche jamais). Mettre à jour la grille tarifaire dans le code ou les traductions ne change
+donc rien à ce que paie un organisateur tant que ce fichier n'est pas modifié lui aussi.
+
+| Variable                                       | Rôle                                    | Valeur prod actuelle |
+| ---------------------------------------------- | --------------------------------------- | -------------------- |
+| `TOURNAMENT_PUBLICATION_TIER_MID_PRICE_CENTS`  | Publication, palier « Le plus courant » | `1900` (19 €)        |
+| `TOURNAMENT_PUBLICATION_TIER_HIGH_PRICE_CENTS` | Publication, grand palier               | `4900` (49 €)        |
+| `ORGANIZATION_ANNUAL_SUBSCRIPTION_PRICE_CENTS` | Abonnement annuel                       | `15900` (159 €)      |
+
+Les réductions de l'offre de lancement (`LAUNCH_PROMO_*`, coupon Stripe
+`STRIPE_LAUNCH_SUBSCRIPTION_COUPON_ID`) s'appliquent **sur** ces montants : un prix de base périmé
+donne une remise « juste » sur un mauvais total.
+
+Procédure sur le VPS (clone dans `/opt/arena-pulse`) :
+
+```bash
+cd /opt/arena-pulse
+cp infra/deployment/.env infra/deployment/.env.bak-$(date +%F)   # sauvegarde
+grep -E 'PRICE_CENTS' infra/deployment/.env                        # état actuel
+# Éditer la ou les lignes (nano, ou sed), par exemple :
+sed -i -E 's/^ORGANIZATION_ANNUAL_SUBSCRIPTION_PRICE_CENTS=.*/ORGANIZATION_ANNUAL_SUBSCRIPTION_PRICE_CENTS=15900/' \
+  infra/deployment/.env
+# Recréer l'API pour qu'elle relise le .env (un simple `restart` garde l'ancien environnement) :
+docker compose -f infra/deployment/docker-compose.prod.yml --env-file infra/deployment/.env up -d api
+```
+
+Vérifier ensuite avec un paiement de test : le récapitulatif Stripe doit afficher le nouveau prix.
+
+> Historique : après le passage de la grille à 19/49/159 € (PR #226), le `.env` de prod est resté
+> sur 2500/8000/20000 jusqu'au 6 novembre 2026. Le test du code TOURNARENA2026 affichait alors
+> 200 € - 50 % = 100 € au lieu de 159 € - 50 % = 79,50 €. Corrigé en éditant le `.env` comme
+> ci-dessus.
+
 ## Sauvegarder
 
 Les données PostgreSQL vivent dans le volume nommé `arena-pulse-postgres-prod` (déclaré dans
