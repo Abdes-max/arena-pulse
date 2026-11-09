@@ -20,10 +20,11 @@ const UNTRACKED_PATH_PREFIXES = ['/organizer'];
 const CLIENT_ID_STORAGE_KEY = 'arena-pulse:ga-client-id';
 
 /**
- * Google Analytics 4 (gtag.js) for the iOS app, same measurement ID as the
- * website (apps/web/src/app/core/analytics.service.ts) -- the app's traffic
- * is told apart by its `capacitor://localhost` page hostname and the
- * `app_platform: 'ios'` parameter on every page_view.
+ * Google Analytics 4 (gtag.js) for the iOS app, mirroring the website's
+ * service (apps/web/src/app/core/analytics.service.ts). The app reports to
+ * its own "TournArena iOS (app)" data stream -- same GA property as the
+ * website, separate measurement ID -- and every page_view also carries
+ * `app_platform: 'ios'`.
  *
  * Differences from the web service, all down to the WKWebView:
  * - gtag's usual `_ga` cookie isn't reliable on the custom capacitor://
