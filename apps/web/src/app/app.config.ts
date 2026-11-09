@@ -15,6 +15,7 @@ import { environment } from '../environments/environment';
 import { routes } from './app.routes';
 import { authInterceptor } from './admin/core/auth.interceptor';
 import { AuthService } from './admin/core/auth.service';
+import { AnalyticsService } from './core/analytics.service';
 import { GlobalErrorHandler } from './core/global-error-handler';
 import { languageInterceptor } from './core/language.interceptor';
 import { playerAuthInterceptor } from './core/player-auth.interceptor';
@@ -83,5 +84,8 @@ export const appConfig: ApplicationConfig = {
     provideAppInitializer(() => inject(PlayerAuthService).silentRefresh()),
     // Same idea, for a SuperAdminAccount session (its own httpOnly cookie).
     provideAppInitializer(() => inject(SuperAdminAuthService).silentRefresh()),
+    // Google Analytics -- started unconditionally for now; a consent banner
+    // will call AnalyticsService.start() itself instead, once accepted.
+    provideAppInitializer(() => inject(AnalyticsService).start()),
   ],
 };

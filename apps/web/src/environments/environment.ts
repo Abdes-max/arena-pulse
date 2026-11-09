@@ -8,4 +8,7 @@ export const environment = {
   // has no fileReplacement in angular.json's "production" configuration)
   // and would only ever have worked on the machine that built it.
   apiUrl: '/api/v1',
+  // Google Analytics 4 measurement ID (G-...) -- empty disables tracking,
+  // see AnalyticsService.
+  gaMeasurementId: '',
 };
