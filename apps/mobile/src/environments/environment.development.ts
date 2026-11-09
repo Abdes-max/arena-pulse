@@ -17,4 +17,6 @@ export const environment = {
   // sandbox), not by using a different API key here. See environment.ts's
   // own comment for why this key is safe to keep in source.
   revenueCatApiKey: 'appl_bVmmdsLVmSmGazbtlCXlerQMJWK',
+  // Empty: no Google Analytics hits from local dev.
+  gaMeasurementId: '',
 };

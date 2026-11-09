@@ -23,4 +23,9 @@ export const environment = {
   // Used only on iOS (IapService checks isIosNative() before configuring
   // Purchases at all) -- guideline 3.1.1, see ADR 0008.
   revenueCatApiKey: 'appl_bVmmdsLVmSmGazbtlCXlerQMJWK',
+  // Google Analytics 4 measurement ID of the "TournArena iOS (app)" stream
+  // (own stream in the same property as the website's, so the app's traffic
+  // is reported apart) -- empty disables tracking (see AnalyticsService; iOS
+  // build only).
+  gaMeasurementId: 'G-PS1RPCYTL5',
 };
