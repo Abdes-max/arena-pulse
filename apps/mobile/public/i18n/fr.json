@@ -39,7 +39,8 @@
         "rateBadge": "Bientôt disponible",
         "share": "Partager l'app",
         "contact": "Nous contacter",
-        "pricing": "Tarifs"
+        "pricing": "Tarifs",
+        "notifications": "Notifications"
       },
       "legal": {
         "sectionTitle": "Juridique",
@@ -509,6 +510,50 @@
       "noResults": "Aucun score validé pour le moment.",
       "noDefense": "Pas encore assez de matchs joués.",
       "noCategories": "Aucune catégorie."
+    }
+  },
+  "notifications": {
+    "back": "Retour",
+    "title": "Notifications",
+    "intro": "Choisissez ce que vous voulez recevoir pour vos équipes favorites.",
+    "permission": {
+      "granted": "Notifications autorisées",
+      "prompt": "Autorisez les notifications pour recevoir les alertes.",
+      "allow": "Autoriser les notifications",
+      "denied": "Notifications désactivées",
+      "deniedHelp": "Activez-les pour TournArena dans les réglages de votre téléphone."
+    },
+    "test": {
+      "button": "Tester une notification",
+      "sent": "Notification envoyée dans quelques secondes : verrouillez votre téléphone, ou restez dans l'app, pour voir la bannière.",
+      "denied": "Impossible : les notifications ne sont pas autorisées."
+    },
+    "global": {
+      "title": "Réglages généraux"
+    },
+    "teams": {
+      "title": "Par équipe favorite",
+      "empty": "Aucune équipe favorite pour l'instant. Ajoutez-en avec l'étoile depuis la fiche d'une équipe.",
+      "useOwn": "Réglages personnalisés",
+      "followsGlobal": "Suit les réglages généraux."
+    },
+    "form": {
+      "enabled": "Notifications",
+      "reminder": "Rappel avant le match",
+      "reminderMinutes": "Délai du rappel",
+      "minutes": "{{count}} min avant",
+      "reminderHint": "Programmé à l'avance : fonctionne même app fermée et téléphone verrouillé.",
+      "started": "Match commencé",
+      "score": "Score modifié",
+      "result": "Résultat final",
+      "liveHint": "Ces alertes arrivent tant que l'app est ouverte ou en arrière-plan.",
+      "sound": "Son"
+    },
+    "display": {
+      "title": "Affichage",
+      "ios": "Pour voir les bannières écran verrouillé et déverrouillé : Réglages > Notifications > TournArena, puis cochez Écran verrouillé, Centre de notifications et Bannières.",
+      "android": "Pour voir les bannières : Paramètres > Applications > TournArena > Notifications, puis activez « Alertes de matchs ».",
+      "web": "Les notifications sont disponibles dans l'app mobile."
     }
   }
 }

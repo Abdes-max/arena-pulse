@@ -39,7 +39,8 @@
         "rateBadge": "Prossimamente",
         "share": "Condividi l'app",
         "contact": "Contattaci",
-        "pricing": "Prezzi"
+        "pricing": "Prezzi",
+        "notifications": "Notifiche"
       },
       "legal": {
         "sectionTitle": "Legale",
@@ -509,6 +510,50 @@
       "noResults": "Ancora nessun risultato convalidato.",
       "noDefense": "Non ci sono ancora abbastanza partite giocate.",
       "noCategories": "Nessuna categoria."
+    }
+  },
+  "notifications": {
+    "back": "Indietro",
+    "title": "Notifiche",
+    "intro": "Scegli cosa vuoi ricevere per le tue squadre preferite.",
+    "permission": {
+      "granted": "Notifiche consentite",
+      "prompt": "Consenti le notifiche per ricevere gli avvisi.",
+      "allow": "Consenti le notifiche",
+      "denied": "Notifiche disattivate",
+      "deniedHelp": "Attivale per TournArena nelle impostazioni del telefono."
+    },
+    "test": {
+      "button": "Prova una notifica",
+      "sent": "Notifica tra pochi secondi: blocca il telefono, o resta nell'app, per vedere il banner.",
+      "denied": "Impossibile: le notifiche non sono consentite."
+    },
+    "global": {
+      "title": "Impostazioni generali"
+    },
+    "teams": {
+      "title": "Per squadra preferita",
+      "empty": "Nessuna squadra preferita per ora. Aggiungine una con la stella dalla scheda di una squadra.",
+      "useOwn": "Impostazioni personalizzate",
+      "followsGlobal": "Segue le impostazioni generali."
+    },
+    "form": {
+      "enabled": "Notifiche",
+      "reminder": "Promemoria prima della partita",
+      "reminderMinutes": "Anticipo del promemoria",
+      "minutes": "{{count}} min prima",
+      "reminderHint": "Programmato in anticipo: funziona anche con l'app chiusa e il telefono bloccato.",
+      "started": "Partita iniziata",
+      "score": "Punteggio cambiato",
+      "result": "Risultato finale",
+      "liveHint": "Questi avvisi arrivano finché l'app è aperta o in background.",
+      "sound": "Suono"
+    },
+    "display": {
+      "title": "Visualizzazione",
+      "ios": "Per vedere i banner con lo schermo bloccato e sbloccato: Impostazioni > Notifiche > TournArena, poi spunta Schermata di blocco, Centro notifiche e Banner.",
+      "android": "Per vedere i banner: Impostazioni > App > TournArena > Notifiche, poi attiva «Avvisi delle partite».",
+      "web": "Le notifiche sono disponibili nell'app mobile."
     }
   }
 }

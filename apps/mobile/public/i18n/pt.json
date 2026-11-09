@@ -39,7 +39,8 @@
         "rateBadge": "Brevemente",
         "share": "Partilhar a app",
         "contact": "Contacte-nos",
-        "pricing": "Preços"
+        "pricing": "Preços",
+        "notifications": "Notificações"
       },
       "legal": {
         "sectionTitle": "Legal",
@@ -509,6 +510,50 @@
       "noResults": "Ainda não há resultados validados.",
       "noDefense": "Ainda não há jogos suficientes.",
       "noCategories": "Nenhuma categoria."
+    }
+  },
+  "notifications": {
+    "back": "Voltar",
+    "title": "Notificações",
+    "intro": "Escolha o que quer receber das suas equipas favoritas.",
+    "permission": {
+      "granted": "Notificações permitidas",
+      "prompt": "Permita as notificações para receber os alertas.",
+      "allow": "Permitir notificações",
+      "denied": "Notificações desativadas",
+      "deniedHelp": "Ative-as para o TournArena nas definições do telemóvel."
+    },
+    "test": {
+      "button": "Testar uma notificação",
+      "sent": "Notificação dentro de alguns segundos: bloqueie o telemóvel, ou fique na app, para ver o banner.",
+      "denied": "Não é possível: as notificações não estão permitidas."
+    },
+    "global": {
+      "title": "Definições gerais"
+    },
+    "teams": {
+      "title": "Por equipa favorita",
+      "empty": "Ainda não há equipas favoritas. Adicione uma com a estrela na página de uma equipa.",
+      "useOwn": "Definições personalizadas",
+      "followsGlobal": "Segue as definições gerais."
+    },
+    "form": {
+      "enabled": "Notificações",
+      "reminder": "Lembrete antes do jogo",
+      "reminderMinutes": "Antecedência do lembrete",
+      "minutes": "{{count}} min antes",
+      "reminderHint": "Agendado com antecedência: funciona com a app fechada e o telemóvel bloqueado.",
+      "started": "Jogo começado",
+      "score": "Resultado alterado",
+      "result": "Resultado final",
+      "liveHint": "Estes alertas chegam enquanto a app está aberta ou em segundo plano.",
+      "sound": "Som"
+    },
+    "display": {
+      "title": "Apresentação",
+      "ios": "Para ver os banners com o ecrã bloqueado e desbloqueado: Definições > Notificações > TournArena, e marque Ecrã bloqueado, Centro de notificações e Banners.",
+      "android": "Para ver os banners: Definições > Aplicações > TournArena > Notificações, e ative «Alertas de jogos».",
+      "web": "As notificações estão disponíveis na app móvel."
     }
   }
 }

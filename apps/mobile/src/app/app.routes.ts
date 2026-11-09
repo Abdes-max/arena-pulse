@@ -97,6 +97,12 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./organizer/pages/stats/stats.page').then((m) => m.OrganizerStatsPage),
   },
+  // Static, so it has to come before the ':slug' catch-all below.
+  {
+    path: 'notifications',
+    loadComponent: () =>
+      import('./pages/notifications/notifications.page').then((m) => m.NotificationsPage),
+  },
   {
     path: ':slug',
     loadComponent: () => import('./shell/tournament-shell').then((m) => m.TournamentShell),

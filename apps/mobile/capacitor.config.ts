@@ -21,6 +21,12 @@ const config: CapacitorConfig = {
   // handling for local dev). Production is HTTPS-only and unaffected.
   plugins: {
     CapacitorHttp: { enabled: false },
+    LocalNotifications: {
+      // Show the banner (and play the sound) even while the app is open, not
+      // only on the lock screen / Notification Center. This is also the iOS
+      // default; spelled out so it is a deliberate choice.
+      presentationOptions: ['badge', 'sound', 'banner', 'list'],
+    },
   },
 };
 
