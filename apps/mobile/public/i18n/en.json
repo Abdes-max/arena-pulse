@@ -39,7 +39,8 @@
         "rateBadge": "Coming soon",
         "share": "Share the app",
         "contact": "Contact us",
-        "pricing": "Pricing"
+        "pricing": "Pricing",
+        "notifications": "Notifications"
       },
       "legal": {
         "sectionTitle": "Legal",
@@ -509,6 +510,50 @@
       "noResults": "No validated score yet.",
       "noDefense": "Not enough matches played yet.",
       "noCategories": "No category."
+    }
+  },
+  "notifications": {
+    "back": "Back",
+    "title": "Notifications",
+    "intro": "Choose what you want to receive for your favorite teams.",
+    "permission": {
+      "granted": "Notifications allowed",
+      "prompt": "Allow notifications to receive alerts.",
+      "allow": "Allow notifications",
+      "denied": "Notifications turned off",
+      "deniedHelp": "Turn them on for TournArena in your phone's settings."
+    },
+    "test": {
+      "button": "Test a notification",
+      "sent": "Notification coming in a few seconds: lock your phone, or stay in the app, to see the banner.",
+      "denied": "Can't do it: notifications are not allowed."
+    },
+    "global": {
+      "title": "General settings"
+    },
+    "teams": {
+      "title": "Per favorite team",
+      "empty": "No favorite team yet. Add one with the star on a team's page.",
+      "useOwn": "Custom settings",
+      "followsGlobal": "Follows the general settings."
+    },
+    "form": {
+      "enabled": "Notifications",
+      "reminder": "Reminder before the match",
+      "reminderMinutes": "Reminder time",
+      "minutes": "{{count}} min before",
+      "reminderHint": "Scheduled ahead: works even with the app closed and the phone locked.",
+      "started": "Match started",
+      "score": "Score changed",
+      "result": "Final result",
+      "liveHint": "These alerts arrive while the app is open or in the background.",
+      "sound": "Sound"
+    },
+    "display": {
+      "title": "Display",
+      "ios": "To see banners on the locked and unlocked screen: Settings > Notifications > TournArena, then tick Lock Screen, Notification Center and Banners.",
+      "android": "To see banners: Settings > Apps > TournArena > Notifications, then turn on \"Match alerts\".",
+      "web": "Notifications are available in the mobile app."
     }
   }
 }

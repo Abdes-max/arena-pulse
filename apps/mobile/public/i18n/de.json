@@ -39,7 +39,8 @@
         "rateBadge": "Demnächst",
         "share": "App teilen",
         "contact": "Kontaktieren Sie uns",
-        "pricing": "Preise"
+        "pricing": "Preise",
+        "notifications": "Benachrichtigungen"
       },
       "legal": {
         "sectionTitle": "Rechtliches",
@@ -509,6 +510,50 @@
       "noResults": "Noch kein bestätigtes Ergebnis.",
       "noDefense": "Noch nicht genug Spiele gespielt.",
       "noCategories": "Keine Kategorie."
+    }
+  },
+  "notifications": {
+    "back": "Zurück",
+    "title": "Benachrichtigungen",
+    "intro": "Wähle, was du für deine Lieblingsteams erhalten möchtest.",
+    "permission": {
+      "granted": "Benachrichtigungen erlaubt",
+      "prompt": "Erlaube Benachrichtigungen, um Meldungen zu erhalten.",
+      "allow": "Benachrichtigungen erlauben",
+      "denied": "Benachrichtigungen ausgeschaltet",
+      "deniedHelp": "Schalte sie für TournArena in den Einstellungen deines Telefons ein."
+    },
+    "test": {
+      "button": "Benachrichtigung testen",
+      "sent": "Benachrichtigung in wenigen Sekunden: Sperre dein Telefon oder bleibe in der App, um das Banner zu sehen.",
+      "denied": "Nicht möglich: Benachrichtigungen sind nicht erlaubt."
+    },
+    "global": {
+      "title": "Allgemeine Einstellungen"
+    },
+    "teams": {
+      "title": "Pro Lieblingsteam",
+      "empty": "Noch kein Lieblingsteam. Füge eines mit dem Stern auf der Teamseite hinzu.",
+      "useOwn": "Eigene Einstellungen",
+      "followsGlobal": "Folgt den allgemeinen Einstellungen."
+    },
+    "form": {
+      "enabled": "Benachrichtigungen",
+      "reminder": "Erinnerung vor dem Spiel",
+      "reminderMinutes": "Vorlaufzeit der Erinnerung",
+      "minutes": "{{count}} Min. vorher",
+      "reminderHint": "Im Voraus geplant: funktioniert auch bei geschlossener App und gesperrtem Telefon.",
+      "started": "Spiel gestartet",
+      "score": "Spielstand geändert",
+      "result": "Endergebnis",
+      "liveHint": "Diese Meldungen kommen, solange die App geöffnet ist oder im Hintergrund läuft.",
+      "sound": "Ton"
+    },
+    "display": {
+      "title": "Anzeige",
+      "ios": "Banner auf dem gesperrten und entsperrten Bildschirm: Einstellungen > Mitteilungen > TournArena, dann Sperrbildschirm, Mitteilungszentrale und Banner aktivieren.",
+      "android": "Für Banner: Einstellungen > Apps > TournArena > Benachrichtigungen, dann „Spielmeldungen“ einschalten.",
+      "web": "Benachrichtigungen sind in der mobilen App verfügbar."
     }
   }
 }

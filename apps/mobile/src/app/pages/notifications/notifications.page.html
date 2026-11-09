@@ -1,0 +1,120 @@
+<ion-header>
+  <ion-toolbar>
+    <button
+      type="button"
+      class="notifications-page__back"
+      slot="start"
+      (click)="goBack()"
+      [attr.aria-label]="'notifications.back' | transloco"
+    >
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+        <path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+      </svg>
+    </button>
+    <ion-title>{{ 'notifications.title' | transloco }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="notifications-page">
+  <div class="notifications-page__scroll">
+    <p class="notifications-page__intro">{{ 'notifications.intro' | transloco }}</p>
+
+    <section class="notifications-page__card" aria-live="polite">
+      @switch (permission()) {
+        @case ('granted') {
+          <p class="notifications-page__status notifications-page__status--ok">
+            {{ 'notifications.permission.granted' | transloco }}
+          </p>
+        }
+        @case ('denied') {
+          <p class="notifications-page__status notifications-page__status--off">
+            {{ 'notifications.permission.denied' | transloco }}
+          </p>
+          <p class="notifications-page__hint">
+            {{ 'notifications.permission.deniedHelp' | transloco }}
+          </p>
+        }
+        @default {
+          <p class="notifications-page__status">
+            {{ 'notifications.permission.prompt' | transloco }}
+          </p>
+          <ion-button size="small" (click)="allow()">{{
+            'notifications.permission.allow' | transloco
+          }}</ion-button>
+        }
+      }
+
+      <ion-button
+        class="notifications-page__test"
+        fill="outline"
+        size="small"
+        [disabled]="permission() === 'denied'"
+        (click)="sendTest()"
+        >{{ 'notifications.test.button' | transloco }}</ion-button
+      >
+      @switch (testState()) {
+        @case ('sent') {
+          <p class="notifications-page__hint">{{ 'notifications.test.sent' | transloco }}</p>
+        }
+        @case ('denied') {
+          <p class="notifications-page__hint">{{ 'notifications.test.denied' | transloco }}</p>
+        }
+      }
+    </section>
+
+    <section class="notifications-page__card">
+      <h2>{{ 'notifications.global.title' | transloco }}</h2>
+      <app-notification-prefs-form [prefs]="globalPrefs()" (prefsChange)="setGlobal($event)" />
+    </section>
+
+    <section class="notifications-page__card">
+      <h2>{{ 'notifications.teams.title' | transloco }}</h2>
+      @if (favorites().length === 0) {
+        <p class="notifications-page__hint">{{ 'notifications.teams.empty' | transloco }}</p>
+      } @else {
+        <ul class="notifications-page__teams">
+          @for (favorite of favorites(); track favorite.tournamentSlug + favorite.teamId) {
+            <li class="notifications-page__team">
+              <div class="notifications-page__team-head">
+                <strong>{{ favorite.teamName }}</strong>
+                <span class="notifications-page__team-tournament">{{
+                  favorite.tournamentSlug
+                }}</span>
+              </div>
+              <ion-toggle
+                [checked]="hasOwnSettings(favorite)"
+                (ionChange)="setOwnSettings(favorite, $event)"
+                >{{ 'notifications.teams.useOwn' | transloco }}</ion-toggle
+              >
+              @if (hasOwnSettings(favorite)) {
+                <app-notification-prefs-form
+                  [prefs]="teamPrefs(favorite)"
+                  (prefsChange)="setTeam(favorite, $event)"
+                />
+              } @else {
+                <p class="notifications-page__hint">
+                  {{ 'notifications.teams.followsGlobal' | transloco }}
+                </p>
+              }
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    <section class="notifications-page__card">
+      <h2>{{ 'notifications.display.title' | transloco }}</h2>
+      @switch (platform) {
+        @case ('ios') {
+          <p class="notifications-page__hint">{{ 'notifications.display.ios' | transloco }}</p>
+        }
+        @case ('android') {
+          <p class="notifications-page__hint">{{ 'notifications.display.android' | transloco }}</p>
+        }
+        @default {
+          <p class="notifications-page__hint">{{ 'notifications.display.web' | transloco }}</p>
+        }
+      }
+    </section>
+  </div>
+</ion-content>

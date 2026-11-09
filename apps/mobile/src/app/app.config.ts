@@ -15,7 +15,9 @@ import { SUPPORTED_LANGUAGES, TranslocoHttpLoader, resolveInitialLanguage } from
 import { environment } from '../environments/environment';
 import { routes } from './app.routes';
 import { AnalyticsService } from './core/analytics.service';
+import { FavoritesService } from './core/favorites.service';
 import { GlobalErrorHandler } from './core/global-error-handler';
+import { NotificationsService } from './core/notifications.service';
 import { languageInterceptor } from './core/language.interceptor';
 import { OrganizerAuthService } from './organizer/core/auth.service';
 import { organizerAuthInterceptor } from './organizer/core/auth.interceptor';
@@ -59,6 +61,11 @@ export const appConfig: ApplicationConfig = {
     // Google Analytics (native iOS build only, see AnalyticsService). A consent
     // prompt would call start() itself instead of this initializer.
     provideAppInitializer(() => inject(AnalyticsService).start()),
+    // Local notifications: tap handler, Android channels, and the scheduled
+    // reminders kept in step with favorites/settings (see NotificationsService).
+    provideAppInitializer(() => {
+      inject(NotificationsService).init(inject(FavoritesService).favorites);
+    }),
     // Same reasoning as apps/web's own provideTransloco (see its comment):
     // resolveInitialLanguage() so the app boots straight into the right
     // language instead of flashing fr first.

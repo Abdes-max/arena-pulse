@@ -1,0 +1,123 @@
+ion-toolbar {
+  --padding-start: var(--ap-space-2);
+  --padding-end: var(--ap-space-4);
+}
+
+ion-title {
+  padding-inline: 0;
+  text-align: start;
+  font-family: var(--ap-font-heading);
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.notifications-page__back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--ap-color-fg);
+  cursor: pointer;
+}
+
+.notifications-page {
+  --padding-top: var(--ap-space-4);
+  --padding-bottom: var(--ap-space-8);
+  --padding-start: var(--ap-space-4);
+  --padding-end: var(--ap-space-4);
+  color: var(--ap-color-fg);
+  font-family: var(--ap-font-body);
+}
+
+.notifications-page__scroll {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-4);
+}
+
+.notifications-page__intro {
+  margin: 0;
+  color: var(--ap-color-muted);
+  font-size: 0.9rem;
+}
+
+.notifications-page__card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ap-space-3);
+  padding: var(--ap-space-4);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-lg);
+
+  h2 {
+    margin: 0;
+    font-family: var(--ap-font-heading);
+    font-size: 1rem;
+  }
+
+  > app-notification-prefs-form {
+    width: 100%;
+  }
+}
+
+.notifications-page__status {
+  margin: 0;
+  font-weight: 600;
+}
+
+.notifications-page__status--ok {
+  color: var(--ap-color-success);
+}
+
+.notifications-page__status--off {
+  color: var(--ap-color-error);
+}
+
+.notifications-page__hint {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--ap-color-muted);
+}
+
+.notifications-page__teams {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-4);
+}
+
+.notifications-page__team {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-3);
+  padding-top: var(--ap-space-3);
+  border-top: var(--ap-border-width) solid var(--ap-color-border);
+
+  &:first-child {
+    padding-top: 0;
+    border-top: none;
+  }
+
+  ion-toggle {
+    width: 100%;
+  }
+}
+
+.notifications-page__team-head {
+  display: flex;
+  flex-direction: column;
+}
+
+.notifications-page__team-tournament {
+  font-size: 0.78rem;
+  color: var(--ap-color-muted);
+}
