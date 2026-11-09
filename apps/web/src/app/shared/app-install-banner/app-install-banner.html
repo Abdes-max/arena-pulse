@@ -1,0 +1,26 @@
+@if (visible()) {
+  <aside class="app-install-banner" [attr.aria-label]="'appBanner.title' | transloco">
+    <ap-logo class="app-install-banner__logo" [wordmark]="false" />
+    <div class="app-install-banner__text">
+      <strong>{{ 'appBanner.title' | transloco }}</strong>
+      <span>{{ 'appBanner.subtitle' | transloco }}</span>
+    </div>
+    <a
+      class="app-install-banner__cta"
+      [href]="appStoreUrl"
+      rel="noopener"
+      (click)="onInstallClick()"
+      >{{ 'appBanner.cta' | transloco }}</a
+    >
+    <button
+      type="button"
+      class="app-install-banner__close"
+      [attr.aria-label]="'appBanner.dismissAria' | transloco"
+      (click)="dismiss()"
+    >
+      <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
+        <path d="M4 4 L16 16 M16 4 L4 16" />
+      </svg>
+    </button>
+  </aside>
+}
