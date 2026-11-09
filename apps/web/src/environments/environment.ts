@@ -10,5 +10,5 @@ export const environment = {
   apiUrl: '/api/v1',
   // Google Analytics 4 measurement ID (G-...) -- empty disables tracking,
   // see AnalyticsService.
-  gaMeasurementId: '',
+  gaMeasurementId: 'G-ME8P8BX6HC',
 };
