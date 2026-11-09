@@ -23,4 +23,7 @@ export const environment = {
   // Used only on iOS (IapService checks isIosNative() before configuring
   // Purchases at all) -- guideline 3.1.1, see ADR 0008.
   revenueCatApiKey: 'appl_bVmmdsLVmSmGazbtlCXlerQMJWK',
+  // Google Analytics 4 measurement ID, same as the website -- empty disables
+  // tracking (see AnalyticsService; iOS build only).
+  gaMeasurementId: 'G-ME8P8BX6HC',
 };
