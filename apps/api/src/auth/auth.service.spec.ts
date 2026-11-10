@@ -9,6 +9,7 @@ import {
 } from '@nestjs/common';
 import { OrganizationRole } from '../../generated/prisma/client';
 import { MailService } from '../mail/mail.service';
+import { SuperAdminNotificationService } from '../super-admin/notifications/super-admin-notification.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuthService } from './auth.service';
 import { PasswordService } from './password.service';
@@ -78,10 +79,14 @@ describe('AuthService', () => {
   let prisma: PrismaMock;
   let mailService: ReturnType<typeof createMailServiceMock>;
   let service: AuthService;
+  let superAdminNotifications: { organizationCreated: jest.Mock };
 
   beforeEach(() => {
     prisma = createPrismaMock();
     mailService = createMailServiceMock();
+    superAdminNotifications = {
+      organizationCreated: jest.fn().mockResolvedValue(undefined),
+    };
     const configService = new ConfigService({
       JWT_EXPIRES_IN: '3600s',
       JWT_REFRESH_EXPIRES_IN: '30d',
@@ -96,6 +101,7 @@ describe('AuthService', () => {
       tokenService,
       mailService as unknown as MailService,
       configService,
+      superAdminNotifications as unknown as SuperAdminNotificationService,
     );
   });
 
@@ -137,6 +143,12 @@ describe('AuthService', () => {
           userId: 'user-1',
           role: OrganizationRole.ORG_ADMIN,
         },
+      });
+      expect(superAdminNotifications.organizationCreated).toHaveBeenCalledWith({
+        organizationId: 'org-1',
+        organizationName: registerDto.organizationName,
+        adminName: 'Ada Lovelace',
+        adminEmail: registerDto.email,
       });
       expect(mailService.sendEmailVerificationEmail).toHaveBeenCalledWith(
         registerDto.email,

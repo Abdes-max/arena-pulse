@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { OrganizationsModule } from '../organizations/organizations.module';
 import { PaymentsModule } from '../payments/payments.module';
 import { PlayerAuthModule } from '../player-auth/player-auth.module';
+import { SuperAdminNotificationsModule } from '../super-admin/notifications/super-admin-notifications.module';
 import { TournamentsModule } from '../tournaments/tournaments.module';
 import { PaymentsWebhookController } from './payments-webhook.controller';
 import { PublicRegistrationsController } from './public-registrations.controller';
@@ -14,6 +15,7 @@ import { RegistrationsService } from './registrations.service';
     TournamentsModule,
     PaymentsModule,
     PlayerAuthModule,
+    SuperAdminNotificationsModule,
   ],
   controllers: [
     RegistrationsController,

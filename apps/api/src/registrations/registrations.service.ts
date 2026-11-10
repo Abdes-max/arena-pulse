@@ -1,4 +1,9 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  Logger,
+  Optional,
+} from '@nestjs/common';
 import Stripe from 'stripe';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
@@ -7,6 +12,7 @@ import { TournamentsService } from '../tournaments/tournaments.service';
 import { StripeService } from '../payments/stripe.service';
 import { CreateRegistrationDto } from './dto/create-registration.dto';
 import { RegistrationStatus } from '../../generated/prisma/client';
+import { SuperAdminNotificationService } from '../super-admin/notifications/super-admin-notification.service';
 
 export interface CreateRegistrationResult {
   registrationId: string;
@@ -16,12 +22,16 @@ export interface CreateRegistrationResult {
 
 @Injectable()
 export class RegistrationsService {
+  private readonly logger = new Logger(RegistrationsService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly tournamentsService: TournamentsService,
     private readonly categoriesService: CategoriesService,
     private readonly stripeService: StripeService,
     private readonly configService: ConfigService,
+    @Optional()
+    private readonly superAdminNotifications?: SuperAdminNotificationService,
   ) {}
 
   async createForPlayer(
@@ -231,7 +241,10 @@ export class RegistrationsService {
   ): Promise<void> {
     const registration = await this.prisma.registration.findUniqueOrThrow({
       where: { id: registrationId },
-      include: { players: true },
+      include: {
+        players: true,
+        tournament: { include: { organization: true } },
+      },
     });
 
     await this.prisma.$transaction(async (tx) => {
@@ -261,6 +274,21 @@ export class RegistrationsService {
         },
       });
     });
+
+    // Super-admin notification (never throws, see SuperAdminNotificationService).
+    this.superAdminNotifications
+      ?.paymentReceived({
+        kind: 'registration',
+        amountCents: registration.amountCents,
+        currency: registration.currency,
+        organizationName: registration.tournament.organization.name,
+        detail: `${registration.teamName} (${registration.tournament.name})`,
+      })
+      .catch((error: Error) =>
+        this.logger.warn(
+          `Failed to notify super-admins of registration ${registration.id}: ${error.message}`,
+        ),
+      );
   }
 
   private async assertTeamNameAvailable(
