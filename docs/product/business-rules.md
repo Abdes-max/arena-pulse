@@ -27,16 +27,16 @@ Toutes les règles ci-dessous sont issues du tournoi de référence "U10 Millois
 
 ## Format de la phase finale (par tableau)
 
-| Tableau | Équipes | Étapes observées | Match de classement |
-| --- | --- | --- | --- |
-| Champions League | 8 | Quarts → Demies → Finale | Oui : petite finale (3e place) |
-| Europa League | 8 | Quarts → Demies → Finale | Non observé |
-| Conférence League | 4 | Demies → Finale | Non observé |
+| Tableau           | Équipes | Étapes observées         | Match de classement            |
+| ----------------- | ------- | ------------------------ | ------------------------------ |
+| Champions League  | 8       | Quarts → Demies → Finale | Oui : petite finale (3e place) |
+| Europa League     | 8       | Quarts → Demies → Finale | Non observé                    |
+| Conférence League | 4       | Demies → Finale          | Non observé                    |
 
 → Le format (nombre de tours, présence ou non d'un match de classement) est **configurable par tableau**, pas uniforme pour tout le tournoi. C'est une contrainte de conception importante pour le modèle de données (`docs/architecture/data-model.md`).
 
 - **CONFIRMÉ (admin, écran "Classement"/structure)** : l'organisateur construit la compétition phase par phase depuis un éditeur dédié : chaque poule dispose de boutons "+POULE" (ajouter une poule), "+BRACKET" (ajouter un tableau à élimination directe alimenté par les positions de sortie d'une phase précédente, taille annoncée "5 jusqu'à 8" équipes), et "+MATCH AMICAL" (ajouter un match hors classement). Chaque bracket individuel propose un bouton "+MATCH" pour ajouter un match de classement (ex. petite finale) à la volée.
-- **CONFIRMÉ** : le bouton "AJOUTER UNE PHASE" porte l'aide contextuelle suivante : *"Ajoutez une phase supplémentaire si vous souhaitez affecter des équipes en fonction de leurs performances dans la ou les phases précédentes"* — confirme explicitement que `QualificationRule` doit lier une position de sortie de phase à une phase suivante, comme modélisé dans `data-model.md`.
+- **CONFIRMÉ** : le bouton "AJOUTER UNE PHASE" porte l'aide contextuelle suivante : _"Ajoutez une phase supplémentaire si vous souhaitez affecter des équipes en fonction de leurs performances dans la ou les phases précédentes"_ — confirme explicitement que `QualificationRule` doit lier une position de sortie de phase à une phase suivante, comme modélisé dans `data-model.md`.
 
 ## Classement final global
 
@@ -48,6 +48,21 @@ Toutes les règles ci-dessous sont issues du tournoi de référence "U10 Millois
 - Chaque carte de match affiche un code couleur : vert (victoire), rouge (défaite), orange (nul) — observé cohérent sur toutes les cartes de l'écran calendrier.
 - **CONFIRMÉ (admin, écran "Scores")** : la saisie de score se fait par un champ texte inline "X - Y" directement dans une liste de matchs groupés par créneau horaire (tous terrains confondus), avec un indicateur de progression global par phase (ex. "40/40" scores saisis en Phase 1, "18/18" en Phase 2). Pas de distinction visible entre score "provisoire" et "validé" dans cette vue — à confirmer si une telle distinction existe ailleurs (**question ouverte maintenue, portée réduite**).
 - Aucune donnée observée sur les forfaits/pénalités dans l'admin lors de cet audit (fonctionnalité potentiellement accessible depuis l'écran match lui-même, non ouvert pour rester dans un périmètre d'audit raisonnable) — reste **A_CONFIRMER**.
+
+## Scores par sets (padel, tennis, volleyball, badminton)
+
+Décision TournArena, inspirée de Tournify (« Scoring and tiebreakers ») : chaque sport a un format de score, `GOALS` (un score par équipe, football et autres) ou `SETS` (détail set par set).
+
+- **Sports concernés** : Padel, Tennis, Badminton (2 sets gagnants par défaut), Volleyball (3 sets gagnants). Les autres sports restent en `GOALS`.
+- **Nombre de sets gagnants** : défaut du sport, modifiable par phase (`setsToWin`, ex. 2 en poule et 3 en finale). Nombre maximal de sets : 2 × sets gagnants − 1.
+- **Saisie** : un set par ligne (domicile / extérieur), au clavier ou par le composant `ap-sets-input`. En direct, la saisie est tolérante (personne n'a encore atteint le nombre de sets gagnants, dernier set possiblement à égalité). À la validation : un set ne peut pas finir à égalité, une équipe atteint exactement le nombre de sets gagnants, aucun set n'est joué après.
+- **Source de vérité** : `homeScore` / `awayScore` valent le nombre de sets gagnés, recalculé côté serveur à partir de `sets` (les valeurs envoyées sont ignorées). Vainqueur, avancement du tableau, Glicko, récap et classement final lisent donc ces valeurs sans changement.
+- **Pas de nul, pas de tirs au but** en format `SETS`. Le format `GOALS` refuse `sets`.
+- **Barème du set décisif** (règle de classement) : `decidingSetWinPoints` / `decidingSetLossPoints`. Un match qui va au set décisif (le perdant a gagné nombre de sets gagnants − 1 sets) rapporte ces points au lieu du barème normal victoire/défaite. Défaut volleyball : 3-2 → 2 points au vainqueur, 1 au perdant.
+- **Classement de poule** : colonnes Sets +, Sets −, Diff. sets et Diff. jeux (tennis, padel) ou Diff. points (volleyball, badminton). Nouveaux critères `SET_DIFFERENCE`, `GAME_DIFFERENCE`, `SETS_WON` ; ordre par défaut en sets : points, confrontation directe, différence de sets, différence de jeux ou points.
+- **Affichage** : « 6-4 3-6 10-7 » sous le score en sets (cartes de match, programme, détail équipe, écran TV). Wrapped : libellés en sets, sans nuls ni tirs au but.
+- **Padel** : le 3e set est un super tie-break à 10 points (ex. 10-7).
+- Écarts connus : le tableau à élimination directe n'affiche que les sets gagnés, et les cartes « plus gros scores » du Wrapped aussi.
 
 ## Planification du calendrier (admin)
 
@@ -65,6 +80,7 @@ Toutes les règles ci-dessous sont issues du tournoi de référence "U10 Millois
 ## Hors périmètre observable dans cette itération
 
 Les règles suivantes n'ont pas pu être confirmées (non ouvertes lors de cet audit pour rester dans un périmètre raisonnable, ou nécessitant un tournoi en cours) :
+
 - Détail exact des forfaits et pénalités (écran de saisie de match non ouvert).
 - Distinction score provisoire / validé.
 - Règles de repos minimal entre deux matchs d'une même équipe (non visible dans le panneau "Planifier" au niveau observé).
