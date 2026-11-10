@@ -1,22 +1,39 @@
 <main class="super-admin-dashboard-page">
   <h1>Tableau de bord</h1>
 
-  @if (loading()) {
-    <p>Chargement…</p>
-  } @else if (errorMessage(); as message) {
+  <div class="super-admin-dashboard-page__filters">
+    <ap-select
+      label="Période"
+      [options]="periodOptions"
+      [value]="period()"
+      (valueChange)="period.set($any($event))"
+    />
+    @if (period() === 'custom') {
+      <ap-text-field label="Du" type="date" [value]="from()" (valueChange)="from.set($event)" />
+      <ap-text-field label="Au" type="date" [value]="to()" (valueChange)="to.set($event)" />
+    }
+  </div>
+
+  @if (errorMessage(); as message) {
     <p class="super-admin-dashboard-page__error" role="alert">{{ message }}</p>
   } @else if (stats(); as s) {
-    <div class="super-admin-dashboard-page__grid">
+    <div class="super-admin-dashboard-page__grid" [attr.aria-busy]="loading()">
       <section class="super-admin-dashboard-page__card">
-        <span class="super-admin-dashboard-page__label">Comptes organisateurs</span>
+        <span class="super-admin-dashboard-page__label">{{
+          windowed() ? 'Nouveaux comptes organisateurs' : 'Comptes organisateurs'
+        }}</span>
         <span class="super-admin-dashboard-page__value">{{ s.totalUsers }}</span>
       </section>
       <section class="super-admin-dashboard-page__card">
-        <span class="super-admin-dashboard-page__label">Organisations</span>
+        <span class="super-admin-dashboard-page__label">{{
+          windowed() ? 'Nouvelles organisations' : 'Organisations'
+        }}</span>
         <span class="super-admin-dashboard-page__value">{{ s.totalOrganizations }}</span>
       </section>
       <section class="super-admin-dashboard-page__card">
-        <span class="super-admin-dashboard-page__label">Abonnements actifs</span>
+        <span class="super-admin-dashboard-page__label">{{
+          windowed() ? 'Abonnements actifs (à ce jour)' : 'Abonnements actifs'
+        }}</span>
         <span class="super-admin-dashboard-page__value">{{ s.activeSubscriptions }}</span>
       </section>
       <section class="super-admin-dashboard-page__card">
@@ -24,13 +41,17 @@
         <span class="super-admin-dashboard-page__value">{{ s.matchesPlayed }}</span>
       </section>
       <section class="super-admin-dashboard-page__card super-admin-dashboard-page__card--wide">
-        <span class="super-admin-dashboard-page__label">Revenu total collecté</span>
+        <span class="super-admin-dashboard-page__label">{{
+          windowed() ? 'Revenu collecté sur la période' : 'Revenu total collecté'
+        }}</span>
         <span class="super-admin-dashboard-page__value">{{ formatAmount(s.revenueCents) }}</span>
       </section>
     </div>
 
     <section class="super-admin-dashboard-page__section">
-      <h2>Tournois par statut</h2>
+      <h2>
+        {{ windowed() ? 'Tournois créés sur la période, par statut' : 'Tournois par statut' }}
+      </h2>
       <dl class="super-admin-dashboard-page__status-list">
         <dt>Brouillon</dt>
         <dd>{{ s.tournamentsByStatus.DRAFT }}</dd>
@@ -42,5 +63,7 @@
         <dd>{{ s.tournamentsByStatus.ARCHIVED }}</dd>
       </dl>
     </section>
+  } @else if (loading()) {
+    <p>Chargement…</p>
   }
 </main>

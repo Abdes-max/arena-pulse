@@ -1,7 +1,8 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Public } from '../auth/decorators/public.decorator';
 import { SuperAdminJwtAuthGuard } from '../super-admin-auth/guards/super-admin-jwt-auth.guard';
+import { StatsQueryDto } from './dto/stats-query.dto';
 import { SuperAdminStatsService } from './super-admin-stats.service';
 
 @ApiTags('super-admin')
@@ -12,7 +13,7 @@ export class SuperAdminStatsController {
   constructor(private readonly statsService: SuperAdminStatsService) {}
 
   @Get()
-  getStats() {
-    return this.statsService.getStats();
+  getStats(@Query() query: StatsQueryDto) {
+    return this.statsService.getStats(query);
   }
 }

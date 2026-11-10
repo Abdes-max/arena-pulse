@@ -17,8 +17,10 @@ export class SuperAdminService {
   private readonly http = inject(HttpClient);
   private readonly base = `${environment.apiUrl}/super-admin`;
 
-  getStats(): Promise<SuperAdminStats> {
-    return firstValueFrom(this.http.get<SuperAdminStats>(`${this.base}/stats`));
+  getStats(period: { period?: string; from?: string; to?: string } = {}): Promise<SuperAdminStats> {
+    return firstValueFrom(
+      this.http.get<SuperAdminStats>(`${this.base}/stats`, { params: { ...period } }),
+    );
   }
 
   listOrganizations(): Promise<SuperAdminOrganizationRow[]> {
