@@ -64,6 +64,8 @@ export class SuperAdminTournamentsService {
       status: tournament.status,
       teamsCount: tournament._count.teams,
       matchesPlayedCount: matchesPlayedCounts[index],
+      startDate: tournament.startDate,
+      endDate: tournament.endDate,
       createdAt: tournament.createdAt,
     }));
   }
