@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { organizerAuthGuard } from './organizer/core/auth.guard';
+import { organizerAuthGuard, organizerGuestGuard } from './organizer/core/auth.guard';
 
 export const routes: Routes = [
   {
@@ -13,16 +13,19 @@ export const routes: Routes = [
   // apps/web/src/app/app.routes.ts registers '/decouvrir' ahead of its own.
   {
     path: 'organizer/register',
+    canActivate: [organizerGuestGuard],
     loadComponent: () =>
       import('./organizer/pages/register/register.page').then((m) => m.OrganizerRegisterPage),
   },
   {
     path: 'organizer/login',
+    canActivate: [organizerGuestGuard],
     loadComponent: () =>
       import('./organizer/pages/login/login.page').then((m) => m.OrganizerLoginPage),
   },
   {
     path: 'organizer/forgot-password',
+    canActivate: [organizerGuestGuard],
     loadComponent: () =>
       import('./organizer/pages/forgot-password/forgot-password.page').then(
         (m) => m.OrganizerForgotPasswordPage,
