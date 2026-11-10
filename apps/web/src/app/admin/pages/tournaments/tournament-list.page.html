@@ -43,6 +43,13 @@
           [value]="selectedStatus()"
           (valueChange)="onStatusFilterChange($event)"
         />
+        <ap-select
+          class="tournament-list-page__select"
+          [label]="'admin.tournamentList.timeFilterLabel' | transloco"
+          [options]="timeOptions()"
+          [value]="selectedTime()"
+          (valueChange)="onTimeFilterChange($event)"
+        />
       </div>
 
       @if (filteredTournaments().length === 0) {

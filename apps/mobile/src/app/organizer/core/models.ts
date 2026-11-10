@@ -13,11 +13,16 @@ export type { PublicTheme, TournamentStatus };
 
 export type OrganizationRole = 'ORG_ADMIN' | 'ORG_MEMBER';
 
+// Same switch as apps/web's: SIMPLE (default) keeps only the essentials in
+// the organizer app, FULL shows everything. Saved per user on the API.
+export type AdminUiMode = 'SIMPLE' | 'FULL';
+
 export interface OrganizerUser {
   id: string;
   email: string;
   firstName: string;
   lastName: string;
+  adminUiMode: AdminUiMode;
 }
 
 export interface OrganizationSummary {

@@ -3,7 +3,7 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { IapService } from './iap.service';
-import { MeResponse, OrganizationSummary, OrganizerUser } from './models';
+import { AdminUiMode, MeResponse, OrganizationSummary, OrganizerUser } from './models';
 
 // Same contract as apps/web/src/app/admin/core/auth.service.ts (this file is
 // a deliberate port, not a shared lib -- see models.ts's comment) against
@@ -41,6 +41,7 @@ export class OrganizerAuthService {
 
   readonly isAuthenticated = computed(() => this.accessToken() !== null);
   readonly currentUser = this.currentUserSignal.asReadonly();
+  readonly simpleMode = computed(() => this.currentUserSignal()?.adminUiMode !== 'FULL');
   readonly organizations = this.organizationsSignal.asReadonly();
 
   getAccessToken(): string | null {
@@ -167,6 +168,7 @@ export class OrganizerAuthService {
       email: me.email,
       firstName: me.firstName,
       lastName: me.lastName,
+      adminUiMode: me.adminUiMode,
     });
     this.organizationsSignal.set(me.organizations);
     // Best-effort, never blocks auth on an IAP concern (IapService.configureForUser
@@ -174,6 +176,26 @@ export class OrganizerAuthService {
     // app_user_id, must match what the backend passes to
     // RevenueCatService.fetchSubscriber when confirming a purchase later.
     void this.iap.configureForUser(me.id);
+  }
+
+  /** Optimistic: the UI switches immediately, and reverts if the save fails. */
+  async setAdminUiMode(adminUiMode: AdminUiMode): Promise<void> {
+    const user = this.currentUserSignal();
+    if (!user || user.adminUiMode === adminUiMode) {
+      return;
+    }
+    this.currentUserSignal.set({ ...user, adminUiMode });
+    try {
+      await firstValueFrom(
+        this.http.patch<MeResponse>(
+          `${environment.apiUrl}/auth/me/preferences`,
+          { adminUiMode },
+          { withCredentials: true },
+        ),
+      );
+    } catch {
+      this.currentUserSignal.set(user);
+    }
   }
 
   private clearSession(): void {

@@ -33,6 +33,32 @@
 
 <ion-content class="organizer-tournaments-page">
   <div class="organizer-tournaments-page__list">
+    @if (user()) {
+      <div
+        class="organizer-tournaments-page__mode"
+        role="group"
+        [attr.aria-label]="'organizer.tournaments.list.uiMode.label' | transloco"
+      >
+        <button
+          type="button"
+          class="organizer-tournaments-page__mode-option"
+          [class.organizer-tournaments-page__mode-option--active]="simpleMode()"
+          [attr.aria-pressed]="simpleMode()"
+          (click)="setUiMode('SIMPLE')"
+        >
+          {{ 'organizer.tournaments.list.uiMode.simple' | transloco }}
+        </button>
+        <button
+          type="button"
+          class="organizer-tournaments-page__mode-option"
+          [class.organizer-tournaments-page__mode-option--active]="!simpleMode()"
+          [attr.aria-pressed]="!simpleMode()"
+          (click)="setUiMode('FULL')"
+        >
+          {{ 'organizer.tournaments.list.uiMode.full' | transloco }}
+        </button>
+      </div>
+    }
     @if (loading()) {
       <p class="organizer-tournaments-page__hint">
         {{ 'organizer.tournaments.list.loading' | transloco }}
@@ -47,7 +73,37 @@
       @if (organizations()[0]; as org) {
         <app-organizer-dashboard [organizationId]="org.id" />
       }
-      @for (t of tournaments(); track t.id) {
+      <div class="organizer-tournaments-page__filters">
+        <div
+          class="organizer-tournaments-page__chips"
+          role="group"
+          [attr.aria-label]="'organizer.tournaments.list.timeFilterLabel' | transloco"
+        >
+          @for (time of timeFilters; track time) {
+            <button
+              type="button"
+              class="organizer-tournaments-page__chip"
+              [class.organizer-tournaments-page__chip--active]="selectedTime() === time"
+              [attr.aria-pressed]="selectedTime() === time"
+              (click)="setTimeFilter(time)"
+            >
+              {{ timeLabel(time) }}
+            </button>
+          }
+        </div>
+        <ap-select
+          [label]="'organizer.tournaments.list.statusFilterLabel' | transloco"
+          [options]="statusOptions()"
+          [value]="selectedStatus()"
+          (valueChange)="onStatusFilterChange($event)"
+        />
+      </div>
+      @if (filteredTournaments().length === 0) {
+        <p class="organizer-tournaments-page__hint">
+          {{ 'organizer.tournaments.list.emptyFiltered' | transloco }}
+        </p>
+      }
+      @for (t of filteredTournaments(); track t.id) {
         <div
           class="tcard"
           role="button"
@@ -76,12 +132,14 @@
             <button type="button" class="tcard__action" (click)="openScores($event, t)">
               {{ 'organizer.tournaments.list.scoresAction' | transloco }}
             </button>
-            <button type="button" class="tcard__action" (click)="openStandings($event, t)">
-              {{ 'organizer.tournaments.list.standingsAction' | transloco }}
-            </button>
-            <button type="button" class="tcard__action" (click)="openStats($event, t)">
-              {{ 'organizer.tournaments.list.statsAction' | transloco }}
-            </button>
+            @if (!simpleMode()) {
+              <button type="button" class="tcard__action" (click)="openStandings($event, t)">
+                {{ 'organizer.tournaments.list.standingsAction' | transloco }}
+              </button>
+              <button type="button" class="tcard__action" (click)="openStats($event, t)">
+                {{ 'organizer.tournaments.list.statsAction' | transloco }}
+              </button>
+            }
           </div>
         </div>
       }
@@ -95,12 +153,14 @@
     >
       + {{ 'organizer.tournaments.list.newPlateau' | transloco }}
     </button>
-    <button
-      class="organizer-tournaments-page__fab organizer-tournaments-page__fab--secondary"
-      type="button"
-      routerLink="/organizer/tournaments/new"
-    >
-      + {{ 'organizer.tournaments.list.newTournament' | transloco }}
-    </button>
+    @if (!simpleMode()) {
+      <button
+        class="organizer-tournaments-page__fab organizer-tournaments-page__fab--secondary"
+        type="button"
+        routerLink="/organizer/tournaments/new"
+      >
+        + {{ 'organizer.tournaments.list.newTournament' | transloco }}
+      </button>
+    }
   </div>
 </ion-content>

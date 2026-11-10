@@ -652,7 +652,13 @@
       "duplicate": "Duplicar",
       "publicLink": "Link público",
       "archive": "Arquivar",
-      "unarchive": "Desarquivar"
+      "unarchive": "Desarquivar",
+      "timeFilterLabel": "Período",
+      "time": {
+        "all": "Todos",
+        "upcoming": "Próximos",
+        "past": "Passados"
+      }
     },
     "onboarding": {
       "title": "Comece por aqui",

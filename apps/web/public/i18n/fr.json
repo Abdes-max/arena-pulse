@@ -754,7 +754,13 @@
       "duplicate": "Dupliquer",
       "publicLink": "Lien public",
       "archive": "Archiver",
-      "unarchive": "Désarchiver"
+      "unarchive": "Désarchiver",
+      "timeFilterLabel": "Période",
+      "time": {
+        "all": "Toutes",
+        "upcoming": "À venir",
+        "past": "Passés"
+      }
     },
     "onboarding": {
       "title": "Bien démarrer",
