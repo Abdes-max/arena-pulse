@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MailModule } from '../mail/mail.module';
+import { SuperAdminNotificationsModule } from '../super-admin/notifications/super-admin-notifications.module';
 import { OrganizationsModule } from '../organizations/organizations.module';
 import { PaymentsModule } from '../payments/payments.module';
 import { PermissionsModule } from '../permissions/permissions.module';
@@ -61,7 +62,13 @@ import { VenuesService } from './venues.service';
 import { WrappedService } from './wrapped.service';
 
 @Module({
-  imports: [OrganizationsModule, PermissionsModule, PaymentsModule, MailModule],
+  imports: [
+    OrganizationsModule,
+    PermissionsModule,
+    PaymentsModule,
+    MailModule,
+    SuperAdminNotificationsModule,
+  ],
   controllers: [
     TournamentsController,
     CategoriesController,

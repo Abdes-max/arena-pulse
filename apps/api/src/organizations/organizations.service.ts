@@ -3,6 +3,7 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
+  Optional,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
@@ -14,6 +15,7 @@ import {
 } from '../../generated/prisma/client';
 import { DEFAULT_MAIL_LANGUAGE, MailLanguage } from '../mail/mail-language';
 import { MailService } from '../mail/mail.service';
+import { SuperAdminNotificationService } from '../super-admin/notifications/super-admin-notification.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { StripeService } from '../payments/stripe.service';
 import {
@@ -34,6 +36,8 @@ export class OrganizationsService {
     private readonly revenueCatService: RevenueCatService,
     private readonly configService: ConfigService,
     private readonly mailService: MailService,
+    @Optional()
+    private readonly superAdminNotifications?: SuperAdminNotificationService,
   ) {}
 
   async listMembers(organizationId: string) {
@@ -515,6 +519,7 @@ export class OrganizationsService {
     });
 
     await this.sendSubscriptionReceipt(updated, lang);
+    void this.notifySubscriptionPaid(updated);
   }
 
   /**
@@ -553,6 +558,33 @@ export class OrganizationsService {
           `Failed to send subscription receipt email to ${email}: ${(error as Error).message}`,
         );
       }
+    }
+  }
+
+  // Super-admin notification (never throws, see SuperAdminNotificationService).
+  private async notifySubscriptionPaid(subscription: {
+    organizationId: string;
+    amountCents: number;
+    currency: string;
+  }): Promise<void> {
+    if (!this.superAdminNotifications) {
+      return;
+    }
+    try {
+      const organization = await this.prisma.organization.findUnique({
+        where: { id: subscription.organizationId },
+        select: { name: true },
+      });
+      await this.superAdminNotifications.paymentReceived({
+        kind: 'subscription',
+        amountCents: subscription.amountCents,
+        currency: subscription.currency,
+        organizationName: organization?.name ?? subscription.organizationId,
+      });
+    } catch (error) {
+      this.logger.warn(
+        `Failed to notify super-admins of subscription payment: ${(error as Error).message}`,
+      );
     }
   }
 
@@ -664,6 +696,7 @@ export class OrganizationsService {
     });
 
     await this.sendSubscriptionReceipt(subscription, lang);
+    void this.notifySubscriptionPaid(subscription);
   }
 
   /**

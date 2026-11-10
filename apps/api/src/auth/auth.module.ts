@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { MailModule } from '../mail/mail.module';
+import { SuperAdminNotificationsModule } from '../super-admin/notifications/super-admin-notifications.module';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { PasswordService } from './password.service';
@@ -20,6 +21,7 @@ import { TokenService } from './token.service';
       }),
     }),
     MailModule,
+    SuperAdminNotificationsModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, PasswordService, TokenService, JwtStrategy],

@@ -502,6 +502,39 @@ export class MailService {
     });
   }
 
+  // Internal notification to a super-admin account (new organization, new
+  // tournament, payment, publication). Not translated: the super-admin
+  // console is French-only. Every value is escaped -- organization and
+  // tournament names are typed by organizers.
+  async sendSuperAdminNotification(
+    to: string,
+    notification: {
+      subject: string;
+      title: string;
+      rows: { label: string; value: string }[];
+      link?: { url: string; label: string };
+    },
+  ): Promise<void> {
+    const rows = notification.rows
+      .map(
+        (row) =>
+          `<p><strong>${this.escapeHtml(row.label)} :</strong> ${this.escapeHtml(row.value)}</p>`,
+      )
+      .join('');
+    const link = notification.link
+      ? `<p><a href="${this.escapeHtml(notification.link.url)}" class="ap-mail-cta">${this.escapeHtml(notification.link.label)}</a></p>`
+      : '';
+    await this.transporter.sendMail({
+      from: this.from,
+      to,
+      subject: notification.subject,
+      html: this.wrapEmail(
+        `<p><strong>${this.escapeHtml(notification.title)}</strong></p>${rows}${link}`,
+        'fr',
+      ),
+    });
+  }
+
   // Not translated: this is a message a public visitor typed into the
   // contact form, delivered to TournArena's own team inbox (this.
   // contactRecipient) -- there's no organizer/visitor language preference to

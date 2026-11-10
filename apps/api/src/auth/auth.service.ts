@@ -4,6 +4,7 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
+  Optional,
   InternalServerErrorException,
   Logger,
   NotFoundException,
@@ -13,6 +14,7 @@ import { ConfigService } from '@nestjs/config';
 import { OrganizationRole } from '../../generated/prisma/client';
 import { DEFAULT_MAIL_LANGUAGE, MailLanguage } from '../mail/mail-language';
 import { MailService } from '../mail/mail.service';
+import { SuperAdminNotificationService } from '../super-admin/notifications/super-admin-notification.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { DeleteAccountDto } from './dto/delete-account.dto';
 import { UpdatePreferencesDto } from './dto/update-preferences.dto';
@@ -51,6 +53,8 @@ export class AuthService {
     private readonly tokenService: TokenService,
     private readonly mailService: MailService,
     private readonly configService: ConfigService,
+    @Optional()
+    private readonly superAdminNotifications?: SuperAdminNotificationService,
   ) {}
 
   async register(
@@ -126,6 +130,13 @@ export class AuthService {
         `Failed to send account confirmation email to ${user.email}: ${(error as Error).message}`,
       );
     }
+
+    void this.superAdminNotifications?.organizationCreated({
+      organizationId: organization.id,
+      organizationName: organization.name,
+      adminName: `${user.firstName} ${user.lastName}`,
+      adminEmail: user.email,
+    });
 
     // No session issued here -- register() no longer logs the account in.
     // The account only becomes usable once verifyEmail() confirms the

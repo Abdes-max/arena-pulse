@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AuthModule } from '../auth/auth.module';
 import { MailModule } from '../mail/mail.module';
+import { SuperAdminNotificationsModule } from '../super-admin/notifications/super-admin-notifications.module';
 import { PaymentsModule } from '../payments/payments.module';
 import { InvitationsController } from './invitations.controller';
 import { InvitationsService } from './invitations.service';
@@ -12,7 +13,12 @@ import { OrganizationsService } from './organizations.service';
 import { OrganizationRoleGuard } from './guards/organization-role.guard';
 
 @Module({
-  imports: [AuthModule, MailModule, PaymentsModule],
+  imports: [
+    AuthModule,
+    MailModule,
+    PaymentsModule,
+    SuperAdminNotificationsModule,
+  ],
   controllers: [
     OrganizationsController,
     OrganizationInvitationsController,

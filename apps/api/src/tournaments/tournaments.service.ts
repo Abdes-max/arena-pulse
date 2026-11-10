@@ -3,6 +3,7 @@ import {
   ConflictException,
   ForbiddenException,
   Injectable,
+  Optional,
   Logger,
   NotFoundException,
 } from '@nestjs/common';
@@ -24,6 +25,7 @@ import {
 import { matchesImageMagicBytes } from '../common/utils/image-magic-bytes.util';
 import { DEFAULT_MAIL_LANGUAGE, MailLanguage } from '../mail/mail-language';
 import { MailService } from '../mail/mail.service';
+import { SuperAdminNotificationService } from '../super-admin/notifications/super-admin-notification.service';
 import { OrganizationsService } from '../organizations/organizations.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { StripeService } from '../payments/stripe.service';
@@ -84,6 +86,8 @@ export class TournamentsService {
     private readonly configService: ConfigService,
     private readonly organizationsService: OrganizationsService,
     private readonly mailService: MailService,
+    @Optional()
+    private readonly superAdminNotifications?: SuperAdminNotificationService,
   ) {}
 
   async create(organizationId: string, dto: CreateTournamentDto) {
@@ -116,6 +120,7 @@ export class TournamentsService {
       },
       include: { sport: true },
     });
+    void this.notifyTournamentCreated(tournament);
     return this.toDetail(tournament);
   }
 
@@ -781,6 +786,7 @@ export class TournamentsService {
       );
     }
 
+    const wasPublished = order.tournament.status === TournamentStatus.PUBLISHED;
     const [updatedOrder] = await this.prisma.$transaction([
       this.prisma.tournamentPublicationOrder.update({
         where: { id: order.id },
@@ -819,6 +825,12 @@ export class TournamentsService {
     ]);
 
     await this.sendPublicationReceipt(updatedOrder, stripeReceiptUrl, lang);
+    void this.notifyPublicationPaid(
+      updatedOrder.tournament,
+      updatedOrder.amountCents,
+      updatedOrder.currency,
+      wasPublished,
+    );
   }
 
   /**
@@ -1002,6 +1014,13 @@ export class TournamentsService {
       return;
     }
 
+    const wasPublished =
+      (
+        await this.prisma.tournament.findUnique({
+          where: { id: tournament.id },
+          select: { status: true },
+        })
+      )?.status === TournamentStatus.PUBLISHED;
     await this.prisma.$transaction([
       this.prisma.tournamentPublicationOrder.create({
         data: {
@@ -1029,6 +1048,12 @@ export class TournamentsService {
       { tournament, amountCents, currency: 'eur' },
       null,
       lang,
+    );
+    void this.notifyPublicationPaid(
+      tournament,
+      amountCents,
+      'eur',
+      wasPublished,
     );
   }
 
@@ -1199,7 +1224,14 @@ export class TournamentsService {
       return newTournament;
     });
 
-    return this.getDetail(organizationId, clone.id);
+    const detail = await this.getDetail(organizationId, clone.id);
+    void this.notifyTournamentCreated({
+      id: clone.id,
+      name: detail.name,
+      organizationId,
+      sport: { name: detail.sportName },
+    });
+    return detail;
   }
 
   /** Used by the categories/divisions/administrators services before any write. */
@@ -1973,12 +2005,108 @@ export class TournamentsService {
   }
 
   private async setStatus(tournamentId: string, status: TournamentStatus) {
+    const previous = await this.prisma.tournament.findUnique({
+      where: { id: tournamentId },
+      select: { status: true },
+    });
     const updated = await this.prisma.tournament.update({
       where: { id: tournamentId },
       data: { status },
       include: { sport: true },
     });
+    if (
+      status === TournamentStatus.PUBLISHED &&
+      previous?.status !== TournamentStatus.PUBLISHED
+    ) {
+      void this.notifyTournamentPublished(updated);
+    }
     return this.toDetail(updated);
+  }
+
+  // Super-admin notifications (never throw, see SuperAdminNotificationService).
+  private async organizationName(organizationId: string): Promise<string> {
+    const organization = await this.prisma.organization.findUnique({
+      where: { id: organizationId },
+      select: { name: true },
+    });
+    return organization?.name ?? organizationId;
+  }
+
+  private async notifyTournamentCreated(tournament: {
+    id: string;
+    name: string;
+    organizationId: string;
+    sport: { name: string };
+  }): Promise<void> {
+    if (!this.superAdminNotifications) {
+      return;
+    }
+    try {
+      await this.superAdminNotifications.tournamentCreated({
+        tournamentId: tournament.id,
+        tournamentName: tournament.name,
+        organizationName: await this.organizationName(
+          tournament.organizationId,
+        ),
+        sportName: tournament.sport.name,
+      });
+    } catch (error) {
+      this.logger.warn(
+        `Failed to notify super-admins of tournament ${tournament.id}: ${(error as Error).message}`,
+      );
+    }
+  }
+
+  private async notifyTournamentPublished(tournament: {
+    id: string;
+    name: string;
+    organizationId: string;
+  }): Promise<void> {
+    if (!this.superAdminNotifications) {
+      return;
+    }
+    try {
+      await this.superAdminNotifications.tournamentPublished({
+        tournamentId: tournament.id,
+        tournamentName: tournament.name,
+        organizationName: await this.organizationName(
+          tournament.organizationId,
+        ),
+      });
+    } catch (error) {
+      this.logger.warn(
+        `Failed to notify super-admins of publication ${tournament.id}: ${(error as Error).message}`,
+      );
+    }
+  }
+
+  private async notifyPublicationPaid(
+    tournament: { id: string; name: string; organizationId: string },
+    amountCents: number,
+    currency: string,
+    wasPublished: boolean,
+  ): Promise<void> {
+    if (!this.superAdminNotifications) {
+      return;
+    }
+    try {
+      await this.superAdminNotifications.paymentReceived({
+        kind: 'publication',
+        amountCents,
+        currency,
+        organizationName: await this.organizationName(
+          tournament.organizationId,
+        ),
+        detail: tournament.name,
+      });
+      if (!wasPublished) {
+        await this.notifyTournamentPublished(tournament);
+      }
+    } catch (error) {
+      this.logger.warn(
+        `Failed to notify super-admins of payment for ${tournament.id}: ${(error as Error).message}`,
+      );
+    }
   }
 
   private toSummary(tournament: TournamentWithSport) {
