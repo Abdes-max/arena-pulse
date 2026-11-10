@@ -20,7 +20,16 @@
         t.organizationName
       }}</a>
       , {{ t.sportName }}
+      @if (t.organizationIsTest) {
+        <span class="super-admin-tournament-detail-page__tag">Démo / test</span>
+      }
     </p>
+    @if (t.status === 'PUBLISHED') {
+      <p class="super-admin-tournament-detail-page__meta">
+        Page publique :
+        <a [href]="publicUrl(t.slug)" target="_blank" rel="noopener">{{ publicUrl(t.slug) }}</a>
+      </p>
+    }
 
     @if (dangerZoneOpen()) {
       <section class="super-admin-tournament-detail-page__danger-zone">

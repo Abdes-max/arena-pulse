@@ -46,6 +46,12 @@
         (valueChange)="note.set($event)"
       />
       <ap-select
+        label="Démo/test"
+        [options]="testOptions"
+        [value]="testScope()"
+        (valueChange)="testScope.set($event)"
+      />
+      <ap-select
         label="Date"
         [options]="periodOptions"
         [value]="period()"
@@ -89,6 +95,9 @@
                 <a [routerLink]="['/super-admin/organizations', payment.organizationId]">{{
                   payment.organizationName
                 }}</a>
+                @if (payment.organizationIsTest) {
+                  <span class="super-admin-payments-page__tag">Test</span>
+                }
               </td>
               <td>{{ formatAmount(payment.amountCents, payment.currency) }}</td>
               <td>

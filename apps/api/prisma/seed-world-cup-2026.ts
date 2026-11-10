@@ -641,6 +641,11 @@ async function main() {
       where: { email },
       data: { emailVerifiedAt: new Date() },
     });
+    // Demo data: kept out of the super-admin dashboard figures by default.
+    await authPrisma.organization.updateMany({
+      where: { name: organizationName },
+      data: { isTest: true },
+    });
   } finally {
     await authPrisma.$disconnect();
   }

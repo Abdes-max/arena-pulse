@@ -3,6 +3,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Badge, BadgeStatus, Button, TypeToConfirm } from 'design-system';
 import { SuperAdminService } from '../../core/super-admin.service';
 import { SuperAdminTournamentDetail } from '../../core/models';
+import { publicTournamentUrl } from '../../shared/list-filters';
 
 const STATUS_TO_BADGE: Record<string, BadgeStatus> = {
   DRAFT: 'draft',
@@ -163,5 +164,9 @@ export class SuperAdminTournamentDetailPage {
     } finally {
       this.deleting.set(false);
     }
+  }
+
+  protected publicUrl(slug: string): string {
+    return publicTournamentUrl(slug);
   }
 }

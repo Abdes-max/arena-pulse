@@ -12,6 +12,7 @@ import {
   withAllOption,
 } from '../../shared/list-filters';
 import { queryFilter } from '../../shared/query-filter';
+import { matchesTestFilter, TEST_FILTER_OPTIONS } from '../../shared/list-filters';
 
 /** Same grouping as the status badges in the table. */
 function statusGroup(status: string): 'paid' | 'pending' | 'other' {
@@ -55,6 +56,8 @@ export class SuperAdminPaymentsPage {
   protected readonly from = queryFilter('from', '');
   protected readonly to = queryFilter('to', '');
 
+  protected readonly testScope = queryFilter('test', '');
+  protected readonly testOptions = TEST_FILTER_OPTIONS;
   protected readonly periodOptions = PERIOD_OPTIONS;
   protected readonly typeOptions: SelectOption[] = withAllOption(
     'Tous les types',
@@ -86,6 +89,7 @@ export class SuperAdminPaymentsPage {
         (!this.status() || statusGroup(payment.status) === this.status()) &&
         (!this.organization() || payment.organizationId === this.organization()) &&
         (!this.note() || !!payment.note === (this.note() === 'with')) &&
+        matchesTestFilter(payment.organizationIsTest, this.testScope()) &&
         isInPeriod(payment.paidAt ?? payment.createdAt, this.period(), this.from(), this.to()),
     ),
   );
@@ -112,6 +116,7 @@ export class SuperAdminPaymentsPage {
         this.status() ||
         this.organization() ||
         this.note() ||
+        this.testScope() ||
         this.period() !== 'all'
       ),
   );
@@ -126,6 +131,7 @@ export class SuperAdminPaymentsPage {
     this.status.set('');
     this.organization.set('');
     this.note.set('');
+    this.testScope.set('');
     this.period.set('all');
     this.from.set('');
     this.to.set('');

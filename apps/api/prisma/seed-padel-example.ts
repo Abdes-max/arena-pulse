@@ -359,6 +359,11 @@ async function main() {
       where: { email },
       data: { emailVerifiedAt: new Date() },
     });
+    // Demo data: kept out of the super-admin dashboard figures by default.
+    await prisma.organization.updateMany({
+      where: { name: organizationName },
+      data: { isTest: true },
+    });
 
     const login: any = await api('POST', '/auth/login', null, {
       email,

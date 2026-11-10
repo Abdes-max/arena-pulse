@@ -3,6 +3,12 @@
 
   <div class="super-admin-dashboard-page__filters">
     <ap-select
+      label="Données"
+      [options]="scopeOptions"
+      [value]="scope()"
+      (valueChange)="scope.set($event)"
+    />
+    <ap-select
       label="Période"
       [options]="periodOptions"
       [value]="period()"
@@ -17,52 +23,119 @@
   @if (errorMessage(); as message) {
     <p class="super-admin-dashboard-page__error" role="alert">{{ message }}</p>
   } @else if (stats(); as s) {
+    @if (!s.includeTest && (s.testData.organizations > 0 || s.testData.users > 0)) {
+      <p class="super-admin-dashboard-page__notice">
+        Les données de démo et de test sont exclues des chiffres ({{
+          s.testData.organizations
+        }}
+        organisation{{ s.testData.organizations > 1 ? 's' : '' }}, {{ s.testData.users }} compte{{
+          s.testData.users > 1 ? 's' : ''
+        }}, {{ s.testData.tournaments }} tournoi{{ s.testData.tournaments > 1 ? 's' : '' }}).
+        <a routerLink="/super-admin/organizations" [queryParams]="testBannerQuery"
+          >Voir les organisations de test</a
+        >
+      </p>
+    }
+
     <div class="super-admin-dashboard-page__grid" [attr.aria-busy]="loading()">
-      <section class="super-admin-dashboard-page__card">
-        <span class="super-admin-dashboard-page__label">{{
-          windowed() ? 'Nouveaux comptes organisateurs' : 'Comptes organisateurs'
-        }}</span>
-        <span class="super-admin-dashboard-page__value">{{ s.totalUsers }}</span>
-      </section>
-      <section class="super-admin-dashboard-page__card">
-        <span class="super-admin-dashboard-page__label">{{
-          windowed() ? 'Nouvelles organisations' : 'Organisations'
-        }}</span>
-        <span class="super-admin-dashboard-page__value">{{ s.totalOrganizations }}</span>
-      </section>
-      <section class="super-admin-dashboard-page__card">
-        <span class="super-admin-dashboard-page__label">{{
-          windowed() ? 'Abonnements actifs (à ce jour)' : 'Abonnements actifs'
-        }}</span>
-        <span class="super-admin-dashboard-page__value">{{ s.activeSubscriptions }}</span>
-      </section>
-      <section class="super-admin-dashboard-page__card">
-        <span class="super-admin-dashboard-page__label">Matchs joués</span>
-        <span class="super-admin-dashboard-page__value">{{ s.matchesPlayed }}</span>
-      </section>
-      <section class="super-admin-dashboard-page__card super-admin-dashboard-page__card--wide">
-        <span class="super-admin-dashboard-page__label">{{
-          windowed() ? 'Revenu collecté sur la période' : 'Revenu total collecté'
-        }}</span>
-        <span class="super-admin-dashboard-page__value">{{ formatAmount(s.revenueCents) }}</span>
-      </section>
+      @for (card of cards(); track card.label) {
+        @if (card.link) {
+          <a
+            class="super-admin-dashboard-page__card super-admin-dashboard-page__card--link"
+            [class.super-admin-dashboard-page__card--wide]="card.accent === 'revenue'"
+            [routerLink]="card.link"
+            [queryParams]="card.queryParams"
+          >
+            <span class="super-admin-dashboard-page__label">{{ card.label }}</span>
+            <span class="super-admin-dashboard-page__value">{{ card.value }}</span>
+            @if (card.detail) {
+              <span class="super-admin-dashboard-page__detail">{{ card.detail }}</span>
+            }
+          </a>
+        } @else {
+          <div class="super-admin-dashboard-page__card">
+            <span class="super-admin-dashboard-page__label">{{ card.label }}</span>
+            <span class="super-admin-dashboard-page__value">{{ card.value }}</span>
+            @if (card.detail) {
+              <span class="super-admin-dashboard-page__detail">{{ card.detail }}</span>
+            }
+          </div>
+        }
+      }
     </div>
 
     <section class="super-admin-dashboard-page__section">
       <h2>
         {{ windowed() ? 'Tournois créés sur la période, par statut' : 'Tournois par statut' }}
       </h2>
-      <dl class="super-admin-dashboard-page__status-list">
-        <dt>Brouillon</dt>
-        <dd>{{ s.tournamentsByStatus.DRAFT }}</dd>
-        <dt>Publié</dt>
-        <dd>{{ s.tournamentsByStatus.PUBLISHED }}</dd>
-        <dt>Dépublié</dt>
-        <dd>{{ s.tournamentsByStatus.UNPUBLISHED }}</dd>
-        <dt>Archivé</dt>
-        <dd>{{ s.tournamentsByStatus.ARCHIVED }}</dd>
-      </dl>
+      <div class="super-admin-dashboard-page__statuses">
+        @for (row of statusRows; track row.status) {
+          <a
+            class="super-admin-dashboard-page__status"
+            routerLink="/super-admin/tournaments"
+            [queryParams]="statusQuery(row.status)"
+          >
+            <ap-badge [status]="row.badge" [label]="row.label" />
+            <strong>{{ s.tournaments.byStatus[row.status] }}</strong>
+          </a>
+        }
+      </div>
     </section>
+
+    <div class="super-admin-dashboard-page__recent">
+      <section class="super-admin-dashboard-page__section">
+        <h2>Dernières organisations</h2>
+        @if (s.recent.organizations.length === 0) {
+          <p class="super-admin-dashboard-page__empty">Aucune organisation.</p>
+        } @else {
+          <ul class="super-admin-dashboard-page__list">
+            @for (organization of s.recent.organizations; track organization.id) {
+              <li>
+                <a [routerLink]="['/super-admin/organizations', organization.id]">{{
+                  organization.name
+                }}</a>
+                @if (organization.isTest) {
+                  <span class="super-admin-dashboard-page__tag">Test</span>
+                }
+                <span class="super-admin-dashboard-page__when">{{
+                  formatDate(organization.createdAt)
+                }}</span>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+
+      <section class="super-admin-dashboard-page__section">
+        <h2>Derniers tournois</h2>
+        @if (s.recent.tournaments.length === 0) {
+          <p class="super-admin-dashboard-page__empty">Aucun tournoi.</p>
+        } @else {
+          <ul class="super-admin-dashboard-page__list">
+            @for (tournament of s.recent.tournaments; track tournament.id) {
+              <li>
+                <span class="super-admin-dashboard-page__name">
+                  <a [routerLink]="['/super-admin/tournaments', tournament.id]">{{
+                    tournament.name
+                  }}</a>
+                  <small>{{ tournament.organizationName }}</small>
+                </span>
+                <ap-badge [status]="badgeOf(tournament.status)" />
+                @if (tournament.status === 'PUBLISHED') {
+                  <a
+                    class="super-admin-dashboard-page__public"
+                    [href]="publicUrl(tournament.slug)"
+                    target="_blank"
+                    rel="noopener"
+                    >Page publique ↗</a
+                  >
+                }
+              </li>
+            }
+          </ul>
+        }
+      </section>
+    </div>
   } @else if (loading()) {
     <p>Chargement…</p>
   }

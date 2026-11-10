@@ -52,6 +52,12 @@
         (valueChange)="played.set($event)"
       />
       <ap-select
+        label="Démo/test"
+        [options]="testOptions"
+        [value]="testScope()"
+        (valueChange)="testScope.set($event)"
+      />
+      <ap-select
         label="Création"
         [options]="periodOptions"
         [value]="period()"
@@ -74,6 +80,7 @@
             <th>Sport</th>
             <th>Dates</th>
             <th>Statut</th>
+            <th>Page publique</th>
             <th>Équipes</th>
             <th>Matchs joués</th>
             <th></th>
@@ -82,7 +89,12 @@
         <tbody>
           @for (tournament of filtered(); track tournament.id) {
             <tr>
-              <td>{{ tournament.name }}</td>
+              <td>
+                {{ tournament.name }}
+                @if (tournament.organizationIsTest) {
+                  <span class="super-admin-tournaments-page__tag">Test</span>
+                }
+              </td>
               <td>
                 <a [routerLink]="['/super-admin/organizations', tournament.organizationId]">{{
                   tournament.organizationName
@@ -91,6 +103,13 @@
               <td>{{ tournament.sportName }}</td>
               <td>{{ formatDates(tournament) }}</td>
               <td><ap-badge [status]="statusBadge[tournament.status]" /></td>
+              <td>
+                @if (tournament.status === 'PUBLISHED') {
+                  <a [href]="publicUrl(tournament.slug)" target="_blank" rel="noopener">Ouvrir ↗</a>
+                } @else {
+                  -
+                }
+              </td>
               <td>{{ tournament.teamsCount }}</td>
               <td>{{ tournament.matchesPlayedCount }}</td>
               <td>

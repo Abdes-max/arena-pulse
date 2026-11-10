@@ -40,6 +40,12 @@
         (valueChange)="tournamentsFilter.set($event)"
       />
       <ap-select
+        label="Démo/test"
+        [options]="testOptions"
+        [value]="testScope()"
+        (valueChange)="testScope.set($event)"
+      />
+      <ap-select
         label="Création"
         [options]="periodOptions"
         [value]="period()"
@@ -69,7 +75,12 @@
         <tbody>
           @for (organization of filtered(); track organization.id) {
             <tr>
-              <td>{{ organization.name }}</td>
+              <td>
+                {{ organization.name }}
+                @if (organization.isTest) {
+                  <span class="super-admin-organizations-page__tag">Test</span>
+                }
+              </td>
               <td>{{ organization.membersCount }}</td>
               <td>{{ organization.tournamentsCount }}</td>
               <td>

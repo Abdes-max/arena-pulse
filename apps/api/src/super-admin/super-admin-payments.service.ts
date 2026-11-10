@@ -14,6 +14,7 @@ export interface SuperAdminPaymentRow {
   type: SuperAdminPaymentType;
   organizationId: string;
   organizationName: string;
+  organizationIsTest: boolean;
   amountCents: number;
   currency: string;
   status: string;
@@ -71,6 +72,7 @@ export class SuperAdminPaymentsService {
         type: 'REGISTRATION' as const,
         organizationId: registration.tournament.organizationId,
         organizationName: registration.tournament.organization.name,
+        organizationIsTest: registration.tournament.organization.isTest,
         amountCents: registration.amountCents,
         currency: registration.currency,
         status: registration.status,
@@ -82,6 +84,7 @@ export class SuperAdminPaymentsService {
         type: 'PUBLICATION' as const,
         organizationId: order.tournament.organizationId,
         organizationName: order.tournament.organization.name,
+        organizationIsTest: order.tournament.organization.isTest,
         amountCents: order.amountCents,
         currency: order.currency,
         status: order.status,
@@ -93,6 +96,7 @@ export class SuperAdminPaymentsService {
         type: 'SUBSCRIPTION' as const,
         organizationId: subscription.organizationId,
         organizationName: subscription.organization.name,
+        organizationIsTest: subscription.organization.isTest,
         amountCents: subscription.amountCents,
         currency: subscription.currency,
         status: subscription.status,

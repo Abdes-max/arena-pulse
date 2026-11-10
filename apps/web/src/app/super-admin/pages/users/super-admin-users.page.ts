@@ -5,6 +5,7 @@ import { SuperAdminUserRow } from '../../core/models';
 import { SuperAdminFilterBar } from '../../shared/filter-bar';
 import { isInPeriod, matchesText, PERIOD_OPTIONS, PeriodFilter } from '../../shared/list-filters';
 import { queryFilter } from '../../shared/query-filter';
+import { matchesTestFilter, TEST_FILTER_OPTIONS } from '../../shared/list-filters';
 
 @Component({
   selector: 'app-super-admin-users-page',
@@ -37,6 +38,8 @@ export class SuperAdminUsersPage {
   protected readonly from = queryFilter('from', '');
   protected readonly to = queryFilter('to', '');
 
+  protected readonly testScope = queryFilter('test', '');
+  protected readonly testOptions = TEST_FILTER_OPTIONS;
   protected readonly periodOptions = PERIOD_OPTIONS;
   protected readonly verificationOptions: SelectOption[] = [
     { value: '', label: 'Vérifiés ou non' },
@@ -62,6 +65,7 @@ export class SuperAdminUsersPage {
         (!this.verification() || !!user.emailVerifiedAt === (this.verification() === 'verified')) &&
         (!this.organizationsFilter() ||
           user.organizations.length > 0 === (this.organizationsFilter() === 'with')) &&
+        matchesTestFilter(user.isTest, this.testScope()) &&
         isInPeriod(user.createdAt, this.period(), this.from(), this.to()),
     ),
   );
@@ -72,6 +76,7 @@ export class SuperAdminUsersPage {
         this.query() ||
         this.verification() ||
         this.organizationsFilter() ||
+        this.testScope() ||
         this.period() !== 'all'
       ),
   );
@@ -84,6 +89,7 @@ export class SuperAdminUsersPage {
     this.query.set('');
     this.verification.set('');
     this.organizationsFilter.set('');
+    this.testScope.set('');
     this.period.set('all');
     this.from.set('');
     this.to.set('');

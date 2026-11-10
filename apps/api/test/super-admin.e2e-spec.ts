@@ -150,15 +150,46 @@ describe('Super admin data endpoints (e2e)', () => {
     );
     expect(user?.emailVerifiedAt).not.toBeNull();
 
+    // The organizer is an @example.com account: a test account, left out of
+    // the figures unless includeTest is asked for.
+    interface Stats {
+      users: { total: number };
+      organizations: { total: number };
+      testData: { users: number; organizations: number };
+      recent: { organizations: { id: string }[] };
+    }
     const statsRes = await auth(
       request(app.getHttpServer()).get('/api/v1/super-admin/stats'),
     ).expect(200);
-    const stats = statsRes.body as {
-      totalUsers: number;
-      totalOrganizations: number;
-    };
-    expect(typeof stats.totalUsers).toBe('number');
-    expect(stats.totalOrganizations).toBeGreaterThanOrEqual(1);
+    const stats = statsRes.body as Stats;
+    expect(stats.users.total).toBe(0);
+    expect(stats.testData.users).toBeGreaterThanOrEqual(1);
+
+    const allStatsRes = await auth(
+      request(app.getHttpServer()).get(
+        '/api/v1/super-admin/stats?includeTest=true',
+      ),
+    ).expect(200);
+    const allStats = allStatsRes.body as Stats;
+    expect(allStats.users.total).toBeGreaterThanOrEqual(1);
+    expect(allStats.organizations.total).toBeGreaterThanOrEqual(1);
+    expect(allStats.recent.organizations.map((o) => o.id)).toContain(
+      organizationId,
+    );
+
+    // Flagging the organization as test leaves it out of the default figures.
+    await auth(
+      request(app.getHttpServer()).post(
+        `/api/v1/super-admin/organizations/${organizationId}/mark-test`,
+      ),
+    ).expect(204);
+    const flaggedStats = (
+      await auth(
+        request(app.getHttpServer()).get('/api/v1/super-admin/stats'),
+      ).expect(200)
+    ).body as Stats;
+    expect(flaggedStats.organizations.total).toBe(0);
+    expect(flaggedStats.testData.organizations).toBe(1);
   });
 
   it('rejects organization list/stats access with an organizer token', async () => {
@@ -181,7 +212,9 @@ describe('Super admin data endpoints (e2e)', () => {
     const sportRes = await orgAuth(
       request(app.getHttpServer()).get('/api/v1/sports'),
     ).expect(200);
-    const sportId = (sportRes.body as { id: string; scoreFormat: string }[]).find((sport) => sport.scoreFormat === 'GOALS')!.id;
+    const sportId = (
+      sportRes.body as { id: string; scoreFormat: string }[]
+    ).find((sport) => sport.scoreFormat === 'GOALS')!.id;
     const tournamentRes = await orgAuth(
       request(app.getHttpServer()).post(
         `/api/v1/organizations/${organizationId}/tournaments`,
@@ -292,7 +325,9 @@ describe('Super admin data endpoints (e2e)', () => {
     const sportRes = await orgAuth(
       request(app.getHttpServer()).get('/api/v1/sports'),
     ).expect(200);
-    const sportId = (sportRes.body as { id: string; scoreFormat: string }[]).find((sport) => sport.scoreFormat === 'GOALS')!.id;
+    const sportId = (
+      sportRes.body as { id: string; scoreFormat: string }[]
+    ).find((sport) => sport.scoreFormat === 'GOALS')!.id;
     const tournamentRes = await orgAuth(
       request(app.getHttpServer()).post(
         `/api/v1/organizations/${organizationId}/tournaments`,

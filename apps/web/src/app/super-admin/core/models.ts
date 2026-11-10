@@ -12,6 +12,7 @@ export interface SuperAdminOrganizationRow {
   tournamentsCount: number;
   subscriptionStatus: 'ACTIVE' | 'NONE';
   suspendedAt: string | null;
+  isTest: boolean;
   createdAt: string;
 }
 
@@ -27,6 +28,7 @@ export interface SuperAdminOrganizationMember {
 export interface SuperAdminOrganizationTournamentSummary {
   id: string;
   name: string;
+  slug: string;
   sportName: string;
   status: string;
 }
@@ -35,6 +37,7 @@ export interface SuperAdminOrganizationDetail {
   id: string;
   name: string;
   suspendedAt: string | null;
+  isTest: boolean;
   createdAt: string;
   members: SuperAdminOrganizationMember[];
   tournaments: SuperAdminOrganizationTournamentSummary[];
@@ -47,6 +50,7 @@ export interface SuperAdminUserRow {
   lastName: string;
   emailVerifiedAt: string | null;
   createdAt: string;
+  isTest: boolean;
   organizations: { id: string; name: string; role: string }[];
 }
 
@@ -55,7 +59,9 @@ export interface SuperAdminTournamentRow {
   name: string;
   organizationId: string;
   organizationName: string;
+  organizationIsTest: boolean;
   sportName: string;
+  slug: string;
   status: string;
   teamsCount: number;
   matchesPlayedCount: number;
@@ -69,7 +75,9 @@ export interface SuperAdminTournamentDetail {
   name: string;
   organizationId: string;
   organizationName: string;
+  organizationIsTest: boolean;
   sportName: string;
+  slug: string;
   status: string;
   createdAt: string;
   teams: {
@@ -96,6 +104,7 @@ export interface SuperAdminPaymentRow {
   type: SuperAdminPaymentType;
   organizationId: string;
   organizationName: string;
+  organizationIsTest: boolean;
   amountCents: number;
   currency: string;
   status: string;
@@ -104,13 +113,37 @@ export interface SuperAdminPaymentRow {
   note: string | null;
 }
 
+export type SuperAdminTournamentStatus = 'DRAFT' | 'PUBLISHED' | 'UNPUBLISHED' | 'ARCHIVED';
+
 export interface SuperAdminStats {
   /** Null when the figures cover everything. */
   period: { from: string | null; to: string | null } | null;
-  totalUsers: number;
-  totalOrganizations: number;
-  tournamentsByStatus: Record<'DRAFT' | 'PUBLISHED' | 'UNPUBLISHED' | 'ARCHIVED', number>;
-  matchesPlayed: number;
-  activeSubscriptions: number;
-  revenueCents: number;
+  /** False: demo / test organizations are left out of every figure. */
+  includeTest: boolean;
+  users: { total: number; verified: number; unverified: number };
+  organizations: { total: number; suspended: number };
+  subscriptions: { active: number };
+  tournaments: { total: number; byStatus: Record<SuperAdminTournamentStatus, number> };
+  teams: number;
+  matches: { played: number; toPlay: number };
+  registrations: { paid: number };
+  revenue: {
+    totalCents: number;
+    publicationCents: number;
+    subscriptionCents: number;
+    registrationCents: number;
+  };
+  /** What the default view leaves out (all time). */
+  testData: { users: number; organizations: number; tournaments: number };
+  recent: {
+    organizations: { id: string; name: string; createdAt: string; isTest: boolean }[];
+    tournaments: {
+      id: string;
+      name: string;
+      slug: string;
+      status: SuperAdminTournamentStatus;
+      organizationName: string;
+      createdAt: string;
+    }[];
+  };
 }

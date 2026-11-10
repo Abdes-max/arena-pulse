@@ -1,0 +1,68 @@
+// Shared look of the super-admin console: data tables as cards, KPI cards,
+// small tags. Pages @use this instead of each redefining a bare table.
+
+@mixin table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.9rem;
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-lg);
+  box-shadow: var(--ap-shadow-sm);
+  overflow: hidden;
+
+  th,
+  td {
+    text-align: left;
+    padding: var(--ap-space-3) var(--ap-space-4);
+    border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+    vertical-align: middle;
+  }
+
+  th {
+    color: var(--ap-color-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background: var(--ap-color-bg);
+    white-space: nowrap;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  tbody tr:hover td {
+    background: var(--ap-color-bg);
+  }
+
+  a {
+    color: var(--ap-color-primary);
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+@mixin tag {
+  display: inline-block;
+  padding: 1px var(--ap-space-2);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: 999px;
+  color: var(--ap-color-muted);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+@mixin page-title {
+  margin: 0 0 var(--ap-space-6);
+  font-family: var(--ap-font-heading);
+}
