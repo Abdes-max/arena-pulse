@@ -303,7 +303,15 @@
       "points": "Pt",
       "pointsFull": "Punti",
       "bracket": "Tabellone",
-      "result": "Risultato"
+      "result": "Risultato",
+      "setsFor": "S+",
+      "setsForFull": "Set vinti",
+      "setsAgainst": "S-",
+      "setsAgainstFull": "Set persi",
+      "gameDiff": "Diff. game",
+      "gameDiffFull": "Differenza game",
+      "pointDiff": "Diff. pt",
+      "pointDiffFull": "Differenza punti"
     }
   },
   "teamDetail": {
@@ -1145,6 +1153,13 @@
         "removeCrossGroupRule": "Impossibile eliminare questa regola.",
         "createBracket": "Impossibile creare questo tabellone.",
         "removeBracket": "Impossibile eliminare questo tabellone."
+      },
+      "setsToWin": {
+        "label": "Set da vincere",
+        "default": "Predefinito dello sport",
+        "one": "1 set da vincere",
+        "two": "2 set da vincere (al meglio dei 3)",
+        "three": "3 set da vincere (al meglio dei 5)"
       }
     },
     "schedule": {
@@ -1258,7 +1273,15 @@
         "penaltyShootoutRequired": "È richiesta una serie di rigori per convalidare questo pareggio.",
         "validateGeneric": "Impossibile convalidare questo risultato.",
         "clearScore": "Impossibile cancellare questo risultato.",
-        "undoForfeit": "Impossibile annullare questa sconfitta a tavolino."
+        "undoForfeit": "Impossibile annullare questa sconfitta a tavolino.",
+        "enterEverySet": "Inserisci entrambi i punteggi di ogni set prima di salvare."
+      },
+      "sets": {
+        "set": "Set",
+        "home": "Punteggio casa",
+        "away": "Punteggio ospiti",
+        "add": "+ Set",
+        "remove": "Rimuovi l’ultimo set"
       }
     },
     "standings": {
@@ -1294,7 +1317,15 @@
         "pointsFull": "Punti",
         "rating": "Rating",
         "bracket": "Tabellone",
-        "result": "Risultato"
+        "result": "Risultato",
+        "setsFor": "S+",
+        "setsForFull": "Set vinti",
+        "setsAgainst": "S-",
+        "setsAgainstFull": "Set persi",
+        "gameDiff": "Diff. game",
+        "gameDiffFull": "Differenza game",
+        "pointDiff": "Diff. pt",
+        "pointDiffFull": "Differenza punti"
       },
       "tieTotal": "Parità totale tra",
       "tieQuestion": ", chi deve essere classificato davanti agli altri?",

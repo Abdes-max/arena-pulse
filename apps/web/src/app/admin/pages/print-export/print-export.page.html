@@ -92,21 +92,41 @@
                   <th [title]="'admin.standings.table.wonFull' | transloco">
                     {{ 'admin.standings.table.won' | transloco }}
                   </th>
-                  <th [title]="'admin.standings.table.drawnFull' | transloco">
-                    {{ 'admin.standings.table.drawn' | transloco }}
-                  </th>
+                  @if (!isSets()) {
+                    <th [title]="'admin.standings.table.drawnFull' | transloco">
+                      {{ 'admin.standings.table.drawn' | transloco }}
+                    </th>
+                  }
                   <th [title]="'admin.standings.table.lostFull' | transloco">
                     {{ 'admin.standings.table.lost' | transloco }}
                   </th>
-                  <th [title]="'admin.standings.table.goalsForFull' | transloco">
-                    {{ 'admin.standings.table.goalsFor' | transloco }}
+                  <th
+                    [title]="
+                      'admin.standings.table.' + (isSets() ? 'setsForFull' : 'goalsForFull')
+                        | transloco
+                    "
+                  >
+                    {{ 'admin.standings.table.' + (isSets() ? 'setsFor' : 'goalsFor') | transloco }}
                   </th>
-                  <th [title]="'admin.standings.table.goalsAgainstFull' | transloco">
-                    {{ 'admin.standings.table.goalsAgainst' | transloco }}
+                  <th
+                    [title]="
+                      'admin.standings.table.' + (isSets() ? 'setsAgainstFull' : 'goalsAgainstFull')
+                        | transloco
+                    "
+                  >
+                    {{
+                      'admin.standings.table.' + (isSets() ? 'setsAgainst' : 'goalsAgainst')
+                        | transloco
+                    }}
                   </th>
                   <th [title]="'admin.standings.table.diffFull' | transloco">
                     {{ 'admin.standings.table.diff' | transloco }}
                   </th>
+                  @if (isSets()) {
+                    <th [title]="'admin.standings.table.' + gameDiffKey() + 'Full' | transloco">
+                      {{ 'admin.standings.table.' + gameDiffKey() | transloco }}
+                    </th>
+                  }
                   <th [title]="'admin.standings.table.pointsFull' | transloco">
                     {{ 'admin.standings.table.points' | transloco }}
                   </th>
@@ -119,11 +139,16 @@
                     <td>{{ row.teamName }}</td>
                     <td>{{ row.played }}</td>
                     <td>{{ row.won }}</td>
-                    <td>{{ row.drawn }}</td>
+                    @if (!isSets()) {
+                      <td>{{ row.drawn }}</td>
+                    }
                     <td>{{ row.lost }}</td>
                     <td>{{ row.goalsFor }}</td>
                     <td>{{ row.goalsAgainst }}</td>
                     <td>{{ row.goalDifference }}</td>
+                    @if (isSets()) {
+                      <td>{{ row.gameDifference }}</td>
+                    }
                     <td>{{ row.points }}</td>
                   </tr>
                 }

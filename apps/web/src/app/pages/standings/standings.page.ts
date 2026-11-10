@@ -32,6 +32,7 @@ import {
   buildBracketView,
   computeFinalRanking,
   qualificationTierColor,
+  setUnitForSport,
 } from 'shared-models';
 
 interface GroupStandings {
@@ -88,6 +89,15 @@ const KNOCKOUT_TAB = 'knockout';
 export class StandingsPage {
   private readonly api = inject(PublicApiService);
   private readonly context = inject(TournamentContextService);
+  // Sets sports (padel, tennis, volleyball, badminton): the table counts sets
+  // won/lost and the games/points difference instead of goals.
+  protected readonly isSets = computed(() => this.context.tournament()?.scoreFormat === 'SETS');
+  protected readonly gameDiffKey = computed(() =>
+    setUnitForSport(this.context.tournament()?.sportName ?? '') === 'points'
+      ? 'pointDiff'
+      : 'gameDiff',
+  );
+
   private readonly assetUrl = inject(AssetUrlService);
   private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly languageService = inject(LanguageService);

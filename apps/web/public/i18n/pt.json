@@ -303,7 +303,15 @@
       "points": "Pts",
       "pointsFull": "Pontos",
       "bracket": "Quadro",
-      "result": "Resultado"
+      "result": "Resultado",
+      "setsFor": "S+",
+      "setsForFull": "Sets ganhos",
+      "setsAgainst": "S-",
+      "setsAgainstFull": "Sets perdidos",
+      "gameDiff": "Dif. jogos",
+      "gameDiffFull": "Diferença de jogos",
+      "pointDiff": "Dif. pts",
+      "pointDiffFull": "Diferença de pontos"
     }
   },
   "teamDetail": {
@@ -1145,6 +1153,13 @@
         "removeCrossGroupRule": "Não foi possível eliminar esta regra.",
         "createBracket": "Não foi possível criar este quadro.",
         "removeBracket": "Não foi possível eliminar este quadro."
+      },
+      "setsToWin": {
+        "label": "Sets para ganhar",
+        "default": "Predefinição do desporto",
+        "one": "1 set para ganhar",
+        "two": "2 sets para ganhar (à melhor de 3)",
+        "three": "3 sets para ganhar (à melhor de 5)"
       }
     },
     "schedule": {
@@ -1258,7 +1273,15 @@
         "penaltyShootoutRequired": "É necessária uma marcação de grandes penalidades para validar este empate.",
         "validateGeneric": "Não foi possível validar este resultado.",
         "clearScore": "Não foi possível limpar este resultado.",
-        "undoForfeit": "Não foi possível anular esta desistência."
+        "undoForfeit": "Não foi possível anular esta desistência.",
+        "enterEverySet": "Introduza os dois resultados de cada set antes de guardar."
+      },
+      "sets": {
+        "set": "Set",
+        "home": "Resultado casa",
+        "away": "Resultado visitante",
+        "add": "+ Set",
+        "remove": "Remover o último set"
       }
     },
     "standings": {
@@ -1294,7 +1317,15 @@
         "pointsFull": "Pontos",
         "rating": "Rating",
         "bracket": "Quadro",
-        "result": "Resultado"
+        "result": "Resultado",
+        "setsFor": "S+",
+        "setsForFull": "Sets ganhos",
+        "setsAgainst": "S-",
+        "setsAgainstFull": "Sets perdidos",
+        "gameDiff": "Dif. jogos",
+        "gameDiffFull": "Diferença de jogos",
+        "pointDiff": "Dif. pts",
+        "pointDiffFull": "Diferença de pontos"
       },
       "tieTotal": "Empate total entre",
       "tieQuestion": ", quem deve ficar classificado à frente dos outros?",

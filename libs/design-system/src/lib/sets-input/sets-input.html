@@ -1,0 +1,39 @@
+<div class="ap-sets-input">
+  @for (set of rows(); track $index) {
+    <div class="ap-sets-input__row">
+      <span class="ap-sets-input__label">{{ text().set }} {{ $index + 1 }}</span>
+      <input
+        class="ap-sets-input__field"
+        type="number"
+        inputmode="numeric"
+        min="0"
+        [attr.aria-label]="text().home + ' - ' + text().set + ' ' + ($index + 1)"
+        [value]="set.home"
+        [disabled]="disabled()"
+        (input)="update($index, 'home', $event)"
+      />
+      <span class="ap-sets-input__sep" aria-hidden="true">-</span>
+      <input
+        class="ap-sets-input__field"
+        type="number"
+        inputmode="numeric"
+        min="0"
+        [attr.aria-label]="text().away + ' - ' + text().set + ' ' + ($index + 1)"
+        [value]="set.away"
+        [disabled]="disabled()"
+        (input)="update($index, 'away', $event)"
+      />
+    </div>
+  }
+  <div class="ap-sets-input__footer">
+    @if (canAdd() && !disabled()) {
+      <button type="button" class="ap-sets-input__button" (click)="add()">{{ text().add }}</button>
+    }
+    @if (canRemove() && !disabled()) {
+      <button type="button" class="ap-sets-input__button" (click)="removeLast()">
+        {{ text().remove }}
+      </button>
+    }
+    <span class="ap-sets-input__total" aria-live="polite">{{ won().home }} - {{ won().away }}</span>
+  </div>
+</div>

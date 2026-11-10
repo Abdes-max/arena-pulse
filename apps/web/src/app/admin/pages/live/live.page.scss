@@ -151,3 +151,16 @@
   margin-left: auto;
   font-variant-numeric: tabular-nums;
 }
+
+// Sets sports: team names, then the list of sets, full width of the match card.
+.live-page__sets {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+  flex: 1 1 100%;
+}
+
+.live-page__sets-teams {
+  margin: 0;
+  font-weight: 600;
+}

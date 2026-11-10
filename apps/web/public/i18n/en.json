@@ -405,7 +405,15 @@
       "points": "Pts",
       "pointsFull": "Points",
       "bracket": "Bracket",
-      "result": "Result"
+      "result": "Result",
+      "setsFor": "S+",
+      "setsForFull": "Sets won",
+      "setsAgainst": "S-",
+      "setsAgainstFull": "Sets lost",
+      "gameDiff": "Game diff.",
+      "gameDiffFull": "Game difference",
+      "pointDiff": "Pts diff.",
+      "pointDiffFull": "Points difference"
     }
   },
   "teamDetail": {
@@ -1247,6 +1255,13 @@
         "removeCrossGroupRule": "Unable to delete this rule.",
         "createBracket": "Unable to create this bracket.",
         "removeBracket": "Unable to delete this bracket."
+      },
+      "setsToWin": {
+        "label": "Sets to win",
+        "default": "Sport default",
+        "one": "1 set to win",
+        "two": "2 sets to win (best of 3)",
+        "three": "3 sets to win (best of 5)"
       }
     },
     "schedule": {
@@ -1360,7 +1375,15 @@
         "penaltyShootoutRequired": "A penalty shootout is required to validate this drawn match.",
         "validateGeneric": "Unable to validate this score.",
         "clearScore": "Unable to clear this score.",
-        "undoForfeit": "Unable to undo this forfeit."
+        "undoForfeit": "Unable to undo this forfeit.",
+        "enterEverySet": "Enter both scores of every set before saving."
+      },
+      "sets": {
+        "set": "Set",
+        "home": "Home score",
+        "away": "Away score",
+        "add": "+ Set",
+        "remove": "Remove last set"
       }
     },
     "standings": {
@@ -1396,7 +1419,15 @@
         "pointsFull": "Points",
         "rating": "Rating",
         "bracket": "Bracket",
-        "result": "Result"
+        "result": "Result",
+        "setsFor": "S+",
+        "setsForFull": "Sets won",
+        "setsAgainst": "S-",
+        "setsAgainstFull": "Sets lost",
+        "gameDiff": "Game diff.",
+        "gameDiffFull": "Game difference",
+        "pointDiff": "Pts diff.",
+        "pointDiffFull": "Points difference"
       },
       "tieTotal": "Complete tie between",
       "tieQuestion": ", who should rank ahead of the others?",

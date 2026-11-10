@@ -84,6 +84,22 @@
   display: contents;
 }
 
+// Sets sports: team names on one line, the sets list below, full width.
+.scores-page__sets {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+  flex: 1 1 100%;
+}
+
+.scores-page__sets-teams {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ap-space-2);
+  font-weight: 600;
+}
+
 // Was a bare `-` between the two score inputs -- fine inline on desktop,
 // meaningless once each team gets its own row on mobile (hidden there, see
 // the @media block below).

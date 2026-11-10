@@ -199,6 +199,7 @@
                             "
                             [homeScore]="card.match.score?.homeScore"
                             [awayScore]="card.match.score?.awayScore"
+                            [sets]="card.match.score?.sets ?? null"
                             [forfeitedTeamName]="
                               card.match.status === 'FORFEITED'
                                 ? card.match.forfeitedTeam?.name

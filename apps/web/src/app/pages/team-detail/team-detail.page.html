@@ -194,6 +194,7 @@
               [awayTeam]="teamCardInput(match.awayTeam, '?')"
               [homeScore]="match.score?.homeScore"
               [awayScore]="match.score?.awayScore"
+              [sets]="match.score?.sets ?? null"
               [venue]="match.timeSlot?.field?.name"
               [competitionLabel]="competitionLabel(match)"
             />

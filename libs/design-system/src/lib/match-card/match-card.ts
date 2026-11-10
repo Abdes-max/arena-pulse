@@ -36,6 +36,10 @@ export class MatchCard {
   readonly awayTeam = input.required<MatchCardTeam>();
   readonly homeScore = input<number>();
   readonly awayScore = input<number>();
+  // Sets sports: the detail of each set in play order. homeScore/awayScore
+  // are then the sets won, shown at the end of the row, with each side's
+  // games per set just before them ("6 4 10  2").
+  readonly sets = input<{ home: number; away: number }[] | null>(null);
   readonly kickoff = input<string>();
   readonly venue = input<string>();
   readonly competitionLabel = input<string>();
@@ -50,6 +54,9 @@ export class MatchCard {
   // host bindings remove the attribute for null/undefined/false, but a bare
   // `true` would stringify to the literal text "true", not an empty value.
   protected readonly highlightWinnerAttr = computed(() => (this.highlightWinner() ? '' : null));
+
+  protected readonly homeSets = computed(() => (this.sets() ?? []).map((set) => set.home));
+  protected readonly awaySets = computed(() => (this.sets() ?? []).map((set) => set.away));
 
   protected readonly hasScore = computed(
     () => this.homeScore() !== undefined && this.awayScore() !== undefined,

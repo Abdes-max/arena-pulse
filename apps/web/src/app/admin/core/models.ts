@@ -144,6 +144,9 @@ export interface Tournament {
   status: TournamentStatus;
   sportId: string;
   sportName: string;
+  // "SETS" sports (padel, tennis...) record each set; see ScoreFormat in shared-models.
+  scoreFormat: 'GOALS' | 'SETS';
+  defaultSetsToWin: number | null;
   startDate: string | null;
   endDate: string | null;
   isOnline: boolean;
@@ -268,6 +271,8 @@ export interface CompetitionPhase {
   // Structure/Calendrier hide it from their phase lists instead of showing
   // an empty, unusable pool.
   isSeedPhase: boolean;
+  // Sets sports: sets a side must win in this phase; null = the sport's default.
+  setsToWin: number | null;
   groups: CompetitionGroup[];
   knockoutBracket: KnockoutBracket | null;
 }
@@ -277,6 +282,9 @@ export interface StandingRule {
   winPoints: number;
   drawPoints: number;
   lossPoints: number;
+  // Sets sports: points when the match went to the deciding set (null = the normal win/loss points).
+  decidingSetWinPoints: number | null;
+  decidingSetLossPoints: number | null;
   tieBreakOrder: string[];
   supplementaryStandingEnabled: boolean;
   penaltyShootoutEnabled: boolean;

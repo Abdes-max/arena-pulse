@@ -378,8 +378,49 @@ export class StructurePage {
     ...this.unassignedTeams().map((team) => ({ value: team.id, label: team.name })),
   ]);
 
+  // Sets sports (padel, tennis, volleyball, badminton): each phase can set
+  // how many sets win a match (best of 3 in pools, best of 5 in the final...).
+  protected readonly isSets = signal(false);
+
   constructor() {
     void this.loadCategories();
+    void this.loadSport();
+  }
+
+  private async loadSport(): Promise<void> {
+    const organizationId = this.organization()?.id;
+    if (!organizationId) {
+      return;
+    }
+    try {
+      const tournament = await this.tournamentsService.getTournament(
+        organizationId,
+        this.tournamentId,
+      );
+      this.isSets.set(tournament.scoreFormat === 'SETS');
+    } catch {
+      // Without it the sets setting just stays hidden.
+    }
+  }
+
+  /** '' = back to the sport's default. Applies to matches scored from now on. */
+  protected async changeSetsToWin(phase: CompetitionPhase, event: Event): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const raw = (event.target as HTMLSelectElement).value;
+    if (!organizationId) {
+      return;
+    }
+    try {
+      const updated = await this.competitionFormatsService.updatePhase(
+        organizationId,
+        this.tournamentId,
+        phase.id,
+        { setsToWin: raw === '' ? null : Number(raw) },
+      );
+      this.phases.update((phases) => phases.map((p) => (p.id === phase.id ? updated : p)));
+    } catch {
+      this.errorMessage.set('admin.structure.errors.toggleSetting');
+    }
   }
 
   /** Localized default tier name -- used both as the initial/reset presetTiers()[0].name and as the fallback in presetTierBracketSizes() below when a tier's own name is left blank. */

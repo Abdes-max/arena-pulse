@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { ActivatedRoute } from '@angular/router';
 import { AssetUrlService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { Button, Select, SelectOption, TextField } from 'design-system';
+import { Button, Select, SelectOption, SetDraft, SetsInput, TextField } from 'design-system';
 import { LanguageService } from 'design-tokens';
 import { AuthService } from '../../core/auth.service';
 import { CompetitionFormatsService } from '../../core/competition-formats.service';
@@ -13,9 +13,10 @@ import {
   CompetitionPhaseType,
   Match,
   StandingRule,
+  TournamentDetail,
 } from '../../core/models';
 import { ScheduleService } from '../../core/schedule.service';
-import { ScoresService } from '../../core/scores.service';
+import { ScoresService, UpsertMatchScorePayload } from '../../core/scores.service';
 import { TournamentsService } from '../../core/tournaments.service';
 import { groupMatchesByPhaseSection, roundLabel, RoundLabelLang } from 'shared-models';
 
@@ -42,7 +43,7 @@ interface ScoreSection {
 
 @Component({
   selector: 'app-scores-page',
-  imports: [Button, Select, TextField, TranslocoPipe],
+  imports: [Button, Select, SetsInput, TextField, TranslocoPipe],
   templateUrl: './scores.page.html',
   styleUrl: './scores.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -75,6 +76,24 @@ export class ScoresPage {
   protected readonly matches = signal<Match[]>([]);
   protected readonly standingRulesByGroup = signal<Map<string, StandingRule>>(new Map());
   protected readonly scoreDrafts = signal<Map<string, ScoreDraft>>(new Map());
+
+  // Sets sports (padel, tennis, volleyball, badminton): each match is entered
+  // as a list of sets instead of one score per side. The API recomputes the
+  // sets won from it, so the page never types homeScore/awayScore itself.
+  private readonly tournament = signal<TournamentDetail | null>(null);
+  protected readonly isSetsFormat = computed(() => this.tournament()?.scoreFormat === 'SETS');
+  protected readonly setsDrafts = signal<Map<string, SetDraft[]>>(new Map());
+  protected readonly setsLabels = computed(() => {
+    const lang = this.languageService.language();
+    const t = (key: string) => this.transloco.translate(`admin.scores.sets.${key}`, {}, lang);
+    return {
+      set: t('set'),
+      home: t('home'),
+      away: t('away'),
+      add: t('add'),
+      remove: t('remove'),
+    };
+  });
 
   protected readonly categoryOptions = computed<SelectOption[]>(() =>
     this.categories().map((category) => ({ value: category.id, label: category.name })),
@@ -262,6 +281,21 @@ export class ScoresPage {
 
   constructor() {
     void this.loadCategories();
+    void this.loadTournament();
+  }
+
+  private async loadTournament(): Promise<void> {
+    const organizationId = this.organization()?.id;
+    if (!organizationId) {
+      return;
+    }
+    try {
+      this.tournament.set(
+        await this.tournamentsService.getTournament(organizationId, this.tournamentId),
+      );
+    } catch {
+      // Without it the page falls back to the single-score entry.
+    }
   }
 
   private async loadCategories(): Promise<void> {
@@ -414,6 +448,26 @@ export class ScoresPage {
     return EMPTY_DRAFT;
   }
 
+  /** Sets to win for this match: its phase's own setting, else the sport's default. */
+  protected setsToWinFor(match: Match): number {
+    return this.phaseForMatch(match)?.setsToWin ?? this.tournament()?.defaultSetsToWin ?? 2;
+  }
+
+  protected setsDraftFor(match: Match): SetDraft[] {
+    const draft = this.setsDrafts().get(match.id);
+    if (draft) {
+      return draft;
+    }
+    return (match.score?.sets ?? []).map((set) => ({
+      home: String(set.home),
+      away: String(set.away),
+    }));
+  }
+
+  protected onSetsChange(match: Match, sets: SetDraft[]): void {
+    this.setsDrafts.update((drafts) => new Map(drafts).set(match.id, sets));
+  }
+
   protected pendingOpponents(match: Match): boolean {
     return !match.homeTeam || !match.awayTeam;
   }
@@ -440,24 +494,41 @@ export class ScoresPage {
     if (!organizationId) {
       return;
     }
-    const draft = this.draftFor(match);
-    if (draft.home === '' || draft.away === '') {
-      this.errorMessage.set('admin.scores.errors.enterBothScores');
-      return;
+    let payload: UpsertMatchScorePayload;
+    if (this.isSetsFormat()) {
+      const rows = this.setsDraftFor(match).filter((set) => set.home !== '' || set.away !== '');
+      if (rows.length === 0 || rows.some((set) => set.home === '' || set.away === '')) {
+        this.errorMessage.set('admin.scores.errors.enterEverySet');
+        return;
+      }
+      const sets = rows.map((set) => ({ home: Number(set.home), away: Number(set.away) }));
+      // homeScore/awayScore are recomputed server-side from the sets.
+      payload = {
+        homeScore: sets.filter((set) => set.home > set.away).length,
+        awayScore: sets.filter((set) => set.away > set.home).length,
+        sets,
+      };
+    } else {
+      const draft = this.draftFor(match);
+      if (draft.home === '' || draft.away === '') {
+        this.errorMessage.set('admin.scores.errors.enterBothScores');
+        return;
+      }
+      const hasPenalty = draft.homePenalty !== '' || draft.awayPenalty !== '';
+      payload = {
+        homeScore: Number(draft.home),
+        awayScore: Number(draft.away),
+        homePenaltyScore: hasPenalty ? Number(draft.homePenalty) : undefined,
+        awayPenaltyScore: hasPenalty ? Number(draft.awayPenalty) : undefined,
+      };
     }
-    const hasPenalty = draft.homePenalty !== '' || draft.awayPenalty !== '';
     this.errorMessage.set(null);
     try {
       const updated = await this.scoresService.upsertScore(
         organizationId,
         this.tournamentId,
         match.id,
-        {
-          homeScore: Number(draft.home),
-          awayScore: Number(draft.away),
-          homePenaltyScore: hasPenalty ? Number(draft.homePenalty) : undefined,
-          awayPenaltyScore: hasPenalty ? Number(draft.awayPenalty) : undefined,
-        },
+        payload,
       );
       this.replaceMatch(updated);
       this.clearDraft(match.id);
@@ -539,6 +610,11 @@ export class ScoresPage {
   }
 
   private clearDraft(matchId: string): void {
+    this.setsDrafts.update((drafts) => {
+      const next = new Map(drafts);
+      next.delete(matchId);
+      return next;
+    });
     this.scoreDrafts.update((drafts) => {
       const next = new Map(drafts);
       next.delete(matchId);

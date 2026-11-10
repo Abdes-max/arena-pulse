@@ -109,6 +109,7 @@
                   [awayTeam]="teamCardInput(match.awayTeam, match.awaySourceLabel)"
                   [homeScore]="match.score?.homeScore"
                   [awayScore]="match.score?.awayScore"
+                  [sets]="match.score?.sets ?? null"
                   [kickoff]="match.timeSlot ? formatKickoff(match.timeSlot.startTime) : undefined"
                   [venue]="match.timeSlot?.field?.name"
                   [competitionLabel]="competitionLabel(match)"
