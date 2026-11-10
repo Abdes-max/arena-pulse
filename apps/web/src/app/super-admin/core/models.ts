@@ -59,6 +59,8 @@ export interface SuperAdminTournamentRow {
   status: string;
   teamsCount: number;
   matchesPlayedCount: number;
+  startDate: string | null;
+  endDate: string | null;
   createdAt: string;
 }
 

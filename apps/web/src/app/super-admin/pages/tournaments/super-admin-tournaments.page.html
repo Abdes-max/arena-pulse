@@ -40,6 +40,12 @@
         (valueChange)="organization.set($event)"
       />
       <ap-select
+        label="Période du tournoi"
+        [options]="timeOptions"
+        [value]="time()"
+        (valueChange)="time.set($event)"
+      />
+      <ap-select
         label="Matchs"
         [options]="playedOptions"
         [value]="played()"
@@ -66,6 +72,7 @@
             <th>Nom</th>
             <th>Organisation</th>
             <th>Sport</th>
+            <th>Dates</th>
             <th>Statut</th>
             <th>Équipes</th>
             <th>Matchs joués</th>
@@ -82,6 +89,7 @@
                 }}</a>
               </td>
               <td>{{ tournament.sportName }}</td>
+              <td>{{ formatDates(tournament) }}</td>
               <td><ap-badge [status]="statusBadge[tournament.status]" /></td>
               <td>{{ tournament.teamsCount }}</td>
               <td>{{ tournament.matchesPlayedCount }}</td>

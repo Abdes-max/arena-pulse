@@ -12,6 +12,7 @@ import {
   PeriodFilter,
   withAllOption,
 } from '../../shared/list-filters';
+import { isTournamentPast } from 'shared-models';
 import { queryFilter } from '../../shared/query-filter';
 
 const STATUS_TO_BADGE: Record<string, BadgeStatus> = {
@@ -41,6 +42,7 @@ export class SuperAdminTournamentsPage {
   protected readonly sport = queryFilter('sport', '');
   protected readonly organization = queryFilter('organization', '');
   protected readonly played = queryFilter('played', '');
+  protected readonly time = queryFilter('time', '');
   protected readonly period = queryFilter<PeriodFilter>('period', 'all');
   protected readonly from = queryFilter('from', '');
   protected readonly to = queryFilter('to', '');
@@ -52,6 +54,11 @@ export class SuperAdminTournamentsPage {
     { value: 'PUBLISHED', label: 'Publié' },
     { value: 'UNPUBLISHED', label: 'Dépublié' },
     { value: 'ARCHIVED', label: 'Archivé' },
+  ];
+  protected readonly timeOptions: SelectOption[] = [
+    { value: '', label: 'À venir et passés' },
+    { value: 'upcoming', label: 'À venir' },
+    { value: 'past', label: 'Passés' },
   ];
   protected readonly playedOptions: SelectOption[] = [
     { value: '', label: 'Avec ou sans match joué' },
@@ -75,6 +82,7 @@ export class SuperAdminTournamentsPage {
         (!this.status() || tournament.status === this.status()) &&
         (!this.sport() || tournament.sportName === this.sport()) &&
         (!this.organization() || tournament.organizationId === this.organization()) &&
+        (!this.time() || isTournamentPast(tournament) === (this.time() === 'past')) &&
         (!this.played() || tournament.matchesPlayedCount > 0 === (this.played() === 'with')) &&
         isInPeriod(tournament.createdAt, this.period(), this.from(), this.to()),
     ),
@@ -88,6 +96,7 @@ export class SuperAdminTournamentsPage {
         this.sport() ||
         this.organization() ||
         this.played() ||
+        this.time() ||
         this.period() !== 'all'
       ),
   );
@@ -107,12 +116,28 @@ export class SuperAdminTournamentsPage {
     }
   }
 
+  protected formatDates(tournament: SuperAdminTournamentRow): string {
+    const format = (iso: string) =>
+      new Date(iso).toLocaleDateString('fr-FR', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      });
+    if (!tournament.startDate) {
+      return '-';
+    }
+    const start = format(tournament.startDate);
+    const end = tournament.endDate ? format(tournament.endDate) : start;
+    return end === start ? start : `${start} au ${end}`;
+  }
+
   protected resetFilters(): void {
     this.query.set('');
     this.status.set('');
     this.sport.set('');
     this.organization.set('');
     this.played.set('');
+    this.time.set('');
     this.period.set('all');
     this.from.set('');
     this.to.set('');
