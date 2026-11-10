@@ -61,6 +61,11 @@ export class WrappedPage {
     return w?.unlocked ? w : null;
   });
 
+  // Sets sports (padel, tennis, volleyball, badminton): the figures count sets
+  // (homeScore/awayScore are the sets won), so the wording says sets, and a
+  // draw or a penalty shootout can't happen.
+  protected readonly isSets = computed(() => this.context.tournament()?.scoreFormat === 'SETS');
+
   protected readonly outcomeSlices = computed<ChartSlice[]>(() => {
     const outcomes = this.data()?.outcomes;
     if (!outcomes) {
@@ -71,8 +76,12 @@ export class WrappedPage {
     return this.buildSlices([
       { label: t('wrapped.outcomes.homeWin'), value: outcomes.homeWin },
       { label: t('wrapped.outcomes.awayWin'), value: outcomes.awayWin },
-      { label: t('wrapped.outcomes.draw'), value: outcomes.draw },
-      { label: t('wrapped.outcomes.shootout'), value: outcomes.shootout },
+      ...(this.isSets()
+        ? []
+        : [
+            { label: t('wrapped.outcomes.draw'), value: outcomes.draw },
+            { label: t('wrapped.outcomes.shootout'), value: outcomes.shootout },
+          ]),
     ]);
   });
 

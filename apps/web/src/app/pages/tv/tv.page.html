@@ -40,7 +40,12 @@
                         <img class="tv__team-logo" [src]="logo" alt="" />
                       }
                     </span>
-                    <span class="tv__score">{{ scoreOf(match) }}</span>
+                    <span class="tv__score">
+                      {{ scoreOf(match) }}
+                      @if (setsOf(match); as sets) {
+                        <span class="tv__sets">{{ sets }}</span>
+                      }
+                    </span>
                     <span class="tv__team">
                       @if (assetUrl.resolve(match.awayTeam?.logoUrl); as logo) {
                         <img class="tv__team-logo" [src]="logo" alt="" />
@@ -68,7 +73,7 @@
                   <th scope="col">#</th>
                   <th scope="col">{{ 'tv.team' | transloco }}</th>
                   <th scope="col">{{ 'tv.played' | transloco }}</th>
-                  <th scope="col">{{ 'tv.diff' | transloco }}</th>
+                  <th scope="col">{{ (isSets() ? 'tv.diffSets' : 'tv.diff') | transloco }}</th>
                   <th scope="col">{{ 'tv.points' | transloco }}</th>
                 </tr>
               </thead>

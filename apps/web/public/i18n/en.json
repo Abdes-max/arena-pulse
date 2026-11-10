@@ -308,7 +308,8 @@
     "played": "P",
     "diff": "+/-",
     "points": "Pts",
-    "followLive": "Live results at"
+    "followLive": "Live results at",
+    "diffSets": "+/- sets"
   },
   "shell": {
     "loading": "Loading…",
@@ -1647,6 +1648,14 @@
       "champion": "{{category}} champion · rating {{rating}}",
       "upsetKicker": "Biggest upset of the tournament",
       "upset": "{{winner}} knocks out {{loser}}, overturning a {{gap}}-point rating gap."
+    },
+    "setsMode": {
+      "hero": "sets played",
+      "title": "Sets & suspense",
+      "average": "An average of {{average}} sets per match.",
+      "highestScoring": "Longest match",
+      "attack": "Top attacks · sets won",
+      "defense": "Top defenses · sets lost"
     }
   },
   "appBanner": {

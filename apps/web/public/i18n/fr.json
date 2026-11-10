@@ -308,7 +308,8 @@
     "played": "J",
     "diff": "+/-",
     "points": "Pts",
-    "followLive": "Résultats en direct sur"
+    "followLive": "Résultats en direct sur",
+    "diffSets": "+/- sets"
   },
   "shell": {
     "loading": "Chargement…",
@@ -1647,6 +1648,14 @@
       "champion": "Champion {{category}} · niveau {{rating}}",
       "upsetKicker": "Plus gros exploit du tournoi",
       "upset": "{{winner}} élimine {{loser}}, un écart de {{gap}} points de niveau renversé."
+    },
+    "setsMode": {
+      "hero": "sets joués",
+      "title": "Sets & suspense",
+      "average": "Une moyenne de {{average}} sets par match.",
+      "highestScoring": "Match le plus long",
+      "attack": "Top attaques · sets gagnés",
+      "defense": "Top défenses · sets perdus"
     }
   },
   "appBanner": {

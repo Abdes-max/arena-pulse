@@ -206,7 +206,8 @@
     "played": "P",
     "diff": "+/-",
     "points": "Pts",
-    "followLive": "Live results at"
+    "followLive": "Live results at",
+    "diffSets": "+/- sets"
   },
   "shell": {
     "loading": "Cargando…",
@@ -1545,6 +1546,14 @@
       "champion": "Campeón {{category}} · nivel {{rating}}",
       "upsetKicker": "La mayor sorpresa del torneo",
       "upset": "{{winner}} elimina a {{loser}}, remontando una diferencia de {{gap}} puntos de nivel."
+    },
+    "setsMode": {
+      "hero": "sets jugados",
+      "title": "Sets y emoción",
+      "average": "Una media de {{average}} sets por partido.",
+      "highestScoring": "Partido más largo",
+      "attack": "Mejores ataques · sets ganados",
+      "defense": "Mejores defensas · sets perdidos"
     }
   },
   "appBanner": {
