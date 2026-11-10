@@ -652,7 +652,13 @@
       "duplicate": "Duplica",
       "publicLink": "Link pubblico",
       "archive": "Archivia",
-      "unarchive": "Disarchivia"
+      "unarchive": "Disarchivia",
+      "timeFilterLabel": "Periodo",
+      "time": {
+        "all": "Tutti",
+        "upcoming": "In arrivo",
+        "past": "Passati"
+      }
     },
     "onboarding": {
       "title": "Per iniziare",

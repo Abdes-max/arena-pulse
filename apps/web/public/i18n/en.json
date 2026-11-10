@@ -754,7 +754,13 @@
       "duplicate": "Duplicate",
       "publicLink": "Public link",
       "archive": "Archive",
-      "unarchive": "Unarchive"
+      "unarchive": "Unarchive",
+      "timeFilterLabel": "Period",
+      "time": {
+        "all": "All",
+        "upcoming": "Upcoming",
+        "past": "Past"
+      }
     },
     "onboarding": {
       "title": "Get started",

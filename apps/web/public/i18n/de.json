@@ -652,7 +652,13 @@
       "duplicate": "Duplizieren",
       "publicLink": "Öffentlicher Link",
       "archive": "Archivieren",
-      "unarchive": "Aus dem Archiv holen"
+      "unarchive": "Aus dem Archiv holen",
+      "timeFilterLabel": "Zeitraum",
+      "time": {
+        "all": "Alle",
+        "upcoming": "Bevorstehend",
+        "past": "Vergangene"
+      }
     },
     "onboarding": {
       "title": "Erste Schritte",

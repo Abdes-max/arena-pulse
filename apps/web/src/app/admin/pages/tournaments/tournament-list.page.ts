@@ -11,6 +11,7 @@ import { AssetUrlService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Badge, BadgeStatus, Button, Select, SelectOption } from 'design-system';
 import { DEFAULT_THEME, LanguageService, ThemeService } from 'design-tokens';
+import { isTournamentPast } from 'shared-models';
 import { AuthService } from '../../core/auth.service';
 import { Tournament, TournamentStatus } from '../../core/models';
 import { TeamsService } from '../../core/teams.service';
@@ -42,6 +43,16 @@ const STATUS_LABEL_KEYS: Record<StatusFilter, string> = {
   PUBLISHED: 'admin.tournamentList.status.published',
   UNPUBLISHED: 'admin.tournamentList.status.unpublished',
   ARCHIVED: 'admin.tournamentList.status.archived',
+};
+
+// "Période" filter, next to the status one: a tournament is past once its
+// last day (endDate, else startDate) is before today -- see isTournamentPast.
+type TimeFilter = 'ALL' | 'UPCOMING' | 'PAST';
+
+const TIME_LABEL_KEYS: Record<TimeFilter, string> = {
+  ALL: 'admin.tournamentList.time.all',
+  UPCOMING: 'admin.tournamentList.time.upcoming',
+  PAST: 'admin.tournamentList.time.past',
 };
 
 const DISMISSED_STORAGE_PREFIX = 'arena-pulse:onboarding-dismissed:';
@@ -83,15 +94,27 @@ export class TournamentListPage {
     }));
   });
   protected readonly selectedStatus = signal<StatusFilter>('NOT_ARCHIVED');
+  protected readonly timeOptions = computed<SelectOption[]>(() => {
+    const lang = this.languageService.language();
+    return (Object.keys(TIME_LABEL_KEYS) as TimeFilter[]).map((value) => ({
+      value,
+      label: this.transloco.translate(TIME_LABEL_KEYS[value], {}, lang),
+    }));
+  });
+  protected readonly selectedTime = signal<TimeFilter>('ALL');
   protected readonly filteredTournaments = computed(() => {
     const status = this.selectedStatus();
-    if (status === 'ALL') {
-      return this.tournaments();
-    }
-    if (status === 'NOT_ARCHIVED') {
-      return this.tournaments().filter((tournament) => tournament.status !== 'ARCHIVED');
-    }
-    return this.tournaments().filter((tournament) => tournament.status === status);
+    const time = this.selectedTime();
+    const now = new Date();
+    return this.tournaments().filter((tournament) => {
+      const statusOk =
+        status === 'ALL' ||
+        (status === 'NOT_ARCHIVED'
+          ? tournament.status !== 'ARCHIVED'
+          : tournament.status === status);
+      const timeOk = time === 'ALL' || isTournamentPast(tournament, now) === (time === 'PAST');
+      return statusOk && timeOk;
+    });
   });
 
   private readonly hasTeam = signal(false);
@@ -244,6 +267,10 @@ export class TournamentListPage {
 
   protected onStatusFilterChange(value: string): void {
     this.selectedStatus.set(value as StatusFilter);
+  }
+
+  protected onTimeFilterChange(value: string): void {
+    this.selectedTime.set(value as TimeFilter);
   }
 
   protected goToCreate(): void {

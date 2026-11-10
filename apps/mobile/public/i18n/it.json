@@ -130,14 +130,29 @@
         "scoresAction": "Risultati",
         "standingsAction": "Classifica",
         "status": {
+          "NOT_ARCHIVED": "Non archiviato",
+          "ALL": "Tutti",
           "DRAFT": "Bozza",
           "PUBLISHED": "Pubblicato",
           "UNPUBLISHED": "Non pubblicato",
           "ARCHIVED": "Archiviato"
         },
-        "newPlateau": "Create an event",
+        "newPlateau": "Create an event (quick)",
         "liveAction": "Match day",
-        "statsAction": "Statistiche"
+        "statsAction": "Statistiche",
+        "statusFilterLabel": "Stato",
+        "timeFilterLabel": "Periodo",
+        "time": {
+          "ALL": "Tutti",
+          "UPCOMING": "In arrivo",
+          "PAST": "Passati"
+        },
+        "emptyFiltered": "Nessun torneo con questi filtri.",
+        "uiMode": {
+          "label": "Modalità di visualizzazione",
+          "simple": "Semplice",
+          "full": "Completa"
+        }
       }
     },
     "account": {

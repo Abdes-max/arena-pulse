@@ -130,14 +130,29 @@
         "scoresAction": "Scores",
         "standingsAction": "Classement",
         "status": {
+          "NOT_ARCHIVED": "Non archivé",
+          "ALL": "Tous",
           "DRAFT": "Brouillon",
           "PUBLISHED": "Publié",
           "UNPUBLISHED": "Dépublié",
           "ARCHIVED": "Archivé"
         },
-        "newPlateau": "Créer un événement",
+        "newPlateau": "Créer un événement (rapide)",
         "liveAction": "Jour J",
-        "statsAction": "Statistiques"
+        "statsAction": "Statistiques",
+        "statusFilterLabel": "Statut",
+        "timeFilterLabel": "Période",
+        "time": {
+          "ALL": "Toutes",
+          "UPCOMING": "À venir",
+          "PAST": "Passés"
+        },
+        "emptyFiltered": "Aucun tournoi avec ces filtres.",
+        "uiMode": {
+          "label": "Mode d'affichage",
+          "simple": "Simple",
+          "full": "Complet"
+        }
       }
     },
     "account": {

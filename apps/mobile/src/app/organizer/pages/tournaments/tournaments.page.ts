@@ -1,11 +1,12 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { AssetUrlService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { Badge, Logo } from 'design-system';
+import { Badge, Logo, Select, SelectOption } from 'design-system';
+import { isTournamentPast } from 'shared-models';
 import { OrganizerAuthService } from '../../core/auth.service';
-import { OrganizerTournament } from '../../core/models';
+import { AdminUiMode, OrganizerTournament } from '../../core/models';
 import { OrganizerTournamentsService } from '../../core/tournaments.service';
 import { OrganizerDashboard } from './organizer-dashboard';
 
@@ -19,6 +20,21 @@ import { OrganizerDashboard } from './organizer-dashboard';
 // 3, openTournament() below). Remaining admin-web-only pages (arbitres,
 // structure/calendrier manual editing, sponsors...) are tracked as PR 5+
 // in the plan file's "PR 4+ -- parité complète" section.
+// Same filters as apps/web's tournament list: status (default "Non archivé",
+// archived editions stay out of the way) and period (à venir / passés).
+type StatusFilter = OrganizerTournament['status'] | 'ALL' | 'NOT_ARCHIVED';
+type TimeFilter = 'ALL' | 'UPCOMING' | 'PAST';
+
+const STATUS_FILTERS: StatusFilter[] = [
+  'NOT_ARCHIVED',
+  'ALL',
+  'DRAFT',
+  'PUBLISHED',
+  'UNPUBLISHED',
+  'ARCHIVED',
+];
+const TIME_FILTERS: TimeFilter[] = ['ALL', 'UPCOMING', 'PAST'];
+
 @Component({
   selector: 'app-organizer-tournaments-page',
   imports: [
@@ -30,6 +46,7 @@ import { OrganizerDashboard } from './organizer-dashboard';
     Logo,
     OrganizerDashboard,
     RouterLink,
+    Select,
     TranslocoPipe,
   ],
   templateUrl: './tournaments.page.html',
@@ -48,6 +65,25 @@ export class OrganizerTournamentsPage {
   protected readonly tournaments = signal<OrganizerTournament[]>([]);
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal<string | null>(null);
+  protected readonly simpleMode = this.auth.simpleMode;
+
+  protected readonly selectedStatus = signal<StatusFilter>('NOT_ARCHIVED');
+  protected readonly selectedTime = signal<TimeFilter>('ALL');
+  protected readonly timeFilters = TIME_FILTERS;
+  protected readonly filteredTournaments = computed(() => {
+    const status = this.selectedStatus();
+    const time = this.selectedTime();
+    const now = new Date();
+    return this.tournaments().filter((tournament) => {
+      const statusOk =
+        status === 'ALL' ||
+        (status === 'NOT_ARCHIVED'
+          ? tournament.status !== 'ARCHIVED'
+          : tournament.status === status);
+      const timeOk = time === 'ALL' || isTournamentPast(tournament, now) === (time === 'PAST');
+      return statusOk && timeOk;
+    });
+  });
 
   constructor() {
     void this.load();
@@ -69,6 +105,30 @@ export class OrganizerTournamentsPage {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  // [options] is a plain input, so it can't go through the transloco pipe.
+  protected statusOptions(): SelectOption[] {
+    return STATUS_FILTERS.map((value) => ({
+      value,
+      label: this.transloco.translate(`organizer.tournaments.list.status.${value}`),
+    }));
+  }
+
+  protected timeLabel(value: TimeFilter): string {
+    return this.transloco.translate(`organizer.tournaments.list.time.${value}`);
+  }
+
+  protected onStatusFilterChange(value: string): void {
+    this.selectedStatus.set(value as StatusFilter);
+  }
+
+  protected setTimeFilter(value: TimeFilter): void {
+    this.selectedTime.set(value);
+  }
+
+  protected setUiMode(mode: AdminUiMode): void {
+    void this.auth.setAdminUiMode(mode);
   }
 
   protected logoUrl(url: string | null): string | null {
