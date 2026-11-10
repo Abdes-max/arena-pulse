@@ -1,4 +1,4 @@
-import { distinctOptions, isInPeriod, matchesText } from './list-filters';
+import { distinctOptions, isInPeriod, matchesTestFilter, matchesText } from './list-filters';
 
 describe('matchesText', () => {
   it('matches everything on an empty query', () => {
@@ -49,5 +49,15 @@ describe('distinctOptions', () => {
       'Padel',
       'Tennis',
     ]);
+  });
+});
+
+describe('matchesTestFilter', () => {
+  it('keeps everything, hides the test rows, or keeps only them', () => {
+    expect(matchesTestFilter(true, '')).toBe(true);
+    expect(matchesTestFilter(true, 'hide')).toBe(false);
+    expect(matchesTestFilter(false, 'hide')).toBe(true);
+    expect(matchesTestFilter(true, 'only')).toBe(true);
+    expect(matchesTestFilter(false, 'only')).toBe(false);
   });
 });

@@ -13,7 +13,9 @@ import {
   withAllOption,
 } from '../../shared/list-filters';
 import { isTournamentPast } from 'shared-models';
+import { publicTournamentUrl } from '../../shared/list-filters';
 import { queryFilter } from '../../shared/query-filter';
+import { matchesTestFilter, TEST_FILTER_OPTIONS } from '../../shared/list-filters';
 
 const STATUS_TO_BADGE: Record<string, BadgeStatus> = {
   DRAFT: 'draft',
@@ -47,6 +49,8 @@ export class SuperAdminTournamentsPage {
   protected readonly from = queryFilter('from', '');
   protected readonly to = queryFilter('to', '');
 
+  protected readonly testScope = queryFilter('test', '');
+  protected readonly testOptions = TEST_FILTER_OPTIONS;
   protected readonly periodOptions = PERIOD_OPTIONS;
   protected readonly statusOptions: SelectOption[] = [
     { value: '', label: 'Tous les statuts' },
@@ -84,6 +88,7 @@ export class SuperAdminTournamentsPage {
         (!this.organization() || tournament.organizationId === this.organization()) &&
         (!this.time() || isTournamentPast(tournament) === (this.time() === 'past')) &&
         (!this.played() || tournament.matchesPlayedCount > 0 === (this.played() === 'with')) &&
+        matchesTestFilter(tournament.organizationIsTest, this.testScope()) &&
         isInPeriod(tournament.createdAt, this.period(), this.from(), this.to()),
     ),
   );
@@ -97,6 +102,7 @@ export class SuperAdminTournamentsPage {
         this.organization() ||
         this.played() ||
         this.time() ||
+        this.testScope() ||
         this.period() !== 'all'
       ),
   );
@@ -131,6 +137,10 @@ export class SuperAdminTournamentsPage {
     return end === start ? start : `${start} au ${end}`;
   }
 
+  protected publicUrl(slug: string): string {
+    return publicTournamentUrl(slug);
+  }
+
   protected resetFilters(): void {
     this.query.set('');
     this.status.set('');
@@ -138,6 +148,7 @@ export class SuperAdminTournamentsPage {
     this.organization.set('');
     this.played.set('');
     this.time.set('');
+    this.testScope.set('');
     this.period.set('all');
     this.from.set('');
     this.to.set('');

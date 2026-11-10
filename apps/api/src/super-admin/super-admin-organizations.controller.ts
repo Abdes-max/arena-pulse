@@ -55,6 +55,32 @@ export class SuperAdminOrganizationsController {
   }
 
   @HttpCode(HttpStatus.NO_CONTENT)
+  @Post(':organizationId/mark-test')
+  markTest(
+    @Param('organizationId') organizationId: string,
+    @CurrentSuperAdmin() superAdmin: AuthenticatedSuperAdmin,
+  ) {
+    return this.organizationsService.setTest(
+      organizationId,
+      true,
+      superAdmin.id,
+    );
+  }
+
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Post(':organizationId/unmark-test')
+  unmarkTest(
+    @Param('organizationId') organizationId: string,
+    @CurrentSuperAdmin() superAdmin: AuthenticatedSuperAdmin,
+  ) {
+    return this.organizationsService.setTest(
+      organizationId,
+      false,
+      superAdmin.id,
+    );
+  }
+
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':organizationId')
   deleteOrganization(
     @Param('organizationId') organizationId: string,

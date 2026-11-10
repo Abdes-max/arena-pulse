@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { OrganizationRole } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { isTestUser } from './test-data.util';
 import { DeleteUserDto } from './dto/delete-user.dto';
 import { SuperAdminAuditLogService } from './super-admin-audit-log.service';
 import { SuperAdminOrganizationsService } from './super-admin-organizations.service';
@@ -32,6 +33,10 @@ export class SuperAdminUsersService {
       lastName: user.lastName,
       emailVerifiedAt: user.emailVerifiedAt,
       createdAt: user.createdAt,
+      isTest: isTestUser(
+        user.email,
+        user.memberships.map((membership) => membership.organization),
+      ),
       organizations: user.memberships.map((membership) => ({
         id: membership.organization.id,
         name: membership.organization.name,

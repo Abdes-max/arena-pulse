@@ -67,3 +67,22 @@ export function distinctOptions(values: readonly string[]): SelectOption[] {
     .sort((a, b) => a.localeCompare(b, 'fr'))
     .map((value) => ({ value, label: value }));
 }
+
+/** "Données de test" filter of the lists: everything, hide the demo / test rows, or only those. */
+export const TEST_FILTER_OPTIONS: SelectOption[] = [
+  { value: '', label: 'Démo/test inclus' },
+  { value: 'hide', label: 'Masquer démo/test' },
+  { value: 'only', label: 'Seulement démo/test' },
+];
+
+export function matchesTestFilter(isTest: boolean, filter: string): boolean {
+  if (filter === 'hide') {
+    return !isTest;
+  }
+  return filter === 'only' ? isTest : true;
+}
+
+/** Address of a tournament's public site (same origin as the console). */
+export function publicTournamentUrl(slug: string): string {
+  return `${window.location.origin}/${slug}`;
+}

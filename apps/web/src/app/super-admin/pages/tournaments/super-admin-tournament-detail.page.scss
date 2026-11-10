@@ -1,3 +1,5 @@
+@use '../../shared/ui';
+
 .super-admin-tournament-detail-page {
   max-width: 800px;
   margin: 0 auto;
@@ -129,4 +131,8 @@
     color: var(--ap-color-muted);
     font-weight: 600;
   }
+}
+
+.super-admin-tournament-detail-page__tag {
+  @include ui.tag;
 }

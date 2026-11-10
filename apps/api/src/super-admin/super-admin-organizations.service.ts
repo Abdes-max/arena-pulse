@@ -44,6 +44,7 @@ export class SuperAdminOrganizationsService {
           ? ('ACTIVE' as const)
           : ('NONE' as const),
       suspendedAt: organization.suspendedAt,
+      isTest: organization.isTest,
       createdAt: organization.createdAt,
     }));
   }
@@ -66,6 +67,7 @@ export class SuperAdminOrganizationsService {
       id: organization.id,
       name: organization.name,
       suspendedAt: organization.suspendedAt,
+      isTest: organization.isTest,
       createdAt: organization.createdAt,
       members: organization.members.map((member) => ({
         id: member.id,
@@ -78,6 +80,7 @@ export class SuperAdminOrganizationsService {
       tournaments: organization.tournaments.map((tournament) => ({
         id: tournament.id,
         name: tournament.name,
+        slug: tournament.slug,
         sportName: tournament.sport.name,
         status: tournament.status,
       })),
@@ -116,6 +119,32 @@ export class SuperAdminOrganizationsService {
     await this.auditLog.record({
       superAdminId,
       action: 'REACTIVATE_ORGANIZATION',
+      targetType: 'Organization',
+      targetId: organizationId,
+    });
+  }
+
+  /** Flags a demo / test organization: left out of the dashboard figures by default. */
+  async setTest(
+    organizationId: string,
+    isTest: boolean,
+    superAdminId: string,
+  ): Promise<void> {
+    const organization = await this.getOrganizationOrThrow(organizationId);
+    if (organization.isTest === isTest) {
+      throw new ConflictException(
+        isTest
+          ? 'Cette organisation est déjà marquée comme test.'
+          : "Cette organisation n'est pas marquée comme test.",
+      );
+    }
+    await this.prisma.organization.update({
+      where: { id: organizationId },
+      data: { isTest },
+    });
+    await this.auditLog.record({
+      superAdminId,
+      action: isTest ? 'MARK_ORGANIZATION_TEST' : 'UNMARK_ORGANIZATION_TEST',
       targetType: 'Organization',
       targetId: organizationId,
     });

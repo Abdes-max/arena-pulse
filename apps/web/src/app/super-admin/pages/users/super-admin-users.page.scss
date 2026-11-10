@@ -1,3 +1,5 @@
+@use '../../shared/ui';
+
 .super-admin-users-page {
   max-width: 1100px;
   margin: 0 auto;
@@ -14,21 +16,12 @@
 }
 
 .super-admin-users-page__table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.9rem;
+  @include ui.table;
+}
 
-  th,
-  td {
-    text-align: left;
-    padding: var(--ap-space-2) var(--ap-space-3);
-    border-bottom: var(--ap-border-width) solid var(--ap-color-border);
-  }
-
-  th {
-    color: var(--ap-color-muted);
-    font-weight: 600;
-  }
+.super-admin-users-page__tag {
+  @include ui.tag;
+  margin-left: var(--ap-space-2);
 }
 
 .super-admin-users-page__actions {

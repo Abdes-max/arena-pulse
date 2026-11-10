@@ -87,6 +87,11 @@ model Organization {
   // coupon on the annual subscription. Null = never redeemed.
   launchPromoRedeemedAt DateTime?
 
+  // Demo / test organization (seeded examples, manual checks), set by a super
+  // admin: left out of the super-admin dashboard figures by default so they
+  // only describe real customers.
+  isTest Boolean @default(false)
+
   members       OrganizationMember[]
   invitations   Invitation[]
   tournaments   Tournament[]

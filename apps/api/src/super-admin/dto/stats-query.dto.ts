@@ -20,4 +20,10 @@ export class StatsQueryDto {
   @IsOptional()
   @IsDateString()
   to?: string;
+
+  // Demo / test organizations are left out unless this is "true".
+  @ApiPropertyOptional({ enum: ['true', 'false'], default: 'false' })
+  @IsOptional()
+  @IsIn(['true', 'false'])
+  includeTest?: 'true' | 'false';
 }

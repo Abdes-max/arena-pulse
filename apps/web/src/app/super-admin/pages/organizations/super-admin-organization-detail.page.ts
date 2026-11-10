@@ -3,6 +3,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Badge, Button, TypeToConfirm } from 'design-system';
 import { SuperAdminService } from '../../core/super-admin.service';
 import { SuperAdminOrganizationDetail } from '../../core/models';
+import { publicTournamentUrl } from '../../shared/list-filters';
 
 @Component({
   selector: 'app-super-admin-organization-detail-page',
@@ -72,6 +73,25 @@ export class SuperAdminOrganizationDetailPage {
     } finally {
       this.toggling.set(false);
     }
+  }
+
+  protected async setTest(isTest: boolean): Promise<void> {
+    if (this.toggling()) {
+      return;
+    }
+    this.toggling.set(true);
+    try {
+      await this.superAdminService.setOrganizationTest(this.organizationId, isTest);
+      await this.load();
+    } catch {
+      this.errorMessage.set('Impossible de modifier le marquage test de cette organisation.');
+    } finally {
+      this.toggling.set(false);
+    }
+  }
+
+  protected publicUrl(slug: string): string {
+    return publicTournamentUrl(slug);
   }
 
   protected openDangerZone(): void {

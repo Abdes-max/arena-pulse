@@ -8,6 +8,9 @@
   } @else if (organization(); as org) {
     <div class="super-admin-organization-detail-page__header">
       <h1>{{ org.name }}</h1>
+      @if (org.isTest) {
+        <span class="super-admin-organization-detail-page__tag">Démo / test</span>
+      }
       @if (org.suspendedAt) {
         <ap-badge status="cancelled" label="Suspendue" />
         <ap-button type="button" variant="ghost" [disabled]="toggling()" (click)="reactivate()">
@@ -20,6 +23,20 @@
         </ap-button>
       }
     </div>
+
+    <p class="super-admin-organization-detail-page__test-hint">
+      @if (org.isTest) {
+        Cette organisation est exclue des chiffres du tableau de bord.
+        <ap-button type="button" variant="ghost" [disabled]="toggling()" (click)="setTest(false)">
+          Retirer le marquage test
+        </ap-button>
+      } @else {
+        <ap-button type="button" variant="ghost" [disabled]="toggling()" (click)="setTest(true)">
+          Marquer comme démo / test
+        </ap-button>
+        Les organisations de test sont exclues des chiffres du tableau de bord.
+      }
+    </p>
 
     <section class="super-admin-organization-detail-page__section">
       <h2>Membres</h2>
@@ -44,6 +61,11 @@
                 tournament.name
               }}</a>
               , {{ tournament.sportName }}, {{ tournament.status }}
+              @if (tournament.status === 'PUBLISHED') {
+                <a [href]="publicUrl(tournament.slug)" target="_blank" rel="noopener"
+                  >Page publique ↗</a
+                >
+              }
             </li>
           }
         </ul>

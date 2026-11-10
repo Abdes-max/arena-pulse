@@ -17,9 +17,11 @@ export class SuperAdminService {
   private readonly http = inject(HttpClient);
   private readonly base = `${environment.apiUrl}/super-admin`;
 
-  getStats(period: { period?: string; from?: string; to?: string } = {}): Promise<SuperAdminStats> {
+  getStats(
+    params: { period?: string; from?: string; to?: string; includeTest?: string } = {},
+  ): Promise<SuperAdminStats> {
     return firstValueFrom(
-      this.http.get<SuperAdminStats>(`${this.base}/stats`, { params: { ...period } }),
+      this.http.get<SuperAdminStats>(`${this.base}/stats`, { params: { ...params } }),
     );
   }
 
@@ -36,6 +38,16 @@ export class SuperAdminService {
   suspendOrganization(organizationId: string): Promise<void> {
     return firstValueFrom(
       this.http.post<void>(`${this.base}/organizations/${organizationId}/suspend`, {}),
+    );
+  }
+
+  /** Flags (or unflags) a demo / test organization, left out of the dashboard figures by default. */
+  setOrganizationTest(organizationId: string, isTest: boolean): Promise<void> {
+    return firstValueFrom(
+      this.http.post<void>(
+        `${this.base}/organizations/${organizationId}/${isTest ? 'mark-test' : 'unmark-test'}`,
+        {},
+      ),
     );
   }
 
