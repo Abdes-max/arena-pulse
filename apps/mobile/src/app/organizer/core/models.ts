@@ -42,6 +42,9 @@ export interface OrganizerTournament {
   status: TournamentStatus;
   sportId: string;
   sportName: string;
+  // "SETS" sports (padel, tennis...) record each set; see ScoreFormat in shared-models.
+  scoreFormat?: 'GOALS' | 'SETS';
+  defaultSetsToWin?: number | null;
   isOnline: boolean;
   isListed: boolean;
   theme: PublicTheme;

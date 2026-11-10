@@ -352,7 +352,15 @@
         "penaltyShootoutRequired": "A penalty shootout is required to validate this drawn match.",
         "validateGeneric": "Unable to validate this score.",
         "clearGeneric": "Unable to clear this score.",
-        "undoForfeitGeneric": "Unable to undo this forfeit."
+        "undoForfeitGeneric": "Unable to undo this forfeit.",
+        "enterEverySet": "Enter both scores of every set before saving."
+      },
+      "sets": {
+        "set": "Set",
+        "home": "Home score",
+        "away": "Away score",
+        "add": "+ Set",
+        "remove": "Remove last set"
       }
     },
     "standings": {

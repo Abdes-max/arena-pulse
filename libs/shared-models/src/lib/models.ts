@@ -257,6 +257,9 @@ export interface CompetitionPhase {
   // creates just to seed its bracket from -- no match is ever generated in
   // it, so it should never surface as a real "Poules"/"Classement" tab.
   isSeedPhase: boolean;
+  // Sets sports (organizer endpoints only): sets a side must win in this
+  // phase; null = the sport's default.
+  setsToWin?: number | null;
 }
 
 export interface PublicTeam {

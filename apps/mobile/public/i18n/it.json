@@ -352,7 +352,15 @@
         "penaltyShootoutRequired": "È richiesta una serie di rigori per convalidare questo pareggio.",
         "validateGeneric": "Impossibile convalidare questo risultato.",
         "clearGeneric": "Impossibile cancellare questo risultato.",
-        "undoForfeitGeneric": "Impossibile annullare questa sconfitta a tavolino."
+        "undoForfeitGeneric": "Impossibile annullare questa sconfitta a tavolino.",
+        "enterEverySet": "Inserisci entrambi i punteggi di ogni set prima di salvare."
+      },
+      "sets": {
+        "set": "Set",
+        "home": "Punteggio casa",
+        "away": "Punteggio ospiti",
+        "add": "+ Set",
+        "remove": "Rimuovi l’ultimo set"
       }
     },
     "standings": {

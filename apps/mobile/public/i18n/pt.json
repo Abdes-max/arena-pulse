@@ -352,7 +352,15 @@
         "penaltyShootoutRequired": "É necessária uma marcação de grandes penalidades para validar este empate.",
         "validateGeneric": "Não foi possível validar este resultado.",
         "clearGeneric": "Não foi possível limpar este resultado.",
-        "undoForfeitGeneric": "Não foi possível anular esta desistência."
+        "undoForfeitGeneric": "Não foi possível anular esta desistência.",
+        "enterEverySet": "Introduza os dois resultados de cada set antes de guardar."
+      },
+      "sets": {
+        "set": "Set",
+        "home": "Resultado casa",
+        "away": "Resultado visitante",
+        "add": "+ Set",
+        "remove": "Remover o último set"
       }
     },
     "standings": {
