@@ -82,7 +82,12 @@ export class StandingsService {
           homeTeamId: true,
           awayTeamId: true,
           score: {
-            select: { homeScore: true, awayScore: true, isValidated: true },
+            select: {
+              homeScore: true,
+              awayScore: true,
+              sets: true,
+              isValidated: true,
+            },
           },
         },
       }),
@@ -103,12 +108,15 @@ export class StandingsService {
         awayTeamId: match.awayTeamId,
         homeScore: match.score!.homeScore,
         awayScore: match.score!.awayScore,
+        sets: match.score!.sets as { home: number; away: number }[] | null,
       }));
 
     const scheme = {
       winPoints: standingRule?.winPoints ?? 3,
       drawPoints: standingRule?.drawPoints ?? 1,
       lossPoints: standingRule?.lossPoints ?? 0,
+      decidingSetWinPoints: standingRule?.decidingSetWinPoints ?? null,
+      decidingSetLossPoints: standingRule?.decidingSetLossPoints ?? null,
     };
     const tieBreakOrder =
       standingRule?.tieBreakOrder ?? DEFAULT_TIE_BREAK_ORDER;

@@ -20,6 +20,8 @@ export type MatchWithRelations = Match & {
     awayScore: number;
     homePenaltyScore: number | null;
     awayPenaltyScore: number | null;
+    // SETS format only: [{ home, away }, ...] in play order.
+    sets: unknown;
     isValidated: boolean;
     validatedAt: Date | null;
   } | null;
@@ -44,6 +46,7 @@ export const MATCH_INCLUDE = {
       awayScore: true,
       homePenaltyScore: true,
       awayPenaltyScore: true,
+      sets: true,
       isValidated: true,
       validatedAt: true,
     },

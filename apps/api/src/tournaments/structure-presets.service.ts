@@ -11,7 +11,7 @@ import {
   CreateStructurePresetDto,
   StructurePresetFormat,
 } from './dto/create-structure-preset.dto';
-import { DEFAULT_TIE_BREAK_ORDER } from './standing-rule.constants';
+import { standingRuleDefaults } from './standing-rule.constants';
 import { TournamentsService } from './tournaments.service';
 
 // Name shared by the single fictitious pool phase and its single group in
@@ -81,16 +81,34 @@ export class StructurePresetsService {
       );
     }
 
+    const tournament = await this.prisma.tournament.findUnique({
+      where: { id: tournamentId },
+      select: {
+        sport: { select: { scoreFormat: true, defaultSetsToWin: true } },
+      },
+    });
+    const ruleDefaults = standingRuleDefaults(tournament?.sport ?? null);
     if (dto.format === StructurePresetFormat.KNOCKOUT_ONLY) {
-      return this.createKnockoutOnly(categoryId, dto, unassignedTeams);
+      return this.createKnockoutOnly(
+        categoryId,
+        dto,
+        unassignedTeams,
+        ruleDefaults,
+      );
     }
-    return this.createWithPoolPhase(categoryId, dto, unassignedTeams);
+    return this.createWithPoolPhase(
+      categoryId,
+      dto,
+      unassignedTeams,
+      ruleDefaults,
+    );
   }
 
   private async createWithPoolPhase(
     categoryId: string,
     dto: CreateStructurePresetDto,
     unassignedTeams: { id: string }[],
+    ruleDefaults: ReturnType<typeof standingRuleDefaults>,
   ) {
     const poolCount = dto.poolCount!;
     const { groupPhaseId, tiers } = await this.prisma.$transaction(
@@ -126,7 +144,7 @@ export class StructurePresetsService {
             },
           });
           await tx.standingRule.create({
-            data: { groupId: group.id, tieBreakOrder: DEFAULT_TIE_BREAK_ORDER },
+            data: { groupId: group.id, ...ruleDefaults },
           });
           groups.push(group);
         }
@@ -225,6 +243,7 @@ export class StructurePresetsService {
     categoryId: string,
     dto: CreateStructurePresetDto,
     unassignedTeams: { id: string }[],
+    ruleDefaults: ReturnType<typeof standingRuleDefaults>,
   ) {
     const { groupPhaseId, tiers } = await this.prisma.$transaction(
       async (tx) => {
@@ -249,7 +268,7 @@ export class StructurePresetsService {
         await tx.standingRule.create({
           data: {
             groupId: seedGroup.id,
-            tieBreakOrder: DEFAULT_TIE_BREAK_ORDER,
+            ...ruleDefaults,
           },
         });
 

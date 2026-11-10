@@ -12,6 +12,7 @@ type PrismaMock = {
     deleteMany: jest.Mock;
   };
   group: { create: jest.Mock };
+  tournament: { findUnique: jest.Mock };
   standingRule: { create: jest.Mock };
   team: { findMany: jest.Mock; update: jest.Mock };
   knockoutBracket: { create: jest.Mock };
@@ -32,6 +33,11 @@ function createPrismaMock(): PrismaMock {
       deleteMany: jest.fn().mockResolvedValue({ count: 0 }),
     },
     group: { create: jest.fn() },
+    tournament: {
+      findUnique: jest.fn().mockResolvedValue({
+        sport: { scoreFormat: 'GOALS', defaultSetsToWin: null },
+      }),
+    },
     standingRule: { create: jest.fn() },
     team: { findMany: jest.fn().mockResolvedValue([]), update: jest.fn() },
     knockoutBracket: { create: jest.fn() },

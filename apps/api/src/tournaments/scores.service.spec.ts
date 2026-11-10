@@ -44,6 +44,14 @@ function createPrismaMock(): PrismaMock {
 
 const TOURNAMENT_ID = 'tournament-1';
 const USER_ID = 'user-1';
+// A phase of a goals sport (football): no sets, nothing changes.
+const GOALS_PHASE = {
+  setsToWin: null,
+  category: {
+    tournamentId: TOURNAMENT_ID,
+    tournament: { sport: { scoreFormat: 'GOALS', defaultSetsToWin: null } },
+  },
+};
 
 function baseMatch(overrides: Partial<Record<string, unknown>> = {}) {
   return {
@@ -61,7 +69,7 @@ function baseMatch(overrides: Partial<Record<string, unknown>> = {}) {
     knockoutBracketId: null,
     knockoutBracket: null,
     group: {
-      phase: { category: { tournamentId: TOURNAMENT_ID } },
+      phase: GOALS_PHASE,
       standingRule: null,
     },
     ...overrides,
@@ -240,7 +248,7 @@ describe('ScoresService', () => {
             awayPenaltyScore: null,
           },
           group: {
-            phase: { category: { tournamentId: TOURNAMENT_ID } },
+            phase: GOALS_PHASE,
             standingRule: { penaltyShootoutEnabled: true },
           },
         }),
@@ -258,7 +266,7 @@ describe('ScoresService', () => {
           group: null,
           knockoutBracketId: 'bracket-1',
           knockoutBracket: {
-            phase: { category: { tournamentId: TOURNAMENT_ID } },
+            phase: GOALS_PHASE,
           },
           score: {
             homeScore: 1,
@@ -279,7 +287,7 @@ describe('ScoresService', () => {
         baseMatch({
           knockoutBracketId: 'bracket-1',
           knockoutBracket: {
-            phase: { category: { tournamentId: TOURNAMENT_ID } },
+            phase: GOALS_PHASE,
           },
           round: 1,
           score: {
@@ -432,7 +440,7 @@ describe('ScoresService', () => {
                   id: 'match-2',
                   knockoutBracketId: 'bracket-1',
                   knockoutBracket: {
-                    phase: { category: { tournamentId: TOURNAMENT_ID } },
+                    phase: GOALS_PHASE,
                   },
                   group: null,
                 })
@@ -538,7 +546,7 @@ describe('ScoresService', () => {
         baseMatch({
           knockoutBracketId: 'bracket-1',
           knockoutBracket: {
-            phase: { category: { tournamentId: TOURNAMENT_ID } },
+            phase: GOALS_PHASE,
           },
           round: 2,
         }),
@@ -608,5 +616,172 @@ describe('ScoresService', () => {
         }),
       );
     });
+  });
+
+  describe('sets sports (padel)', () => {
+    const padelPhase = {
+      setsToWin: null,
+      category: {
+        tournamentId: TOURNAMENT_ID,
+        tournament: { sport: { scoreFormat: 'SETS', defaultSetsToWin: 2 } },
+      },
+    };
+    const padelMatch = (overrides: Partial<Record<string, unknown>> = {}) =>
+      baseMatch({
+        group: { phase: padelPhase, standingRule: null },
+        ...overrides,
+      });
+
+    it('stores the sets and recomputes the score as sets won, ignoring what the client sent', async () => {
+      prisma.match.findUnique.mockResolvedValue(padelMatch());
+      prisma.match.update.mockResolvedValue(padelMatch({ status: 'LIVE' }));
+
+      await service.upsertScore(
+        'org-1',
+        TOURNAMENT_ID,
+        'match-1',
+        {
+          homeScore: 9,
+          awayScore: 9,
+          sets: [
+            { home: 4, away: 6 },
+            { home: 6, away: 4 },
+            { home: 10, away: 7 },
+          ],
+        },
+        USER_ID,
+      );
+
+      expect(prisma.matchScore.upsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          update: expect.objectContaining({
+            homeScore: 2,
+            awayScore: 1,
+            sets: [
+              { home: 4, away: 6 },
+              { home: 6, away: 4 },
+              { home: 10, away: 7 },
+            ],
+          }),
+        }),
+      );
+    });
+
+    it('requires the sets detail', async () => {
+      prisma.match.findUnique.mockResolvedValue(padelMatch());
+
+      await expect(
+        service.upsertScore(
+          'org-1',
+          TOURNAMENT_ID,
+          'match-1',
+          { homeScore: 2, awayScore: 0 },
+          USER_ID,
+        ),
+      ).rejects.toBeInstanceOf(BadRequestException);
+    });
+
+    it('refuses a shootout', async () => {
+      prisma.match.findUnique.mockResolvedValue(padelMatch());
+
+      await expect(
+        service.upsertScore(
+          'org-1',
+          TOURNAMENT_ID,
+          'match-1',
+          {
+            homeScore: 1,
+            awayScore: 1,
+            homePenaltyScore: 4,
+            awayPenaltyScore: 3,
+            sets: [{ home: 6, away: 4 }],
+          },
+          USER_ID,
+        ),
+      ).rejects.toBeInstanceOf(BadRequestException);
+    });
+
+    it('refuses an unfinished match when validating a rotation', async () => {
+      prisma.match.findUnique.mockResolvedValue(padelMatch());
+
+      await expect(
+        service.upsertScores(
+          'org-1',
+          TOURNAMENT_ID,
+          {
+            validate: true,
+            scores: [
+              {
+                matchId: 'match-1',
+                homeScore: 1,
+                awayScore: 0,
+                sets: [{ home: 6, away: 4 }],
+              },
+            ],
+          },
+          USER_ID,
+        ),
+      ).rejects.toBeInstanceOf(BadRequestException);
+      expect(prisma.matchScore.upsert).not.toHaveBeenCalled();
+    });
+
+    it('refuses to validate a stored score that is not a finished match', async () => {
+      prisma.match.findUnique.mockResolvedValue(
+        padelMatch({
+          score: {
+            homeScore: 1,
+            awayScore: 0,
+            homePenaltyScore: null,
+            awayPenaltyScore: null,
+            sets: [{ home: 6, away: 4 }],
+          },
+        }),
+      );
+
+      await expect(
+        service.validateScore('org-1', TOURNAMENT_ID, 'match-1', USER_ID),
+      ).rejects.toBeInstanceOf(BadRequestException);
+    });
+
+    it('lets a phase play more sets than the sport default', async () => {
+      const finalPhase = { ...padelPhase, setsToWin: 3 };
+      prisma.match.findUnique.mockResolvedValue(
+        padelMatch({ group: { phase: finalPhase, standingRule: null } }),
+      );
+      prisma.match.update.mockResolvedValue(padelMatch({ status: 'LIVE' }));
+
+      await service.upsertScore(
+        'org-1',
+        TOURNAMENT_ID,
+        'match-1',
+        {
+          homeScore: 0,
+          awayScore: 0,
+          sets: [
+            { home: 6, away: 4 },
+            { home: 6, away: 4 },
+            { home: 4, away: 6 },
+          ],
+        },
+        USER_ID,
+      );
+
+      expect(prisma.matchScore.upsert).toHaveBeenCalled();
+    });
+  });
+
+  it('refuses sets for a goals sport', async () => {
+    prisma.match.findUnique.mockResolvedValue(baseMatch());
+
+    await expect(
+      service.upsertScore(
+        'org-1',
+        TOURNAMENT_ID,
+        'match-1',
+        { homeScore: 1, awayScore: 0, sets: [{ home: 6, away: 4 }] },
+        USER_ID,
+      ),
+    ).rejects.toBeInstanceOf(BadRequestException);
   });
 });

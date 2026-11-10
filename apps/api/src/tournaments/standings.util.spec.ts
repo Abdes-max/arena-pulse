@@ -399,4 +399,151 @@ describe('findUnresolvedTies', () => {
 
     expect(ties).toEqual([]);
   });
+
+  describe('sets sports', () => {
+    const TEAMS = [
+      { id: 'a', name: 'Alpha' },
+      { id: 'b', name: 'Beta' },
+      { id: 'c', name: 'Gamma' },
+    ];
+    const SETS_ORDER = [
+      'POINTS',
+      'HEAD_TO_HEAD',
+      'SET_DIFFERENCE',
+      'GAME_DIFFERENCE',
+    ];
+    const match = (
+      homeTeamId: string,
+      awayTeamId: string,
+      sets: { home: number; away: number }[],
+    ) => ({
+      homeTeamId,
+      awayTeamId,
+      homeScore: sets.filter((s) => s.home > s.away).length,
+      awayScore: sets.filter((s) => s.away > s.home).length,
+      sets,
+    });
+
+    it('counts sets as goals and sums the games of every set', () => {
+      const rows = computeStandings(
+        TEAMS.slice(0, 2),
+        [
+          match('a', 'b', [
+            { home: 6, away: 4 },
+            { home: 3, away: 6 },
+            { home: 10, away: 7 },
+          ]),
+        ],
+        SCHEME,
+        SETS_ORDER,
+      );
+
+      expect(rows[0]).toEqual(
+        expect.objectContaining({
+          teamId: 'a',
+          goalsFor: 2,
+          goalsAgainst: 1,
+          gamesFor: 19,
+          gamesAgainst: 17,
+          gameDifference: 2,
+          points: 3,
+        }),
+      );
+      expect(rows[1]).toEqual(
+        expect.objectContaining({ teamId: 'b', gamesFor: 17, points: 0 }),
+      );
+    });
+
+    it('gives the deciding-set points (volleyball 3-2: 2 for the winner, 1 for the loser)', () => {
+      const bestOf5 = [
+        { home: 25, away: 20 },
+        { home: 20, away: 25 },
+        { home: 25, away: 20 },
+        { home: 20, away: 25 },
+        { home: 15, away: 12 },
+      ];
+      const rows = computeStandings(
+        TEAMS.slice(0, 2),
+        [match('a', 'b', bestOf5)],
+        { ...SCHEME, decidingSetWinPoints: 2, decidingSetLossPoints: 1 },
+        SETS_ORDER,
+      );
+
+      expect(rows.find((r) => r.teamId === 'a')?.points).toBe(2);
+      expect(rows.find((r) => r.teamId === 'b')?.points).toBe(1);
+    });
+
+    it('keeps the normal points for a clear win, even with deciding-set points set', () => {
+      const rows = computeStandings(
+        TEAMS.slice(0, 2),
+        [
+          match('a', 'b', [
+            { home: 25, away: 10 },
+            { home: 25, away: 10 },
+            { home: 25, away: 10 },
+          ]),
+        ],
+        { ...SCHEME, decidingSetWinPoints: 2, decidingSetLossPoints: 1 },
+        SETS_ORDER,
+      );
+
+      expect(rows.find((r) => r.teamId === 'a')?.points).toBe(3);
+      expect(rows.find((r) => r.teamId === 'b')?.points).toBe(0);
+    });
+
+    it('breaks a three-way points tie on the set difference', () => {
+      // a beats b 2-0, b beats c 2-0, c beats a 2-1: everyone has 3 points.
+      // Sets: a 3-2 (+1), b 2-2 (0), c 2-3 (-1).
+      const rows = computeStandings(
+        TEAMS,
+        [
+          match('a', 'b', [
+            { home: 6, away: 0 },
+            { home: 6, away: 0 },
+          ]),
+          match('b', 'c', [
+            { home: 6, away: 4 },
+            { home: 6, away: 4 },
+          ]),
+          match('c', 'a', [
+            { home: 6, away: 4 },
+            { home: 4, away: 6 },
+            { home: 6, away: 4 },
+          ]),
+        ],
+        SCHEME,
+        ['POINTS', 'SET_DIFFERENCE', 'GAME_DIFFERENCE'],
+      );
+
+      expect(rows.map((r) => r.points)).toEqual([3, 3, 3]);
+      expect(rows.map((r) => r.teamId)).toEqual(['a', 'b', 'c']);
+    });
+
+    it('breaks a tie on the game difference when sets are level', () => {
+      // Both win one 2-0 match: same points, same set difference, but a won
+      // its games by a wider margin.
+      const rows = computeStandings(
+        [
+          { id: 'a', name: 'Alpha' },
+          { id: 'b', name: 'Beta' },
+          { id: 'c', name: 'Gamma' },
+          { id: 'd', name: 'Delta' },
+        ],
+        [
+          match('a', 'c', [
+            { home: 6, away: 0 },
+            { home: 6, away: 0 },
+          ]),
+          match('b', 'd', [
+            { home: 7, away: 5 },
+            { home: 7, away: 5 },
+          ]),
+        ],
+        SCHEME,
+        ['POINTS', 'SET_DIFFERENCE', 'GAME_DIFFERENCE'],
+      );
+
+      expect(rows.slice(0, 2).map((r) => r.teamId)).toEqual(['a', 'b']);
+    });
+  });
 });

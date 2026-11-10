@@ -19,6 +19,7 @@ type PrismaMock = {
     delete: jest.Mock;
   };
   standingRule: { create: jest.Mock };
+  tournament: { findUnique: jest.Mock };
   $transaction: jest.Mock;
 };
 
@@ -33,6 +34,11 @@ function createPrismaMock(): PrismaMock {
       delete: jest.fn(),
     },
     standingRule: { create: jest.fn() },
+    tournament: {
+      findUnique: jest.fn().mockResolvedValue({
+        sport: { scoreFormat: 'GOALS', defaultSetsToWin: null },
+      }),
+    },
     $transaction: jest.fn(),
   };
   mock.$transaction.mockImplementation(

@@ -7,9 +7,23 @@ export type PublicTheme =
 // Sport catalog is global, not per-organization -- publicly readable (the
 // landing page's "Sports" nav dropdown lists these for a logged-out
 // visitor, see sports.controller.ts).
+// How a match result is recorded: one score per side ("GOALS") or the
+// detail of each set ("SETS": padel, tennis, volleyball, badminton). In SETS
+// mode MatchScore.homeScore/awayScore are the sets won.
+export type ScoreFormat = 'GOALS' | 'SETS';
+
+/** One set (or game, for sports that count points in a set): home vs away. */
+export interface SetScore {
+  home: number;
+  away: number;
+}
+
 export interface PublicSport {
   id: string;
   name: string;
+  scoreFormat: ScoreFormat;
+  // Sets a side must win to take a match (best of 2n-1); null for GOALS sports.
+  defaultSetsToWin: number | null;
 }
 
 // Public contact form (landing page footer) -- no persistence, this is
@@ -50,6 +64,8 @@ export interface PublicTournamentSummary {
   name: string;
   slug: string;
   sportName: string;
+  scoreFormat: ScoreFormat;
+  defaultSetsToWin: number | null;
   startDate: string | null;
   endDate: string | null;
   // End time of the latest scheduled match, when the tournament has no
@@ -90,6 +106,8 @@ export interface PublicTournament {
   slug: string;
   status: TournamentStatus;
   sportName: string;
+  scoreFormat: ScoreFormat;
+  defaultSetsToWin: number | null;
   startDate: string | null;
   endDate: string | null;
   // Earliest scheduled match's kickoff time, across the whole tournament --
@@ -270,6 +288,8 @@ export interface MatchScore {
   awayScore: number;
   homePenaltyScore: number | null;
   awayPenaltyScore: number | null;
+  // SETS format only: the detail of each set, in play order.
+  sets: SetScore[] | null;
   isValidated: boolean;
   validatedAt: string | null;
 }
@@ -311,6 +331,11 @@ export interface StandingRow {
   goalsFor: number;
   goalsAgainst: number;
   goalDifference: number;
+  // SETS format only (0 otherwise): games/points won and lost inside the
+  // sets. goalsFor/goalsAgainst then count the sets won and lost.
+  gamesFor: number;
+  gamesAgainst: number;
+  gameDifference: number;
   points: number;
   position: number;
   // Persistent Glicko-2 rating for this team within the organization (not

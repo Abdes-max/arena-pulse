@@ -5,17 +5,24 @@ import { PrismaClient } from '../generated/prisma/client';
 // Esport added alongside the physical sports (feat/099) -- Tournament.isOnline
 // already existed as a generic per-tournament flag, but no Sport row let an
 // organizer actually pick "esport" as the sport itself before this.
-const SPORTS = [
-  'Football',
-  'Basketball',
-  'Volleyball',
-  'Handball',
-  'Rugby',
-  'Tennis',
-  'Badminton',
-  'Futsal',
-  'Esport',
-  'Padel',
+// Sets sports record each set (see ScoreFormat in schema.prisma); the rest keep
+// a single score per side. defaultSetsToWin = sets needed to take the match:
+// padel/tennis/badminton are best of 3, volleyball best of 5.
+const SPORTS: {
+  name: string;
+  scoreFormat: 'GOALS' | 'SETS';
+  defaultSetsToWin: number | null;
+}[] = [
+  { name: 'Football', scoreFormat: 'GOALS', defaultSetsToWin: null },
+  { name: 'Basketball', scoreFormat: 'GOALS', defaultSetsToWin: null },
+  { name: 'Volleyball', scoreFormat: 'SETS', defaultSetsToWin: 3 },
+  { name: 'Handball', scoreFormat: 'GOALS', defaultSetsToWin: null },
+  { name: 'Rugby', scoreFormat: 'GOALS', defaultSetsToWin: null },
+  { name: 'Tennis', scoreFormat: 'SETS', defaultSetsToWin: 2 },
+  { name: 'Badminton', scoreFormat: 'SETS', defaultSetsToWin: 2 },
+  { name: 'Futsal', scoreFormat: 'GOALS', defaultSetsToWin: null },
+  { name: 'Esport', scoreFormat: 'GOALS', defaultSetsToWin: null },
+  { name: 'Padel', scoreFormat: 'SETS', defaultSetsToWin: 2 },
 ];
 
 // Order and labels match docs/product/roles-and-permissions.md exactly.
@@ -38,11 +45,11 @@ async function main(): Promise<void> {
   });
 
   try {
-    for (const name of SPORTS) {
+    for (const { name, scoreFormat, defaultSetsToWin } of SPORTS) {
       await prisma.sport.upsert({
         where: { name },
-        update: {},
-        create: { name },
+        update: { scoreFormat, defaultSetsToWin },
+        create: { name, scoreFormat, defaultSetsToWin },
       });
     }
 
