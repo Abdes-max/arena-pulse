@@ -71,3 +71,15 @@
     font-variant-numeric: tabular-nums;
   }
 }
+
+.super-admin-dashboard-page__filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--ap-space-4);
+  margin-bottom: var(--ap-space-5);
+
+  > * {
+    min-width: 11rem;
+  }
+}

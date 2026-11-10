@@ -105,6 +105,8 @@ export interface SuperAdminPaymentRow {
 }
 
 export interface SuperAdminStats {
+  /** Null when the figures cover everything. */
+  period: { from: string | null; to: string | null } | null;
   totalUsers: number;
   totalOrganizations: number;
   tournamentsByStatus: Record<'DRAFT' | 'PUBLISHED' | 'UNPUBLISHED' | 'ARCHIVED', number>;

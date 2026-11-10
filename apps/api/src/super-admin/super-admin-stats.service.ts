@@ -7,6 +7,8 @@ import {
   TournamentStatus,
 } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { StatsQueryDto } from './dto/stats-query.dto';
+import { dateFilter, resolveStatsRange } from './stats-period.util';
 
 @Injectable()
 export class SuperAdminStatsService {
@@ -19,8 +21,17 @@ export class SuperAdminStatsService {
    * sources (Registration, TournamentPublicationOrder,
    * OrganizationSubscription) in their "actually collected" statuses --
    * matches SuperAdminPaymentsService's merge logic.
+   *
+   * With a period, every figure is the activity inside it: accounts,
+   * organizations and tournaments created, matches played (last update of a
+   * completed match), money collected (paidAt). Active subscriptions stay a
+   * snapshot of today, since "active" has no meaning over a past window.
    */
-  async getStats() {
+  async getStats(query: StatsQueryDto = {}) {
+    const range = resolveStatsRange(query.period, query.from, query.to);
+    const created = dateFilter(range);
+    const paid = dateFilter(range);
+
     const [
       totalUsers,
       totalOrganizations,
@@ -31,15 +42,17 @@ export class SuperAdminStatsService {
       publicationRevenue,
       subscriptionRevenue,
     ] = await Promise.all([
-      this.prisma.user.count(),
-      this.prisma.organization.count(),
+      this.prisma.user.count({ where: { createdAt: created } }),
+      this.prisma.organization.count({ where: { createdAt: created } }),
       this.prisma.tournament.groupBy({
         by: ['status'],
+        where: { createdAt: created },
         _count: { _all: true },
       }),
       this.prisma.match.count({
         where: {
           status: { in: [MatchStatus.COMPLETED, MatchStatus.FORFEITED] },
+          updatedAt: created,
         },
       }),
       this.prisma.organizationSubscription.count({
@@ -49,15 +62,15 @@ export class SuperAdminStatsService {
         },
       }),
       this.prisma.registration.aggregate({
-        where: { status: RegistrationStatus.PAID },
+        where: { status: RegistrationStatus.PAID, paidAt: paid },
         _sum: { amountCents: true },
       }),
       this.prisma.tournamentPublicationOrder.aggregate({
-        where: { status: TournamentPublicationOrderStatus.PAID },
+        where: { status: TournamentPublicationOrderStatus.PAID, paidAt: paid },
         _sum: { amountCents: true },
       }),
       this.prisma.organizationSubscription.aggregate({
-        where: { status: OrganizationSubscriptionStatus.ACTIVE },
+        where: { status: OrganizationSubscriptionStatus.ACTIVE, paidAt: paid },
         _sum: { amountCents: true },
       }),
     ]);
@@ -73,6 +86,13 @@ export class SuperAdminStatsService {
     }
 
     return {
+      // Null when the figures cover everything.
+      period: range
+        ? {
+            from: range.from?.toISOString() ?? null,
+            to: range.to?.toISOString() ?? null,
+          }
+        : null,
       totalUsers,
       totalOrganizations,
       tournamentsByStatus: tournamentsByStatusMap,
