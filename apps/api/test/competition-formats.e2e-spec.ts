@@ -166,6 +166,8 @@ describe('Competition formats (e2e)', () => {
         'GOALS_SCORED',
         'HEAD_TO_HEAD',
       ],
+      decidingSetWinPoints: null,
+      decidingSetLossPoints: null,
       supplementaryStandingEnabled: false,
       penaltyShootoutEnabled: false,
     });

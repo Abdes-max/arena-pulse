@@ -62,8 +62,12 @@ async function firstSportId(
     .get('/api/v1/sports')
     .set('Authorization', `Bearer ${accessToken}`)
     .expect(200);
-  const sports = res.body as { id: string; name: string }[];
-  return sports[0].id;
+  const sports = res.body as {
+    id: string;
+    name: string;
+    scoreFormat: string;
+  }[];
+  return sports.find((sport) => sport.scoreFormat === 'GOALS')!.id;
 }
 
 describe('Tournaments (e2e)', () => {

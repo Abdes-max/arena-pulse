@@ -102,7 +102,9 @@ describe('Tournament administrators (e2e)', () => {
     const sportsRes = await auth(
       request(app.getHttpServer()).get('/api/v1/sports'),
     ).expect(200);
-    const sportId = (sportsRes.body as { id: string }[])[0].id;
+    const sportId = (
+      sportsRes.body as { id: string; scoreFormat: string }[]
+    ).find((sport) => sport.scoreFormat === 'GOALS')!.id;
     const tournamentRes = await auth(
       request(app.getHttpServer()).post(
         `/api/v1/organizations/${organizationId}/tournaments`,
@@ -157,7 +159,9 @@ describe('Tournament administrators (e2e)', () => {
     const sportsRes = await auth(
       request(app.getHttpServer()).get('/api/v1/sports'),
     ).expect(200);
-    const sportId = (sportsRes.body as { id: string }[])[0].id;
+    const sportId = (
+      sportsRes.body as { id: string; scoreFormat: string }[]
+    ).find((sport) => sport.scoreFormat === 'GOALS')!.id;
     const tournamentRes = await auth(
       request(app.getHttpServer()).post(
         `/api/v1/organizations/${organizationId}/tournaments`,
