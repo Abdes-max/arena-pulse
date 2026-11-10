@@ -10,6 +10,7 @@ import {
   RoundLabelLang,
   Standings,
   groupMatchesByPhaseSection,
+  setUnitForSport,
 } from 'shared-models';
 import { AuthService } from '../../core/auth.service';
 import { CompetitionFormatsService } from '../../core/competition-formats.service';
@@ -72,6 +73,13 @@ export class PrintExportPage {
   private readonly scheduleService = inject(ScheduleService);
   private readonly standingsService = inject(StandingsService);
   private readonly languageService = inject(LanguageService);
+  // Sets sports: the table counts sets won/lost and the games/points
+  // difference instead of goals.
+  protected readonly isSets = signal(false);
+  private readonly sportName = signal('');
+  protected readonly gameDiffKey = computed(() =>
+    setUnitForSport(this.sportName()) === 'points' ? 'pointDiff' : 'gameDiff',
+  );
 
   protected readonly organization = computed(() => this.authService.organizations()[0] ?? null);
   protected readonly tournamentId = this.route.snapshot.paramMap.get('tournamentId')!;
@@ -102,6 +110,8 @@ export class PrintExportPage {
         this.tournamentsService.listCategories(organizationId, this.tournamentId),
       ]);
       this.tournamentName.set(tournament.name);
+      this.isSets.set(tournament.scoreFormat === 'SETS');
+      this.sportName.set(tournament.sportName);
       const lang = this.languageService.language() as RoundLabelLang;
       const exports = await Promise.all(
         categories.map((category) => this.loadCategory(organizationId, category, lang)),

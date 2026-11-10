@@ -18,6 +18,13 @@
         <span class="ap-match-card__team-name">{{ homeTeam().name }}</span>
       </span>
       @if (hasScore()) {
+        @if (homeSets().length > 0) {
+          <span class="ap-match-card__sets">
+            @for (games of homeSets(); track $index) {
+              <span>{{ games }}</span>
+            }
+          </span>
+        }
         <span class="ap-match-card__score">{{ homeScore() }}</span>
       }
     </div>
@@ -29,6 +36,13 @@
         <span class="ap-match-card__team-name">{{ awayTeam().name }}</span>
       </span>
       @if (hasScore()) {
+        @if (awaySets().length > 0) {
+          <span class="ap-match-card__sets">
+            @for (games of awaySets(); track $index) {
+              <span>{{ games }}</span>
+            }
+          </span>
+        }
         <span class="ap-match-card__score">{{ awayScore() }}</span>
       }
     </div>

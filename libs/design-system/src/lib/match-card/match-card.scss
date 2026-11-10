@@ -74,6 +74,16 @@
   white-space: nowrap;
 }
 
+.ap-match-card__sets {
+  display: inline-flex;
+  gap: var(--ap-space-2);
+  margin-left: auto;
+  padding-right: var(--ap-space-2);
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--ap-color-muted);
+}
+
 .ap-match-card__score {
   font-family: var(--ap-font-heading);
   font-weight: 700;

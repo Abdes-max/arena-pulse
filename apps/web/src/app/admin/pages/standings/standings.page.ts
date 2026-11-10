@@ -20,6 +20,7 @@ import {
   qualificationTierColor,
   QualificationTierColor,
   RoundLabelLang,
+  setUnitForSport,
 } from 'shared-models';
 
 interface QualificationTier {
@@ -50,6 +51,14 @@ export class StandingsPage {
   private readonly standingsService = inject(StandingsService);
   private readonly assetUrl = inject(AssetUrlService);
   private readonly languageService = inject(LanguageService);
+  // Sets sports: the table counts sets won/lost and the games/points
+  // difference instead of goals.
+  protected readonly isSets = signal(false);
+  private readonly sportName = signal('');
+  protected readonly gameDiffKey = computed(() =>
+    setUnitForSport(this.sportName()) === 'points' ? 'pointDiff' : 'gameDiff',
+  );
+
   private readonly transloco = inject(TranslocoService);
 
   protected readonly organization = computed(() => this.authService.organizations()[0] ?? null);
@@ -186,6 +195,24 @@ export class StandingsPage {
 
   constructor() {
     void this.loadCategories();
+    void this.loadSport();
+  }
+
+  private async loadSport(): Promise<void> {
+    const organizationId = this.organization()?.id;
+    if (!organizationId) {
+      return;
+    }
+    try {
+      const tournament = await this.tournamentsService.getTournament(
+        organizationId,
+        this.tournamentId,
+      );
+      this.isSets.set(tournament.scoreFormat === 'SETS');
+      this.sportName.set(tournament.sportName);
+    } catch {
+      // Falls back to the goals columns.
+    }
   }
 
   private async loadCategories(): Promise<void> {

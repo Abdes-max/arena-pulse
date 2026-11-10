@@ -22,6 +22,8 @@ export interface CreatePhasePayload {
 
 export interface UpdatePhasePayload {
   doubleRoundRobin?: boolean;
+  /** Sets sports: sets to win in this phase (1-3); null = the sport's default. */
+  setsToWin?: number | null;
 }
 
 export interface CreateGroupPayload {

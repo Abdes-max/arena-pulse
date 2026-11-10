@@ -303,7 +303,15 @@
       "points": "Pkt",
       "pointsFull": "Punkte",
       "bracket": "Turnierbaum",
-      "result": "Ergebnis"
+      "result": "Ergebnis",
+      "setsFor": "S+",
+      "setsForFull": "Gewonnene Sätze",
+      "setsAgainst": "S-",
+      "setsAgainstFull": "Verlorene Sätze",
+      "gameDiff": "Spieldiff.",
+      "gameDiffFull": "Spieldifferenz",
+      "pointDiff": "Punktdiff.",
+      "pointDiffFull": "Punktdifferenz"
     }
   },
   "teamDetail": {
@@ -1145,6 +1153,13 @@
         "removeCrossGroupRule": "Diese Regel konnte nicht gelöscht werden.",
         "createBracket": "Dieser Turnierbaum konnte nicht erstellt werden.",
         "removeBracket": "Dieser Turnierbaum konnte nicht gelöscht werden."
+      },
+      "setsToWin": {
+        "label": "Gewinnsätze",
+        "default": "Standard der Sportart",
+        "one": "1 Gewinnsatz",
+        "two": "2 Gewinnsätze (Best of 3)",
+        "three": "3 Gewinnsätze (Best of 5)"
       }
     },
     "schedule": {
@@ -1258,7 +1273,15 @@
         "penaltyShootoutRequired": "Zur Bestätigung dieses Unentschiedens ist ein Elfmeterschießen erforderlich.",
         "validateGeneric": "Dieses Ergebnis konnte nicht bestätigt werden.",
         "clearScore": "Dieses Ergebnis konnte nicht gelöscht werden.",
-        "undoForfeit": "Diese Aufgabe konnte nicht rückgängig gemacht werden."
+        "undoForfeit": "Diese Aufgabe konnte nicht rückgängig gemacht werden.",
+        "enterEverySet": "Beide Ergebnisse jedes Satzes eingeben, bevor du speicherst."
+      },
+      "sets": {
+        "set": "Satz",
+        "home": "Ergebnis Heim",
+        "away": "Ergebnis Gast",
+        "add": "+ Satz",
+        "remove": "Letzten Satz entfernen"
       }
     },
     "standings": {
@@ -1294,7 +1317,15 @@
         "pointsFull": "Punkte",
         "rating": "Rating",
         "bracket": "Turnierbaum",
-        "result": "Ergebnis"
+        "result": "Ergebnis",
+        "setsFor": "S+",
+        "setsForFull": "Gewonnene Sätze",
+        "setsAgainst": "S-",
+        "setsAgainstFull": "Verlorene Sätze",
+        "gameDiff": "Spieldiff.",
+        "gameDiffFull": "Spieldifferenz",
+        "pointDiff": "Punktdiff.",
+        "pointDiffFull": "Punktdifferenz"
       },
       "tieTotal": "Vollständige Gleichheit zwischen",
       "tieQuestion": ", wer soll vor den anderen platziert werden?",

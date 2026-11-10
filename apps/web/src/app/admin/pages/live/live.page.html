@@ -45,7 +45,20 @@
               @for (match of rotation.matches; track match.id) {
                 <div class="live-page__match">
                   <span class="live-page__field">{{ match.timeSlot?.field?.name }}</span>
-                  @if (isPlayable(match)) {
+                  @if (isPlayable(match) && isSetsFormat()) {
+                    <div class="live-page__sets">
+                      <p class="live-page__sets-teams">
+                        {{ teamName(match.homeTeam, match.homeSourceLabel) }} –
+                        {{ teamName(match.awayTeam, match.awaySourceLabel) }}
+                      </p>
+                      <ap-sets-input
+                        [sets]="setsDraftFor(match)"
+                        [setsToWin]="setsToWinFor(match)"
+                        [labels]="setsLabels()"
+                        (setsChange)="onSetsChange(match, $event)"
+                      />
+                    </div>
+                  } @else if (isPlayable(match)) {
                     <div class="live-page__side">
                       <span class="live-page__team">{{
                         teamName(match.homeTeam, match.homeSourceLabel)

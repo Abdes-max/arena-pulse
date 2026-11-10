@@ -114,6 +114,23 @@
   }
 }
 
+.structure-page__sets-to-win {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ap-space-2);
+  font-size: 0.9rem;
+
+  select {
+    font: inherit;
+    padding: var(--ap-space-1) var(--ap-space-2);
+    color: var(--ap-color-fg);
+    background: var(--ap-color-surface);
+    border: 1px solid var(--ap-color-border);
+    border-radius: var(--ap-radius-md);
+  }
+}
+
 .structure-page__checkbox-label {
   display: flex;
   flex-direction: row !important;

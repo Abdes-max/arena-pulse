@@ -91,71 +91,91 @@
                           'admin.scores.pending' | transloco
                         }}</span>
                       } @else {
-                        <div class="scores-page__match-row scores-page__match-row--home">
-                          <span class="scores-page__team scores-page__team--home">
-                            @if (logoUrl(match.homeTeam?.logoUrl); as logo) {
-                              <img class="scores-page__team-logo" [src]="logo" alt="" />
-                            }
-                            <span class="scores-page__team-name">{{
-                              match.homeTeam?.name ?? '?'
-                            }}</span>
-                          </span>
-                          <ap-text-field
-                            class="scores-page__score-input"
-                            [label]="'admin.scores.homeScoreLabel' | transloco"
-                            [hideLabel]="true"
-                            type="number"
-                            [min]="0"
-                            [value]="draftFor(match).home"
-                            (valueChange)="onDraftChange(match, 'home', $event)"
-                          />
-                        </div>
-                        <span class="scores-page__score-sep">-</span>
-                        <div class="scores-page__match-row scores-page__match-row--away">
-                          <ap-text-field
-                            class="scores-page__score-input"
-                            [label]="'admin.scores.awayScoreLabel' | transloco"
-                            [hideLabel]="true"
-                            type="number"
-                            [min]="0"
-                            [value]="draftFor(match).away"
-                            (valueChange)="onDraftChange(match, 'away', $event)"
-                          />
-                          <span class="scores-page__team scores-page__team--away">
-                            @if (logoUrl(match.awayTeam?.logoUrl); as logo) {
-                              <img class="scores-page__team-logo" [src]="logo" alt="" />
-                            }
-                            <span class="scores-page__team-name">{{
-                              match.awayTeam?.name ?? '?'
-                            }}</span>
-                          </span>
-                        </div>
-
-                        @if (isDraw(match) && penaltyShootoutEnabled(match)) {
-                          <div class="scores-page__match-row scores-page__match-row--penalty">
-                            <span class="scores-page__penalty-label">{{
-                              'admin.scores.penaltyLabel' | transloco
-                            }}</span>
-                            <ap-text-field
-                              class="scores-page__score-input"
-                              [label]="'admin.scores.homePenaltyLabel' | transloco"
-                              [hideLabel]="true"
-                              type="number"
-                              [min]="0"
-                              [value]="draftFor(match).homePenalty"
-                              (valueChange)="onDraftChange(match, 'homePenalty', $event)"
-                            />
-                            <span>-</span>
-                            <ap-text-field
-                              class="scores-page__score-input"
-                              [label]="'admin.scores.awayPenaltyLabel' | transloco"
-                              [hideLabel]="true"
-                              type="number"
-                              [min]="0"
-                              [value]="draftFor(match).awayPenalty"
-                              (valueChange)="onDraftChange(match, 'awayPenalty', $event)"
+                        @if (isSetsFormat()) {
+                          <div class="scores-page__sets">
+                            <div class="scores-page__sets-teams">
+                              <span class="scores-page__team-name">{{
+                                match.homeTeam?.name ?? '?'
+                              }}</span>
+                              <span class="scores-page__score-sep">-</span>
+                              <span class="scores-page__team-name">{{
+                                match.awayTeam?.name ?? '?'
+                              }}</span>
+                            </div>
+                            <ap-sets-input
+                              [sets]="setsDraftFor(match)"
+                              [setsToWin]="setsToWinFor(match)"
+                              [labels]="setsLabels()"
+                              (setsChange)="onSetsChange(match, $event)"
                             />
                           </div>
+                        } @else {
+                          <div class="scores-page__match-row scores-page__match-row--home">
+                            <span class="scores-page__team scores-page__team--home">
+                              @if (logoUrl(match.homeTeam?.logoUrl); as logo) {
+                                <img class="scores-page__team-logo" [src]="logo" alt="" />
+                              }
+                              <span class="scores-page__team-name">{{
+                                match.homeTeam?.name ?? '?'
+                              }}</span>
+                            </span>
+                            <ap-text-field
+                              class="scores-page__score-input"
+                              [label]="'admin.scores.homeScoreLabel' | transloco"
+                              [hideLabel]="true"
+                              type="number"
+                              [min]="0"
+                              [value]="draftFor(match).home"
+                              (valueChange)="onDraftChange(match, 'home', $event)"
+                            />
+                          </div>
+                          <span class="scores-page__score-sep">-</span>
+                          <div class="scores-page__match-row scores-page__match-row--away">
+                            <ap-text-field
+                              class="scores-page__score-input"
+                              [label]="'admin.scores.awayScoreLabel' | transloco"
+                              [hideLabel]="true"
+                              type="number"
+                              [min]="0"
+                              [value]="draftFor(match).away"
+                              (valueChange)="onDraftChange(match, 'away', $event)"
+                            />
+                            <span class="scores-page__team scores-page__team--away">
+                              @if (logoUrl(match.awayTeam?.logoUrl); as logo) {
+                                <img class="scores-page__team-logo" [src]="logo" alt="" />
+                              }
+                              <span class="scores-page__team-name">{{
+                                match.awayTeam?.name ?? '?'
+                              }}</span>
+                            </span>
+                          </div>
+
+                          @if (isDraw(match) && penaltyShootoutEnabled(match)) {
+                            <div class="scores-page__match-row scores-page__match-row--penalty">
+                              <span class="scores-page__penalty-label">{{
+                                'admin.scores.penaltyLabel' | transloco
+                              }}</span>
+                              <ap-text-field
+                                class="scores-page__score-input"
+                                [label]="'admin.scores.homePenaltyLabel' | transloco"
+                                [hideLabel]="true"
+                                type="number"
+                                [min]="0"
+                                [value]="draftFor(match).homePenalty"
+                                (valueChange)="onDraftChange(match, 'homePenalty', $event)"
+                              />
+                              <span>-</span>
+                              <ap-text-field
+                                class="scores-page__score-input"
+                                [label]="'admin.scores.awayPenaltyLabel' | transloco"
+                                [hideLabel]="true"
+                                type="number"
+                                [min]="0"
+                                [value]="draftFor(match).awayPenalty"
+                                (valueChange)="onDraftChange(match, 'awayPenalty', $event)"
+                              />
+                            </div>
+                          }
                         }
 
                         <div class="scores-page__match-actions">

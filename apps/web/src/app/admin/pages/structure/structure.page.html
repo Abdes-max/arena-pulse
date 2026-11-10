@@ -308,6 +308,26 @@
             }
           </div>
 
+          @if (isSets()) {
+            <label class="structure-page__sets-to-win">
+              {{ 'admin.structure.setsToWin.label' | transloco }}
+              <select (change)="changeSetsToWin(phase, $event)">
+                <option value="" [selected]="phase.setsToWin === null">
+                  {{ 'admin.structure.setsToWin.default' | transloco }}
+                </option>
+                <option value="1" [selected]="phase.setsToWin === 1">
+                  {{ 'admin.structure.setsToWin.one' | transloco }}
+                </option>
+                <option value="2" [selected]="phase.setsToWin === 2">
+                  {{ 'admin.structure.setsToWin.two' | transloco }}
+                </option>
+                <option value="3" [selected]="phase.setsToWin === 3">
+                  {{ 'admin.structure.setsToWin.three' | transloco }}
+                </option>
+              </select>
+            </label>
+          }
+
           @if (phase.type === 'GROUP_STAGE') {
             <label class="structure-page__checkbox-label">
               <input
