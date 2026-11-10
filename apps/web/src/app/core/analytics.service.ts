@@ -69,6 +69,11 @@ export class AnalyticsService {
       .subscribe((event) => this.trackPage(event.urlAfterRedirects));
   }
 
+  /** A custom event (e.g. a banner click) -- a silent no-op until start() has run. */
+  trackEvent(name: string, params: Record<string, unknown> = {}): void {
+    this.document.defaultView?.gtag?.('event', name, params);
+  }
+
   private trackPage(url: string): void {
     const path = url.split(/[?#]/)[0];
     if (

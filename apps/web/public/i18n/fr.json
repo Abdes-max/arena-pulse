@@ -1611,5 +1611,11 @@
       "upsetKicker": "Plus gros exploit du tournoi",
       "upset": "{{winner}} élimine {{loser}}, un écart de {{gap}} points de niveau renversé."
     }
+  },
+  "appBanner": {
+    "title": "Installez l'app TournArena",
+    "subtitle": "Suivez vos tournois en direct, avec les notifications.",
+    "cta": "Installer",
+    "dismissAria": "Fermer"
   }
 }

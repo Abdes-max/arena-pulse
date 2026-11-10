@@ -1509,5 +1509,11 @@
       "upsetKicker": "La mayor sorpresa del torneo",
       "upset": "{{winner}} elimina a {{loser}}, remontando una diferencia de {{gap}} puntos de nivel."
     }
+  },
+  "appBanner": {
+    "title": "Instala la app TournArena",
+    "subtitle": "Sigue tus torneos en directo, con notificaciones.",
+    "cta": "Instalar",
+    "dismissAria": "Cerrar"
   }
 }

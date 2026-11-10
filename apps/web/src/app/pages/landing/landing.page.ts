@@ -21,6 +21,7 @@ import {
 } from 'design-tokens';
 import { PublicSport, PublicTournamentSummary, isTournamentCurrentOrUpcoming } from 'shared-models';
 import { AuthService } from '../../admin/core/auth.service';
+import { APP_STORE_URL } from '../../core/app-store';
 import { CountUp, Reveal } from './landing-motion';
 
 // One concrete, product-true detail per sport (not interchangeable filler)
@@ -46,11 +47,6 @@ const SPORT_DESCRIPTION_KEYS: Record<string, string> = {
   Padel: 'landing.sports.description.padel',
 };
 const DEFAULT_SPORT_DESCRIPTION_KEY = 'landing.sports.description.default';
-
-// Universal (no country code) App Store product link -- Apple resolves it
-// to the visitor's own storefront, so this one URL works worldwide instead
-// of hardcoding e.g. /fr/. TournArena's numeric id (App Store Connect).
-const APP_STORE_URL = 'https://apps.apple.com/app/tournarena/id6800457795';
 
 @Component({
   selector: 'app-landing-page',
