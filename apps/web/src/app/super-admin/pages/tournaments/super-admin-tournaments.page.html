@@ -8,37 +8,90 @@
   } @else if (tournaments().length === 0) {
     <p>Aucun tournoi.</p>
   } @else {
-    <table class="super-admin-tournaments-page__table">
-      <thead>
-        <tr>
-          <th>Nom</th>
-          <th>Organisation</th>
-          <th>Sport</th>
-          <th>Statut</th>
-          <th>Équipes</th>
-          <th>Matchs joués</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (tournament of tournaments(); track tournament.id) {
+    <app-super-admin-filter-bar
+      [shown]="filtered().length"
+      [total]="tournaments().length"
+      [active]="filtersActive()"
+      (filtersReset)="resetFilters()"
+    >
+      <ap-text-field
+        label="Rechercher"
+        type="search"
+        placeholder="Tournoi ou organisation"
+        [value]="query()"
+        (valueChange)="query.set($event)"
+      />
+      <ap-select
+        label="Statut"
+        [options]="statusOptions"
+        [value]="status()"
+        (valueChange)="status.set($event)"
+      />
+      <ap-select
+        label="Sport"
+        [options]="sportOptions()"
+        [value]="sport()"
+        (valueChange)="sport.set($event)"
+      />
+      <ap-select
+        label="Organisation"
+        [options]="organizationOptions()"
+        [value]="organization()"
+        (valueChange)="organization.set($event)"
+      />
+      <ap-select
+        label="Matchs"
+        [options]="playedOptions"
+        [value]="played()"
+        (valueChange)="played.set($event)"
+      />
+      <ap-select
+        label="Création"
+        [options]="periodOptions"
+        [value]="period()"
+        (valueChange)="period.set($any($event))"
+      />
+      @if (period() === 'custom') {
+        <ap-text-field label="Du" type="date" [value]="from()" (valueChange)="from.set($event)" />
+        <ap-text-field label="Au" type="date" [value]="to()" (valueChange)="to.set($event)" />
+      }
+    </app-super-admin-filter-bar>
+
+    @if (filtered().length === 0) {
+      <p>Aucun tournoi ne correspond aux filtres.</p>
+    } @else {
+      <table class="super-admin-tournaments-page__table">
+        <thead>
           <tr>
-            <td>{{ tournament.name }}</td>
-            <td>
-              <a [routerLink]="['/super-admin/organizations', tournament.organizationId]">{{
-                tournament.organizationName
-              }}</a>
-            </td>
-            <td>{{ tournament.sportName }}</td>
-            <td><ap-badge [status]="statusBadge[tournament.status]" /></td>
-            <td>{{ tournament.teamsCount }}</td>
-            <td>{{ tournament.matchesPlayedCount }}</td>
-            <td>
-              <a [routerLink]="['/super-admin/tournaments', tournament.id]">Voir</a>
-            </td>
+            <th>Nom</th>
+            <th>Organisation</th>
+            <th>Sport</th>
+            <th>Statut</th>
+            <th>Équipes</th>
+            <th>Matchs joués</th>
+            <th></th>
           </tr>
-        }
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          @for (tournament of filtered(); track tournament.id) {
+            <tr>
+              <td>{{ tournament.name }}</td>
+              <td>
+                <a [routerLink]="['/super-admin/organizations', tournament.organizationId]">{{
+                  tournament.organizationName
+                }}</a>
+              </td>
+              <td>{{ tournament.sportName }}</td>
+              <td><ap-badge [status]="statusBadge[tournament.status]" /></td>
+              <td>{{ tournament.teamsCount }}</td>
+              <td>{{ tournament.matchesPlayedCount }}</td>
+              <td>
+                <a [routerLink]="['/super-admin/tournaments', tournament.id]">Voir</a>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
   }
 </main>

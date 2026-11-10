@@ -8,69 +8,110 @@
   } @else if (users().length === 0) {
     <p>Aucun compte.</p>
   } @else {
-    <table class="super-admin-users-page__table">
-      <thead>
-        <tr>
-          <th>Nom</th>
-          <th>Email</th>
-          <th>Organisations</th>
-          <th>Vérification</th>
-          <th>Créé le</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (user of users(); track user.id) {
+    <app-super-admin-filter-bar
+      [shown]="filtered().length"
+      [total]="users().length"
+      [active]="filtersActive()"
+      (filtersReset)="resetFilters()"
+    >
+      <ap-text-field
+        label="Rechercher"
+        type="search"
+        placeholder="Nom ou email"
+        [value]="query()"
+        (valueChange)="query.set($event)"
+      />
+      <ap-select
+        label="Vérification"
+        [options]="verificationOptions"
+        [value]="verification()"
+        (valueChange)="verification.set($event)"
+      />
+      <ap-select
+        label="Organisations"
+        [options]="organizationsOptions"
+        [value]="organizationsFilter()"
+        (valueChange)="organizationsFilter.set($event)"
+      />
+      <ap-select
+        label="Création"
+        [options]="periodOptions"
+        [value]="period()"
+        (valueChange)="period.set($any($event))"
+      />
+      @if (period() === 'custom') {
+        <ap-text-field label="Du" type="date" [value]="from()" (valueChange)="from.set($event)" />
+        <ap-text-field label="Au" type="date" [value]="to()" (valueChange)="to.set($event)" />
+      }
+    </app-super-admin-filter-bar>
+
+    @if (filtered().length === 0) {
+      <p>Aucun compte ne correspond aux filtres.</p>
+    } @else {
+      <table class="super-admin-users-page__table">
+        <thead>
           <tr>
-            <td>{{ user.firstName }} {{ user.lastName }}</td>
-            <td>{{ user.email }}</td>
-            <td>
-              @for (org of user.organizations; track org.id) {
-                <div>{{ org.name }} ({{ org.role }})</div>
-              }
-            </td>
-            <td>
-              @if (user.emailVerifiedAt) {
-                <ap-badge status="published" label="Vérifié" />
-              } @else {
-                <ap-badge status="unpublished" label="Non vérifié" />
-              }
-            </td>
-            <td>{{ formatDate(user.createdAt) }}</td>
-            <td class="super-admin-users-page__actions">
-              @if (!user.emailVerifiedAt) {
-                <ap-button
-                  type="button"
-                  variant="ghost"
-                  [disabled]="verifying() === user.id"
-                  (click)="verifyEmail(user)"
-                >
-                  Vérifier l'email
-                </ap-button>
-              }
-              @if (deletingUserId() !== user.id) {
-                <ap-button type="button" variant="ghost" (click)="startDeleting(user)">
-                  Supprimer
-                </ap-button>
-              }
-            </td>
+            <th>Nom</th>
+            <th>Email</th>
+            <th>Organisations</th>
+            <th>Vérification</th>
+            <th>Créé le</th>
+            <th></th>
           </tr>
-          @if (deletingUserId() === user.id) {
+        </thead>
+        <tbody>
+          @for (user of filtered(); track user.id) {
             <tr>
-              <td colspan="6" class="super-admin-users-page__delete-row">
-                @if (deleteErrorMessage(); as message) {
-                  <p class="super-admin-users-page__error" role="alert">{{ message }}</p>
+              <td>{{ user.firstName }} {{ user.lastName }}</td>
+              <td>{{ user.email }}</td>
+              <td>
+                @for (org of user.organizations; track org.id) {
+                  <div>{{ org.name }} ({{ org.role }})</div>
                 }
-                <ap-type-to-confirm
-                  [pending]="deleting()"
-                  (confirm)="deleteUser(user)"
-                  (cancelled)="cancelDeleting()"
-                />
+              </td>
+              <td>
+                @if (user.emailVerifiedAt) {
+                  <ap-badge status="published" label="Vérifié" />
+                } @else {
+                  <ap-badge status="unpublished" label="Non vérifié" />
+                }
+              </td>
+              <td>{{ formatDate(user.createdAt) }}</td>
+              <td class="super-admin-users-page__actions">
+                @if (!user.emailVerifiedAt) {
+                  <ap-button
+                    type="button"
+                    variant="ghost"
+                    [disabled]="verifying() === user.id"
+                    (click)="verifyEmail(user)"
+                  >
+                    Vérifier l'email
+                  </ap-button>
+                }
+                @if (deletingUserId() !== user.id) {
+                  <ap-button type="button" variant="ghost" (click)="startDeleting(user)">
+                    Supprimer
+                  </ap-button>
+                }
               </td>
             </tr>
+            @if (deletingUserId() === user.id) {
+              <tr>
+                <td colspan="6" class="super-admin-users-page__delete-row">
+                  @if (deleteErrorMessage(); as message) {
+                    <p class="super-admin-users-page__error" role="alert">{{ message }}</p>
+                  }
+                  <ap-type-to-confirm
+                    [pending]="deleting()"
+                    (confirm)="deleteUser(user)"
+                    (cancelled)="cancelDeleting()"
+                  />
+                </td>
+              </tr>
+            }
           }
-        }
-      </tbody>
-    </table>
+        </tbody>
+      </table>
+    }
   }
 </main>

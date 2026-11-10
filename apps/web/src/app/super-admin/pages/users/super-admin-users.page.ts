@@ -1,11 +1,14 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { Badge, Button, TypeToConfirm } from 'design-system';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { Badge, Button, Select, SelectOption, TextField, TypeToConfirm } from 'design-system';
 import { SuperAdminService } from '../../core/super-admin.service';
 import { SuperAdminUserRow } from '../../core/models';
+import { SuperAdminFilterBar } from '../../shared/filter-bar';
+import { isInPeriod, matchesText, PERIOD_OPTIONS, PeriodFilter } from '../../shared/list-filters';
+import { queryFilter } from '../../shared/query-filter';
 
 @Component({
   selector: 'app-super-admin-users-page',
-  imports: [Badge, Button, TypeToConfirm],
+  imports: [Badge, Button, Select, TextField, TypeToConfirm, SuperAdminFilterBar],
   templateUrl: './super-admin-users.page.html',
   styleUrl: './super-admin-users.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,8 +30,63 @@ export class SuperAdminUsersPage {
   // shown inline, next to the row, without hiding everything else.
   protected readonly deleteErrorMessage = signal<string | null>(null);
 
+  protected readonly query = queryFilter('q', '');
+  protected readonly verification = queryFilter('verification', '');
+  protected readonly organizationsFilter = queryFilter('organizations', '');
+  protected readonly period = queryFilter<PeriodFilter>('period', 'all');
+  protected readonly from = queryFilter('from', '');
+  protected readonly to = queryFilter('to', '');
+
+  protected readonly periodOptions = PERIOD_OPTIONS;
+  protected readonly verificationOptions: SelectOption[] = [
+    { value: '', label: 'Vérifiés ou non' },
+    { value: 'verified', label: 'Vérifié' },
+    { value: 'unverified', label: 'Non vérifié' },
+  ];
+  protected readonly organizationsOptions: SelectOption[] = [
+    { value: '', label: 'Avec ou sans organisation' },
+    { value: 'with', label: 'Avec organisation' },
+    { value: 'without', label: 'Sans organisation' },
+  ];
+
+  protected readonly filtered = computed(() =>
+    this.users().filter(
+      (user) =>
+        matchesText(
+          this.query(),
+          user.firstName,
+          user.lastName,
+          user.email,
+          ...user.organizations.map((org) => org.name),
+        ) &&
+        (!this.verification() || !!user.emailVerifiedAt === (this.verification() === 'verified')) &&
+        (!this.organizationsFilter() ||
+          user.organizations.length > 0 === (this.organizationsFilter() === 'with')) &&
+        isInPeriod(user.createdAt, this.period(), this.from(), this.to()),
+    ),
+  );
+
+  protected readonly filtersActive = computed(
+    () =>
+      !!(
+        this.query() ||
+        this.verification() ||
+        this.organizationsFilter() ||
+        this.period() !== 'all'
+      ),
+  );
+
   constructor() {
     void this.load();
+  }
+
+  protected resetFilters(): void {
+    this.query.set('');
+    this.verification.set('');
+    this.organizationsFilter.set('');
+    this.period.set('all');
+    this.from.set('');
+    this.to.set('');
   }
 
   private async load(): Promise<void> {
