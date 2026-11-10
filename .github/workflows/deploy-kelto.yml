@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # First run on a fresh host: KELTO_SITE_DIR doesn't exist yet, and
       # scp (unlike rsync --mkpath) won't create it -- same timeout
