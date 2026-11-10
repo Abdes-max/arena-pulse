@@ -14,16 +14,47 @@ import { matchBelongsToTournament } from './match-ownership.util';
 import { MATCH_INCLUDE, toMatchSummary } from './match-summary.util';
 import { RatingsService } from './ratings.service';
 import { RealtimeService } from './realtime.service';
+import { checkSets, resolveScoring, ScoringConfig } from './sets-score.util';
 import { TournamentsService } from './tournaments.service';
+
+interface PhaseWithScoring {
+  setsToWin: number | null;
+  category: {
+    tournamentId: string;
+    tournament: {
+      sport: {
+        scoreFormat: 'GOALS' | 'SETS';
+        defaultSetsToWin: number | null;
+      };
+    };
+  };
+}
 
 type MatchWithScoringData = Match & {
   score: MatchScore | null;
   group: {
-    phase: { category: { tournamentId: string } };
+    phase: PhaseWithScoring;
     standingRule: { penaltyShootoutEnabled: boolean } | null;
   } | null;
-  knockoutBracket: { phase: { category: { tournamentId: string } } } | null;
+  knockoutBracket: { phase: PhaseWithScoring } | null;
 };
+
+/** What gets stored in MatchScore once the sport's score format is applied. */
+interface NormalizedScore {
+  homeScore: number;
+  awayScore: number;
+  homePenaltyScore: number | null;
+  awayPenaltyScore: number | null;
+  sets: { home: number; away: number }[] | null;
+}
+
+const SCORING_CATEGORY = {
+  tournament: {
+    select: {
+      sport: { select: { scoreFormat: true, defaultSetsToWin: true } },
+    },
+  },
+} as const;
 
 @Injectable()
 export class ScoresService {
@@ -52,23 +83,27 @@ export class ScoresService {
         'Ce match est déclaré forfait, annulez le forfait avant de saisir un score.',
       );
     }
-    this.assertPenaltyScoreShape(dto);
+    const score = this.normalizeScore(match, dto, false);
 
+    // Only sets sports carry a detail; goals sports leave the column null.
+    const setsData = score.sets ? { sets: score.sets } : {};
     await this.prisma.matchScore.upsert({
       where: { matchId },
       create: {
         matchId,
-        homeScore: dto.homeScore,
-        awayScore: dto.awayScore,
-        homePenaltyScore: dto.homePenaltyScore ?? null,
-        awayPenaltyScore: dto.awayPenaltyScore ?? null,
+        homeScore: score.homeScore,
+        awayScore: score.awayScore,
+        homePenaltyScore: score.homePenaltyScore,
+        awayPenaltyScore: score.awayPenaltyScore,
+        ...setsData,
         recordedById: userId,
       },
       update: {
-        homeScore: dto.homeScore,
-        awayScore: dto.awayScore,
-        homePenaltyScore: dto.homePenaltyScore ?? null,
-        awayPenaltyScore: dto.awayPenaltyScore ?? null,
+        homeScore: score.homeScore,
+        awayScore: score.awayScore,
+        homePenaltyScore: score.homePenaltyScore,
+        awayPenaltyScore: score.awayPenaltyScore,
+        ...setsData,
         isValidated: false,
         validatedAt: null,
         validatedById: null,
@@ -100,6 +135,7 @@ export class ScoresService {
       throw new BadRequestException('Aucun score saisi pour ce match.');
     }
     this.assertValidatable(match, match.score);
+    this.assertSetsComplete(match, match.score.sets);
 
     await this.prisma.matchScore.update({
       where: { matchId },
@@ -166,14 +202,9 @@ export class ScoresService {
           'Un match de la série est déclaré forfait, annulez le forfait avant de saisir un score.',
         );
       }
-      this.assertPenaltyScoreShape(entry);
+      const score = this.normalizeScore(match, entry, Boolean(dto.validate));
       if (dto.validate) {
-        this.assertValidatable(match, {
-          homeScore: entry.homeScore,
-          awayScore: entry.awayScore,
-          homePenaltyScore: entry.homePenaltyScore ?? null,
-          awayPenaltyScore: entry.awayPenaltyScore ?? null,
-        });
+        this.assertValidatable(match, score);
       }
     }
 
@@ -325,6 +356,84 @@ export class ScoresService {
     }
   }
 
+  /**
+   * Applies the sport's score format to what the client sent. GOALS keeps the
+   * plain score and refuses `sets`. SETS needs `sets`, refuses shootouts, and
+   * recomputes homeScore/awayScore as the sets won (the client's values are
+   * ignored); `complete` demands a finished match rather than one in progress.
+   */
+  private normalizeScore(
+    match: MatchWithScoringData,
+    dto: UpsertMatchScoreDto,
+    complete: boolean,
+  ): NormalizedScore {
+    const scoring = this.scoringFor(match);
+    if (scoring.format === 'GOALS') {
+      if (dto.sets !== undefined) {
+        throw new BadRequestException(
+          'Le détail des sets ne concerne que les sports à sets.',
+        );
+      }
+      this.assertPenaltyScoreShape(dto);
+      return {
+        homeScore: dto.homeScore,
+        awayScore: dto.awayScore,
+        homePenaltyScore: dto.homePenaltyScore ?? null,
+        awayPenaltyScore: dto.awayPenaltyScore ?? null,
+        sets: null,
+      };
+    }
+    if (
+      dto.homePenaltyScore !== undefined ||
+      dto.awayPenaltyScore !== undefined
+    ) {
+      throw new BadRequestException('Pas de tirs au but dans un sport à sets.');
+    }
+    if (dto.sets === undefined) {
+      throw new BadRequestException(
+        'Le détail des sets est requis pour ce sport.',
+      );
+    }
+    const sets = dto.sets.map(({ home, away }) => ({ home, away }));
+    const won = checkSets(sets, scoring.setsToWin, complete);
+    if ('error' in won) {
+      throw new BadRequestException(won.error);
+    }
+    return {
+      homeScore: won.home,
+      awayScore: won.away,
+      homePenaltyScore: null,
+      awayPenaltyScore: null,
+      sets,
+    };
+  }
+
+  /** A stored sets score must be a finished match before it is validated. */
+  private assertSetsComplete(
+    match: MatchWithScoringData,
+    stored: unknown,
+  ): void {
+    const scoring = this.scoringFor(match);
+    if (scoring.format !== 'SETS') {
+      return;
+    }
+    const sets = Array.isArray(stored)
+      ? (stored as { home: number; away: number }[])
+      : [];
+    const result = checkSets(sets, scoring.setsToWin, true);
+    if ('error' in result) {
+      throw new BadRequestException(result.error);
+    }
+  }
+
+  private scoringFor(match: MatchWithScoringData): ScoringConfig {
+    const phase = (match.group?.phase ?? match.knockoutBracket?.phase)!;
+    return resolveScoring({
+      phaseSetsToWin: phase.setsToWin,
+      sport: phase.category.tournament.sport,
+    });
+  }
+
   private assertPenaltyScoreShape(dto: UpsertMatchScoreDto): void {
     const hasHomePenalty = dto.homePenaltyScore !== undefined;
     const hasAwayPenalty = dto.awayPenaltyScore !== undefined;
@@ -350,12 +459,14 @@ export class ScoresService {
         score: true,
         group: {
           include: {
-            phase: { include: { category: true } },
+            phase: { include: { category: { include: SCORING_CATEGORY } } },
             standingRule: { select: { penaltyShootoutEnabled: true } },
           },
         },
         knockoutBracket: {
-          include: { phase: { include: { category: true } } },
+          include: {
+            phase: { include: { category: { include: SCORING_CATEGORY } } },
+          },
         },
       },
     });

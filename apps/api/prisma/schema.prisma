@@ -230,11 +230,23 @@ enum PublicTheme {
 }
 
 // Global reference data (not scoped by organization) — seeded, no CRUD in this PR.
+// How a match result is recorded: GOALS = one score per side (football...),
+// SETS = a list of sets/games (padel, tennis, volleyball, badminton). In SETS
+// mode MatchScore.homeScore/awayScore hold the number of sets won, so every
+// consumer of the plain score (winner, bracket, ratings, recap) keeps working.
+enum ScoreFormat {
+  GOALS
+  SETS
+}
+
 model Sport {
-  id        String   @id @default(uuid())
-  name      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id               String      @id @default(uuid())
+  name             String      @unique
+  scoreFormat      ScoreFormat @default(GOALS)
+  // Sets a side must win to take a match (best of 2n-1); SETS sports only.
+  defaultSetsToWin Int?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
 
   tournaments Tournament[]
 }
@@ -452,6 +464,9 @@ model CompetitionPhase {
   // BracketsService.generateAllMatches) treat it as "no real pool phase"
   // instead of a genuine one, rather than name-matching KNOCKOUT_ONLY_SEED_NAME.
   isSeedPhase          Boolean              @default(false)
+  // Overrides Sport.defaultSetsToWin for this phase (e.g. best of 3 in
+  // pools, best of 5 in the final); null = the sport's default.
+  setsToWin            Int?
   createdAt            DateTime             @default(now())
   updatedAt            DateTime             @updatedAt
 
@@ -488,6 +503,11 @@ model StandingRule {
   winPoints                    Int      @default(3)
   drawPoints                   Int      @default(1)
   lossPoints                   Int      @default(0)
+  // SETS format: points when the match went to the deciding set (e.g.
+  // volleyball 3-2 = 2 for the winner, 1 for the loser). null = the normal
+  // win/loss points above.
+  decidingSetWinPoints         Int?
+  decidingSetLossPoints        Int?
   tieBreakOrder                String[]
   supplementaryStandingEnabled Boolean  @default(false)
   penaltyShootoutEnabled       Boolean  @default(false)
@@ -669,6 +689,8 @@ model MatchScore {
   awayScore        Int
   homePenaltyScore Int?
   awayPenaltyScore Int?
+  // SETS format only: [{ home, away }, ...] in play order.
+  sets             Json?
   isValidated      Boolean   @default(false)
   validatedAt      DateTime?
   validatedById    String?

@@ -106,6 +106,8 @@ export class PublicService {
       slug: tournament.slug,
       status: tournament.status,
       sportName: tournament.sportName,
+      scoreFormat: tournament.scoreFormat,
+      defaultSetsToWin: tournament.defaultSetsToWin,
       startDate: tournament.startDate,
       endDate: tournament.endDate,
       firstMatchTime,

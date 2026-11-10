@@ -9,6 +9,11 @@ export class SportsService {
     const sports = await this.prisma.sport.findMany({
       orderBy: { name: 'asc' },
     });
-    return sports.map((sport) => ({ id: sport.id, name: sport.name }));
+    return sports.map((sport) => ({
+      id: sport.id,
+      name: sport.name,
+      scoreFormat: sport.scoreFormat,
+      defaultSetsToWin: sport.defaultSetsToWin,
+    }));
   }
 }

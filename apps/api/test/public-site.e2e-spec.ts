@@ -64,7 +64,7 @@ describe('Public tournament site (e2e)', () => {
     const sportRes = await auth(
       request(app.getHttpServer()).get('/api/v1/sports'),
     ).expect(200);
-    const sportId = (sportRes.body as { id: string }[])[0].id;
+    const sportId = (sportRes.body as { id: string; scoreFormat: string }[]).find((sport) => sport.scoreFormat === 'GOALS')!.id;
 
     const tournamentRes = await auth(request(app.getHttpServer()).post(base))
       .send({ name: 'Coupe Publique', sportId })
@@ -286,7 +286,7 @@ describe('Public tournament site (e2e)', () => {
     const sportRes = await auth(
       request(app.getHttpServer()).get('/api/v1/sports'),
     ).expect(200);
-    const sportId = (sportRes.body as { id: string }[])[0].id;
+    const sportId = (sportRes.body as { id: string; scoreFormat: string }[]).find((sport) => sport.scoreFormat === 'GOALS')!.id;
 
     const tournamentRes = await auth(request(app.getHttpServer()).post(base))
       .send({ name: 'Coupe des Prochains Matchs', sportId })
@@ -414,7 +414,7 @@ describe('Public tournament site (e2e)', () => {
     const sportRes = await auth(
       request(app.getHttpServer()).get('/api/v1/sports'),
     ).expect(200);
-    const sportId = (sportRes.body as { id: string }[])[0].id;
+    const sportId = (sportRes.body as { id: string; scoreFormat: string }[]).find((sport) => sport.scoreFormat === 'GOALS')!.id;
 
     const tournamentRes = await auth(request(app.getHttpServer()).post(base))
       .send({ name: 'Coupe Thème', sportId })
@@ -490,7 +490,7 @@ describe('Public tournament site (e2e)', () => {
     const sportRes = await auth(
       request(app.getHttpServer()).get('/api/v1/sports'),
     ).expect(200);
-    const sportId = (sportRes.body as { id: string }[])[0].id;
+    const sportId = (sportRes.body as { id: string; scoreFormat: string }[]).find((sport) => sport.scoreFormat === 'GOALS')!.id;
 
     // A tournament created without isListed defaults to listed (true) --
     // preserves the pre-existing behavior of every already-published

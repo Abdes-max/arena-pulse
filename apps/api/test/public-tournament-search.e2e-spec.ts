@@ -105,7 +105,7 @@ describe('Public tournament directory search (e2e)', () => {
     const sportRes = await request(app.getHttpServer())
       .get('/api/v1/sports')
       .expect(200);
-    const sportId = (sportRes.body as { id: string }[])[0].id;
+    const sportId = (sportRes.body as { id: string; scoreFormat: string }[]).find((sport) => sport.scoreFormat === 'GOALS')!.id;
 
     const a = await registerAndPublishTournament(
       'ada@example.com',
@@ -186,7 +186,7 @@ describe('Public tournament directory search (e2e)', () => {
     const sportRes = await request(app.getHttpServer())
       .get('/api/v1/sports')
       .expect(200);
-    const sportId = (sportRes.body as { id: string }[])[0].id;
+    const sportId = (sportRes.body as { id: string; scoreFormat: string }[]).find((sport) => sport.scoreFormat === 'GOALS')!.id;
 
     await registerAndPublishTournament('one@example.com', 'Org One', {
       name: 'Coupe Un',

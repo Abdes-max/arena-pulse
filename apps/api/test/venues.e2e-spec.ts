@@ -59,7 +59,9 @@ async function firstSportId(
     .get('/api/v1/sports')
     .set('Authorization', `Bearer ${accessToken}`)
     .expect(200);
-  return (res.body as { id: string }[])[0].id;
+  return (res.body as { id: string; scoreFormat: string }[]).find(
+    (sport) => sport.scoreFormat === 'GOALS',
+  )!.id;
 }
 
 /** Directly seeds an ORG_MEMBER with a real password, bypassing the invitation/email flow. */

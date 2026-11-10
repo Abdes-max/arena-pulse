@@ -107,6 +107,7 @@ export class PhasesService {
         breakDurationMinutes: dto.breakDurationMinutes,
         refereesPerMatch: dto.refereesPerMatch,
         doubleRoundRobin: dto.doubleRoundRobin,
+        setsToWin: dto.setsToWin,
       },
       include: {
         groups: { orderBy: { position: 'asc' } },
@@ -209,6 +210,7 @@ export class PhasesService {
       breakDurationMinutes: phase.breakDurationMinutes,
       refereesPerMatch: phase.refereesPerMatch,
       doubleRoundRobin: phase.doubleRoundRobin,
+      setsToWin: phase.setsToWin,
       isSeedPhase: phase.isSeedPhase,
       groups: phase.groups.map((group) => ({
         id: group.id,

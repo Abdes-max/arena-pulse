@@ -181,7 +181,7 @@ describe('Super admin data endpoints (e2e)', () => {
     const sportRes = await orgAuth(
       request(app.getHttpServer()).get('/api/v1/sports'),
     ).expect(200);
-    const sportId = (sportRes.body as { id: string }[])[0].id;
+    const sportId = (sportRes.body as { id: string; scoreFormat: string }[]).find((sport) => sport.scoreFormat === 'GOALS')!.id;
     const tournamentRes = await orgAuth(
       request(app.getHttpServer()).post(
         `/api/v1/organizations/${organizationId}/tournaments`,
@@ -292,7 +292,7 @@ describe('Super admin data endpoints (e2e)', () => {
     const sportRes = await orgAuth(
       request(app.getHttpServer()).get('/api/v1/sports'),
     ).expect(200);
-    const sportId = (sportRes.body as { id: string }[])[0].id;
+    const sportId = (sportRes.body as { id: string; scoreFormat: string }[]).find((sport) => sport.scoreFormat === 'GOALS')!.id;
     const tournamentRes = await orgAuth(
       request(app.getHttpServer()).post(
         `/api/v1/organizations/${organizationId}/tournaments`,

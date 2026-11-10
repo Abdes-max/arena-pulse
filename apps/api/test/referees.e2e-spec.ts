@@ -58,7 +58,9 @@ async function firstSportId(
     .get('/api/v1/sports')
     .set('Authorization', `Bearer ${accessToken}`)
     .expect(200);
-  return (res.body as { id: string }[])[0].id;
+  return (res.body as { id: string; scoreFormat: string }[]).find(
+    (sport) => sport.scoreFormat === 'GOALS',
+  )!.id;
 }
 
 describe('Referees (e2e)', () => {

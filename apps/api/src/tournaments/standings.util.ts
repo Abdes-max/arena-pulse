@@ -9,6 +9,11 @@ export interface StandingRow {
   goalsFor: number;
   goalsAgainst: number;
   goalDifference: number;
+  // SETS format only (0 otherwise): games/points won and lost inside the
+  // sets. goalsFor/goalsAgainst then count the sets won and lost.
+  gamesFor: number;
+  gamesAgainst: number;
+  gameDifference: number;
   points: number;
   position: number;
 }
@@ -27,12 +32,19 @@ interface ValidatedMatchInput {
   awayTeamId: string;
   homeScore: number;
   awayScore: number;
+  // SETS format only: the detail of each set.
+  sets?: { home: number; away: number }[] | null;
 }
 
 interface PointsScheme {
   winPoints: number;
   drawPoints: number;
   lossPoints: number;
+  // SETS format: points when the match went to the deciding set (e.g.
+  // volleyball 3-2 -> 2 for the winner, 1 for the loser). Absent/null = the
+  // normal win/loss points.
+  decidingSetWinPoints?: number | null;
+  decidingSetLossPoints?: number | null;
 }
 
 type Stats = Omit<StandingRow, 'position'>;
@@ -63,18 +75,24 @@ export function computeStandings(
         goalsFor: 0,
         goalsAgainst: 0,
         goalDifference: 0,
+        gamesFor: 0,
+        gamesAgainst: 0,
+        gameDifference: 0,
         points: 0,
       },
     ]),
   );
 
   for (const match of matches) {
+    const games = sumGames(match.sets);
     applyResult(
       statsByTeam,
       match.homeTeamId,
       match.homeScore,
       match.awayScore,
       scheme,
+      games.home,
+      games.away,
     );
     applyResult(
       statsByTeam,
@@ -82,6 +100,8 @@ export function computeStandings(
       match.awayScore,
       match.homeScore,
       scheme,
+      games.away,
+      games.home,
     );
   }
 
@@ -130,12 +150,53 @@ export function rankCrossGroupCandidates(
   return ordered.map((row, index) => ({ ...row, position: index + 1 }));
 }
 
+function sumGames(sets: ValidatedMatchInput['sets']): {
+  home: number;
+  away: number;
+} {
+  let home = 0;
+  let away = 0;
+  for (const set of sets ?? []) {
+    home += set.home;
+    away += set.away;
+  }
+  return { home, away };
+}
+
+// A match went to the deciding set when the winner has n sets and the loser
+// n - 1 (2-1 in best of 3, 3-2 in best of 5). A single set (1-0) never counts.
+function isDecidingSetMatch(scored: number, conceded: number): boolean {
+  const winner = Math.max(scored, conceded);
+  return winner >= 2 && Math.min(scored, conceded) === winner - 1;
+}
+
+function resultPoints(
+  scored: number,
+  conceded: number,
+  scheme: PointsScheme,
+): number {
+  const deciding = isDecidingSetMatch(scored, conceded);
+  if (scored > conceded) {
+    return deciding
+      ? (scheme.decidingSetWinPoints ?? scheme.winPoints)
+      : scheme.winPoints;
+  }
+  if (scored === conceded) {
+    return scheme.drawPoints;
+  }
+  return deciding
+    ? (scheme.decidingSetLossPoints ?? scheme.lossPoints)
+    : scheme.lossPoints;
+}
+
 function applyResult(
   statsByTeam: Map<string, Stats>,
   teamId: string,
   scored: number,
   conceded: number,
   scheme: PointsScheme,
+  gamesScored = 0,
+  gamesConceded = 0,
 ): void {
   const stats = statsByTeam.get(teamId);
   if (!stats) {
@@ -145,15 +206,16 @@ function applyResult(
   stats.goalsFor += scored;
   stats.goalsAgainst += conceded;
   stats.goalDifference = stats.goalsFor - stats.goalsAgainst;
+  stats.gamesFor += gamesScored;
+  stats.gamesAgainst += gamesConceded;
+  stats.gameDifference = stats.gamesFor - stats.gamesAgainst;
+  stats.points += resultPoints(scored, conceded, scheme);
   if (scored > conceded) {
     stats.won += 1;
-    stats.points += scheme.winPoints;
   } else if (scored === conceded) {
     stats.drawn += 1;
-    stats.points += scheme.drawPoints;
   } else {
     stats.lost += 1;
-    stats.points += scheme.lossPoints;
   }
 }
 
@@ -293,10 +355,16 @@ function criterionValueGetter(
   switch (criterion) {
     case 'POINTS':
       return (team) => team.points;
+    // In SETS mode goalsFor/goalDifference hold the sets won/difference, so
+    // the set criteria read the same columns under their own names.
     case 'GOAL_DIFFERENCE':
+    case 'SET_DIFFERENCE':
       return (team) => team.goalDifference;
     case 'GOALS_SCORED':
+    case 'SETS_WON':
       return (team) => team.goalsFor;
+    case 'GAME_DIFFERENCE':
+      return (team) => team.gameDifference;
     case 'HEAD_TO_HEAD': {
       const subgroupIds = new Set(teams.map((team) => team.teamId));
       const headToHeadPoints = new Map<string, number>();
@@ -307,18 +375,16 @@ function criterionValueGetter(
         ) {
           continue;
         }
-        const homePoints =
-          match.homeScore > match.awayScore
-            ? scheme.winPoints
-            : match.homeScore === match.awayScore
-              ? scheme.drawPoints
-              : scheme.lossPoints;
-        const awayPoints =
-          match.awayScore > match.homeScore
-            ? scheme.winPoints
-            : match.awayScore === match.homeScore
-              ? scheme.drawPoints
-              : scheme.lossPoints;
+        const homePoints = resultPoints(
+          match.homeScore,
+          match.awayScore,
+          scheme,
+        );
+        const awayPoints = resultPoints(
+          match.awayScore,
+          match.homeScore,
+          scheme,
+        );
         headToHeadPoints.set(
           match.homeTeamId,
           (headToHeadPoints.get(match.homeTeamId) ?? 0) + homePoints,

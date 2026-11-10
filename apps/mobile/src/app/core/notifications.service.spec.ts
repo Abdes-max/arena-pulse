@@ -78,6 +78,7 @@ function liveScore(home: number, away: number): Match['score'] {
     awayScore: away,
     homePenaltyScore: null,
     awayPenaltyScore: null,
+    sets: null,
     isValidated: false,
     validatedAt: null,
   };
