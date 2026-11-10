@@ -171,3 +171,15 @@ ion-title {
   font-size: 0.78rem;
   cursor: pointer;
 }
+
+// Sets sports: team names, then the list of sets, full width of the card.
+.scores-page__sets {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+}
+
+.scores-page__sets-teams {
+  margin: 0;
+  font-weight: 600;
+}

@@ -109,60 +109,74 @@
                         }}</span>
                       </div>
                     } @else {
-                      <div class="scores-page__teamrow">
-                        <span class="scores-page__team-name">{{
-                          match.homeTeam?.name ?? '?'
-                        }}</span>
-                        <ap-text-field
-                          class="scores-page__score-input"
-                          [label]="'organizer.scores.homeScoreLabel' | transloco"
-                          [hideLabel]="true"
-                          type="number"
-                          [min]="0"
-                          [value]="draftFor(match).home"
-                          (valueChange)="onDraftChange(match, 'home', $event)"
-                        />
-                      </div>
-                      <div class="scores-page__teamrow scores-page__teamrow--away">
-                        <span class="scores-page__team-name">{{
-                          match.awayTeam?.name ?? '?'
-                        }}</span>
-                        <ap-text-field
-                          class="scores-page__score-input"
-                          [label]="'organizer.scores.awayScoreLabel' | transloco"
-                          [hideLabel]="true"
-                          type="number"
-                          [min]="0"
-                          [value]="draftFor(match).away"
-                          (valueChange)="onDraftChange(match, 'away', $event)"
-                        />
-                      </div>
-
-                      @if (isDraw(match) && penaltyShootoutEnabled(match)) {
-                        <div class="scores-page__penalty-row">
-                          <span class="scores-page__penalty-label">{{
-                            'organizer.scores.penaltyLabel' | transloco
+                      @if (isSetsFormat()) {
+                        <div class="scores-page__sets">
+                          <p class="scores-page__sets-teams">
+                            {{ match.homeTeam?.name ?? '?' }} - {{ match.awayTeam?.name ?? '?' }}
+                          </p>
+                          <ap-sets-input
+                            [sets]="setsDraftFor(match)"
+                            [setsToWin]="setsToWinFor(match)"
+                            [labels]="setsLabels()"
+                            (setsChange)="onSetsChange(match, $event)"
+                          />
+                        </div>
+                      } @else {
+                        <div class="scores-page__teamrow">
+                          <span class="scores-page__team-name">{{
+                            match.homeTeam?.name ?? '?'
                           }}</span>
                           <ap-text-field
                             class="scores-page__score-input"
-                            [label]="'organizer.scores.homePenaltyLabel' | transloco"
+                            [label]="'organizer.scores.homeScoreLabel' | transloco"
                             [hideLabel]="true"
                             type="number"
                             [min]="0"
-                            [value]="draftFor(match).homePenalty"
-                            (valueChange)="onDraftChange(match, 'homePenalty', $event)"
-                          />
-                          <span>-</span>
-                          <ap-text-field
-                            class="scores-page__score-input"
-                            [label]="'organizer.scores.awayPenaltyLabel' | transloco"
-                            [hideLabel]="true"
-                            type="number"
-                            [min]="0"
-                            [value]="draftFor(match).awayPenalty"
-                            (valueChange)="onDraftChange(match, 'awayPenalty', $event)"
+                            [value]="draftFor(match).home"
+                            (valueChange)="onDraftChange(match, 'home', $event)"
                           />
                         </div>
+                        <div class="scores-page__teamrow scores-page__teamrow--away">
+                          <span class="scores-page__team-name">{{
+                            match.awayTeam?.name ?? '?'
+                          }}</span>
+                          <ap-text-field
+                            class="scores-page__score-input"
+                            [label]="'organizer.scores.awayScoreLabel' | transloco"
+                            [hideLabel]="true"
+                            type="number"
+                            [min]="0"
+                            [value]="draftFor(match).away"
+                            (valueChange)="onDraftChange(match, 'away', $event)"
+                          />
+                        </div>
+
+                        @if (isDraw(match) && penaltyShootoutEnabled(match)) {
+                          <div class="scores-page__penalty-row">
+                            <span class="scores-page__penalty-label">{{
+                              'organizer.scores.penaltyLabel' | transloco
+                            }}</span>
+                            <ap-text-field
+                              class="scores-page__score-input"
+                              [label]="'organizer.scores.homePenaltyLabel' | transloco"
+                              [hideLabel]="true"
+                              type="number"
+                              [min]="0"
+                              [value]="draftFor(match).homePenalty"
+                              (valueChange)="onDraftChange(match, 'homePenalty', $event)"
+                            />
+                            <span>-</span>
+                            <ap-text-field
+                              class="scores-page__score-input"
+                              [label]="'organizer.scores.awayPenaltyLabel' | transloco"
+                              [hideLabel]="true"
+                              type="number"
+                              [min]="0"
+                              [value]="draftFor(match).awayPenalty"
+                              (valueChange)="onDraftChange(match, 'awayPenalty', $event)"
+                            />
+                          </div>
+                        }
                       }
 
                       <div class="scores-page__match-actions">

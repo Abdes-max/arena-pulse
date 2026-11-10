@@ -352,7 +352,15 @@
         "penaltyShootoutRequired": "Une séance de tirs au but est requise pour valider ce match nul.",
         "validateGeneric": "Impossible de valider ce score.",
         "clearGeneric": "Impossible d'effacer ce score.",
-        "undoForfeitGeneric": "Impossible d'annuler ce forfait."
+        "undoForfeitGeneric": "Impossible d'annuler ce forfait.",
+        "enterEverySet": "Renseignez les deux scores de chaque set avant d’enregistrer."
+      },
+      "sets": {
+        "set": "Set",
+        "home": "Score domicile",
+        "away": "Score extérieur",
+        "add": "+ Set",
+        "remove": "Retirer le dernier set"
       }
     },
     "standings": {

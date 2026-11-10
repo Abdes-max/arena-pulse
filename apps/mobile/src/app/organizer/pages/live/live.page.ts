@@ -2,13 +2,15 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
-import { TranslocoPipe } from '@jsverse/transloco';
-import { Button } from 'design-system';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { Button, SetDraft, SetsInput } from 'design-system';
 import { LanguageService } from 'design-tokens';
-import { Match } from 'shared-models';
+import { CompetitionPhase, Match } from 'shared-models';
 import { OrganizerAuthService } from '../../core/auth.service';
 import { groupRotations, pickCurrentAndNext, Rotation } from '../../core/rotations';
+import { OrganizerTournament } from '../../core/models';
 import { OrganizerScoresService } from '../../core/scores.service';
+import { OrganizerTournamentsService } from '../../core/tournaments.service';
 import { TournamentCreationService } from '../../core/tournament-creation.service';
 
 interface DraftScore {
@@ -27,7 +29,7 @@ const FINISHED = new Set(['COMPLETED', 'FORFEITED', 'CANCELLED']);
  */
 @Component({
   selector: 'app-organizer-live-page',
-  imports: [Button, IonContent, IonHeader, IonTitle, IonToolbar, TranslocoPipe],
+  imports: [Button, IonContent, IonHeader, IonTitle, IonToolbar, SetsInput, TranslocoPipe],
   templateUrl: './live.page.html',
   styleUrl: './live.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -37,6 +39,8 @@ export class OrganizerLivePage {
   private readonly router = inject(Router);
   private readonly creationApi = inject(TournamentCreationService);
   private readonly scoresApi = inject(OrganizerScoresService);
+  private readonly tournamentsApi = inject(OrganizerTournamentsService);
+  private readonly transloco = inject(TranslocoService);
   private readonly languageService = inject(LanguageService);
   private readonly tournamentId = inject(ActivatedRoute).snapshot.paramMap.get('id') ?? '';
 
@@ -46,6 +50,24 @@ export class OrganizerLivePage {
   protected readonly apiError = signal<string | null>(null);
   protected readonly matches = signal<Match[]>([]);
   protected readonly drafts = signal<Map<string, DraftScore>>(new Map());
+
+  // Sets sports (padel, tennis, volleyball, badminton): each match is a list
+  // of sets instead of a +/- counter; the API recomputes the sets won.
+  private readonly tournament = signal<OrganizerTournament | null>(null);
+  private readonly phases = signal<CompetitionPhase[]>([]);
+  protected readonly isSetsFormat = computed(() => this.tournament()?.scoreFormat === 'SETS');
+  protected readonly setsDrafts = signal<Map<string, SetDraft[]>>(new Map());
+  protected readonly setsLabels = computed(() => {
+    const lang = this.languageService.language();
+    const t = (key: string) => this.transloco.translate(`organizer.scores.sets.${key}`, {}, lang);
+    return {
+      set: t('set'),
+      home: t('home'),
+      away: t('away'),
+      add: t('add'),
+      remove: t('remove'),
+    };
+  });
   /** Rotation opened by hand; null = follow the one being played, '' = all closed. */
   protected readonly openedStart = signal<string | null>(null);
   private groupPhaseIds: string[] = [];
@@ -73,7 +95,11 @@ export class OrganizerLivePage {
       return;
     }
     try {
-      const categories = await this.creationApi.listCategories(organizationId, this.tournamentId);
+      const [tournament, categories] = await Promise.all([
+        this.tournamentsApi.getTournament(organizationId, this.tournamentId),
+        this.creationApi.listCategories(organizationId, this.tournamentId),
+      ]);
+      this.tournament.set(tournament);
       const phases = (
         await Promise.all(
           categories.map((category) =>
@@ -83,6 +109,7 @@ export class OrganizerLivePage {
       )
         .flat()
         .filter((phase) => !phase.isSeedPhase);
+      this.phases.set(phases);
       this.groupPhaseIds = phases
         .filter((phase) => phase.type === 'GROUP_STAGE')
         .map((phase) => phase.id);
@@ -95,6 +122,7 @@ export class OrganizerLivePage {
       ).flat();
       this.matches.set(matches);
       this.drafts.set(new Map());
+      this.setsDrafts.set(new Map());
     } catch {
       this.errorMessage.set('organizer.live.errors.load');
     } finally {
@@ -128,6 +156,37 @@ export class OrganizerLivePage {
     );
   }
 
+  protected setsToWinFor(match: Match): number {
+    const phase = this.phases().find((candidate) =>
+      match.knockoutBracketId
+        ? candidate.knockoutBracket?.id === match.knockoutBracketId
+        : candidate.groups.some((group) => group.id === match.groupId),
+    );
+    return phase?.setsToWin ?? this.tournament()?.defaultSetsToWin ?? 2;
+  }
+
+  protected setsDraftFor(match: Match): SetDraft[] {
+    const draft = this.setsDrafts().get(match.id);
+    if (draft) {
+      return draft;
+    }
+    return (match.score?.sets ?? []).map((set) => ({
+      home: String(set.home),
+      away: String(set.away),
+    }));
+  }
+
+  protected onSetsChange(match: Match, sets: SetDraft[]): void {
+    this.setsDrafts.update((drafts) => new Map(drafts).set(match.id, sets));
+  }
+
+  /** Complete rows only: a half-typed set is left out rather than sent. */
+  private setsPayload(match: Match): { home: number; away: number }[] {
+    return this.setsDraftFor(match)
+      .filter((set) => set.home !== '' && set.away !== '')
+      .map((set) => ({ home: Number(set.home), away: Number(set.away) }));
+  }
+
   protected bump(match: Match, side: keyof DraftScore, delta: number): void {
     const current = this.scoreOf(match);
     const next = { ...current, [side]: Math.max(0, current[side] + delta) };
@@ -154,6 +213,15 @@ export class OrganizerLivePage {
         organizationId,
         this.tournamentId,
         playable.map((match) => {
+          if (this.isSetsFormat()) {
+            const sets = this.setsPayload(match);
+            return {
+              matchId: match.id,
+              homeScore: sets.filter((set) => set.home > set.away).length,
+              awayScore: sets.filter((set) => set.away > set.home).length,
+              sets,
+            };
+          }
           const score = this.scoreOf(match);
           return { matchId: match.id, homeScore: score.home, awayScore: score.away };
         }),

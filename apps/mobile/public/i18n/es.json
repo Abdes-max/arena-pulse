@@ -352,7 +352,15 @@
         "penaltyShootoutRequired": "Se requiere una tanda de penaltis para validar este empate.",
         "validateGeneric": "No se ha podido validar este resultado.",
         "clearGeneric": "No se ha podido borrar este resultado.",
-        "undoForfeitGeneric": "No se ha podido anular esta renuncia."
+        "undoForfeitGeneric": "No se ha podido anular esta renuncia.",
+        "enterEverySet": "Introduce los dos marcadores de cada set antes de guardar."
+      },
+      "sets": {
+        "set": "Set",
+        "home": "Marcador local",
+        "away": "Marcador visitante",
+        "add": "+ Set",
+        "remove": "Quitar el último set"
       }
     },
     "standings": {

@@ -352,7 +352,15 @@
         "penaltyShootoutRequired": "Zur Bestätigung dieses Unentschiedens ist ein Elfmeterschießen erforderlich.",
         "validateGeneric": "Dieses Ergebnis konnte nicht bestätigt werden.",
         "clearGeneric": "Dieses Ergebnis konnte nicht gelöscht werden.",
-        "undoForfeitGeneric": "Diese Aufgabe konnte nicht rückgängig gemacht werden."
+        "undoForfeitGeneric": "Diese Aufgabe konnte nicht rückgängig gemacht werden.",
+        "enterEverySet": "Beide Ergebnisse jedes Satzes eingeben, bevor du speicherst."
+      },
+      "sets": {
+        "set": "Satz",
+        "home": "Ergebnis Heim",
+        "away": "Ergebnis Gast",
+        "add": "+ Satz",
+        "remove": "Letzten Satz entfernen"
       }
     },
     "standings": {

@@ -11,9 +11,14 @@
 // (12 pairs is past the free tier; this is TournArena's own showcase, not a
 // customer's, so it doesn't pay itself through Stripe).
 //
-// Scores are in sets (padel is played in 2 winning sets), so homeScore/
-// awayScore read "2-1" -- the stronger pair always wins, which keeps the pool
-// standings free of ties an organizer would have to settle by hand.
+// Scores are entered set by set (padel is played in 2 winning sets, the 3rd
+// being a 10-point super tie-break), e.g. 6-4 3-6 10-7 -- the API derives the
+// sets won (homeScore/awayScore) from them. The stronger pair always wins,
+// which keeps the pool standings free of ties an organizer would have to
+// settle by hand.
+//
+// Re-running it first removes the previous demo organization (same exact
+// name), so the example never piles up in production.
 //
 // Usage (from apps/api): npm run build && node dist/prisma/seed-padel-example.js
 // Env: API_URL (default http://localhost:3000/api/v1). Assets are read from
@@ -203,18 +208,66 @@ const STRENGTH = new Map(
   POOLS.flatMap((pool) => pool.pairs.map((p) => [p.name, p.strength] as const)),
 );
 
-// Sets score for one match: the stronger pair wins, 2-0 when clearly better,
-// 2-1 when close.
+// Winning set scores for a padel set (winner games first), picked
+// deterministically per match so a re-run produces the same results.
+const WINNING_SETS: [number, number][] = [
+  [6, 4],
+  [6, 3],
+  [6, 2],
+  [7, 5],
+  [6, 1],
+  [7, 6],
+];
+const SUPER_TIEBREAKS: [number, number][] = [
+  [10, 7],
+  [10, 8],
+  [10, 5],
+  [11, 9],
+];
+
+function hashOf(text: string): number {
+  let hash = 7;
+  for (const char of text) {
+    hash = (hash * 31 + char.charCodeAt(0)) >>> 0;
+  }
+  return hash;
+}
+
+// Sets for one match: the stronger pair wins, 2-0 when clearly better, 2-1
+// (decided by a super tie-break) when close.
 function resultFor(homeName: string, awayName: string) {
   const home = STRENGTH.get(homeName);
   const away = STRENGTH.get(awayName);
   if (home === undefined || away === undefined) {
     throw new Error(`Unknown pair in "${homeName}" vs "${awayName}"`);
   }
-  const loserSets = Math.abs(home - away) >= 12 ? 0 : 1;
-  return home > away
-    ? { homeScore: 2, awayScore: loserSets }
-    : { homeScore: loserSets, awayScore: 2 };
+  const homeWins = home > away;
+  const seed = hashOf(`${homeName}|${awayName}`);
+  const pick = (offset: number) =>
+    WINNING_SETS[(seed + offset) % WINNING_SETS.length];
+  // [winner, loser] games of each set, from the winner's point of view.
+  let sets: [number, number][];
+  if (Math.abs(home - away) >= 12) {
+    sets = [pick(0), pick(1)];
+  } else {
+    const lostSet = pick(2);
+    const superTiebreak = SUPER_TIEBREAKS[seed % SUPER_TIEBREAKS.length];
+    // The winner takes the first or the second set, then the super tie-break.
+    sets =
+      seed % 2 === 0
+        ? [pick(0), [lostSet[1], lostSet[0]], superTiebreak]
+        : [[lostSet[1], lostSet[0]], pick(0), superTiebreak];
+  }
+  const setsHomeFirst = sets.map(([winner, loser]) =>
+    homeWins ? { home: winner, away: loser } : { home: loser, away: winner },
+  );
+  const winnerSets = 2;
+  const loserSets = sets.length - winnerSets;
+  return {
+    homeScore: homeWins ? winnerSets : loserSets,
+    awayScore: homeWins ? loserSets : winnerSets,
+    sets: setsHomeFirst,
+  };
 }
 
 const DESCRIPTION = `L'Open Padel Sainte-Victoire réunit 12 paires pour un week-end de padel au pied de la montagne Sainte-Victoire.
@@ -237,25 +290,70 @@ Buvette et restauration rapide toute la journée.
 Balles fournies par l'organisation (3 balles neuves par match).
 Remise des prix dimanche à 17h30 sur la piste centrale.`;
 
+// Deletes the organization(s) a previous run created (matched on the exact
+// demo name -- never anything else) and their seed accounts. Matches go first:
+// a plain organization delete can trip Postgres's cascade ordering on
+// scheduled matches (same workaround as SuperAdminOrganizationsService.
+// deleteOrganizationCascade).
+async function removePreviousDemo(
+  prisma: PrismaClient,
+  organizationName: string,
+): Promise<void> {
+  const previous = await prisma.organization.findMany({
+    where: { name: organizationName },
+    select: { id: true },
+  });
+  for (const { id: organizationId } of previous) {
+    console.log(`Removing previous demo organization ${organizationId}…`);
+    await prisma.$transaction([
+      prisma.match.deleteMany({
+        where: {
+          OR: [
+            {
+              group: {
+                phase: { category: { tournament: { organizationId } } },
+              },
+            },
+            {
+              knockoutBracket: {
+                phase: { category: { tournament: { organizationId } } },
+              },
+            },
+          ],
+        },
+      }),
+      prisma.organization.delete({ where: { id: organizationId } }),
+    ]);
+  }
+  const { count } = await prisma.user.deleteMany({
+    where: { email: { startsWith: 'demo-padel-', endsWith: '@example.com' } },
+  });
+  if (count > 0) {
+    console.log(`Removed ${count} previous demo account(s).`);
+  }
+}
+
 async function main() {
   const stamp = Date.now();
   const email = `demo-padel-${stamp}@example.com`;
   const password = 'a-very-strong-password';
   const organizationName = 'Padel Arena Sainte-Victoire (démo)';
 
-  console.log(`Registering organization (${email})…`);
-  await api('POST', '/auth/register', null, {
-    email,
-    password,
-    organizationName,
-    firstName: 'Démo',
-    lastName: 'Padel',
-  });
-
   const prisma = new PrismaClient({
     adapter: new PrismaPg({ connectionString: process.env.DATABASE_URL }),
   });
   try {
+    await removePreviousDemo(prisma, organizationName);
+
+    console.log(`Registering organization (${email})…`);
+    await api('POST', '/auth/register', null, {
+      email,
+      password,
+      organizationName,
+      firstName: 'Démo',
+      lastName: 'Padel',
+    });
+
     console.log('Marking the seed account verified…');
     await prisma.user.update({
       where: { email },

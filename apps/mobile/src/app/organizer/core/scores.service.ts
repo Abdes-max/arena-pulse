@@ -10,6 +10,8 @@ export interface UpsertMatchScorePayload {
   awayScore: number;
   homePenaltyScore?: number;
   awayPenaltyScore?: number;
+  // Sets sports: the detail of each set (the API recomputes homeScore/awayScore from it).
+  sets?: { home: number; away: number }[];
 }
 
 // Mirrors apps/web/src/app/admin/core/scores.service.ts against the same
