@@ -206,7 +206,8 @@
     "played": "P",
     "diff": "+/-",
     "points": "Pts",
-    "followLive": "Live results at"
+    "followLive": "Live results at",
+    "diffSets": "+/- sets"
   },
   "shell": {
     "loading": "A carregar…",
@@ -1545,6 +1546,14 @@
       "champion": "Campeão {{category}} · nível {{rating}}",
       "upsetKicker": "A maior surpresa do torneio",
       "upset": "{{winner}} elimina {{loser}}, revertendo uma diferença de {{gap}} pontos de nível."
+    },
+    "setsMode": {
+      "hero": "sets jogados",
+      "title": "Sets e suspense",
+      "average": "Uma média de {{average}} sets por jogo.",
+      "highestScoring": "Jogo mais longo",
+      "attack": "Melhores ataques · sets ganhos",
+      "defense": "Melhores defesas · sets perdidos"
     }
   },
   "appBanner": {

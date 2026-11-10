@@ -116,4 +116,12 @@ export class TvPage {
   protected scoreOf(match: Match): string {
     return match.score ? `${match.score.homeScore} – ${match.score.awayScore}` : '–';
   }
+
+  /** Sets sports: "6-4 3-6 10-7", shown under the sets-won score. Empty otherwise. */
+  protected setsOf(match: Match): string {
+    return (match.score?.sets ?? []).map((set) => `${set.home}-${set.away}`).join('  ');
+  }
+
+  /** Sets sports: the standings' difference column counts sets. */
+  protected readonly isSets = computed(() => this.tournament()?.scoreFormat === 'SETS');
 }

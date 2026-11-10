@@ -11,7 +11,9 @@
     <p class="wrapped-page__eyebrow">{{ 'wrapped.eyebrow' | transloco }}</p>
     <p class="wrapped-page__figure">
       {{ w.goals.totalGoals }}
-      <span class="wrapped-page__figure-label">{{ 'wrapped.hero.goals' | transloco }}</span>
+      <span class="wrapped-page__figure-label">{{
+        (isSets() ? 'wrapped.setsMode.hero' : 'wrapped.hero.goals') | transloco
+      }}</span>
     </p>
   </header>
 
@@ -116,10 +118,12 @@
     class="wrapped-page__section wrapped-page__section--alt"
     aria-labelledby="wrapped-goals-title"
   >
-    <h2 id="wrapped-goals-title">{{ 'wrapped.goals.title' | transloco }}</h2>
+    <h2 id="wrapped-goals-title">
+      {{ (isSets() ? 'wrapped.setsMode.title' : 'wrapped.goals.title') | transloco }}
+    </h2>
     <p class="wrapped-page__average">
       {{
-        'wrapped.goals.average'
+        (isSets() ? 'wrapped.setsMode.average' : 'wrapped.goals.average')
           | transloco: { average: (w.goals.averageGoalsPerMatch | number: '1.1-1') }
       }}
     </p>
@@ -127,7 +131,12 @@
     <div class="wrapped-page__cards">
       @if (w.goals.highestScoringMatch; as match) {
         <div class="wrapped-page__card">
-          <p class="wrapped-page__card-label">{{ 'wrapped.goals.highestScoring' | transloco }}</p>
+          <p class="wrapped-page__card-label">
+            {{
+              (isSets() ? 'wrapped.setsMode.highestScoring' : 'wrapped.goals.highestScoring')
+                | transloco
+            }}
+          </p>
           <p class="wrapped-page__card-score">{{ matchLabel(match) }}</p>
         </div>
       }
@@ -174,7 +183,9 @@
       <div class="wrapped-page__chart-grid">
         @if (attackBars().length > 0) {
           <div class="wrapped-page__chart-box">
-            <h3>{{ 'wrapped.charts.attack' | transloco }}</h3>
+            <h3>
+              {{ (isSets() ? 'wrapped.setsMode.attack' : 'wrapped.charts.attack') | transloco }}
+            </h3>
             <div class="wrapped-page__barchart">
               @for (bar of attackBars(); track bar.label) {
                 <div class="wrapped-page__bar-row">
@@ -190,7 +201,9 @@
         }
         @if (defenseBars().length > 0) {
           <div class="wrapped-page__chart-box">
-            <h3>{{ 'wrapped.charts.defense' | transloco }}</h3>
+            <h3>
+              {{ (isSets() ? 'wrapped.setsMode.defense' : 'wrapped.charts.defense') | transloco }}
+            </h3>
             <div class="wrapped-page__barchart">
               @for (bar of defenseBars(); track bar.label) {
                 <div class="wrapped-page__bar-row">

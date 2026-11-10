@@ -206,7 +206,8 @@
     "played": "P",
     "diff": "+/-",
     "points": "Pts",
-    "followLive": "Live results at"
+    "followLive": "Live results at",
+    "diffSets": "+/- Sätze"
   },
   "shell": {
     "loading": "Wird geladen…",
@@ -1545,6 +1546,14 @@
       "champion": "{{category}}-Champion · Stärke {{rating}}",
       "upsetKicker": "Die größte Überraschung des Turniers",
       "upset": "{{winner}} wirft {{loser}} raus und dreht einen Stärkeunterschied von {{gap}} Punkten."
+    },
+    "setsMode": {
+      "hero": "gespielte Sätze",
+      "title": "Sätze & Spannung",
+      "average": "Im Schnitt {{average}} Sätze pro Spiel.",
+      "highestScoring": "Längstes Spiel",
+      "attack": "Beste Angriffe · gewonnene Sätze",
+      "defense": "Beste Abwehr · verlorene Sätze"
     }
   },
   "appBanner": {
