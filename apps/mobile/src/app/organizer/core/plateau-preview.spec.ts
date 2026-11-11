@@ -58,3 +58,24 @@ describe('previewPlateau', () => {
     expect(previewPlateau({ ...base, teamCount: 3, poolCount: 2 })).toBeNull();
   });
 });
+
+describe('previewPlateau pause between phases', () => {
+  const withFinal = { ...base, knockoutSize: 2 };
+
+  it('is the usual break when no pause is given', () => {
+    expect(previewPlateau(withFinal)?.durationMinutes).toBe(6 * 30 - 8);
+  });
+
+  it('replaces the break before the phase finale by the pause', () => {
+    // 6 rotations of 22 + 8 minus the last break, with a 20 minute pause instead of 8.
+    expect(previewPlateau({ ...withFinal, breakBetweenPhasesMinutes: 20 })?.durationMinutes).toBe(
+      6 * 30 - 8 + (20 - 8),
+    );
+  });
+
+  it('is ignored without a phase finale', () => {
+    expect(previewPlateau({ ...base, breakBetweenPhasesMinutes: 20 })?.durationMinutes).toBe(
+      5 * 30 - 8,
+    );
+  });
+});

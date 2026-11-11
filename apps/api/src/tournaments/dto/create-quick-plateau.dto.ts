@@ -54,6 +54,14 @@ export class CreateQuickPlateauDto {
   @Max(120)
   breakDurationMinutes!: number;
 
+  // Pause between the last pool match and the first match of the phase
+  // finale (only used when there is one). Defaults to breakDurationMinutes.
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  @Max(240)
+  breakBetweenPhasesMinutes?: number;
+
   @IsOptional()
   @IsInt()
   @Min(1)

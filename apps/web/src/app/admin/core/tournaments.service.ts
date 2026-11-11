@@ -37,6 +37,8 @@ export interface CreateQuickPlateauPayload {
   fieldCount: number;
   matchDurationMinutes: number;
   breakDurationMinutes: number;
+  /** Pause between the pools and the phase finale (only with a phase finale). */
+  breakBetweenPhasesMinutes?: number;
   poolCount?: number;
   withFinal?: boolean;
   /** Phase finale: teams in the knockout bracket (2 = final, 4 = semis...). */

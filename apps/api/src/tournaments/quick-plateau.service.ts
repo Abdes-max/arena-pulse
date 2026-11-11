@@ -159,9 +159,11 @@ export class QuickPlateauService {
         tournamentId,
         category.id,
         {
-          // Right after the pools, round by round, on every field.
+          // After the pools (plus the pause the organizer asked for between
+          // the two phases), round by round, on every field.
           fieldIds,
-          breakAfterPoolsMinutes: dto.breakDurationMinutes,
+          breakAfterPoolsMinutes:
+            dto.breakBetweenPhasesMinutes ?? dto.breakDurationMinutes,
           matchDurationMinutes: dto.matchDurationMinutes,
           breakDurationMinutes: dto.breakDurationMinutes,
         },

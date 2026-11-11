@@ -54,6 +54,8 @@ export class QuickPlateauPage {
   protected readonly poolCount = signal('1');
   protected readonly matchDurationMinutes = signal('15');
   protected readonly breakDurationMinutes = signal('5');
+  // Pause between the pools and the phase finale (shown only with a phase finale).
+  protected readonly breakBetweenPhasesMinutes = signal('15');
   // Phase finale: '' = none, else the bracket size (2 = final, 4 = semis...).
   protected readonly knockoutSize = signal('');
   // Predefined list (U5..U20, Senior, Vétéran); '' = not specified.
@@ -109,6 +111,7 @@ export class QuickPlateauPage {
       poolCount: toInt(this.poolCount()),
       matchDurationMinutes: toInt(this.matchDurationMinutes()),
       breakDurationMinutes: toInt(this.breakDurationMinutes()),
+      breakBetweenPhasesMinutes: toInt(this.breakBetweenPhasesMinutes()),
       knockoutSize: this.effectiveKnockoutSize(),
       thirdPlaceMatch: this.thirdPlaceMatch(),
     }),
@@ -153,6 +156,11 @@ export class QuickPlateauPage {
     } catch {
       this.errorMessage.set('admin.quickPlateau.errors.loadSports');
     }
+  }
+
+  /** Pools followed by a phase finale: two phases, so a pause between them. */
+  protected hasTwoPhases(): boolean {
+    return this.effectiveKnockoutSize() !== null;
   }
 
   protected hasThirdPlaceOption(): boolean {
@@ -200,6 +208,7 @@ export class QuickPlateauPage {
         matchDurationMinutes: toInt(this.matchDurationMinutes()),
         breakDurationMinutes: toInt(this.breakDurationMinutes()),
         ...(this.effectiveKnockoutSize() && {
+          breakBetweenPhasesMinutes: toInt(this.breakBetweenPhasesMinutes()),
           knockoutSize: this.effectiveKnockoutSize()!,
           thirdPlaceMatch: this.hasThirdPlaceOption() && this.thirdPlaceMatch(),
         }),

@@ -134,6 +134,28 @@ describe('QuickPlateauService', () => {
     );
   });
 
+  it('starts the phase finale after the match break by default, or after the pause asked for', async () => {
+    await service.create('org-1', { ...baseDto, withFinal: true });
+    expect(brackets.generateAllMatches).toHaveBeenLastCalledWith(
+      'org-1',
+      'tournament-1',
+      'category-1',
+      expect.objectContaining({ breakAfterPoolsMinutes: 8 }),
+    );
+
+    await service.create('org-1', {
+      ...baseDto,
+      withFinal: true,
+      breakBetweenPhasesMinutes: 25,
+    });
+    expect(brackets.generateAllMatches).toHaveBeenLastCalledWith(
+      'org-1',
+      'tournament-1',
+      'category-1',
+      expect.objectContaining({ breakAfterPoolsMinutes: 25 }),
+    );
+  });
+
   it('builds a classic knockout phase (semi-finals + 3rd place) from 2 pools', async () => {
     await service.create('org-1', {
       ...baseDto,
