@@ -32,6 +32,10 @@
 </ion-header>
 
 <ion-content class="organizer-tournaments-page">
+  <!-- Pull down to reload: statuses change elsewhere (web, another device). -->
+  <ion-refresher slot="fixed" (ionRefresh)="onRefresh($event)">
+    <ion-refresher-content />
+  </ion-refresher>
   <div class="organizer-tournaments-page__list">
     @if (user()) {
       <div
