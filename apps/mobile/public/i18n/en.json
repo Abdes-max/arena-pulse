@@ -323,7 +323,8 @@
         "backToList": "Back to My tournaments",
         "republishedTitle": "Tournament updated!",
         "republishedBody": "{{name}} has been republished with your changes."
-      }
+      },
+      "progress": "Step {{current}} of {{total}} ·"
     },
     "scores": {
       "title": "Scores",

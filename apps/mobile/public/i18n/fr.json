@@ -323,7 +323,8 @@
         "backToList": "Retour à Mes tournois",
         "republishedTitle": "Tournoi mis à jour !",
         "republishedBody": "{{name}} a été republié avec vos modifications."
-      }
+      },
+      "progress": "Étape {{current}} sur {{total}} ·"
     },
     "scores": {
       "title": "Scores",
