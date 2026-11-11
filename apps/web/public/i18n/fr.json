@@ -1307,7 +1307,15 @@
         "second": "2e {{group}}",
         "third": "3e {{group}}",
         "nth": "{{position}}e {{group}}",
-        "bestOf": "{{count}} meilleur(s) {{position}}e"
+        "bestOf": "{{count}} meilleur(s) {{position}}e",
+        "match": "Match {{number}}",
+        "home": "Équipe 1",
+        "away": "Équipe 2",
+        "pairingAuto": "Affiches automatiques : choisissez qui se rencontre.",
+        "pairingCustom": "Affiches choisies par vous.",
+        "pairingReset": "Revenir à l’automatique",
+        "pairingLocked": "Des scores existent dans ce tableau : affiches figées.",
+        "pairingError": "Impossible d’enregistrer ces affiches."
       }
     },
     "schedule": {

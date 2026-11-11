@@ -1205,7 +1205,15 @@
         "second": "2. {{group}}",
         "third": "3. {{group}}",
         "nth": "{{position}}. {{group}}",
-        "bestOf": "{{count}} beste(n) {{position}}."
+        "bestOf": "{{count}} beste(n) {{position}}.",
+        "match": "Spiel {{number}}",
+        "home": "Mannschaft 1",
+        "away": "Mannschaft 2",
+        "pairingAuto": "Automatische Paarungen: wählen Sie, wer gegen wen spielt.",
+        "pairingCustom": "Von Ihnen gewählte Paarungen.",
+        "pairingReset": "Zurück zu automatisch",
+        "pairingLocked": "Diese Runde hat Ergebnisse: Paarungen gesperrt.",
+        "pairingError": "Die Paarungen konnten nicht gespeichert werden."
       }
     },
     "schedule": {

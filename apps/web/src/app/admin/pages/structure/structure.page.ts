@@ -1,11 +1,20 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+  untracked,
+} from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Button, Select, SelectOption, TextField } from 'design-system';
 import { LanguageService } from 'design-tokens';
 import { AuthService } from '../../core/auth.service';
 import {
+  BracketFirstRound,
   CompetitionFormatsService,
   StructurePresetFormat,
 } from '../../core/competition-formats.service';
@@ -388,6 +397,107 @@ export class StructurePage {
   constructor() {
     void this.loadCategories();
     void this.loadSport();
+    // The first-round editor depends on the brackets and on the qualification
+    // rules (they define the qualifiers): reload it whenever either changes.
+    effect(() => {
+      const brackets = this.visiblePhases()
+        .map((phase) => phase.knockoutBracket?.id)
+        .filter((id): id is string => !!id);
+      this.phaseQualificationRuleGroups();
+      this.phaseCrossGroupRules();
+      untracked(() => void this.loadFirstRounds(brackets));
+    });
+  }
+
+  /** Round 1 of each bracket, by bracket id. */
+  protected readonly firstRounds = signal<Map<string, BracketFirstRound>>(new Map());
+  protected readonly pairingError = signal<string | null>(null);
+
+  private async loadFirstRounds(bracketIds: string[]): Promise<void> {
+    const organizationId = this.organization()?.id;
+    if (!organizationId || bracketIds.length === 0) {
+      this.firstRounds.set(new Map());
+      return;
+    }
+    try {
+      const rounds = await Promise.all(
+        bracketIds.map((id) =>
+          this.competitionFormatsService.getFirstRound(organizationId, this.tournamentId, id),
+        ),
+      );
+      this.firstRounds.set(new Map(rounds.map((round) => [round.bracketId, round])));
+    } catch {
+      // Read-only helper: the bracket card falls back to the plain qualifier list.
+    }
+  }
+
+  /** The pairing editor is usable once the rules define exactly one qualifier per place. */
+  protected editableFirstRound(bracketId: string): BracketFirstRound | null {
+    const round = this.firstRounds().get(bracketId);
+    return round && round.qualifiers.length === round.size ? round : null;
+  }
+
+  protected firstRoundMatches(round: BracketFirstRound): { home: number; away: number }[] {
+    return Array.from({ length: round.size / 2 }, (_, index) => ({
+      home: round.order[index * 2],
+      away: round.order[index * 2 + 1],
+    }));
+  }
+
+  protected qualifierOptions(round: BracketFirstRound): SelectOption[] {
+    return round.qualifiers.map((label, index) => ({ value: String(index), label }));
+  }
+
+  /** Puts the chosen qualifier at this position; whoever held it takes the freed place. */
+  protected async changePairing(
+    round: BracketFirstRound,
+    position: number,
+    value: string,
+  ): Promise<void> {
+    const chosen = Number(value);
+    if (!Number.isInteger(chosen) || round.order[position] === chosen) {
+      return;
+    }
+    const order = [...round.order];
+    const previous = order.indexOf(chosen);
+    order[previous] = order[position];
+    order[position] = chosen;
+    await this.saveFirstRound(round.bracketId, order);
+  }
+
+  protected async resetPairing(round: BracketFirstRound): Promise<void> {
+    await this.saveFirstRound(round.bracketId, null);
+  }
+
+  private async saveFirstRound(bracketId: string, order: number[] | null): Promise<void> {
+    const organizationId = this.organization()?.id;
+    if (!organizationId) {
+      return;
+    }
+    this.pairingError.set(null);
+    try {
+      const saved = await this.competitionFormatsService.setFirstRound(
+        organizationId,
+        this.tournamentId,
+        bracketId,
+        order,
+      );
+      this.firstRounds.update((rounds) => new Map(rounds).set(bracketId, saved));
+    } catch (error) {
+      const message =
+        error instanceof HttpErrorResponse
+          ? (error.error as { message?: unknown } | null)?.message
+          : null;
+      this.pairingError.set(
+        typeof message === 'string'
+          ? message
+          : this.transloco.translate(
+              'admin.structure.board.pairingError',
+              {},
+              this.languageService.language(),
+            ),
+      );
+    }
   }
 
   private async loadSport(): Promise<void> {

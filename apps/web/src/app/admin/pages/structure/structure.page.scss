@@ -529,3 +529,43 @@
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+
+// ---- First round: two pickers per match ----
+.structure-page__pairings {
+  list-style: none;
+  margin: 0;
+  padding: var(--ap-space-2) var(--ap-space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-3);
+}
+
+.structure-page__pairing {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-1);
+  padding-bottom: var(--ap-space-3);
+  border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+
+  &:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+}
+
+.structure-page__pairing-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--ap-color-muted);
+  text-transform: uppercase;
+}
+
+.structure-page__pairing-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-2);
+  padding: var(--ap-space-2) var(--ap-space-3) var(--ap-space-3);
+  border-top: var(--ap-border-width) solid var(--ap-color-border);
+}

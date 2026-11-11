@@ -1307,7 +1307,15 @@
         "second": "2nd {{group}}",
         "third": "3rd {{group}}",
         "nth": "{{position}}th {{group}}",
-        "bestOf": "{{count}} best {{position}}th place(s)"
+        "bestOf": "{{count}} best {{position}}th place(s)",
+        "match": "Match {{number}}",
+        "home": "Team 1",
+        "away": "Team 2",
+        "pairingAuto": "Automatic pairings: choose who meets whom.",
+        "pairingCustom": "Pairings chosen by you.",
+        "pairingReset": "Back to automatic",
+        "pairingLocked": "This bracket has scores: pairings are locked.",
+        "pairingError": "Could not save these pairings."
       }
     },
     "schedule": {

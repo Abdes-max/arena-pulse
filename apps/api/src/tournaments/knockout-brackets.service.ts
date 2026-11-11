@@ -7,6 +7,7 @@ import {
 import {
   CompetitionPhaseType,
   KnockoutBracket,
+  Prisma,
 } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateKnockoutBracketDto } from './dto/create-knockout-bracket.dto';
@@ -77,6 +78,7 @@ export class KnockoutBracketsService {
         name: dto.name,
         size: dto.size,
         hasRankingMatch: dto.hasRankingMatch,
+        ...(dto.size !== undefined && { firstRoundOrder: Prisma.DbNull }),
       },
     });
     return this.toSummary(updated);

@@ -1,4 +1,9 @@
-import { isPowerOfTwo, seedOrder } from './bracket-seeding.util';
+import {
+  isPowerOfTwo,
+  seedOrder,
+  firstRoundPairing,
+  isValidFirstRoundOrder,
+} from './bracket-seeding.util';
 
 describe('seedOrder', () => {
   it('returns the standard 4-team seeding', () => {
@@ -27,5 +32,36 @@ describe('isPowerOfTwo', () => {
 
   it.each([0, 1, 3, 5, 6, 7, 12])('rejects %d', (size) => {
     expect(isPowerOfTwo(size)).toBe(false);
+  });
+});
+
+describe('firstRoundPairing', () => {
+  it('uses the standard seeding when nothing is saved', () => {
+    expect(firstRoundPairing({ size: 4, firstRoundOrder: null })).toEqual([
+      1, 4, 2, 3,
+    ]);
+  });
+
+  it("uses the organizer's pairing, 1-based", () => {
+    // 1st A vs 2nd A, 1st B vs 2nd B (qualifiers: 1A, 1B, 2A, 2B)
+    expect(
+      firstRoundPairing({ size: 4, firstRoundOrder: [0, 2, 1, 3] }),
+    ).toEqual([1, 3, 2, 4]);
+  });
+
+  it('falls back to the standard seeding when the saved pairing no longer fits', () => {
+    expect(
+      firstRoundPairing({ size: 8, firstRoundOrder: [0, 2, 1, 3] }),
+    ).toEqual(firstRoundPairing({ size: 8 }));
+  });
+});
+
+describe('isValidFirstRoundOrder', () => {
+  it('needs every qualifier exactly once', () => {
+    expect(isValidFirstRoundOrder([0, 1, 2, 3], 4)).toBe(true);
+    expect(isValidFirstRoundOrder([0, 0, 2, 3], 4)).toBe(false);
+    expect(isValidFirstRoundOrder([0, 1, 2, 4], 4)).toBe(false);
+    expect(isValidFirstRoundOrder([0, 1, 2], 4)).toBe(false);
+    expect(isValidFirstRoundOrder(null, 4)).toBe(false);
   });
 });
