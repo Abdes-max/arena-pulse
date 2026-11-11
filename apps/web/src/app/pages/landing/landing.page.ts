@@ -2,7 +2,9 @@ import { ViewportScroller } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AssetUrlService, PublicApiService } from 'api-client';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { PublicTournamentDirectoryItem } from 'shared-models';
+import { registrationCard } from '../../core/registration-card';
 import {
   Button,
   LanguageSwitcher,
@@ -79,6 +81,7 @@ export class LandingPage {
   private readonly themeService = inject(ThemeService);
   private readonly languageService = inject(LanguageService);
   private readonly api = inject(PublicApiService);
+  private readonly transloco = inject(TranslocoService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly viewportScroller = inject(ViewportScroller);
@@ -147,7 +150,27 @@ export class LandingPage {
     this.tournaments().length >= 50 ? '+' : '',
   );
 
+  // Tournaments taking pre-registrations right now (the "Inscriptions ouvertes" section).
+  protected readonly openRegistrations = signal<
+    (PublicTournamentDirectoryItem & { band: { label: string | null; price: string | null } })[]
+  >([]);
+
   constructor() {
+    void this.api
+      .searchTournaments({ registration: 'open', page: 1, pageSize: 6 })
+      .then((result) =>
+        this.openRegistrations.set(
+          result.items.map((item) => ({
+            ...item,
+            band: registrationCard(
+              item,
+              (key, params) => this.transloco.translate(key, params),
+              this.transloco.getActiveLang(),
+            ),
+          })),
+        ),
+      )
+      .catch(() => undefined);
     const tournamentsLoaded = this.api
       .listTournaments(50)
       .then((tournaments) => this.tournaments.set(tournaments));

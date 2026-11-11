@@ -1,4 +1,43 @@
 @if (tournament(); as t) {
+  @if (registration(); as r) {
+    @if (r.open) {
+      <section class="home-page__registration">
+        <div class="home-page__registration-head">
+          <h2>{{ 'home.registration.title' | transloco }}</h2>
+          <a class="home-page__registration-cta" [routerLink]="['/', t.slug, 'register']">
+            {{ 'home.registration.cta' | transloco }}
+          </a>
+        </div>
+        <ul class="home-page__registration-categories">
+          @for (c of r.categories; track c.id) {
+            <li>
+              <strong>{{ c.name }}</strong>
+              <span>
+                @if (c.remaining === null) {
+                  {{ 'home.registration.unlimited' | transloco }}
+                } @else if (c.remaining === 0) {
+                  {{ 'home.registration.full' | transloco }}
+                } @else {
+                  {{
+                    'home.registration.places'
+                      | transloco: { remaining: c.remaining, total: c.maxTeams }
+                  }}
+                }
+                @if (formatFee(c.feeCents, c.currency); as fee) {
+                  · {{ fee }}
+                }
+              </span>
+            </li>
+          }
+        </ul>
+        @if (r.paymentInfo) {
+          <p class="home-page__registration-payment">
+            <strong>{{ 'home.registration.payment' | transloco }} :</strong> {{ r.paymentInfo }}
+          </p>
+        }
+      </section>
+    }
+  }
   @if (hasOverviewMain(t) || hasPoster(t)) {
     <section
       class="home-page__overview"

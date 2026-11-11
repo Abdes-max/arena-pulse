@@ -76,6 +76,7 @@ export class CategoriesService {
         position: dto.position,
         registrationFeeCents: dto.registrationFeeCents,
         registrationFeeCurrency: dto.registrationFeeCurrency,
+        maxTeams: dto.maxTeams,
       },
     });
     return this.toSummary(updated, []);
@@ -141,6 +142,7 @@ export class CategoriesService {
       position: category.position,
       registrationFeeCents: category.registrationFeeCents,
       registrationFeeCurrency: category.registrationFeeCurrency,
+      maxTeams: category.maxTeams,
       divisions: divisions.map((division) => ({
         id: division.id,
         name: division.name,

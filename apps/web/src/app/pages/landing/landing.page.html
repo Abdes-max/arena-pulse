@@ -234,6 +234,58 @@
 </ul>
 
 @if (tournaments().length > 0) {
+  <section id="inscriptions" class="landing-page__registrations" appReveal>
+    <div class="landing-page__registrations-pitch">
+      <span class="landing-page__registrations-kicker">{{
+        'landing.registrations.kicker' | transloco
+      }}</span>
+      <h2>{{ 'landing.registrations.title' | transloco }}</h2>
+      <p>{{ 'landing.registrations.lede' | transloco }}</p>
+      <ul>
+        <li>{{ 'landing.registrations.point1' | transloco }}</li>
+        <li>{{ 'landing.registrations.point2' | transloco }}</li>
+        <li>{{ 'landing.registrations.point3' | transloco }}</li>
+      </ul>
+      <div class="landing-page__registrations-ctas">
+        <a
+          class="landing-page__registrations-cta"
+          routerLink="/discover"
+          [queryParams]="{ inscriptions: 1 }"
+        >
+          {{ 'landing.registrations.browse' | transloco }}
+        </a>
+        <a
+          class="landing-page__registrations-cta landing-page__registrations-cta--ghost"
+          routerLink="/register"
+        >
+          {{ 'landing.registrations.organize' | transloco }}
+        </a>
+      </div>
+    </div>
+    @if (openRegistrations().length > 0) {
+      <div class="landing-page__tournaments-grid">
+        @for (t of openRegistrations(); track t.id) {
+          <a class="landing-page__tournament-link" [routerLink]="['/', t.slug]">
+            <ap-tournament-card
+              [name]="t.name"
+              [sportName]="t.sportName"
+              [startDate]="t.startDate"
+              [endDate]="t.endDate"
+              [isOnline]="t.isOnline"
+              [location]="t.location"
+              [logoUrl]="logoUrl(t.logoUrl)"
+              [organizerName]="t.organizerName"
+              [format]="t.format ?? null"
+              [level]="t.level ?? null"
+              [registrationLabel]="t.band.label"
+              [priceLabel]="t.band.price"
+            />
+          </a>
+        }
+      </div>
+    }
+  </section>
+
   <section id="tournois" class="landing-page__tournaments">
     <h2 appReveal>{{ 'landing.tournaments.title' | transloco }}</h2>
     <ap-text-field

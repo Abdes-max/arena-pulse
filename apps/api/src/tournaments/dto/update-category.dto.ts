@@ -6,6 +6,7 @@ import {
   Min,
   MaxLength,
   MinLength,
+  ValidateIf,
 } from 'class-validator';
 
 const SUPPORTED_CURRENCIES = ['eur', 'usd', 'gbp', 'chf', 'cad'];
@@ -33,4 +34,11 @@ export class UpdateCategoryDto {
   @IsString()
   @IsIn(SUPPORTED_CURRENCIES)
   registrationFeeCurrency?: string;
+
+  /** Places for pre-registrations; null = unlimited. */
+  @IsOptional()
+  @ValidateIf((dto: UpdateCategoryDto) => dto.maxTeams !== null)
+  @IsInt()
+  @Min(1)
+  maxTeams?: number | null;
 }

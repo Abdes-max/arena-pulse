@@ -169,6 +169,16 @@
       "body": "Die Android-App kommt bald bei Google Play.",
       "back": "Zurück",
       "close": "Schließen"
+    },
+    "registrations": {
+      "kicker": "Neu",
+      "title": "Öffnen Sie die Voranmeldung Ihrer Turniere",
+      "lede": "Mannschaften (oder Spieler in Einzelsportarten) fragen ihren Platz online an, Sie bestätigen mit einem Klick und kassieren, wie Sie möchten.",
+      "point1": "Begrenzte Plätze pro Kategorie, automatische Warteliste",
+      "point2": "Manuelle Bestätigung, E-Mails werden für Sie verschickt",
+      "point3": "Angezeigter Preis, Zahlung vor Ort oder per Überweisung, „bezahlt“ mit einem Klick",
+      "browse": "Offene Anmeldungen ansehen",
+      "organize": "Turnier organisieren"
     }
   },
   "legal": {
@@ -197,7 +207,8 @@
       "dateFromLabel": "Ab",
       "timeLabel": "Zeitraum",
       "upcoming": "Bevorstehend",
-      "past": "Vergangen"
+      "past": "Vergangen",
+      "registrationOpen": "Anmeldung offen"
     },
     "resultsCount": "{{count}} Turnier(e) gefunden",
     "empty": "Kein Turnier entspricht Ihrer Suche.",
@@ -260,6 +271,14 @@
       "location": "Ort",
       "online": "Online",
       "poster": "Veranstaltungsplakat"
+    },
+    "registration": {
+      "title": "Anmeldung offen",
+      "cta": "Voranmelden",
+      "unlimited": "Plätze verfügbar",
+      "full": "Ausgebucht · Warteliste",
+      "places": "{{remaining}} Platz/Plätze von {{total}}",
+      "payment": "Zahlung"
     }
   },
   "schedule": {
@@ -809,7 +828,10 @@
         "summary": {
           "free": "Kostenlos",
           "divisions": "{{count}} Division(en)"
-        }
+        },
+        "capacityLabel": "Anzahl der Plätze",
+        "capacityPlaceholder": "Leer = unbegrenzt",
+        "saveCapacity": "Speichern"
       },
       "venues": {
         "title": "Austragungsorte und Felder",
@@ -1044,7 +1066,7 @@
     "registrationList": {
       "title": "Anmeldungen und Zahlungen",
       "loading": "Wird geladen…",
-      "empty": "Noch keine Anmeldungen für dieses Turnier.",
+      "empty": "Keine Anfrage in dieser Liste.",
       "table": {
         "team": "Team",
         "category": "Kategorie",
@@ -1055,13 +1077,57 @@
       },
       "free": "Kostenlos",
       "status": {
-        "paid": "Bezahlt",
-        "pending": "Zahlung ausstehend",
-        "cancelled": "Storniert"
+        "PENDING": "Offen",
+        "CONFIRMED": "Bestätigt",
+        "WAITLIST": "Warteliste",
+        "REJECTED": "Abgelehnt",
+        "CANCELLED": "Storniert",
+        "PAID": "Bestätigt (online bezahlt)",
+        "PENDING_PAYMENT": "Online-Zahlung läuft"
       },
       "errors": {
-        "load": "Anmeldungen konnten nicht geladen werden."
-      }
+        "load": "Anmeldungen konnten nicht geladen werden.",
+        "save": "Diese Änderung konnte nicht gespeichert werden."
+      },
+      "settings": {
+        "open": "Anmeldung offen",
+        "openNow": "Mannschaften können jetzt ihre Anfrage senden.",
+        "closedNow": "Derzeit keine Anfrage möglich.",
+        "teamHint": "Mannschaftssport: Kapitäne melden ihr Team und ihre Spieler an.",
+        "individualHint": "Einzelsport: jeder Spieler meldet sich mit seinem Namen an.",
+        "opensAt": "Öffnung (optional)",
+        "closesAt": "Schluss (optional)",
+        "paymentInfo": "Zahlungsmodalitäten",
+        "paymentInfoPlaceholder": "z. B. 40 € pro Team, vor Ort oder per Überweisung (IBAN…)",
+        "format": "Format (Turnierkarte)",
+        "formatPlaceholder": "z. B. 5 gegen 5",
+        "level": "Niveau",
+        "levelPlaceholder": "z. B. Elite",
+        "placesHint": "Plätze und Preis pro Kategorie unter Allgemein › Kategorien › Optionen.",
+        "save": "Speichern"
+      },
+      "filters": {
+        "PENDING": "Offen",
+        "CONFIRMED": "Bestätigt",
+        "WAITLIST": "Warteliste",
+        "REJECTED": "Abgelehnt",
+        "ALL": "Alle"
+      },
+      "actions": {
+        "confirm": "Bestätigen",
+        "waitlist": "Warteliste",
+        "reject": "Ablehnen",
+        "confirmReject": "Ablehnung bestätigen",
+        "cancel": "Abbrechen"
+      },
+      "payment": {
+        "label": "Zahlung",
+        "UNPAID": "Nicht bezahlt",
+        "PAID": "Bezahlt",
+        "EXEMPT": "Befreit"
+      },
+      "reason": "Grund",
+      "reasonLabel": "Ablehnungsgrund (per E-Mail, optional)"
     },
     "structure": {
       "title": "Wettbewerbsstruktur",
@@ -1640,5 +1706,10 @@
     "error": "Ein Fehler ist aufgetreten, bitte erneut versuchen.",
     "offline": "Keine Verbindung: Netzwerk prüfen.",
     "close": "Schließen"
+  },
+  "registrationCard": {
+    "open": "Anmeldung offen ({{taken}}/{{total}})",
+    "openNoLimit": "Anmeldung offen",
+    "full": "Ausgebucht · Warteliste"
   }
 }

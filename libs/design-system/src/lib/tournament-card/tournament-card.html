@@ -20,4 +20,24 @@
   @if (organizerName(); as organizer) {
     <span class="ap-tournament-card__organizer">{{ organizer }}</span>
   }
+
+  @if (format() || level()) {
+    <div class="ap-tournament-card__chips">
+      @if (format(); as f) {
+        <span class="ap-tournament-card__chip">{{ f }}</span>
+      }
+      @if (level(); as l) {
+        <span class="ap-tournament-card__chip">{{ l }}</span>
+      }
+    </div>
+  }
+
+  @if (registrationLabel(); as label) {
+    <div class="ap-tournament-card__registration">
+      <span>{{ label }}</span>
+      @if (priceLabel(); as price) {
+        <strong>{{ price }}</strong>
+      }
+    </div>
+  }
 </article>

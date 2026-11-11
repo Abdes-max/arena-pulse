@@ -61,6 +61,8 @@ export interface PublicTournamentSearchParams {
   location?: string;
   dateFrom?: string;
   time?: PublicTimeFilter;
+  /** 'open': only tournaments taking pre-registrations right now. */
+  registration?: 'open';
   page?: number;
   pageSize?: number;
 }
@@ -193,6 +195,8 @@ export class TournamentsService {
             : undefined,
         isOnline: dto.isOnline,
         teamsCanReferee: dto.teamsCanReferee,
+        ...(dto.format !== undefined && { format: dto.format?.trim() || null }),
+        ...(dto.level !== undefined && { level: dto.level?.trim() || null }),
         isListed: dto.isListed,
         theme: dto.theme,
         description: dto.description,
@@ -1615,6 +1619,24 @@ export class TournamentsService {
         ? { startDate: { gte: new Date(params.dateFrom) } }
         : {}),
       ...(params.time ? { AND: [publicTimeWhere(params.time)] } : {}),
+      ...(params.registration === 'open'
+        ? {
+            registrationsOpen: true,
+            OR: [
+              { registrationOpensAt: null },
+              { registrationOpensAt: { lte: new Date() } },
+            ],
+            AND: [
+              ...(params.time ? [publicTimeWhere(params.time)] : []),
+              {
+                OR: [
+                  { registrationClosesAt: null },
+                  { registrationClosesAt: { gte: new Date() } },
+                ],
+              },
+            ],
+          }
+        : {}),
       ...(params.location
         ? {
             venues: {
@@ -1649,12 +1671,106 @@ export class TournamentsService {
       this.prisma.tournament.count({ where }),
     ]);
 
+    const registration = await this.registrationCardInfo(
+      tournaments.map((t) => t.id),
+    );
     return {
-      items: tournaments.map((tournament) =>
-        this.toPublicDirectoryItem(tournament),
-      ),
+      items: tournaments.map((tournament) => ({
+        ...this.toPublicDirectoryItem(tournament),
+        format: tournament.format,
+        level: tournament.level,
+        registration: registration.get(tournament.id) ?? null,
+      })),
       total,
     };
+  }
+
+  /**
+   * The "Inscription (10/12) · 40 €" band of a search card, for the
+   * tournaments taking pre-registrations right now: places held / total
+   * (null when a category is unlimited) and the lowest price.
+   */
+  private async registrationCardInfo(tournamentIds: string[]) {
+    const now = Date.now();
+    const tournaments = await this.prisma.tournament.findMany({
+      where: { id: { in: tournamentIds }, registrationsOpen: true },
+      select: {
+        id: true,
+        registrationsOpen: true,
+        registrationOpensAt: true,
+        registrationClosesAt: true,
+        categories: {
+          select: {
+            maxTeams: true,
+            registrationFeeCents: true,
+            registrationFeeCurrency: true,
+          },
+        },
+      },
+    });
+    const openOnes = tournaments.filter(
+      (tournament) => tournament.registrationsOpen,
+    );
+    if (openOnes.length === 0) {
+      return new Map<
+        string,
+        {
+          taken: number;
+          total: number | null;
+          feeCents: number | null;
+          currency: string;
+        }
+      >();
+    }
+    const taken = await this.prisma.registration.groupBy({
+      by: ['tournamentId'],
+      where: {
+        tournamentId: { in: tournamentIds },
+        status: { in: ['CONFIRMED', 'PAID'] },
+      },
+      _count: { _all: true },
+    });
+    const takenBy = new Map(
+      taken.map((row) => [row.tournamentId, row._count._all]),
+    );
+    const info = new Map<
+      string,
+      {
+        taken: number;
+        total: number | null;
+        feeCents: number | null;
+        currency: string;
+      }
+    >();
+    for (const tournament of openOnes) {
+      const open =
+        (!tournament.registrationOpensAt ||
+          tournament.registrationOpensAt.getTime() <= now) &&
+        (!tournament.registrationClosesAt ||
+          tournament.registrationClosesAt.getTime() >= now);
+      if (!open) {
+        continue;
+      }
+      const limited = tournament.categories.every(
+        (category) => category.maxTeams !== null,
+      );
+      const fees = tournament.categories
+        .map((category) => category.registrationFeeCents)
+        .filter((fee): fee is number => fee !== null && fee > 0);
+      info.set(tournament.id, {
+        taken: takenBy.get(tournament.id) ?? 0,
+        total:
+          limited && tournament.categories.length > 0
+            ? tournament.categories.reduce(
+                (sum, category) => sum + (category.maxTeams ?? 0),
+                0,
+              )
+            : null,
+        feeCents: fees.length > 0 ? Math.min(...fees) : null,
+        currency: tournament.categories[0]?.registrationFeeCurrency ?? 'eur',
+      });
+    }
+    return info;
   }
 
   /**
@@ -1684,6 +1800,8 @@ export class TournamentsService {
       practicalInfo: tournament.practicalInfo,
       headerBackgroundUrl: tournament.headerBackgroundUrl,
       posterUrl: tournament.posterUrl,
+      format: tournament.format,
+      level: tournament.level,
     };
   }
 
@@ -2179,6 +2297,9 @@ export class TournamentsService {
       updatedAt: tournament.updatedAt,
       teamsCanReferee: tournament.teamsCanReferee,
       isListed: tournament.isListed,
+      format: tournament.format,
+      level: tournament.level,
+      registrationsOpen: tournament.registrationsOpen,
       description: tournament.description,
       rules: tournament.rules,
       practicalInfo: tournament.practicalInfo,

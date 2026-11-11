@@ -108,3 +108,39 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.ap-tournament-card__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ap-space-2);
+}
+
+.ap-tournament-card__chip {
+  padding: 2px var(--ap-space-2);
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: 999px;
+}
+
+// Pre-registrations open: the band the organizer's players look for.
+.ap-tournament-card__registration {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-2);
+  margin-top: var(--ap-space-1);
+  padding: var(--ap-space-2) var(--ap-space-3);
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--ap-color-on-primary);
+  background: var(--ap-color-primary);
+  border-radius: var(--ap-radius-md);
+
+  strong {
+    font-size: 1rem;
+    text-transform: none;
+  }
+}

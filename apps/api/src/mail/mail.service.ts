@@ -506,6 +506,19 @@ export class MailService {
   // tournament, payment, publication). Not translated: the super-admin
   // console is French-only. Every value is escaped -- organization and
   // tournament names are typed by organizers.
+  /** Plain informational email (title, label/value rows, optional button) -- registrations, notifications. */
+  async sendInfoEmail(
+    to: string,
+    message: {
+      subject: string;
+      title: string;
+      rows: { label: string; value: string }[];
+      link?: { url: string; label: string };
+    },
+  ): Promise<void> {
+    await this.sendSuperAdminNotification(to, message);
+  }
+
   async sendSuperAdminNotification(
     to: string,
     notification: {

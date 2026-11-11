@@ -169,6 +169,16 @@
       "body": "The Android app is coming soon to Google Play.",
       "back": "Back",
       "close": "Close"
+    },
+    "registrations": {
+      "kicker": "New",
+      "title": "Open pre-registrations for your tournaments",
+      "lede": "Teams (or players in individual sports) request their place online, you approve in one click and collect the fee your way.",
+      "point1": "Limited places per category, automatic waiting list",
+      "point2": "Manual approval, emails sent for you",
+      "point3": "Displayed price, payment on site or by transfer, “paid” tracking in one click",
+      "browse": "See open registrations",
+      "organize": "Organize a tournament"
     }
   },
   "legal": {
@@ -299,7 +309,8 @@
       "dateFromLabel": "From",
       "timeLabel": "Period",
       "upcoming": "Upcoming",
-      "past": "Past"
+      "past": "Past",
+      "registrationOpen": "Registration open"
     },
     "resultsCount": "{{count}} tournament(s) found",
     "empty": "No tournament matches your search.",
@@ -362,6 +373,14 @@
       "location": "Location",
       "online": "Online",
       "poster": "Event poster"
+    },
+    "registration": {
+      "title": "Registration open",
+      "cta": "Pre-register",
+      "unlimited": "Places available",
+      "full": "Full · waiting list",
+      "places": "{{remaining}} place(s) out of {{total}}",
+      "payment": "Payment"
     }
   },
   "schedule": {
@@ -911,7 +930,10 @@
         "summary": {
           "free": "Free",
           "divisions": "{{count}} division(s)"
-        }
+        },
+        "capacityLabel": "Number of places",
+        "capacityPlaceholder": "Empty = unlimited",
+        "saveCapacity": "Save"
       },
       "venues": {
         "title": "Venues and fields",
@@ -1146,7 +1168,7 @@
     "registrationList": {
       "title": "Registrations and payments",
       "loading": "Loading…",
-      "empty": "No registrations for this tournament yet.",
+      "empty": "No request in this list.",
       "table": {
         "team": "Team",
         "category": "Category",
@@ -1157,13 +1179,57 @@
       },
       "free": "Free",
       "status": {
-        "paid": "Paid",
-        "pending": "Awaiting payment",
-        "cancelled": "Cancelled"
+        "PENDING": "Pending",
+        "CONFIRMED": "Confirmed",
+        "WAITLIST": "Waiting list",
+        "REJECTED": "Refused",
+        "CANCELLED": "Cancelled",
+        "PAID": "Confirmed (paid online)",
+        "PENDING_PAYMENT": "Online payment in progress"
       },
       "errors": {
-        "load": "Unable to load registrations."
-      }
+        "load": "Unable to load registrations.",
+        "save": "Could not save this change."
+      },
+      "settings": {
+        "open": "Registration open",
+        "openNow": "Teams can send their request right now.",
+        "closedNow": "No request possible right now.",
+        "teamHint": "Team sport: captains register their team and its players.",
+        "individualHint": "Individual sport: each player registers in their own name.",
+        "opensAt": "Opening (optional)",
+        "closesAt": "Closing (optional)",
+        "paymentInfo": "Payment details",
+        "paymentInfoPlaceholder": "e.g. €40 per team, paid on site or by bank transfer (IBAN…)",
+        "format": "Format (tournament card)",
+        "formatPlaceholder": "e.g. 5-a-side",
+        "level": "Level",
+        "levelPlaceholder": "e.g. Elite",
+        "placesHint": "Places and price are set per category in General › Categories › Options.",
+        "save": "Save"
+      },
+      "filters": {
+        "PENDING": "Pending",
+        "CONFIRMED": "Confirmed",
+        "WAITLIST": "Waiting list",
+        "REJECTED": "Refused",
+        "ALL": "All"
+      },
+      "actions": {
+        "confirm": "Approve",
+        "waitlist": "Waiting list",
+        "reject": "Refuse",
+        "confirmReject": "Confirm refusal",
+        "cancel": "Cancel"
+      },
+      "payment": {
+        "label": "Payment",
+        "UNPAID": "Unpaid",
+        "PAID": "Paid",
+        "EXEMPT": "Exempt"
+      },
+      "reason": "Reason",
+      "reasonLabel": "Reason for refusal (emailed, optional)"
     },
     "structure": {
       "title": "Competition structure",
@@ -1742,5 +1808,10 @@
     "error": "Something went wrong, please try again.",
     "offline": "Cannot connect: check your network.",
     "close": "Close"
+  },
+  "registrationCard": {
+    "open": "Registration open ({{taken}}/{{total}})",
+    "openNoLimit": "Registration open",
+    "full": "Full · waiting list"
   }
 }

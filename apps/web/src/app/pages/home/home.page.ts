@@ -1,14 +1,15 @@
+import { RouterLink } from '@angular/router';
 import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
 import { MatchCard, MatchCardTeam } from 'design-system';
 import { AssetUrlService, PublicApiService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { LanguageService } from 'design-tokens';
 import { TournamentContextService } from '../../core/tournament-context.service';
-import { Match, PublicTournament } from 'shared-models';
+import { Match, PublicTournament, PublicRegistrationInfo } from 'shared-models';
 
 @Component({
   selector: 'app-home-page',
-  imports: [MatchCard, TranslocoPipe],
+  imports: [MatchCard, RouterLink, TranslocoPipe],
   templateUrl: './home.page.html',
   styleUrl: './home.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -43,6 +44,20 @@ export class HomePage {
       return;
     }
     this.upcomingMatches.set(await this.api.listUpcomingMatches(slug, 3));
+    try {
+      this.registration.set(await this.api.getRegistrationInfo(slug));
+    } catch {
+      // No registration block then.
+    }
+  }
+
+  /** Pre-registrations of this tournament (shown while they're open). */
+  protected readonly registration = signal<PublicRegistrationInfo | null>(null);
+
+  protected formatFee(cents: number | null, currency: string): string | null {
+    return cents
+      ? new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(cents / 100)
+      : null;
   }
 
   // Whether the main "aperçu" column (online notice and/or description) has

@@ -51,6 +51,8 @@ export interface CreateQuickPlateauPayload {
 
 export interface UpdateTournamentPayload {
   name?: string;
+  format?: string | null;
+  level?: string | null;
   sportId?: string;
   startDate?: string | null;
   endDate?: string | null;
@@ -363,6 +365,21 @@ export class TournamentsService {
       this.http.patch<Category>(
         `${this.base(organizationId)}/${tournamentId}/categories/${categoryId}`,
         { registrationFeeCents, registrationFeeCurrency },
+      ),
+    );
+  }
+
+  /** Places for pre-registrations; null = unlimited. */
+  updateCategoryCapacity(
+    organizationId: string,
+    tournamentId: string,
+    categoryId: string,
+    maxTeams: number | null,
+  ): Promise<Category> {
+    return firstValueFrom(
+      this.http.patch<Category>(
+        `${this.base(organizationId)}/${tournamentId}/categories/${categoryId}`,
+        { maxTeams },
       ),
     );
   }

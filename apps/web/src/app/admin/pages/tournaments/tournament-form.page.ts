@@ -1065,6 +1065,44 @@ export class TournamentFormPage {
     return divisions > 0 ? `${fee} · ${t('divisions', { count: divisions })}` : fee;
   }
 
+  // Places for pre-registrations, per category (empty = unlimited).
+  private readonly capacityDrafts = signal<Record<string, string>>({});
+
+  protected capacityDraftFor(category: Category): string {
+    return (
+      this.capacityDrafts()[category.id] ??
+      (category.maxTeams !== null && category.maxTeams !== undefined
+        ? String(category.maxTeams)
+        : '')
+    );
+  }
+
+  protected onCapacityDraftChange(categoryId: string, value: string): void {
+    this.capacityDrafts.update((drafts) => ({ ...drafts, [categoryId]: value }));
+  }
+
+  protected async saveCategoryCapacity(category: Category): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const tournamentId = this.tournamentId();
+    if (!organizationId || !tournamentId) {
+      return;
+    }
+    const draft = this.capacityDraftFor(category).trim();
+    try {
+      const updated = await this.tournamentsService.updateCategoryCapacity(
+        organizationId,
+        tournamentId,
+        category.id,
+        draft ? Math.max(1, Math.round(Number(draft))) : null,
+      );
+      this.categories.update((categories) =>
+        categories.map((c) => (c.id === category.id ? updated : c)),
+      );
+    } catch {
+      this.errorMessage.set('admin.tournamentForm.errors.saveCategoryFee');
+    }
+  }
+
   protected categoryFeeDraftFor(categoryId: string): string {
     return this.categoryFeeDraftById()[categoryId] ?? '';
   }
