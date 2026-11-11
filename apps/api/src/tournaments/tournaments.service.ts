@@ -28,6 +28,7 @@ import { MailService } from '../mail/mail.service';
 import { SuperAdminNotificationService } from '../super-admin/notifications/super-admin-notification.service';
 import { OrganizationsService } from '../organizations/organizations.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { PublicTimeFilter, publicTimeWhere } from './public-time-filter.util';
 import { StripeService } from '../payments/stripe.service';
 import {
   IAP_PRODUCT_IDS,
@@ -58,6 +59,7 @@ export interface PublicTournamentSearchParams {
   sportId?: string;
   location?: string;
   dateFrom?: string;
+  time?: PublicTimeFilter;
   page?: number;
   pageSize?: number;
 }
@@ -1605,6 +1607,7 @@ export class TournamentsService {
       ...(params.dateFrom
         ? { startDate: { gte: new Date(params.dateFrom) } }
         : {}),
+      ...(params.time ? { AND: [publicTimeWhere(params.time)] } : {}),
       ...(params.location
         ? {
             venues: {

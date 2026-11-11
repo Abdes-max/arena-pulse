@@ -40,7 +40,10 @@
       "title": "Veröffentlichte Veranstaltungen",
       "searchLabel": "Turnier suchen",
       "searchPlaceholder": "Turnier suchen…",
-      "empty": "Kein Turnier gefunden."
+      "empty": "Kein Turnier gefunden.",
+      "timeLabel": "Zeitraum",
+      "upcoming": "Bevorstehend",
+      "past": "Vergangen"
     },
     "features": {
       "title": "Alles, um einen Wettbewerb zu leiten, nichts Überflüssiges",
@@ -191,7 +194,10 @@
       "allSports": "Alle Sportarten",
       "locationLabel": "Ort",
       "locationPlaceholder": "Stadt, Halle…",
-      "dateFromLabel": "Ab"
+      "dateFromLabel": "Ab",
+      "timeLabel": "Zeitraum",
+      "upcoming": "Bevorstehend",
+      "past": "Vergangen"
     },
     "resultsCount": "{{count}} Turnier(e) gefunden",
     "empty": "Kein Turnier entspricht Ihrer Suche.",

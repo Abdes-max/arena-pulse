@@ -450,6 +450,13 @@
         [value]="dateFrom()"
         (valueChange)="dateFrom.set($event)"
       />
+      <ap-time-filter
+        [label]="'tournamentEntry.published.filters.timeLabel' | transloco"
+        [upcomingLabel]="'tournamentEntry.published.filters.upcoming' | transloco"
+        [pastLabel]="'tournamentEntry.published.filters.past' | transloco"
+        [value]="timeFilter()"
+        (valueChange)="timeFilter.set($event)"
+      />
     </div>
 
     @if (hasSearched() && !searchLoading() && searchItems().length === 0) {

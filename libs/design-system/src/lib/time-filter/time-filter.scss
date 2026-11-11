@@ -1,0 +1,37 @@
+:host {
+  display: inline-block;
+}
+
+.ap-time-filter {
+  display: inline-flex;
+  gap: var(--ap-space-2);
+}
+
+.ap-time-filter__button {
+  padding: var(--ap-space-2) var(--ap-space-4);
+  font: inherit;
+  font-weight: 600;
+  color: var(--ap-color-fg);
+  background: var(--ap-color-surface);
+  border: 1px solid var(--ap-color-border);
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+
+  &:hover {
+    border-color: var(--ap-color-signal-text);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ap-color-signal-text);
+    outline-offset: 2px;
+  }
+
+  &[aria-pressed='true'] {
+    color: var(--ap-color-on-signal);
+    background: var(--ap-color-signal);
+    border-color: var(--ap-color-signal);
+  }
+}

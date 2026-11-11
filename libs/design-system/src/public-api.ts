@@ -20,3 +20,4 @@ export * from './lib/tournament-marquee/tournament-marquee';
 export * from './lib/autocomplete-field/autocomplete-field';
 export * from './lib/stats-charts/stats-charts';
 export * from './lib/sets-input/sets-input';
+export * from './lib/time-filter/time-filter';

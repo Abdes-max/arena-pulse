@@ -18,7 +18,10 @@
         "allSports": "Tutti gli sport",
         "locationLabel": "Luogo",
         "locationPlaceholder": "Città, palazzetto…",
-        "dateFromLabel": "A partire da"
+        "dateFromLabel": "A partire da",
+        "timeLabel": "Periodo",
+        "upcoming": "In arrivo",
+        "past": "Passati"
       },
       "empty": "Nessun evento trovato.",
       "loadMore": "Carica altri",

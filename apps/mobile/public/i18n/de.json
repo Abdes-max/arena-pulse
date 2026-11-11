@@ -18,7 +18,10 @@
         "allSports": "Alle Sportarten",
         "locationLabel": "Ort",
         "locationPlaceholder": "Stadt, Halle…",
-        "dateFromLabel": "Ab"
+        "dateFromLabel": "Ab",
+        "timeLabel": "Zeitraum",
+        "upcoming": "Bevorstehend",
+        "past": "Vergangen"
       },
       "empty": "Keine Veranstaltung gefunden.",
       "loadMore": "Mehr laden",

@@ -11,6 +11,8 @@ import {
   ThemeModeToggle,
   TournamentCard,
   TournamentMarquee,
+  TimeFilter,
+  TimeFilterValue,
 } from 'design-system';
 import {
   LanguageCode,
@@ -19,7 +21,12 @@ import {
   ThemeMode,
   ThemeService,
 } from 'design-tokens';
-import { PublicSport, PublicTournamentSummary, isTournamentCurrentOrUpcoming } from 'shared-models';
+import {
+  PublicSport,
+  PublicTournamentSummary,
+  isTournamentCurrentOrUpcoming,
+  isTournamentPastPublic,
+} from 'shared-models';
 import { AuthService } from '../../admin/core/auth.service';
 import { APP_STORE_URL } from '../../core/app-store';
 import { CountUp, Reveal } from './landing-motion';
@@ -51,6 +58,7 @@ const DEFAULT_SPORT_DESCRIPTION_KEY = 'landing.sports.description.default';
 @Component({
   selector: 'app-landing-page',
   imports: [
+    TimeFilter,
     RouterLink,
     Button,
     LanguageSwitcher,
@@ -104,8 +112,13 @@ export class LandingPage {
   // isTournamentCurrentOrUpcoming filter here, matching apps/mobile's own
   // "Événements publiés" list (tournament-entry.page.ts's searchItems,
   // which never applies that filter either).
+  protected readonly timeFilter = signal<TimeFilterValue>('');
+
   protected readonly filteredTournaments = computed(() => {
-    const all = this.tournaments();
+    const time = this.timeFilter();
+    const all = this.tournaments().filter(
+      (t) => !time || isTournamentPastPublic(t) === (time === 'past'),
+    );
     const q = this.query().trim().toLowerCase();
     if (!q) {
       return all;

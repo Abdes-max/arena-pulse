@@ -245,6 +245,14 @@
       [value]="query()"
       (valueChange)="onQueryChange($event)"
     />
+    <ap-time-filter
+      class="landing-page__tournaments-time"
+      [label]="'landing.tournaments.timeLabel' | transloco"
+      [upcomingLabel]="'landing.tournaments.upcoming' | transloco"
+      [pastLabel]="'landing.tournaments.past' | transloco"
+      [value]="timeFilter()"
+      (valueChange)="timeFilter.set($event)"
+    />
     @if (filteredTournaments().length === 0) {
       <p class="landing-page__tournaments-empty">{{ 'landing.tournaments.empty' | transloco }}</p>
     } @else {

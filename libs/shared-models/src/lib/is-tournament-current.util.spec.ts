@@ -1,4 +1,7 @@
-import { isTournamentCurrentOrUpcoming } from './is-tournament-current.util';
+import {
+  isTournamentCurrentOrUpcoming,
+  isTournamentPastPublic,
+} from './is-tournament-current.util';
 
 const NOW = new Date('2026-10-14T12:00:00.000Z');
 
@@ -80,5 +83,31 @@ describe('isTournamentCurrentOrUpcoming', () => {
         NOW,
       ),
     ).toBe(true);
+  });
+});
+
+describe('isTournamentPastPublic', () => {
+  it('is past once the last day has gone by', () => {
+    expect(
+      isTournamentPastPublic(
+        { startDate: null, endDate: '2026-10-12T12:00:00.000Z', lastMatchDate: null },
+        NOW,
+      ),
+    ).toBe(true);
+  });
+
+  it('is upcoming while the end date is today or later', () => {
+    expect(
+      isTournamentPastPublic(
+        { startDate: null, endDate: '2026-10-14T00:00:00.000Z', lastMatchDate: null },
+        NOW,
+      ),
+    ).toBe(false);
+  });
+
+  it('keeps an undated tournament in the upcoming list', () => {
+    expect(
+      isTournamentPastPublic({ startDate: null, endDate: null, lastMatchDate: null }, NOW),
+    ).toBe(false);
   });
 });

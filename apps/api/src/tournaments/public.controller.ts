@@ -38,6 +38,7 @@ export class PublicController {
     @Query('sportId') sportId?: string,
     @Query('location') location?: string,
     @Query('dateFrom') dateFrom?: string,
+    @Query('time') time?: string,
     @Query('page') page?: string,
     @Query('pageSize') pageSize?: string,
   ) {
@@ -46,6 +47,8 @@ export class PublicController {
       sportId,
       location,
       dateFrom,
+      // Anything else than the two known values means no time filter.
+      time: time === 'upcoming' || time === 'past' ? time : undefined,
       page: page ? Number(page) : undefined,
       pageSize: pageSize ? Number(pageSize) : undefined,
     });

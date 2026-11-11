@@ -2098,6 +2098,27 @@ describe('TournamentsService', () => {
       });
     });
 
+    it('adds the À venir / Passés window when asked', async () => {
+      prisma.tournament.findMany.mockResolvedValue([]);
+      prisma.tournament.count.mockResolvedValue(0);
+
+      await service.searchPublished({ time: 'past', page: 1, pageSize: 20 });
+
+      const { where } = (
+        prisma.tournament.findMany.mock.calls[0] as [
+          { where: { AND: unknown[] } },
+        ]
+      )[0];
+      expect(where.AND).toEqual([
+        {
+          OR: [
+            { endDate: { lt: expect.any(Date) as Date } },
+            { endDate: null, startDate: { lt: expect.any(Date) as Date } },
+          ],
+        },
+      ]);
+    });
+
     it('paginates with skip = (page - 1) * pageSize and reports the unpaginated total', async () => {
       prisma.tournament.findMany.mockResolvedValue([]);
       prisma.tournament.count.mockResolvedValue(45);

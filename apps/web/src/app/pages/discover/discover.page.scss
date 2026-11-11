@@ -56,6 +56,10 @@ h1 {
   margin: 0 0 var(--ap-space-8);
 }
 
+.discover-page__filter-time {
+  grid-column: 1 / -1;
+}
+
 .discover-page__filters {
   display: grid;
   grid-template-columns: 2fr 1fr 1.4fr 1fr;

@@ -49,6 +49,7 @@ export class PublicApiService {
     if (query.sportId) params = params.set('sportId', query.sportId);
     if (query.location) params = params.set('location', query.location);
     if (query.dateFrom) params = params.set('dateFrom', query.dateFrom);
+    if (query.time) params = params.set('time', query.time);
     return firstValueFrom(
       this.http.get<PublicTournamentSearchResult>(
         `${this.config.apiUrl}/public/tournaments/search`,
