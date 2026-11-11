@@ -213,7 +213,8 @@
     "diff": "+/-",
     "points": "Pts",
     "followLive": "Live results at",
-    "diffSets": "+/- Sätze"
+    "diffSets": "+/- Sätze",
+    "finalRanking": "Endstand"
   },
   "shell": {
     "loading": "Wird geladen…",

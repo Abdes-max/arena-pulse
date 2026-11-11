@@ -12,7 +12,14 @@ import { ActivatedRoute } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { AssetUrlService, PublicApiService } from 'api-client';
 import { LanguageService } from 'design-tokens';
-import { CompetitionGroup, Match, Standings } from 'shared-models';
+import {
+  CompetitionGroup,
+  Match,
+  Standings,
+  computeFinalRanking,
+  RoundLabelLang,
+  CompetitionPhase,
+} from 'shared-models';
 import { TournamentContextService } from '../../core/tournament-context.service';
 import { groupRotations, pickCurrentAndNext } from './tv-rotations';
 
@@ -49,6 +56,17 @@ export class TvPage {
   protected readonly matches = signal<Match[]>([]);
   protected readonly groupStandings = signal<GroupStandings[]>([]);
   protected readonly now = signal(new Date());
+  // Brackets with their matches, in phase order (the "value" of each bracket):
+  // the final ranking of a finished tournament is computed from them.
+  private readonly bracketMatches = signal<{ phase: CompetitionPhase; matches: Match[] }[]>([]);
+  protected readonly finalRanking = computed(() =>
+    this.tournament()?.isFinished
+      ? computeFinalRanking(
+          this.bracketMatches(),
+          this.languageService.language() as RoundLabelLang,
+        )
+      : [],
+  );
 
   protected readonly picked = computed(() =>
     pickCurrentAndNext(groupRotations(this.matches()), this.now()),
@@ -94,6 +112,19 @@ export class TvPage {
         ),
       ]);
       this.matches.set(matchLists.flat());
+      if (this.tournament()?.isFinished) {
+        const brackets = phases.filter(
+          (phase) => phase.type === 'KNOCKOUT' && phase.knockoutBracket,
+        );
+        this.bracketMatches.set(
+          await Promise.all(
+            brackets.map(async (phase) => ({
+              phase,
+              matches: await this.api.listBracketMatches(this.slug, phase.knockoutBracket!.id),
+            })),
+          ),
+        );
+      }
       this.groupStandings.set(standings);
       this.now.set(new Date());
     } catch {
