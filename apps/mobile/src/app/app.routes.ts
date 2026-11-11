@@ -77,16 +77,15 @@ export const routes: Routes = [
   // PR 4 ("parité complète admin web <-> mobile", see the plan file) --
   // native ports of apps/web/src/app/admin/pages/{scores,standings}.
   {
+    // The day-of page (by rotation) is the one Scores page now.
     path: 'organizer/tournaments/:id/scores',
     canActivate: [organizerAuthGuard],
     loadComponent: () =>
-      import('./organizer/pages/scores/scores.page').then((m) => m.OrganizerScoresPage),
+      import('./organizer/pages/live/live.page').then((m) => m.OrganizerLivePage),
   },
   {
     path: 'organizer/tournaments/:id/live',
-    canActivate: [organizerAuthGuard],
-    loadComponent: () =>
-      import('./organizer/pages/live/live.page').then((m) => m.OrganizerLivePage),
+    redirectTo: 'organizer/tournaments/:id/scores',
   },
   {
     path: 'organizer/tournaments/:id/standings',

@@ -198,3 +198,40 @@ ion-title {
 .live-page__pool-validation--done {
   border-color: var(--ap-color-success);
 }
+
+// ---- Shootout, forfeit, clear (were on the old Scores page) ----
+.live-page__shootout-title {
+  margin: var(--ap-space-2) 0 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ap-color-muted);
+}
+
+.live-page__match-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ap-space-4);
+}
+
+.live-page__link {
+  min-height: 36px;
+  padding: 0;
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--ap-color-muted);
+  text-decoration: underline;
+  background: transparent;
+  border: none;
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+.live-page__forfeit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ap-space-2);
+  font-size: 0.9rem;
+}

@@ -460,7 +460,7 @@
       "categoryNone": "Non specificata"
     },
     "live": {
-      "title": "Match day",
+      "title": "Risultati",
       "loading": "Loading…",
       "empty": "No match scheduled yet.",
       "rotation": "Rotation {{number}}",
@@ -479,7 +479,14 @@
         "save": "Could not save the scores.",
         "shift": "Could not shift the calendar.",
         "shiftConflict": "This shift would overlap another slot on a field."
-      }
+      },
+      "shootout": "Rigori",
+      "forfeit": "Forfait…",
+      "forfeitWho": "Quale squadra dà forfait?",
+      "forfeitOf": "Forfait: {{team}}",
+      "undoForfeit": "Annulla il forfait",
+      "clearScore": "Cancella il risultato",
+      "validateMatch": "Convalida questa partita"
     },
     "dashboard": {
       "title": "Panoramica",
