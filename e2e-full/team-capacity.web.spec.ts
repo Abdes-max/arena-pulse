@@ -77,6 +77,7 @@ test('8 équipes : publication gratuite immédiate, puis ajout d’une équipe a
   expect(await getTournamentStatus(request, session, tournamentId)).toBe('PUBLISHED');
 
   await page.goto(`/admin/tournaments/${tournamentId}/teams`);
+  await page.getByRole('button', { name: 'Ajouter une équipe' }).click();
   await page.getByLabel("Nom de l'équipe").fill('Équipe 9');
   await page.getByRole('button', { name: "Ajouter l'équipe" }).click();
 
@@ -122,6 +123,7 @@ test('48 équipes : la publication franchit le palier payant (redirection Stripe
   // completed) -- the ordinary, always-available team-management flow,
   // unaffected by the pending checkout.
   await page.goto(`/admin/tournaments/${tournamentId}/teams`);
+  await page.getByRole('button', { name: 'Ajouter une équipe' }).click();
   await page.getByLabel("Nom de l'équipe").fill('Équipe 49');
   await page.getByRole('button', { name: "Ajouter l'équipe" }).click();
   await expect(page.getByText('Équipe 49')).toBeVisible();

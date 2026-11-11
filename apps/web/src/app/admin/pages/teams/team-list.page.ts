@@ -1,4 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
+import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { AssetUrlService } from 'api-client';
@@ -36,7 +37,7 @@ function isPublicationTierExceededError(
 
 @Component({
   selector: 'app-team-list-page',
-  imports: [Button, Select, TextField, TranslocoPipe],
+  imports: [Button, NgTemplateOutlet, Select, TextField, TranslocoPipe],
   templateUrl: './team-list.page.html',
   styleUrl: './team-list.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -111,6 +112,27 @@ export class TeamListPage {
   protected readonly formManagerPhone = signal('');
 
   protected readonly importCsv = signal('');
+
+  // "Ajouter une équipe" panel: one team at a time (Enter chains the next),
+  // a pasted list (one name per line) or a CSV file.
+  protected readonly addModes = ['one', 'list', 'csv'] as const;
+  protected readonly addOpen = signal(false);
+  protected readonly addMode = signal<'one' | 'list' | 'csv'>('one');
+  protected readonly pasteText = signal('');
+  protected readonly pastedNames = computed(() =>
+    this.pasteText()
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter((line) => line.length > 0),
+  );
+  /** Category/division under the name only when they tell teams apart. */
+  protected readonly showCategoryOnRows = computed(() => this.categories().length > 1);
+  protected readonly allSelected = computed(
+    () => this.teams().length > 0 && this.selectedTeamIds().size === this.teams().length,
+  );
+  protected readonly hasManagerInfo = computed(
+    () => !!(this.formManagerName() || this.formManagerEmail() || this.formManagerPhone()),
+  );
   protected readonly importResult = signal<TeamImportResult | null>(null);
 
   // Audit finding (securite-audit.md): deleting a team used to fire straight
@@ -166,12 +188,81 @@ export class TeamListPage {
     }
   }
 
+  protected openAdd(): void {
+    this.cancelEdit();
+    this.expandedTeamId.set(null);
+    this.importResult.set(null);
+    this.addOpen.set(true);
+    this.selectDefaultCategory();
+    this.focusNameField();
+  }
+
+  protected closeAdd(): void {
+    this.addOpen.set(false);
+    this.cancelEdit();
+    this.pasteText.set('');
+  }
+
+  /** With a single category there is nothing to choose: it is preselected (and its field hidden). */
+  private selectDefaultCategory(): void {
+    const categories = this.categories();
+    if (!this.formCategoryId() && categories.length === 1) {
+      this.formCategoryId.set(categories[0].id);
+    }
+  }
+
+  private focusNameField(): void {
+    setTimeout(() =>
+      document.querySelector<HTMLInputElement>('.team-list-page__name-field input')?.focus(),
+    );
+  }
+
+  protected toggleAll(event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+    this.selectedTeamIds.set(new Set(checked ? this.teams().map((team) => team.id) : []));
+  }
+
+  protected onPasteChange(event: Event): void {
+    this.pasteText.set((event.target as HTMLTextAreaElement).value);
+  }
+
+  /** One name per line, through the CSV import (header line, then "name;category"). */
+  protected async addPastedList(): Promise<void> {
+    const organizationId = this.organization()?.id;
+    this.selectDefaultCategory();
+    const category = this.categories().find((c) => c.id === this.formCategoryId());
+    const names = this.pastedNames();
+    if (!organizationId || !category || names.length === 0) {
+      if (!category) {
+        this.errorMessage.set('admin.teamList.errors.chooseCategory');
+      }
+      return;
+    }
+    const clean = (value: string) => value.replace(/[;"\r\n]/g, ' ').trim();
+    const csv = [
+      'nom;categorie',
+      ...names.map((name) => `${clean(name)};${clean(category.name)}`),
+    ].join('\n');
+    this.errorMessage.set(null);
+    try {
+      const result = await this.teamsService.importTeams(organizationId, this.tournamentId, csv);
+      this.importResult.set(result);
+      this.teams.update((teams) => [...teams, ...result.created]);
+      this.pasteText.set('');
+    } catch {
+      this.errorMessage.set('admin.teamList.errors.import');
+    }
+  }
+
   protected onFormCategoryChange(categoryId: string): void {
     this.formCategoryId.set(categoryId);
     this.formDivisionId.set('');
   }
 
   protected startEdit(team: Team): void {
+    this.addOpen.set(false);
+    this.expandedTeamId.set(null);
+    this.confirmingTeamId.set(null);
     this.editingTeamId.set(team.id);
     this.formName.set(team.name);
     this.formCategoryId.set(team.categoryId);
@@ -245,6 +336,12 @@ export class TeamListPage {
           managerPhone,
         });
         this.teams.update((teams) => [...teams, created]);
+        this.formName.set('');
+        this.formManagerName.set('');
+        this.formManagerEmail.set('');
+        this.formManagerPhone.set('');
+        this.focusNameField();
+        return;
       }
       this.cancelEdit();
     } catch (error) {
@@ -504,6 +601,7 @@ export class TeamListPage {
       this.expandedTeamId.set(null);
       return;
     }
+    this.cancelEdit();
     this.expandedTeamId.set(team.id);
     try {
       this.players.set(

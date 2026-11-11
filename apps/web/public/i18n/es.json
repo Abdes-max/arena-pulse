@@ -782,29 +782,38 @@
         "themePremiumHint": "La elección de tema está reservada a torneos con más de {{count}} equipos o con una suscripción anual activa."
       },
       "categories": {
-        "title": "Categorías y divisiones",
+        "title": "Categorías",
         "remove": "Eliminar",
         "feeLabel": "Cuota de inscripción (céntimos, vacío = gratis)",
         "saveFee": "Guardar cuota",
         "removeDivision": "Quitar",
-        "newDivisionLabel": "Nueva división",
+        "newDivisionLabel": "Añadir una división",
         "addDivision": "Añadir",
-        "newCategoryLabel": "Nueva categoría",
+        "newCategoryLabel": "Añadir una categoría",
         "newCategoryPlaceholder": "Nueva categoría (ej. U10)",
         "newFeeLabel": "Cuota (céntimos, opcional)",
-        "addCategory": "Añadir una categoría",
-        "choose": "Elegir una categoría…"
+        "addCategory": "Añadir",
+        "choose": "Elegir una categoría…",
+        "options": "Opciones: divisiones, cuota de inscripción",
+        "feeEurosLabel": "Cuota de inscripción (€)",
+        "feeFreePlaceholder": "Vacío = gratis",
+        "newDivisionPlaceholder": "p. ej. Grupo alto",
+        "summary": {
+          "free": "Gratis",
+          "divisions": "{{count}} división(es)"
+        }
       },
       "venues": {
         "title": "Sedes y pistas",
         "remove": "Eliminar",
         "removeField": "Quitar",
-        "newFieldLabel": "Nueva pista",
+        "newFieldLabel": "Añadir un campo",
         "addField": "Añadir",
-        "newVenueLabel": "Nueva sede",
+        "newVenueLabel": "Lugar",
         "newVenuePlaceholder": "Buscar un estadio, pabellón o dirección…",
-        "addVenue": "Añadir una sede",
-        "searchFailed": "Búsqueda de direcciones no disponible: se usará el nombre escrito."
+        "addVenue": "Añadir el lugar",
+        "searchFailed": "Búsqueda de direcciones no disponible: se usará el nombre escrito.",
+        "newFieldPlaceholder": "p. ej. Campo 1"
       },
       "description": {
         "title": "Descripción",
@@ -965,7 +974,8 @@
         "loadPlayers": "No se han podido cargar los jugadores de este equipo.",
         "addPlayer": "No se ha podido añadir este jugador.",
         "removePlayer": "No se ha podido quitar este jugador.",
-        "logoPremiumLocked": "Reservado a torneos con más de {{count}} equipos o con una suscripción anual activa."
+        "logoPremiumLocked": "Reservado a torneos con más de {{count}} equipos o con una suscripción anual activa.",
+        "chooseCategory": "Elige primero una categoría."
       },
       "logoPremiumHint": "Los logos de equipo están reservados a torneos con más de {{count}} equipos o con una suscripción anual activa.",
       "tierModal": {
@@ -979,6 +989,20 @@
           "upgrade": "No se ha podido actualizar el pago de la publicación, inténtalo de nuevo.",
           "subscribe": "No se ha podido suscribir, inténtalo de nuevo."
         }
+      },
+      "count": "{{count}} equipo(s)",
+      "close": "Cerrar",
+      "namePlaceholder": "p. ej. FC Leones",
+      "enterHint": "Intro añade el equipo y pasa al siguiente.",
+      "moreInfo": "Más información (responsable, contacto)",
+      "pasteLabel": "Un equipo por línea",
+      "pastePlaceholder": "FC Leones\nAS Tigres\nUS Panteras",
+      "pasteSubmit": "Añadir {{count}} equipo(s)",
+      "selectAll": "Seleccionar todo",
+      "modes": {
+        "one": "Un equipo",
+        "list": "Pegar una lista",
+        "csv": "Archivo CSV"
       }
     },
     "refereeList": {
