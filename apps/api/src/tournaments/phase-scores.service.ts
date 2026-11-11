@@ -10,6 +10,9 @@ import { BracketsService } from './brackets.service';
 import { RealtimeService } from './realtime.service';
 import { TournamentsService } from './tournaments.service';
 
+// A pool match that no longer needs a score: played, forfeited or cancelled.
+const FINISHED_STATUSES = new Set(['COMPLETED', 'FORFEITED', 'CANCELLED']);
+
 /**
  * The explicit "pool scores are final" step between the pools and the phases
  * they feed (the bracket). The bracket used to be filled the moment the last
@@ -95,7 +98,7 @@ export class PhaseScoresService {
       select: { status: true },
     });
     const unfinished = matches.filter(
-      (match) => match.status !== 'COMPLETED' && match.status !== 'FORFEITED',
+      (match) => !FINISHED_STATUSES.has(match.status),
     ).length;
     if (matches.length === 0 || unfinished > 0) {
       throw new ConflictException({

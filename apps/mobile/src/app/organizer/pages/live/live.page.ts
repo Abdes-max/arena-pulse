@@ -175,7 +175,10 @@ export class OrganizerLivePage {
           name: phase.name,
           validated: !!phase.scoresValidatedAt,
           finished: poolMatches.filter(
-            (match) => match.status === 'COMPLETED' || match.status === 'FORFEITED',
+            (match) =>
+              match.status === 'COMPLETED' ||
+              match.status === 'FORFEITED' ||
+              match.status === 'CANCELLED',
           ).length,
           total: poolMatches.length,
         };

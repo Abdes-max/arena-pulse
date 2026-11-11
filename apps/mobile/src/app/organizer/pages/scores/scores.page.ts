@@ -478,7 +478,10 @@ export class OrganizerScoresPage {
       return null;
     }
     const finished = poolMatches.filter(
-      (match) => match.status === 'COMPLETED' || match.status === 'FORFEITED',
+      (match) =>
+        match.status === 'COMPLETED' ||
+        match.status === 'FORFEITED' ||
+        match.status === 'CANCELLED',
     ).length;
     return {
       phaseId: phase.id,

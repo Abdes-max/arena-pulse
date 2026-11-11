@@ -87,6 +87,31 @@ describe('StandingsService', () => {
       expect(result.isComplete).toBe(false);
     });
 
+    it('treats a forfeited or cancelled match as settled for completion', async () => {
+      prisma.team.findMany.mockResolvedValue([
+        { id: 'a', name: 'Alpha' },
+        { id: 'b', name: 'Beta' },
+      ]);
+      prisma.match.findMany.mockResolvedValue([
+        {
+          homeTeamId: 'a',
+          awayTeamId: 'b',
+          status: 'COMPLETED',
+          score: { homeScore: 1, awayScore: 0, isValidated: true },
+        },
+        { homeTeamId: 'a', awayTeamId: 'b', status: 'FORFEITED', score: null },
+        { homeTeamId: 'b', awayTeamId: 'a', status: 'CANCELLED', score: null },
+      ]);
+
+      const result = await service.getStandings(
+        'org-1',
+        'tournament-1',
+        'group-1',
+      );
+
+      expect(result.isComplete).toBe(true);
+    });
+
     it('counts only validated scores and reports completion', async () => {
       prisma.team.findMany.mockResolvedValue([
         { id: 'a', name: 'Alpha' },

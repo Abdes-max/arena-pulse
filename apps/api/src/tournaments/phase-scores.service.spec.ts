@@ -153,6 +153,8 @@ describe('PhaseScoresService', () => {
       prisma.match.findMany.mockResolvedValue([
         { status: 'COMPLETED' },
         { status: 'FORFEITED' },
+        // A cancelled match no longer needs a score.
+        { status: 'CANCELLED' },
       ]);
       // sourcePhases(ko-phase): the pool phase, now validated.
       prisma.competitionPhase.findMany.mockResolvedValue([

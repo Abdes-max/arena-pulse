@@ -26,5 +26,5 @@ WHERE p."type" = 'GROUP_STAGE'
   AND NOT EXISTS (
     SELECT 1 FROM "Match" m
     JOIN "Group" g ON g."id" = m."groupId"
-    WHERE g."phaseId" = p."id" AND m."status" NOT IN ('COMPLETED', 'FORFEITED')
+    WHERE g."phaseId" = p."id" AND m."status" NOT IN ('COMPLETED', 'FORFEITED', 'CANCELLED')
   );
