@@ -20,7 +20,7 @@ interface PlayerAuthResponseBody {
 
 interface RegistrationResponseBody {
   registrationId: string;
-  status: 'PENDING_PAYMENT' | 'PAID' | 'CANCELLED';
+  status: string;
   checkoutUrl: string | null;
 }
 
@@ -124,7 +124,9 @@ describe('Registrations & payments (e2e)', () => {
     categoryOverrides: Partial<{
       registrationFeeCents: number;
       registrationFeeCurrency: string;
+      maxTeams: number;
     }> = {},
+    options: { sportName?: string; open?: boolean } = {},
   ) {
     const { accessToken, organizationId } = await registerOrganizer(app);
     const auth = (req: request.Test) =>
@@ -134,7 +136,16 @@ describe('Registrations & payments (e2e)', () => {
     const sportRes = await auth(
       request(app.getHttpServer()).get('/api/v1/sports'),
     ).expect(200);
-    const sportId = (sportRes.body as { id: string; scoreFormat: string }[]).find((sport) => sport.scoreFormat === 'GOALS')!.id;
+    const sports = sportRes.body as {
+      id: string;
+      name: string;
+      scoreFormat: string;
+    }[];
+    const sportId = (
+      options.sportName
+        ? sports.find((sport) => sport.name === options.sportName)
+        : sports.find((sport) => sport.scoreFormat === 'GOALS')
+    )!.id;
 
     const tournamentRes = await auth(request(app.getHttpServer()).post(base))
       .send({ name: 'Coupe des Inscriptions', sportId })
@@ -145,14 +156,36 @@ describe('Registrations & payments (e2e)', () => {
     const categoryRes = await auth(
       request(app.getHttpServer()).post(`${base}/${tournamentId}/categories`),
     )
-      .send({ name: 'Senior', ...categoryOverrides })
+      .send({
+        name: 'Senior',
+        registrationFeeCents: categoryOverrides.registrationFeeCents,
+        registrationFeeCurrency: categoryOverrides.registrationFeeCurrency,
+      })
       .expect(201);
     const categoryId = (categoryRes.body as { id: string }).id;
+    if (categoryOverrides.maxTeams) {
+      await auth(
+        request(app.getHttpServer()).patch(
+          `${base}/${tournamentId}/categories/${categoryId}`,
+        ),
+      )
+        .send({ maxTeams: categoryOverrides.maxTeams })
+        .expect(200);
+    }
 
     await makeTournamentPublishable(app, auth, base, tournamentId, categoryId);
     await auth(
       request(app.getHttpServer()).post(`${base}/${tournamentId}/publish`),
     ).expect(200);
+    if (options.open !== false) {
+      await auth(
+        request(app.getHttpServer()).patch(
+          `${base}/${tournamentId}/registrations/settings`,
+        ),
+      )
+        .send({ open: true, paymentInfo: '20 € à régler sur place' })
+        .expect(200);
+    }
 
     return {
       accessToken,
@@ -175,213 +208,172 @@ describe('Registrations & payments (e2e)', () => {
     ],
   };
 
-  it('creates a free registration and materializes the team+players immediately', async () => {
-    const { slug, categoryId, auth, base, organizationId, tournamentId } =
-      await setupPublishedTournament(app);
-    const { accessToken: playerToken } = await registerPlayer(app);
-
-    const res = await request(app.getHttpServer())
+  const register = (
+    slug: string,
+    categoryId: string,
+    token: string,
+    body: object,
+  ) =>
+    request(app.getHttpServer())
       .post(
         `/api/v1/public/tournaments/${slug}/categories/${categoryId}/registrations`,
       )
-      .set('Authorization', `Bearer ${playerToken}`)
-      .send(roster)
-      .expect(201);
-    const body = res.body as RegistrationResponseBody;
+      .set('Authorization', `Bearer ${token}`)
+      .send(body);
 
-    expect(body.status).toBe('PAID');
-    expect(body.checkoutUrl).toBeNull();
+  it('creates a pending pre-registration; the team only joins once the organizer confirms it', async () => {
+    const { slug, categoryId, auth, base, tournamentId } =
+      await setupPublishedTournament(app, {
+        registrationFeeCents: 2000,
+      });
+    const { accessToken: playerToken } = await registerPlayer(app);
+
+    const res = await register(slug, categoryId, playerToken, roster).expect(
+      201,
+    );
+    const body = res.body as RegistrationResponseBody;
+    expect(body).toMatchObject({ status: 'PENDING', checkoutUrl: null });
+    // No online payment any more.
     expect(stripeService.createCheckoutSession).not.toHaveBeenCalled();
 
-    const listRes = await auth(
-      request(app.getHttpServer()).get(`${base}/${tournamentId}/registrations`),
+    const teamsBefore = await auth(
+      request(app.getHttpServer()).get(`${base}/${tournamentId}/teams`),
     ).expect(200);
-    const rows = listRes.body as OrganizerRegistrationRow[];
-    expect(rows).toHaveLength(1);
+    expect(teamsBefore.body).toEqual([]);
+
+    const confirmed = await auth(
+      request(app.getHttpServer()).post(
+        `${base}/${tournamentId}/registrations/${body.registrationId}/confirm`,
+      ),
+    ).expect(200);
+    const rows = confirmed.body as (OrganizerRegistrationRow & {
+      paymentStatus: string;
+    })[];
     expect(rows[0]).toMatchObject({
-      id: body.registrationId,
-      status: 'PAID',
-      amountCents: 0,
+      status: 'CONFIRMED',
+      paymentStatus: 'UNPAID',
+      amountCents: 2000,
     });
     expect(rows[0].teamId).toEqual(expect.any(String));
 
-    const teamsRes = await auth(
+    const teamsAfter = await auth(
       request(app.getHttpServer()).get(`${base}/${tournamentId}/teams`),
     ).expect(200);
-    expect(teamsRes.body).toEqual([
+    expect(teamsAfter.body).toEqual([
       expect.objectContaining({ id: rows[0].teamId, name: roster.teamName }),
     ]);
 
-    void organizationId;
-  });
-
-  it('creates a Stripe checkout session for a paid category, then materializes the team once the webhook confirms payment', async () => {
-    const { slug, categoryId, auth, base, tournamentId } =
-      await setupPublishedTournament(app, {
-        registrationFeeCents: 2500,
-        registrationFeeCurrency: 'eur',
-      });
-    const { accessToken: playerToken } = await registerPlayer(app);
-
-    const res = await request(app.getHttpServer())
-      .post(
-        `/api/v1/public/tournaments/${slug}/categories/${categoryId}/registrations`,
-      )
-      .set('Authorization', `Bearer ${playerToken}`)
-      .send(roster)
-      .expect(201);
-    const body = res.body as RegistrationResponseBody;
-
-    expect(body.status).toBe('PENDING_PAYMENT');
-    expect(body.checkoutUrl).toBe(
-      'https://checkout.stripe.example/cs_test_123',
-    );
-    expect(stripeService.createCheckoutSession).toHaveBeenCalledWith(
-      expect.objectContaining({
-        amountCents: 2500,
-        currency: 'eur',
-        metadata: { registrationId: body.registrationId },
-      }),
-    );
-
-    const beforeWebhook = await auth(
-      request(app.getHttpServer()).get(`${base}/${tournamentId}/registrations`),
-    ).expect(200);
-    expect((beforeWebhook.body as OrganizerRegistrationRow[])[0]).toMatchObject(
-      {
-        status: 'PENDING_PAYMENT',
-        teamId: null,
-      },
-    );
-
-    const webhookEvent = {
-      type: 'checkout.session.completed',
-      data: {
-        object: { id: 'cs_test_123', payment_intent: 'pi_test_456' },
-      },
-    };
-    await request(app.getHttpServer())
-      .post('/api/v1/payments/webhook')
-      .set('stripe-signature', 'test-signature')
-      .send(webhookEvent)
-      .expect(200, { received: true });
-
-    const afterWebhook = await auth(
-      request(app.getHttpServer()).get(`${base}/${tournamentId}/registrations`),
-    ).expect(200);
-    const row = (afterWebhook.body as OrganizerRegistrationRow[])[0];
-    expect(row.status).toBe('PAID');
-    expect(row.teamId).toEqual(expect.any(String));
-    expect(row.paidAt).not.toBeNull();
-
-    // A retried webhook delivery for the same session is a silent no-op, not a duplicate team.
-    await request(app.getHttpServer())
-      .post('/api/v1/payments/webhook')
-      .set('stripe-signature', 'test-signature')
-      .send(webhookEvent)
-      .expect(200, { received: true });
-
-    const teamsRes = await auth(
-      request(app.getHttpServer()).get(`${base}/${tournamentId}/teams`),
-    ).expect(200);
-    expect(teamsRes.body).toHaveLength(1);
-  });
-
-  it('confirms a pending registration directly against Stripe when the player lands back on the success page before the webhook arrives', async () => {
-    const { slug, categoryId, auth, base, tournamentId } =
-      await setupPublishedTournament(app, {
-        registrationFeeCents: 2500,
-        registrationFeeCurrency: 'eur',
-      });
-    const { accessToken: playerToken } = await registerPlayer(app);
-
-    const res = await request(app.getHttpServer())
-      .post(
-        `/api/v1/public/tournaments/${slug}/categories/${categoryId}/registrations`,
-      )
-      .set('Authorization', `Bearer ${playerToken}`)
-      .send(roster)
-      .expect(201);
-    const body = res.body as RegistrationResponseBody;
-
-    // Webhook hasn't landed yet -- Stripe itself reports the session as paid.
-    stripeService.retrieveCheckoutSession.mockResolvedValue({
-      id: 'cs_test_123',
-      payment_status: 'paid',
-      payment_intent: 'pi_test_confirm_456',
-    });
-
-    const confirmRes = await request(app.getHttpServer())
-      .post('/api/v1/public/registrations/confirm')
-      .set('Authorization', `Bearer ${playerToken}`)
-      .send({ sessionId: 'cs_test_123' })
+    // Payment collected on site, ticked by hand.
+    const paid = await auth(
+      request(app.getHttpServer()).patch(
+        `${base}/${tournamentId}/registrations/${body.registrationId}/payment`,
+      ),
+    )
+      .send({ paymentStatus: 'PAID' })
       .expect(200);
-
-    expect(stripeService.retrieveCheckoutSession).toHaveBeenCalledWith(
-      'cs_test_123',
+    expect((paid.body as { paymentStatus: string }[])[0].paymentStatus).toBe(
+      'PAID',
     );
-    const confirmed = (
-      confirmRes.body as { id: string; status: string }[]
-    ).find((r) => r.id === body.registrationId);
-    expect(confirmed?.status).toBe('PAID');
-
-    const afterConfirm = await auth(
-      request(app.getHttpServer()).get(`${base}/${tournamentId}/registrations`),
-    ).expect(200);
-    const row = (afterConfirm.body as OrganizerRegistrationRow[])[0];
-    expect(row.status).toBe('PAID');
-    expect(row.teamId).toEqual(expect.any(String));
-
-    // The webhook arriving afterwards for the same session is a silent no-op, not a duplicate team.
-    await request(app.getHttpServer())
-      .post('/api/v1/payments/webhook')
-      .set('stripe-signature', 'test-signature')
-      .send({
-        type: 'checkout.session.completed',
-        data: {
-          object: { id: 'cs_test_123', payment_intent: 'pi_test_confirm_456' },
-        },
-      })
-      .expect(200, { received: true });
-
-    const teamsRes = await auth(
-      request(app.getHttpServer()).get(`${base}/${tournamentId}/teams`),
-    ).expect(200);
-    expect(teamsRes.body).toHaveLength(1);
   });
 
-  it('does not confirm a registration belonging to another player', async () => {
-    const { slug, categoryId } = await setupPublishedTournament(app, {
-      registrationFeeCents: 2500,
-      registrationFeeCurrency: 'eur',
-    });
-    const { accessToken: playerToken } = await registerPlayer(app);
-    const { accessToken: otherPlayerToken } = await registerPlayer(
+  it('refuses requests while registrations are closed', async () => {
+    const { slug, categoryId } = await setupPublishedTournament(
       app,
-      'other-player@example.com',
+      {},
+      { open: false },
+    );
+    const { accessToken: playerToken } = await registerPlayer(app);
+
+    await register(slug, categoryId, playerToken, roster).expect(409);
+
+    const info = await request(app.getHttpServer())
+      .get(`/api/v1/public/tournaments/${slug}/registration-info`)
+      .expect(200);
+    expect(info.body).toMatchObject({ open: false, participantType: 'TEAM' });
+  });
+
+  it('puts requests on the waiting list once the category is full', async () => {
+    const { slug, categoryId, auth, base, tournamentId } =
+      await setupPublishedTournament(app, {
+        maxTeams: 1,
+      });
+    const { accessToken: first } = await registerPlayer(app);
+    const { accessToken: second } = await registerPlayer(
+      app,
+      'second@example.com',
     );
 
-    await request(app.getHttpServer())
+    const one = await register(slug, categoryId, first, roster).expect(201);
+    await auth(
+      request(app.getHttpServer()).post(
+        `${base}/${tournamentId}/registrations/${(one.body as RegistrationResponseBody).registrationId}/confirm`,
+      ),
+    ).expect(200);
+
+    const two = await register(slug, categoryId, second, {
+      ...roster,
+      teamName: 'Les Faucons',
+    }).expect(201);
+    expect((two.body as RegistrationResponseBody).status).toBe('WAITLIST');
+
+    // No place left: confirming it is refused.
+    await auth(
+      request(app.getHttpServer()).post(
+        `${base}/${tournamentId}/registrations/${(two.body as RegistrationResponseBody).registrationId}/confirm`,
+      ),
+    ).expect(409);
+
+    const info = await request(app.getHttpServer())
+      .get(`/api/v1/public/tournaments/${slug}/registration-info`)
+      .expect(200);
+    expect(
+      (info.body as { categories: { remaining: number }[] }).categories[0]
+        .remaining,
+    ).toBe(0);
+  });
+
+  it('registers a single player, named after them, for an individual sport', async () => {
+    const { slug, categoryId } = await setupPublishedTournament(
+      app,
+      {},
+      { sportName: 'Tennis' },
+    );
+    const { accessToken: playerToken } = await registerPlayer(app);
+    const player = { firstName: 'Rafa', lastName: 'Nadal' };
+
+    // Two players is a team, not an individual registration.
+    await register(slug, categoryId, playerToken, {
+      managerEmail: 'rafa@example.com',
+      players: [player, { firstName: 'Roger', lastName: 'Federer' }],
+    }).expect(400);
+
+    await register(slug, categoryId, playerToken, {
+      managerEmail: 'rafa@example.com',
+      players: [player],
+    }).expect(201);
+    const mine = await request(app.getHttpServer())
+      .get('/api/v1/public/registrations/me')
+      .set('Authorization', `Bearer ${playerToken}`)
+      .expect(200);
+    expect((mine.body as { teamName: string }[])[0].teamName).toBe(
+      'Rafa Nadal',
+    );
+  });
+
+  it('lets the player withdraw a request that is not confirmed yet', async () => {
+    const { slug, categoryId } = await setupPublishedTournament(app);
+    const { accessToken: playerToken } = await registerPlayer(app);
+    const res = await register(slug, categoryId, playerToken, roster).expect(
+      201,
+    );
+
+    const after = await request(app.getHttpServer())
       .post(
-        `/api/v1/public/tournaments/${slug}/categories/${categoryId}/registrations`,
+        `/api/v1/public/registrations/${(res.body as RegistrationResponseBody).registrationId}/cancel`,
       )
       .set('Authorization', `Bearer ${playerToken}`)
-      .send(roster)
-      .expect(201);
-
-    stripeService.retrieveCheckoutSession.mockResolvedValue({
-      id: 'cs_test_123',
-      payment_status: 'paid',
-      payment_intent: 'pi_test_other_456',
-    });
-
-    await request(app.getHttpServer())
-      .post('/api/v1/public/registrations/confirm')
-      .set('Authorization', `Bearer ${otherPlayerToken}`)
-      .send({ sessionId: 'cs_test_123' })
       .expect(200);
-
-    expect(stripeService.retrieveCheckoutSession).not.toHaveBeenCalled();
+    expect((after.body as { status: string }[])[0].status).toBe('CANCELLED');
   });
 
   it('rejects a webhook request with no signature header', async () => {
@@ -452,7 +444,7 @@ describe('Registrations & payments (e2e)', () => {
     expect(meBody).toHaveLength(1);
     expect(meBody[0]).toMatchObject({
       teamName: roster.teamName,
-      status: 'PAID',
+      status: 'PENDING',
     });
     expect(meBody[0].tournament.slug).toBe(slug);
   });

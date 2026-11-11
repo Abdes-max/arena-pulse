@@ -45,11 +45,16 @@ async function main(): Promise<void> {
   });
 
   try {
+    // Individual sports: players register on their own (Padel is played in pairs: a team).
+    const INDIVIDUAL_SPORTS = new Set(['Tennis', 'Badminton']);
     for (const { name, scoreFormat, defaultSetsToWin } of SPORTS) {
+      const participantType = INDIVIDUAL_SPORTS.has(name)
+        ? 'INDIVIDUAL'
+        : 'TEAM';
       await prisma.sport.upsert({
         where: { name },
-        update: { scoreFormat, defaultSetsToWin },
-        create: { name, scoreFormat, defaultSetsToWin },
+        update: { scoreFormat, defaultSetsToWin, participantType },
+        create: { name, scoreFormat, defaultSetsToWin, participantType },
       });
     }
 

@@ -39,6 +39,15 @@ export class PublicRegistrationsController {
     );
   }
 
+  @HttpCode(HttpStatus.OK)
+  @Post('registrations/:registrationId/cancel')
+  cancel(
+    @CurrentPlayer() player: AuthenticatedPlayer,
+    @Param('registrationId') registrationId: string,
+  ) {
+    return this.registrationsService.cancelForPlayer(player.id, registrationId);
+  }
+
   @Get('registrations/me')
   listMine(@CurrentPlayer() player: AuthenticatedPlayer) {
     return this.registrationsService.listForPlayer(player.id);

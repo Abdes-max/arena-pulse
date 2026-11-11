@@ -244,10 +244,20 @@ enum ScoreFormat {
   SETS
 }
 
+// Who takes part: teams (football, volley...) or individual players (tennis,
+// badminton). Decides the pre-registration form (a team and its roster, or
+// one player); the tournament engine itself always works with Team rows -- an
+// individual player is a team of one, named after them.
+enum ParticipantType {
+  TEAM
+  INDIVIDUAL
+}
+
 model Sport {
   id               String      @id @default(uuid())
   name             String      @unique
   scoreFormat      ScoreFormat @default(GOALS)
+  participantType  ParticipantType @default(TEAM)
   // Sets a side must win to take a match (best of 2n-1); SETS sports only.
   defaultSetsToWin Int?
   createdAt        DateTime    @default(now())
@@ -267,6 +277,14 @@ model Tournament {
   endDate             DateTime?
   isOnline            Boolean          @default(false)
   teamsCanReferee     Boolean          @default(false)
+  // Pre-registration (no online payment): open to new requests between the
+  // two optional dates; every request is validated by hand by the organizer.
+  registrationsOpen   Boolean          @default(false)
+  registrationOpensAt DateTime?
+  registrationClosesAt DateTime?
+  // Free text shown with the form: price, how and when to pay (on site, bank
+  // transfer...). The organizer collects the money themselves.
+  registrationPaymentInfo String?
   // Whether a PUBLISHED tournament appears in the public directory search
   // (GET /public/tournaments, /public/tournaments/search) -- independent
   // from `status`. A private tournament (false) stays reachable by its
@@ -341,6 +359,9 @@ model Category {
   // own convention -- see docs/architecture/adr/0005-player-registration-and-payments.md.
   registrationFeeCents    Int?
   registrationFeeCurrency String?  @default("eur")
+  // Places for pre-registered teams/players; beyond it, requests go to the
+  // waiting list. Null = unlimited.
+  maxTeams                Int?
   createdAt               DateTime @default(now())
   updatedAt               DateTime @updatedAt
 
@@ -813,9 +834,23 @@ model PlayerRefreshToken {
 }
 
 enum RegistrationStatus {
+  // Legacy online-payment flow (kept for the registrations made with it).
   PENDING_PAYMENT
   PAID
   CANCELLED
+  // Pre-registration: waiting for the organizer, accepted (the team exists),
+  // on the waiting list (category full), or turned down.
+  PENDING
+  CONFIRMED
+  WAITLIST
+  REJECTED
+}
+
+// Payment is collected by the organizer (on site, transfer...) and ticked by hand.
+enum RegistrationPaymentStatus {
+  UNPAID
+  PAID
+  EXEMPT
 }
 
 // One registration = one team's entry into one category, submitted by a
@@ -833,6 +868,9 @@ model Registration {
   managerEmail            String
   managerPhone            String?
   status                  RegistrationStatus @default(PENDING_PAYMENT)
+  paymentStatus           RegistrationPaymentStatus @default(UNPAID)
+  rejectionReason         String?
+  decidedAt               DateTime?
   amountCents             Int
   currency                String
   stripeCheckoutSessionId String?            @unique

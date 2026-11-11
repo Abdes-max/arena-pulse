@@ -29,10 +29,12 @@ export class RegistrationPlayerDto {
 }
 
 export class CreateRegistrationDto {
+  /** Team sports only; an individual registration is named after its single player. */
+  @IsOptional()
   @IsString()
   @MinLength(1)
   @MaxLength(200)
-  teamName!: string;
+  teamName?: string;
 
   @IsEmail()
   @MaxLength(254)
