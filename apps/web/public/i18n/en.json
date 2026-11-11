@@ -628,7 +628,7 @@
       "errorGeneric": "Something went wrong, please try again."
     },
     "live": {
-      "title": "Match day",
+      "title": "Scores",
       "intro": "Enter scores one rotation at a time. The current rotation is open; \"Validate rotation\" records every result at once.",
       "loading": "Loading…",
       "empty": "No match scheduled yet.",
@@ -645,7 +645,14 @@
       "errors": {
         "load": "Could not load the matches.",
         "save": "Could not save the scores."
-      }
+      },
+      "shootout": "Penalty shootout",
+      "forfeit": "Forfeit…",
+      "forfeitWho": "Which team forfeits?",
+      "forfeitOf": "Forfeit: {{team}}",
+      "undoForfeit": "Undo forfeit",
+      "clearScore": "Clear score",
+      "validateMatch": "Validate this match"
     },
     "review": {
       "loading": "Loading…",

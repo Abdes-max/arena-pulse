@@ -628,7 +628,7 @@
       "errorGeneric": "Une erreur est survenue, réessayez."
     },
     "live": {
-      "title": "Jour J",
+      "title": "Scores",
       "intro": "Saisissez les scores série par série. La série en cours est ouverte ; « Valider la série » enregistre tous les résultats d’un coup.",
       "loading": "Chargement…",
       "empty": "Aucun match planifié pour l’instant.",
@@ -645,7 +645,14 @@
       "errors": {
         "load": "Impossible de charger les matchs.",
         "save": "Impossible d’enregistrer les scores."
-      }
+      },
+      "shootout": "Tirs au but",
+      "forfeit": "Forfait…",
+      "forfeitWho": "Quelle équipe déclare forfait ?",
+      "forfeitOf": "Forfait : {{team}}",
+      "undoForfeit": "Annuler le forfait",
+      "clearScore": "Effacer le score",
+      "validateMatch": "Valider ce match"
     },
     "review": {
       "loading": "Chargement…",

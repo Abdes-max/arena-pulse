@@ -39,21 +39,12 @@
     >
       {{ 'admin.submenu.schedule' | transloco }}
     </a>
-    @if (!simpleMode()) {
-      <a
-        [routerLink]="['/admin/tournaments', tournamentId(), 'scores']"
-        routerLinkActive="tournament-submenu__link--active"
-        (click)="centerTab($event)"
-      >
-        {{ 'admin.submenu.scores' | transloco }}
-      </a>
-    }
     <a
-      [routerLink]="['/admin/tournaments', tournamentId(), 'live']"
+      [routerLink]="['/admin/tournaments', tournamentId(), 'scores']"
       routerLinkActive="tournament-submenu__link--active"
       (click)="centerTab($event)"
     >
-      {{ 'admin.submenu.live' | transloco }}
+      {{ 'admin.submenu.scores' | transloco }}
     </a>
     <a
       [routerLink]="['/admin/tournaments', tournamentId(), 'standings']"

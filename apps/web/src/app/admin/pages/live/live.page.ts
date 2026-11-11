@@ -16,6 +16,8 @@ import { TournamentsService } from '../../core/tournaments.service';
 interface DraftScore {
   home: number;
   away: number;
+  homePenalty: number;
+  awayPenalty: number;
 }
 
 const FINISHED = new Set(['COMPLETED', 'FORFEITED', 'CANCELLED']);
@@ -56,6 +58,15 @@ export class LivePage {
   protected readonly apiError = signal<string | null>(null);
   protected readonly matches = signal<Match[]>([]);
   protected readonly drafts = signal<Map<string, DraftScore>>(new Map());
+  // Pools whose standing rule settles a draw with a shootout (knockout
+  // matches always need a winner, see needsShootout).
+  private readonly shootoutGroupIds = signal<Set<string>>(new Set());
+  protected readonly shootoutSides = [
+    { key: 'homePenalty' as const },
+    { key: 'awayPenalty' as const },
+  ];
+  /** Match whose forfeit choices are unfolded. */
+  protected readonly forfeitOpenId = signal<string | null>(null);
 
   // Sets sports (padel, tennis, volleyball, badminton): each match is a list
   // of sets instead of a +/- counter; the API recomputes the sets won.
@@ -122,12 +133,116 @@ export class LivePage {
         )
       ).flat();
       this.matches.set(matches);
+      void this.loadShootoutRules(organizationId, phases);
       this.drafts.set(new Map());
       this.setsDrafts.set(new Map());
     } catch {
       this.errorMessage.set('admin.live.errors.load');
     } finally {
       this.loading.set(false);
+    }
+  }
+
+  private async loadShootoutRules(
+    organizationId: string,
+    phases: CompetitionPhase[],
+  ): Promise<void> {
+    const groupIds = phases
+      .filter((phase) => phase.type === 'GROUP_STAGE' && !phase.isSeedPhase)
+      .flatMap((phase) => phase.groups.map((group) => group.id));
+    try {
+      const rules = await Promise.all(
+        groupIds.map((groupId) =>
+          this.competitionFormatsService.getStandingRule(
+            organizationId,
+            this.tournamentId,
+            groupId,
+          ),
+        ),
+      );
+      this.shootoutGroupIds.set(
+        new Set(groupIds.filter((_, index) => rules[index].penaltyShootoutEnabled)),
+      );
+    } catch {
+      // Without the rules, only knockout draws ask for a shootout.
+    }
+  }
+
+  /** A draw that a shootout must settle: always in a knockout match, in a pool when its rule says so. */
+  protected needsShootout(match: Match): boolean {
+    if (this.isSetsFormat()) {
+      return false;
+    }
+    const score = this.scoreOf(match);
+    return (
+      score.home === score.away &&
+      (!!match.knockoutBracketId || (!!match.groupId && this.shootoutGroupIds().has(match.groupId)))
+    );
+  }
+
+  /** Validates this match alone (the rest of the rotation may still be playing). */
+  protected async validateMatch(match: Match): Promise<void> {
+    const opened = this.openStart();
+    await this.save({ startTime: match.timeSlot?.startTime ?? '', matches: [match] }, true);
+    this.openedStart.set(opened);
+  }
+
+  protected toggleForfeit(match: Match): void {
+    this.forfeitOpenId.set(this.forfeitOpenId() === match.id ? null : match.id);
+  }
+
+  protected async declareForfeit(match: Match, teamId: string | undefined): Promise<void> {
+    await this.runMatchAction(async (organizationId) => {
+      if (teamId) {
+        await this.scoresService.declareForfeit(
+          organizationId,
+          this.tournamentId,
+          match.id,
+          teamId,
+        );
+      }
+    });
+  }
+
+  protected async undoForfeit(match: Match): Promise<void> {
+    await this.runMatchAction((organizationId) =>
+      this.scoresService.undoForfeit(organizationId, this.tournamentId, match.id),
+    );
+  }
+
+  protected async clearScore(match: Match): Promise<void> {
+    await this.runMatchAction((organizationId) =>
+      this.scoresService.clearScore(organizationId, this.tournamentId, match.id),
+    );
+  }
+
+  /** One match changed outside "Valider la série": reload, keep the rotation open. */
+  private async runMatchAction(
+    action: (organizationId: string) => Promise<unknown>,
+  ): Promise<void> {
+    const organizationId = this.authService.organizations()[0]?.id;
+    if (!organizationId || this.saving()) {
+      return;
+    }
+    this.saving.set(true);
+    this.apiError.set(null);
+    this.errorMessage.set(null);
+    try {
+      await action(organizationId);
+      this.forfeitOpenId.set(null);
+      await this.load();
+    } catch (error) {
+      const message =
+        error instanceof HttpErrorResponse
+          ? (error.error as { message?: unknown } | null)?.message
+          : null;
+      if (typeof message === 'string') {
+        this.apiError.set(message);
+      } else {
+        this.errorMessage.set('admin.live.errors.save');
+      }
+    } finally {
+      this.saving.set(false);
     }
   }
 
@@ -277,6 +392,8 @@ export class LivePage {
       this.drafts().get(match.id) ?? {
         home: match.score?.homeScore ?? 0,
         away: match.score?.awayScore ?? 0,
+        homePenalty: match.score?.homePenaltyScore ?? 0,
+        awayPenalty: match.score?.awayPenaltyScore ?? 0,
       }
     );
   }
@@ -342,7 +459,15 @@ export class LivePage {
             };
           }
           const score = this.scoreOf(match);
-          return { matchId: match.id, homeScore: score.home, awayScore: score.away };
+          return {
+            matchId: match.id,
+            homeScore: score.home,
+            awayScore: score.away,
+            ...(this.needsShootout(match) && {
+              homePenaltyScore: score.homePenalty,
+              awayPenaltyScore: score.awayPenalty,
+            }),
+          };
         }),
         validate,
       );
