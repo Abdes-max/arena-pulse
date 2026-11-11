@@ -12,7 +12,11 @@ import {
   Prisma,
 } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { isPowerOfTwo, seedOrder } from './bracket-seeding.util';
+import {
+  firstRoundPairing,
+  isPowerOfTwo,
+  isValidFirstRoundOrder,
+} from './bracket-seeding.util';
 import { CategoriesService } from './categories.service';
 import {
   CrossGroupQualificationRulesService,
@@ -320,7 +324,7 @@ export class BracketsService {
   ): SlotDef[] {
     const totalRounds = Math.log2(bracket.size);
     if (round === 1) {
-      const order = seedOrder(bracket.size);
+      const order = firstRoundPairing(bracket);
       return Array.from({ length: order.length / 2 }, (_, slot) => {
         const home = slots[order[slot * 2] - 1];
         const away = slots[order[slot * 2 + 1] - 1];
@@ -554,6 +558,121 @@ export class BracketsService {
   }
 
   /**
+   * The first-round editor of the Structure page: every qualifier label, the
+   * pairing in force (organizer's own, or the standard seeding), and whether it
+   * can still change (not once a match of this bracket has a result).
+   */
+  async getFirstRound(
+    organizationId: string,
+    tournamentId: string,
+    bracketId: string,
+  ) {
+    await this.tournamentsService.assertTournamentExists(
+      organizationId,
+      tournamentId,
+    );
+    const bracket = await this.getOrThrowForTournament(tournamentId, bracketId);
+    const slots = await this.resolveQualificationSlots(
+      organizationId,
+      tournamentId,
+      bracket.phaseId,
+    );
+    return {
+      bracketId,
+      size: bracket.size,
+      qualifiers: slots.map((slot) => slot.label),
+      order: firstRoundPairing(bracket).map((seed) => seed - 1),
+      custom: isValidFirstRoundOrder(bracket.firstRoundOrder, bracket.size),
+      locked: (await this.countBracketProgress(bracketId)) > 0,
+    };
+  }
+
+  /**
+   * Saves the organizer's first-round pairing (null = back to the standard
+   * seeding) and applies it to the round-1 matches already generated: their
+   * "1er Poule A" labels, or their teams once the pools are validated.
+   */
+  async setFirstRound(
+    organizationId: string,
+    tournamentId: string,
+    bracketId: string,
+    order: number[] | null,
+  ) {
+    await this.tournamentsService.assertTournamentIsEditable(
+      organizationId,
+      tournamentId,
+    );
+    const bracket = await this.getOrThrowForTournament(tournamentId, bracketId);
+    if (order !== null && !isValidFirstRoundOrder(order, bracket.size)) {
+      throw new BadRequestException(
+        `Chaque qualifié doit apparaître une seule fois dans les ${bracket.size / 2} matchs.`,
+      );
+    }
+    if ((await this.countBracketProgress(bracketId)) > 0) {
+      throw new ConflictException({
+        message:
+          'Des matchs de ce tableau ont déjà un score : les affiches ne peuvent plus changer.',
+        code: 'BRACKET_IN_PROGRESS',
+      });
+    }
+    const updated = await this.prisma.knockoutBracket.update({
+      where: { id: bracketId },
+      data: { firstRoundOrder: order === null ? Prisma.DbNull : order },
+      include: { phase: { include: { category: true } } },
+    });
+
+    const slots = await this.resolveQualificationSlots(
+      organizationId,
+      tournamentId,
+      updated.phaseId,
+    );
+    if (slots.length === updated.size) {
+      const defs = this.buildRoundSlotDefs(updated, slots, 1);
+      const roundOne = await this.prisma.match.findMany({
+        where: {
+          knockoutBracketId: bracketId,
+          round: 1,
+          isThirdPlaceMatch: false,
+        },
+        select: { id: true, bracketSlot: true },
+      });
+      for (const match of roundOne) {
+        const def = defs.find(
+          (candidate) => candidate.bracketSlot === match.bracketSlot,
+        );
+        if (!def) {
+          continue;
+        }
+        await this.prisma.match.update({
+          where: { id: match.id },
+          data: {
+            homeTeamId: def.homeTeamId,
+            awayTeamId: def.awayTeamId,
+            homeSourceLabel: def.homeSourceLabel,
+            awaySourceLabel: def.awaySourceLabel,
+          },
+        });
+        this.realtimeService.emit({
+          tournamentId,
+          type: 'match-updated',
+          matchId: match.id,
+        });
+      }
+    }
+    return this.getFirstRound(organizationId, tournamentId, bracketId);
+  }
+
+  /** Matches of this bracket that already have a score or a result. */
+  private countBracketProgress(bracketId: string): Promise<number> {
+    return this.prisma.match.count({
+      where: {
+        knockoutBracketId: bracketId,
+        OR: [{ score: { isNot: null } }, { status: { not: 'SCHEDULED' } }],
+      },
+    });
+  }
+
+  /**
    * Puts a bracket back to "teams to be determined": every match loses its
    * teams, score and forfeit, and gets its "1er Poule A" / "Vainqueur ..."
    * placeholder labels back. Used when the pool scores feeding it are
@@ -710,7 +829,7 @@ export class BracketsService {
         continue;
       }
 
-      const order = seedOrder(bracket.size);
+      const order = firstRoundPairing(bracket);
       for (const match of pendingMatches) {
         const slotIndex = match.bracketSlot ?? 0;
         const home = slots[order[slotIndex * 2] - 1];

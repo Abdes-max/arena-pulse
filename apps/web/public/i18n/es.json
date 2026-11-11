@@ -1205,7 +1205,15 @@
         "second": "2.º {{group}}",
         "third": "3.º {{group}}",
         "nth": "{{position}}.º {{group}}",
-        "bestOf": "{{count}} mejor(es) {{position}}.º"
+        "bestOf": "{{count}} mejor(es) {{position}}.º",
+        "match": "Partido {{number}}",
+        "home": "Equipo 1",
+        "away": "Equipo 2",
+        "pairingAuto": "Cruces automáticos: elige quién se enfrenta.",
+        "pairingCustom": "Cruces elegidos por ti.",
+        "pairingReset": "Volver a lo automático",
+        "pairingLocked": "Este cuadro tiene resultados: cruces bloqueados.",
+        "pairingError": "No se pudieron guardar estos cruces."
       }
     },
     "schedule": {

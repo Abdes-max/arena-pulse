@@ -1205,7 +1205,15 @@
         "second": "2ª {{group}}",
         "third": "3ª {{group}}",
         "nth": "{{position}}ª {{group}}",
-        "bestOf": "{{count}} migliore/i {{position}}ª"
+        "bestOf": "{{count}} migliore/i {{position}}ª",
+        "match": "Partita {{number}}",
+        "home": "Squadra 1",
+        "away": "Squadra 2",
+        "pairingAuto": "Accoppiamenti automatici: scegli chi si affronta.",
+        "pairingCustom": "Accoppiamenti scelti da te.",
+        "pairingReset": "Torna all’automatico",
+        "pairingLocked": "Questo tabellone ha risultati: accoppiamenti bloccati.",
+        "pairingError": "Impossibile salvare questi accoppiamenti."
       }
     },
     "schedule": {

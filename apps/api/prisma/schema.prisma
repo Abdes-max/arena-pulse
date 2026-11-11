@@ -539,6 +539,11 @@ model KnockoutBracket {
   name            String
   size            Int
   hasRankingMatch Boolean  @default(false)
+  // First-round pairing chosen by the organizer: position i of the round
+  // (match i/2, home when even) holds qualifier number firstRoundOrder[i]
+  // (0-based, in BracketsService.resolveQualificationSlots order). Null =
+  // the standard seeding (1st vs last...). See firstRoundPairing().
+  firstRoundOrder Json?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 

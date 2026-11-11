@@ -1205,7 +1205,15 @@
         "second": "2.º {{group}}",
         "third": "3.º {{group}}",
         "nth": "{{position}}.º {{group}}",
-        "bestOf": "{{count}} melhor(es) {{position}}.º"
+        "bestOf": "{{count}} melhor(es) {{position}}.º",
+        "match": "Jogo {{number}}",
+        "home": "Equipa 1",
+        "away": "Equipa 2",
+        "pairingAuto": "Confrontos automáticos: escolha quem joga contra quem.",
+        "pairingCustom": "Confrontos escolhidos por si.",
+        "pairingReset": "Voltar ao automático",
+        "pairingLocked": "Este quadro tem resultados: confrontos bloqueados.",
+        "pairingError": "Não foi possível guardar estes confrontos."
       }
     },
     "schedule": {

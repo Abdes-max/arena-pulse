@@ -130,6 +130,16 @@ export interface StructurePresetResult {
   tiers: { phaseId: string; name: string; bracketSize: number }[];
 }
 
+/** Round 1 of a bracket: qualifier labels and who meets whom (positions 2k and 2k+1 play match k). */
+export interface BracketFirstRound {
+  bracketId: string;
+  size: number;
+  qualifiers: string[];
+  order: number[];
+  custom: boolean;
+  locked: boolean;
+}
+
 @Injectable({ providedIn: 'root' })
 export class CompetitionFormatsService {
   private readonly http = inject(HttpClient);
@@ -254,6 +264,33 @@ export class CompetitionFormatsService {
       this.http.patch<KnockoutBracket>(
         `${this.base(organizationId, tournamentId)}/knockout-brackets/${bracketId}`,
         payload,
+      ),
+    );
+  }
+
+  getFirstRound(
+    organizationId: string,
+    tournamentId: string,
+    bracketId: string,
+  ): Promise<BracketFirstRound> {
+    return firstValueFrom(
+      this.http.get<BracketFirstRound>(
+        `${this.base(organizationId, tournamentId)}/knockout-brackets/${bracketId}/first-round`,
+      ),
+    );
+  }
+
+  /** `order` null = back to the standard seeding. */
+  setFirstRound(
+    organizationId: string,
+    tournamentId: string,
+    bracketId: string,
+    order: number[] | null,
+  ): Promise<BracketFirstRound> {
+    return firstValueFrom(
+      this.http.patch<BracketFirstRound>(
+        `${this.base(organizationId, tournamentId)}/knockout-brackets/${bracketId}/first-round`,
+        { order },
       ),
     );
   }

@@ -683,15 +683,75 @@
                               | transloco: { size: bracket.size }
                           }}</span>
                         </div>
-                        <ul class="structure-page__card-list">
-                          @for (label of qualifierLabelsFor(phase.id); track $index) {
-                            <li>{{ label }}</li>
-                          } @empty {
-                            <li class="structure-page__card-empty">
-                              {{ 'admin.structure.board.noQualifiers' | transloco }}
-                            </li>
+                        @if (editableFirstRound(bracket.id); as round) {
+                          <!-- Round 1: who meets whom, chosen by the organizer. -->
+                          <ol class="structure-page__pairings">
+                            @for (match of firstRoundMatches(round); track $index) {
+                              <li class="structure-page__pairing">
+                                <span class="structure-page__pairing-title">{{
+                                  'admin.structure.board.match' | transloco: { number: $index + 1 }
+                                }}</span>
+                                @if (round.locked) {
+                                  <span>{{ round.qualifiers[match.home] }}</span>
+                                  <span>{{ round.qualifiers[match.away] }}</span>
+                                } @else {
+                                  <ap-select
+                                    [label]="'admin.structure.board.home' | transloco"
+                                    [hideLabel]="true"
+                                    [options]="qualifierOptions(round)"
+                                    [value]="'' + match.home"
+                                    [autoSelectSingle]="false"
+                                    (valueChange)="changePairing(round, $index * 2, $event)"
+                                  />
+                                  <ap-select
+                                    [label]="'admin.structure.board.away' | transloco"
+                                    [hideLabel]="true"
+                                    [options]="qualifierOptions(round)"
+                                    [value]="'' + match.away"
+                                    [autoSelectSingle]="false"
+                                    (valueChange)="changePairing(round, $index * 2 + 1, $event)"
+                                  />
+                                }
+                              </li>
+                            }
+                          </ol>
+                          <div class="structure-page__pairing-footer">
+                            @if (round.locked) {
+                              <span class="structure-page__hint">{{
+                                'admin.structure.board.pairingLocked' | transloco
+                              }}</span>
+                            } @else {
+                              <span class="structure-page__hint">{{
+                                (round.custom
+                                  ? 'admin.structure.board.pairingCustom'
+                                  : 'admin.structure.board.pairingAuto'
+                                ) | transloco
+                              }}</span>
+                              @if (round.custom) {
+                                <ap-button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  (click)="resetPairing(round)"
+                                  >{{ 'admin.structure.board.pairingReset' | transloco }}</ap-button
+                                >
+                              }
+                            }
+                          </div>
+                          @if (pairingError(); as message) {
+                            <p class="structure-page__error" role="alert">{{ message }}</p>
                           }
-                        </ul>
+                        } @else {
+                          <ul class="structure-page__card-list">
+                            @for (label of qualifierLabelsFor(phase.id); track $index) {
+                              <li>{{ label }}</li>
+                            } @empty {
+                              <li class="structure-page__card-empty">
+                                {{ 'admin.structure.board.noQualifiers' | transloco }}
+                              </li>
+                            }
+                          </ul>
+                        }
                       </div>
                     } @else {
                       <div class="structure-page__add-row">

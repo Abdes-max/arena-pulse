@@ -19,6 +19,7 @@ import { RequireTournamentPermission } from './decorators/require-tournament-per
 import { CreateKnockoutBracketDto } from './dto/create-knockout-bracket.dto';
 import { GenerateAllBracketMatchesDto } from './dto/generate-all-bracket-matches.dto';
 import { GenerateBracketMatchesDto } from './dto/generate-bracket-matches.dto';
+import { SetFirstRoundDto } from './dto/set-first-round.dto';
 import { UpdateKnockoutBracketDto } from './dto/update-knockout-bracket.dto';
 import { TournamentPermissionGuard } from './guards/tournament-permission.guard';
 import { KnockoutBracketsService } from './knockout-brackets.service';
@@ -63,6 +64,37 @@ export class KnockoutBracketsController {
       tournamentId,
       bracketId,
       dto,
+    );
+  }
+
+  @RequireOrgRole(OrganizationRole.ORG_MEMBER)
+  @Get('knockout-brackets/:bracketId/first-round')
+  getFirstRound(
+    @Param('organizationId') organizationId: string,
+    @Param('tournamentId') tournamentId: string,
+    @Param('bracketId') bracketId: string,
+  ) {
+    return this.bracketsService.getFirstRound(
+      organizationId,
+      tournamentId,
+      bracketId,
+    );
+  }
+
+  @RequireOrgRole(OrganizationRole.ORG_MEMBER)
+  @RequireTournamentPermission('MANAGE_PHASES')
+  @Patch('knockout-brackets/:bracketId/first-round')
+  setFirstRound(
+    @Param('organizationId') organizationId: string,
+    @Param('tournamentId') tournamentId: string,
+    @Param('bracketId') bracketId: string,
+    @Body() dto: SetFirstRoundDto,
+  ) {
+    return this.bracketsService.setFirstRound(
+      organizationId,
+      tournamentId,
+      bracketId,
+      dto.order,
     );
   }
 

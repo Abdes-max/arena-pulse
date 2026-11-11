@@ -12,7 +12,7 @@ import { StandingsService } from './standings.service';
 import { TournamentsService } from './tournaments.service';
 
 type PrismaMock = {
-  knockoutBracket: { findUnique: jest.Mock };
+  knockoutBracket: { findUnique: jest.Mock; update: jest.Mock };
   competitionPhase: { findMany: jest.Mock; findFirst: jest.Mock };
   group: { findUnique: jest.Mock };
   match: {
@@ -32,7 +32,7 @@ type PrismaMock = {
 
 function createPrismaMock(): PrismaMock {
   const mock: PrismaMock = {
-    knockoutBracket: { findUnique: jest.fn() },
+    knockoutBracket: { findUnique: jest.fn(), update: jest.fn() },
     competitionPhase: {
       findMany: jest.fn().mockResolvedValue([]),
       findFirst: jest.fn(),
@@ -1269,6 +1269,56 @@ describe('BracketsService', () => {
           awaySourceLabel: null,
         },
       });
+    });
+  });
+  describe('setFirstRound', () => {
+    beforeEach(() => {
+      prisma.knockoutBracket.findUnique.mockResolvedValue(
+        bracketFixture({ size: 4 }),
+      );
+      prisma.knockoutBracket.update.mockResolvedValue(
+        bracketFixture({ size: 4 }),
+      );
+    });
+
+    it('refuses a pairing that does not use each qualifier exactly once', async () => {
+      await expect(
+        service.setFirstRound(
+          'org-1',
+          TOURNAMENT_ID,
+          'bracket-1',
+          [0, 0, 1, 2],
+        ),
+      ).rejects.toThrow(BadRequestException);
+      expect(prisma.knockoutBracket.update).not.toHaveBeenCalled();
+    });
+
+    it('refuses once a match of the bracket has a result', async () => {
+      prisma.match.count.mockResolvedValue(1);
+      await expect(
+        service.setFirstRound(
+          'org-1',
+          TOURNAMENT_ID,
+          'bracket-1',
+          [0, 2, 1, 3],
+        ),
+      ).rejects.toThrow(ConflictException);
+      expect(prisma.knockoutBracket.update).not.toHaveBeenCalled();
+    });
+
+    it('saves the pairing chosen by the organizer', async () => {
+      await service.setFirstRound(
+        'org-1',
+        TOURNAMENT_ID,
+        'bracket-1',
+        [0, 2, 1, 3],
+      );
+      expect(prisma.knockoutBracket.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: 'bracket-1' },
+          data: { firstRoundOrder: [0, 2, 1, 3] },
+        }),
+      );
     });
   });
 });

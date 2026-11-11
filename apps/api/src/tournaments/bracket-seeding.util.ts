@@ -20,3 +20,31 @@ export function seedOrder(size: number): number[] {
 export function isPowerOfTwo(size: number): boolean {
   return size >= 2 && (size & (size - 1)) === 0;
 }
+
+/** True when `order` lists each of 0..size-1 exactly once. */
+export function isValidFirstRoundOrder(
+  order: unknown,
+  size: number,
+): order is number[] {
+  return (
+    Array.isArray(order) &&
+    order.length === size &&
+    order.every((value) => Number.isInteger(value)) &&
+    new Set(order).size === size &&
+    (order as number[]).every((value) => value >= 0 && value < size)
+  );
+}
+
+/**
+ * Who meets whom in round 1, as 1-based qualifier numbers in the same shape as
+ * seedOrder (positions 2k and 2k+1 play match k): the organizer's own pairing
+ * when one is saved and still fits the bracket, the standard seeding otherwise.
+ */
+export function firstRoundPairing(bracket: {
+  size: number;
+  firstRoundOrder?: unknown;
+}): number[] {
+  return isValidFirstRoundOrder(bracket.firstRoundOrder, bracket.size)
+    ? bracket.firstRoundOrder.map((index) => index + 1)
+    : seedOrder(bracket.size);
+}
