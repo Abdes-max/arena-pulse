@@ -396,10 +396,10 @@
 .structure-page__icon-button--on-color {
   width: 36px;
   height: 36px;
-  color: var(--ap-color-on-signal);
+  color: var(--ap-color-on-primary);
 
   &:hover {
-    color: var(--ap-color-on-signal);
+    color: var(--ap-color-on-primary);
     background: rgba(255, 255, 255, 0.15);
   }
 }
@@ -442,8 +442,9 @@
   gap: var(--ap-space-2);
   min-height: 44px;
   padding: 0 var(--ap-space-2) 0 var(--ap-space-4);
-  color: var(--ap-color-on-signal);
-  background: var(--ap-color-signal);
+  // Same as .schedule-page__match-card-header (Calendrier).
+  color: var(--ap-color-on-primary);
+  background: var(--ap-color-primary);
 }
 
 .structure-page__card-tag {

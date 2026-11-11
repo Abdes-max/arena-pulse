@@ -315,7 +315,8 @@
     "diff": "+/-",
     "points": "Pts",
     "followLive": "Live results at",
-    "diffSets": "+/- sets"
+    "diffSets": "+/- sets",
+    "finalRanking": "Final ranking"
   },
   "shell": {
     "loading": "Loading…",

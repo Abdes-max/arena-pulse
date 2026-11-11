@@ -213,7 +213,8 @@
     "diff": "+/-",
     "points": "Pts",
     "followLive": "Live results at",
-    "diffSets": "+/- sets"
+    "diffSets": "+/- sets",
+    "finalRanking": "Clasificación final"
   },
   "shell": {
     "loading": "Cargando…",
