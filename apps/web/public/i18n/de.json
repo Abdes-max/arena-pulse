@@ -1193,6 +1193,19 @@
         "one": "1 Gewinnsatz",
         "two": "2 Gewinnsätze (Best of 3)",
         "three": "3 Gewinnsätze (Best of 5)"
+      },
+      "board": {
+        "shuffle": "Nicht zugeordnete Mannschaften auslosen",
+        "settings": "Einstellungen der Phase",
+        "emptyPool": "Noch keine Mannschaft: unten auswählen",
+        "pool": "Gruppe",
+        "bracket": "K.-o.-Runde",
+        "noQualifiers": "Keine Qualifikationsregel (siehe ⚙ der Gruppenphase)",
+        "first": "1. {{group}}",
+        "second": "2. {{group}}",
+        "third": "3. {{group}}",
+        "nth": "{{position}}. {{group}}",
+        "bestOf": "{{count}} beste(n) {{position}}."
       }
     },
     "schedule": {

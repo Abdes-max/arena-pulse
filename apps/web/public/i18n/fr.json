@@ -1295,6 +1295,19 @@
         "one": "1 set gagnant",
         "two": "2 sets gagnants (au meilleur des 3)",
         "three": "3 sets gagnants (au meilleur des 5)"
+      },
+      "board": {
+        "shuffle": "Tirage au sort des équipes non placées",
+        "settings": "Réglages de la phase",
+        "emptyPool": "Aucune équipe : choisissez-en une ci-dessous",
+        "pool": "Poule",
+        "bracket": "Tableau",
+        "noQualifiers": "Aucune règle de qualification (voir ⚙ de la phase de poules)",
+        "first": "1er {{group}}",
+        "second": "2e {{group}}",
+        "third": "3e {{group}}",
+        "nth": "{{position}}e {{group}}",
+        "bestOf": "{{count}} meilleur(s) {{position}}e"
       }
     },
     "schedule": {

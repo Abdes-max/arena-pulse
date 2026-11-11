@@ -1295,6 +1295,19 @@
         "one": "1 set to win",
         "two": "2 sets to win (best of 3)",
         "three": "3 sets to win (best of 5)"
+      },
+      "board": {
+        "shuffle": "Random draw of unplaced teams",
+        "settings": "Phase settings",
+        "emptyPool": "No team yet: pick one below",
+        "pool": "Pool",
+        "bracket": "Bracket",
+        "noQualifiers": "No qualification rule (see the pool phase ⚙)",
+        "first": "1st {{group}}",
+        "second": "2nd {{group}}",
+        "third": "3rd {{group}}",
+        "nth": "{{position}}th {{group}}",
+        "bestOf": "{{count}} best {{position}}th place(s)"
       }
     },
     "schedule": {

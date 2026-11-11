@@ -1193,6 +1193,19 @@
         "one": "1 set da vincere",
         "two": "2 set da vincere (al meglio dei 3)",
         "three": "3 set da vincere (al meglio dei 5)"
+      },
+      "board": {
+        "shuffle": "Sorteggio delle squadre non assegnate",
+        "settings": "Impostazioni della fase",
+        "emptyPool": "Nessuna squadra: scegline una qui sotto",
+        "pool": "Girone",
+        "bracket": "Tabellone",
+        "noQualifiers": "Nessuna regola di qualificazione (vedi ⚙ della fase a gironi)",
+        "first": "1ª {{group}}",
+        "second": "2ª {{group}}",
+        "third": "3ª {{group}}",
+        "nth": "{{position}}ª {{group}}",
+        "bestOf": "{{count}} migliore/i {{position}}ª"
       }
     },
     "schedule": {
