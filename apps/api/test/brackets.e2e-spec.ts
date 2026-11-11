@@ -495,6 +495,13 @@ describe('Knockout bracket generation and advancement (e2e)', () => {
       ).expect(201);
     }
 
+    // Locking the pool scores reveals the bracket's teams.
+    await auth(
+      request(app.getHttpServer()).post(
+        `${base}/${tournamentId}/phases/${poolPhaseId}/scores/validate`,
+      ),
+    ).expect(201);
+
     // Schedule every round (quarterfinal here is round 1, final+3rd-place is
     // round 2) onto the same field up front -- this is the part under test.
     const bracketMatchesRes = await auth(
