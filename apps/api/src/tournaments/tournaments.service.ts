@@ -40,6 +40,7 @@ import { ConfirmIapPurchaseDto } from './dto/confirm-iap-purchase.dto';
 import {
   HeaderBackgroundPreset,
   headerBackgroundPresetUrl,
+  RECOMMENDED_HEADER_BACKGROUND,
 } from './dto/set-header-background-preset.dto';
 import { CreateTournamentDto } from './dto/create-tournament.dto';
 import { DuplicateTournamentDto } from './dto/duplicate-tournament.dto';
@@ -119,6 +120,12 @@ export class TournamentsService {
         isOnline: dto.isOnline ?? false,
         isListed: dto.isListed ?? true,
         theme: dto.theme,
+        // Every new tournament starts with the header that matches its theme
+        // (presets are free, whatever the plan), whether it comes from the
+        // web, the app or the quick event; the organizer can change it later.
+        headerBackgroundUrl: headerBackgroundPresetUrl(
+          RECOMMENDED_HEADER_BACKGROUND[dto.theme ?? PublicTheme.INK_SIGNAL],
+        ),
       },
       include: { sport: true },
     });

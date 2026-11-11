@@ -230,6 +230,20 @@ describe('TournamentsService', () => {
       expect(calls[0][0].data.slug).toMatch(/^coupe-de-printemps-[0-9a-f]{8}$/);
     });
 
+    it('starts with the header that matches the theme', async () => {
+      prisma.sport.findUnique.mockResolvedValue(SPORT);
+      prisma.tournament.create.mockResolvedValue(tournamentFixture());
+
+      await service.create('org-1', { name: 'Coupe', sportId: SPORT.id });
+
+      const calls = prisma.tournament.create.mock.calls as {
+        data: { headerBackgroundUrl: string };
+      }[][];
+      expect(calls[0][0].data.headerBackgroundUrl).toBe(
+        '/header-backgrounds/bleu.jpg',
+      );
+    });
+
     it('allows the default theme even without a subscription -- a brand-new tournament always has 0 teams', async () => {
       prisma.sport.findUnique.mockResolvedValue(SPORT);
       prisma.tournament.create.mockResolvedValue(tournamentFixture());
