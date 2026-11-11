@@ -166,9 +166,22 @@ export class LivePage {
         const poolMatches = this.matches().filter(
           (match) => match.groupId && groupIds.has(match.groupId),
         );
+        // Right after the last rotation that plays this phase's pools, so the
+        // button sits between the pools and the matches that follow them.
+        const rotations = this.rotations();
+        let afterRotation = rotations.length - 1;
+        for (let index = rotations.length - 1; index >= 0; index--) {
+          if (
+            rotations[index].matches.some((match) => match.groupId && groupIds.has(match.groupId))
+          ) {
+            afterRotation = index;
+            break;
+          }
+        }
         return {
           phaseId: phase.id,
           name: phase.name,
+          afterRotation,
           validated: !!phase.scoresValidatedAt,
           finished: poolMatches.filter(
             (match) =>
@@ -182,12 +195,19 @@ export class LivePage {
       .filter((block) => block.total > 0),
   );
 
+  protected blocksAfter(rotationIndex: number) {
+    return this.poolBlocks().filter((block) => block.afterRotation === rotationIndex);
+  }
+
+  /** Error from validating/reopening the pools, shown inside the block itself. */
+  protected readonly poolError = signal<string | null>(null);
+
   protected async validatePool(phaseId: string): Promise<void> {
     const organizationId = this.authService.organizations()[0]?.id;
     if (!organizationId) {
       return;
     }
-    this.apiError.set(null);
+    this.poolError.set(null);
     this.errorMessage.set(null);
     try {
       await this.scoresService.validatePoolScores(organizationId, this.tournamentId, phaseId);
@@ -202,7 +222,7 @@ export class LivePage {
     if (!organizationId) {
       return;
     }
-    this.apiError.set(null);
+    this.poolError.set(null);
     this.errorMessage.set(null);
     try {
       try {
@@ -242,7 +262,7 @@ export class LivePage {
         ? (error.error as PoolErrorBody).message
         : null;
     if (message) {
-      this.apiError.set(message);
+      this.poolError.set(message);
     } else {
       this.errorMessage.set(fallback);
     }

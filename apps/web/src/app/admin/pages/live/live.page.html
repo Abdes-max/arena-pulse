@@ -138,38 +138,37 @@
             </div>
           }
         </li>
+        @for (block of blocksAfter(i); track block.phaseId) {
+          <li
+            class="live-page__pool-validation"
+            [class.live-page__pool-validation--done]="block.validated"
+          >
+            @if (block.validated) {
+              <p>{{ 'admin.scores.pools.validatedHint' | transloco }}</p>
+              <ap-button type="button" variant="ghost" (click)="reopenPool(block.phaseId)">{{
+                'admin.scores.pools.reopen' | transloco
+              }}</ap-button>
+            } @else {
+              <p>
+                {{
+                  'admin.scores.pools.progress'
+                    | transloco: { finished: block.finished, total: block.total }
+                }}
+              </p>
+              <ap-button
+                type="button"
+                [disabled]="block.finished < block.total"
+                (click)="validatePool(block.phaseId)"
+              >
+                {{ 'admin.scores.pools.validate' | transloco }}
+              </ap-button>
+            }
+            @if (poolError(); as message) {
+              <p class="live-page__error" role="alert">{{ message }}</p>
+            }
+          </li>
+        }
       }
     </ol>
-
-    @if (apiError(); as message) {
-      <p class="live-page__error" role="alert">{{ message }}</p>
-    }
-    @for (block of poolBlocks(); track block.phaseId) {
-      <div
-        class="live-page__pool-validation"
-        [class.live-page__pool-validation--done]="block.validated"
-      >
-        @if (block.validated) {
-          <p>{{ 'admin.scores.pools.validatedHint' | transloco }}</p>
-          <ap-button type="button" variant="ghost" (click)="reopenPool(block.phaseId)">{{
-            'admin.scores.pools.reopen' | transloco
-          }}</ap-button>
-        } @else {
-          <p>
-            {{
-              'admin.scores.pools.progress'
-                | transloco: { finished: block.finished, total: block.total }
-            }}
-          </p>
-          <ap-button
-            type="button"
-            [disabled]="block.finished < block.total"
-            (click)="validatePool(block.phaseId)"
-          >
-            {{ 'admin.scores.pools.validate' | transloco }}
-          </ap-button>
-        }
-      </div>
-    }
   }
 </main>
