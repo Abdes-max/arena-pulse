@@ -525,7 +525,7 @@
       "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo."
     },
     "live": {
-      "title": "Match day",
+      "title": "Resultados",
       "intro": "Enter scores one rotation at a time. The current rotation is open; \"Validate rotation\" records every result at once.",
       "loading": "Loading…",
       "empty": "No match scheduled yet.",
@@ -542,7 +542,14 @@
       "errors": {
         "load": "Could not load the matches.",
         "save": "Could not save the scores."
-      }
+      },
+      "shootout": "Penaltis",
+      "forfeit": "Incomparecencia…",
+      "forfeitWho": "¿Qué equipo no se presenta?",
+      "forfeitOf": "Incomparecencia: {{team}}",
+      "undoForfeit": "Anular la incomparecencia",
+      "clearScore": "Borrar el resultado",
+      "validateMatch": "Validar este partido"
     },
     "review": {
       "loading": "Loading…",

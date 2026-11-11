@@ -525,7 +525,7 @@
       "errorGeneric": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut."
     },
     "live": {
-      "title": "Match day",
+      "title": "Ergebnisse",
       "intro": "Enter scores one rotation at a time. The current rotation is open; \"Validate rotation\" records every result at once.",
       "loading": "Loading…",
       "empty": "No match scheduled yet.",
@@ -542,7 +542,14 @@
       "errors": {
         "load": "Could not load the matches.",
         "save": "Could not save the scores."
-      }
+      },
+      "shootout": "Elfmeterschießen",
+      "forfeit": "Nichtantritt…",
+      "forfeitWho": "Welche Mannschaft tritt nicht an?",
+      "forfeitOf": "Nichtantritt: {{team}}",
+      "undoForfeit": "Nichtantritt aufheben",
+      "clearScore": "Ergebnis löschen",
+      "validateMatch": "Dieses Spiel bestätigen"
     },
     "review": {
       "loading": "Loading…",

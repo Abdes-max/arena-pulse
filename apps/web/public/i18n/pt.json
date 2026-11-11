@@ -525,7 +525,7 @@
       "errorGeneric": "Ocorreu um erro, tente novamente."
     },
     "live": {
-      "title": "Match day",
+      "title": "Resultados",
       "intro": "Enter scores one rotation at a time. The current rotation is open; \"Validate rotation\" records every result at once.",
       "loading": "Loading…",
       "empty": "No match scheduled yet.",
@@ -542,7 +542,14 @@
       "errors": {
         "load": "Could not load the matches.",
         "save": "Could not save the scores."
-      }
+      },
+      "shootout": "Desempate por penáltis",
+      "forfeit": "Falta de comparência…",
+      "forfeitWho": "Que equipa falta?",
+      "forfeitOf": "Falta de comparência: {{team}}",
+      "undoForfeit": "Anular a falta de comparência",
+      "clearScore": "Apagar o resultado",
+      "validateMatch": "Validar este jogo"
     },
     "review": {
       "loading": "Loading…",

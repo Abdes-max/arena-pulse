@@ -198,8 +198,9 @@ export const routes: Routes = [
           import('./admin/pages/schedule/schedule.page').then((m) => m.SchedulePage),
       },
       {
+        // The day-of page (by rotation) is the one Scores page now.
         path: 'tournaments/:tournamentId/scores',
-        loadComponent: () => import('./admin/pages/scores/scores.page').then((m) => m.ScoresPage),
+        loadComponent: () => import('./admin/pages/live/live.page').then((m) => m.LivePage),
       },
       {
         path: 'tournaments/:tournamentId/standings',
@@ -225,7 +226,7 @@ export const routes: Routes = [
       },
       {
         path: 'tournaments/:tournamentId/live',
-        loadComponent: () => import('./admin/pages/live/live.page').then((m) => m.LivePage),
+        redirectTo: 'tournaments/:tournamentId/scores',
       },
       {
         path: 'tournaments/:tournamentId/review',
