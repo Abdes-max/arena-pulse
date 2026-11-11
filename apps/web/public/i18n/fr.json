@@ -1724,5 +1724,12 @@
     "subtitle": "Suivez vos tournois en direct, avec les notifications.",
     "cta": "Installer",
     "dismissAria": "Fermer"
+  },
+  "feedback": {
+    "saved": "Enregistré",
+    "deleted": "Supprimé",
+    "error": "Une erreur est survenue, réessayez.",
+    "offline": "Connexion impossible : vérifiez votre réseau.",
+    "close": "Fermer"
   }
 }

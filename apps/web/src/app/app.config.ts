@@ -17,6 +17,7 @@ import { authInterceptor } from './admin/core/auth.interceptor';
 import { AuthService } from './admin/core/auth.service';
 import { AnalyticsService } from './core/analytics.service';
 import { GlobalErrorHandler } from './core/global-error-handler';
+import { feedbackInterceptor } from './core/feedback.interceptor';
 import { languageInterceptor } from './core/language.interceptor';
 import { playerAuthInterceptor } from './core/player-auth.interceptor';
 import { PlayerAuthService } from './core/player-auth.service';
@@ -48,6 +49,7 @@ export const appConfig: ApplicationConfig = {
         playerAuthInterceptor,
         superAdminAuthInterceptor,
         languageInterceptor,
+        feedbackInterceptor,
       ]),
     ),
     provideApiClient({ apiUrl: environment.apiUrl }),
