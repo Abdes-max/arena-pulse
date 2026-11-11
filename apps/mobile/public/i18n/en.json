@@ -156,7 +156,8 @@
           "simple": "Simple",
           "full": "Full"
         },
-        "structureAction": "Structure"
+        "structureAction": "Structure",
+        "registrationsAction": "Registrations"
       }
     },
     "account": {
@@ -621,6 +622,51 @@
       "cancel": "Cancel",
       "errors": {
         "load": "Could not load the structure.",
+        "save": "Could not save this change."
+      }
+    },
+    "registrations": {
+      "title": "Registrations",
+      "loading": "Loading…",
+      "open": "Registration open",
+      "openNow": "Requests are possible right now.",
+      "closedNow": "No request possible right now.",
+      "paymentInfo": "Payment details",
+      "paymentInfoPlaceholder": "e.g. €40 per team, on site",
+      "save": "Save",
+      "moreOnWeb": "Dates, places per category and tournament card: on the website.",
+      "filters": {
+        "PENDING": "Pending",
+        "CONFIRMED": "Confirmed",
+        "WAITLIST": "Waiting list",
+        "REJECTED": "Refused",
+        "ALL": "All"
+      },
+      "status": {
+        "PENDING": "Pending",
+        "CONFIRMED": "Confirmed",
+        "WAITLIST": "Waiting list",
+        "REJECTED": "Refused",
+        "CANCELLED": "Cancelled",
+        "PAID": "Confirmed",
+        "PENDING_PAYMENT": "Payment in progress"
+      },
+      "actions": {
+        "confirm": "Approve",
+        "waitlist": "Waiting list",
+        "reject": "Refuse",
+        "confirmReject": "Confirm refusal"
+      },
+      "payment": {
+        "label": "Payment",
+        "UNPAID": "Unpaid",
+        "PAID": "Paid",
+        "EXEMPT": "Exempt"
+      },
+      "reasonLabel": "Reason for refusal (optional)",
+      "empty": "No request in this list.",
+      "errors": {
+        "load": "Could not load the registrations.",
         "save": "Could not save this change."
       }
     }

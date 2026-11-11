@@ -156,7 +156,8 @@
           "simple": "Simple",
           "full": "Completo"
         },
-        "structureAction": "Estructura"
+        "structureAction": "Estructura",
+        "registrationsAction": "Inscripciones"
       }
     },
     "account": {
@@ -621,6 +622,51 @@
       "cancel": "Cancelar",
       "errors": {
         "load": "No se pudo cargar la estructura.",
+        "save": "No se pudo guardar este cambio."
+      }
+    },
+    "registrations": {
+      "title": "Inscripciones",
+      "loading": "Cargando…",
+      "open": "Inscripciones abiertas",
+      "openNow": "Las solicitudes son posibles ahora.",
+      "closedNow": "Ninguna solicitud posible ahora.",
+      "paymentInfo": "Modalidades de pago",
+      "paymentInfoPlaceholder": "p. ej. 40 € por equipo, in situ",
+      "save": "Guardar",
+      "moreOnWeb": "Fechas, plazas por categoría y tarjeta del torneo: en la web.",
+      "filters": {
+        "PENDING": "Pendientes",
+        "CONFIRMED": "Confirmadas",
+        "WAITLIST": "Lista de espera",
+        "REJECTED": "Rechazadas",
+        "ALL": "Todas"
+      },
+      "status": {
+        "PENDING": "Pendiente",
+        "CONFIRMED": "Confirmada",
+        "WAITLIST": "Lista de espera",
+        "REJECTED": "Rechazada",
+        "CANCELLED": "Cancelada",
+        "PAID": "Confirmada",
+        "PENDING_PAYMENT": "Pago en curso"
+      },
+      "actions": {
+        "confirm": "Validar",
+        "waitlist": "Lista de espera",
+        "reject": "Rechazar",
+        "confirmReject": "Confirmar el rechazo"
+      },
+      "payment": {
+        "label": "Pago",
+        "UNPAID": "No pagado",
+        "PAID": "Pagado",
+        "EXEMPT": "Exento"
+      },
+      "reasonLabel": "Motivo del rechazo (opcional)",
+      "empty": "Ninguna solicitud en esta lista.",
+      "errors": {
+        "load": "No se pudieron cargar las inscripciones.",
         "save": "No se pudo guardar este cambio."
       }
     }
