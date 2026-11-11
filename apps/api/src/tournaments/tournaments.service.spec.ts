@@ -2104,20 +2104,19 @@ describe('TournamentsService', () => {
 
       await service.searchPublished({ time: 'past', page: 1, pageSize: 20 });
 
-      expect(prisma.tournament.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: expect.objectContaining({
-            AND: [
-              {
-                OR: [
-                  { endDate: { lt: expect.any(Date) } },
-                  { endDate: null, startDate: { lt: expect.any(Date) } },
-                ],
-              },
-            ],
-          }),
-        }),
-      );
+      const { where } = (
+        prisma.tournament.findMany.mock.calls[0] as [
+          { where: { AND: unknown[] } },
+        ]
+      )[0];
+      expect(where.AND).toEqual([
+        {
+          OR: [
+            { endDate: { lt: expect.any(Date) as Date } },
+            { endDate: null, startDate: { lt: expect.any(Date) as Date } },
+          ],
+        },
+      ]);
     });
 
     it('paginates with skip = (page - 1) * pageSize and reports the unpaginated total', async () => {
