@@ -72,6 +72,9 @@ export class Select implements ControlValueAccessor {
    * again and the control never visually "sticks" on the last choice.
    */
   readonly resetAfterSelect = input(false);
+  // Off for a picker whose choice triggers an action right away (e.g. placing
+  // a team in a pool): an automatic pick would fire that action by itself.
+  readonly autoSelectSingle = input(true);
 
   protected readonly selectId = `ap-select-${nextId++}`;
   private readonly selectRef = viewChild<ElementRef<HTMLSelectElement>>('selectEl');
@@ -98,6 +101,9 @@ export class Select implements ControlValueAccessor {
     // Re-runs as `options()` shrinks (e.g. assigning teams to a group one
     // by one) so the last remaining choice gets the same treatment.
     effect(() => {
+      if (!this.autoSelectSingle()) {
+        return;
+      }
       const selectable = this.options().filter((option) => !option.disabled);
       if (selectable.length !== 1 || this.displayValue() !== '') {
         return;

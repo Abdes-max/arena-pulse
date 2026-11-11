@@ -651,6 +651,8 @@
                                 [hideLabel]="true"
                                 [options]="unassignedTeamOptions()"
                                 [value]="teamIdToAssignFor(group.id)"
+                                [autoSelectSingle]="false"
+                                [resetAfterSelect]="true"
                                 (valueChange)="assignPicked(group.id, $event)"
                               />
                             </div>
