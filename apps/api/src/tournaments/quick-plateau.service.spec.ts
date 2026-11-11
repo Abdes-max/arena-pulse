@@ -28,7 +28,11 @@ describe('QuickPlateauService', () => {
     tournament: { delete: jest.Mock };
     competitionPhase: { findFirstOrThrow: jest.Mock };
   };
-  let tournaments: { create: jest.Mock; getDetail: jest.Mock };
+  let tournaments: {
+    create: jest.Mock;
+    getDetail: jest.Mock;
+    setHeaderBackgroundPreset: jest.Mock;
+  };
   let categories: { create: jest.Mock };
   let venues: { create: jest.Mock };
   let fields: { create: jest.Mock };
@@ -47,8 +51,11 @@ describe('QuickPlateauService', () => {
       },
     };
     tournaments = {
-      create: jest.fn().mockResolvedValue({ id: 'tournament-1' }),
+      create: jest
+        .fn()
+        .mockResolvedValue({ id: 'tournament-1', theme: 'INK_SIGNAL' }),
       getDetail: jest.fn().mockResolvedValue({ id: 'tournament-1' }),
+      setHeaderBackgroundPreset: jest.fn(),
     };
     categories = { create: jest.fn().mockResolvedValue({ id: 'category-1' }) };
     venues = { create: jest.fn().mockResolvedValue({ id: 'venue-1' }) };
@@ -110,6 +117,27 @@ describe('QuickPlateauService', () => {
       },
     );
     expect(brackets.generateAllMatches).not.toHaveBeenCalled();
+  });
+
+  it('starts with the header preset that matches the theme', async () => {
+    await service.create('org-1', baseDto);
+
+    expect(tournaments.setHeaderBackgroundPreset).toHaveBeenCalledWith(
+      'org-1',
+      'tournament-1',
+      'bleu',
+    );
+
+    tournaments.create.mockResolvedValueOnce({
+      id: 'tournament-2',
+      theme: 'FRESH_PITCH',
+    });
+    await service.create('org-1', baseDto);
+    expect(tournaments.setHeaderBackgroundPreset).toHaveBeenLastCalledWith(
+      'org-1',
+      'tournament-2',
+      'vert',
+    );
   });
 
   it('adds a 1st-vs-2nd final when asked', async () => {
