@@ -273,6 +273,10 @@ export interface CompetitionPhase {
   isSeedPhase: boolean;
   // Sets sports: sets a side must win in this phase; null = the sport's default.
   setsToWin: number | null;
+  // A pool phase that feeds a knockout phase has its scores validated by the
+  // organizer (which draws the bracket); scoresValidatedAt is set once done.
+  feedsKnockout?: boolean;
+  scoresValidatedAt?: string | null;
   groups: CompetitionGroup[];
   knockoutBracket: KnockoutBracket | null;
 }

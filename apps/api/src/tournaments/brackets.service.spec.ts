@@ -139,6 +139,12 @@ function knockoutPhaseFixture(
   };
 }
 
+// Pool scores validated by the organizer: the bracket draws its real teams.
+const VALIDATED_POOL_PHASE = {
+  isSeedPhase: false,
+  scoresValidatedAt: new Date('2026-11-11T10:00:00Z'),
+};
+
 describe('BracketsService', () => {
   let prisma: PrismaMock;
   let tournamentsService: {
@@ -218,7 +224,7 @@ describe('BracketsService', () => {
           groupId: 'group-a',
           fromPosition: 1,
           toPosition: 2,
-          group: { name: 'Poule A' },
+          group: { name: 'Poule A', phase: VALIDATED_POOL_PHASE },
         },
       ]);
       standingsService.getStandings.mockResolvedValue(
@@ -239,13 +245,13 @@ describe('BracketsService', () => {
           groupId: 'group-a',
           fromPosition: 1,
           toPosition: 2,
-          group: { name: 'Poule A' },
+          group: { name: 'Poule A', phase: VALIDATED_POOL_PHASE },
         },
         {
           groupId: 'group-b',
           fromPosition: 1,
           toPosition: 2,
-          group: { name: 'Poule B' },
+          group: { name: 'Poule B', phase: VALIDATED_POOL_PHASE },
         },
       ]);
       standingsService.getStandings.mockImplementation(
@@ -318,7 +324,7 @@ describe('BracketsService', () => {
           groupId: 'group-a',
           fromPosition: 1,
           toPosition: 2,
-          group: { name: 'Poule A' },
+          group: { name: 'Poule A', phase: VALIDATED_POOL_PHASE },
         },
       ]);
       standingsService.getStandings.mockResolvedValue({
@@ -363,7 +369,7 @@ describe('BracketsService', () => {
           groupId: 'group-a',
           fromPosition: 1,
           toPosition: 1,
-          group: { name: 'Poule A' },
+          group: { name: 'Poule A', phase: VALIDATED_POOL_PHASE },
         },
       ]);
       standingsService.getStandings.mockResolvedValue(standingsFixture(['a1']));
@@ -418,13 +424,13 @@ describe('BracketsService', () => {
           groupId: 'group-a',
           fromPosition: 1,
           toPosition: 2,
-          group: { name: 'Poule A' },
+          group: { name: 'Poule A', phase: VALIDATED_POOL_PHASE },
         },
         {
           groupId: 'group-b',
           fromPosition: 1,
           toPosition: 2,
-          group: { name: 'Poule B' },
+          group: { name: 'Poule B', phase: VALIDATED_POOL_PHASE },
         },
       ]);
       // Neither pool has finished -- computeStandings would still rank every
@@ -466,6 +472,42 @@ describe('BracketsService', () => {
         include: expect.anything() as unknown,
       });
     });
+    it('keeps the placeholder labels while the pool scores are complete but not yet validated', async () => {
+      prisma.knockoutBracket.findUnique.mockResolvedValue(
+        bracketFixture({ size: 4 }),
+      );
+      const openPhase = { isSeedPhase: false, scoresValidatedAt: null };
+      prisma.qualificationRule.findMany.mockResolvedValue([
+        {
+          groupId: 'group-a',
+          fromPosition: 1,
+          toPosition: 2,
+          group: { name: 'Poule A', phase: openPhase },
+        },
+        {
+          groupId: 'group-b',
+          fromPosition: 1,
+          toPosition: 2,
+          group: { name: 'Poule B', phase: openPhase },
+        },
+      ]);
+      standingsService.getStandings.mockResolvedValue(
+        standingsFixture(['a1', 'a2'], true),
+      );
+
+      await service.generateMatches('org-1', TOURNAMENT_ID, 'bracket-1');
+
+      expect(prisma.match.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          bracketSlot: 0,
+          homeTeamId: null,
+          awayTeamId: null,
+          homeSourceLabel: '1er Poule A',
+          awaySourceLabel: '2e Poule B',
+        }) as unknown,
+        include: expect.anything() as unknown,
+      });
+    });
   });
 
   describe('generateAllMatches', () => {
@@ -501,13 +543,13 @@ describe('BracketsService', () => {
                     groupId: 'group-a',
                     fromPosition: 1,
                     toPosition: 1,
-                    group: { name: 'Poule A' },
+                    group: { name: 'Poule A', phase: VALIDATED_POOL_PHASE },
                   },
                   {
                     groupId: 'group-b',
                     fromPosition: 1,
                     toPosition: 1,
-                    group: { name: 'Poule B' },
+                    group: { name: 'Poule B', phase: VALIDATED_POOL_PHASE },
                   },
                 ]
               : [
@@ -515,13 +557,13 @@ describe('BracketsService', () => {
                     groupId: 'group-a',
                     fromPosition: 2,
                     toPosition: 2,
-                    group: { name: 'Poule A' },
+                    group: { name: 'Poule A', phase: VALIDATED_POOL_PHASE },
                   },
                   {
                     groupId: 'group-b',
                     fromPosition: 2,
                     toPosition: 2,
-                    group: { name: 'Poule B' },
+                    group: { name: 'Poule B', phase: VALIDATED_POOL_PHASE },
                   },
                 ],
           ),
@@ -748,7 +790,7 @@ describe('BracketsService', () => {
                 groupId: 'group-a',
                 fromPosition: 1,
                 toPosition: 4,
-                group: { name: 'Poule A' },
+                group: { name: 'Poule A', phase: VALIDATED_POOL_PHASE },
               },
             ],
             'phase-ko-b': [
@@ -756,7 +798,7 @@ describe('BracketsService', () => {
                 groupId: 'group-b',
                 fromPosition: 1,
                 toPosition: 4,
-                group: { name: 'Poule B' },
+                group: { name: 'Poule B', phase: VALIDATED_POOL_PHASE },
               },
             ],
             'phase-ko-c': [
@@ -764,7 +806,7 @@ describe('BracketsService', () => {
                 groupId: 'group-c',
                 fromPosition: 1,
                 toPosition: 2,
-                group: { name: 'Poule C' },
+                group: { name: 'Poule C', phase: VALIDATED_POOL_PHASE },
               },
             ],
           };
@@ -851,13 +893,13 @@ describe('BracketsService', () => {
                     groupId: 'group-a',
                     fromPosition: 1,
                     toPosition: 1,
-                    group: { name: 'Poule A' },
+                    group: { name: 'Poule A', phase: VALIDATED_POOL_PHASE },
                   },
                   {
                     groupId: 'group-b',
                     fromPosition: 1,
                     toPosition: 1,
-                    group: { name: 'Poule B' },
+                    group: { name: 'Poule B', phase: VALIDATED_POOL_PHASE },
                   },
                 ],
           ),

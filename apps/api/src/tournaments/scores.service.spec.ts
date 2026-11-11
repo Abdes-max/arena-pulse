@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { BracketsService } from './brackets.service';
+import { PhaseScoresService } from './phase-scores.service';
 import { RatingsService } from './ratings.service';
 import { RealtimeService } from './realtime.service';
 import { ScoresService } from './scores.service';
@@ -81,8 +82,8 @@ describe('ScoresService', () => {
   let tournamentsService: { assertTournamentIsEditable: jest.Mock };
   let bracketsService: {
     tryAdvanceRound: jest.Mock;
-    tryResolveFirstRound: jest.Mock;
   };
+  let phaseScoresService: { assertMatchScorable: jest.Mock };
   let ratingsService: { recordMatchResult: jest.Mock };
   let realtimeService: { emit: jest.Mock };
   let service: ScoresService;
@@ -96,7 +97,9 @@ describe('ScoresService', () => {
     };
     bracketsService = {
       tryAdvanceRound: jest.fn(),
-      tryResolveFirstRound: jest.fn(),
+    };
+    phaseScoresService = {
+      assertMatchScorable: jest.fn().mockResolvedValue(undefined),
     };
     ratingsService = { recordMatchResult: jest.fn() };
     realtimeService = { emit: jest.fn() };
@@ -104,6 +107,7 @@ describe('ScoresService', () => {
       prisma as unknown as PrismaService,
       tournamentsService as unknown as TournamentsService,
       bracketsService as unknown as BracketsService,
+      phaseScoresService as unknown as PhaseScoresService,
       ratingsService as unknown as RatingsService,
       realtimeService as unknown as RealtimeService,
     );

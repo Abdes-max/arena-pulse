@@ -340,6 +340,14 @@
       "forfeit": "Desistência: {{team}}",
       "undoForfeit": "Anular a desistência",
       "pending": "A aguardar as equipas",
+      "pools": {
+        "progress": "{{finished}}/{{total}} jogos de grupo terminados",
+        "validate": "Validar os resultados da fase de grupos",
+        "validatedHint": "Resultados dos grupos validados: o quadro final está sorteado. Os resultados estão bloqueados.",
+        "reopen": "Modificar os resultados",
+        "validateError": "Não foi possível validar os resultados dos grupos.",
+        "reopenError": "Não foi possível reabrir os resultados dos grupos."
+      },
       "homeScoreLabel": "Resultado em casa",
       "awayScoreLabel": "Resultado fora",
       "penaltyLabel": "Grandes penalidades",
@@ -462,6 +470,7 @@
       "minus": "Remove a goal",
       "plus": "Add a goal",
       "teamsUnknown": "teams known after the previous phase",
+      "poolLocked": "Grupo validado, resultados bloqueados",
       "validate": "Validate rotation",
       "saveRunning": "Save running score",
       "shiftLabel": "Shift",

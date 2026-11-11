@@ -6,6 +6,7 @@ import { PaymentsModule } from '../payments/payments.module';
 import { PermissionsModule } from '../permissions/permissions.module';
 import { RecapRenderService } from '../recap/recap-render.service';
 import { BracketsService } from './brackets.service';
+import { PhaseScoresService } from './phase-scores.service';
 import { CategoriesController } from './categories.controller';
 import { CategoriesService } from './categories.service';
 import { DashboardStatsController } from './dashboard-stats.controller';
@@ -123,6 +124,7 @@ import { WrappedService } from './wrapped.service';
     ScoresService,
     StandingsService,
     BracketsService,
+    PhaseScoresService,
     RatingsService,
     PublicService,
     RealtimeService,

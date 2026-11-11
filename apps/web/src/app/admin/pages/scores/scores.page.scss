@@ -308,3 +308,30 @@
     font-size: 0.9rem !important;
   }
 }
+
+.scores-page__pool-validation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-3);
+  margin-top: var(--ap-space-6);
+  padding: var(--ap-space-4);
+  background: var(--ap-color-surface);
+  border: 1px solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+
+  p {
+    margin: 0;
+    font-weight: 600;
+  }
+}
+
+.scores-page__pool-validation--done {
+  border-color: var(--ap-color-success);
+}
+
+.scores-page__locked-score {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}

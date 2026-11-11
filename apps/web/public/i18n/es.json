@@ -536,6 +536,7 @@
       "minus": "Remove a goal",
       "plus": "Add a goal",
       "teamsUnknown": "teams known after the previous phase",
+      "poolLocked": "Grupo validado, resultados bloqueados",
       "validate": "Validate rotation",
       "saveRunning": "Save running score",
       "errors": {
@@ -1260,6 +1261,14 @@
       "forfeit": "Renuncia: {{team}}",
       "undoForfeit": "Anular la renuncia",
       "pending": "Esperando a los equipos",
+      "pools": {
+        "progress": "{{finished}}/{{total}} partidos de grupo terminados",
+        "validate": "Validar los resultados de la fase de grupos",
+        "validatedHint": "Resultados de grupos validados: el cuadro final está sorteado. Los resultados están bloqueados.",
+        "reopen": "Modificar los resultados",
+        "validateError": "No se pudieron validar los resultados de los grupos.",
+        "reopenError": "No se pudieron reabrir los resultados de los grupos."
+      },
       "homeScoreLabel": "Resultado local",
       "awayScoreLabel": "Resultado visitante",
       "penaltyLabel": "Tanda de penaltis",

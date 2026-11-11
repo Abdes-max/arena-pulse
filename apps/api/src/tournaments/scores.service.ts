@@ -12,6 +12,7 @@ import { BatchMatchScoresDto } from './dto/batch-match-scores.dto';
 import { UpsertMatchScoreDto } from './dto/upsert-match-score.dto';
 import { matchBelongsToTournament } from './match-ownership.util';
 import { MATCH_INCLUDE, toMatchSummary } from './match-summary.util';
+import { PhaseScoresService } from './phase-scores.service';
 import { RatingsService } from './ratings.service';
 import { RealtimeService } from './realtime.service';
 import { checkSets, resolveScoring, ScoringConfig } from './sets-score.util';
@@ -62,6 +63,7 @@ export class ScoresService {
     private readonly prisma: PrismaService,
     private readonly tournamentsService: TournamentsService,
     private readonly bracketsService: BracketsService,
+    private readonly phaseScoresService: PhaseScoresService,
     private readonly ratingsService: RatingsService,
     private readonly realtimeService: RealtimeService,
   ) {}
@@ -78,6 +80,7 @@ export class ScoresService {
       tournamentId,
     );
     const match = await this.getOrThrowForTournament(tournamentId, matchId);
+    await this.phaseScoresService.assertMatchScorable(matchId);
     if (match.status === 'FORFEITED') {
       throw new ConflictException(
         'Ce match est déclaré forfait, annulez le forfait avant de saisir un score.',
@@ -131,6 +134,7 @@ export class ScoresService {
       tournamentId,
     );
     const match = await this.getOrThrowForTournament(tournamentId, matchId);
+    await this.phaseScoresService.assertMatchScorable(matchId);
     if (!match.score) {
       throw new BadRequestException('Aucun score saisi pour ce match.');
     }
@@ -156,13 +160,8 @@ export class ScoresService {
         match.round,
       );
     }
-    if (match.groupId) {
-      await this.bracketsService.tryResolveFirstRound(
-        organizationId,
-        tournamentId,
-        match.groupId,
-      );
-    }
+    // Pool scores no longer draw the bracket by themselves: the organizer
+    // validates the phase (PhaseScoresService.validatePoolScores).
     await this.ratingsService.recordMatchResult(organizationId, updated);
     this.realtimeService.emit({ tournamentId, type: 'match-updated', matchId });
     return toMatchSummary(updated);
@@ -197,6 +196,7 @@ export class ScoresService {
         tournamentId,
         entry.matchId,
       );
+      await this.phaseScoresService.assertMatchScorable(entry.matchId);
       if (match.status === 'FORFEITED') {
         throw new ConflictException(
           'Un match de la série est déclaré forfait, annulez le forfait avant de saisir un score.',
@@ -241,6 +241,7 @@ export class ScoresService {
       tournamentId,
     );
     const match = await this.getOrThrowForTournament(tournamentId, matchId);
+    await this.phaseScoresService.assertMatchScorable(matchId);
     if (!match.score) {
       throw new NotFoundException('Aucun score saisi pour ce match.');
     }
@@ -266,6 +267,7 @@ export class ScoresService {
       tournamentId,
     );
     const match = await this.getOrThrowForTournament(tournamentId, matchId);
+    await this.phaseScoresService.assertMatchScorable(matchId);
     if (dto.teamId !== match.homeTeamId && dto.teamId !== match.awayTeamId) {
       throw new BadRequestException(
         'Cette équipe ne participe pas à ce match.',
@@ -289,13 +291,6 @@ export class ScoresService {
         match.round,
       );
     }
-    if (match.groupId) {
-      await this.bracketsService.tryResolveFirstRound(
-        organizationId,
-        tournamentId,
-        match.groupId,
-      );
-    }
     await this.ratingsService.recordMatchResult(organizationId, updated);
     this.realtimeService.emit({ tournamentId, type: 'match-updated', matchId });
     return toMatchSummary(updated);
@@ -311,6 +306,7 @@ export class ScoresService {
       tournamentId,
     );
     const match = await this.getOrThrowForTournament(tournamentId, matchId);
+    await this.phaseScoresService.assertMatchScorable(matchId);
     if (match.status !== 'FORFEITED') {
       throw new BadRequestException("Ce match n'est pas déclaré forfait.");
     }

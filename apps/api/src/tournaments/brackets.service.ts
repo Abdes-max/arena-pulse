@@ -554,6 +554,82 @@ export class BracketsService {
   }
 
   /**
+   * Puts a bracket back to "teams to be determined": every match loses its
+   * teams, score and forfeit, and gets its "1er Poule A" / "Vainqueur ..."
+   * placeholder labels back. Used when the pool scores feeding it are
+   * reopened. Returns the ids of the matches it reset.
+   */
+  async resetBracketToPlaceholders(
+    organizationId: string,
+    tournamentId: string,
+    bracketId: string,
+  ): Promise<string[]> {
+    const bracket = await this.prisma.knockoutBracket.findUnique({
+      where: { id: bracketId },
+      include: { phase: { include: { category: true } } },
+    });
+    if (!bracket) {
+      return [];
+    }
+    const matches = await this.prisma.match.findMany({
+      where: { knockoutBracketId: bracketId },
+      select: {
+        id: true,
+        round: true,
+        bracketSlot: true,
+        isThirdPlaceMatch: true,
+      },
+    });
+
+    const totalRounds = Math.log2(bracket.size);
+    const slots = await this.resolveQualificationSlots(
+      organizationId,
+      tournamentId,
+      bracket.phaseId,
+    );
+    // Labels only when the rules describe the whole bracket; otherwise the
+    // matches just lose their teams.
+    const defs: SlotDef[] =
+      Number.isInteger(totalRounds) && slots.length === bracket.size
+        ? Array.from({ length: totalRounds }, (_, index) =>
+            this.buildRoundSlotDefs(
+              bracket,
+              slots.map((slot) => ({ ...slot, teamId: null })),
+              index + 1,
+            ),
+          ).flat()
+        : [];
+
+    await this.prisma.$transaction([
+      this.prisma.matchScore.deleteMany({
+        where: { match: { knockoutBracketId: bracketId } },
+      }),
+      ...matches.map((match) => {
+        const def = defs.find(
+          (candidate) =>
+            candidate.round === match.round &&
+            candidate.bracketSlot === match.bracketSlot &&
+            candidate.isThirdPlaceMatch === match.isThirdPlaceMatch,
+        );
+        return this.prisma.match.update({
+          where: { id: match.id },
+          data: {
+            status: 'SCHEDULED',
+            forfeitedTeamId: null,
+            homeTeamId: null,
+            awayTeamId: null,
+            ...(def && {
+              homeSourceLabel: def.homeSourceLabel,
+              awaySourceLabel: def.awaySourceLabel,
+            }),
+          },
+        });
+      }),
+    ]);
+    return matches.map((match) => match.id);
+  }
+
+  /**
    * Called after a pool match's score is validated or it's forfeited.
    * Mirrors tryAdvanceRound, but for round 1: once a pool becomes complete,
    * checks every knockout phase it feeds (directly via QualificationRule or
@@ -673,7 +749,14 @@ export class BracketsService {
   ): Promise<QualificationSlot[]> {
     const rules = await this.prisma.qualificationRule.findMany({
       where: { targetPhaseId },
-      include: { group: { select: { name: true } } },
+      include: {
+        group: {
+          select: {
+            name: true,
+            phase: { select: { isSeedPhase: true, scoresValidatedAt: true } },
+          },
+        },
+      },
     });
 
     const standingsByGroupId = new Map<
@@ -748,7 +831,36 @@ export class BracketsService {
         targetPhaseId,
       );
 
-    return [...directQualificationSlots, ...crossGroupSlots];
+    const slots = [...directQualificationSlots, ...crossGroupSlots];
+    // The teams are only revealed once the organizer has validated the pool
+    // scores feeding this phase (PhaseScoresService); until then only the
+    // labels ("1er Poule A") show, so a draw is never frozen from scores that
+    // can still change.
+    return (await this.sourcePoolsValidated(rules, targetPhaseId))
+      ? slots
+      : slots.map((slot) => ({ ...slot, teamId: null }));
+  }
+
+  /** True when every real pool phase feeding `targetPhaseId` has its scores validated (the fictitious seed phase of a no-pool format never needs it). */
+  private async sourcePoolsValidated(
+    directRules: {
+      group: {
+        phase: { isSeedPhase: boolean; scoresValidatedAt: Date | null };
+      };
+    }[],
+    targetPhaseId: string,
+  ): Promise<boolean> {
+    const crossGroupRules =
+      await this.prisma.crossGroupQualificationRule.findMany({
+        where: { targetPhaseId },
+        select: {
+          phase: { select: { isSeedPhase: true, scoresValidatedAt: true } },
+        },
+      });
+    return [
+      ...directRules.map((rule) => rule.group.phase),
+      ...crossGroupRules.map((rule) => rule.phase),
+    ].every((phase) => phase.isSeedPhase || phase.scoresValidatedAt !== null);
   }
 
   private async assertFieldsBelongToTournament(

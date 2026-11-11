@@ -536,6 +536,7 @@
       "minus": "Remove a goal",
       "plus": "Add a goal",
       "teamsUnknown": "teams known after the previous phase",
+      "poolLocked": "Girone convalidato, risultati bloccati",
       "validate": "Validate rotation",
       "saveRunning": "Save running score",
       "errors": {
@@ -1260,6 +1261,14 @@
       "forfeit": "A tavolino: {{team}}",
       "undoForfeit": "Annulla la sconfitta a tavolino",
       "pending": "In attesa delle squadre",
+      "pools": {
+        "progress": "{{finished}}/{{total}} partite dei gironi terminate",
+        "validate": "Convalida i risultati della fase a gironi",
+        "validatedHint": "Risultati dei gironi convalidati: il tabellone finale è sorteggiato. I risultati sono bloccati.",
+        "reopen": "Modifica i risultati",
+        "validateError": "Impossibile convalidare i risultati dei gironi.",
+        "reopenError": "Impossibile riaprire i risultati dei gironi."
+      },
       "homeScoreLabel": "Risultato in casa",
       "awayScoreLabel": "Risultato in trasferta",
       "penaltyLabel": "Rigori",

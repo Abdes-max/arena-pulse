@@ -238,6 +238,13 @@ describe('Knockout bracket generation and advancement (e2e)', () => {
       ).expect(201);
     }
 
+    // The organizer locks the pool scores, which reveals the bracket's teams.
+    await auth(
+      request(app.getHttpServer()).post(
+        `${base}/${tournamentId}/phases/${poolPhaseId}/scores/validate`,
+      ),
+    ).expect(201);
+
     const generatedRes = await auth(
       request(app.getHttpServer()).post(
         `${base}/${tournamentId}/knockout-brackets/${bracketId}/generate-matches`,

@@ -43,7 +43,7 @@
             }}
           </p>
 
-          @for (section of matchesByRoundSection(); track section) {
+          @for (section of matchesByRoundSection(); track section; let sectionIndex = $index) {
             <section class="scores-page__slot">
               <h2>{{ section.label }}</h2>
               @for (subgroup of section.subgroups; track subgroup) {
@@ -69,6 +69,23 @@
                         <ap-button type="button" variant="ghost" (click)="undoForfeit(match)">
                           {{ 'admin.scores.undoForfeit' | transloco }}
                         </ap-button>
+                      } @else if (poolLocked(match)) {
+                        <span class="scores-page__team scores-page__team--home">
+                          <span class="scores-page__team-name">{{
+                            match.homeTeam?.name ?? '?'
+                          }}</span>
+                        </span>
+                        <span class="scores-page__locked-score"
+                          >{{ match.score?.homeScore }} - {{ match.score?.awayScore }}</span
+                        >
+                        <span class="scores-page__team scores-page__team--away">
+                          <span class="scores-page__team-name">{{
+                            match.awayTeam?.name ?? '?'
+                          }}</span>
+                        </span>
+                        <span class="scores-page__validated-badge">{{
+                          'admin.scores.validated' | transloco
+                        }}</span>
                       } @else if (pendingOpponents(match)) {
                         <span class="scores-page__team scores-page__team--home">
                           @if (logoUrl(match.homeTeam?.logoUrl); as logo) {
@@ -214,6 +231,35 @@
                 </ul>
               }
             </section>
+            @if (sectionIndex === lastPoolSectionIndex()) {
+              @if (poolValidation(); as validation) {
+                <div
+                  class="scores-page__pool-validation"
+                  [class.scores-page__pool-validation--done]="validation.validated"
+                >
+                  @if (validation.validated) {
+                    <p>{{ 'admin.scores.pools.validatedHint' | transloco }}</p>
+                    <ap-button type="button" variant="ghost" (click)="reopenPools()">{{
+                      'admin.scores.pools.reopen' | transloco
+                    }}</ap-button>
+                  } @else {
+                    <p>
+                      {{
+                        'admin.scores.pools.progress'
+                          | transloco: { finished: validation.finished, total: validation.total }
+                      }}
+                    </p>
+                    <ap-button
+                      type="button"
+                      [disabled]="validation.finished < validation.total"
+                      (click)="validatePools()"
+                    >
+                      {{ 'admin.scores.pools.validate' | transloco }}
+                    </ap-button>
+                  }
+                </div>
+              }
+            }
           }
         }
       }
