@@ -1,0 +1,18 @@
+<div class="ap-time-filter" role="group" [attr.aria-label]="label()">
+  <button
+    type="button"
+    class="ap-time-filter__button"
+    [attr.aria-pressed]="value() === 'upcoming'"
+    (click)="toggle('upcoming')"
+  >
+    {{ upcomingLabel() }}
+  </button>
+  <button
+    type="button"
+    class="ap-time-filter__button"
+    [attr.aria-pressed]="value() === 'past'"
+    (click)="toggle('past')"
+  >
+    {{ pastLabel() }}
+  </button>
+</div>

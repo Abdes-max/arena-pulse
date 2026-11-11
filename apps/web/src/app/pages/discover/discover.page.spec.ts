@@ -129,4 +129,40 @@ describe('DiscoverPage', () => {
 
     httpMock.verify();
   });
+
+  it('sends the À venir / Passés choice to the search, and drops it when pressed again', async () => {
+    await configureTestBed();
+    const fixture = TestBed.createComponent(DiscoverPage);
+    const httpMock = TestBed.inject(HttpTestingController);
+    fixture.detectChanges();
+    const root = fixture.nativeElement as HTMLElement;
+    httpMock.expectOne('http://localhost/api/v1/sports').flush([]);
+    await wait(PAST_DEBOUNCE_MS);
+    httpMock
+      .expectOne((r) => r.url === SEARCH_URL && !r.params.has('time'))
+      .flush({ items: [], total: 0 });
+
+    const [upcoming, past] = Array.from(
+      root.querySelectorAll<HTMLButtonElement>('.ap-time-filter__button'),
+    );
+    past.click();
+    await wait(PAST_DEBOUNCE_MS);
+    httpMock
+      .expectOne((r) => r.url === SEARCH_URL && r.params.get('time') === 'past')
+      .flush({ items: [], total: 0 });
+
+    upcoming.click();
+    await wait(PAST_DEBOUNCE_MS);
+    httpMock
+      .expectOne((r) => r.url === SEARCH_URL && r.params.get('time') === 'upcoming')
+      .flush({ items: [], total: 0 });
+
+    upcoming.click();
+    await wait(PAST_DEBOUNCE_MS);
+    httpMock
+      .expectOne((r) => r.url === SEARCH_URL && !r.params.has('time'))
+      .flush({ items: [], total: 0 });
+
+    httpMock.verify();
+  });
 });

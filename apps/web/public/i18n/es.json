@@ -40,7 +40,10 @@
       "title": "Eventos publicados",
       "searchLabel": "Buscar un torneo",
       "searchPlaceholder": "Buscar un torneo…",
-      "empty": "No se encontró ningún torneo."
+      "empty": "No se encontró ningún torneo.",
+      "timeLabel": "Período",
+      "upcoming": "Próximos",
+      "past": "Pasados"
     },
     "features": {
       "title": "Todo lo necesario para dirigir una competición, nada superfluo",
@@ -191,7 +194,10 @@
       "allSports": "Todos los deportes",
       "locationLabel": "Lugar",
       "locationPlaceholder": "Ciudad, sala…",
-      "dateFromLabel": "A partir de"
+      "dateFromLabel": "A partir de",
+      "timeLabel": "Período",
+      "upcoming": "Próximos",
+      "past": "Pasados"
     },
     "resultsCount": "{{count}} torneo(s) encontrado(s)",
     "empty": "Ningún torneo coincide con tu búsqueda.",

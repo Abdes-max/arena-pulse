@@ -40,7 +40,10 @@
       "title": "Published events",
       "searchLabel": "Search a tournament",
       "searchPlaceholder": "Search a tournament…",
-      "empty": "No tournament found."
+      "empty": "No tournament found.",
+      "timeLabel": "Period",
+      "upcoming": "Upcoming",
+      "past": "Past"
     },
     "features": {
       "title": "Everything you need to run a competition, nothing you don't",
@@ -293,7 +296,10 @@
       "allSports": "All sports",
       "locationLabel": "Location",
       "locationPlaceholder": "City, venue…",
-      "dateFromLabel": "From"
+      "dateFromLabel": "From",
+      "timeLabel": "Period",
+      "upcoming": "Upcoming",
+      "past": "Past"
     },
     "resultsCount": "{{count}} tournament(s) found",
     "empty": "No tournament matches your search.",

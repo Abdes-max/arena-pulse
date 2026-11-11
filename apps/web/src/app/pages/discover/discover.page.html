@@ -48,6 +48,14 @@
       [value]="dateFrom()"
       (valueChange)="dateFrom.set($event)"
     />
+    <ap-time-filter
+      class="discover-page__filter-time"
+      [label]="'discover.filters.timeLabel' | transloco"
+      [upcomingLabel]="'discover.filters.upcoming' | transloco"
+      [pastLabel]="'discover.filters.past' | transloco"
+      [value]="timeFilter()"
+      (valueChange)="timeFilter.set($event)"
+    />
   </form>
 
   @if (hasSearched() && !loading() && items().length === 0) {

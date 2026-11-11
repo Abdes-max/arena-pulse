@@ -40,7 +40,10 @@
       "title": "Événements publiés",
       "searchLabel": "Rechercher un tournoi",
       "searchPlaceholder": "Rechercher un tournoi…",
-      "empty": "Aucun tournoi trouvé."
+      "empty": "Aucun tournoi trouvé.",
+      "timeLabel": "Période",
+      "upcoming": "À venir",
+      "past": "Passés"
     },
     "features": {
       "title": "Tout ce qu'il faut pour piloter une compétition, rien de superflu",
@@ -293,7 +296,10 @@
       "allSports": "Tous les sports",
       "locationLabel": "Lieu",
       "locationPlaceholder": "Ville, salle…",
-      "dateFromLabel": "À partir du"
+      "dateFromLabel": "À partir du",
+      "timeLabel": "Période",
+      "upcoming": "À venir",
+      "past": "Passés"
     },
     "resultsCount": "{{count}} tournoi(s) trouvé(s)",
     "empty": "Aucun tournoi ne correspond à votre recherche.",

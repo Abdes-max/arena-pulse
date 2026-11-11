@@ -21,6 +21,8 @@ import {
   ThemeModeToggle,
   TournamentCard,
   TournamentMarquee,
+  TimeFilter,
+  TimeFilterValue,
 } from 'design-system';
 import {
   LanguageCode,
@@ -44,6 +46,7 @@ const PAGE_SIZE = 20;
   selector: 'app-tournament-entry-page',
   imports: [
     Button,
+    TimeFilter,
     IonContent,
     IonHeader,
     IonToolbar,
@@ -132,6 +135,7 @@ export class TournamentEntryPage {
   protected readonly sportId = signal('');
   protected readonly place = signal('');
   protected readonly dateFrom = signal('');
+  protected readonly timeFilter = signal<TimeFilterValue>('');
   protected readonly sports = signal<PublicSport[]>([]);
   protected readonly sportOptions = computed(() => {
     const lang = this.language();
@@ -161,6 +165,7 @@ export class TournamentEntryPage {
     sportId: this.sportId(),
     location: this.place().trim(),
     dateFrom: this.dateFrom(),
+    time: this.timeFilter(),
   }));
 
   constructor() {
@@ -181,7 +186,13 @@ export class TournamentEntryPage {
   }
 
   private async runSearch(
-    filters: { q: string; sportId: string; location: string; dateFrom: string },
+    filters: {
+      q: string;
+      sportId: string;
+      location: string;
+      dateFrom: string;
+      time: TimeFilterValue;
+    },
     append: boolean,
   ): Promise<void> {
     this.searchLoading.set(true);
@@ -191,6 +202,7 @@ export class TournamentEntryPage {
         sportId: filters.sportId || undefined,
         location: filters.location || undefined,
         dateFrom: filters.dateFrom || undefined,
+        time: filters.time || undefined,
         page: this.searchPage,
         pageSize: PAGE_SIZE,
       });

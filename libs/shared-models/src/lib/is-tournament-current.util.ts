@@ -28,3 +28,17 @@ export function isTournamentCurrentOrUpcoming(
   todayStart.setHours(0, 0, 0, 0);
   return new Date(effectiveEnd) >= todayStart;
 }
+
+/**
+ * "Passés" filter of the public lists: a tournament with at least one date
+ * whose end has gone by (same end-of-tournament rule as
+ * isTournamentCurrentOrUpcoming). Everything else, undated tournaments
+ * included, is "à venir".
+ */
+export function isTournamentPastPublic(
+  tournament: Pick<PublicTournamentSummary, 'startDate' | 'endDate' | 'lastMatchDate'>,
+  now = new Date(),
+): boolean {
+  const hasDate = !!(tournament.startDate || tournament.endDate || tournament.lastMatchDate);
+  return hasDate && !isTournamentCurrentOrUpcoming(tournament, now);
+}

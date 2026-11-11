@@ -91,6 +91,8 @@ export interface PublicTournamentSearchQuery {
   sportId?: string;
   location?: string;
   dateFrom?: string;
+  /** Only events still to come (or running), or only those already over. */
+  time?: 'upcoming' | 'past';
   page: number;
   pageSize: number;
 }

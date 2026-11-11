@@ -4,7 +4,15 @@ import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { AssetUrlService, PublicApiService } from 'api-client';
-import { LanguageSwitcher, Logo, Select, TextField, TournamentCard } from 'design-system';
+import {
+  LanguageSwitcher,
+  Logo,
+  Select,
+  TextField,
+  TimeFilter,
+  TimeFilterValue,
+  TournamentCard,
+} from 'design-system';
 import { LanguageCode, LanguageService, SUPPORTED_LANGUAGES } from 'design-tokens';
 import { debounceTime } from 'rxjs';
 import { PublicSport, PublicTournamentDirectoryItem } from 'shared-models';
@@ -13,7 +21,16 @@ const PAGE_SIZE = 20;
 
 @Component({
   selector: 'app-discover-page',
-  imports: [RouterLink, LanguageSwitcher, Logo, TextField, Select, TournamentCard, TranslocoPipe],
+  imports: [
+    RouterLink,
+    LanguageSwitcher,
+    Logo,
+    TextField,
+    Select,
+    TimeFilter,
+    TournamentCard,
+    TranslocoPipe,
+  ],
   templateUrl: './discover.page.html',
   styleUrl: './discover.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -32,6 +49,7 @@ export class DiscoverPage {
   protected readonly sportId = signal('');
   protected readonly place = signal('');
   protected readonly dateFrom = signal('');
+  protected readonly timeFilter = signal<TimeFilterValue>('');
   protected readonly sports = signal<PublicSport[]>([]);
   protected readonly sportOptions = computed(() => {
     const lang = this.language();
@@ -65,6 +83,7 @@ export class DiscoverPage {
     sportId: this.sportId(),
     location: this.place().trim(),
     dateFrom: this.dateFrom(),
+    time: this.timeFilter(),
   }));
 
   constructor() {
@@ -96,7 +115,13 @@ export class DiscoverPage {
   }
 
   private async runSearch(
-    filters: { q: string; sportId: string; location: string; dateFrom: string },
+    filters: {
+      q: string;
+      sportId: string;
+      location: string;
+      dateFrom: string;
+      time: TimeFilterValue;
+    },
     append: boolean,
   ): Promise<void> {
     this.loading.set(true);
@@ -106,6 +131,7 @@ export class DiscoverPage {
         sportId: filters.sportId || undefined,
         location: filters.location || undefined,
         dateFrom: filters.dateFrom || undefined,
+        time: filters.time || undefined,
         page: this.page,
         pageSize: PAGE_SIZE,
       });

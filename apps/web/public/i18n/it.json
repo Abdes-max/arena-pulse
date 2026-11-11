@@ -40,7 +40,10 @@
       "title": "Eventi pubblicati",
       "searchLabel": "Cerca un torneo",
       "searchPlaceholder": "Cerca un torneo…",
-      "empty": "Nessun torneo trovato."
+      "empty": "Nessun torneo trovato.",
+      "timeLabel": "Periodo",
+      "upcoming": "In arrivo",
+      "past": "Passati"
     },
     "features": {
       "title": "Tutto ciò che serve per gestire una competizione, niente di superfluo",
@@ -191,7 +194,10 @@
       "allSports": "Tutti gli sport",
       "locationLabel": "Luogo",
       "locationPlaceholder": "Città, palazzetto…",
-      "dateFromLabel": "A partire da"
+      "dateFromLabel": "A partire da",
+      "timeLabel": "Periodo",
+      "upcoming": "In arrivo",
+      "past": "Passati"
     },
     "resultsCount": "{{count}} torneo/i trovato/i",
     "empty": "Nessun torneo corrisponde alla tua ricerca.",

@@ -18,7 +18,10 @@
         "allSports": "All sports",
         "locationLabel": "Location",
         "locationPlaceholder": "City, venue…",
-        "dateFromLabel": "From"
+        "dateFromLabel": "From",
+        "timeLabel": "Period",
+        "upcoming": "Upcoming",
+        "past": "Past"
       },
       "empty": "No event found.",
       "loadMore": "Load more",
