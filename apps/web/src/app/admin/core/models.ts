@@ -163,6 +163,9 @@ export interface TournamentDetail extends Tournament {
   updatedAt: string;
   teamsCanReferee: boolean;
   isListed: boolean;
+  format?: string | null;
+  level?: string | null;
+  registrationsOpen?: boolean;
   description: string | null;
   rules: string | null;
   practicalInfo: string | null;
@@ -191,6 +194,7 @@ export interface Category {
   position: number;
   registrationFeeCents: number | null;
   registrationFeeCurrency: string | null;
+  maxTeams?: number | null;
   divisions: Division[];
 }
 

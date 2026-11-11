@@ -1,120 +1,168 @@
 .registration-list-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--ap-space-6) var(--ap-space-4);
   display: flex;
   flex-direction: column;
   gap: var(--ap-space-4);
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: var(--ap-space-6);
-
-  h1 {
-    font-family: var(--ap-font-body);
-    color: var(--ap-color-fg);
-    margin: 0;
-  }
 }
 
 .registration-list-page__error {
   color: var(--ap-color-error);
 }
 
-.registration-list-page__table {
-  width: 100%;
-  border-collapse: collapse;
+.registration-list-page__hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--ap-color-muted);
+}
 
-  th,
-  td {
-    text-align: left;
-    padding: var(--ap-space-3);
-    border-bottom: 1px solid var(--ap-color-border);
-    color: var(--ap-color-fg);
+.registration-list-page__settings {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-3);
+  padding: var(--ap-space-4);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+}
+
+.registration-list-page__switch {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-3);
+
+  input {
+    width: 22px;
+    height: 22px;
   }
 
-  th {
-    font-weight: 600;
+  span {
+    display: flex;
+    flex-direction: column;
   }
 
-  a {
-    color: var(--ap-color-primary);
+  small {
+    color: var(--ap-color-muted);
   }
 }
 
-// Widest table in the admin (6 columns, incl. a two-line manager cell with
-// a mailto link) -- same table -> stacked card treatment as team-list.page
-// (Phase 3) rather than shrinking 6 columns onto a phone width.
-@media (max-width: 768px) {
-  .registration-list-page__table {
-    display: block;
-    width: 100%;
+.registration-list-page__row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--ap-space-3);
 
-    thead {
-      display: none;
-    }
-
-    tbody {
-      display: block;
-    }
+  ap-text-field {
+    min-width: 0;
   }
+}
 
-  .registration-list-page__row {
-    display: block;
-    margin-bottom: var(--ap-space-4);
+.registration-list-page__textarea {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+  font-weight: 600;
+
+  textarea {
     padding: var(--ap-space-3);
+    font: inherit;
+    font-weight: 400;
+    color: var(--ap-color-fg);
+    background: var(--ap-color-bg);
     border: var(--ap-border-width) solid var(--ap-color-border);
     border-radius: var(--ap-radius-md);
   }
+}
 
-  .registration-list-page__cell {
+.registration-list-page__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ap-space-2);
+}
+
+.registration-list-page__filter {
+  padding: var(--ap-space-2) var(--ap-space-3);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ap-color-fg);
+  background: transparent;
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: 999px;
+  cursor: pointer;
+
+  &[aria-selected='true'] {
+    color: var(--ap-color-on-signal);
+    background: var(--ap-color-signal);
+    border-color: var(--ap-color-signal);
+  }
+}
+
+.registration-list-page__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-3);
+}
+
+.registration-list-page__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+  padding: var(--ap-space-3) var(--ap-space-4);
+  background: var(--ap-color-bg);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+}
+
+.registration-list-page__item-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--ap-space-2);
+
+  span {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--ap-space-3);
-    padding: var(--ap-space-2) 0;
-    border-bottom: 1px solid var(--ap-color-border);
-
-    &:last-child {
-      border-bottom: none;
-    }
-  }
-
-  // The manager cell's own content (name + line break + mailto link) reads
-  // better stacked under its label than squeezed onto the label's row.
-  .registration-list-page__cell--manager {
     flex-direction: column;
-    align-items: flex-start;
   }
 
-  .registration-list-page__cell--team::before,
-  .registration-list-page__cell--category::before,
-  .registration-list-page__cell--manager::before,
-  .registration-list-page__cell--amount::before,
-  .registration-list-page__cell--status::before,
-  .registration-list-page__cell--date::before {
-    font-size: 0.75rem;
-    font-weight: 600;
+  small {
     color: var(--ap-color-muted);
   }
+}
 
-  .registration-list-page__cell--team::before {
-    content: 'Équipe';
-  }
+.registration-list-page__contact,
+.registration-list-page__players {
+  margin: 0;
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
 
-  .registration-list-page__cell--category::before {
-    content: 'Catégorie';
-  }
+.registration-list-page__players {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ap-space-1) var(--ap-space-3);
+  color: var(--ap-color-muted);
+}
 
-  .registration-list-page__cell--manager::before {
-    content: 'Responsable';
-  }
+.registration-list-page__actions,
+.registration-list-page__reject {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--ap-space-2);
+}
 
-  .registration-list-page__cell--amount::before {
-    content: 'Montant';
-  }
+.registration-list-page__payment {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  font-size: 0.9rem;
 
-  .registration-list-page__cell--status::before {
-    content: 'Statut';
-  }
-
-  .registration-list-page__cell--date::before {
-    content: 'Inscrite le';
+  select {
+    min-height: 36px;
+    font: inherit;
   }
 }

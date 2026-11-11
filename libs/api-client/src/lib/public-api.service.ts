@@ -19,6 +19,7 @@ import {
   Qualification,
   Standings,
   TournamentWrapped,
+  PublicRegistrationInfo,
 } from 'shared-models';
 import { API_CLIENT_CONFIG } from './api-client.config';
 
@@ -50,6 +51,7 @@ export class PublicApiService {
     if (query.location) params = params.set('location', query.location);
     if (query.dateFrom) params = params.set('dateFrom', query.dateFrom);
     if (query.time) params = params.set('time', query.time);
+    if (query.registration) params = params.set('registration', query.registration);
     return firstValueFrom(
       this.http.get<PublicTournamentSearchResult>(
         `${this.config.apiUrl}/public/tournaments/search`,
@@ -114,6 +116,13 @@ export class PublicApiService {
       this.http.get<Match[]>(`${this.base(slug)}/matches/upcoming`, {
         params: limit !== undefined ? new HttpParams().set('limit', limit) : undefined,
       }),
+    );
+  }
+
+  /** The registration block of a tournament: open or not, places, price, payment details. */
+  getRegistrationInfo(slug: string): Promise<PublicRegistrationInfo> {
+    return firstValueFrom(
+      this.http.get<PublicRegistrationInfo>(`${this.base(slug)}/registration-info`),
     );
   }
 

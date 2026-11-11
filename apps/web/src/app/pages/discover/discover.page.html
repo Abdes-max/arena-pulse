@@ -56,6 +56,14 @@
       [value]="timeFilter()"
       (valueChange)="timeFilter.set($event)"
     />
+    <button
+      type="button"
+      class="discover-page__registration-filter"
+      [attr.aria-pressed]="registrationOnly()"
+      (click)="registrationOnly.set(!registrationOnly())"
+    >
+      {{ 'discover.filters.registrationOpen' | transloco }}
+    </button>
   </form>
 
   @if (hasSearched() && !loading() && items().length === 0) {
@@ -76,6 +84,10 @@
             [location]="t.location"
             [logoUrl]="t.logoUrl"
             [organizerName]="t.organizerName"
+            [format]="t.format ?? null"
+            [level]="t.level ?? null"
+            [registrationLabel]="t.band.label"
+            [priceLabel]="t.band.price"
           />
         </a>
       }

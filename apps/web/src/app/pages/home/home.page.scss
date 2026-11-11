@@ -139,3 +139,56 @@
   font-weight: 600;
   color: var(--ap-color-fg);
 }
+
+.home-page__registration {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-3);
+  margin-bottom: var(--ap-space-6);
+  padding: var(--ap-space-4);
+  color: var(--ap-color-on-primary);
+  background: var(--ap-color-primary);
+  border-radius: var(--ap-radius-lg);
+
+  h2 {
+    margin: 0;
+    font-size: 1.2rem;
+  }
+}
+
+.home-page__registration-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-3);
+}
+
+.home-page__registration-cta {
+  padding: var(--ap-space-2) var(--ap-space-4);
+  font-weight: 700;
+  color: var(--ap-color-primary);
+  text-decoration: none;
+  background: #fff;
+  border-radius: var(--ap-radius-md);
+}
+
+.home-page__registration-categories {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--ap-space-1);
+
+  li {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--ap-space-2);
+  }
+}
+
+.home-page__registration-payment {
+  margin: 0;
+  font-size: 0.9rem;
+}

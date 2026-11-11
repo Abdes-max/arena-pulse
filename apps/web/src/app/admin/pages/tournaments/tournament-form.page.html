@@ -643,6 +643,24 @@
                         >{{ 'admin.tournamentForm.categories.saveFee' | transloco }}</ap-button
                       >
                     </div>
+                    <div class="tournament-form-page__field-row">
+                      <ap-text-field
+                        [label]="'admin.tournamentForm.categories.capacityLabel' | transloco"
+                        type="number"
+                        [min]="1"
+                        [placeholder]="
+                          'admin.tournamentForm.categories.capacityPlaceholder' | transloco
+                        "
+                        [value]="capacityDraftFor(category)"
+                        (valueChange)="onCapacityDraftChange(category.id, $event)"
+                      />
+                      <ap-button
+                        type="button"
+                        variant="secondary"
+                        (click)="saveCategoryCapacity(category)"
+                        >{{ 'admin.tournamentForm.categories.saveCapacity' | transloco }}</ap-button
+                      >
+                    </div>
                     @if (category.divisions.length > 0) {
                       <ul class="tournament-form-page__chips">
                         @for (division of category.divisions; track division.id) {

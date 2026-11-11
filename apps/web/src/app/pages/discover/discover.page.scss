@@ -125,3 +125,21 @@ h1 {
     cursor: not-allowed;
   }
 }
+
+.discover-page__registration-filter {
+  align-self: center;
+  padding: var(--ap-space-2) var(--ap-space-4);
+  font: inherit;
+  font-weight: 600;
+  color: var(--ap-color-fg);
+  background: var(--ap-color-surface);
+  border: 1px solid var(--ap-color-border);
+  border-radius: 999px;
+  cursor: pointer;
+
+  &[aria-pressed='true'] {
+    color: var(--ap-color-on-primary);
+    background: var(--ap-color-primary);
+    border-color: var(--ap-color-primary);
+  }
+}

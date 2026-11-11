@@ -3,51 +3,221 @@
 
   @if (loading()) {
     <p>{{ 'admin.registrationList.loading' | transloco }}</p>
-  } @else if (errorMessage(); as message) {
-    <p class="registration-list-page__error" role="alert">{{ message | transloco }}</p>
-  } @else if (registrations().length === 0) {
-    <p>{{ 'admin.registrationList.empty' | transloco }}</p>
   } @else {
-    <table class="registration-list-page__table">
-      <thead>
-        <tr>
-          <th>{{ 'admin.registrationList.table.team' | transloco }}</th>
-          <th>{{ 'admin.registrationList.table.category' | transloco }}</th>
-          <th>{{ 'admin.registrationList.table.manager' | transloco }}</th>
-          <th>{{ 'admin.registrationList.table.amount' | transloco }}</th>
-          <th>{{ 'admin.registrationList.table.status' | transloco }}</th>
-          <th>{{ 'admin.registrationList.table.registeredAt' | transloco }}</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (registration of registrations(); track registration.id) {
-          <tr class="registration-list-page__row">
-            <td class="registration-list-page__cell registration-list-page__cell--team">
-              {{ registration.teamName }}
-            </td>
-            <td class="registration-list-page__cell registration-list-page__cell--category">
-              {{ registration.categoryName }}
-            </td>
-            <td class="registration-list-page__cell registration-list-page__cell--manager">
-              {{ registration.registrant.firstName }} {{ registration.registrant.lastName }}
-              <br />
-              <a [href]="'mailto:' + registration.managerEmail">{{ registration.managerEmail }}</a>
-            </td>
-            <td class="registration-list-page__cell registration-list-page__cell--amount">
-              {{ formatAmount(registration) }}
-            </td>
-            <td class="registration-list-page__cell registration-list-page__cell--status">
+    @if (errorMessage(); as message) {
+      <p class="registration-list-page__error" role="alert">{{ message | transloco }}</p>
+    }
+
+    @if (settings(); as s) {
+      <!-- Opening settings: the switch, optional dates, payment details, card details. -->
+      <section class="registration-list-page__settings">
+        <label class="registration-list-page__switch">
+          <input
+            type="checkbox"
+            [checked]="s.open"
+            [disabled]="busy()"
+            (change)="toggleOpen($event)"
+          />
+          <span>
+            <strong>{{ 'admin.registrationList.settings.open' | transloco }}</strong>
+            <small>{{
+              (s.openNow
+                ? 'admin.registrationList.settings.openNow'
+                : 'admin.registrationList.settings.closedNow'
+              ) | transloco
+            }}</small>
+          </span>
+        </label>
+        <p class="registration-list-page__hint">
+          {{
+            (individual()
+              ? 'admin.registrationList.settings.individualHint'
+              : 'admin.registrationList.settings.teamHint'
+            ) | transloco
+          }}
+        </p>
+        <div class="registration-list-page__row">
+          <ap-text-field
+            type="date"
+            [label]="'admin.registrationList.settings.opensAt' | transloco"
+            [value]="opensAt()"
+            (valueChange)="opensAt.set($event)"
+          />
+          <ap-text-field
+            type="date"
+            [label]="'admin.registrationList.settings.closesAt' | transloco"
+            [value]="closesAt()"
+            (valueChange)="closesAt.set($event)"
+          />
+        </div>
+        <label class="registration-list-page__textarea">
+          {{ 'admin.registrationList.settings.paymentInfo' | transloco }}
+          <textarea
+            rows="3"
+            [placeholder]="'admin.registrationList.settings.paymentInfoPlaceholder' | transloco"
+            [value]="paymentInfo()"
+            (input)="onPaymentInfo($event)"
+          ></textarea>
+        </label>
+        <div class="registration-list-page__row">
+          <ap-text-field
+            [label]="'admin.registrationList.settings.format' | transloco"
+            [placeholder]="'admin.registrationList.settings.formatPlaceholder' | transloco"
+            [value]="format()"
+            (valueChange)="format.set($event)"
+          />
+          <ap-text-field
+            [label]="'admin.registrationList.settings.level' | transloco"
+            [placeholder]="'admin.registrationList.settings.levelPlaceholder' | transloco"
+            [value]="level()"
+            (valueChange)="level.set($event)"
+          />
+        </div>
+        <p class="registration-list-page__hint">
+          {{ 'admin.registrationList.settings.placesHint' | transloco }}
+        </p>
+        <ap-button type="button" variant="secondary" [disabled]="busy()" (click)="saveDetails()">
+          {{ 'admin.registrationList.settings.save' | transloco }}
+        </ap-button>
+      </section>
+    }
+
+    <div class="registration-list-page__filters" role="tablist">
+      @for (f of filters; track f) {
+        <button
+          type="button"
+          role="tab"
+          class="registration-list-page__filter"
+          [attr.aria-selected]="filter() === f"
+          (click)="filter.set(f)"
+        >
+          {{ 'admin.registrationList.filters.' + f | transloco }} ({{ counts()[f] }})
+        </button>
+      }
+    </div>
+
+    @if (visible().length === 0) {
+      <p class="registration-list-page__empty">{{ 'admin.registrationList.empty' | transloco }}</p>
+    } @else {
+      <ul class="registration-list-page__list">
+        @for (registration of visible(); track registration.id) {
+          <li class="registration-list-page__item">
+            <div class="registration-list-page__item-head">
+              <span>
+                <strong>{{ registration.teamName }}</strong>
+                <small>
+                  {{ registration.categoryName }} · {{ formatAmount(registration) }} ·
+                  {{ formatDate(registration.createdAt) }}
+                </small>
+              </span>
               <ap-badge
                 [status]="statusBadge[registration.status]"
                 [label]="statusLabel(registration.status)"
               />
-            </td>
-            <td class="registration-list-page__cell registration-list-page__cell--date">
-              {{ formatRegisteredAt(registration.createdAt) }}
-            </td>
-          </tr>
+            </div>
+            <p class="registration-list-page__contact">
+              {{ registration.registrant.firstName }} {{ registration.registrant.lastName }} ·
+              <a [href]="'mailto:' + registration.managerEmail">{{ registration.managerEmail }}</a>
+              @if (registration.managerPhone) {
+                · <a [href]="'tel:' + registration.managerPhone">{{ registration.managerPhone }}</a>
+              }
+            </p>
+            @if (!individual() && registration.players.length > 0) {
+              <p class="registration-list-page__players">
+                @for (player of registration.players; track $index) {
+                  <span>{{ player.firstName }} {{ player.lastName }}</span>
+                }
+              </p>
+            }
+            @if (registration.rejectionReason) {
+              <p class="registration-list-page__hint">
+                {{ 'admin.registrationList.reason' | transloco }} :
+                {{ registration.rejectionReason }}
+              </p>
+            }
+
+            <div class="registration-list-page__actions">
+              @if (
+                registration.status !== 'CONFIRMED' &&
+                registration.status !== 'PAID' &&
+                registration.status !== 'CANCELLED'
+              ) {
+                <ap-button
+                  type="button"
+                  size="sm"
+                  [disabled]="busy()"
+                  (click)="confirm(registration)"
+                >
+                  {{ 'admin.registrationList.actions.confirm' | transloco }}
+                </ap-button>
+              }
+              @if (registration.status !== 'WAITLIST' && registration.status !== 'CANCELLED') {
+                <ap-button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  [disabled]="busy()"
+                  (click)="waitlist(registration)"
+                >
+                  {{ 'admin.registrationList.actions.waitlist' | transloco }}
+                </ap-button>
+              }
+              @if (registration.status !== 'REJECTED' && registration.status !== 'CANCELLED') {
+                <ap-button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  [disabled]="busy()"
+                  (click)="startReject(registration)"
+                >
+                  {{ 'admin.registrationList.actions.reject' | transloco }}
+                </ap-button>
+              }
+              @if (registration.amountCents > 0) {
+                <label class="registration-list-page__payment">
+                  {{ 'admin.registrationList.payment.label' | transloco }}
+                  <select
+                    [value]="registration.paymentStatus"
+                    [disabled]="busy()"
+                    (change)="setPayment(registration, $event)"
+                  >
+                    <option value="UNPAID">
+                      {{ 'admin.registrationList.payment.UNPAID' | transloco }}
+                    </option>
+                    <option value="PAID">
+                      {{ 'admin.registrationList.payment.PAID' | transloco }}
+                    </option>
+                    <option value="EXEMPT">
+                      {{ 'admin.registrationList.payment.EXEMPT' | transloco }}
+                    </option>
+                  </select>
+                </label>
+              }
+            </div>
+
+            @if (rejectingId() === registration.id) {
+              <div class="registration-list-page__reject">
+                <ap-text-field
+                  [label]="'admin.registrationList.reasonLabel' | transloco"
+                  [value]="rejectReason()"
+                  (valueChange)="rejectReason.set($event)"
+                />
+                <ap-button
+                  type="button"
+                  size="sm"
+                  [disabled]="busy()"
+                  (click)="reject(registration)"
+                >
+                  {{ 'admin.registrationList.actions.confirmReject' | transloco }}
+                </ap-button>
+                <ap-button type="button" size="sm" variant="ghost" (click)="rejectingId.set(null)">
+                  {{ 'admin.registrationList.actions.cancel' | transloco }}
+                </ap-button>
+              </div>
+            }
+          </li>
         }
-      </tbody>
-    </table>
+      </ul>
+    }
   }
 </main>

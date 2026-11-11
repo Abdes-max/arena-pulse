@@ -1035,3 +1035,69 @@ ap-tournament-marquee {
   margin: 0;
   color: var(--ap-color-muted);
 }
+
+// ---- Pre-registrations (vitrine highlight) ----
+.landing-page__registrations {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-6);
+  max-width: 1200px;
+  margin: var(--ap-space-12) auto 0;
+  padding: 0 var(--ap-space-4);
+}
+
+.landing-page__registrations-pitch {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-3);
+  padding: var(--ap-space-6);
+  color: var(--ap-color-on-primary);
+  background: linear-gradient(135deg, var(--ap-color-primary), var(--ap-color-signal));
+  border-radius: 20px;
+
+  h2 {
+    margin: 0;
+  }
+
+  p {
+    margin: 0;
+    max-width: 60ch;
+  }
+
+  ul {
+    margin: 0;
+    padding-left: 1.2em;
+    display: grid;
+    gap: var(--ap-space-1);
+  }
+}
+
+.landing-page__registrations-kicker {
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.landing-page__registrations-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ap-space-3);
+  margin-top: var(--ap-space-2);
+}
+
+.landing-page__registrations-cta {
+  padding: var(--ap-space-3) var(--ap-space-4);
+  font-weight: 700;
+  color: var(--ap-color-primary);
+  text-decoration: none;
+  background: #fff;
+  border-radius: var(--ap-radius-md);
+}
+
+.landing-page__registrations-cta--ghost {
+  color: inherit;
+  background: transparent;
+  border: 1px solid currentColor;
+}

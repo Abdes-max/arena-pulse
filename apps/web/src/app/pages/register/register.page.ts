@@ -4,7 +4,7 @@ import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angula
 import { Router } from '@angular/router';
 import { PublicApiService } from 'api-client';
 import { Button, Select, SelectOption, TextField } from 'design-system';
-import { Category } from 'shared-models';
+import { Category, PublicRegistrationInfo } from 'shared-models';
 import { TournamentContextService } from '../../core/tournament-context.service';
 
 function formatFee(category: Category): string {
@@ -36,6 +36,13 @@ export class RegisterPage {
   protected readonly errorMessage = signal<string | null>(null);
 
   protected readonly categories = signal<Category[]>([]);
+  protected readonly info = signal<PublicRegistrationInfo | null>(null);
+  /** Individual sport: one player, no team name nor roster. */
+  protected readonly individual = computed(() => this.info()?.participantType === 'INDIVIDUAL');
+  protected readonly remaining = computed(
+    () =>
+      this.info()?.categories.find((c) => c.id === this.selectedCategoryId())?.remaining ?? null,
+  );
   protected readonly selectedCategoryId = signal('');
 
   protected readonly categoryOptions = computed<SelectOption[]>(() => [
@@ -98,8 +105,16 @@ export class RegisterPage {
       return;
     }
     try {
-      const categories = await this.api.listCategories(slug);
+      const [categories, info] = await Promise.all([
+        this.api.listCategories(slug),
+        this.api.getRegistrationInfo(slug),
+      ]);
       this.categories.set(categories);
+      this.info.set(info);
+      if (info.participantType === 'INDIVIDUAL') {
+        this.form.controls.teamName.clearValidators();
+        this.form.controls.teamName.updateValueAndValidity();
+      }
     } catch {
       this.errorMessage.set('Impossible de charger les catégories de ce tournoi.');
     } finally {
@@ -118,7 +133,7 @@ export class RegisterPage {
     try {
       const { teamName, managerEmail, managerPhone, players } = this.form.getRawValue();
       const result = await this.api.createRegistration(slug, categoryId, {
-        teamName,
+        teamName: this.individual() ? undefined : teamName,
         managerEmail,
         managerPhone: managerPhone || undefined,
         players: players.map((player) => ({
@@ -134,7 +149,10 @@ export class RegisterPage {
       await this.router.navigate(['/', slug, 'register', 'success']);
     } catch (error) {
       if (error instanceof HttpErrorResponse && error.status === 409) {
-        this.errorMessage.set('Une équipe porte déjà ce nom pour ce tournoi.');
+        const message = (error.error as { message?: unknown } | null)?.message;
+        this.errorMessage.set(
+          typeof message === 'string' ? message : 'Une équipe porte déjà ce nom pour ce tournoi.',
+        );
       } else {
         this.errorMessage.set("Impossible d'envoyer cette inscription, réessayez.");
       }

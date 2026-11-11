@@ -83,6 +83,16 @@ export interface PublicTournamentSummary {
 /** One row of the public directory search (`GET /public/tournaments/search`) -- unlike PublicTournamentSummary, carries the organizer's name (shown on each result card) since a directory search spans every organization, not just this site's own recent list. */
 export interface PublicTournamentDirectoryItem extends PublicTournamentSummary {
   organizerName: string;
+  /** Card details, e.g. "5 contre 5" and "Elite". */
+  format?: string | null;
+  level?: string | null;
+  /** Set while the tournament takes pre-registrations: places held / total (null = unlimited) and the lowest price. */
+  registration?: {
+    taken: number;
+    total: number | null;
+    feeCents: number | null;
+    currency: string;
+  } | null;
 }
 
 /** Query params accepted by `GET /public/tournaments/search`. All optional except pagination. */
@@ -93,6 +103,8 @@ export interface PublicTournamentSearchQuery {
   dateFrom?: string;
   /** Only events still to come (or running), or only those already over. */
   time?: 'upcoming' | 'past';
+  /** Only tournaments taking pre-registrations right now. */
+  registration?: 'open';
   page: number;
   pageSize: number;
 }
@@ -229,6 +241,8 @@ export interface Category {
   // Smallest currency unit (cents), matching Stripe's own convention.
   registrationFeeCents: number | null;
   registrationFeeCurrency: string | null;
+  /** Places for pre-registrations; null = unlimited. */
+  maxTeams?: number | null;
 }
 
 export type CompetitionPhaseType = 'GROUP_STAGE' | 'KNOCKOUT';
@@ -404,13 +418,52 @@ export interface RegistrationPlayerInput {
 }
 
 export interface CreateRegistrationPayload {
-  teamName: string;
+  /** Team sports only (an individual registration is named after its player). */
+  teamName?: string;
   managerEmail: string;
   managerPhone?: string;
   players: RegistrationPlayerInput[];
 }
 
-export type RegistrationStatus = 'PENDING_PAYMENT' | 'PAID' | 'CANCELLED';
+export type RegistrationStatus =
+  | 'PENDING'
+  | 'CONFIRMED'
+  | 'WAITLIST'
+  | 'REJECTED'
+  | 'CANCELLED'
+  // Former online-payment flow.
+  | 'PENDING_PAYMENT'
+  | 'PAID';
+
+export type RegistrationPaymentStatus = 'UNPAID' | 'PAID' | 'EXEMPT';
+export type ParticipantType = 'TEAM' | 'INDIVIDUAL';
+
+/** GET /public/tournaments/:slug/registration-info */
+export interface PublicRegistrationInfo {
+  open: boolean;
+  opensAt: string | null;
+  closesAt: string | null;
+  paymentInfo: string | null;
+  participantType: ParticipantType;
+  categories: {
+    id: string;
+    name: string;
+    feeCents: number | null;
+    currency: string;
+    maxTeams: number | null;
+    remaining: number | null;
+  }[];
+}
+
+/** Organizer side: GET/PATCH …/registrations/settings */
+export interface RegistrationSettings {
+  open: boolean;
+  openNow: boolean;
+  opensAt: string | null;
+  closesAt: string | null;
+  paymentInfo: string | null;
+  participantType: ParticipantType;
+}
 
 export interface CreateRegistrationResult {
   registrationId: string;
@@ -440,6 +493,8 @@ export interface OrganizerRegistration {
   managerEmail: string;
   managerPhone: string | null;
   status: RegistrationStatus;
+  paymentStatus: RegistrationPaymentStatus;
+  rejectionReason: string | null;
   amountCents: number;
   currency: string;
   teamId: string | null;

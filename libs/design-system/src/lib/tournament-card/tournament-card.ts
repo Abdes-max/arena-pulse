@@ -28,6 +28,13 @@ export class TournamentCard {
   // favorites/marquee), where the card is already scoped to one known
   // organizer and the line would be redundant.
   readonly organizerName = input<string | null>(null);
+  /** e.g. "5 contre 5", "Elite". */
+  readonly format = input<string | null>(null);
+  readonly level = input<string | null>(null);
+  /** Pre-registration band, e.g. "Inscriptions ouvertes (10/12)"; null hides it. */
+  readonly registrationLabel = input<string | null>(null);
+  /** e.g. "40 €". */
+  readonly priceLabel = input<string | null>(null);
 
   protected readonly locationLabel = computed(() =>
     this.isOnline() ? 'En ligne' : this.location(),

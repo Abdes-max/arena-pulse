@@ -1,7 +1,8 @@
 import { Location } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { registrationCard } from '../../core/registration-card';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { AssetUrlService, PublicApiService } from 'api-client';
 import {
@@ -38,7 +39,6 @@ const PAGE_SIZE = 20;
 export class DiscoverPage {
   private readonly location = inject(Location);
   private readonly languageService = inject(LanguageService);
-  private readonly transloco = inject(TranslocoService);
   private readonly api = inject(PublicApiService);
   private readonly assetUrl = inject(AssetUrlService);
 
@@ -50,6 +50,11 @@ export class DiscoverPage {
   protected readonly place = signal('');
   protected readonly dateFrom = signal('');
   protected readonly timeFilter = signal<TimeFilterValue>('');
+  // Shareable: /discover?inscriptions=1 opens on the tournaments taking pre-registrations.
+  protected readonly registrationOnly = signal(
+    inject(ActivatedRoute).snapshot.queryParamMap.get('inscriptions') === '1',
+  );
+  private readonly transloco = inject(TranslocoService);
   protected readonly sports = signal<PublicSport[]>([]);
   protected readonly sportOptions = computed(() => {
     const lang = this.language();
@@ -70,7 +75,15 @@ export class DiscoverPage {
   // landing.page.ts's own logoUrl()/marqueeTournaments, applied per-item
   // here instead since this list doesn't get its own dedicated computed.
   protected readonly resolvedItems = computed(() =>
-    this.items().map((item) => ({ ...item, logoUrl: this.assetUrl.resolve(item.logoUrl) })),
+    this.items().map((item) => ({
+      ...item,
+      logoUrl: this.assetUrl.resolve(item.logoUrl),
+      band: registrationCard(
+        item,
+        (key, params) => this.transloco.translate(key, params),
+        this.languageService.language(),
+      ),
+    })),
   );
 
   // page is plain component state, not a signal -- it never drives its own
@@ -84,6 +97,7 @@ export class DiscoverPage {
     location: this.place().trim(),
     dateFrom: this.dateFrom(),
     time: this.timeFilter(),
+    registrationOnly: this.registrationOnly(),
   }));
 
   constructor() {
@@ -121,6 +135,7 @@ export class DiscoverPage {
       location: string;
       dateFrom: string;
       time: TimeFilterValue;
+      registrationOnly: boolean;
     },
     append: boolean,
   ): Promise<void> {
@@ -132,6 +147,7 @@ export class DiscoverPage {
         location: filters.location || undefined,
         dateFrom: filters.dateFrom || undefined,
         time: filters.time || undefined,
+        registration: filters.registrationOnly ? 'open' : undefined,
         page: this.page,
         pageSize: PAGE_SIZE,
       });

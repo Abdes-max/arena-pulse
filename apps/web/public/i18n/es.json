@@ -169,6 +169,16 @@
       "body": "La aplicación Android llegará pronto a Google Play.",
       "back": "Volver",
       "close": "Cerrar"
+    },
+    "registrations": {
+      "kicker": "Nuevo",
+      "title": "Abre las preinscripciones de tus torneos",
+      "lede": "Los equipos (o los jugadores en deportes individuales) piden su plaza en línea, tú validas con un clic y cobras como quieras.",
+      "point1": "Plazas limitadas por categoría, lista de espera automática",
+      "point2": "Validación manual, correos enviados por ti",
+      "point3": "Precio visible, pago in situ o por transferencia, seguimiento «pagado» en un clic",
+      "browse": "Ver inscripciones abiertas",
+      "organize": "Organizar un torneo"
     }
   },
   "legal": {
@@ -197,7 +207,8 @@
       "dateFromLabel": "A partir de",
       "timeLabel": "Período",
       "upcoming": "Próximos",
-      "past": "Pasados"
+      "past": "Pasados",
+      "registrationOpen": "Inscripciones abiertas"
     },
     "resultsCount": "{{count}} torneo(s) encontrado(s)",
     "empty": "Ningún torneo coincide con tu búsqueda.",
@@ -260,6 +271,14 @@
       "location": "Lugar",
       "online": "En línea",
       "poster": "Cartel del evento"
+    },
+    "registration": {
+      "title": "Inscripciones abiertas",
+      "cta": "Preinscribirse",
+      "unlimited": "Plazas disponibles",
+      "full": "Completo · lista de espera",
+      "places": "{{remaining}} plaza(s) de {{total}}",
+      "payment": "Pago"
     }
   },
   "schedule": {
@@ -809,7 +828,10 @@
         "summary": {
           "free": "Gratis",
           "divisions": "{{count}} división(es)"
-        }
+        },
+        "capacityLabel": "Número de plazas",
+        "capacityPlaceholder": "Vacío = ilimitado",
+        "saveCapacity": "Guardar"
       },
       "venues": {
         "title": "Sedes y pistas",
@@ -1044,7 +1066,7 @@
     "registrationList": {
       "title": "Inscripciones y pagos",
       "loading": "Cargando…",
-      "empty": "Todavía no hay inscripciones para este torneo.",
+      "empty": "Ninguna solicitud en esta lista.",
       "table": {
         "team": "Equipo",
         "category": "Categoría",
@@ -1055,13 +1077,57 @@
       },
       "free": "Gratis",
       "status": {
-        "paid": "Pagada",
-        "pending": "Pendiente de pago",
-        "cancelled": "Cancelada"
+        "PENDING": "Pendiente",
+        "CONFIRMED": "Confirmada",
+        "WAITLIST": "Lista de espera",
+        "REJECTED": "Rechazada",
+        "CANCELLED": "Cancelada",
+        "PAID": "Confirmada (pagada en línea)",
+        "PENDING_PAYMENT": "Pago en línea en curso"
       },
       "errors": {
-        "load": "No se han podido cargar las inscripciones."
-      }
+        "load": "No se han podido cargar las inscripciones.",
+        "save": "No se pudo guardar este cambio."
+      },
+      "settings": {
+        "open": "Inscripciones abiertas",
+        "openNow": "Los equipos pueden enviar su solicitud ahora.",
+        "closedNow": "Ninguna solicitud posible ahora.",
+        "teamHint": "Deporte colectivo: los capitanes inscriben a su equipo y sus jugadores.",
+        "individualHint": "Deporte individual: cada jugador se inscribe a su nombre.",
+        "opensAt": "Apertura (opcional)",
+        "closesAt": "Cierre (opcional)",
+        "paymentInfo": "Modalidades de pago",
+        "paymentInfoPlaceholder": "p. ej. 40 € por equipo, in situ o por transferencia (IBAN…)",
+        "format": "Formato (tarjeta del torneo)",
+        "formatPlaceholder": "p. ej. 5 contra 5",
+        "level": "Nivel",
+        "levelPlaceholder": "p. ej. Élite",
+        "placesHint": "Las plazas y el precio se ajustan por categoría en General › Categorías › Opciones.",
+        "save": "Guardar"
+      },
+      "filters": {
+        "PENDING": "Pendientes",
+        "CONFIRMED": "Confirmadas",
+        "WAITLIST": "Lista de espera",
+        "REJECTED": "Rechazadas",
+        "ALL": "Todas"
+      },
+      "actions": {
+        "confirm": "Validar",
+        "waitlist": "Lista de espera",
+        "reject": "Rechazar",
+        "confirmReject": "Confirmar el rechazo",
+        "cancel": "Cancelar"
+      },
+      "payment": {
+        "label": "Pago",
+        "UNPAID": "No pagado",
+        "PAID": "Pagado",
+        "EXEMPT": "Exento"
+      },
+      "reason": "Motivo",
+      "reasonLabel": "Motivo del rechazo (enviado por correo, opcional)"
     },
     "structure": {
       "title": "Estructura de la competición",
@@ -1640,5 +1706,10 @@
     "error": "Se produjo un error, inténtalo de nuevo.",
     "offline": "Sin conexión: comprueba tu red.",
     "close": "Cerrar"
+  },
+  "registrationCard": {
+    "open": "Inscripciones abiertas ({{taken}}/{{total}})",
+    "openNoLimit": "Inscripciones abiertas",
+    "full": "Completo · lista de espera"
   }
 }

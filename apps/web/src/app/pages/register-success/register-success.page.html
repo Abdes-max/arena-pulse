@@ -1,8 +1,29 @@
 <main class="register-success-page">
   @if (loading()) {
-    <p>Vérification du paiement…</p>
+    <p>Chargement…</p>
   } @else if (registration(); as registration) {
-    @if (registration.status === 'PAID') {
+    @if (registration.status === 'PENDING') {
+      <h1>Pré-inscription envoyée</h1>
+      <p>
+        Votre demande pour <strong>{{ registration.teamName }}</strong> ({{
+          registration.category.name
+        }}) est en attente de validation par l'organisateur. Vous recevrez un e-mail dès qu'elle
+        sera traitée.
+      </p>
+    } @else if (registration.status === 'WAITLIST') {
+      <h1>Sur liste d'attente</h1>
+      <p>
+        La catégorie {{ registration.category.name }} est complète : la demande pour
+        <strong>{{ registration.teamName }}</strong> est en liste d'attente. L'organisateur vous
+        préviendra si une place se libère.
+      </p>
+    } @else if (registration.status === 'CONFIRMED') {
+      <h1>Inscription confirmée</h1>
+      <p>
+        <strong>{{ registration.teamName }}</strong> est inscrit(e) en
+        {{ registration.category.name }}.
+      </p>
+    } @else if (registration.status === 'PAID') {
       <h1>Inscription confirmée</h1>
       <p>
         L'équipe <strong>{{ registration.teamName }}</strong> est inscrite en
