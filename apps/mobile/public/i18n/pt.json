@@ -155,7 +155,8 @@
           "label": "Modo de visualização",
           "simple": "Simples",
           "full": "Completo"
-        }
+        },
+        "structureAction": "Estrutura"
       }
     },
     "account": {
@@ -558,6 +559,62 @@
       "noResults": "Ainda não há resultados validados.",
       "noDefense": "Ainda não há jogos suficientes.",
       "noCategories": "Nenhuma categoria."
+    },
+    "structure": {
+      "title": "Estrutura",
+      "loading": "A carregar…",
+      "category": "Categoria",
+      "unassigned": "{{count}} equipa(s) por colocar num grupo.",
+      "points": "Pontos",
+      "win": "Vitória",
+      "draw": "Empate",
+      "loss": "Derrota",
+      "save": "Guardar",
+      "qualification": "Qualificados para a fase seguinte",
+      "ruleRow": "{{from}}.º a {{to}}.º → {{target}}",
+      "noRule": "Nenhuma regra de qualificação.",
+      "from": "Do lugar",
+      "to": "Até ao lugar",
+      "targetPhase": "Fase de destino",
+      "addRule": "Adicionar a regra",
+      "moreOnWeb": "Definições avançadas (melhores terceiros, desempates) no site",
+      "remove": "Retirar",
+      "emptyPool": "Nenhuma equipa: escolha uma abaixo",
+      "chooseTeam": "Colocar uma equipa…",
+      "newPool": "Novo grupo",
+      "newPoolPlaceholder": "ex. Grupo C",
+      "pool": "Grupo",
+      "defaultPoolName": "Grupo {{letter}}",
+      "rankingMatch": "Jogo do 3.º lugar",
+      "removeBracket": "Eliminar o quadro",
+      "teamsCount": "{{size}} equipas",
+      "match": "Jogo {{number}}",
+      "team1": "Equipa 1",
+      "team2": "Equipa 2",
+      "pairingAuto": "Confrontos automáticos: escolha quem joga contra quem.",
+      "pairingCustom": "Confrontos escolhidos por si.",
+      "pairingLocked": "Este quadro tem resultados: confrontos bloqueados.",
+      "pairingReset": "Voltar ao automático",
+      "noQualifiers": "Adicione uma regra de qualificação à fase de grupos (⚙) para escolher os confrontos.",
+      "bracketName": "Nome do quadro",
+      "bracketSize": "Número de equipas",
+      "bracket": "Quadro",
+      "addPhase": "Adicionar uma fase",
+      "phaseName": "Nome da fase",
+      "phaseType": "Tipo",
+      "addPhaseButton": "Adicionar a fase",
+      "typePools": "Grupos",
+      "typeKnockout": "Fase final",
+      "shuffle": "Sorteio das equipas não colocadas",
+      "settings": "Definições da fase",
+      "removePhase": "Eliminar a fase",
+      "confirmRemovePhase": "Eliminar esta fase e os seus jogos?",
+      "confirmRemove": "Eliminar",
+      "cancel": "Cancelar",
+      "errors": {
+        "load": "Não foi possível carregar a estrutura.",
+        "save": "Não foi possível guardar esta alteração."
+      }
     }
   },
   "notifications": {

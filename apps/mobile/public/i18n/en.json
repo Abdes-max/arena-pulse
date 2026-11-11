@@ -155,7 +155,8 @@
           "label": "Display mode",
           "simple": "Simple",
           "full": "Full"
-        }
+        },
+        "structureAction": "Structure"
       }
     },
     "account": {
@@ -558,6 +559,62 @@
       "noResults": "No validated score yet.",
       "noDefense": "Not enough matches played yet.",
       "noCategories": "No category."
+    },
+    "structure": {
+      "title": "Structure",
+      "loading": "Loading…",
+      "category": "Category",
+      "unassigned": "{{count}} team(s) to place in a pool.",
+      "points": "Points",
+      "win": "Win",
+      "draw": "Draw",
+      "loss": "Loss",
+      "save": "Save",
+      "qualification": "Qualified for the next phase",
+      "ruleRow": "{{from}}–{{to}} → {{target}}",
+      "noRule": "No qualification rule.",
+      "from": "From place",
+      "to": "To place",
+      "targetPhase": "Target phase",
+      "addRule": "Add the rule",
+      "moreOnWeb": "Advanced settings (best 3rd places, tie-breaks) on the website",
+      "remove": "Remove",
+      "emptyPool": "No team yet: pick one below",
+      "chooseTeam": "Place a team…",
+      "newPool": "New pool",
+      "newPoolPlaceholder": "e.g. Pool C",
+      "pool": "Pool",
+      "defaultPoolName": "Pool {{letter}}",
+      "rankingMatch": "Third-place match",
+      "removeBracket": "Delete the bracket",
+      "teamsCount": "{{size}} teams",
+      "match": "Match {{number}}",
+      "team1": "Team 1",
+      "team2": "Team 2",
+      "pairingAuto": "Automatic pairings: choose who meets whom.",
+      "pairingCustom": "Pairings chosen by you.",
+      "pairingLocked": "This bracket has scores: pairings are locked.",
+      "pairingReset": "Back to automatic",
+      "noQualifiers": "Add a qualification rule to the pool phase (⚙) to choose the pairings.",
+      "bracketName": "Bracket name",
+      "bracketSize": "Number of teams",
+      "bracket": "Bracket",
+      "addPhase": "Add a phase",
+      "phaseName": "Phase name",
+      "phaseType": "Type",
+      "addPhaseButton": "Add the phase",
+      "typePools": "Pools",
+      "typeKnockout": "Final phase",
+      "shuffle": "Random draw of unplaced teams",
+      "settings": "Phase settings",
+      "removePhase": "Delete the phase",
+      "confirmRemovePhase": "Delete this phase and its matches?",
+      "confirmRemove": "Delete",
+      "cancel": "Cancel",
+      "errors": {
+        "load": "Could not load the structure.",
+        "save": "Could not save this change."
+      }
     }
   },
   "notifications": {

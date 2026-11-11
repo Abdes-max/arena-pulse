@@ -155,7 +155,8 @@
           "label": "Mode d'affichage",
           "simple": "Simple",
           "full": "Complet"
-        }
+        },
+        "structureAction": "Structure"
       }
     },
     "account": {
@@ -558,6 +559,62 @@
       "noResults": "Aucun score validé pour le moment.",
       "noDefense": "Pas encore assez de matchs joués.",
       "noCategories": "Aucune catégorie."
+    },
+    "structure": {
+      "title": "Structure",
+      "loading": "Chargement…",
+      "category": "Catégorie",
+      "unassigned": "{{count}} équipe(s) à placer dans une poule.",
+      "points": "Points",
+      "win": "Victoire",
+      "draw": "Nul",
+      "loss": "Défaite",
+      "save": "Enregistrer",
+      "qualification": "Qualifiés pour la phase suivante",
+      "ruleRow": "{{from}}e à {{to}}e → {{target}}",
+      "noRule": "Aucune règle de qualification.",
+      "from": "De la place",
+      "to": "À la place",
+      "targetPhase": "Phase visée",
+      "addRule": "Ajouter la règle",
+      "moreOnWeb": "Réglages avancés (meilleurs 3es, départages) sur le site web",
+      "remove": "Retirer",
+      "emptyPool": "Aucune équipe : choisissez-en une ci-dessous",
+      "chooseTeam": "Placer une équipe…",
+      "newPool": "Nouvelle poule",
+      "newPoolPlaceholder": "ex. Poule C",
+      "pool": "Poule",
+      "defaultPoolName": "Poule {{letter}}",
+      "rankingMatch": "Match pour la 3e place",
+      "removeBracket": "Supprimer le tableau",
+      "teamsCount": "{{size}} équipes",
+      "match": "Match {{number}}",
+      "team1": "Équipe 1",
+      "team2": "Équipe 2",
+      "pairingAuto": "Affiches automatiques : choisissez qui se rencontre.",
+      "pairingCustom": "Affiches choisies par vous.",
+      "pairingLocked": "Des scores existent dans ce tableau : affiches figées.",
+      "pairingReset": "Revenir à l’automatique",
+      "noQualifiers": "Ajoutez une règle de qualification à la phase de poules (⚙) pour choisir les affiches.",
+      "bracketName": "Nom du tableau",
+      "bracketSize": "Nombre d’équipes",
+      "bracket": "Tableau",
+      "addPhase": "Ajouter une phase",
+      "phaseName": "Nom de la phase",
+      "phaseType": "Type",
+      "addPhaseButton": "Ajouter la phase",
+      "typePools": "Poules",
+      "typeKnockout": "Phase finale",
+      "shuffle": "Tirage au sort des équipes non placées",
+      "settings": "Réglages de la phase",
+      "removePhase": "Supprimer la phase",
+      "confirmRemovePhase": "Supprimer cette phase et ses matchs ?",
+      "confirmRemove": "Supprimer",
+      "cancel": "Annuler",
+      "errors": {
+        "load": "Impossible de charger la structure.",
+        "save": "Impossible d’enregistrer ce changement."
+      }
     }
   },
   "notifications": {

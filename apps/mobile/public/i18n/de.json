@@ -155,7 +155,8 @@
           "label": "Anzeigemodus",
           "simple": "Einfach",
           "full": "Vollständig"
-        }
+        },
+        "structureAction": "Struktur"
       }
     },
     "account": {
@@ -558,6 +559,62 @@
       "noResults": "Noch kein bestätigtes Ergebnis.",
       "noDefense": "Noch nicht genug Spiele gespielt.",
       "noCategories": "Keine Kategorie."
+    },
+    "structure": {
+      "title": "Struktur",
+      "loading": "Wird geladen…",
+      "category": "Kategorie",
+      "unassigned": "{{count}} Mannschaft(en) einer Gruppe zuordnen.",
+      "points": "Punkte",
+      "win": "Sieg",
+      "draw": "Unentschieden",
+      "loss": "Niederlage",
+      "save": "Speichern",
+      "qualification": "Qualifiziert für die nächste Phase",
+      "ruleRow": "{{from}}. bis {{to}}. → {{target}}",
+      "noRule": "Keine Qualifikationsregel.",
+      "from": "Ab Platz",
+      "to": "Bis Platz",
+      "targetPhase": "Zielphase",
+      "addRule": "Regel hinzufügen",
+      "moreOnWeb": "Erweiterte Einstellungen (beste Dritte, Tiebreaks) auf der Website",
+      "remove": "Entfernen",
+      "emptyPool": "Noch keine Mannschaft: unten auswählen",
+      "chooseTeam": "Mannschaft zuordnen…",
+      "newPool": "Neue Gruppe",
+      "newPoolPlaceholder": "z. B. Gruppe C",
+      "pool": "Gruppe",
+      "defaultPoolName": "Gruppe {{letter}}",
+      "rankingMatch": "Spiel um Platz 3",
+      "removeBracket": "K.-o.-Runde löschen",
+      "teamsCount": "{{size}} Mannschaften",
+      "match": "Spiel {{number}}",
+      "team1": "Mannschaft 1",
+      "team2": "Mannschaft 2",
+      "pairingAuto": "Automatische Paarungen: wählen Sie, wer gegen wen spielt.",
+      "pairingCustom": "Von Ihnen gewählte Paarungen.",
+      "pairingLocked": "Diese Runde hat Ergebnisse: Paarungen gesperrt.",
+      "pairingReset": "Zurück zu automatisch",
+      "noQualifiers": "Fügen Sie der Gruppenphase eine Qualifikationsregel hinzu (⚙), um die Paarungen zu wählen.",
+      "bracketName": "Name der K.-o.-Runde",
+      "bracketSize": "Anzahl Mannschaften",
+      "bracket": "K.-o.-Runde",
+      "addPhase": "Phase hinzufügen",
+      "phaseName": "Name der Phase",
+      "phaseType": "Typ",
+      "addPhaseButton": "Phase hinzufügen",
+      "typePools": "Gruppen",
+      "typeKnockout": "Finalrunde",
+      "shuffle": "Nicht zugeordnete Mannschaften auslosen",
+      "settings": "Einstellungen der Phase",
+      "removePhase": "Phase löschen",
+      "confirmRemovePhase": "Diese Phase und ihre Spiele löschen?",
+      "confirmRemove": "Löschen",
+      "cancel": "Abbrechen",
+      "errors": {
+        "load": "Die Struktur konnte nicht geladen werden.",
+        "save": "Diese Änderung konnte nicht gespeichert werden."
+      }
     }
   },
   "notifications": {

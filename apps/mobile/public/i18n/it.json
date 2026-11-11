@@ -155,7 +155,8 @@
           "label": "Modalità di visualizzazione",
           "simple": "Semplice",
           "full": "Completa"
-        }
+        },
+        "structureAction": "Struttura"
       }
     },
     "account": {
@@ -558,6 +559,62 @@
       "noResults": "Ancora nessun risultato convalidato.",
       "noDefense": "Non ci sono ancora abbastanza partite giocate.",
       "noCategories": "Nessuna categoria."
+    },
+    "structure": {
+      "title": "Struttura",
+      "loading": "Caricamento…",
+      "category": "Categoria",
+      "unassigned": "{{count}} squadra/e da inserire in un girone.",
+      "points": "Punti",
+      "win": "Vittoria",
+      "draw": "Pareggio",
+      "loss": "Sconfitta",
+      "save": "Salva",
+      "qualification": "Qualificati per la fase successiva",
+      "ruleRow": "Dalla {{from}}ª alla {{to}}ª → {{target}}",
+      "noRule": "Nessuna regola di qualificazione.",
+      "from": "Dal posto",
+      "to": "Al posto",
+      "targetPhase": "Fase di destinazione",
+      "addRule": "Aggiungi la regola",
+      "moreOnWeb": "Impostazioni avanzate (migliori terze, spareggi) sul sito web",
+      "remove": "Rimuovi",
+      "emptyPool": "Nessuna squadra: scegline una qui sotto",
+      "chooseTeam": "Inserisci una squadra…",
+      "newPool": "Nuovo girone",
+      "newPoolPlaceholder": "es. Girone C",
+      "pool": "Girone",
+      "defaultPoolName": "Girone {{letter}}",
+      "rankingMatch": "Finale per il 3º posto",
+      "removeBracket": "Elimina il tabellone",
+      "teamsCount": "{{size}} squadre",
+      "match": "Partita {{number}}",
+      "team1": "Squadra 1",
+      "team2": "Squadra 2",
+      "pairingAuto": "Accoppiamenti automatici: scegli chi si affronta.",
+      "pairingCustom": "Accoppiamenti scelti da te.",
+      "pairingLocked": "Questo tabellone ha risultati: accoppiamenti bloccati.",
+      "pairingReset": "Torna all’automatico",
+      "noQualifiers": "Aggiungi una regola di qualificazione alla fase a gironi (⚙) per scegliere gli accoppiamenti.",
+      "bracketName": "Nome del tabellone",
+      "bracketSize": "Numero di squadre",
+      "bracket": "Tabellone",
+      "addPhase": "Aggiungi una fase",
+      "phaseName": "Nome della fase",
+      "phaseType": "Tipo",
+      "addPhaseButton": "Aggiungi la fase",
+      "typePools": "Gironi",
+      "typeKnockout": "Fase finale",
+      "shuffle": "Sorteggio delle squadre non assegnate",
+      "settings": "Impostazioni della fase",
+      "removePhase": "Elimina la fase",
+      "confirmRemovePhase": "Eliminare questa fase e le sue partite?",
+      "confirmRemove": "Elimina",
+      "cancel": "Annulla",
+      "errors": {
+        "load": "Impossibile caricare la struttura.",
+        "save": "Impossibile salvare questa modifica."
+      }
     }
   },
   "notifications": {

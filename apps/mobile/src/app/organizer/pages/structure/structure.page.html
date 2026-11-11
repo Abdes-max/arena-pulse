@@ -1,0 +1,436 @@
+<ion-header>
+  <ion-toolbar>
+    <button
+      type="button"
+      class="structure-page__back"
+      slot="start"
+      (click)="goBack()"
+      [attr.aria-label]="'organizer.wizard.cancelAria' | transloco"
+    >
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+        <path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+      </svg>
+    </button>
+    <ion-title>{{ 'organizer.structure.title' | transloco }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="structure-page">
+  <div class="structure-page__scroll">
+    @if (errorMessage(); as message) {
+      <p class="structure-page__error" role="alert">{{ message | transloco }}</p>
+    }
+
+    @if (loading()) {
+      <p class="structure-page__hint">{{ 'organizer.structure.loading' | transloco }}</p>
+    } @else {
+      @if (categories().length > 1) {
+        <ap-select
+          [label]="'organizer.structure.category' | transloco"
+          [options]="categoryOptions()"
+          [value]="categoryId()"
+          (valueChange)="onCategoryChange($event)"
+        />
+      }
+
+      @if (unassignedTeams().length > 0) {
+        <p class="structure-page__hint">
+          {{ 'organizer.structure.unassigned' | transloco: { count: unassignedTeams().length } }}
+        </p>
+      }
+
+      <!-- Pools -->
+      @for (phase of poolPhases(); track phase.id) {
+        <section class="structure-page__phase">
+          <ng-container
+            *ngTemplateOutlet="phaseHeader; context: { $implicit: phase, pools: true }"
+          />
+
+          @if (openSettings() === phase.id) {
+            <div class="structure-page__settings">
+              @if (pointsFor(phase.id); as points) {
+                <p class="structure-page__settings-title">
+                  {{ 'organizer.structure.points' | transloco }}
+                </p>
+                <div class="structure-page__row">
+                  <ap-text-field
+                    [label]="'organizer.structure.win' | transloco"
+                    type="number"
+                    [value]="points.win"
+                    (valueChange)="setPoints(phase.id, 'win', $event)"
+                  />
+                  <ap-text-field
+                    [label]="'organizer.structure.draw' | transloco"
+                    type="number"
+                    [value]="points.draw"
+                    (valueChange)="setPoints(phase.id, 'draw', $event)"
+                  />
+                  <ap-text-field
+                    [label]="'organizer.structure.loss' | transloco"
+                    type="number"
+                    [value]="points.loss"
+                    (valueChange)="setPoints(phase.id, 'loss', $event)"
+                  />
+                </div>
+                <ap-button
+                  type="button"
+                  variant="secondary"
+                  [disabled]="busy()"
+                  (click)="savePoints(phase)"
+                >
+                  {{ 'organizer.structure.save' | transloco }}
+                </ap-button>
+              }
+
+              <p class="structure-page__settings-title">
+                {{ 'organizer.structure.qualification' | transloco }}
+              </p>
+              <ul class="structure-page__rules">
+                @for (rule of rulesOf(phase.id); track rule.key) {
+                  <li>
+                    <span>{{
+                      'organizer.structure.ruleRow'
+                        | transloco
+                          : {
+                              from: rule.fromPosition,
+                              to: rule.toPosition,
+                              target: phaseName(rule.targetPhaseId),
+                            }
+                    }}</span>
+                    <button
+                      type="button"
+                      class="structure-page__row-remove"
+                      [attr.aria-label]="'organizer.structure.remove' | transloco"
+                      (click)="removeRule(rule)"
+                    >
+                      ×
+                    </button>
+                  </li>
+                } @empty {
+                  <li class="structure-page__hint">
+                    {{ 'organizer.structure.noRule' | transloco }}
+                  </li>
+                }
+              </ul>
+              @if (knockoutPhases().length > 0) {
+                <div class="structure-page__row">
+                  <ap-text-field
+                    [label]="'organizer.structure.from' | transloco"
+                    type="number"
+                    [min]="1"
+                    [value]="ruleFormFor(phase.id).from"
+                    (valueChange)="setRuleForm(phase.id, 'from', $event)"
+                  />
+                  <ap-text-field
+                    [label]="'organizer.structure.to' | transloco"
+                    type="number"
+                    [min]="1"
+                    [value]="ruleFormFor(phase.id).to"
+                    (valueChange)="setRuleForm(phase.id, 'to', $event)"
+                  />
+                </div>
+                <ap-select
+                  [label]="'organizer.structure.targetPhase' | transloco"
+                  [options]="targetOptions()"
+                  [value]="ruleFormFor(phase.id).target"
+                  (valueChange)="setRuleForm(phase.id, 'target', $event)"
+                />
+                <ap-button
+                  type="button"
+                  variant="secondary"
+                  [disabled]="busy()"
+                  (click)="addRule(phase)"
+                >
+                  {{ 'organizer.structure.addRule' | transloco }}
+                </ap-button>
+              }
+              <a
+                class="structure-page__web-link"
+                [href]="webStructureUrl"
+                target="_blank"
+                rel="noopener"
+              >
+                {{ 'organizer.structure.moreOnWeb' | transloco }}
+              </a>
+            </div>
+          }
+
+          @for (group of phase.groups; track group.id) {
+            <div class="structure-page__card">
+              <div class="structure-page__card-head">
+                <strong>{{ group.name }}</strong>
+                <button
+                  type="button"
+                  class="structure-page__icon-button structure-page__icon-button--on-color"
+                  [attr.aria-label]="('organizer.structure.remove' | transloco) + ' ' + group.name"
+                  [disabled]="busy()"
+                  (click)="removeGroup(group.id)"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <ul class="structure-page__card-list">
+                @for (team of teamsOf(group.id); track team.id) {
+                  <li>
+                    <span>{{ team.name }}</span>
+                    <button
+                      type="button"
+                      class="structure-page__row-remove"
+                      [attr.aria-label]="
+                        ('organizer.structure.remove' | transloco) + ' ' + team.name
+                      "
+                      [disabled]="busy()"
+                      (click)="unplace(team)"
+                    >
+                      ×
+                    </button>
+                  </li>
+                } @empty {
+                  <li class="structure-page__card-empty">
+                    {{ 'organizer.structure.emptyPool' | transloco }}
+                  </li>
+                }
+              </ul>
+              @if (unassignedTeams().length > 0) {
+                <div class="structure-page__card-add">
+                  <ap-select
+                    [label]="'organizer.structure.chooseTeam' | transloco"
+                    [hideLabel]="true"
+                    [options]="unassignedOptions()"
+                    value=""
+                    [autoSelectSingle]="false"
+                    [resetAfterSelect]="true"
+                    (valueChange)="place(group.id, $event)"
+                  />
+                </div>
+              }
+            </div>
+          }
+
+          <div class="structure-page__row structure-page__row--add">
+            <ap-text-field
+              [label]="'organizer.structure.newPool' | transloco"
+              [placeholder]="'organizer.structure.newPoolPlaceholder' | transloco"
+              [value]="groupNameFor(phase.id)"
+              (valueChange)="setGroupName(phase.id, $event)"
+            />
+            <ap-button
+              type="button"
+              variant="secondary"
+              [disabled]="busy()"
+              (click)="addGroup(phase)"
+            >
+              + {{ 'organizer.structure.pool' | transloco }}
+            </ap-button>
+          </div>
+        </section>
+      }
+
+      <!-- Final phases -->
+      @for (phase of knockoutPhases(); track phase.id) {
+        <section class="structure-page__phase">
+          <ng-container
+            *ngTemplateOutlet="phaseHeader; context: { $implicit: phase, pools: false }"
+          />
+
+          @if (openSettings() === phase.id && phase.knockoutBracket; as bracket) {
+            <div class="structure-page__settings">
+              <label class="structure-page__checkbox">
+                <input
+                  type="checkbox"
+                  [checked]="bracket.hasRankingMatch"
+                  [disabled]="busy()"
+                  (change)="toggleRankingMatch(phase, $event)"
+                />
+                {{ 'organizer.structure.rankingMatch' | transloco }}
+              </label>
+              <ap-button
+                type="button"
+                variant="ghost"
+                [disabled]="busy()"
+                (click)="removeBracket(phase)"
+              >
+                {{ 'organizer.structure.removeBracket' | transloco }}
+              </ap-button>
+            </div>
+          }
+
+          @if (phase.knockoutBracket; as bracket) {
+            <div class="structure-page__card">
+              <div class="structure-page__card-head">
+                <strong>{{ bracket.name }}</strong>
+                <span class="structure-page__card-tag">{{
+                  'organizer.structure.teamsCount' | transloco: { size: bracket.size }
+                }}</span>
+              </div>
+              @if (editableRound(bracket.id); as round) {
+                <ol class="structure-page__pairings">
+                  @for (match of roundMatches(round); track $index) {
+                    <li class="structure-page__pairing">
+                      <span class="structure-page__pairing-title">{{
+                        'organizer.structure.match' | transloco: { number: $index + 1 }
+                      }}</span>
+                      @if (round.locked) {
+                        <span
+                          >{{ round.qualifiers[match.home] }} –
+                          {{ round.qualifiers[match.away] }}</span
+                        >
+                      } @else {
+                        <ap-select
+                          [label]="'organizer.structure.team1' | transloco"
+                          [hideLabel]="true"
+                          [options]="qualifierOptions(round)"
+                          [value]="'' + match.home"
+                          [autoSelectSingle]="false"
+                          (valueChange)="changePairing(round, $index * 2, $event)"
+                        />
+                        <ap-select
+                          [label]="'organizer.structure.team2' | transloco"
+                          [hideLabel]="true"
+                          [options]="qualifierOptions(round)"
+                          [value]="'' + match.away"
+                          [autoSelectSingle]="false"
+                          (valueChange)="changePairing(round, $index * 2 + 1, $event)"
+                        />
+                      }
+                    </li>
+                  }
+                </ol>
+                <div class="structure-page__pairing-footer">
+                  <span class="structure-page__hint">{{
+                    (round.locked
+                      ? 'organizer.structure.pairingLocked'
+                      : round.custom
+                        ? 'organizer.structure.pairingCustom'
+                        : 'organizer.structure.pairingAuto'
+                    ) | transloco
+                  }}</span>
+                  @if (round.custom && !round.locked) {
+                    <ap-button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      (click)="resetPairing(round)"
+                    >
+                      {{ 'organizer.structure.pairingReset' | transloco }}
+                    </ap-button>
+                  }
+                </div>
+              } @else {
+                <p class="structure-page__card-empty structure-page__card-pad">
+                  {{ 'organizer.structure.noQualifiers' | transloco }}
+                </p>
+              }
+            </div>
+          } @else {
+            <div class="structure-page__row structure-page__row--add">
+              <ap-text-field
+                [label]="'organizer.structure.bracketName' | transloco"
+                [value]="bracketFormFor(phase.id).name"
+                (valueChange)="setBracketForm(phase.id, 'name', $event)"
+              />
+              <ap-text-field
+                [label]="'organizer.structure.bracketSize' | transloco"
+                type="number"
+                [min]="2"
+                [value]="bracketFormFor(phase.id).size"
+                (valueChange)="setBracketForm(phase.id, 'size', $event)"
+              />
+              <ap-button
+                type="button"
+                variant="secondary"
+                [disabled]="busy()"
+                (click)="createBracket(phase)"
+              >
+                + {{ 'organizer.structure.bracket' | transloco }}
+              </ap-button>
+            </div>
+          }
+        </section>
+      }
+
+      <details class="structure-page__add-phase" [open]="visiblePhases().length === 0">
+        <summary>+ {{ 'organizer.structure.addPhase' | transloco }}</summary>
+        <div class="structure-page__add-phase-body">
+          <ap-text-field
+            [label]="'organizer.structure.phaseName' | transloco"
+            [value]="newPhaseName()"
+            (valueChange)="newPhaseName.set($event)"
+          />
+          <ap-select
+            [label]="'organizer.structure.phaseType' | transloco"
+            [options]="phaseTypeOptions()"
+            [value]="newPhaseType()"
+            (valueChange)="onNewPhaseType($event)"
+          />
+          <ap-button type="button" variant="secondary" [disabled]="busy()" (click)="addPhase()">
+            {{ 'organizer.structure.addPhaseButton' | transloco }}
+          </ap-button>
+        </div>
+      </details>
+    }
+  </div>
+
+  <ng-template #phaseHeader let-phase let-pools="pools">
+    <div class="structure-page__phase-header">
+      <h2>{{ phase.name }}</h2>
+      <span class="structure-page__phase-icons">
+        @if (pools && phase.groups.length > 0 && unassignedTeams().length > 0) {
+          <button
+            type="button"
+            class="structure-page__icon-button"
+            [attr.aria-label]="'organizer.structure.shuffle' | transloco"
+            [disabled]="busy()"
+            (click)="shuffle(phase)"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M10.59 9.17 5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"
+              />
+            </svg>
+          </button>
+        }
+        <button
+          type="button"
+          class="structure-page__icon-button"
+          [attr.aria-expanded]="openSettings() === phase.id"
+          [attr.aria-label]="'organizer.structure.settings' | transloco"
+          (click)="toggleSettings(phase.id)"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M19.14 12.94a7.07 7.07 0 0 0 .06-.94 7.07 7.07 0 0 0-.06-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96a7.03 7.03 0 0 0-1.62-.94l-.36-2.54a.48.48 0 0 0-.48-.41h-3.84a.48.48 0 0 0-.48.41l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96a.49.49 0 0 0-.59.22L2.74 8.87a.48.48 0 0 0 .12.61l2.03 1.58a7.07 7.07 0 0 0 0 1.88l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.48-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.48.48 0 0 0-.12-.61l-2.03-1.58zM12 15.6A3.6 3.6 0 1 1 12 8.4a3.6 3.6 0 0 1 0 7.2z"
+            />
+          </svg>
+        </button>
+        <button
+          type="button"
+          class="structure-page__icon-button"
+          [attr.aria-label]="'organizer.structure.removePhase' | transloco"
+          (click)="confirmingPhaseId.set(phase.id)"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+            />
+          </svg>
+        </button>
+      </span>
+    </div>
+    @if (confirmingPhaseId() === phase.id) {
+      <div class="structure-page__confirm">
+        <span>{{ 'organizer.structure.confirmRemovePhase' | transloco }}</span>
+        <ap-button type="button" size="sm" [disabled]="busy()" (click)="removePhase(phase)">
+          {{ 'organizer.structure.confirmRemove' | transloco }}
+        </ap-button>
+        <ap-button type="button" variant="ghost" size="sm" (click)="confirmingPhaseId.set(null)">
+          {{ 'organizer.structure.cancel' | transloco }}
+        </ap-button>
+      </div>
+    }
+  </ng-template>
+</ion-content>
