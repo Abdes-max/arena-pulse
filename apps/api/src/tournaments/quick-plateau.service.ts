@@ -5,6 +5,7 @@ import { BracketsService } from './brackets.service';
 import { CategoriesService } from './categories.service';
 import { CreateQuickPlateauDto } from './dto/create-quick-plateau.dto';
 import { StructurePresetFormat } from './dto/create-structure-preset.dto';
+import { RECOMMENDED_HEADER_BACKGROUND } from './dto/set-header-background-preset.dto';
 import { FieldsService } from './fields.service';
 import {
   KnockoutQualification,
@@ -66,6 +67,13 @@ export class QuickPlateauService {
       endDate: dto.date,
     });
     try {
+      // Start with the header that matches the theme rather than none (the
+      // organizer can still change or remove it afterwards).
+      await this.tournamentsService.setHeaderBackgroundPreset(
+        organizationId,
+        tournament.id,
+        RECOMMENDED_HEADER_BACKGROUND[tournament.theme],
+      );
       await this.build(organizationId, tournament.id, dto, poolCount, knockout);
     } catch (error) {
       await this.prisma.tournament.delete({ where: { id: tournament.id } });
