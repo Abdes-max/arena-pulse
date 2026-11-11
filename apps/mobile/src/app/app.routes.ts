@@ -88,6 +88,12 @@ export const routes: Routes = [
     redirectTo: 'organizer/tournaments/:id/scores',
   },
   {
+    path: 'organizer/tournaments/:id/structure',
+    canActivate: [organizerAuthGuard],
+    loadComponent: () =>
+      import('./organizer/pages/structure/structure.page').then((m) => m.OrganizerStructurePage),
+  },
+  {
     path: 'organizer/tournaments/:id/standings',
     canActivate: [organizerAuthGuard],
     loadComponent: () =>

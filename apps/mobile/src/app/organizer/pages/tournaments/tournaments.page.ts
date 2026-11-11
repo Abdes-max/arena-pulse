@@ -182,6 +182,12 @@ export class OrganizerTournamentsPage {
     await this.router.navigateByUrl(`/organizer/tournaments/${tournament.id}/scores`);
   }
 
+  /** Pools, brackets and their settings, after creation -- same as openScores() above. */
+  protected async openStructure(event: Event, tournament: OrganizerTournament): Promise<void> {
+    event.stopPropagation();
+    await this.router.navigateByUrl(`/organizer/tournaments/${tournament.id}/structure`);
+  }
+
   /** PR 4 -- same as openScores() above. */
   protected async openStandings(event: Event, tournament: OrganizerTournament): Promise<void> {
     event.stopPropagation();

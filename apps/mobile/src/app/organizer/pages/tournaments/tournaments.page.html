@@ -133,6 +133,9 @@
             <button type="button" class="tcard__action" (click)="openScores($event, t)">
               {{ 'organizer.tournaments.list.scoresAction' | transloco }}
             </button>
+            <button type="button" class="tcard__action" (click)="openStructure($event, t)">
+              {{ 'organizer.tournaments.list.structureAction' | transloco }}
+            </button>
             @if (!simpleMode()) {
               <button type="button" class="tcard__action" (click)="openStandings($event, t)">
                 {{ 'organizer.tournaments.list.standingsAction' | transloco }}
