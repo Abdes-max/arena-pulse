@@ -67,6 +67,27 @@ class FormHostComponent {
   control = new FormControl('a');
 }
 
+@Component({
+  imports: [Select],
+  template: `
+    <ap-select
+      label="Équipe"
+      value=""
+      [options]="options"
+      [autoSelectSingle]="autoSelectSingle"
+      (valueChange)="received = $event"
+    />
+  `,
+})
+class SingleOptionHostComponent {
+  autoSelectSingle = true;
+  options: SelectOption[] = [
+    { value: '', label: 'Choisir une équipe', disabled: true },
+    { value: 'team-1', label: 'FC Lions' },
+  ];
+  received: string | undefined;
+}
+
 describe('Select', () => {
   it('renders one option per entry and reflects the current value', () => {
     const fixture = TestBed.createComponent(HostComponent);
@@ -150,6 +171,23 @@ describe('Select', () => {
 
     expect(fixture.componentInstance.received).toBe('x');
     expect(select.value).toBe('');
+  });
+
+  it('picks the only remaining option by itself by default', () => {
+    const fixture = TestBed.createComponent(SingleOptionHostComponent);
+    fixture.detectChanges();
+    TestBed.tick();
+
+    expect(fixture.componentInstance.received).toBe('team-1');
+  });
+
+  it('never picks by itself when autoSelectSingle is off', () => {
+    const fixture = TestBed.createComponent(SingleOptionHostComponent);
+    fixture.componentInstance.autoSelectSingle = false;
+    fixture.detectChanges();
+    TestBed.tick();
+
+    expect(fixture.componentInstance.received).toBeUndefined();
   });
 
   it('binds to a FormControl via ControlValueAccessor', () => {
