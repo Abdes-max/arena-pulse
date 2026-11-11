@@ -144,36 +144,36 @@
             </div>
           }
         </section>
-      }
-      @if (apiError(); as message) {
-        <p class="live-page__error" role="alert">{{ message }}</p>
-      }
-      @for (block of poolBlocks(); track block.phaseId) {
-        <div
-          class="live-page__pool-validation"
-          [class.live-page__pool-validation--done]="block.validated"
-        >
-          @if (block.validated) {
-            <p>{{ 'organizer.scores.pools.validatedHint' | transloco }}</p>
-            <ap-button type="button" variant="ghost" (click)="reopenPool(block.phaseId)">{{
-              'organizer.scores.pools.reopen' | transloco
-            }}</ap-button>
-          } @else {
-            <p>
-              {{
-                'organizer.scores.pools.progress'
-                  | transloco: { finished: block.finished, total: block.total }
-              }}
-            </p>
-            <ap-button
-              type="button"
-              [disabled]="block.finished < block.total"
-              (click)="validatePool(block.phaseId)"
-            >
-              {{ 'organizer.scores.pools.validate' | transloco }}
-            </ap-button>
-          }
-        </div>
+        @for (block of blocksAfter(i); track block.phaseId) {
+          <div
+            class="live-page__pool-validation"
+            [class.live-page__pool-validation--done]="block.validated"
+          >
+            @if (block.validated) {
+              <p>{{ 'organizer.scores.pools.validatedHint' | transloco }}</p>
+              <ap-button type="button" variant="ghost" (click)="reopenPool(block.phaseId)">{{
+                'organizer.scores.pools.reopen' | transloco
+              }}</ap-button>
+            } @else {
+              <p>
+                {{
+                  'organizer.scores.pools.progress'
+                    | transloco: { finished: block.finished, total: block.total }
+                }}
+              </p>
+              <ap-button
+                type="button"
+                [disabled]="block.finished < block.total"
+                (click)="validatePool(block.phaseId)"
+              >
+                {{ 'organizer.scores.pools.validate' | transloco }}
+              </ap-button>
+            }
+            @if (poolError(); as message) {
+              <p class="live-page__error" role="alert">{{ message }}</p>
+            }
+          </div>
+        }
       }
     }
   </div>
