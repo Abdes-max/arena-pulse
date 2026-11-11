@@ -638,6 +638,7 @@
       "minus": "Remove a goal",
       "plus": "Add a goal",
       "teamsUnknown": "teams known after the previous phase",
+      "poolLocked": "Pool validated, scores locked",
       "validate": "Validate rotation",
       "saveRunning": "Save running score",
       "errors": {
@@ -1362,6 +1363,14 @@
       "forfeit": "Forfeit: {{team}}",
       "undoForfeit": "Undo forfeit",
       "pending": "Awaiting teams",
+      "pools": {
+        "progress": "{{finished}}/{{total}} pool matches finished",
+        "validate": "Validate the pool phase scores",
+        "validatedHint": "Pool scores validated: the final bracket is drawn. Scores are locked.",
+        "reopen": "Edit scores",
+        "validateError": "Could not validate the pool scores.",
+        "reopenError": "Could not reopen the pool scores."
+      },
       "homeScoreLabel": "Home score",
       "awayScoreLabel": "Away score",
       "penaltyLabel": "Penalty shootout",

@@ -80,7 +80,8 @@ export class PhasesService {
       // the bracket they feed into, regardless of the order they were added in.
       orderBy: [{ type: 'asc' }, { position: 'asc' }],
     });
-    return phases.map((phase) => this.toSummary(phase));
+    const feeding = await this.feedingPhaseIds(phases.map((phase) => phase.id));
+    return phases.map((phase) => this.toSummary(phase, feeding.has(phase.id)));
   }
 
   async update(
@@ -114,7 +115,8 @@ export class PhasesService {
         knockoutBracket: true,
       },
     });
-    return this.toSummary(updated);
+    const feeding = await this.feedingPhaseIds([updated.id]);
+    return this.toSummary(updated, feeding.has(updated.id));
   }
 
   async remove(
@@ -200,7 +202,25 @@ export class PhasesService {
     }
   }
 
-  private toSummary(phase: PhaseWithRelations) {
+  /** Real pool phases that qualify teams into another phase: those whose scores the organizer validates. */
+  private async feedingPhaseIds(phaseIds: string[]): Promise<Set<string>> {
+    const [direct, crossGroup] = await Promise.all([
+      this.prisma.qualificationRule.findMany({
+        where: { group: { phaseId: { in: phaseIds } } },
+        select: { group: { select: { phaseId: true } } },
+      }),
+      this.prisma.crossGroupQualificationRule.findMany({
+        where: { phaseId: { in: phaseIds } },
+        select: { phaseId: true },
+      }),
+    ]);
+    return new Set([
+      ...direct.map((rule) => rule.group.phaseId),
+      ...crossGroup.map((rule) => rule.phaseId),
+    ]);
+  }
+
+  private toSummary(phase: PhaseWithRelations, feedsKnockout = false) {
     return {
       id: phase.id,
       name: phase.name,
@@ -212,6 +232,8 @@ export class PhasesService {
       doubleRoundRobin: phase.doubleRoundRobin,
       setsToWin: phase.setsToWin,
       isSeedPhase: phase.isSeedPhase,
+      feedsKnockout: feedsKnockout && !phase.isSeedPhase,
+      scoresValidatedAt: phase.scoresValidatedAt,
       groups: phase.groups.map((group) => ({
         id: group.id,
         name: group.name,

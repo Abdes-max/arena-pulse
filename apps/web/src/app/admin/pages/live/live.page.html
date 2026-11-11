@@ -103,6 +103,13 @@
                         </button>
                       </div>
                     </div>
+                  } @else if (isLocked(match)) {
+                    <p class="live-page__pending">
+                      {{ teamName(match.homeTeam, match.homeSourceLabel) }}
+                      {{ match.score?.homeScore }}-{{ match.score?.awayScore }}
+                      {{ teamName(match.awayTeam, match.awaySourceLabel) }}
+                      · {{ 'admin.live.poolLocked' | transloco }}
+                    </p>
                   } @else {
                     <p class="live-page__pending">
                       {{ teamName(match.homeTeam, match.homeSourceLabel) }} –
@@ -133,5 +140,36 @@
         </li>
       }
     </ol>
+
+    @if (apiError(); as message) {
+      <p class="live-page__error" role="alert">{{ message }}</p>
+    }
+    @for (block of poolBlocks(); track block.phaseId) {
+      <div
+        class="live-page__pool-validation"
+        [class.live-page__pool-validation--done]="block.validated"
+      >
+        @if (block.validated) {
+          <p>{{ 'admin.scores.pools.validatedHint' | transloco }}</p>
+          <ap-button type="button" variant="ghost" (click)="reopenPool(block.phaseId)">{{
+            'admin.scores.pools.reopen' | transloco
+          }}</ap-button>
+        } @else {
+          <p>
+            {{
+              'admin.scores.pools.progress'
+                | transloco: { finished: block.finished, total: block.total }
+            }}
+          </p>
+          <ap-button
+            type="button"
+            [disabled]="block.finished < block.total"
+            (click)="validatePool(block.phaseId)"
+          >
+            {{ 'admin.scores.pools.validate' | transloco }}
+          </ap-button>
+        }
+      </div>
+    }
   }
 </main>

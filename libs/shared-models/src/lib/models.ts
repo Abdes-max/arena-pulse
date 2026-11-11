@@ -259,6 +259,11 @@ export interface CompetitionPhase {
   // creates just to seed its bracket from -- no match is ever generated in
   // it, so it should never surface as a real "Poules"/"Classement" tab.
   isSeedPhase: boolean;
+  // Organizer endpoints only. A pool phase feeding a knockout phase has its
+  // scores validated by the organizer (which draws the bracket); until then
+  // the knockout scores are locked, and once validated the pool scores are.
+  feedsKnockout?: boolean;
+  scoresValidatedAt?: string | null;
   // Sets sports (organizer endpoints only): sets a side must win in this
   // phase; null = the sport's default.
   setsToWin?: number | null;

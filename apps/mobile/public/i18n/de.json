@@ -340,6 +340,14 @@
       "forfeit": "Aufgabe: {{team}}",
       "undoForfeit": "Aufgabe rückgängig machen",
       "pending": "Warten auf Teams",
+      "pools": {
+        "progress": "{{finished}}/{{total}} Gruppenspiele beendet",
+        "validate": "Ergebnisse der Gruppenphase bestätigen",
+        "validatedHint": "Gruppenergebnisse bestätigt: Die Finalrunde ist ausgelost. Die Ergebnisse sind gesperrt.",
+        "reopen": "Ergebnisse ändern",
+        "validateError": "Die Gruppenergebnisse konnten nicht bestätigt werden.",
+        "reopenError": "Die Gruppenergebnisse konnten nicht wieder geöffnet werden."
+      },
       "homeScoreLabel": "Ergebnis Heim",
       "awayScoreLabel": "Ergebnis Auswärts",
       "penaltyLabel": "Elfmeterschießen",
@@ -462,6 +470,7 @@
       "minus": "Remove a goal",
       "plus": "Add a goal",
       "teamsUnknown": "teams known after the previous phase",
+      "poolLocked": "Gruppe bestätigt, Ergebnisse gesperrt",
       "validate": "Validate rotation",
       "saveRunning": "Save running score",
       "shiftLabel": "Shift",

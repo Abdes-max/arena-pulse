@@ -36,6 +36,11 @@ interface ScoreSubgroup {
   matches: Match[];
 }
 
+interface PoolErrorBody {
+  message?: string;
+  code?: string;
+}
+
 interface ScoreSection {
   label: string;
   subgroups: ScoreSubgroup[];
@@ -469,7 +474,135 @@ export class ScoresPage {
   }
 
   protected pendingOpponents(match: Match): boolean {
-    return !match.homeTeam || !match.awayTeam;
+    return !match.homeTeam || !match.awayTeam || this.knockoutLocked(match);
+  }
+
+  /** A knockout match stays unscoreable until the pools feeding it are validated. */
+  private knockoutLocked(match: Match): boolean {
+    const pool = this.groupStagePhase();
+    return Boolean(match.knockoutBracketId && pool?.feedsKnockout && !pool.scoresValidatedAt);
+  }
+
+  /** Once the pool scores are validated they are read-only until reopened. */
+  protected poolLocked(match: Match): boolean {
+    return Boolean(match.groupId && this.groupStagePhase()?.scoresValidatedAt);
+  }
+
+  /** The "validate pool scores" step: only for a pool phase that feeds a knockout phase. */
+  protected readonly poolValidation = computed(() => {
+    const phase = this.groupStagePhase();
+    if (!phase?.feedsKnockout) {
+      return null;
+    }
+    const poolMatches = this.matches().filter((match) => match.groupId);
+    if (poolMatches.length === 0) {
+      return null;
+    }
+    const finished = poolMatches.filter(
+      (match) =>
+        match.status === 'COMPLETED' ||
+        match.status === 'FORFEITED' ||
+        match.status === 'CANCELLED',
+    ).length;
+    return {
+      phaseId: phase.id,
+      validated: Boolean(phase.scoresValidatedAt),
+      finished,
+      total: poolMatches.length,
+    };
+  });
+
+  /** The validation block goes right under the last pool section. */
+  protected readonly lastPoolSectionIndex = computed(() => {
+    const sections = this.matchesByRoundSection();
+    for (let index = sections.length - 1; index >= 0; index--) {
+      if (sections[index].subgroups.some((group) => group.matches.some((match) => match.groupId))) {
+        return index;
+      }
+    }
+    return -1;
+  });
+
+  protected async validatePools(): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const validation = this.poolValidation();
+    if (!organizationId || !validation) {
+      return;
+    }
+    this.errorMessage.set(null);
+    try {
+      await this.scoresService.validatePoolScores(
+        organizationId,
+        this.tournamentId,
+        validation.phaseId,
+      );
+      await this.refreshAfterPoolChange();
+    } catch (error) {
+      this.errorMessage.set(this.poolErrorKey(error, 'admin.scores.pools.validateError'));
+    }
+  }
+
+  protected async reopenPools(): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const validation = this.poolValidation();
+    if (!organizationId || !validation) {
+      return;
+    }
+    this.errorMessage.set(null);
+    try {
+      try {
+        await this.scoresService.reopenPoolScores(
+          organizationId,
+          this.tournamentId,
+          validation.phaseId,
+          false,
+        );
+      } catch (error) {
+        // Scores already entered in the final phases would no longer match
+        // the right teams: ask before wiping them.
+        const body = error instanceof HttpErrorResponse ? (error.error as PoolErrorBody) : null;
+        if (error instanceof HttpErrorResponse && body?.code === 'KNOCKOUT_PROGRESS_EXISTS') {
+          if (!window.confirm(body.message ?? '')) {
+            return;
+          }
+          await this.scoresService.reopenPoolScores(
+            organizationId,
+            this.tournamentId,
+            validation.phaseId,
+            true,
+          );
+        } else {
+          throw error;
+        }
+      }
+      await this.refreshAfterPoolChange();
+    } catch (error) {
+      this.errorMessage.set(this.poolErrorKey(error, 'admin.scores.pools.reopenError'));
+    }
+  }
+
+  private poolErrorKey(error: unknown, fallback: string): string {
+    // The API's own French message (e.g. "Il reste 2 matchs de poule sans score validé.").
+    return error instanceof HttpErrorResponse && error.status === 409
+      ? ((error.error as PoolErrorBody).message ?? fallback)
+      : fallback;
+  }
+
+  /** The phases carry the validation flag and the bracket's teams changed: reload both. */
+  private async refreshAfterPoolChange(): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const categoryId = this.selectedCategoryId();
+    if (!organizationId || !categoryId) {
+      return;
+    }
+    this.phases.set(
+      await this.competitionFormatsService.listPhases(
+        organizationId,
+        this.tournamentId,
+        categoryId,
+      ),
+    );
+    await this.loadMatches();
   }
 
   protected logoUrl(url: string | null | undefined): string | null {

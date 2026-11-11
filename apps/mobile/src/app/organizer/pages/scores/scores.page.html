@@ -62,7 +62,7 @@
             }}
           </p>
 
-          @for (section of matchesByRoundSection(); track section) {
+          @for (section of matchesByRoundSection(); track section; let sectionIndex = $index) {
             <section class="scores-page__section">
               <h2 class="scores-page__section-title">{{ section.label }}</h2>
               @for (subgroup of section.subgroups; track subgroup) {
@@ -94,6 +94,16 @@
                         >
                           {{ 'organizer.scores.undoForfeit' | transloco }}
                         </ap-button>
+                      </div>
+                    } @else if (poolLocked(match)) {
+                      <div class="scores-page__pending-row">
+                        <span class="scores-page__team-name">{{
+                          match.homeTeam?.name ?? '?'
+                        }}</span>
+                        <strong>{{ match.score?.homeScore }} - {{ match.score?.awayScore }}</strong>
+                        <span class="scores-page__team-name">{{
+                          match.awayTeam?.name ?? '?'
+                        }}</span>
                       </div>
                     } @else if (pendingOpponents(match)) {
                       <div class="scores-page__pending-row">
@@ -212,6 +222,35 @@
                 }
               }
             </section>
+            @if (sectionIndex === lastPoolSectionIndex()) {
+              @if (poolValidation(); as validation) {
+                <div
+                  class="scores-page__pool-validation"
+                  [class.scores-page__pool-validation--done]="validation.validated"
+                >
+                  @if (validation.validated) {
+                    <p>{{ 'organizer.scores.pools.validatedHint' | transloco }}</p>
+                    <ap-button type="button" variant="ghost" (click)="reopenPools()">{{
+                      'organizer.scores.pools.reopen' | transloco
+                    }}</ap-button>
+                  } @else {
+                    <p>
+                      {{
+                        'organizer.scores.pools.progress'
+                          | transloco: { finished: validation.finished, total: validation.total }
+                      }}
+                    </p>
+                    <ap-button
+                      type="button"
+                      [disabled]="validation.finished < validation.total"
+                      (click)="validatePools()"
+                    >
+                      {{ 'organizer.scores.pools.validate' | transloco }}
+                    </ap-button>
+                  }
+                </div>
+              }
+            }
           }
         }
       }

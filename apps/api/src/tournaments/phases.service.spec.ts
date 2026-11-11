@@ -126,6 +126,7 @@ describe('PhasesService', () => {
       matchDurationMinutes: 15,
       breakDurationMinutes: 5,
       refereesPerMatch: 1,
+      feedsKnockout: false,
       groups: [],
       knockoutBracket: null,
     });

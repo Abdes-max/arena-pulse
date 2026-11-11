@@ -16,7 +16,9 @@ import { OrganizationRoleGuard } from '../organizations/guards/organization-role
 import { RequireTournamentPermission } from './decorators/require-tournament-permission.decorator';
 import { ForfeitMatchDto } from './dto/forfeit-match.dto';
 import { BatchMatchScoresDto } from './dto/batch-match-scores.dto';
+import { ReopenPoolScoresDto } from './dto/reopen-pool-scores.dto';
 import { UpsertMatchScoreDto } from './dto/upsert-match-score.dto';
+import { PhaseScoresService } from './phase-scores.service';
 import { TournamentPermissionGuard } from './guards/tournament-permission.guard';
 import { ScoresService } from './scores.service';
 
@@ -24,7 +26,42 @@ import { ScoresService } from './scores.service';
 @UseGuards(OrganizationRoleGuard, TournamentPermissionGuard)
 @Controller('organizations/:organizationId/tournaments/:tournamentId')
 export class ScoresController {
-  constructor(private readonly scoresService: ScoresService) {}
+  constructor(
+    private readonly scoresService: ScoresService,
+    private readonly phaseScoresService: PhaseScoresService,
+  ) {}
+
+  @RequireOrgRole(OrganizationRole.ORG_MEMBER)
+  @RequireTournamentPermission('MANAGE_SCORES')
+  @Post('phases/:phaseId/scores/validate')
+  validatePoolScores(
+    @Param('organizationId') organizationId: string,
+    @Param('tournamentId') tournamentId: string,
+    @Param('phaseId') phaseId: string,
+  ) {
+    return this.phaseScoresService.validatePoolScores(
+      organizationId,
+      tournamentId,
+      phaseId,
+    );
+  }
+
+  @RequireOrgRole(OrganizationRole.ORG_MEMBER)
+  @RequireTournamentPermission('MANAGE_SCORES')
+  @Post('phases/:phaseId/scores/reopen')
+  reopenPoolScores(
+    @Param('organizationId') organizationId: string,
+    @Param('tournamentId') tournamentId: string,
+    @Param('phaseId') phaseId: string,
+    @Body() dto: ReopenPoolScoresDto,
+  ) {
+    return this.phaseScoresService.reopenPoolScores(
+      organizationId,
+      tournamentId,
+      phaseId,
+      dto?.confirm === true,
+    );
+  }
 
   @RequireOrgRole(OrganizationRole.ORG_MEMBER)
   @RequireTournamentPermission('MANAGE_SCORES')

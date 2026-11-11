@@ -83,6 +83,31 @@ export class ScoresService {
     );
   }
 
+  /** Locks a pool phase's scores and draws the phases it feeds. */
+  validatePoolScores(organizationId: string, tournamentId: string, phaseId: string): Promise<void> {
+    return firstValueFrom(
+      this.http.post<void>(
+        `${this.base(organizationId, tournamentId)}/phases/${phaseId}/scores/validate`,
+        {},
+      ),
+    );
+  }
+
+  /** Reopens a validated pool phase; `confirm` accepts wiping the scores already entered in the phases it feeds. */
+  reopenPoolScores(
+    organizationId: string,
+    tournamentId: string,
+    phaseId: string,
+    confirm: boolean,
+  ): Promise<void> {
+    return firstValueFrom(
+      this.http.post<void>(
+        `${this.base(organizationId, tournamentId)}/phases/${phaseId}/scores/reopen`,
+        { confirm },
+      ),
+    );
+  }
+
   undoForfeit(organizationId: string, tournamentId: string, matchId: string): Promise<Match> {
     return firstValueFrom(
       this.http.delete<Match>(

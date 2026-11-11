@@ -81,6 +81,7 @@ export class StandingsService {
         select: {
           homeTeamId: true,
           awayTeamId: true,
+          status: true,
           score: {
             select: {
               homeScore: true,
@@ -157,7 +158,13 @@ export class StandingsService {
     const isComplete = group.phase.isSeedPhase
       ? true
       : matches.length > 0 &&
-        matches.every((match) => match.score?.isValidated === true);
+        // A forfeited or cancelled match has no score but is settled too.
+        matches.every(
+          (match) =>
+            match.score?.isValidated === true ||
+            match.status === 'FORFEITED' ||
+            match.status === 'CANCELLED',
+        );
 
     const ratingsByTeamName = await this.ratingsService.getRatingsForTeamNames(
       organizationId,

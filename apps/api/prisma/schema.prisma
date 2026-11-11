@@ -472,6 +472,11 @@ model CompetitionPhase {
   // Overrides Sport.defaultSetsToWin for this phase (e.g. best of 3 in
   // pools, best of 5 in the final); null = the sport's default.
   setsToWin            Int?
+  // GROUP_STAGE phases that feed a knockout phase only: set once the organizer
+  // has validated the pool scores (which draws the bracket). While set, the
+  // pool scores are locked; reopening clears it and resets the bracket. See
+  // PhaseScoresService.
+  scoresValidatedAt    DateTime?
   createdAt            DateTime             @default(now())
   updatedAt            DateTime             @updatedAt
 

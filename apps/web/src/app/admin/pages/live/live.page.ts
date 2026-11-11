@@ -20,6 +20,11 @@ interface DraftScore {
 
 const FINISHED = new Set(['COMPLETED', 'FORFEITED', 'CANCELLED']);
 
+interface PoolErrorBody {
+  message?: string;
+  code?: string;
+}
+
 /**
  * "Jour J": the day-of score entry, one rotation ("série") at a time --
  * the one being played is opened and highlighted, every field's match is on
@@ -136,7 +141,111 @@ export class LivePage {
 
   /** Matches whose teams are both known -- a final waiting on "1er Poule A" can't be scored yet. */
   protected isPlayable(match: Match): boolean {
-    return !!match.homeTeam && !!match.awayTeam && match.status !== 'FORFEITED';
+    return (
+      !!match.homeTeam && !!match.awayTeam && match.status !== 'FORFEITED' && !this.isLocked(match)
+    );
+  }
+
+  /** A pool match whose phase has its scores validated is read-only until the phase is reopened. */
+  protected isLocked(match: Match): boolean {
+    return (
+      !!match.groupId &&
+      this.phases().some(
+        (phase) =>
+          !!phase.scoresValidatedAt && phase.groups.some((group) => group.id === match.groupId),
+      )
+    );
+  }
+
+  /** One "validate the pool scores" block per pool phase that feeds a knockout phase. */
+  protected readonly poolBlocks = computed(() =>
+    this.phases()
+      .filter((phase) => phase.type === 'GROUP_STAGE' && phase.feedsKnockout && !phase.isSeedPhase)
+      .map((phase) => {
+        const groupIds = new Set(phase.groups.map((group) => group.id));
+        const poolMatches = this.matches().filter(
+          (match) => match.groupId && groupIds.has(match.groupId),
+        );
+        return {
+          phaseId: phase.id,
+          name: phase.name,
+          validated: !!phase.scoresValidatedAt,
+          finished: poolMatches.filter(
+            (match) =>
+              match.status === 'COMPLETED' ||
+              match.status === 'FORFEITED' ||
+              match.status === 'CANCELLED',
+          ).length,
+          total: poolMatches.length,
+        };
+      })
+      .filter((block) => block.total > 0),
+  );
+
+  protected async validatePool(phaseId: string): Promise<void> {
+    const organizationId = this.authService.organizations()[0]?.id;
+    if (!organizationId) {
+      return;
+    }
+    this.apiError.set(null);
+    this.errorMessage.set(null);
+    try {
+      await this.scoresService.validatePoolScores(organizationId, this.tournamentId, phaseId);
+      await this.load();
+    } catch (error) {
+      this.showPoolError(error, 'admin.scores.pools.validateError');
+    }
+  }
+
+  protected async reopenPool(phaseId: string): Promise<void> {
+    const organizationId = this.authService.organizations()[0]?.id;
+    if (!organizationId) {
+      return;
+    }
+    this.apiError.set(null);
+    this.errorMessage.set(null);
+    try {
+      try {
+        await this.scoresService.reopenPoolScores(
+          organizationId,
+          this.tournamentId,
+          phaseId,
+          false,
+        );
+      } catch (error) {
+        // Scores already entered in the final phases would no longer match
+        // the right teams: ask before wiping them.
+        const body = error instanceof HttpErrorResponse ? (error.error as PoolErrorBody) : null;
+        if (error instanceof HttpErrorResponse && body?.code === 'KNOCKOUT_PROGRESS_EXISTS') {
+          if (!window.confirm(body.message ?? '')) {
+            return;
+          }
+          await this.scoresService.reopenPoolScores(
+            organizationId,
+            this.tournamentId,
+            phaseId,
+            true,
+          );
+        } else {
+          throw error;
+        }
+      }
+      await this.load();
+    } catch (error) {
+      this.showPoolError(error, 'admin.scores.pools.reopenError');
+    }
+  }
+
+  private showPoolError(error: unknown, fallback: string): void {
+    const message =
+      error instanceof HttpErrorResponse && error.status === 409
+        ? (error.error as PoolErrorBody).message
+        : null;
+    if (message) {
+      this.apiError.set(message);
+    } else {
+      this.errorMessage.set(fallback);
+    }
   }
 
   protected toggle(rotation: Rotation): void {

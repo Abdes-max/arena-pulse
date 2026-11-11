@@ -340,6 +340,14 @@
       "forfeit": "Forfait : {{team}}",
       "undoForfeit": "Annuler le forfait",
       "pending": "En attente des équipes",
+      "pools": {
+        "progress": "{{finished}}/{{total}} matchs de poule terminés",
+        "validate": "Valider les scores des phases de poules",
+        "validatedHint": "Scores des poules validés : le tableau final est tiré. Les scores sont verrouillés.",
+        "reopen": "Modifier les scores",
+        "validateError": "Impossible de valider les scores des poules.",
+        "reopenError": "Impossible de rouvrir les scores des poules."
+      },
       "homeScoreLabel": "Score à domicile",
       "awayScoreLabel": "Score à l'extérieur",
       "penaltyLabel": "Tirs au but",
@@ -462,6 +470,7 @@
       "minus": "Retirer un but",
       "plus": "Ajouter un but",
       "teamsUnknown": "équipes connues après la phase précédente",
+      "poolLocked": "Poule validée, scores verrouillés",
       "validate": "Valider la série",
       "saveRunning": "Enregistrer le score en cours",
       "shiftLabel": "Décaler",
