@@ -333,3 +333,32 @@
 .team-list-page__import-warnings {
   color: var(--ap-color-muted);
 }
+
+// ---- Referees section ----
+.team-list-page__referees {
+  margin-top: var(--ap-space-12);
+  padding-top: var(--ap-space-6);
+  border-top: var(--ap-border-width) solid var(--ap-color-border);
+}
+
+.team-list-page__section-title {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.team-list-page__checkbox {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  margin-top: var(--ap-space-3);
+}
+
+.team-list-page__name-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ap-space-3);
+
+  > ap-text-field {
+    flex: 1 1 180px;
+  }
+}

@@ -183,9 +183,9 @@ export const routes: Routes = [
           import('./admin/pages/teams/team-list.page').then((m) => m.TeamListPage),
       },
       {
+        // Referees now live at the bottom of the Teams page.
         path: 'tournaments/:tournamentId/referees',
-        loadComponent: () =>
-          import('./admin/pages/referees/referee-list.page').then((m) => m.RefereeListPage),
+        redirectTo: 'tournaments/:tournamentId/teams',
       },
       {
         path: 'tournaments/:tournamentId/structure',
