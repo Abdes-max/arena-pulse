@@ -262,7 +262,8 @@
           "pools": "Liga em grupos -- {{count}} grupo(s).",
           "knockoutOnly": "Eliminação direta simples."
         },
-        "editOnWebHint": "Para alterar a estrutura, use o admin web (Estrutura)."
+        "editOnWebHint": "Para alterar a estrutura, use o admin web (Estrutura).",
+        "editStructure": "Modificar a estrutura"
       },
       "calendar": {
         "title": "Calendário dos jogos",
@@ -325,7 +326,13 @@
         "republishedTitle": "Torneio atualizado!",
         "republishedBody": "{{name}} foi novamente publicado com as suas alterações."
       },
-      "progress": "Passo {{current}} de {{total}} ·"
+      "progress": "Passo {{current}} de {{total}} ·",
+      "status": {
+        "title": "Estado do torneio",
+        "archive": "Arquivar",
+        "unarchive": "Desarquivar",
+        "hint": "Arquivar retira o torneio do site público; desarquivar devolve-o a rascunho. Publicar ou despublicar faz-se abaixo."
+      }
     },
     "scores": {
       "title": "Resultados",

@@ -262,7 +262,8 @@
           "pools": "League in pools -- {{count}} pool(s).",
           "knockoutOnly": "Single-elimination knockout."
         },
-        "editOnWebHint": "To change the structure, use the web admin (Structure)."
+        "editOnWebHint": "To change the structure, use the web admin (Structure).",
+        "editStructure": "Edit the structure"
       },
       "calendar": {
         "title": "Match schedule",
@@ -325,7 +326,13 @@
         "republishedTitle": "Tournament updated!",
         "republishedBody": "{{name}} has been republished with your changes."
       },
-      "progress": "Step {{current}} of {{total}} ·"
+      "progress": "Step {{current}} of {{total}} ·",
+      "status": {
+        "title": "Tournament status",
+        "archive": "Archive",
+        "unarchive": "Unarchive",
+        "hint": "Archiving removes the tournament from the public site; unarchiving puts it back as a draft. Publish or unpublish below."
+      }
     },
     "scores": {
       "title": "Scores",

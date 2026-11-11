@@ -838,3 +838,52 @@ ion-title {
     transition: none;
   }
 }
+
+// ---- Calendrier settings: fields that fit the phone width ----
+.wizard-page__gen-cta {
+  align-items: stretch;
+}
+
+.wizard-page__schedule-settings {
+  width: 100%;
+
+  ap-button {
+    display: block;
+  }
+}
+
+.wizard-page__row {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  ap-text-field {
+    min-width: 0;
+  }
+}
+
+.wizard-page__row--3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+// ---- Status (edit mode) ----
+.wizard-page__status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-2);
+}
+
+.wizard-page__status-chip {
+  padding: var(--ap-space-1) var(--ap-space-3);
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+
+  &[data-status='PUBLISHED'] {
+    color: var(--ap-color-signal-text);
+    background: var(--ap-color-signal-soft);
+    border-color: transparent;
+  }
+}

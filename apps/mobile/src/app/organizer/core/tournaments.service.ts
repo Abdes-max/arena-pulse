@@ -163,6 +163,25 @@ export class OrganizerTournamentsService {
     );
   }
 
+  /** Closes the tournament (hidden from the public site); unarchive brings it back as a draft. */
+  archive(organizationId: string, tournamentId: string): Promise<OrganizerTournament> {
+    return firstValueFrom(
+      this.http.post<OrganizerTournament>(
+        `${this.base(organizationId)}/${tournamentId}/archive`,
+        {},
+      ),
+    );
+  }
+
+  unarchive(organizationId: string, tournamentId: string): Promise<OrganizerTournament> {
+    return firstValueFrom(
+      this.http.post<OrganizerTournament>(
+        `${this.base(organizationId)}/${tournamentId}/unarchive`,
+        {},
+      ),
+    );
+  }
+
   unpublish(organizationId: string, tournamentId: string): Promise<OrganizerTournament> {
     return firstValueFrom(
       this.http.post<OrganizerTournament>(

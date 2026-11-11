@@ -1071,6 +1071,34 @@ export class OrganizerTournamentWizardPage {
   }
 
   /** Publication step, already-published tournament: secondary action next to "Republier". */
+  /** Archive (close) or bring back the tournament -- the status block of the Publication step. */
+  protected async setArchived(archived: boolean): Promise<void> {
+    const organizationId = this.organizationId;
+    const tournamentId = this.tournamentId;
+    if (!organizationId || !tournamentId || this.submitting()) {
+      return;
+    }
+    this.submitting.set(true);
+    this.errorMessage.set(null);
+    try {
+      const tournament = archived
+        ? await this.tournamentsApi.archive(organizationId, tournamentId)
+        : await this.tournamentsApi.unarchive(organizationId, tournamentId);
+      this.currentStatus.set(tournament.status);
+    } catch {
+      this.errorMessage.set('organizer.wizard.errorGeneric');
+    } finally {
+      this.submitting.set(false);
+    }
+  }
+
+  /** The app's own Structure screen (pools, brackets, pairings). */
+  protected async openStructure(): Promise<void> {
+    if (this.tournamentId) {
+      await this.router.navigateByUrl(`/organizer/tournaments/${this.tournamentId}/structure`);
+    }
+  }
+
   protected async unpublish(): Promise<void> {
     if (this.submitting()) {
       return;
