@@ -7,8 +7,16 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Button, Select, SelectOption, TextField } from 'design-system';
 import { LanguageService } from 'design-tokens';
 import { AuthService } from '../../core/auth.service';
-import { Category, Player, Team, TeamImportResult } from '../../core/models';
+import {
+  Category,
+  Player,
+  Team,
+  TeamImportResult,
+  Referee,
+  TournamentDetail,
+} from '../../core/models';
 import { OrganizationsService } from '../../core/organizations.service';
+import { RefereesService } from '../../core/referees.service';
 import { TeamsService } from '../../core/teams.service';
 import { TournamentsService } from '../../core/tournaments.service';
 
@@ -46,6 +54,7 @@ export class TeamListPage {
   private readonly route = inject(ActivatedRoute);
   private readonly authService = inject(AuthService);
   private readonly teamsService = inject(TeamsService);
+  private readonly refereesService = inject(RefereesService);
   private readonly tournamentsService = inject(TournamentsService);
   private readonly organizationsService = inject(OrganizationsService);
   private readonly assetUrl = inject(AssetUrlService);
@@ -113,6 +122,18 @@ export class TeamListPage {
 
   protected readonly importCsv = signal('');
 
+  // ---- Referees (bottom of the page, same list as the teams) ----
+  protected readonly tournament = signal<TournamentDetail | null>(null);
+  protected readonly referees = signal<Referee[]>([]);
+  protected readonly refereeAddOpen = signal(false);
+  protected readonly editingRefereeId = signal<string | null>(null);
+  protected readonly confirmingRefereeId = signal<string | null>(null);
+  protected readonly deletingRefereeId = signal<string | null>(null);
+  protected readonly refereeFirstName = signal('');
+  protected readonly refereeLastName = signal('');
+  protected readonly refereeEmail = signal('');
+  protected readonly refereePhone = signal('');
+
   // "Ajouter une équipe" panel: one team at a time (Enter chains the next),
   // a pasted list (one name per line) or a CSV file.
   protected readonly addModes = ['one', 'list', 'csv'] as const;
@@ -168,10 +189,143 @@ export class TeamListPage {
         await this.tournamentsService.listCategories(organizationId, this.tournamentId),
       );
       void this.loadPremiumFeatures(organizationId);
+      void this.loadReferees(organizationId);
     } catch {
       this.errorMessage.set('admin.teamList.errors.load');
     } finally {
       this.loading.set(false);
+    }
+  }
+
+  private async loadReferees(organizationId: string): Promise<void> {
+    try {
+      const [tournament, referees] = await Promise.all([
+        this.tournamentsService.getTournament(organizationId, this.tournamentId),
+        this.refereesService.listReferees(organizationId, this.tournamentId),
+      ]);
+      this.tournament.set(tournament);
+      this.referees.set(referees);
+    } catch {
+      this.errorMessage.set('admin.refereeList.errors.load');
+    }
+  }
+
+  protected async toggleTeamsCanReferee(event: Event): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const teamsCanReferee = (event.target as HTMLInputElement).checked;
+    if (!organizationId) {
+      return;
+    }
+    try {
+      this.tournament.set(
+        await this.tournamentsService.updateTournament(organizationId, this.tournamentId, {
+          teamsCanReferee,
+        }),
+      );
+    } catch {
+      this.errorMessage.set('admin.refereeList.errors.toggleSetting');
+    }
+  }
+
+  protected openRefereeAdd(): void {
+    this.cancelRefereeEdit();
+    this.refereeAddOpen.set(true);
+    this.focusRefereeField();
+  }
+
+  protected closeRefereeAdd(): void {
+    this.refereeAddOpen.set(false);
+    this.cancelRefereeEdit();
+  }
+
+  private focusRefereeField(): void {
+    setTimeout(() =>
+      document
+        .querySelector<HTMLInputElement>('.team-list-page__referee-first-name input')
+        ?.focus(),
+    );
+  }
+
+  protected startRefereeEdit(referee: Referee): void {
+    this.refereeAddOpen.set(false);
+    this.confirmingRefereeId.set(null);
+    this.editingRefereeId.set(referee.id);
+    this.refereeFirstName.set(referee.firstName);
+    this.refereeLastName.set(referee.lastName);
+    this.refereeEmail.set(referee.email ?? '');
+    this.refereePhone.set(referee.phone ?? '');
+  }
+
+  protected cancelRefereeEdit(): void {
+    this.editingRefereeId.set(null);
+    this.confirmingRefereeId.set(null);
+    this.refereeFirstName.set('');
+    this.refereeLastName.set('');
+    this.refereeEmail.set('');
+    this.refereePhone.set('');
+  }
+
+  protected onRefereeSubmit(event: Event): void {
+    event.preventDefault();
+    void this.submitReferee();
+  }
+
+  private async submitReferee(): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const firstName = this.refereeFirstName().trim();
+    const lastName = this.refereeLastName().trim();
+    if (!organizationId || !firstName || !lastName) {
+      return;
+    }
+    const payload = {
+      firstName,
+      lastName,
+      email: this.refereeEmail().trim() || undefined,
+      phone: this.refereePhone().trim() || undefined,
+    };
+    try {
+      const editingId = this.editingRefereeId();
+      if (editingId) {
+        const updated = await this.refereesService.updateReferee(
+          organizationId,
+          this.tournamentId,
+          editingId,
+          payload,
+        );
+        this.referees.update((referees) =>
+          referees.map((r) => (r.id === updated.id ? updated : r)),
+        );
+        this.cancelRefereeEdit();
+      } else {
+        const created = await this.refereesService.createReferee(
+          organizationId,
+          this.tournamentId,
+          payload,
+        );
+        this.referees.update((referees) => [...referees, created]);
+        // Same as the teams: the panel stays open for the next one.
+        this.cancelRefereeEdit();
+        this.focusRefereeField();
+      }
+    } catch {
+      this.errorMessage.set('admin.refereeList.errors.save');
+    }
+  }
+
+  protected async confirmDeleteReferee(referee: Referee): Promise<void> {
+    const organizationId = this.organization()?.id;
+    if (!organizationId) {
+      return;
+    }
+    this.deletingRefereeId.set(referee.id);
+    try {
+      await this.refereesService.deleteReferee(organizationId, this.tournamentId, referee.id);
+      this.referees.update((referees) => referees.filter((r) => r.id !== referee.id));
+      this.cancelRefereeEdit();
+    } catch {
+      this.errorMessage.set('admin.refereeList.errors.remove');
+    } finally {
+      this.deletingRefereeId.set(null);
     }
   }
 

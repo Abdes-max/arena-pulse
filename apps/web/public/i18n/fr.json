@@ -1131,7 +1131,10 @@
         "toggleSetting": "Impossible de mettre à jour ce réglage.",
         "save": "Impossible d'enregistrer cet arbitre.",
         "remove": "Impossible de retirer cet arbitre."
-      }
+      },
+      "moreInfo": "Plus d’infos (email, téléphone)",
+      "enterHint": "Entrée ajoute l’arbitre et passe au suivant.",
+      "confirmDeleteQuestion": "Retirer cet arbitre ?"
     },
     "registrationList": {
       "title": "Inscriptions et paiements",

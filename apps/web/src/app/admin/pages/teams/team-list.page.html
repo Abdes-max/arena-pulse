@@ -443,6 +443,186 @@
       </table>
     }
 
+    <!-- Referees: same compact list as the teams, under them (was its own tab). -->
+    <section class="team-list-page__referees" id="arbitres">
+      <div class="team-list-page__head">
+        <h2 class="team-list-page__section-title">
+          {{ 'admin.refereeList.title' | transloco }} ({{ referees().length }})
+        </h2>
+        <div class="team-list-page__toolbar">
+          <ap-button type="button" (click)="openRefereeAdd()">{{
+            'admin.refereeList.addTitle' | transloco
+          }}</ap-button>
+        </div>
+      </div>
+      <label class="team-list-page__checkbox">
+        <input
+          type="checkbox"
+          [checked]="tournament()?.teamsCanReferee ?? false"
+          (change)="toggleTeamsCanReferee($event)"
+        />
+        {{ 'admin.refereeList.teamsCanReferee' | transloco }}
+      </label>
+
+      @if (refereeAddOpen()) {
+        <section
+          class="team-list-page__panel"
+          [attr.aria-label]="'admin.refereeList.addTitle' | transloco"
+        >
+          <form class="team-list-page__form" (submit)="onRefereeSubmit($event)">
+            <ng-container [ngTemplateOutlet]="refereeFields" />
+            <p class="team-list-page__hint">{{ 'admin.refereeList.enterHint' | transloco }}</p>
+            <div class="team-list-page__form-actions">
+              <ap-button type="submit">{{ 'admin.refereeList.add' | transloco }}</ap-button>
+              <ap-button type="button" variant="ghost" (click)="closeRefereeAdd()">{{
+                'admin.teamList.close' | transloco
+              }}</ap-button>
+            </div>
+          </form>
+        </section>
+      }
+
+      @if (referees().length === 0) {
+        <p class="team-list-page__empty">{{ 'admin.refereeList.empty' | transloco }}</p>
+      } @else {
+        <table class="team-list-page__table">
+          <thead>
+            <tr>
+              <th scope="col">{{ 'admin.teamList.table.name' | transloco }}</th>
+              <th scope="col" class="team-list-page__cell--actions">
+                <span class="team-list-page__sr-only">{{
+                  'admin.teamList.table.actions' | transloco
+                }}</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (referee of referees(); track referee.id) {
+              <tr class="team-list-page__row">
+                <td class="team-list-page__cell team-list-page__cell--name">
+                  <span class="team-list-page__name"
+                    >{{ referee.firstName }} {{ referee.lastName }}</span
+                  >
+                  @if (referee.email || referee.phone) {
+                    <span class="team-list-page__meta">
+                      {{ referee.email }}{{ referee.email && referee.phone ? ' · ' : ''
+                      }}{{ referee.phone }}
+                    </span>
+                  }
+                </td>
+                <td class="team-list-page__cell team-list-page__cell--actions">
+                  <button
+                    type="button"
+                    class="team-list-page__icon-button"
+                    [attr.aria-expanded]="editingRefereeId() === referee.id"
+                    [attr.title]="'admin.refereeList.edit' | transloco"
+                    (click)="
+                      editingRefereeId() === referee.id
+                        ? cancelRefereeEdit()
+                        : startRefereeEdit(referee)
+                    "
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                      />
+                    </svg>
+                    <span class="team-list-page__sr-only">{{
+                      'admin.refereeList.edit' | transloco
+                    }}</span>
+                  </button>
+                </td>
+              </tr>
+              @if (editingRefereeId() === referee.id) {
+                <tr class="team-list-page__row team-list-page__row--expanded">
+                  <td class="team-list-page__cell" colspan="2">
+                    <form class="team-list-page__form" (submit)="onRefereeSubmit($event)">
+                      <ng-container [ngTemplateOutlet]="refereeFields" />
+                      <div class="team-list-page__form-actions">
+                        <ap-button type="submit">{{
+                          'admin.refereeList.save' | transloco
+                        }}</ap-button>
+                        <ap-button type="button" variant="ghost" (click)="cancelRefereeEdit()">{{
+                          'admin.refereeList.cancel' | transloco
+                        }}</ap-button>
+                        @if (confirmingRefereeId() === referee.id) {
+                          <span class="team-list-page__confirm-inline">
+                            <span class="team-list-page__confirm-inline-question">
+                              {{ 'admin.refereeList.confirmDeleteQuestion' | transloco }}
+                            </span>
+                            <ap-button
+                              type="button"
+                              variant="primary"
+                              [disabled]="deletingRefereeId() === referee.id"
+                              (click)="confirmDeleteReferee(referee)"
+                            >
+                              {{
+                                (deletingRefereeId() === referee.id
+                                  ? 'admin.refereeList.deleting'
+                                  : 'admin.refereeList.confirmDelete'
+                                ) | transloco
+                              }}
+                            </ap-button>
+                            <ap-button
+                              type="button"
+                              variant="ghost"
+                              [disabled]="deletingRefereeId() === referee.id"
+                              (click)="confirmingRefereeId.set(null)"
+                            >
+                              {{ 'admin.refereeList.cancel' | transloco }}
+                            </ap-button>
+                          </span>
+                        } @else {
+                          <ap-button
+                            type="button"
+                            variant="ghost"
+                            (click)="confirmingRefereeId.set(referee.id)"
+                          >
+                            {{ 'admin.refereeList.remove' | transloco }}
+                          </ap-button>
+                        }
+                      </div>
+                    </form>
+                  </td>
+                </tr>
+              }
+            }
+          </tbody>
+        </table>
+      }
+    </section>
+
+    <ng-template #refereeFields>
+      <div class="team-list-page__name-row">
+        <ap-text-field
+          class="team-list-page__referee-first-name"
+          [label]="'admin.refereeList.firstNameLabel' | transloco"
+          [value]="refereeFirstName()"
+          (valueChange)="refereeFirstName.set($event)"
+        />
+        <ap-text-field
+          [label]="'admin.refereeList.lastNameLabel' | transloco"
+          [value]="refereeLastName()"
+          (valueChange)="refereeLastName.set($event)"
+        />
+      </div>
+      <details class="team-list-page__more" [open]="!!(refereeEmail() || refereePhone())">
+        <summary>{{ 'admin.refereeList.moreInfo' | transloco }}</summary>
+        <ap-text-field
+          [label]="'admin.refereeList.emailLabel' | transloco"
+          type="email"
+          [value]="refereeEmail()"
+          (valueChange)="refereeEmail.set($event)"
+        />
+        <ap-text-field
+          [label]="'admin.refereeList.phoneLabel' | transloco"
+          type="tel"
+          [value]="refereePhone()"
+          (valueChange)="refereePhone.set($event)"
+        />
+      </details>
+    </ng-template>
+
     <!-- The team's fields, shared by "add one team" and the edit row: the name
          first, the rest only when it matters (category with several of them,
          division when the category has some, contact folded away). -->

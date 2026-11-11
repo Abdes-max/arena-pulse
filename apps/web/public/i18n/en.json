@@ -1131,7 +1131,10 @@
         "toggleSetting": "Unable to update this setting.",
         "save": "Unable to save this referee.",
         "remove": "Unable to remove this referee."
-      }
+      },
+      "moreInfo": "More info (email, phone)",
+      "enterHint": "Enter adds the referee and moves on to the next one.",
+      "confirmDeleteQuestion": "Remove this referee?"
     },
     "registrationList": {
       "title": "Registrations and payments",

@@ -25,13 +25,6 @@
     </a>
     @if (!simpleMode()) {
       <a
-        [routerLink]="['/admin/tournaments', tournamentId(), 'referees']"
-        routerLinkActive="tournament-submenu__link--active"
-        (click)="centerTab($event)"
-      >
-        {{ 'admin.submenu.referees' | transloco }}
-      </a>
-      <a
         [routerLink]="['/admin/tournaments', tournamentId(), 'structure']"
         routerLinkActive="tournament-submenu__link--active"
         (click)="centerTab($event)"

@@ -1029,7 +1029,10 @@
         "toggleSetting": "Não foi possível atualizar esta definição.",
         "save": "Não foi possível guardar este árbitro.",
         "remove": "Não foi possível remover este árbitro."
-      }
+      },
+      "moreInfo": "Mais informações (email, telefone)",
+      "enterHint": "Enter adiciona o árbitro e passa ao seguinte.",
+      "confirmDeleteQuestion": "Remover este árbitro?"
     },
     "registrationList": {
       "title": "Inscrições e pagamentos",
