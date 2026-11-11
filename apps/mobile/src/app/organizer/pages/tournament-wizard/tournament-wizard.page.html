@@ -26,6 +26,19 @@
   </ion-toolbar>
 
   @if (step() !== 'done' && !initializing()) {
+    <div class="wizard-page__progress">
+      <div class="wizard-page__progress-text">
+        <span>{{
+          'organizer.wizard.progress' | transloco: { current: stepNumber(), total: 5 }
+        }}</span>
+        <strong>{{ 'organizer.wizard.rail.' + stepNumber() | transloco }}</strong>
+      </div>
+      <div class="wizard-page__progress-bar" aria-hidden="true">
+        <span [style.width.%]="stepNumber() * 20"></span>
+      </div>
+    </div>
+  }
+  @if (step() !== 'done' && !initializing() && mode() === 'edit') {
     <div class="wizard-page__rail">
       @for (n of [1, 2, 3, 4, 5]; track n) {
         <div
