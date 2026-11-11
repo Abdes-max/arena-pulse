@@ -26,7 +26,17 @@
 .ap-text-field__input {
   display: block;
   width: 100%;
+  min-width: 0;
   box-sizing: border-box;
+
+  // iOS sizes date/time inputs to their content and centres the text: let
+  // them fill their cell like the other fields.
+  &[type='date'],
+  &[type='time'] {
+    -webkit-appearance: none;
+    appearance: none;
+    text-align: start;
+  }
   min-height: var(--ap-touch-target-min);
   font-family: var(--ap-font-body);
   font-size: 1rem;

@@ -262,7 +262,8 @@
           "pools": "Liga in Gruppen -- {{count}} Gruppe(n).",
           "knockoutOnly": "Einfaches K.-o.-System."
         },
-        "editOnWebHint": "Um die Struktur zu ändern, nutzen Sie das Web-Admin (Struktur)."
+        "editOnWebHint": "Um die Struktur zu ändern, nutzen Sie das Web-Admin (Struktur).",
+        "editStructure": "Struktur bearbeiten"
       },
       "calendar": {
         "title": "Spielplan",
@@ -325,7 +326,13 @@
         "republishedTitle": "Turnier aktualisiert!",
         "republishedBody": "{{name}} wurde mit Ihren Änderungen erneut veröffentlicht."
       },
-      "progress": "Schritt {{current}} von {{total}} ·"
+      "progress": "Schritt {{current}} von {{total}} ·",
+      "status": {
+        "title": "Turnierstatus",
+        "archive": "Archivieren",
+        "unarchive": "Wiederherstellen",
+        "hint": "Archivieren entfernt das Turnier von der öffentlichen Seite; Wiederherstellen macht es wieder zum Entwurf. Veröffentlichen oder zurückziehen unten."
+      }
     },
     "scores": {
       "title": "Ergebnisse",

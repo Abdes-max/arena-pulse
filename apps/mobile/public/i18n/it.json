@@ -262,7 +262,8 @@
           "pools": "Campionato a gironi -- {{count}} girone/i.",
           "knockoutOnly": "Eliminazione diretta semplice."
         },
-        "editOnWebHint": "Per modificare la struttura, usa l'admin web (Struttura)."
+        "editOnWebHint": "Per modificare la struttura, usa l'admin web (Struttura).",
+        "editStructure": "Modifica la struttura"
       },
       "calendar": {
         "title": "Calendario delle partite",
@@ -325,7 +326,13 @@
         "republishedTitle": "Torneo aggiornato!",
         "republishedBody": "{{name}} è stato ripubblicato con le tue modifiche."
       },
-      "progress": "Passo {{current}} di {{total}} ·"
+      "progress": "Passo {{current}} di {{total}} ·",
+      "status": {
+        "title": "Stato del torneo",
+        "archive": "Archivia",
+        "unarchive": "Ripristina",
+        "hint": "Archiviare toglie il torneo dal sito pubblico; ripristinarlo lo rimette in bozza. Pubblica o ritira qui sotto."
+      }
     },
     "scores": {
       "title": "Risultati",

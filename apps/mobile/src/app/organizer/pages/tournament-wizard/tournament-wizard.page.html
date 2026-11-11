@@ -441,9 +441,14 @@
           </h3>
           @if (structureSummary(); as summary) {
             <p class="wizard-page__lede">{{ summary }}</p>
-            <p class="wizard-page__hint">
-              {{ 'organizer.wizard.structure.editOnWebHint' | transloco }}
-            </p>
+            <ap-button
+              type="button"
+              variant="secondary"
+              [fullWidth]="true"
+              (click)="openStructure()"
+            >
+              {{ 'organizer.wizard.structure.editStructure' | transloco }}
+            </ap-button>
           } @else {
             <button
               type="button"
@@ -598,7 +603,7 @@
                   (valueChange)="scheduleTime.set($event)"
                 />
               </div>
-              <div class="wizard-page__row">
+              <div class="wizard-page__row wizard-page__row--3">
                 <ap-text-field
                   type="number"
                   [min]="1"
@@ -641,6 +646,36 @@
           </ng-template>
         }
         @case (5) {
+          @if (mode() === 'edit') {
+            <h3 class="wizard-page__section-title">
+              {{ 'organizer.wizard.status.title' | transloco }}
+            </h3>
+            <div class="wizard-page__status">
+              <span class="wizard-page__status-chip" [attr.data-status]="currentStatus()">{{
+                'organizer.tournaments.list.status.' + currentStatus() | transloco
+              }}</span>
+              @if (currentStatus() === 'ARCHIVED') {
+                <ap-button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  [disabled]="submitting()"
+                  (click)="setArchived(false)"
+                  >{{ 'organizer.wizard.status.unarchive' | transloco }}</ap-button
+                >
+              } @else {
+                <ap-button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  [disabled]="submitting()"
+                  (click)="setArchived(true)"
+                  >{{ 'organizer.wizard.status.archive' | transloco }}</ap-button
+                >
+              }
+            </div>
+            <p class="wizard-page__hint">{{ 'organizer.wizard.status.hint' | transloco }}</p>
+          }
           <h3 class="wizard-page__section-title">
             {{ 'organizer.wizard.publish.visibilityTitle' | transloco }}
           </h3>

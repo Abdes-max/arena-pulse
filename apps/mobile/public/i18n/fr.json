@@ -262,7 +262,8 @@
           "pools": "Championnat en poules -- {{count}} poule(s).",
           "knockoutOnly": "Élimination directe simple."
         },
-        "editOnWebHint": "Pour modifier la structure, utilisez l'admin web (Structure)."
+        "editOnWebHint": "Pour modifier la structure, utilisez l'admin web (Structure).",
+        "editStructure": "Modifier la structure"
       },
       "calendar": {
         "title": "Calendrier des matchs",
@@ -325,7 +326,13 @@
         "republishedTitle": "Tournoi mis à jour !",
         "republishedBody": "{{name}} a été republié avec vos modifications."
       },
-      "progress": "Étape {{current}} sur {{total}} ·"
+      "progress": "Étape {{current}} sur {{total}} ·",
+      "status": {
+        "title": "Statut du tournoi",
+        "archive": "Archiver",
+        "unarchive": "Désarchiver",
+        "hint": "Archiver retire le tournoi du site public ; désarchiver le remet en brouillon. Publier ou dépublier se fait ci-dessous."
+      }
     },
     "scores": {
       "title": "Scores",
