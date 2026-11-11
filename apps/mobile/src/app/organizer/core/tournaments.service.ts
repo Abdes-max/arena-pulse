@@ -58,6 +58,7 @@ export class OrganizerTournamentsService {
       fieldCount: number;
       matchDurationMinutes: number;
       breakDurationMinutes: number;
+      breakBetweenPhasesMinutes?: number;
       poolCount?: number;
       withFinal?: boolean;
       knockoutSize?: number;

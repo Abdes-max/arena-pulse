@@ -602,6 +602,7 @@
       "poolCount": "Pools",
       "matchDuration": "Match length (min)",
       "breakDuration": "Break between matches (min)",
+      "breakBetweenPhases": "Pause zwischen den beiden Phasen (Min.)",
       "withFinal": "Add a final (1st vs 2nd, or both pool winners)",
       "preview": {
         "matches": "Matches",

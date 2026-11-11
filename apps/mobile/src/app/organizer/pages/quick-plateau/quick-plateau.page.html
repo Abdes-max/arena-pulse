@@ -114,6 +114,15 @@
       [value]="knockoutSize()"
       (valueChange)="knockoutSize.set($event)"
     />
+    @if (hasTwoPhases()) {
+      <ap-text-field
+        type="number"
+        [min]="0"
+        [label]="'organizer.quickPlateau.breakBetweenPhases' | transloco"
+        [value]="breakBetweenPhasesMinutes()"
+        (valueChange)="breakBetweenPhasesMinutes.set($event)"
+      />
+    }
     @if (hasThirdPlaceOption()) {
       <label class="quick-plateau-page__checkbox">
         <input type="checkbox" [checked]="thirdPlaceMatch()" (change)="toggleThirdPlace($event)" />

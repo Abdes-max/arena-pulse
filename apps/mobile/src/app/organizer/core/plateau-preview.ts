@@ -10,6 +10,8 @@ export interface PlateauPreviewInput {
   poolCount: number;
   matchDurationMinutes: number;
   breakDurationMinutes: number;
+  /** Pause between the last pool match and the knockout phase; defaults to breakDurationMinutes. */
+  breakBetweenPhasesMinutes?: number;
   /** Teams in the knockout phase after the pools (2 = final, 4 = semis...), or null. */
   knockoutSize: number | null;
   thirdPlaceMatch?: boolean;
@@ -136,6 +138,14 @@ export function previewPlateau(input: PlateauPreviewInput): PlateauPreview | nul
     rotationCount,
     minMatchesPerTeam: Math.min(...sizes),
     maxMatchesPerTeam: Math.max(...sizes) + knockout.rounds,
-    durationMinutes: rotationCount * slot - input.breakDurationMinutes,
+    // The pause between the two phases replaces the usual break before the
+    // first knockout rotation.
+    durationMinutes:
+      rotationCount * slot -
+      input.breakDurationMinutes +
+      (knockout.rotations > 0
+        ? (input.breakBetweenPhasesMinutes ?? input.breakDurationMinutes) -
+          input.breakDurationMinutes
+        : 0),
   };
 }

@@ -62,6 +62,8 @@ export class OrganizerQuickPlateauPage {
   protected readonly poolCount = signal('1');
   protected readonly matchDurationMinutes = signal('15');
   protected readonly breakDurationMinutes = signal('5');
+  // Pause between the pools and the phase finale (shown only with a phase finale).
+  protected readonly breakBetweenPhasesMinutes = signal('15');
   // Phase finale: '' = none, else the bracket size (2 = final, 4 = semis...)
   // -- same choices as apps/web's quick-plateau.page.ts.
   protected readonly knockoutSize = signal('');
@@ -107,6 +109,7 @@ export class OrganizerQuickPlateauPage {
       poolCount: toInt(this.poolCount()),
       matchDurationMinutes: toInt(this.matchDurationMinutes()),
       breakDurationMinutes: toInt(this.breakDurationMinutes()),
+      breakBetweenPhasesMinutes: toInt(this.breakBetweenPhasesMinutes()),
       knockoutSize: this.effectiveKnockoutSize(),
       thirdPlaceMatch: this.thirdPlaceMatch(),
     }),
@@ -146,6 +149,11 @@ export class OrganizerQuickPlateauPage {
       },
       () => this.errorMessage.set('organizer.quickPlateau.errors.loadSports'),
     );
+  }
+
+  /** Pools followed by a phase finale: two phases, so a pause between them. */
+  protected hasTwoPhases(): boolean {
+    return this.effectiveKnockoutSize() !== null;
   }
 
   protected hasThirdPlaceOption(): boolean {
@@ -196,6 +204,7 @@ export class OrganizerQuickPlateauPage {
         matchDurationMinutes: toInt(this.matchDurationMinutes()),
         breakDurationMinutes: toInt(this.breakDurationMinutes()),
         ...(this.effectiveKnockoutSize() && {
+          breakBetweenPhasesMinutes: toInt(this.breakBetweenPhasesMinutes()),
           knockoutSize: this.effectiveKnockoutSize()!,
           thirdPlaceMatch: this.hasThirdPlaceOption() && this.thirdPlaceMatch(),
         }),

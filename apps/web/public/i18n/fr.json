@@ -704,6 +704,7 @@
       "poolCount": "Poules",
       "matchDuration": "Durée d’un match (min)",
       "breakDuration": "Pause entre matchs (min)",
+      "breakBetweenPhases": "Pause entre les deux phases (min)",
       "withFinal": "Ajouter une finale (1er contre 2e, ou vainqueurs des 2 poules)",
       "preview": {
         "matches": "Matchs",
