@@ -1,6 +1,14 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import {
+  IonContent,
+  IonHeader,
+  IonRefresher,
+  IonRefresherContent,
+  IonTitle,
+  IonToolbar,
+  RefresherCustomEvent,
+} from '@ionic/angular/standalone';
 import { AssetUrlService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Badge, Logo, Select, SelectOption } from 'design-system';
@@ -41,6 +49,8 @@ const TIME_FILTERS: TimeFilter[] = ['ALL', 'UPCOMING', 'PAST'];
     Badge,
     IonContent,
     IonHeader,
+    IonRefresher,
+    IonRefresherContent,
     IonTitle,
     IonToolbar,
     Logo,
@@ -85,21 +95,39 @@ export class OrganizerTournamentsPage {
     });
   });
 
+  private loadedOnce = false;
+
   constructor() {
     void this.load();
   }
 
-  private async load(): Promise<void> {
+  /** Ionic keeps this page alive when navigating away: reload (quietly) on every return. */
+  ionViewWillEnter(): void {
+    if (this.loadedOnce) {
+      void this.load(true);
+    }
+  }
+
+  protected async onRefresh(event: RefresherCustomEvent): Promise<void> {
+    await this.load(true);
+    await event.target.complete();
+  }
+
+  /** quiet: keep the current list on screen while reloading (no full-page spinner). */
+  private async load(quiet = false): Promise<void> {
     const organizationId = this.organizations()[0]?.id;
     if (!organizationId) {
       this.loading.set(false);
       return;
     }
-    this.loading.set(true);
+    if (!quiet) {
+      this.loading.set(true);
+    }
     this.errorMessage.set(null);
     try {
       const tournaments = await this.tournamentsApi.listTournaments(organizationId);
       this.tournaments.set(tournaments);
+      this.loadedOnce = true;
     } catch {
       this.errorMessage.set('organizer.tournaments.list.errorGeneric');
     } finally {
