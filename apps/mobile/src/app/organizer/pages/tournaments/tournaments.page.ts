@@ -154,12 +154,6 @@ export class OrganizerTournamentsPage {
     await this.router.navigateByUrl(`/organizer/tournaments/${tournament.id}/scores`);
   }
 
-  /** Day-of score entry, one rotation at a time -- same as openScores() above. */
-  protected async openLive(event: Event, tournament: OrganizerTournament): Promise<void> {
-    event.stopPropagation();
-    await this.router.navigateByUrl(`/organizer/tournaments/${tournament.id}/live`);
-  }
-
   /** PR 4 -- same as openScores() above. */
   protected async openStandings(event: Event, tournament: OrganizerTournament): Promise<void> {
     event.stopPropagation();

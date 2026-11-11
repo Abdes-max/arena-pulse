@@ -111,6 +111,59 @@
                         </div>
                       </div>
                     }
+                    @if (needsShootout(match)) {
+                      <p class="live-page__shootout-title">
+                        {{ 'organizer.live.shootout' | transloco }}
+                      </p>
+                      @for (side of shootoutSides; track side.key) {
+                        <div class="live-page__side">
+                          <span class="live-page__team">{{
+                            teamName(
+                              side.key === 'homePenalty' ? match.homeTeam : match.awayTeam,
+                              null
+                            )
+                          }}</span>
+                          <div class="live-page__stepper">
+                            <button
+                              type="button"
+                              [attr.aria-label]="'organizer.live.minus' | transloco"
+                              (click)="bump(match, side.key, -1)"
+                            >
+                              −
+                            </button>
+                            <output>{{ scoreOf(match)[side.key] }}</output>
+                            <button
+                              type="button"
+                              [attr.aria-label]="'organizer.live.plus' | transloco"
+                              (click)="bump(match, side.key, 1)"
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+                      }
+                    }
+                  } @else if (match.status === 'FORFEITED') {
+                    <p class="live-page__hint">
+                      {{ teamName(match.homeTeam, match.homeSourceLabel) }} –
+                      {{ teamName(match.awayTeam, match.awaySourceLabel) }} ·
+                      {{
+                        'organizer.live.forfeitOf'
+                          | transloco: { team: match.forfeitedTeam?.name ?? '?' }
+                      }}
+                    </p>
+                    @if (!isLocked(match)) {
+                      <div class="live-page__match-tools">
+                        <button
+                          type="button"
+                          class="live-page__link"
+                          [disabled]="saving()"
+                          (click)="undoForfeit(match)"
+                        >
+                          {{ 'organizer.live.undoForfeit' | transloco }}
+                        </button>
+                      </div>
+                    }
                   } @else if (isLocked(match)) {
                     <p class="live-page__hint">
                       {{ teamName(match.homeTeam, match.homeSourceLabel) }}
@@ -124,6 +177,59 @@
                       {{ teamName(match.awayTeam, match.awaySourceLabel) }}
                       · {{ 'organizer.live.teamsUnknown' | transloco }}
                     </p>
+                  }
+                  @if (isPlayable(match)) {
+                    <div class="live-page__match-tools">
+                      @if (!match.score?.isValidated) {
+                        <button
+                          type="button"
+                          class="live-page__link"
+                          [disabled]="saving()"
+                          (click)="validateMatch(match)"
+                        >
+                          {{ 'organizer.live.validateMatch' | transloco }}
+                        </button>
+                      }
+                      <button
+                        type="button"
+                        class="live-page__link"
+                        [attr.aria-expanded]="forfeitOpenId() === match.id"
+                        (click)="toggleForfeit(match)"
+                      >
+                        {{ 'organizer.live.forfeit' | transloco }}
+                      </button>
+                      @if (match.score) {
+                        <button
+                          type="button"
+                          class="live-page__link"
+                          [disabled]="saving()"
+                          (click)="clearScore(match)"
+                        >
+                          {{ 'organizer.live.clearScore' | transloco }}
+                        </button>
+                      }
+                    </div>
+                    @if (forfeitOpenId() === match.id) {
+                      <div class="live-page__forfeit">
+                        <span>{{ 'organizer.live.forfeitWho' | transloco }}</span>
+                        <ap-button
+                          type="button"
+                          variant="secondary"
+                          size="sm"
+                          [disabled]="saving()"
+                          (click)="declareForfeit(match, match.homeTeam?.id)"
+                          >{{ teamName(match.homeTeam, null) }}</ap-button
+                        >
+                        <ap-button
+                          type="button"
+                          variant="secondary"
+                          size="sm"
+                          [disabled]="saving()"
+                          (click)="declareForfeit(match, match.awayTeam?.id)"
+                          >{{ teamName(match.awayTeam, null) }}</ap-button
+                        >
+                      </div>
+                    }
                   }
                 </div>
               }

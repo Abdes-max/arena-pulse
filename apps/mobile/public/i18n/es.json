@@ -460,7 +460,7 @@
       "categoryNone": "Sin especificar"
     },
     "live": {
-      "title": "Match day",
+      "title": "Resultados",
       "loading": "Loading…",
       "empty": "No match scheduled yet.",
       "rotation": "Rotation {{number}}",
@@ -479,7 +479,14 @@
         "save": "Could not save the scores.",
         "shift": "Could not shift the calendar.",
         "shiftConflict": "This shift would overlap another slot on a field."
-      }
+      },
+      "shootout": "Penaltis",
+      "forfeit": "Incomparecencia…",
+      "forfeitWho": "¿Qué equipo no se presenta?",
+      "forfeitOf": "Incomparecencia: {{team}}",
+      "undoForfeit": "Anular la incomparecencia",
+      "clearScore": "Borrar el resultado",
+      "validateMatch": "Validar este partido"
     },
     "dashboard": {
       "title": "Resumen",

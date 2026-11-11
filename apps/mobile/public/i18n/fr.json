@@ -460,7 +460,7 @@
       "categoryNone": "Non précisée"
     },
     "live": {
-      "title": "Jour J",
+      "title": "Scores",
       "loading": "Chargement…",
       "empty": "Aucun match planifié pour l’instant.",
       "rotation": "Série {{number}}",
@@ -479,7 +479,14 @@
         "save": "Impossible d’enregistrer les scores.",
         "shift": "Impossible de décaler le calendrier.",
         "shiftConflict": "Ce décalage ferait chevaucher un autre créneau sur un terrain."
-      }
+      },
+      "shootout": "Tirs au but",
+      "forfeit": "Forfait…",
+      "forfeitWho": "Quelle équipe déclare forfait ?",
+      "forfeitOf": "Forfait : {{team}}",
+      "undoForfeit": "Annuler le forfait",
+      "clearScore": "Effacer le score",
+      "validateMatch": "Valider ce match"
     },
     "dashboard": {
       "title": "Vue d'ensemble",

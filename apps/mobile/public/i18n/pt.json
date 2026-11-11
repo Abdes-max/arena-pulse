@@ -460,7 +460,7 @@
       "categoryNone": "Não especificada"
     },
     "live": {
-      "title": "Match day",
+      "title": "Resultados",
       "loading": "Loading…",
       "empty": "No match scheduled yet.",
       "rotation": "Rotation {{number}}",
@@ -479,7 +479,14 @@
         "save": "Could not save the scores.",
         "shift": "Could not shift the calendar.",
         "shiftConflict": "This shift would overlap another slot on a field."
-      }
+      },
+      "shootout": "Desempate por penáltis",
+      "forfeit": "Falta de comparência…",
+      "forfeitWho": "Que equipa falta?",
+      "forfeitOf": "Falta de comparência: {{team}}",
+      "undoForfeit": "Anular a falta de comparência",
+      "clearScore": "Apagar o resultado",
+      "validateMatch": "Validar este jogo"
     },
     "dashboard": {
       "title": "Visão geral",
