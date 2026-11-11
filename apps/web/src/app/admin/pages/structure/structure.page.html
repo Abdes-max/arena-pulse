@@ -227,19 +227,519 @@
         </section>
       }
 
-      <section class="structure-page__section">
-        <h2>{{ 'admin.structure.addPhase.title' | transloco }}</h2>
-        <div class="structure-page__inline-form">
+      <!-- Board: pools on the left, the phases they feed on the right (stacked
+           on a phone). Each phase keeps every setting it had, folded behind
+           its ⚙ button. -->
+      <div class="structure-page__board">
+        @for (column of boardColumns(); track column.type) {
+          @if (column.phases.length > 0) {
+            <div class="structure-page__column">
+              @for (phase of column.phases; track phase.id) {
+                <section class="structure-page__phase">
+                  <div class="structure-page__phase-header">
+                    <h2>{{ phase.name }}</h2>
+                    <span class="structure-page__phase-icons">
+                      @if (
+                        phase.type === 'GROUP_STAGE' &&
+                        phase.groups.length > 0 &&
+                        unassignedTeams().length > 0
+                      ) {
+                        <button
+                          type="button"
+                          class="structure-page__icon-button"
+                          [attr.title]="'admin.structure.board.shuffle' | transloco"
+                          [disabled]="shuffling()"
+                          (click)="shuffleUnassigned(phase)"
+                        >
+                          <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path
+                              d="M10.59 9.17 5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"
+                            />
+                          </svg>
+                          <span class="structure-page__sr-only">{{
+                            'admin.structure.board.shuffle' | transloco
+                          }}</span>
+                        </button>
+                      }
+                      <button
+                        type="button"
+                        class="structure-page__icon-button"
+                        [attr.aria-expanded]="settingsOpen(phase.id)"
+                        [attr.title]="'admin.structure.board.settings' | transloco"
+                        (click)="toggleSettings(phase.id)"
+                      >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path
+                            d="M19.14 12.94a7.07 7.07 0 0 0 .06-.94 7.07 7.07 0 0 0-.06-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96a7.03 7.03 0 0 0-1.62-.94l-.36-2.54a.48.48 0 0 0-.48-.41h-3.84a.48.48 0 0 0-.48.41l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96a.49.49 0 0 0-.59.22L2.74 8.87a.48.48 0 0 0 .12.61l2.03 1.58a7.07 7.07 0 0 0 0 1.88l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.48-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.48.48 0 0 0-.12-.61l-2.03-1.58zM12 15.6A3.6 3.6 0 1 1 12 8.4a3.6 3.6 0 0 1 0 7.2z"
+                          />
+                        </svg>
+                        <span class="structure-page__sr-only">{{
+                          'admin.structure.board.settings' | transloco
+                        }}</span>
+                      </button>
+                      <button
+                        type="button"
+                        class="structure-page__icon-button"
+                        [attr.title]="'admin.structure.phase.removePhase' | transloco"
+                        (click)="requestRemovePhase(phase)"
+                      >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                          <path
+                            d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+                          />
+                        </svg>
+                        <span class="structure-page__sr-only">{{
+                          'admin.structure.phase.removePhase' | transloco
+                        }}</span>
+                      </button>
+                    </span>
+                  </div>
+
+                  @if (confirmingRemovePhaseId() === phase.id) {
+                    <div class="structure-page__confirm-inline">
+                      <span class="structure-page__confirm-inline-question">
+                        {{ 'admin.structure.phase.confirmRemoveQuestion' | transloco }}
+                      </span>
+                      <ap-button
+                        type="button"
+                        variant="primary"
+                        [disabled]="removingPhaseId() === phase.id"
+                        (click)="confirmRemovePhase(phase)"
+                      >
+                        {{
+                          (removingPhaseId() === phase.id
+                            ? 'admin.structure.phase.removing'
+                            : 'admin.structure.phase.confirmRemove'
+                          ) | transloco
+                        }}
+                      </ap-button>
+                      <ap-button
+                        type="button"
+                        variant="ghost"
+                        [disabled]="removingPhaseId() === phase.id"
+                        (click)="cancelRemovePhase()"
+                      >
+                        {{ 'admin.structure.phase.cancelRemove' | transloco }}
+                      </ap-button>
+                    </div>
+                  }
+
+                  @if (settingsOpen(phase.id)) {
+                    <div class="structure-page__settings">
+                      @if (isSets()) {
+                        <label class="structure-page__sets-to-win">
+                          {{ 'admin.structure.setsToWin.label' | transloco }}
+                          <select (change)="changeSetsToWin(phase, $event)">
+                            <option value="" [selected]="phase.setsToWin === null">
+                              {{ 'admin.structure.setsToWin.default' | transloco }}
+                            </option>
+                            <option value="1" [selected]="phase.setsToWin === 1">
+                              {{ 'admin.structure.setsToWin.one' | transloco }}
+                            </option>
+                            <option value="2" [selected]="phase.setsToWin === 2">
+                              {{ 'admin.structure.setsToWin.two' | transloco }}
+                            </option>
+                            <option value="3" [selected]="phase.setsToWin === 3">
+                              {{ 'admin.structure.setsToWin.three' | transloco }}
+                            </option>
+                          </select>
+                        </label>
+                      }
+                      @if (phase.type === 'GROUP_STAGE') {
+                        <label class="structure-page__checkbox-label">
+                          <input
+                            type="checkbox"
+                            [checked]="phase.doubleRoundRobin"
+                            (change)="toggleDoubleRoundRobin(phase, $event)"
+                          />
+                          {{ 'admin.structure.doubleRoundRobinLabel' | transloco }}
+                        </label>
+                        @if (standingRuleFor(phase.id); as rule) {
+                          <div class="structure-page__phase-rules">
+                            <h3>{{ 'admin.structure.phase.standingRule.title' | transloco }}</h3>
+                            <p class="structure-page__hint">
+                              {{ 'admin.structure.phase.standingRule.hint' | transloco }}
+                            </p>
+                            <div class="structure-page__standing-rule">
+                              <ap-text-field
+                                [label]="'admin.structure.phase.standingRule.winLabel' | transloco"
+                                type="number"
+                                [value]="rule.winPoints.toString()"
+                                (valueChange)="
+                                  updateStandingRuleField(phase.id, 'winPoints', $event)
+                                "
+                              />
+                              <ap-text-field
+                                [label]="'admin.structure.phase.standingRule.drawLabel' | transloco"
+                                type="number"
+                                [value]="rule.drawPoints.toString()"
+                                (valueChange)="
+                                  updateStandingRuleField(phase.id, 'drawPoints', $event)
+                                "
+                              />
+                              <ap-text-field
+                                [label]="'admin.structure.phase.standingRule.lossLabel' | transloco"
+                                type="number"
+                                [value]="rule.lossPoints.toString()"
+                                (valueChange)="
+                                  updateStandingRuleField(phase.id, 'lossPoints', $event)
+                                "
+                              />
+                              <div class="structure-page__checkbox-row">
+                                <label class="structure-page__checkbox-label">
+                                  <input
+                                    type="checkbox"
+                                    [checked]="rule.supplementaryStandingEnabled"
+                                    (change)="
+                                      toggleStandingRuleFlag(
+                                        phase.id,
+                                        'supplementaryStandingEnabled',
+                                        $event
+                                      )
+                                    "
+                                  />
+                                  {{
+                                    'admin.structure.phase.standingRule.supplementaryLabel'
+                                      | transloco
+                                  }}
+                                </label>
+                                <label class="structure-page__checkbox-label">
+                                  <input
+                                    type="checkbox"
+                                    [checked]="rule.penaltyShootoutEnabled"
+                                    (change)="
+                                      toggleStandingRuleFlag(
+                                        phase.id,
+                                        'penaltyShootoutEnabled',
+                                        $event
+                                      )
+                                    "
+                                  />
+                                  {{
+                                    'admin.structure.phase.standingRule.penaltyShootoutLabel'
+                                      | transloco
+                                  }}
+                                </label>
+                              </div>
+                              <p class="structure-page__hint">
+                                {{
+                                  'admin.structure.phase.standingRule.tieBreakHint'
+                                    | transloco: { order: rule.tieBreakOrder.join(' → ') }
+                                }}
+                              </p>
+                              <ap-button type="button" (click)="saveStandingRule(phase)">
+                                {{ 'admin.structure.saveLabel' | transloco }}
+                              </ap-button>
+                            </div>
+
+                            <h3>{{ 'admin.structure.phase.qualification.title' | transloco }}</h3>
+                            <p class="structure-page__hint">
+                              {{ 'admin.structure.phase.qualification.hint' | transloco }}
+                            </p>
+                            <ul class="structure-page__qualification-list">
+                              @for (
+                                ruleGroup of qualificationRuleGroupsFor(phase.id);
+                                track ruleGroup.key
+                              ) {
+                                <li>
+                                  {{
+                                    'admin.structure.phase.qualification.ruleRow'
+                                      | transloco
+                                        : {
+                                            from: ruleGroup.fromPosition,
+                                            to: ruleGroup.toPosition,
+                                            target: ruleGroup.targetPhaseName,
+                                          }
+                                  }}
+                                  <ap-button
+                                    type="button"
+                                    variant="ghost"
+                                    (click)="removeQualificationRule(phase, ruleGroup)"
+                                  >
+                                    {{ 'admin.structure.deleteLabel' | transloco }}
+                                  </ap-button>
+                                </li>
+                              }
+                            </ul>
+                            <div class="structure-page__inline-form">
+                              <ap-text-field
+                                [label]="
+                                  'admin.structure.phase.qualification.fromLabel' | transloco
+                                "
+                                [hideLabel]="true"
+                                type="number"
+                                [min]="1"
+                                [placeholder]="
+                                  'admin.structure.phase.qualification.fromLabel' | transloco
+                                "
+                                [value]="qualificationRuleFormFor(phase.id).fromPosition"
+                                (valueChange)="
+                                  updateQualificationRuleField(phase.id, 'fromPosition', $event)
+                                "
+                              />
+                              <ap-text-field
+                                [label]="'admin.structure.phase.qualification.toLabel' | transloco"
+                                [hideLabel]="true"
+                                type="number"
+                                [min]="1"
+                                [placeholder]="
+                                  'admin.structure.phase.qualification.toLabel' | transloco
+                                "
+                                [value]="qualificationRuleFormFor(phase.id).toPosition"
+                                (valueChange)="
+                                  updateQualificationRuleField(phase.id, 'toPosition', $event)
+                                "
+                              />
+                              <ap-select
+                                [label]="'admin.structure.targetPhaseLabel' | transloco"
+                                [hideLabel]="true"
+                                [options]="targetPhaseOptions(phase.id)"
+                                [value]="qualificationRuleFormFor(phase.id).targetPhaseId"
+                                (valueChange)="onTargetPhaseChange(phase.id, $event)"
+                              />
+                              <ap-button
+                                type="button"
+                                variant="ghost"
+                                (click)="addQualificationRule(phase)"
+                              >
+                                {{ 'admin.structure.phase.qualification.addRule' | transloco }}
+                              </ap-button>
+                            </div>
+
+                            <h3>{{ 'admin.structure.phase.crossGroup.title' | transloco }}</h3>
+                            <p class="structure-page__hint">
+                              {{ 'admin.structure.phase.crossGroup.hint' | transloco }}
+                            </p>
+                            <ul class="structure-page__qualification-list">
+                              @for (rule of crossGroupRulesFor(phase.id); track rule.id) {
+                                <li>
+                                  {{
+                                    'admin.structure.phase.crossGroup.ruleRow'
+                                      | transloco
+                                        : {
+                                            count: rule.bestCount,
+                                            position: rule.position,
+                                            target: rule.targetPhaseName,
+                                          }
+                                  }}
+                                  <ap-button
+                                    type="button"
+                                    variant="ghost"
+                                    (click)="removeCrossGroupRule(phase, rule)"
+                                  >
+                                    {{ 'admin.structure.deleteLabel' | transloco }}
+                                  </ap-button>
+                                </li>
+                              }
+                            </ul>
+                            <div class="structure-page__inline-form">
+                              <ap-text-field
+                                [label]="'admin.structure.positionLabel' | transloco"
+                                [hideLabel]="true"
+                                type="number"
+                                [min]="1"
+                                [placeholder]="
+                                  'admin.structure.phase.crossGroup.positionPlaceholder' | transloco
+                                "
+                                [value]="crossGroupRuleFormFor(phase.id).position"
+                                (valueChange)="
+                                  updateCrossGroupRuleField(phase.id, 'position', $event)
+                                "
+                              />
+                              <ap-text-field
+                                [label]="
+                                  'admin.structure.phase.crossGroup.bestCountLabel' | transloco
+                                "
+                                [hideLabel]="true"
+                                type="number"
+                                [min]="1"
+                                [placeholder]="
+                                  'admin.structure.phase.crossGroup.bestCountLabel' | transloco
+                                "
+                                [value]="crossGroupRuleFormFor(phase.id).bestCount"
+                                (valueChange)="
+                                  updateCrossGroupRuleField(phase.id, 'bestCount', $event)
+                                "
+                              />
+                              <ap-select
+                                [label]="'admin.structure.targetPhaseLabel' | transloco"
+                                [hideLabel]="true"
+                                [options]="targetPhaseOptions(phase.id)"
+                                [value]="crossGroupRuleFormFor(phase.id).targetPhaseId"
+                                (valueChange)="onCrossGroupTargetPhaseChange(phase.id, $event)"
+                              />
+                              <ap-button
+                                type="button"
+                                variant="ghost"
+                                (click)="addCrossGroupRule(phase)"
+                              >
+                                {{ 'admin.structure.phase.crossGroup.addRule' | transloco }}
+                              </ap-button>
+                            </div>
+                          </div>
+                        }
+                      } @else if (phase.knockoutBracket; as bracket) {
+                        <label class="structure-page__checkbox-label">
+                          <input
+                            type="checkbox"
+                            [checked]="bracketRankingMatchFor(bracket)"
+                            (change)="onBracketRankingMatchEditChange(bracket.id, $event)"
+                          />
+                          {{ 'admin.structure.rankingMatchLabel' | transloco }}
+                        </label>
+                        <div class="structure-page__inline-form">
+                          <ap-button type="button" (click)="saveBracketRankingMatch(phase)">
+                            {{ 'admin.structure.saveLabel' | transloco }}
+                          </ap-button>
+                          <ap-button type="button" variant="ghost" (click)="removeBracket(phase)">
+                            {{ 'admin.structure.phase.bracket.removeBracket' | transloco }}
+                          </ap-button>
+                        </div>
+                      }
+                    </div>
+                  }
+
+                  @if (phase.type === 'GROUP_STAGE') {
+                    <div class="structure-page__cards">
+                      @for (group of phase.groups; track group.id) {
+                        <div class="structure-page__card">
+                          <div class="structure-page__card-head">
+                            <strong>{{ group.name }}</strong>
+                            <button
+                              type="button"
+                              class="structure-page__icon-button structure-page__icon-button--on-color"
+                              [attr.title]="
+                                ('admin.structure.deleteLabel' | transloco) + ' ' + group.name
+                              "
+                              (click)="removeGroup(phase, group)"
+                            >
+                              <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path
+                                  d="M6 19a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"
+                                />
+                              </svg>
+                              <span class="structure-page__sr-only">{{
+                                'admin.structure.deleteLabel' | transloco
+                              }}</span>
+                            </button>
+                          </div>
+                          <ul class="structure-page__card-list">
+                            @for (team of teamsForGroup(group.id); track team.id) {
+                              <li>
+                                <span>{{ team.name }}</span>
+                                <button
+                                  type="button"
+                                  class="structure-page__row-remove"
+                                  [attr.aria-label]="
+                                    ('admin.structure.removeLabel' | transloco) + ' ' + team.name
+                                  "
+                                  (click)="unassignTeam(team)"
+                                >
+                                  ×
+                                </button>
+                              </li>
+                            } @empty {
+                              <li class="structure-page__card-empty">
+                                {{ 'admin.structure.board.emptyPool' | transloco }}
+                              </li>
+                            }
+                          </ul>
+                          @if (unassignedTeams().length > 0) {
+                            <div class="structure-page__card-add">
+                              <ap-select
+                                [label]="'admin.structure.phase.group.chooseTeamLabel' | transloco"
+                                [hideLabel]="true"
+                                [options]="unassignedTeamOptions()"
+                                [value]="teamIdToAssignFor(group.id)"
+                                (valueChange)="assignPicked(group.id, $event)"
+                              />
+                            </div>
+                          }
+                        </div>
+                      }
+                    </div>
+                    <div class="structure-page__add-row">
+                      <ap-text-field
+                        [label]="'admin.structure.phase.group.newGroupLabel' | transloco"
+                        [placeholder]="
+                          'admin.structure.phase.group.newGroupPlaceholder' | transloco
+                        "
+                        [value]="groupNameFor(phase.id)"
+                        (valueChange)="onNewGroupNameChange(phase.id, $event)"
+                      />
+                      <ap-button type="button" variant="secondary" (click)="addGroup(phase)">
+                        + {{ 'admin.structure.board.pool' | transloco }}
+                      </ap-button>
+                    </div>
+                  } @else {
+                    @if (phase.knockoutBracket; as bracket) {
+                      <div class="structure-page__card">
+                        <div class="structure-page__card-head">
+                          <strong>{{ bracket.name }}</strong>
+                          <span class="structure-page__card-tag">{{
+                            'admin.structure.phase.bracket.teamsCount'
+                              | transloco: { size: bracket.size }
+                          }}</span>
+                        </div>
+                        <ul class="structure-page__card-list">
+                          @for (label of qualifierLabelsFor(phase.id); track $index) {
+                            <li>{{ label }}</li>
+                          } @empty {
+                            <li class="structure-page__card-empty">
+                              {{ 'admin.structure.board.noQualifiers' | transloco }}
+                            </li>
+                          }
+                        </ul>
+                      </div>
+                    } @else {
+                      <div class="structure-page__add-row">
+                        <ap-text-field
+                          [label]="'admin.structure.phase.bracket.nameLabel' | transloco"
+                          [placeholder]="
+                            'admin.structure.phase.bracket.namePlaceholder' | transloco
+                          "
+                          [value]="bracketFormFor(phase.id).name"
+                          (valueChange)="onBracketFormChange(phase.id, 'name', $event)"
+                        />
+                        <ap-text-field
+                          [label]="'admin.structure.phase.bracket.sizeLabel' | transloco"
+                          type="number"
+                          [min]="2"
+                          [value]="bracketFormFor(phase.id).size"
+                          (valueChange)="onBracketFormChange(phase.id, 'size', $event)"
+                        />
+                        <label class="structure-page__checkbox-label">
+                          <input
+                            type="checkbox"
+                            [checked]="bracketFormFor(phase.id).hasRankingMatch"
+                            (change)="onBracketRankingMatchChange(phase.id, $event)"
+                          />
+                          {{ 'admin.structure.rankingMatchLabel' | transloco }}
+                        </label>
+                        <ap-button type="button" variant="secondary" (click)="createBracket(phase)">
+                          + {{ 'admin.structure.board.bracket' | transloco }}
+                        </ap-button>
+                      </div>
+                    }
+                  }
+                </section>
+              }
+            </div>
+          }
+        }
+      </div>
+
+      <details class="structure-page__add-phase" [open]="visiblePhases().length === 0">
+        <summary>+ {{ 'admin.structure.addPhase.title' | transloco }}</summary>
+        <div class="structure-page__add-row">
           <ap-text-field
             [label]="'admin.structure.addPhase.nameLabel' | transloco"
-            [hideLabel]="true"
             [placeholder]="'admin.structure.addPhase.namePlaceholder' | transloco"
             [value]="newPhaseName()"
             (valueChange)="onNewPhaseNameChange($event)"
           />
           <ap-select
             [label]="'admin.structure.addPhase.typeLabel' | transloco"
-            [hideLabel]="true"
             [options]="phaseTypeOptions()"
             [value]="newPhaseType()"
             (valueChange)="onNewPhaseTypeChange($event)"
@@ -254,371 +754,11 @@
               {{ 'admin.structure.doubleRoundRobinLabel' | transloco }}
             </label>
           }
-          <ap-button type="button" (click)="addPhase()">{{
+          <ap-button type="button" variant="secondary" (click)="addPhase()">{{
             'admin.structure.addPhase.add' | transloco
           }}</ap-button>
         </div>
-      </section>
-
-      @for (phase of visiblePhases(); track phase.id) {
-        <section class="structure-page__phase">
-          <div class="structure-page__phase-header">
-            <h2>
-              {{ phase.name }}
-              <span class="structure-page__phase-type">
-                ({{
-                  (phase.type === 'GROUP_STAGE'
-                    ? 'admin.structure.typeGroupStage'
-                    : 'admin.structure.typeKnockout'
-                  ) | transloco
-                }})
-              </span>
-            </h2>
-            @if (confirmingRemovePhaseId() === phase.id) {
-              <span class="structure-page__confirm-inline">
-                <span class="structure-page__confirm-inline-question">
-                  {{ 'admin.structure.phase.confirmRemoveQuestion' | transloco }}
-                </span>
-                <ap-button
-                  type="button"
-                  variant="primary"
-                  [disabled]="removingPhaseId() === phase.id"
-                  (click)="confirmRemovePhase(phase)"
-                >
-                  {{
-                    (removingPhaseId() === phase.id
-                      ? 'admin.structure.phase.removing'
-                      : 'admin.structure.phase.confirmRemove'
-                    ) | transloco
-                  }}
-                </ap-button>
-                <ap-button
-                  type="button"
-                  variant="ghost"
-                  [disabled]="removingPhaseId() === phase.id"
-                  (click)="cancelRemovePhase()"
-                >
-                  {{ 'admin.structure.phase.cancelRemove' | transloco }}
-                </ap-button>
-              </span>
-            } @else {
-              <ap-button type="button" variant="ghost" (click)="requestRemovePhase(phase)">
-                {{ 'admin.structure.phase.removePhase' | transloco }}
-              </ap-button>
-            }
-          </div>
-
-          @if (isSets()) {
-            <label class="structure-page__sets-to-win">
-              {{ 'admin.structure.setsToWin.label' | transloco }}
-              <select (change)="changeSetsToWin(phase, $event)">
-                <option value="" [selected]="phase.setsToWin === null">
-                  {{ 'admin.structure.setsToWin.default' | transloco }}
-                </option>
-                <option value="1" [selected]="phase.setsToWin === 1">
-                  {{ 'admin.structure.setsToWin.one' | transloco }}
-                </option>
-                <option value="2" [selected]="phase.setsToWin === 2">
-                  {{ 'admin.structure.setsToWin.two' | transloco }}
-                </option>
-                <option value="3" [selected]="phase.setsToWin === 3">
-                  {{ 'admin.structure.setsToWin.three' | transloco }}
-                </option>
-              </select>
-            </label>
-          }
-
-          @if (phase.type === 'GROUP_STAGE') {
-            <label class="structure-page__checkbox-label">
-              <input
-                type="checkbox"
-                [checked]="phase.doubleRoundRobin"
-                (change)="toggleDoubleRoundRobin(phase, $event)"
-              />
-              {{ 'admin.structure.doubleRoundRobinLabel' | transloco }}
-            </label>
-
-            @if (standingRuleFor(phase.id); as rule) {
-              <div class="structure-page__phase-rules">
-                <h3>{{ 'admin.structure.phase.standingRule.title' | transloco }}</h3>
-                <p class="structure-page__hint">
-                  {{ 'admin.structure.phase.standingRule.hint' | transloco }}
-                </p>
-                <div class="structure-page__standing-rule">
-                  <ap-text-field
-                    [label]="'admin.structure.phase.standingRule.winLabel' | transloco"
-                    type="number"
-                    [value]="rule.winPoints.toString()"
-                    (valueChange)="updateStandingRuleField(phase.id, 'winPoints', $event)"
-                  />
-                  <ap-text-field
-                    [label]="'admin.structure.phase.standingRule.drawLabel' | transloco"
-                    type="number"
-                    [value]="rule.drawPoints.toString()"
-                    (valueChange)="updateStandingRuleField(phase.id, 'drawPoints', $event)"
-                  />
-                  <ap-text-field
-                    [label]="'admin.structure.phase.standingRule.lossLabel' | transloco"
-                    type="number"
-                    [value]="rule.lossPoints.toString()"
-                    (valueChange)="updateStandingRuleField(phase.id, 'lossPoints', $event)"
-                  />
-                  <div class="structure-page__checkbox-row">
-                    <label class="structure-page__checkbox-label">
-                      <input
-                        type="checkbox"
-                        [checked]="rule.supplementaryStandingEnabled"
-                        (change)="
-                          toggleStandingRuleFlag(phase.id, 'supplementaryStandingEnabled', $event)
-                        "
-                      />
-                      {{ 'admin.structure.phase.standingRule.supplementaryLabel' | transloco }}
-                    </label>
-                    <label class="structure-page__checkbox-label">
-                      <input
-                        type="checkbox"
-                        [checked]="rule.penaltyShootoutEnabled"
-                        (change)="
-                          toggleStandingRuleFlag(phase.id, 'penaltyShootoutEnabled', $event)
-                        "
-                      />
-                      {{ 'admin.structure.phase.standingRule.penaltyShootoutLabel' | transloco }}
-                    </label>
-                  </div>
-                  <p class="structure-page__hint">
-                    {{
-                      'admin.structure.phase.standingRule.tieBreakHint'
-                        | transloco: { order: rule.tieBreakOrder.join(' → ') }
-                    }}
-                  </p>
-                  <ap-button type="button" (click)="saveStandingRule(phase)">
-                    {{ 'admin.structure.saveLabel' | transloco }}
-                  </ap-button>
-                </div>
-
-                <h3>{{ 'admin.structure.phase.qualification.title' | transloco }}</h3>
-                <p class="structure-page__hint">
-                  {{ 'admin.structure.phase.qualification.hint' | transloco }}
-                </p>
-                <ul class="structure-page__qualification-list">
-                  @for (ruleGroup of qualificationRuleGroupsFor(phase.id); track ruleGroup.key) {
-                    <li>
-                      {{
-                        'admin.structure.phase.qualification.ruleRow'
-                          | transloco
-                            : {
-                                from: ruleGroup.fromPosition,
-                                to: ruleGroup.toPosition,
-                                target: ruleGroup.targetPhaseName,
-                              }
-                      }}
-                      <ap-button
-                        type="button"
-                        variant="ghost"
-                        (click)="removeQualificationRule(phase, ruleGroup)"
-                      >
-                        {{ 'admin.structure.deleteLabel' | transloco }}
-                      </ap-button>
-                    </li>
-                  }
-                </ul>
-                <div class="structure-page__inline-form">
-                  <ap-text-field
-                    [label]="'admin.structure.phase.qualification.fromLabel' | transloco"
-                    [hideLabel]="true"
-                    type="number"
-                    [min]="1"
-                    [placeholder]="'admin.structure.phase.qualification.fromLabel' | transloco"
-                    [value]="qualificationRuleFormFor(phase.id).fromPosition"
-                    (valueChange)="updateQualificationRuleField(phase.id, 'fromPosition', $event)"
-                  />
-                  <ap-text-field
-                    [label]="'admin.structure.phase.qualification.toLabel' | transloco"
-                    [hideLabel]="true"
-                    type="number"
-                    [min]="1"
-                    [placeholder]="'admin.structure.phase.qualification.toLabel' | transloco"
-                    [value]="qualificationRuleFormFor(phase.id).toPosition"
-                    (valueChange)="updateQualificationRuleField(phase.id, 'toPosition', $event)"
-                  />
-                  <ap-select
-                    [label]="'admin.structure.targetPhaseLabel' | transloco"
-                    [hideLabel]="true"
-                    [options]="targetPhaseOptions(phase.id)"
-                    [value]="qualificationRuleFormFor(phase.id).targetPhaseId"
-                    (valueChange)="onTargetPhaseChange(phase.id, $event)"
-                  />
-                  <ap-button type="button" variant="ghost" (click)="addQualificationRule(phase)">
-                    {{ 'admin.structure.phase.qualification.addRule' | transloco }}
-                  </ap-button>
-                </div>
-
-                <h3>{{ 'admin.structure.phase.crossGroup.title' | transloco }}</h3>
-                <p class="structure-page__hint">
-                  {{ 'admin.structure.phase.crossGroup.hint' | transloco }}
-                </p>
-                <ul class="structure-page__qualification-list">
-                  @for (rule of crossGroupRulesFor(phase.id); track rule.id) {
-                    <li>
-                      {{
-                        'admin.structure.phase.crossGroup.ruleRow'
-                          | transloco
-                            : {
-                                count: rule.bestCount,
-                                position: rule.position,
-                                target: rule.targetPhaseName,
-                              }
-                      }}
-                      <ap-button
-                        type="button"
-                        variant="ghost"
-                        (click)="removeCrossGroupRule(phase, rule)"
-                      >
-                        {{ 'admin.structure.deleteLabel' | transloco }}
-                      </ap-button>
-                    </li>
-                  }
-                </ul>
-                <div class="structure-page__inline-form">
-                  <ap-text-field
-                    [label]="'admin.structure.positionLabel' | transloco"
-                    [hideLabel]="true"
-                    type="number"
-                    [min]="1"
-                    [placeholder]="
-                      'admin.structure.phase.crossGroup.positionPlaceholder' | transloco
-                    "
-                    [value]="crossGroupRuleFormFor(phase.id).position"
-                    (valueChange)="updateCrossGroupRuleField(phase.id, 'position', $event)"
-                  />
-                  <ap-text-field
-                    [label]="'admin.structure.phase.crossGroup.bestCountLabel' | transloco"
-                    [hideLabel]="true"
-                    type="number"
-                    [min]="1"
-                    [placeholder]="'admin.structure.phase.crossGroup.bestCountLabel' | transloco"
-                    [value]="crossGroupRuleFormFor(phase.id).bestCount"
-                    (valueChange)="updateCrossGroupRuleField(phase.id, 'bestCount', $event)"
-                  />
-                  <ap-select
-                    [label]="'admin.structure.targetPhaseLabel' | transloco"
-                    [hideLabel]="true"
-                    [options]="targetPhaseOptions(phase.id)"
-                    [value]="crossGroupRuleFormFor(phase.id).targetPhaseId"
-                    (valueChange)="onCrossGroupTargetPhaseChange(phase.id, $event)"
-                  />
-                  <ap-button type="button" variant="ghost" (click)="addCrossGroupRule(phase)">
-                    {{ 'admin.structure.phase.crossGroup.addRule' | transloco }}
-                  </ap-button>
-                </div>
-              </div>
-            }
-
-            @for (group of phase.groups; track group.id) {
-              <div class="structure-page__group">
-                <div class="structure-page__group-header">
-                  <strong>{{ group.name }}</strong>
-                  <div class="structure-page__group-actions">
-                    <ap-button type="button" variant="ghost" (click)="removeGroup(phase, group)">
-                      {{ 'admin.structure.deleteLabel' | transloco }}
-                    </ap-button>
-                  </div>
-                </div>
-
-                <ul class="structure-page__team-list">
-                  @for (team of teamsForGroup(group.id); track team.id) {
-                    <li>
-                      {{ team.name }}
-                      <ap-button type="button" variant="ghost" (click)="unassignTeam(team)">
-                        {{ 'admin.structure.removeLabel' | transloco }}
-                      </ap-button>
-                    </li>
-                  }
-                </ul>
-
-                <div class="structure-page__group-details">
-                  <div class="structure-page__inline-form">
-                    <ap-select
-                      [label]="'admin.structure.phase.group.chooseTeamLabel' | transloco"
-                      [hideLabel]="true"
-                      [options]="unassignedTeamOptions()"
-                      [value]="teamIdToAssignFor(group.id)"
-                      (valueChange)="onNewTeamIdToAssignChange(group.id, $event)"
-                    />
-                    <ap-button type="button" variant="ghost" (click)="assignTeamToGroup(group.id)">
-                      {{ 'admin.structure.phase.group.addTeam' | transloco }}
-                    </ap-button>
-                  </div>
-                </div>
-              </div>
-            }
-            <div class="structure-page__inline-form">
-              <ap-text-field
-                [label]="'admin.structure.phase.group.newGroupLabel' | transloco"
-                [hideLabel]="true"
-                [placeholder]="'admin.structure.phase.group.newGroupPlaceholder' | transloco"
-                [value]="groupNameFor(phase.id)"
-                (valueChange)="onNewGroupNameChange(phase.id, $event)"
-              />
-              <ap-button type="button" variant="ghost" (click)="addGroup(phase)">
-                {{ 'admin.structure.phase.group.addGroup' | transloco }}
-              </ap-button>
-            </div>
-          } @else {
-            @if (phase.knockoutBracket; as bracket) {
-              <p>
-                <strong>{{ bracket.name }}</strong>
-                ({{
-                  'admin.structure.phase.bracket.teamsCount' | transloco: { size: bracket.size }
-                }})
-              </p>
-              <label class="structure-page__checkbox-label">
-                <input
-                  type="checkbox"
-                  [checked]="bracketRankingMatchFor(bracket)"
-                  (change)="onBracketRankingMatchEditChange(bracket.id, $event)"
-                />
-                {{ 'admin.structure.rankingMatchLabel' | transloco }}
-              </label>
-              <ap-button type="button" (click)="saveBracketRankingMatch(phase)">
-                {{ 'admin.structure.saveLabel' | transloco }}
-              </ap-button>
-              <ap-button type="button" variant="ghost" (click)="removeBracket(phase)">
-                {{ 'admin.structure.phase.bracket.removeBracket' | transloco }}
-              </ap-button>
-            } @else {
-              <div class="structure-page__inline-form">
-                <ap-text-field
-                  [label]="'admin.structure.phase.bracket.nameLabel' | transloco"
-                  [hideLabel]="true"
-                  [placeholder]="'admin.structure.phase.bracket.namePlaceholder' | transloco"
-                  [value]="bracketFormFor(phase.id).name"
-                  (valueChange)="onBracketFormChange(phase.id, 'name', $event)"
-                />
-                <ap-text-field
-                  [label]="'admin.structure.phase.bracket.sizeLabel' | transloco"
-                  [hideLabel]="true"
-                  type="number"
-                  [min]="2"
-                  [value]="bracketFormFor(phase.id).size"
-                  (valueChange)="onBracketFormChange(phase.id, 'size', $event)"
-                />
-                <label class="structure-page__checkbox-label">
-                  <input
-                    type="checkbox"
-                    [checked]="bracketFormFor(phase.id).hasRankingMatch"
-                    (change)="onBracketRankingMatchChange(phase.id, $event)"
-                  />
-                  {{ 'admin.structure.rankingMatchLabel' | transloco }}
-                </label>
-                <ap-button type="button" (click)="createBracket(phase)">{{
-                  'admin.structure.phase.bracket.create' | transloco
-                }}</ap-button>
-              </div>
-            }
-          }
-        </section>
-      }
+      </details>
     }
   }
 </main>

@@ -323,3 +323,209 @@
     white-space: normal;
   }
 }
+
+// ---- Board: pool cards and bracket cards, settings behind ⚙ ----
+.structure-page__board {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--ap-space-6);
+  align-items: start;
+  margin-top: var(--ap-space-6);
+}
+
+.structure-page__column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-6);
+  min-width: 0;
+}
+
+.structure-page__board .structure-page__phase {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.structure-page__board .structure-page__phase-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-2);
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.structure-page__phase-icons {
+  display: inline-flex;
+  gap: var(--ap-space-1);
+}
+
+.structure-page__icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--ap-touch-target-min);
+  height: var(--ap-touch-target-min);
+  padding: 0;
+  color: var(--ap-color-muted);
+  background: transparent;
+  border: none;
+  border-radius: var(--ap-radius-md);
+  cursor: pointer;
+
+  svg {
+    width: 22px;
+    height: 22px;
+    fill: currentColor;
+  }
+
+  &:hover,
+  &[aria-expanded='true'] {
+    color: var(--ap-color-fg);
+    background: var(--ap-color-surface);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: wait;
+  }
+}
+
+.structure-page__icon-button--on-color {
+  width: 36px;
+  height: 36px;
+  color: var(--ap-color-on-signal);
+
+  &:hover {
+    color: var(--ap-color-on-signal);
+    background: rgba(255, 255, 255, 0.15);
+  }
+}
+
+.structure-page__settings {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-3);
+  margin-top: var(--ap-space-3);
+  padding: var(--ap-space-4);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+}
+
+.structure-page__cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-4);
+  margin-top: var(--ap-space-3);
+}
+
+.structure-page__card {
+  overflow: hidden;
+  margin-top: var(--ap-space-3);
+  background: var(--ap-color-bg);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.structure-page__cards .structure-page__card {
+  margin-top: 0;
+}
+
+.structure-page__card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-2);
+  min-height: 44px;
+  padding: 0 var(--ap-space-2) 0 var(--ap-space-4);
+  color: var(--ap-color-on-signal);
+  background: var(--ap-color-signal);
+}
+
+.structure-page__card-tag {
+  padding-right: var(--ap-space-2);
+  font-size: 0.85rem;
+  opacity: 0.9;
+}
+
+.structure-page__card-list {
+  list-style: none;
+  margin: 0;
+  padding: var(--ap-space-1) 0;
+
+  li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ap-space-2);
+    min-height: 40px;
+    padding: 0 var(--ap-space-2) 0 var(--ap-space-4);
+  }
+}
+
+.structure-page__card-empty {
+  color: var(--ap-color-error);
+  font-size: 0.9rem;
+}
+
+.structure-page__row-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  font: inherit;
+  font-size: 1.2rem;
+  color: var(--ap-color-muted);
+  background: transparent;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--ap-color-error);
+  }
+}
+
+.structure-page__card-add {
+  padding: var(--ap-space-2) var(--ap-space-3) var(--ap-space-3);
+  border-top: var(--ap-border-width) solid var(--ap-color-border);
+}
+
+.structure-page__add-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--ap-space-3);
+  margin-top: var(--ap-space-4);
+
+  > ap-text-field,
+  > ap-select {
+    flex: 1 1 200px;
+  }
+}
+
+.structure-page__add-phase {
+  margin-top: var(--ap-space-8);
+  padding: var(--ap-space-4);
+  border: var(--ap-border-width) dashed var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+
+  summary {
+    cursor: pointer;
+    font-weight: 600;
+  }
+}
+
+.structure-page__sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

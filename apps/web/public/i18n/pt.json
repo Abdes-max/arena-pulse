@@ -1193,6 +1193,19 @@
         "one": "1 set para ganhar",
         "two": "2 sets para ganhar (à melhor de 3)",
         "three": "3 sets para ganhar (à melhor de 5)"
+      },
+      "board": {
+        "shuffle": "Sorteio das equipas não colocadas",
+        "settings": "Definições da fase",
+        "emptyPool": "Nenhuma equipa: escolha uma abaixo",
+        "pool": "Grupo",
+        "bracket": "Quadro",
+        "noQualifiers": "Nenhuma regra de qualificação (ver ⚙ da fase de grupos)",
+        "first": "1.º {{group}}",
+        "second": "2.º {{group}}",
+        "third": "3.º {{group}}",
+        "nth": "{{position}}.º {{group}}",
+        "bestOf": "{{count}} melhor(es) {{position}}.º"
       }
     },
     "schedule": {

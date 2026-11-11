@@ -78,6 +78,9 @@ export class StructurePage {
   // "expanded" pool at a time), so the pending team selection is kept per
   // pool -- same Map-per-entity pattern as newGroupNameByPhase above.
   protected readonly newTeamIdToAssignByGroup = signal<Record<string, string>>({});
+  /** Phases whose ⚙ settings are unfolded (everything rule-related lives there). */
+  private readonly openSettings = signal<Set<string>>(new Set());
+  protected readonly shuffling = signal(false);
 
   // Keyed by phaseId -- one barème / one set of qualification rules per
   // group-stage phase, applied under the hood to every pool it contains.
@@ -430,6 +433,107 @@ export class StructurePage {
       {},
       this.languageService.language(),
     );
+  }
+
+  /** Pools first, then the phases they feed: the two columns of the board. */
+  protected readonly boardColumns = computed(() => [
+    {
+      type: 'GROUP_STAGE',
+      phases: this.visiblePhases().filter((phase) => phase.type === 'GROUP_STAGE'),
+    },
+    { type: 'KNOCKOUT', phases: this.visiblePhases().filter((phase) => phase.type === 'KNOCKOUT') },
+  ]);
+
+  protected settingsOpen(phaseId: string): boolean {
+    return this.openSettings().has(phaseId);
+  }
+
+  protected toggleSettings(phaseId: string): void {
+    this.openSettings.update((open) => {
+      const next = new Set(open);
+      if (next.has(phaseId)) {
+        next.delete(phaseId);
+      } else {
+        next.add(phaseId);
+      }
+      return next;
+    });
+  }
+
+  /** Picking a team in a pool's list places it right away (no extra button). */
+  protected async assignPicked(groupId: string, teamId: string): Promise<void> {
+    this.onNewTeamIdToAssignChange(groupId, teamId);
+    if (teamId) {
+      await this.assignTeamToGroup(groupId);
+    }
+  }
+
+  /** Random draw: every team not placed yet goes to the pool that has the fewest. */
+  protected async shuffleUnassigned(phase: CompetitionPhase): Promise<void> {
+    const organizationId = this.organization()?.id;
+    if (!organizationId || phase.groups.length === 0 || this.shuffling()) {
+      return;
+    }
+    const pending = [...this.unassignedTeams()];
+    for (let index = pending.length - 1; index > 0; index--) {
+      const swap = Math.floor(Math.random() * (index + 1));
+      [pending[index], pending[swap]] = [pending[swap], pending[index]];
+    }
+    this.shuffling.set(true);
+    this.errorMessage.set(null);
+    try {
+      for (const team of pending) {
+        const target = [...phase.groups].sort(
+          (a, b) => this.teamsForGroup(a.id).length - this.teamsForGroup(b.id).length,
+        )[0];
+        const updated = await this.teamsService.assignGroup(
+          organizationId,
+          this.tournamentId,
+          team.id,
+          target.id,
+        );
+        this.teams.update((teams) => teams.map((t) => (t.id === updated.id ? updated : t)));
+      }
+    } catch {
+      this.errorMessage.set('admin.structure.errors.assignTeam');
+    } finally {
+      this.shuffling.set(false);
+    }
+  }
+
+  /** Who reaches a knockout phase, from the qualification rules: "1er Poule A", "2 meilleurs 3e"… */
+  protected qualifierLabelsFor(targetPhaseId: string): string[] {
+    const lang = this.languageService.language();
+    const t = (key: string, params: Record<string, unknown>) =>
+      this.transloco.translate(`admin.structure.board.${key}`, params, lang);
+    const ordinalKey = (position: number) =>
+      position === 1 ? 'first' : position === 2 ? 'second' : position === 3 ? 'third' : 'nth';
+    const direct: { position: number; group: string }[] = [];
+    const labels: string[] = [];
+    for (const source of this.phases().filter((phase) => phase.type === 'GROUP_STAGE')) {
+      for (const rule of this.qualificationRuleGroupsFor(source.id)) {
+        if (rule.targetPhaseId !== targetPhaseId) {
+          continue;
+        }
+        for (let position = rule.fromPosition; position <= rule.toPosition; position++) {
+          for (const group of source.groups) {
+            direct.push({ position, group: group.name });
+          }
+        }
+      }
+      for (const rule of this.crossGroupRulesFor(source.id)) {
+        if (rule.targetPhaseId === targetPhaseId) {
+          labels.push(t('bestOf', { count: rule.bestCount, position: rule.position }));
+        }
+      }
+    }
+    direct.sort((a, b) => a.position - b.position || a.group.localeCompare(b.group));
+    return [
+      ...direct.map((slot) =>
+        t(ordinalKey(slot.position), { position: slot.position, group: slot.group }),
+      ),
+      ...labels,
+    ];
   }
 
   protected teamsForGroup(groupId: string): Team[] {
