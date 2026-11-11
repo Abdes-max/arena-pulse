@@ -314,6 +314,53 @@ describe('Auth (e2e)', () => {
       .expect(401);
   });
 
+  it('lets a native client keep its session through the response body instead of the cookie', async () => {
+    await request(app.getHttpServer())
+      .post('/api/v1/auth/register')
+      .send(credentials)
+      .expect(201);
+    await prisma.user.update({
+      where: { email: credentials.email },
+      data: { emailVerifiedAt: new Date() },
+    });
+
+    // Web (no header): the token never appears in the body.
+    const webLogin = await request(app.getHttpServer())
+      .post('/api/v1/auth/login')
+      .send({ email: credentials.email, password: credentials.password })
+      .expect(200);
+    expect(
+      (webLogin.body as { refreshToken?: string }).refreshToken,
+    ).toBeUndefined();
+
+    const login = await request(app.getHttpServer())
+      .post('/api/v1/auth/login')
+      .set('X-Client', 'native')
+      .send({ email: credentials.email, password: credentials.password })
+      .expect(200);
+    const first = (login.body as { refreshToken?: string }).refreshToken;
+    expect(first).toBeDefined();
+
+    // No cookie sent: the body token alone restores the session, and rotates.
+    const refreshed = await request(app.getHttpServer())
+      .post('/api/v1/auth/refresh')
+      .set('X-Client', 'native')
+      .send({ refreshToken: first })
+      .expect(200);
+    const second = (refreshed.body as { refreshToken?: string }).refreshToken;
+    expect(second).toBeDefined();
+    expect(second).not.toBe(first);
+
+    await request(app.getHttpServer())
+      .post('/api/v1/auth/logout')
+      .send({ refreshToken: second })
+      .expect(204);
+    await request(app.getHttpServer())
+      .post('/api/v1/auth/refresh')
+      .send({ refreshToken: second })
+      .expect(401);
+  });
+
   it('logs out and invalidates the refresh token', async () => {
     await request(app.getHttpServer())
       .post('/api/v1/auth/register')
