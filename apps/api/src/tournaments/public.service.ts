@@ -119,6 +119,8 @@ export class PublicService {
       description: tournament.description,
       rules: tournament.rules,
       practicalInfo: tournament.practicalInfo,
+      format: tournament.format,
+      level: tournament.level,
       venues,
       sponsors,
       wrappedUnlocked,

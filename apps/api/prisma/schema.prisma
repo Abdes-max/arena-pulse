@@ -285,6 +285,9 @@ model Tournament {
   // Free text shown with the form: price, how and when to pay (on site, bank
   // transfer...). The organizer collects the money themselves.
   registrationPaymentInfo String?
+  // Shown on the tournament card (e.g. "5 contre 5", "Elite"); free text.
+  format              String?
+  level               String?
   // Whether a PUBLISHED tournament appears in the public directory search
   // (GET /public/tournaments, /public/tournaments/search) -- independent
   // from `status`. A private tournament (false) stays reachable by its

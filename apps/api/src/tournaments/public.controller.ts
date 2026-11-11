@@ -39,6 +39,7 @@ export class PublicController {
     @Query('location') location?: string,
     @Query('dateFrom') dateFrom?: string,
     @Query('time') time?: string,
+    @Query('registration') registration?: string,
     @Query('page') page?: string,
     @Query('pageSize') pageSize?: string,
   ) {
@@ -49,6 +50,7 @@ export class PublicController {
       dateFrom,
       // Anything else than the two known values means no time filter.
       time: time === 'upcoming' || time === 'past' ? time : undefined,
+      registration: registration === 'open' ? 'open' : undefined,
       page: page ? Number(page) : undefined,
       pageSize: pageSize ? Number(pageSize) : undefined,
     });
