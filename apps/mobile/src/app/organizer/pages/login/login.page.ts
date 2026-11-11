@@ -47,7 +47,8 @@ export class OrganizerLoginPage {
   private readonly location = inject(Location);
 
   protected readonly form = this.formBuilder.nonNullable.group({
-    email: ['', [Validators.required, Validators.email]],
+    // The last account that signed in here, so a returning organizer only types the password.
+    email: [this.auth.lastEmail(), [Validators.required, Validators.email]],
     password: ['', Validators.required],
     // Checked by default: same persistent session as before this option existed.
     rememberMe: [true],
@@ -57,8 +58,7 @@ export class OrganizerLoginPage {
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly needsVerification = signal(false);
   protected readonly resent = signal(false);
-  // Set by SessionTimeoutService's own redirect after a 30-min-idle/8h-
-  // absolute auto-logout, same reasoning as apps/web's login.page.ts.
+  // Kept for old links: the app no longer auto-logs out on idle (see SessionTimeoutService).
   protected readonly sessionExpired =
     this.route.snapshot.queryParamMap.get('sessionExpired') === '1';
 

@@ -20,6 +20,7 @@ import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { Public } from './decorators/public.decorator';
 import { LoginDto } from './dto/login.dto';
+import { RefreshDto } from './dto/refresh.dto';
 import { RegisterDto } from './dto/register.dto';
 import { RequestPasswordResetDto } from './dto/request-password-reset.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
@@ -27,6 +28,12 @@ import { UpdatePreferencesDto } from './dto/update-preferences.dto';
 import { MailLang } from '../mail/decorators/mail-lang.decorator';
 import type { MailLanguage } from '../mail/mail-language';
 import type { AuthenticatedUser } from './strategies/jwt.strategy';
+
+// Sent by the Capacitor apps (see apps/mobile auth.service.ts). Such a client
+// gets the refresh token in the response body too and presents it back in the
+// body, instead of relying on the cookie (unreliable in iOS webviews).
+export const NATIVE_CLIENT_HEADER = 'x-client';
+export const NATIVE_CLIENT_VALUE = 'native';
 
 export const REFRESH_TOKEN_COOKIE = 'refresh_token';
 export const REFRESH_TOKEN_PATH = '/api/v1/auth';
@@ -67,6 +74,7 @@ export class AuthController {
   @Post('verify-email/:token')
   async verifyEmail(
     @Param('token') token: string,
+    @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
     const result = await this.authService.verifyEmail(token);
@@ -79,6 +87,7 @@ export class AuthController {
       accessToken: result.accessToken,
       expiresIn: result.expiresIn,
       user: result.user,
+      ...this.nativeRefreshBody(req, result.refreshToken),
     };
   }
 
@@ -120,6 +129,7 @@ export class AuthController {
   @Post('login')
   async login(
     @Body() dto: LoginDto,
+    @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
     const result = await this.authService.login(dto);
@@ -142,6 +152,7 @@ export class AuthController {
       accessToken: result.accessToken,
       expiresIn: result.expiresIn,
       user: result.user,
+      ...this.nativeRefreshBody(req, result.refreshToken),
     };
   }
 
@@ -150,10 +161,11 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Post('refresh')
   async refresh(
+    @Body() dto: RefreshDto,
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const presented = this.readRefreshCookie(req);
+    const presented = this.readRefreshCookie(req) ?? dto?.refreshToken;
     if (!presented) {
       throw new UnauthorizedException('Session invalide.');
     }
@@ -165,14 +177,22 @@ export class AuthController {
       result.refreshTokenExpiresAt,
       !cookies?.[SESSION_ONLY_COOKIE],
     );
-    return { accessToken: result.accessToken, expiresIn: result.expiresIn };
+    return {
+      accessToken: result.accessToken,
+      expiresIn: result.expiresIn,
+      ...this.nativeRefreshBody(req, result.refreshToken),
+    };
   }
 
   @Public()
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('logout')
-  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    const presented = this.readRefreshCookie(req);
+  async logout(
+    @Body() dto: RefreshDto,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const presented = this.readRefreshCookie(req) ?? dto?.refreshToken;
     if (presented) {
       await this.authService.logout(presented);
     }
@@ -219,6 +239,16 @@ export class AuthController {
     // there's no refresh token left to explicitly revoke (the cascade on
     // User already deleted every RefreshToken row), just drop the cookie.
     res.clearCookie(REFRESH_TOKEN_COOKIE, { path: REFRESH_TOKEN_PATH });
+  }
+
+  /** The refresh token in the body, for native clients only -- web never sees it (httpOnly cookie). */
+  private nativeRefreshBody(
+    req: Request,
+    refreshToken: string,
+  ): { refreshToken?: string } {
+    return req.header(NATIVE_CLIENT_HEADER) === NATIVE_CLIENT_VALUE
+      ? { refreshToken }
+      : {};
   }
 
   private readRefreshCookie(req: Request): string | undefined {

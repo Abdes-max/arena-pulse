@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
@@ -28,6 +28,37 @@ export interface RegisterResponse {
 interface TokenResponse {
   accessToken: string;
   expiresIn: number;
+  /** Only present because every call below sends NATIVE_HEADERS. */
+  refreshToken?: string;
+}
+
+// Tells the API to also hand the refresh token back in the response body (and
+// to accept it back in the body): the webview's cross-site cookie is not
+// reliable on iOS, which used to sign the organizer out on most app restarts.
+// The token is kept in the app's own storage instead; the cookie still works
+// as a fallback.
+const NATIVE_HEADERS = { 'X-Client': 'native' };
+const REFRESH_TOKEN_KEY = 'tournarena.refreshToken';
+const LAST_EMAIL_KEY = 'tournarena.lastEmail';
+
+function readStored(key: string): string | null {
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function writeStored(key: string, value: string | null): void {
+  try {
+    if (value === null) {
+      localStorage.removeItem(key);
+    } else {
+      localStorage.setItem(key, value);
+    }
+  } catch {
+    // Storage unavailable: the session just won't survive a restart.
+  }
 }
 
 @Injectable({ providedIn: 'root' })
@@ -38,6 +69,7 @@ export class OrganizerAuthService {
   private readonly accessToken = signal<string | null>(null);
   private readonly currentUserSignal = signal<OrganizerUser | null>(null);
   private readonly organizationsSignal = signal<OrganizationSummary[]>([]);
+  private refreshing: Promise<boolean> | null = null;
 
   readonly isAuthenticated = computed(() => this.accessToken() !== null);
   readonly currentUser = this.currentUserSignal.asReadonly();
@@ -46,6 +78,11 @@ export class OrganizerAuthService {
 
   getAccessToken(): string | null {
     return this.accessToken();
+  }
+
+  /** The last account that signed in on this device, to pre-fill the login form. */
+  lastEmail(): string {
+    return readStored(LAST_EMAIL_KEY) ?? '';
   }
 
   /** No session is issued yet -- the account stays unusable until the emailed link is clicked (see verifyEmail below). */
@@ -61,10 +98,11 @@ export class OrganizerAuthService {
       this.http.post<TokenResponse>(
         `${environment.apiUrl}/auth/verify-email/${token}`,
         {},
-        { withCredentials: true },
+        { withCredentials: true, headers: NATIVE_HEADERS },
       ),
     );
     this.accessToken.set(response.accessToken);
+    this.rememberSession(response.refreshToken);
     await this.loadProfile();
   }
 
@@ -99,28 +137,59 @@ export class OrganizerAuthService {
       this.http.post<TokenResponse>(
         `${environment.apiUrl}/auth/login`,
         { email, password, rememberMe },
-        { withCredentials: true },
+        { withCredentials: true, headers: NATIVE_HEADERS },
       ),
     );
     this.accessToken.set(response.accessToken);
+    // Unchecked "Se souvenir de moi": nothing is kept, the session ends with the app.
+    this.rememberSession(rememberMe ? response.refreshToken : undefined);
+    writeStored(LAST_EMAIL_KEY, email.trim().toLowerCase());
     await this.loadProfile();
   }
 
-  /** Restores a session from the httpOnly refresh cookie on app startup. */
-  async silentRefresh(): Promise<boolean> {
+  /**
+   * Restores a session on app startup, from the refresh token kept in the app's
+   * storage (or the httpOnly cookie as a fallback). Concurrent calls share one
+   * request: the token rotates on every use, and reusing a rotated one revokes
+   * the whole session.
+   */
+  silentRefresh(): Promise<boolean> {
+    this.refreshing ??= this.doSilentRefresh().finally(() => {
+      this.refreshing = null;
+    });
+    return this.refreshing;
+  }
+
+  private async doSilentRefresh(): Promise<boolean> {
+    const stored = readStored(REFRESH_TOKEN_KEY);
     try {
       const response = await firstValueFrom(
         this.http.post<TokenResponse>(
           `${environment.apiUrl}/auth/refresh`,
-          {},
-          { withCredentials: true },
+          stored ? { refreshToken: stored } : {},
+          { withCredentials: true, headers: NATIVE_HEADERS },
         ),
       );
       this.accessToken.set(response.accessToken);
+      // Rotated token. Only re-stored when one was already kept, so a session
+      // that opted out of "Se souvenir de moi" never becomes persistent.
+      if (stored) {
+        this.rememberSession(response.refreshToken);
+      }
       await this.loadProfile();
       return true;
-    } catch {
-      this.clearSession();
+    } catch (error) {
+      // Only a rejected token ends the stored session. Offline or a server
+      // hiccup at launch keeps it for the next attempt.
+      const rejected =
+        error instanceof HttpErrorResponse && (error.status === 401 || error.status === 403);
+      if (rejected) {
+        writeStored(REFRESH_TOKEN_KEY, null);
+      }
+      // Already signed in and just offline for a moment: stay signed in.
+      if (rejected || this.accessToken() === null) {
+        this.clearSession();
+      }
       return false;
     }
   }
@@ -146,15 +215,23 @@ export class OrganizerAuthService {
         withCredentials: true,
       }),
     );
+    writeStored(REFRESH_TOKEN_KEY, null);
+    writeStored(LAST_EMAIL_KEY, null);
     this.clearSession();
   }
 
   async logout(): Promise<void> {
+    const stored = readStored(REFRESH_TOKEN_KEY);
     try {
       await firstValueFrom(
-        this.http.post(`${environment.apiUrl}/auth/logout`, {}, { withCredentials: true }),
+        this.http.post(
+          `${environment.apiUrl}/auth/logout`,
+          stored ? { refreshToken: stored } : {},
+          { withCredentials: true },
+        ),
       );
     } finally {
+      writeStored(REFRESH_TOKEN_KEY, null);
       this.clearSession();
     }
   }
@@ -196,6 +273,10 @@ export class OrganizerAuthService {
     } catch {
       this.currentUserSignal.set(user);
     }
+  }
+
+  private rememberSession(refreshToken: string | undefined): void {
+    writeStored(REFRESH_TOKEN_KEY, refreshToken ?? null);
   }
 
   private clearSession(): void {
