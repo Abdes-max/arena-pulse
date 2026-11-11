@@ -38,13 +38,17 @@ test('cycle publier / dépublier / republier, avec des équipes ajoutées et ret
 
   // 3. While unpublished: add a team, then remove it.
   await page.goto(`/admin/tournaments/${tournamentId}/teams`);
+  await page.getByRole('button', { name: 'Ajouter une équipe' }).click();
   await page.getByLabel("Nom de l'équipe").fill('Équipe temporaire');
   await page.getByRole('button', { name: "Ajouter l'équipe" }).click();
   const row = page.locator('tr.team-list-page__row', { hasText: 'Équipe temporaire' });
   await expect(row).toBeVisible();
 
-  await row.getByRole('button', { name: 'Supprimer' }).click();
-  await row.getByRole('button', { name: 'Confirmer la suppression' }).click();
+  // Deleting lives in the team's edit row.
+  await row.getByRole('button', { name: 'Modifier' }).click();
+  const editRow = page.locator('tr.team-list-page__row--expanded');
+  await editRow.getByRole('button', { name: 'Supprimer' }).click();
+  await editRow.getByRole('button', { name: 'Confirmer la suppression' }).click();
   await expect(row).toHaveCount(0);
 
   // 4. Republish -- the existing publish() endpoint already handles this

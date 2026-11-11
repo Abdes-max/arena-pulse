@@ -884,29 +884,38 @@
         "themePremiumHint": "Choosing a theme is reserved for tournaments with more than {{count}} teams, or an active annual subscription."
       },
       "categories": {
-        "title": "Categories and divisions",
+        "title": "Categories",
         "remove": "Delete",
         "feeLabel": "Registration fee (cents, empty = free)",
         "saveFee": "Save fee",
         "removeDivision": "Remove",
-        "newDivisionLabel": "New division",
+        "newDivisionLabel": "Add a division",
         "addDivision": "Add",
-        "newCategoryLabel": "New category",
+        "newCategoryLabel": "Add a category",
         "newCategoryPlaceholder": "New category (e.g. U10)",
         "newFeeLabel": "Fee (cents, optional)",
-        "addCategory": "Add a category",
-        "choose": "Choose a category…"
+        "addCategory": "Add",
+        "choose": "Choose a category…",
+        "options": "Options: divisions, registration fee",
+        "feeEurosLabel": "Registration fee (€)",
+        "feeFreePlaceholder": "Empty = free",
+        "newDivisionPlaceholder": "e.g. Upper pool",
+        "summary": {
+          "free": "Free",
+          "divisions": "{{count}} division(s)"
+        }
       },
       "venues": {
         "title": "Venues and fields",
         "remove": "Delete",
         "removeField": "Remove",
-        "newFieldLabel": "New field",
+        "newFieldLabel": "Add a pitch",
         "addField": "Add",
-        "newVenueLabel": "New venue",
+        "newVenueLabel": "Venue",
         "newVenuePlaceholder": "Search a stadium, gym or address…",
-        "addVenue": "Add a venue",
-        "searchFailed": "Address search unavailable: the typed name will be used as is."
+        "addVenue": "Add the venue",
+        "searchFailed": "Address search unavailable: the typed name will be used as is.",
+        "newFieldPlaceholder": "e.g. Pitch 1"
       },
       "description": {
         "title": "Description",
@@ -1067,7 +1076,8 @@
         "loadPlayers": "Unable to load this team's players.",
         "addPlayer": "Unable to add this player.",
         "removePlayer": "Unable to remove this player.",
-        "logoPremiumLocked": "Reserved for tournaments with more than {{count}} teams, or an active annual subscription."
+        "logoPremiumLocked": "Reserved for tournaments with more than {{count}} teams, or an active annual subscription.",
+        "chooseCategory": "Choose a category first."
       },
       "logoPremiumHint": "Team logos are reserved for tournaments with more than {{count}} teams, or an active annual subscription.",
       "tierModal": {
@@ -1081,6 +1091,20 @@
           "upgrade": "Couldn't update the publication payment, please try again.",
           "subscribe": "Couldn't subscribe, please try again."
         }
+      },
+      "count": "{{count}} team(s)",
+      "close": "Close",
+      "namePlaceholder": "e.g. FC Lions",
+      "enterHint": "Enter adds the team and moves on to the next one.",
+      "moreInfo": "More info (manager, contact)",
+      "pasteLabel": "One team per line",
+      "pastePlaceholder": "FC Lions\nAS Tigers\nUS Panthers",
+      "pasteSubmit": "Add {{count}} team(s)",
+      "selectAll": "Select all",
+      "modes": {
+        "one": "One team",
+        "list": "Paste a list",
+        "csv": "CSV file"
       }
     },
     "refereeList": {

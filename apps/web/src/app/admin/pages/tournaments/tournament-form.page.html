@@ -572,9 +572,9 @@
       @if (isEditMode()) {
         <section class="tournament-form-page__section">
           <h2>{{ 'admin.tournamentForm.categories.title' | transloco }}</h2>
-          @for (category of categories(); track category.id) {
-            <div class="tournament-form-page__category">
-              <div class="tournament-form-page__category-header">
+          <ul class="tournament-form-page__item-list">
+            @for (category of categories(); track category.id) {
+              <li class="tournament-form-page__item">
                 @if (isEditing('category', category.id)) {
                   <form
                     class="tournament-form-page__inline-edit"
@@ -595,79 +595,105 @@
                     }}</ap-button>
                   </form>
                 } @else {
-                  <strong>{{ category.name }}</strong>
-                  <span class="tournament-form-page__item-actions">
-                    <ap-button
-                      type="button"
-                      variant="ghost"
-                      (click)="startEdit('category', category.id, category.name)"
-                      >{{ 'admin.tournamentForm.edit.edit' | transloco }}</ap-button
-                    >
-                    <ap-button type="button" variant="ghost" (click)="removeCategory(category)">
-                      {{ 'admin.tournamentForm.categories.remove' | transloco }}
-                    </ap-button>
-                  </span>
+                  <div class="tournament-form-page__item-head">
+                    <span class="tournament-form-page__item-title">
+                      <strong>{{ category.name }}</strong>
+                      <span class="tournament-form-page__item-meta">{{
+                        categorySummary(category)
+                      }}</span>
+                    </span>
+                    <span class="tournament-form-page__item-actions">
+                      <ap-button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        (click)="startEdit('category', category.id, category.name)"
+                        >{{ 'admin.tournamentForm.edit.edit' | transloco }}</ap-button
+                      >
+                      <ap-button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        (click)="removeCategory(category)"
+                      >
+                        {{ 'admin.tournamentForm.categories.remove' | transloco }}
+                      </ap-button>
+                    </span>
+                  </div>
                 }
-              </div>
-              <div class="tournament-form-page__inline-form">
-                <ap-text-field
-                  [label]="'admin.tournamentForm.categories.feeLabel' | transloco"
-                  [hideLabel]="true"
-                  type="number"
-                  [placeholder]="'admin.tournamentForm.categories.feeLabel' | transloco"
-                  [value]="categoryFeeDraftFor(category.id)"
-                  (valueChange)="onCategoryFeeDraftChange(category.id, $event)"
-                />
-                <ap-button type="button" variant="ghost" (click)="saveCategoryFee(category)">{{
-                  'admin.tournamentForm.categories.saveFee' | transloco
-                }}</ap-button>
-              </div>
-              <ul class="tournament-form-page__division-list">
-                @for (division of category.divisions; track division.id) {
-                  <li>
-                    {{ division.name }}
-                    <ap-button
-                      type="button"
-                      variant="ghost"
-                      (click)="removeDivision(category, division.id)"
-                    >
-                      {{ 'admin.tournamentForm.categories.removeDivision' | transloco }}
-                    </ap-button>
-                  </li>
-                }
-              </ul>
-              <div class="tournament-form-page__inline-form">
-                <ap-text-field
-                  [label]="'admin.tournamentForm.categories.newDivisionLabel' | transloco"
-                  [hideLabel]="true"
-                  [placeholder]="'admin.tournamentForm.categories.newDivisionLabel' | transloco"
-                  [value]="divisionNameFor(category.id)"
-                  (valueChange)="onNewDivisionNameChange(category.id, $event)"
-                />
-                <ap-button type="button" variant="ghost" (click)="addDivision(category)">{{
-                  'admin.tournamentForm.categories.addDivision' | transloco
-                }}</ap-button>
-              </div>
-            </div>
-          }
-          <div class="tournament-form-page__inline-form">
+                <!-- Divisions and the registration fee are optional: folded away. -->
+                <details class="tournament-form-page__options">
+                  <summary>{{ 'admin.tournamentForm.categories.options' | transloco }}</summary>
+                  <div class="tournament-form-page__options-body">
+                    <div class="tournament-form-page__field-row">
+                      <ap-text-field
+                        [label]="'admin.tournamentForm.categories.feeEurosLabel' | transloco"
+                        type="number"
+                        [min]="0"
+                        [placeholder]="
+                          'admin.tournamentForm.categories.feeFreePlaceholder' | transloco
+                        "
+                        [value]="categoryFeeDraftFor(category.id)"
+                        (valueChange)="onCategoryFeeDraftChange(category.id, $event)"
+                      />
+                      <ap-button
+                        type="button"
+                        variant="secondary"
+                        (click)="saveCategoryFee(category)"
+                        >{{ 'admin.tournamentForm.categories.saveFee' | transloco }}</ap-button
+                      >
+                    </div>
+                    @if (category.divisions.length > 0) {
+                      <ul class="tournament-form-page__chips">
+                        @for (division of category.divisions; track division.id) {
+                          <li class="tournament-form-page__chip">
+                            {{ division.name }}
+                            <button
+                              type="button"
+                              class="tournament-form-page__chip-remove"
+                              [attr.aria-label]="
+                                ('admin.tournamentForm.categories.removeDivision' | transloco) +
+                                ' ' +
+                                division.name
+                              "
+                              (click)="removeDivision(category, division.id)"
+                            >
+                              ×
+                            </button>
+                          </li>
+                        }
+                      </ul>
+                    }
+                    <div class="tournament-form-page__field-row">
+                      <ap-text-field
+                        [label]="'admin.tournamentForm.categories.newDivisionLabel' | transloco"
+                        [placeholder]="
+                          'admin.tournamentForm.categories.newDivisionPlaceholder' | transloco
+                        "
+                        [value]="divisionNameFor(category.id)"
+                        (valueChange)="onNewDivisionNameChange(category.id, $event)"
+                      />
+                      <ap-button
+                        type="button"
+                        variant="secondary"
+                        (click)="addDivision(category)"
+                        >{{ 'admin.tournamentForm.categories.addDivision' | transloco }}</ap-button
+                      >
+                    </div>
+                  </div>
+                </details>
+              </li>
+            }
+          </ul>
+          <div class="tournament-form-page__field-row">
             <ap-select
               class="tournament-form-page__category-select"
               [label]="'admin.tournamentForm.categories.newCategoryLabel' | transloco"
-              [hideLabel]="true"
               [options]="newCategoryOptions()"
               [value]="newCategoryName()"
               (valueChange)="onNewCategoryNameChange($event)"
             />
-            <ap-text-field
-              [label]="'admin.tournamentForm.categories.newFeeLabel' | transloco"
-              [hideLabel]="true"
-              type="number"
-              [placeholder]="'admin.tournamentForm.categories.newFeeLabel' | transloco"
-              [value]="newCategoryFeeCents()"
-              (valueChange)="onNewCategoryFeeCentsChange($event)"
-            />
-            <ap-button type="button" variant="ghost" (click)="addCategory()">{{
+            <ap-button type="button" variant="secondary" (click)="addCategory()">{{
               'admin.tournamentForm.categories.addCategory' | transloco
             }}</ap-button>
           </div>
@@ -675,9 +701,9 @@
 
         <section class="tournament-form-page__section">
           <h2>{{ 'admin.tournamentForm.venues.title' | transloco }}</h2>
-          @for (venue of venues(); track venue.id) {
-            <div class="tournament-form-page__category">
-              <div class="tournament-form-page__category-header">
+          <ul class="tournament-form-page__item-list">
+            @for (venue of venues(); track venue.id) {
+              <li class="tournament-form-page__item">
                 @if (isEditing('venue', venue.id)) {
                   <form
                     class="tournament-form-page__inline-edit"
@@ -701,86 +727,101 @@
                     }}</ap-button>
                   </form>
                 } @else {
-                  <span class="tournament-form-page__venue-title">
-                    <strong>{{ venue.name }}</strong>
-                    @if (venue.address && venue.address !== venue.name) {
-                      <span class="tournament-form-page__venue-address">{{ venue.address }}</span>
-                    }
-                  </span>
-                  <span class="tournament-form-page__item-actions">
-                    <ap-button
-                      type="button"
-                      variant="ghost"
-                      (click)="startEdit('venue', venue.id, venue.name)"
-                      >{{ 'admin.tournamentForm.edit.edit' | transloco }}</ap-button
-                    >
-                    <ap-button type="button" variant="ghost" (click)="removeVenue(venue)">
-                      {{ 'admin.tournamentForm.venues.remove' | transloco }}
-                    </ap-button>
-                  </span>
-                }
-              </div>
-              <ul class="tournament-form-page__division-list">
-                @for (field of venue.fields; track field.id) {
-                  <li>
-                    @if (isEditing('field', field.id)) {
-                      <form
-                        class="tournament-form-page__inline-edit"
-                        (submit)="saveEdit(); $event.preventDefault()"
+                  <div class="tournament-form-page__item-head">
+                    <span class="tournament-form-page__item-title">
+                      <strong>{{ venue.name }}</strong>
+                      @if (venue.address && venue.address !== venue.name) {
+                        <span class="tournament-form-page__item-meta">{{ venue.address }}</span>
+                      }
+                    </span>
+                    <span class="tournament-form-page__item-actions">
+                      <ap-button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        (click)="startEdit('venue', venue.id, venue.name)"
+                        >{{ 'admin.tournamentForm.edit.edit' | transloco }}</ap-button
                       >
-                        <ap-text-field
-                          [label]="'admin.tournamentForm.edit.nameLabel' | transloco"
-                          [hideLabel]="true"
-                          [value]="editDraft()"
-                          (valueChange)="onEditDraftChange($event)"
-                        />
-                        <ap-button type="submit" size="sm">{{
-                          'admin.tournamentForm.edit.save' | transloco
-                        }}</ap-button>
-                        <ap-button type="button" variant="ghost" size="sm" (click)="cancelEdit()">{{
-                          'admin.tournamentForm.edit.cancel' | transloco
-                        }}</ap-button>
-                      </form>
-                    } @else {
-                      {{ field.name }}
-                      <span class="tournament-form-page__item-actions">
-                        <ap-button
-                          type="button"
-                          variant="ghost"
-                          (click)="startEdit('field', field.id, field.name)"
-                          >{{ 'admin.tournamentForm.edit.edit' | transloco }}</ap-button
+                      <ap-button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        (click)="removeVenue(venue)"
+                      >
+                        {{ 'admin.tournamentForm.venues.remove' | transloco }}
+                      </ap-button>
+                    </span>
+                  </div>
+                }
+                <!-- Fields as chips: tap the name to rename, × to remove. -->
+                <ul class="tournament-form-page__chips">
+                  @for (field of venue.fields; track field.id) {
+                    <li class="tournament-form-page__chip">
+                      @if (isEditing('field', field.id)) {
+                        <form
+                          class="tournament-form-page__inline-edit"
+                          (submit)="saveEdit(); $event.preventDefault()"
                         >
-                        <ap-button
+                          <ap-text-field
+                            [label]="'admin.tournamentForm.edit.nameLabel' | transloco"
+                            [hideLabel]="true"
+                            [value]="editDraft()"
+                            (valueChange)="onEditDraftChange($event)"
+                          />
+                          <ap-button type="submit" size="sm">{{
+                            'admin.tournamentForm.edit.save' | transloco
+                          }}</ap-button>
+                          <ap-button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            (click)="cancelEdit()"
+                            >{{ 'admin.tournamentForm.edit.cancel' | transloco }}</ap-button
+                          >
+                        </form>
+                      } @else {
+                        <button
                           type="button"
-                          variant="ghost"
+                          class="tournament-form-page__chip-label"
+                          [attr.title]="'admin.tournamentForm.edit.edit' | transloco"
+                          (click)="startEdit('field', field.id, field.name)"
+                        >
+                          {{ field.name }}
+                        </button>
+                        <button
+                          type="button"
+                          class="tournament-form-page__chip-remove"
+                          [attr.aria-label]="
+                            ('admin.tournamentForm.venues.removeField' | transloco) +
+                            ' ' +
+                            field.name
+                          "
                           (click)="removeField(venue, field.id)"
                         >
-                          {{ 'admin.tournamentForm.venues.removeField' | transloco }}
-                        </ap-button>
-                      </span>
-                    }
-                  </li>
-                }
-              </ul>
-              <div class="tournament-form-page__inline-form">
-                <ap-text-field
-                  [label]="'admin.tournamentForm.venues.newFieldLabel' | transloco"
-                  [hideLabel]="true"
-                  [placeholder]="'admin.tournamentForm.venues.newFieldLabel' | transloco"
-                  [value]="fieldNameFor(venue.id)"
-                  (valueChange)="onNewFieldNameChange(venue.id, $event)"
-                />
-                <ap-button type="button" variant="ghost" (click)="addField(venue)">{{
-                  'admin.tournamentForm.venues.addField' | transloco
-                }}</ap-button>
-              </div>
-            </div>
-          }
-          <div class="tournament-form-page__inline-form">
+                          ×
+                        </button>
+                      }
+                    </li>
+                  }
+                </ul>
+                <div class="tournament-form-page__field-row">
+                  <ap-text-field
+                    [label]="'admin.tournamentForm.venues.newFieldLabel' | transloco"
+                    [placeholder]="'admin.tournamentForm.venues.newFieldPlaceholder' | transloco"
+                    [value]="fieldNameFor(venue.id)"
+                    (valueChange)="onNewFieldNameChange(venue.id, $event)"
+                  />
+                  <ap-button type="button" variant="secondary" (click)="addField(venue)">{{
+                    'admin.tournamentForm.venues.addField' | transloco
+                  }}</ap-button>
+                </div>
+              </li>
+            }
+          </ul>
+          <div class="tournament-form-page__field-row">
             <ap-autocomplete-field
               class="tournament-form-page__venue-search"
               [label]="'admin.tournamentForm.venues.newVenueLabel' | transloco"
-              [hideLabel]="true"
               [placeholder]="'admin.tournamentForm.venues.newVenuePlaceholder' | transloco"
               [value]="newVenueName()"
               [suggestions]="venueSearch.suggestions()"
@@ -793,7 +834,7 @@
               (valueChange)="onNewVenueNameChange($event)"
               (suggestionSelect)="onVenueSuggestionSelect($event)"
             />
-            <ap-button type="button" variant="ghost" (click)="addVenue()">{{
+            <ap-button type="button" variant="secondary" (click)="addVenue()">{{
               'admin.tournamentForm.venues.addVenue' | transloco
             }}</ap-button>
           </div>

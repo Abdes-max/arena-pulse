@@ -58,61 +58,33 @@
   gap: var(--ap-space-2);
 }
 
-.team-list-page__section {
-  margin-top: var(--ap-space-8);
-}
-
-.team-list-page__form {
+// ---- head: count + toolbar ----
+.team-list-page__head {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--ap-space-3);
   align-items: center;
-  max-width: 640px;
+  justify-content: space-between;
+  gap: var(--ap-space-3);
+  margin-top: var(--ap-space-4);
 }
 
-.team-list-page__form-actions {
-  display: flex;
-  gap: var(--ap-space-2);
+.team-list-page__count {
+  font-weight: 600;
+  color: var(--ap-color-muted);
 }
 
 .team-list-page__toolbar {
   display: flex;
-  gap: var(--ap-space-2);
-  margin-bottom: var(--ap-space-4);
-}
-
-.team-list-page__table {
-  width: 100%;
-  border-collapse: collapse;
-
-  th,
-  td {
-    text-align: left;
-    padding: var(--ap-space-3);
-    border-bottom: var(--ap-border-width) solid var(--ap-color-border);
-  }
-}
-
-// .team-list-page__actions/.team-list-page__logo-cell (the <td>s
-// themselves) deliberately have no `display: flex` of their own on
-// desktop -- that would break table layout's normal row-height
-// auto-stretch (confirmed via getBoundingClientRect: a flexed <td> shrinks
-// to its own content instead of matching sibling cells, misaligning the
-// row's borders). The flex row lives on an inner wrapper span instead,
-// free to size itself without affecting the cell's own box.
-.team-list-page__actions-inner {
-  display: flex;
+  flex-wrap: wrap;
   gap: var(--ap-space-2);
 }
 
-// Two-click team deletion (arm, then confirm) -- replaced a
-// type-SUPPRIMER-to-confirm step, same simplification and same reasoning as
-// structure.page.scss's own __confirm-inline (phase deletion).
 .team-list-page__confirm-inline {
   display: flex;
   align-items: center;
   gap: var(--ap-space-2);
   flex-wrap: wrap;
+  margin-top: var(--ap-space-3);
 }
 
 .team-list-page__confirm-inline-question {
@@ -120,41 +92,173 @@
   color: var(--ap-color-muted);
 }
 
-.team-list-page__logo-cell-inner {
+// ---- add panel (same card + labelled fields as the quick event form) ----
+.team-list-page__panel {
   display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-4);
+  margin-top: var(--ap-space-4);
+  padding: var(--ap-space-4);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+}
+
+.team-list-page__modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ap-space-2);
+}
+
+.team-list-page__mode {
+  padding: var(--ap-space-2) var(--ap-space-3);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ap-color-fg);
+  background: transparent;
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: 999px;
+  cursor: pointer;
+
+  &[aria-selected='true'] {
+    color: var(--ap-color-on-signal);
+    background: var(--ap-color-signal);
+    border-color: var(--ap-color-signal);
+  }
+}
+
+.team-list-page__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-3);
+  max-width: 520px;
+}
+
+.team-list-page__form-actions {
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--ap-space-2);
 }
 
-.team-list-page__logo,
-.team-list-page__logo-placeholder {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--ap-radius-sm);
-  flex: none;
+.team-list-page__more {
+  summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--ap-color-muted);
+  }
+
+  &[open] summary {
+    margin-bottom: var(--ap-space-3);
+  }
+
+  ap-text-field {
+    display: block;
+    margin-bottom: var(--ap-space-3);
+  }
 }
 
-.team-list-page__logo {
-  object-fit: cover;
-}
-
-.team-list-page__logo-placeholder {
-  border: var(--ap-border-width) dashed var(--ap-color-border);
-}
-
-// A styled <label> wrapping a visually-hidden native file input -- clicking
-// anywhere on the label text opens the file picker, same affordance as a
-// button without needing to intercept the click to call input.click()
-// ourselves.
-.team-list-page__logo-upload {
-  position: relative;
-  font-size: 0.8rem;
+.team-list-page__textarea-label {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
   font-weight: 600;
-  color: var(--ap-color-signal-text);
-  cursor: pointer;
-  white-space: nowrap;
+}
 
-  input {
+.team-list-page__panel textarea,
+.team-list-page__textarea-label textarea {
+  width: 100%;
+  padding: var(--ap-space-3);
+  font: inherit;
+  font-weight: 400;
+  color: var(--ap-color-fg);
+  background: var(--ap-color-bg);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  box-sizing: border-box;
+}
+
+.team-list-page__empty {
+  margin-top: var(--ap-space-6);
+}
+
+// ---- compact list: one line per team, on phones too ----
+.team-list-page__table {
+  width: 100%;
+  margin-top: var(--ap-space-4);
+  border-collapse: collapse;
+
+  th,
+  td {
+    text-align: left;
+    padding: var(--ap-space-2) var(--ap-space-2);
+    border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+    vertical-align: middle;
+  }
+
+  th {
+    font-size: 0.85rem;
+    color: var(--ap-color-muted);
+  }
+}
+
+.team-list-page__cell--select {
+  width: 2rem;
+}
+
+.team-list-page__cell--icon,
+.team-list-page__cell--actions {
+  width: 3.25rem;
+  text-align: center !important;
+}
+
+.team-list-page__name {
+  display: block;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.team-list-page__meta {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--ap-color-muted);
+}
+
+.team-list-page__icon-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--ap-touch-target-min);
+  height: var(--ap-touch-target-min);
+  padding: 0;
+  color: var(--ap-color-muted);
+  background: transparent;
+  border: none;
+  border-radius: var(--ap-radius-md);
+  cursor: pointer;
+
+  svg {
+    width: 22px;
+    height: 22px;
+    fill: currentColor;
+  }
+
+  &:hover,
+  &[aria-expanded='true'] {
+    color: var(--ap-color-fg);
+    background: var(--ap-color-surface);
+  }
+
+  &:focus-within,
+  &:focus-visible {
+    outline: 2px solid var(--ap-color-signal-text);
+    outline-offset: 1px;
+  }
+
+  // The file input covers the whole icon, invisible: tapping the icon picks a file.
+  input[type='file'] {
     position: absolute;
     inset: 0;
     opacity: 0;
@@ -162,209 +266,70 @@
   }
 }
 
-// Team logos are a premium touch (see
-// TournamentsService.assertPremiumFeaturesUnlocked, apps/api) -- greyed out
-// rather than hidden while locked, `title` on the label explains why.
-.team-list-page__logo-upload--locked {
-  color: var(--ap-color-muted);
-  cursor: not-allowed;
+.team-list-page__icon-button--locked {
+  opacity: 0.4;
 
-  input {
+  input[type='file'] {
     cursor: not-allowed;
   }
 }
 
-.team-list-page__premium-hint {
-  margin: 0 0 var(--ap-space-3);
-  font-size: 0.85rem;
-  color: var(--ap-color-muted);
+.team-list-page__logo {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  border-radius: 4px;
 }
 
-.team-list-page__logo-remove {
-  background: none;
-  border: none;
-  padding: 0;
-  font: inherit;
-  font-size: 0.8rem;
-  color: var(--ap-color-muted);
-  cursor: pointer;
-  white-space: nowrap;
+.team-list-page__row--expanded > td {
+  background: var(--ap-color-surface);
+}
 
-  &:hover {
-    color: var(--ap-color-error);
-  }
+.team-list-page__sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.team-list-page__premium-hint {
+  margin-top: var(--ap-space-3);
+  font-size: 0.85rem;
+  color: var(--ap-color-muted);
 }
 
 .team-list-page__player-list {
   list-style: none;
   margin: 0 0 var(--ap-space-3);
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--ap-space-2);
 
   li {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: var(--ap-space-2);
   }
 }
 
 .team-list-page__inline-form {
   display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
   gap: var(--ap-space-2);
-  align-items: center;
 }
 
 .team-list-page__hint {
+  margin: 0;
   font-size: 0.85rem;
   color: var(--ap-color-muted);
 }
 
 .team-list-page__import-errors {
   color: var(--ap-color-error);
-  font-size: 0.9rem;
 }
 
-// Non-fatal (e.g. a logo URL couldn't be fetched) -- the team was still
-// created, so this reads as a heads-up, not an error.
 .team-list-page__import-warnings {
   color: var(--ap-color-muted);
-  font-size: 0.9rem;
-}
-
-// Densest table in the admin (7 columns, an image + 3-button action cell)
-// -- per docs/design/responsive-guidelines.md ("tableaux denses proposent
-// une vue alternative sous md"), this abandons table semantics on mobile
-// entirely for a stacked card per team, rather than trying to shrink 7
-// columns onto a phone width. Cells keep their own classes (rather than
-// nth-child) so the expanded player row -- 2 <td>s, not 7 -- can't
-// accidentally match another column's styling.
-@media (max-width: 768px) {
-  .team-list-page__table {
-    display: block;
-    width: 100%;
-    border-collapse: separate;
-
-    thead {
-      // Labels come from each .team-list-page__cell--*::before below
-      // instead of a header row, which has nowhere sensible to sit once
-      // the table becomes a column of cards.
-      display: none;
-    }
-
-    tbody {
-      display: block;
-    }
-  }
-
-  .team-list-page__row {
-    display: block;
-    margin-bottom: var(--ap-space-4);
-    padding: var(--ap-space-3);
-    border: var(--ap-border-width) solid var(--ap-color-border);
-    border-radius: var(--ap-radius-md);
-  }
-
-  // Sits directly under its team's card, not floating as its own bordered
-  // box -- reads as that card's content continuing, not a new unrelated
-  // card.
-  .team-list-page__row--expanded {
-    margin-top: calc(-1 * var(--ap-space-4));
-    border-top: none;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-  }
-
-  .team-list-page__cell {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--ap-space-3);
-    padding: var(--ap-space-2) 0;
-    border-bottom: var(--ap-border-width) solid var(--ap-color-border);
-
-    &:last-child {
-      border-bottom: none;
-    }
-  }
-
-  .team-list-page__cell--select {
-    justify-content: flex-start;
-  }
-
-  .team-list-page__cell--empty {
-    display: none;
-  }
-
-  .team-list-page__cell--name::before,
-  .team-list-page__cell--category::before,
-  .team-list-page__cell--division::before,
-  .team-list-page__cell--manager::before {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--ap-color-muted);
-  }
-
-  .team-list-page__cell--name::before {
-    content: 'Nom';
-  }
-
-  .team-list-page__cell--category::before {
-    content: 'Catégorie';
-  }
-
-  .team-list-page__cell--division::before {
-    content: 'Division';
-  }
-
-  .team-list-page__cell--manager::before {
-    content: 'Responsable';
-  }
-
-  // Actions cell: was 3 ap-button crammed into one flex row inside a table
-  // cell -- stacked and stretched here, each with the full row to itself
-  // instead of jostling for space (docs/design/responsive-guidelines.md's
-  // touch-target concern, same family as the logo cell below). The <td>
-  // itself only loses its border (the generic .team-list-page__cell rule
-  // above already makes it flex to lay out its single child, the inner
-  // wrapper below) -- the column stacking happens on that inner wrapper.
-  .team-list-page__actions {
-    border-bottom: none;
-  }
-
-  .team-list-page__actions-inner {
-    flex-direction: column;
-    align-items: stretch;
-    gap: var(--ap-space-2);
-    width: 100%;
-
-    ap-button {
-      display: block;
-    }
-  }
-
-  // Was 3 small, closely-clustered targets (thumbnail, "Changer" text
-  // link, "Retirer" text button) in one dense row -- real vertical space
-  // between them here instead of relying on their own compact desktop
-  // sizing.
-  .team-list-page__logo-cell-inner {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--ap-space-2);
-  }
-
-  // Real touch-target sizing only in this stacked mobile layout -- unlike
-  // the phase-0 fixes (schedule/scores), this text link is fine at its
-  // compact desktop size inside the dense table; it only needs growing
-  // once it's a standalone row in the card.
-  .team-list-page__logo-remove {
-    display: inline-flex;
-    align-items: center;
-    min-height: var(--ap-touch-target-min);
-  }
-
-  .team-list-page__player-cell {
-    padding-top: 0;
-  }
 }

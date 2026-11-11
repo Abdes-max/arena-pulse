@@ -782,29 +782,38 @@
         "themePremiumHint": "A escolha de tema está reservada a torneios com mais de {{count}} equipas ou com uma subscrição anual ativa."
       },
       "categories": {
-        "title": "Categorias e divisões",
+        "title": "Categorias",
         "remove": "Eliminar",
         "feeLabel": "Taxa de inscrição (cêntimos, vazio = grátis)",
         "saveFee": "Guardar taxa",
         "removeDivision": "Remover",
-        "newDivisionLabel": "Nova divisão",
+        "newDivisionLabel": "Adicionar uma divisão",
         "addDivision": "Adicionar",
-        "newCategoryLabel": "Nova categoria",
+        "newCategoryLabel": "Adicionar uma categoria",
         "newCategoryPlaceholder": "Nova categoria (ex. U10)",
         "newFeeLabel": "Taxa (cêntimos, opcional)",
-        "addCategory": "Adicionar uma categoria",
-        "choose": "Escolher uma categoria…"
+        "addCategory": "Adicionar",
+        "choose": "Escolher uma categoria…",
+        "options": "Opções: divisões, taxa de inscrição",
+        "feeEurosLabel": "Taxa de inscrição (€)",
+        "feeFreePlaceholder": "Vazio = grátis",
+        "newDivisionPlaceholder": "ex. Grupo alto",
+        "summary": {
+          "free": "Grátis",
+          "divisions": "{{count}} divisão(ões)"
+        }
       },
       "venues": {
         "title": "Locais e campos",
         "remove": "Eliminar",
         "removeField": "Remover",
-        "newFieldLabel": "Novo campo",
+        "newFieldLabel": "Adicionar um campo",
         "addField": "Adicionar",
-        "newVenueLabel": "Novo local",
+        "newVenueLabel": "Local",
         "newVenuePlaceholder": "Pesquisar um estádio, pavilhão ou morada…",
-        "addVenue": "Adicionar um local",
-        "searchFailed": "Pesquisa de moradas indisponível: será usado o nome escrito."
+        "addVenue": "Adicionar o local",
+        "searchFailed": "Pesquisa de moradas indisponível: será usado o nome escrito.",
+        "newFieldPlaceholder": "ex. Campo 1"
       },
       "description": {
         "title": "Descrição",
@@ -965,7 +974,8 @@
         "loadPlayers": "Não foi possível carregar os jogadores desta equipa.",
         "addPlayer": "Não foi possível adicionar este jogador.",
         "removePlayer": "Não foi possível remover este jogador.",
-        "logoPremiumLocked": "Reservado a torneios com mais de {{count}} equipas ou com uma subscrição anual ativa."
+        "logoPremiumLocked": "Reservado a torneios com mais de {{count}} equipas ou com uma subscrição anual ativa.",
+        "chooseCategory": "Escolha primeiro uma categoria."
       },
       "logoPremiumHint": "Os logótipos das equipas estão reservados a torneios com mais de {{count}} equipas ou com uma subscrição anual ativa.",
       "tierModal": {
@@ -979,6 +989,20 @@
           "upgrade": "Não foi possível atualizar o pagamento de publicação, tente novamente.",
           "subscribe": "Não foi possível subscrever, tente novamente."
         }
+      },
+      "count": "{{count}} equipa(s)",
+      "close": "Fechar",
+      "namePlaceholder": "ex. FC Leões",
+      "enterHint": "Enter adiciona a equipa e passa à seguinte.",
+      "moreInfo": "Mais informações (responsável, contacto)",
+      "pasteLabel": "Uma equipa por linha",
+      "pastePlaceholder": "FC Leões\nAS Tigres\nUS Panteras",
+      "pasteSubmit": "Adicionar {{count}} equipa(s)",
+      "selectAll": "Selecionar tudo",
+      "modes": {
+        "one": "Uma equipa",
+        "list": "Colar uma lista",
+        "csv": "Ficheiro CSV"
       }
     },
     "refereeList": {

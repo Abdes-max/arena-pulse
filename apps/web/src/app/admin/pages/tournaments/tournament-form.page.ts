@@ -557,7 +557,7 @@ export class TournamentFormPage {
       Object.fromEntries(
         categories.map((category) => [
           category.id,
-          category.registrationFeeCents !== null ? String(category.registrationFeeCents) : '',
+          category.registrationFeeCents !== null ? String(category.registrationFeeCents / 100) : '',
         ]),
       ),
     );
@@ -1050,6 +1050,21 @@ export class TournamentFormPage {
     }
   }
 
+  /** "Gratuit · 2 divisions" -- what the folded options currently hold. */
+  protected categorySummary(category: Category): string {
+    const lang = this.languageService.language();
+    const t = (key: string, params: Record<string, unknown> = {}) =>
+      this.transloco.translate(`admin.tournamentForm.categories.summary.${key}`, params, lang);
+    const fee =
+      category.registrationFeeCents !== null && category.registrationFeeCents > 0
+        ? new Intl.NumberFormat(lang, { style: 'currency', currency: 'EUR' }).format(
+            category.registrationFeeCents / 100,
+          )
+        : t('free');
+    const divisions = category.divisions.length;
+    return divisions > 0 ? `${fee} · ${t('divisions', { count: divisions })}` : fee;
+  }
+
   protected categoryFeeDraftFor(categoryId: string): string {
     return this.categoryFeeDraftById()[categoryId] ?? '';
   }
@@ -1070,7 +1085,7 @@ export class TournamentFormPage {
         organizationId,
         tournamentId,
         category.id,
-        draft ? Number(draft) : null,
+        draft ? Math.round(Number(draft.replace(',', '.')) * 100) : null,
       );
       this.categories.update((categories) =>
         categories.map((c) => (c.id === category.id ? updated : c)),

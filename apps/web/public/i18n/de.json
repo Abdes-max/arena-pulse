@@ -782,29 +782,38 @@
         "themePremiumHint": "Die Themenwahl ist nur für Turniere mit mehr als {{count}} Teams oder mit aktivem Jahresabonnement verfügbar."
       },
       "categories": {
-        "title": "Kategorien und Divisionen",
+        "title": "Kategorien",
         "remove": "Löschen",
         "feeLabel": "Startgebühr (Cent, leer = kostenlos)",
         "saveFee": "Gebühr speichern",
         "removeDivision": "Entfernen",
-        "newDivisionLabel": "Neue Division",
+        "newDivisionLabel": "Division hinzufügen",
         "addDivision": "Hinzufügen",
-        "newCategoryLabel": "Neue Kategorie",
+        "newCategoryLabel": "Kategorie hinzufügen",
         "newCategoryPlaceholder": "Neue Kategorie (z. B. U10)",
         "newFeeLabel": "Gebühr (Cent, optional)",
-        "addCategory": "Kategorie hinzufügen",
-        "choose": "Kategorie wählen…"
+        "addCategory": "Hinzufügen",
+        "choose": "Kategorie wählen…",
+        "options": "Optionen: Divisionen, Startgebühr",
+        "feeEurosLabel": "Startgebühr (€)",
+        "feeFreePlaceholder": "Leer = kostenlos",
+        "newDivisionPlaceholder": "z. B. Obere Gruppe",
+        "summary": {
+          "free": "Kostenlos",
+          "divisions": "{{count}} Division(en)"
+        }
       },
       "venues": {
         "title": "Austragungsorte und Felder",
         "remove": "Löschen",
         "removeField": "Entfernen",
-        "newFieldLabel": "Neues Feld",
+        "newFieldLabel": "Platz hinzufügen",
         "addField": "Hinzufügen",
-        "newVenueLabel": "Neuer Austragungsort",
+        "newVenueLabel": "Ort",
         "newVenuePlaceholder": "Stadion, Halle oder Adresse suchen…",
-        "addVenue": "Austragungsort hinzufügen",
-        "searchFailed": "Adresssuche nicht verfügbar: Der eingegebene Name wird so verwendet."
+        "addVenue": "Ort hinzufügen",
+        "searchFailed": "Adresssuche nicht verfügbar: Der eingegebene Name wird so verwendet.",
+        "newFieldPlaceholder": "z. B. Platz 1"
       },
       "description": {
         "title": "Beschreibung",
@@ -965,7 +974,8 @@
         "loadPlayers": "Die Spieler dieses Teams konnten nicht geladen werden.",
         "addPlayer": "Dieser Spieler konnte nicht hinzugefügt werden.",
         "removePlayer": "Dieser Spieler konnte nicht entfernt werden.",
-        "logoPremiumLocked": "Nur für Turniere mit mehr als {{count}} Teams oder mit aktivem Jahresabonnement."
+        "logoPremiumLocked": "Nur für Turniere mit mehr als {{count}} Teams oder mit aktivem Jahresabonnement.",
+        "chooseCategory": "Wählen Sie zuerst eine Kategorie."
       },
       "logoPremiumHint": "Team-Logos sind nur für Turniere mit mehr als {{count}} Teams oder mit aktivem Jahresabonnement verfügbar.",
       "tierModal": {
@@ -979,6 +989,20 @@
           "upgrade": "Die Veröffentlichungszahlung konnte nicht aktualisiert werden, bitte versuchen Sie es erneut.",
           "subscribe": "Das Abonnement konnte nicht abgeschlossen werden, bitte versuchen Sie es erneut."
         }
+      },
+      "count": "{{count}} Mannschaft(en)",
+      "close": "Schließen",
+      "namePlaceholder": "z. B. FC Löwen",
+      "enterHint": "Enter fügt die Mannschaft hinzu und springt zur nächsten.",
+      "moreInfo": "Weitere Angaben (Verantwortliche, Kontakt)",
+      "pasteLabel": "Eine Mannschaft pro Zeile",
+      "pastePlaceholder": "FC Löwen\nSV Tiger\nTSV Panther",
+      "pasteSubmit": "{{count}} Mannschaft(en) hinzufügen",
+      "selectAll": "Alle auswählen",
+      "modes": {
+        "one": "Eine Mannschaft",
+        "list": "Liste einfügen",
+        "csv": "CSV-Datei"
       }
     },
     "refereeList": {

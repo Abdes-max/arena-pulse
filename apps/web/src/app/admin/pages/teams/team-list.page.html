@@ -64,330 +64,432 @@
       </div>
     }
 
-    <section class="team-list-page__section">
-      <h2>
-        {{ (editingTeamId() ? 'admin.teamList.editTitle' : 'admin.teamList.addTitle') | transloco }}
-      </h2>
-      <form class="team-list-page__form" (submit)="onFormSubmit($event)">
-        <ap-text-field
-          [label]="'admin.teamList.nameLabel' | transloco"
-          [hideLabel]="true"
-          [placeholder]="'admin.teamList.nameLabel' | transloco"
-          [value]="formName()"
-          (valueChange)="formName.set($event)"
-        />
+    <div class="team-list-page__head">
+      <span class="team-list-page__count">{{
+        'admin.teamList.count' | transloco: { count: teams().length }
+      }}</span>
+      <div class="team-list-page__toolbar">
+        @if (selectedTeamIds().size > 0 && !confirmingBulkDelete()) {
+          <ap-button type="button" variant="ghost" (click)="requestDeleteSelected()">
+            {{ 'admin.teamList.deleteSelected' | transloco }} ({{ selectedTeamIds().size }})
+          </ap-button>
+        }
+        <ap-button type="button" variant="secondary" (click)="exportCsv()">{{
+          'admin.teamList.export' | transloco
+        }}</ap-button>
+        <ap-button type="button" (click)="openAdd()">{{
+          'admin.teamList.addTitle' | transloco
+        }}</ap-button>
+      </div>
+    </div>
+
+    @if (confirmingBulkDelete()) {
+      <div class="team-list-page__confirm-inline">
+        <span class="team-list-page__confirm-inline-question">
+          {{
+            'admin.teamList.confirmBulkDeleteQuestion'
+              | transloco: { count: selectedTeamIds().size }
+          }}
+        </span>
+        <ap-button
+          type="button"
+          variant="primary"
+          [disabled]="bulkDeleting()"
+          (click)="confirmDeleteSelected()"
+        >
+          {{
+            (bulkDeleting() ? 'admin.teamList.deleting' : 'admin.teamList.confirmDelete')
+              | transloco
+          }}
+        </ap-button>
+        <ap-button
+          type="button"
+          variant="ghost"
+          [disabled]="bulkDeleting()"
+          (click)="cancelDeleteSelected()"
+        >
+          {{ 'admin.teamList.cancel' | transloco }}
+        </ap-button>
+      </div>
+    }
+
+    @if (addOpen()) {
+      <section
+        class="team-list-page__panel"
+        [attr.aria-label]="'admin.teamList.addTitle' | transloco"
+      >
+        <div class="team-list-page__modes" role="tablist">
+          @for (mode of addModes; track mode) {
+            <button
+              type="button"
+              role="tab"
+              class="team-list-page__mode"
+              [attr.aria-selected]="addMode() === mode"
+              (click)="addMode.set(mode)"
+            >
+              {{ 'admin.teamList.modes.' + mode | transloco }}
+            </button>
+          }
+        </div>
+
+        @if (addMode() === 'one') {
+          <form class="team-list-page__form" (submit)="onFormSubmit($event)">
+            <ng-container [ngTemplateOutlet]="teamFields" />
+            <p class="team-list-page__hint">{{ 'admin.teamList.enterHint' | transloco }}</p>
+            <div class="team-list-page__form-actions">
+              <ap-button type="submit">{{ 'admin.teamList.add' | transloco }}</ap-button>
+              <ap-button type="button" variant="ghost" (click)="closeAdd()">{{
+                'admin.teamList.close' | transloco
+              }}</ap-button>
+            </div>
+          </form>
+        } @else if (addMode() === 'list') {
+          <div class="team-list-page__form">
+            @if (categories().length > 1) {
+              <ap-select
+                [label]="'admin.teamList.categoryLabel' | transloco"
+                [options]="categoryOptions()"
+                [value]="formCategoryId()"
+                (valueChange)="onFormCategoryChange($event)"
+              />
+            }
+            <label class="team-list-page__textarea-label">
+              {{ 'admin.teamList.pasteLabel' | transloco }}
+              <textarea
+                rows="6"
+                [placeholder]="'admin.teamList.pastePlaceholder' | transloco"
+                [value]="pasteText()"
+                (input)="onPasteChange($event)"
+              ></textarea>
+            </label>
+            <div class="team-list-page__form-actions">
+              <ap-button
+                type="button"
+                [disabled]="pastedNames().length === 0"
+                (click)="addPastedList()"
+              >
+                {{ 'admin.teamList.pasteSubmit' | transloco: { count: pastedNames().length } }}
+              </ap-button>
+              <ap-button type="button" variant="ghost" (click)="closeAdd()">{{
+                'admin.teamList.close' | transloco
+              }}</ap-button>
+            </div>
+          </div>
+        } @else {
+          <div class="team-list-page__form">
+            <p class="team-list-page__hint">{{ 'admin.teamList.importHint' | transloco }}</p>
+            <input type="file" accept=".csv,text/csv" (change)="onImportFileSelected($event)" />
+            <textarea
+              rows="5"
+              [placeholder]="'admin.teamList.importPlaceholder' | transloco"
+              [value]="importCsv()"
+              (input)="onImportCsvChange($event)"
+            ></textarea>
+            <div class="team-list-page__form-actions">
+              <ap-button type="button" (click)="runImport()">{{
+                'admin.teamList.import' | transloco
+              }}</ap-button>
+              <ap-button type="button" variant="ghost" (click)="closeAdd()">{{
+                'admin.teamList.close' | transloco
+              }}</ap-button>
+            </div>
+          </div>
+        }
+
+        @if (importResult(); as result) {
+          <p>{{ 'admin.teamList.importedCount' | transloco: { count: result.created.length } }}</p>
+          @if (result.errors.length > 0) {
+            <ul class="team-list-page__import-errors">
+              @for (error of result.errors; track error.line) {
+                <li>
+                  {{
+                    'admin.teamList.lineError'
+                      | transloco: { line: error.line, message: error.message }
+                  }}
+                </li>
+              }
+            </ul>
+          }
+          @if (result.warnings.length > 0) {
+            <ul class="team-list-page__import-warnings">
+              @for (warning of result.warnings; track warning.line) {
+                <li>
+                  {{
+                    'admin.teamList.lineError'
+                      | transloco: { line: warning.line, message: warning.message }
+                  }}
+                </li>
+              }
+            </ul>
+          }
+        }
+      </section>
+    }
+
+    @if (!premiumUnlocked()) {
+      <p class="team-list-page__premium-hint">
+        {{ 'admin.teamList.logoPremiumHint' | transloco: { count: freeMaxTeams() } }}
+      </p>
+    }
+
+    @if (teams().length === 0) {
+      <p class="team-list-page__empty">{{ 'admin.teamList.empty' | transloco }}</p>
+    } @else {
+      <table class="team-list-page__table">
+        <thead>
+          <tr>
+            <th scope="col" class="team-list-page__cell--select">
+              <input
+                type="checkbox"
+                [attr.aria-label]="'admin.teamList.selectAll' | transloco"
+                [checked]="allSelected()"
+                (change)="toggleAll($event)"
+              />
+            </th>
+            <th scope="col">{{ 'admin.teamList.table.name' | transloco }}</th>
+            <th scope="col" class="team-list-page__cell--icon">
+              {{ 'admin.teamList.table.logo' | transloco }}
+            </th>
+            <th scope="col" class="team-list-page__cell--icon">
+              {{ 'admin.teamList.players' | transloco }}
+            </th>
+            <th scope="col" class="team-list-page__cell--actions">
+              <span class="team-list-page__sr-only">{{
+                'admin.teamList.table.actions' | transloco
+              }}</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (team of teams(); track team.id) {
+            <tr class="team-list-page__row">
+              <td class="team-list-page__cell team-list-page__cell--select">
+                <input
+                  type="checkbox"
+                  [attr.aria-label]="team.name"
+                  [checked]="isSelected(team.id)"
+                  (change)="toggleSelected(team.id, $event)"
+                />
+              </td>
+              <td class="team-list-page__cell team-list-page__cell--name">
+                <span class="team-list-page__name">{{ team.name }}</span>
+                @if (showCategoryOnRows() || team.divisionName) {
+                  <span class="team-list-page__meta">
+                    {{ team.categoryName }}{{ team.divisionName ? ' · ' + team.divisionName : '' }}
+                  </span>
+                }
+              </td>
+              <td class="team-list-page__cell team-list-page__cell--icon">
+                <label
+                  class="team-list-page__icon-button"
+                  [class.team-list-page__icon-button--locked]="!premiumUnlocked()"
+                  [attr.title]="
+                    premiumUnlocked()
+                      ? ((team.logoUrl ? 'admin.teamList.logoChange' : 'admin.teamList.logoAdd')
+                        | transloco)
+                      : ('admin.teamList.logoPremiumHint' | transloco: { count: freeMaxTeams() })
+                  "
+                >
+                  @if (logoUrl(team.logoUrl); as logo) {
+                    <img class="team-list-page__logo" [src]="logo" alt="" />
+                  } @else {
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"
+                      />
+                    </svg>
+                  }
+                  <span class="team-list-page__sr-only">{{
+                    (team.logoUrl ? 'admin.teamList.logoChange' : 'admin.teamList.logoAdd')
+                      | transloco
+                  }}</span>
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp"
+                    [disabled]="!premiumUnlocked()"
+                    (change)="onLogoFileSelected(team, $event)"
+                  />
+                </label>
+              </td>
+              <td class="team-list-page__cell team-list-page__cell--icon">
+                <button
+                  type="button"
+                  class="team-list-page__icon-button"
+                  [attr.aria-expanded]="expandedTeamId() === team.id"
+                  [attr.title]="'admin.teamList.players' | transloco"
+                  (click)="togglePlayers(team)"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+                    />
+                  </svg>
+                  <span class="team-list-page__sr-only">{{
+                    'admin.teamList.players' | transloco
+                  }}</span>
+                </button>
+              </td>
+              <td class="team-list-page__cell team-list-page__cell--actions">
+                <button
+                  type="button"
+                  class="team-list-page__icon-button"
+                  [attr.aria-expanded]="editingTeamId() === team.id"
+                  [attr.title]="'admin.teamList.edit' | transloco"
+                  (click)="editingTeamId() === team.id ? cancelEdit() : startEdit(team)"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                    />
+                  </svg>
+                  <span class="team-list-page__sr-only">{{
+                    'admin.teamList.edit' | transloco
+                  }}</span>
+                </button>
+              </td>
+            </tr>
+            @if (editingTeamId() === team.id) {
+              <tr class="team-list-page__row team-list-page__row--expanded">
+                <td class="team-list-page__cell" colspan="5">
+                  <form class="team-list-page__form" (submit)="onFormSubmit($event)">
+                    <ng-container [ngTemplateOutlet]="teamFields" />
+                    <div class="team-list-page__form-actions">
+                      <ap-button type="submit">{{ 'admin.teamList.save' | transloco }}</ap-button>
+                      <ap-button type="button" variant="ghost" (click)="cancelEdit()">{{
+                        'admin.teamList.cancel' | transloco
+                      }}</ap-button>
+                      @if (team.logoUrl) {
+                        <ap-button type="button" variant="ghost" (click)="removeLogo(team)">{{
+                          'admin.teamList.logoRemove' | transloco
+                        }}</ap-button>
+                      }
+                      @if (confirmingTeamId() === team.id) {
+                        <span class="team-list-page__confirm-inline">
+                          <span class="team-list-page__confirm-inline-question">
+                            {{ 'admin.teamList.confirmDeleteQuestion' | transloco }}
+                          </span>
+                          <ap-button
+                            type="button"
+                            variant="primary"
+                            [disabled]="deletingTeamId() === team.id"
+                            (click)="confirmDeleteTeam(team)"
+                          >
+                            {{
+                              (deletingTeamId() === team.id
+                                ? 'admin.teamList.deleting'
+                                : 'admin.teamList.confirmDelete'
+                              ) | transloco
+                            }}
+                          </ap-button>
+                          <ap-button
+                            type="button"
+                            variant="ghost"
+                            [disabled]="deletingTeamId() === team.id"
+                            (click)="cancelDeleteTeam()"
+                          >
+                            {{ 'admin.teamList.cancel' | transloco }}
+                          </ap-button>
+                        </span>
+                      } @else {
+                        <ap-button type="button" variant="ghost" (click)="requestDeleteTeam(team)">
+                          {{ 'admin.teamList.delete' | transloco }}
+                        </ap-button>
+                      }
+                    </div>
+                  </form>
+                </td>
+              </tr>
+            }
+            @if (expandedTeamId() === team.id) {
+              <tr class="team-list-page__row team-list-page__row--expanded">
+                <td class="team-list-page__cell team-list-page__player-cell" colspan="5">
+                  <ul class="team-list-page__player-list">
+                    @for (player of players(); track player.id) {
+                      <li>
+                        {{ player.firstName }} {{ player.lastName }}
+                        @if (player.isCaptain) {
+                          <strong>{{ 'admin.teamList.captain' | transloco }}</strong>
+                        }
+                        <ap-button
+                          type="button"
+                          variant="ghost"
+                          (click)="removePlayer(team, player)"
+                        >
+                          {{ 'admin.teamList.removePlayer' | transloco }}
+                        </ap-button>
+                      </li>
+                    }
+                  </ul>
+                  <div class="team-list-page__inline-form">
+                    <ap-text-field
+                      [label]="'admin.teamList.firstNameLabel' | transloco"
+                      [value]="newPlayerFirstName()"
+                      (valueChange)="onNewPlayerFirstNameChange($event)"
+                    />
+                    <ap-text-field
+                      [label]="'admin.teamList.lastNameLabel' | transloco"
+                      [value]="newPlayerLastName()"
+                      (valueChange)="onNewPlayerLastNameChange($event)"
+                    />
+                    <ap-button type="button" variant="ghost" (click)="addPlayer(team)">
+                      {{ 'admin.teamList.addPlayer' | transloco }}
+                    </ap-button>
+                  </div>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    }
+
+    <!-- The team's fields, shared by "add one team" and the edit row: the name
+         first, the rest only when it matters (category with several of them,
+         division when the category has some, contact folded away). -->
+    <ng-template #teamFields>
+      <ap-text-field
+        class="team-list-page__name-field"
+        [label]="'admin.teamList.nameLabel' | transloco"
+        [placeholder]="'admin.teamList.namePlaceholder' | transloco"
+        [value]="formName()"
+        (valueChange)="formName.set($event)"
+      />
+      @if (categories().length > 1) {
         <ap-select
           [label]="'admin.teamList.categoryLabel' | transloco"
-          [hideLabel]="true"
           [options]="categoryOptions()"
           [value]="formCategoryId()"
           (valueChange)="onFormCategoryChange($event)"
         />
+      }
+      @if (divisionsForSelectedCategory().length > 0) {
         <ap-select
           [label]="'admin.teamList.divisionLabel' | transloco"
-          [hideLabel]="true"
           [options]="divisionOptions()"
           [value]="formDivisionId()"
           (valueChange)="formDivisionId.set($event)"
         />
+      }
+      <details class="team-list-page__more" [open]="hasManagerInfo()">
+        <summary>{{ 'admin.teamList.moreInfo' | transloco }}</summary>
         <ap-text-field
           [label]="'admin.teamList.managerLabel' | transloco"
-          [hideLabel]="true"
-          [placeholder]="'admin.teamList.managerLabel' | transloco"
           [value]="formManagerName()"
           (valueChange)="formManagerName.set($event)"
         />
         <ap-text-field
           [label]="'admin.teamList.managerEmailLabel' | transloco"
-          [hideLabel]="true"
           type="email"
-          [placeholder]="'admin.teamList.managerEmailLabel' | transloco"
           [value]="formManagerEmail()"
           (valueChange)="formManagerEmail.set($event)"
         />
         <ap-text-field
           [label]="'admin.teamList.managerPhoneLabel' | transloco"
-          [hideLabel]="true"
           type="tel"
-          [placeholder]="'admin.teamList.managerPhoneLabel' | transloco"
           [value]="formManagerPhone()"
           (valueChange)="formManagerPhone.set($event)"
         />
-        <div class="team-list-page__form-actions">
-          <ap-button type="submit">{{
-            (editingTeamId() ? 'admin.teamList.save' : 'admin.teamList.add') | transloco
-          }}</ap-button>
-          @if (editingTeamId()) {
-            <ap-button type="button" variant="ghost" (click)="cancelEdit()">{{
-              'admin.teamList.cancel' | transloco
-            }}</ap-button>
-          }
-        </div>
-      </form>
-    </section>
-
-    <section class="team-list-page__section">
-      <div class="team-list-page__toolbar">
-        <ap-button type="button" variant="ghost" (click)="exportCsv()">{{
-          'admin.teamList.export' | transloco
-        }}</ap-button>
-        @if (!confirmingBulkDelete()) {
-          <ap-button
-            type="button"
-            variant="ghost"
-            [disabled]="selectedTeamIds().size === 0"
-            (click)="requestDeleteSelected()"
-          >
-            {{ 'admin.teamList.deleteSelected' | transloco }}
-          </ap-button>
-        }
-      </div>
-
-      @if (confirmingBulkDelete()) {
-        <span class="team-list-page__confirm-inline">
-          <span class="team-list-page__confirm-inline-question">
-            {{
-              'admin.teamList.confirmBulkDeleteQuestion'
-                | transloco: { count: selectedTeamIds().size }
-            }}
-          </span>
-          <ap-button
-            type="button"
-            variant="primary"
-            [disabled]="bulkDeleting()"
-            (click)="confirmDeleteSelected()"
-          >
-            {{
-              (bulkDeleting() ? 'admin.teamList.deleting' : 'admin.teamList.confirmDelete')
-                | transloco
-            }}
-          </ap-button>
-          <ap-button
-            type="button"
-            variant="ghost"
-            [disabled]="bulkDeleting()"
-            (click)="cancelDeleteSelected()"
-          >
-            {{ 'admin.teamList.cancel' | transloco }}
-          </ap-button>
-        </span>
-      }
-
-      @if (!premiumUnlocked()) {
-        <p class="team-list-page__premium-hint">
-          {{ 'admin.teamList.logoPremiumHint' | transloco: { count: freeMaxTeams() } }}
-        </p>
-      }
-
-      @if (teams().length === 0) {
-        <p>{{ 'admin.teamList.empty' | transloco }}</p>
-      } @else {
-        <table class="team-list-page__table">
-          <thead>
-            <tr>
-              <th scope="col"></th>
-              <th scope="col">{{ 'admin.teamList.table.logo' | transloco }}</th>
-              <th scope="col">{{ 'admin.teamList.table.name' | transloco }}</th>
-              <th scope="col">{{ 'admin.teamList.table.category' | transloco }}</th>
-              <th scope="col">{{ 'admin.teamList.table.division' | transloco }}</th>
-              <th scope="col">{{ 'admin.teamList.table.manager' | transloco }}</th>
-              <th scope="col">{{ 'admin.teamList.table.actions' | transloco }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (team of teams(); track team.id) {
-              <tr class="team-list-page__row">
-                <td class="team-list-page__cell team-list-page__cell--select">
-                  <input
-                    type="checkbox"
-                    [checked]="isSelected(team.id)"
-                    (change)="toggleSelected(team.id, $event)"
-                  />
-                </td>
-                <td class="team-list-page__cell team-list-page__logo-cell">
-                  <span class="team-list-page__logo-cell-inner">
-                    @if (logoUrl(team.logoUrl); as logo) {
-                      <img class="team-list-page__logo" [src]="logo" alt="" />
-                    } @else {
-                      <span class="team-list-page__logo-placeholder" aria-hidden="true"></span>
-                    }
-                    <label
-                      class="team-list-page__logo-upload"
-                      [class.team-list-page__logo-upload--locked]="!premiumUnlocked()"
-                      [attr.title]="
-                        premiumUnlocked()
-                          ? null
-                          : ('admin.teamList.logoPremiumHint'
-                            | transloco: { count: freeMaxTeams() })
-                      "
-                    >
-                      {{
-                        (team.logoUrl ? 'admin.teamList.logoChange' : 'admin.teamList.logoAdd')
-                          | transloco
-                      }}
-                      <input
-                        type="file"
-                        accept="image/png,image/jpeg,image/webp"
-                        [disabled]="!premiumUnlocked()"
-                        (change)="onLogoFileSelected(team, $event)"
-                      />
-                    </label>
-                    @if (team.logoUrl) {
-                      <button
-                        type="button"
-                        class="team-list-page__logo-remove"
-                        (click)="removeLogo(team)"
-                      >
-                        {{ 'admin.teamList.logoRemove' | transloco }}
-                      </button>
-                    }
-                  </span>
-                </td>
-                <td class="team-list-page__cell team-list-page__cell--name">{{ team.name }}</td>
-                <td class="team-list-page__cell team-list-page__cell--category">
-                  {{ team.categoryName }}
-                </td>
-                <td class="team-list-page__cell team-list-page__cell--division">
-                  {{ team.divisionName ?? '-' }}
-                </td>
-                <td class="team-list-page__cell team-list-page__cell--manager">
-                  {{ team.managerName ?? '-' }}
-                </td>
-                <td class="team-list-page__cell team-list-page__actions">
-                  @if (confirmingTeamId() === team.id) {
-                    <span class="team-list-page__confirm-inline">
-                      <span class="team-list-page__confirm-inline-question">
-                        {{ 'admin.teamList.confirmDeleteQuestion' | transloco }}
-                      </span>
-                      <ap-button
-                        type="button"
-                        variant="primary"
-                        [disabled]="deletingTeamId() === team.id"
-                        (click)="confirmDeleteTeam(team)"
-                      >
-                        {{
-                          (deletingTeamId() === team.id
-                            ? 'admin.teamList.deleting'
-                            : 'admin.teamList.confirmDelete'
-                          ) | transloco
-                        }}
-                      </ap-button>
-                      <ap-button
-                        type="button"
-                        variant="ghost"
-                        [disabled]="deletingTeamId() === team.id"
-                        (click)="cancelDeleteTeam()"
-                      >
-                        {{ 'admin.teamList.cancel' | transloco }}
-                      </ap-button>
-                    </span>
-                  } @else {
-                    <span class="team-list-page__actions-inner">
-                      <ap-button type="button" variant="ghost" (click)="startEdit(team)">
-                        {{ 'admin.teamList.edit' | transloco }}
-                      </ap-button>
-                      <ap-button type="button" variant="ghost" (click)="togglePlayers(team)">
-                        {{ 'admin.teamList.players' | transloco }}
-                      </ap-button>
-                      <ap-button type="button" variant="ghost" (click)="requestDeleteTeam(team)">
-                        {{ 'admin.teamList.delete' | transloco }}
-                      </ap-button>
-                    </span>
-                  }
-                </td>
-              </tr>
-              @if (expandedTeamId() === team.id) {
-                <tr class="team-list-page__row team-list-page__row--expanded">
-                  <td class="team-list-page__cell team-list-page__cell--empty"></td>
-                  <td class="team-list-page__cell team-list-page__player-cell" colspan="6">
-                    <ul class="team-list-page__player-list">
-                      @for (player of players(); track player.id) {
-                        <li>
-                          {{ player.firstName }} {{ player.lastName }}
-                          @if (player.isCaptain) {
-                            <strong>{{ 'admin.teamList.captain' | transloco }}</strong>
-                          }
-                          <ap-button
-                            type="button"
-                            variant="ghost"
-                            (click)="removePlayer(team, player)"
-                          >
-                            {{ 'admin.teamList.removePlayer' | transloco }}
-                          </ap-button>
-                        </li>
-                      }
-                    </ul>
-                    <div class="team-list-page__inline-form">
-                      <ap-text-field
-                        [label]="'admin.teamList.firstNameLabel' | transloco"
-                        [hideLabel]="true"
-                        [placeholder]="'admin.teamList.firstNameLabel' | transloco"
-                        [value]="newPlayerFirstName()"
-                        (valueChange)="onNewPlayerFirstNameChange($event)"
-                      />
-                      <ap-text-field
-                        [label]="'admin.teamList.lastNameLabel' | transloco"
-                        [hideLabel]="true"
-                        [placeholder]="'admin.teamList.lastNameLabel' | transloco"
-                        [value]="newPlayerLastName()"
-                        (valueChange)="onNewPlayerLastNameChange($event)"
-                      />
-                      <ap-button type="button" variant="ghost" (click)="addPlayer(team)">
-                        {{ 'admin.teamList.addPlayer' | transloco }}
-                      </ap-button>
-                    </div>
-                  </td>
-                </tr>
-              }
-            }
-          </tbody>
-        </table>
-      }
-    </section>
-
-    <section class="team-list-page__section">
-      <h2>{{ 'admin.teamList.importTitle' | transloco }}</h2>
-      <p class="team-list-page__hint">
-        {{ 'admin.teamList.importHint' | transloco }}
-      </p>
-      <input type="file" accept=".csv,text/csv" (change)="onImportFileSelected($event)" />
-      <textarea
-        rows="5"
-        [placeholder]="'admin.teamList.importPlaceholder' | transloco"
-        [value]="importCsv()"
-        (input)="onImportCsvChange($event)"
-      ></textarea>
-      <ap-button type="button" (click)="runImport()">{{
-        'admin.teamList.import' | transloco
-      }}</ap-button>
-
-      @if (importResult(); as result) {
-        <p>{{ 'admin.teamList.importedCount' | transloco: { count: result.created.length } }}</p>
-        @if (result.errors.length > 0) {
-          <ul class="team-list-page__import-errors">
-            @for (error of result.errors; track error.line) {
-              <li>
-                {{
-                  'admin.teamList.lineError'
-                    | transloco: { line: error.line, message: error.message }
-                }}
-              </li>
-            }
-          </ul>
-        }
-        @if (result.warnings.length > 0) {
-          <ul class="team-list-page__import-warnings">
-            @for (warning of result.warnings; track warning.line) {
-              <li>
-                {{
-                  'admin.teamList.lineError'
-                    | transloco: { line: warning.line, message: warning.message }
-                }}
-              </li>
-            }
-          </ul>
-        }
-      }
-    </section>
+      </details>
+    </ng-template>
   }
 </main>
