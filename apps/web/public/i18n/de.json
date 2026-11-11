@@ -1626,5 +1626,12 @@
     "subtitle": "Verfolge deine Turniere live, mit Benachrichtigungen.",
     "cta": "Installieren",
     "dismissAria": "Schließen"
+  },
+  "feedback": {
+    "saved": "Gespeichert",
+    "deleted": "Gelöscht",
+    "error": "Ein Fehler ist aufgetreten, bitte erneut versuchen.",
+    "offline": "Keine Verbindung: Netzwerk prüfen.",
+    "close": "Schließen"
   }
 }

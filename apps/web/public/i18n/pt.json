@@ -1626,5 +1626,12 @@
     "subtitle": "Acompanhe os seus torneios em direto, com notificações.",
     "cta": "Instalar",
     "dismissAria": "Fechar"
+  },
+  "feedback": {
+    "saved": "Guardado",
+    "deleted": "Eliminado",
+    "error": "Ocorreu um erro, tente novamente.",
+    "offline": "Sem ligação: verifique a sua rede.",
+    "close": "Fechar"
   }
 }

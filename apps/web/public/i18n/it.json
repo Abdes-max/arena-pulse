@@ -1626,5 +1626,12 @@
     "subtitle": "Segui i tuoi tornei in diretta, con le notifiche.",
     "cta": "Installa",
     "dismissAria": "Chiudi"
+  },
+  "feedback": {
+    "saved": "Salvato",
+    "deleted": "Eliminato",
+    "error": "Si è verificato un errore, riprova.",
+    "offline": "Connessione impossibile: controlla la rete.",
+    "close": "Chiudi"
   }
 }

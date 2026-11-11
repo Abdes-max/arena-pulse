@@ -1728,5 +1728,12 @@
     "subtitle": "Follow your tournaments live, with notifications.",
     "cta": "Install",
     "dismissAria": "Close"
+  },
+  "feedback": {
+    "saved": "Saved",
+    "deleted": "Deleted",
+    "error": "Something went wrong, please try again.",
+    "offline": "Cannot connect: check your network.",
+    "close": "Close"
   }
 }
