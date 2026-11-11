@@ -140,6 +140,13 @@ ion-title {
   font-size: 0.78rem;
 }
 
+.wizard-page__error-detail {
+  margin: 0;
+  color: var(--ap-color-muted);
+  font-size: 0.75rem;
+  word-break: break-word;
+}
+
 .wizard-page__error {
   margin: 0;
   color: var(--ap-color-error);

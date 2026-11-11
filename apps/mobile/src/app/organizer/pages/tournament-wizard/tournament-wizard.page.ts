@@ -85,6 +85,34 @@ const DEFAULT_THEME: PublicTheme = 'INK_SIGNAL';
 //   (Publier/Dépublier/Republier) instead of always being a first publish.
 // - The rail becomes directly clickable (all data is already loaded, no
 //   reason to force a linear walk to reach e.g. step 5 to just publish).
+/** A publication step that failed, with the i18n key naming which one -- the Publication step used to collapse them all into one generic message, which made a failing payment impossible to diagnose from a phone. */
+class PublishStageError extends Error {
+  constructor(
+    readonly key: string,
+    readonly origin: unknown,
+  ) {
+    super(key);
+  }
+}
+
+/** Short technical hint (HTTP status + server message, or the raw error message) shown under a publication error. */
+function describeError(error: unknown): string {
+  const value = error as { status?: number; error?: { message?: unknown }; message?: unknown };
+  const serverMessage = value.error?.message;
+  const message =
+    typeof serverMessage === 'string'
+      ? serverMessage
+      : Array.isArray(serverMessage)
+        ? serverMessage.join(', ')
+        : typeof value.message === 'string'
+          ? value.message
+          : '';
+  return [value.status ? 'HTTP ' + value.status : '', message]
+    .filter(Boolean)
+    .join(' · ')
+    .slice(0, 200);
+}
+
 @Component({
   selector: 'app-organizer-tournament-wizard-page',
   imports: [
@@ -143,6 +171,7 @@ export class OrganizerTournamentWizardPage {
   });
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
+  protected readonly errorDetail = signal<string | null>(null);
 
   // ---- Step 1: Infos ----
   protected readonly sports = signal<PublicSport[]>([]);
@@ -665,6 +694,7 @@ export class OrganizerTournamentWizardPage {
       return;
     }
     this.errorMessage.set(null);
+    this.errorDetail.set(null);
     this.submitting.set(true);
     try {
       if (current === 1) {
@@ -685,8 +715,13 @@ export class OrganizerTournamentWizardPage {
         return;
       }
       this.step.set((current + 1) as 2 | 3 | 4 | 5);
-    } catch {
-      this.errorMessage.set('organizer.wizard.errorGeneric');
+    } catch (error) {
+      if (error instanceof PublishStageError) {
+        this.errorMessage.set(error.key);
+        this.errorDetail.set(describeError(error.origin) || null);
+      } else {
+        this.errorMessage.set('organizer.wizard.errorGeneric');
+      }
     } finally {
       this.submitting.set(false);
     }
@@ -930,10 +965,19 @@ export class OrganizerTournamentWizardPage {
     if (!organizationId || !tournamentId) {
       throw new Error('Wizard state not initialized');
     }
-    await this.tournamentsApi.updateTournament(organizationId, tournamentId, {
-      isListed: this.isListed(),
-    });
-    const result = await this.tournamentsApi.publish(organizationId, tournamentId);
+    try {
+      await this.tournamentsApi.updateTournament(organizationId, tournamentId, {
+        isListed: this.isListed(),
+      });
+    } catch (error) {
+      throw new PublishStageError('organizer.wizard.publish.errorVisibility', error);
+    }
+    let result;
+    try {
+      result = await this.tournamentsApi.publish(organizationId, tournamentId);
+    } catch (error) {
+      throw new PublishStageError('organizer.wizard.publish.errorCheckout', error);
+    }
     if (result.status === 'PENDING_PAYMENT') {
       if (this.isIosNative) {
         if (result.iapProductId) {
@@ -952,13 +996,23 @@ export class OrganizerTournamentWizardPage {
               // Publication step exactly as it was; no 'done' navigation.
               return;
             }
-            throw error;
+            throw new PublishStageError(
+              error instanceof Error && error.message.startsWith('IAP product not found')
+                ? 'organizer.wizard.publish.errorProduct'
+                : 'organizer.wizard.publish.errorPurchase',
+              error,
+            );
           }
-          const published = await this.tournamentsApi.confirmPublicationPaymentViaIap(
-            organizationId,
-            tournamentId,
-            result.iapProductId,
-          );
+          let published;
+          try {
+            published = await this.tournamentsApi.confirmPublicationPaymentViaIap(
+              organizationId,
+              tournamentId,
+              result.iapProductId,
+            );
+          } catch (error) {
+            throw new PublishStageError('organizer.wizard.publish.errorConfirm', error);
+          }
           this.publishedTournamentName.set(published.name);
         } else {
           // No IAP product matches this exact amount (e.g. tier prices are

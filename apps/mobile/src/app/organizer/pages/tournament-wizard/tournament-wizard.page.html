@@ -741,6 +741,9 @@
     }
     @if (errorMessage(); as message) {
       <p class="wizard-page__error" role="alert">{{ message | transloco }}</p>
+      @if (errorDetail(); as detail) {
+        <p class="wizard-page__error-detail">{{ detail }}</p>
+      }
     }
 
     @if (step() === 'done') {
