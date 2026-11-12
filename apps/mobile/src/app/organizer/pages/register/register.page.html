@@ -1,6 +1,8 @@
 <ion-header>
   <ion-toolbar>
-    <ap-logo class="organizer-register-page__brand" slot="start" [wordmark]="false" />
+    <a class="organizer-register-page__brand" slot="start" routerLink="/" aria-label="TournArena"
+      ><ap-logo [wordmark]="false"
+    /></a>
     <ion-title>
       {{
         (state() === 'sent' ? 'organizer.auth.register.sentTitle' : 'organizer.auth.register.title')

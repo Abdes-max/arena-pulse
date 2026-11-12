@@ -110,3 +110,10 @@
   flex: 1;
   padding: var(--ap-space-6);
 }
+
+// Logo: back to the TournArena home page.
+.super-admin-shell__brand {
+  display: inline-flex;
+  color: inherit;
+  text-decoration: none;
+}

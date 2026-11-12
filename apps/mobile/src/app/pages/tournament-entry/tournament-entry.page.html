@@ -446,6 +446,7 @@
       />
       <ap-text-field
         type="date"
+        [nativePicker]="true"
         [label]="'tournamentEntry.published.filters.dateFromLabel' | transloco"
         [value]="dateFrom()"
         (valueChange)="dateFrom.set($event)"

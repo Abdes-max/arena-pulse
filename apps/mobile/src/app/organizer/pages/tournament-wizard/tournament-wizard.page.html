@@ -257,6 +257,7 @@
           <ap-text-field
             [label]="'organizer.wizard.infos.dateLabel' | transloco"
             type="date"
+            [nativePicker]="true"
             [value]="startDate()"
             (valueChange)="startDate.set($event)"
           />
@@ -592,6 +593,7 @@
               <div class="wizard-page__row">
                 <ap-text-field
                   type="date"
+                  [nativePicker]="true"
                   [label]="'organizer.wizard.calendar.dateLabel' | transloco"
                   [value]="scheduleDate()"
                   (valueChange)="scheduleDate.set($event)"

@@ -46,6 +46,7 @@
     <div class="quick-plateau-page__row">
       <ap-text-field
         type="date"
+        [nativePicker]="true"
         [label]="'organizer.quickPlateau.date' | transloco"
         [value]="date()"
         (valueChange)="date.set($event)"

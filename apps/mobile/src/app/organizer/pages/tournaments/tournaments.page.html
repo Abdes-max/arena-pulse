@@ -1,6 +1,8 @@
 <ion-header>
   <ion-toolbar>
-    <ap-logo class="organizer-tournaments-page__brand" slot="start" [wordmark]="false" />
+    <a class="organizer-tournaments-page__brand" slot="start" routerLink="/" aria-label="TournArena"
+      ><ap-logo [wordmark]="false"
+    /></a>
     <ion-title>{{ 'organizer.tournaments.list.title' | transloco }}</ion-title>
     @if (user(); as u) {
       <button

@@ -191,3 +191,215 @@
   font-size: 0.85rem;
   color: var(--ap-color-error);
 }
+
+// type="date": themed trigger + calendar popover (see text-field.html).
+.ap-text-field__date {
+  position: relative;
+}
+
+.ap-text-field__date-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-2);
+  padding-right: calc(var(--ap-space-4) + 22px);
+  text-align: start;
+  cursor: pointer;
+
+  svg {
+    position: absolute;
+    right: var(--ap-space-3);
+    flex: none;
+    color: var(--ap-color-muted);
+  }
+
+  &:hover:not(:disabled),
+  &[aria-expanded='true'] {
+    border-color: var(--ap-color-primary);
+
+    svg {
+      color: var(--ap-color-primary);
+    }
+  }
+}
+
+// Room for the clear button as well as the calendar icon.
+.ap-text-field__date-trigger:not(.ap-text-field__date-trigger--empty) {
+  padding-right: calc(var(--ap-space-4) + 50px);
+}
+
+.ap-text-field__date-trigger--empty .ap-text-field__date-value {
+  color: var(--ap-color-muted);
+}
+
+.ap-text-field__date-value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ap-text-field__date-clear {
+  position: absolute;
+  top: 50%;
+  right: calc(var(--ap-space-3) + 24px);
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ap-color-muted);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--ap-color-fg);
+    background: var(--ap-color-border);
+  }
+}
+
+.ap-text-field__date-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: default;
+}
+
+.ap-text-field__calendar {
+  position: absolute;
+  top: calc(100% + var(--ap-space-1));
+  left: 0;
+  z-index: 61;
+  width: 288px;
+  max-width: calc(100vw - 32px);
+  padding: var(--ap-space-3);
+  background: var(--ap-color-surface);
+  color: var(--ap-color-fg);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-lg);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+  font-family: var(--ap-font-body);
+}
+
+.ap-text-field__calendar--end {
+  right: 0;
+  left: auto;
+}
+
+.ap-text-field__calendar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--ap-space-2);
+
+  strong {
+    font-family: var(--ap-font-heading);
+    font-size: 0.95rem;
+  }
+}
+
+.ap-text-field__calendar-nav {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ap-color-fg);
+  font-size: 1.3rem;
+  line-height: 1;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--ap-color-signal-soft);
+  }
+}
+
+.ap-text-field__calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.ap-text-field__calendar-weekday {
+  padding: var(--ap-space-1) 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--ap-color-muted);
+}
+
+.ap-text-field__calendar-day {
+  aspect-ratio: 1;
+  padding: 0;
+  border: var(--ap-border-width) solid transparent;
+  border-radius: var(--ap-radius-sm);
+  background: transparent;
+  color: var(--ap-color-fg);
+  font: inherit;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: var(--ap-color-signal-soft);
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    outline: var(--ap-border-width-strong) solid var(--ap-color-focus);
+    outline-offset: 1px;
+  }
+}
+
+.ap-text-field__calendar-day--outside {
+  color: var(--ap-color-muted);
+  opacity: 0.6;
+}
+
+.ap-text-field__calendar-day--today {
+  border-color: var(--ap-color-primary);
+  font-weight: 700;
+}
+
+.ap-text-field__calendar-day--selected,
+.ap-text-field__calendar-day--selected:hover:not(:disabled) {
+  background: var(--ap-color-primary);
+  color: var(--ap-color-on-primary);
+  font-weight: 700;
+  opacity: 1;
+}
+
+.ap-text-field__calendar-foot {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--ap-space-2);
+  padding-top: var(--ap-space-2);
+  border-top: var(--ap-border-width) solid var(--ap-color-border);
+}
+
+.ap-text-field__calendar-link {
+  padding: var(--ap-space-1) var(--ap-space-2);
+  border: none;
+  border-radius: var(--ap-radius-sm);
+  background: transparent;
+  color: var(--ap-color-primary);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--ap-color-signal-soft);
+  }
+}
