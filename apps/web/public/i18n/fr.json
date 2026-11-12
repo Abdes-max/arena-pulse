@@ -1678,6 +1678,14 @@
       "field": "Terrain",
       "errors": {
         "load": "Impossible de charger l'export."
+      },
+      "infos": {
+        "venues": "Lieu",
+        "dates": "Dates",
+        "plannedStart": "Début prévu",
+        "plannedEnd": "Fin prévue",
+        "poolMatch": "Matchs de poule",
+        "knockoutMatch": "Matchs de phase finale"
       }
     },
     "dashboard": {

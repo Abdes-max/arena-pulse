@@ -29,6 +29,95 @@
   }
 }
 
+// Header in the tournament's theme, like the public site's header.
+.print-export-page__header {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-4);
+  padding: var(--ap-space-6);
+  color: var(--ap-color-fg);
+  background-color: var(--ap-color-bg);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  border-radius: var(--ap-radius-lg);
+  // Browsers drop backgrounds when printing unless told otherwise.
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+
+  h1 {
+    margin: 0;
+    font-family: var(--ap-font-heading);
+    font-size: 1.9rem;
+    line-height: 1.15;
+  }
+}
+
+.print-export-page__header--photo {
+  color: #fff;
+}
+
+.print-export-page__sport {
+  margin: 0 0 var(--ap-space-1);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.print-export-page__logo {
+  flex: none;
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
+  padding: var(--ap-space-1);
+  background: #fff;
+  border-radius: var(--ap-radius-md);
+}
+
+// Key facts: venue(s), dates, planned start/end, match lengths.
+.print-export-page__infos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--ap-space-3) var(--ap-space-6);
+  margin: var(--ap-space-4) 0 0;
+  padding: var(--ap-space-4) var(--ap-space-5, var(--ap-space-4));
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-lg);
+  break-inside: avoid;
+
+  dt {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ap-color-muted);
+  }
+
+  dd {
+    margin: 2px 0 0;
+    font-weight: 600;
+  }
+}
+
+.print-export-page__venue {
+  display: block;
+}
+
+.print-export-page__team {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+
+  img {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    flex: none;
+  }
+}
+
 .print-export-page__error {
   color: var(--ap-color-error);
   font-size: 0.9rem;
@@ -109,11 +198,11 @@
   // inconsistently and organizers are printing on plain paper, so this
   // strips the coloring back to plain black-on-white rather than trusting
   // whatever the active theme happens to be.
-  h1,
   h2,
   h3,
   h4,
-  th {
+  th,
+  .print-export-page__infos dt {
     color: #000;
   }
 

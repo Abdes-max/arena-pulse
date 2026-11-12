@@ -1576,6 +1576,14 @@
       "field": "Spielfeld",
       "errors": {
         "load": "Export konnte nicht geladen werden."
+      },
+      "infos": {
+        "venues": "Ort",
+        "dates": "Daten",
+        "plannedStart": "Geplanter Beginn",
+        "plannedEnd": "Geplantes Ende",
+        "poolMatch": "Gruppenspiele",
+        "knockoutMatch": "K.-o.-Spiele"
       }
     },
     "dashboard": {

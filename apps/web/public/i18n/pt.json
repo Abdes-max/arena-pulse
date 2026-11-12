@@ -1576,6 +1576,14 @@
       "field": "Campo",
       "errors": {
         "load": "Não foi possível carregar a exportação."
+      },
+      "infos": {
+        "venues": "Local",
+        "dates": "Datas",
+        "plannedStart": "Início previsto",
+        "plannedEnd": "Fim previsto",
+        "poolMatch": "Jogos de grupo",
+        "knockoutMatch": "Jogos da fase final"
       }
     },
     "dashboard": {
