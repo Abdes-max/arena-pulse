@@ -92,7 +92,6 @@
                 @if (!user.emailVerifiedAt) {
                   <ap-button
                     type="button"
-                    variant="ghost"
                     [disabled]="verifying() === user.id"
                     (click)="verifyEmail(user)"
                   >
@@ -100,7 +99,7 @@
                   </ap-button>
                 }
                 @if (deletingUserId() !== user.id) {
-                  <ap-button type="button" variant="ghost" (click)="startDeleting(user)">
+                  <ap-button type="button" variant="secondary" (click)="startDeleting(user)">
                     Supprimer
                   </ap-button>
                 }

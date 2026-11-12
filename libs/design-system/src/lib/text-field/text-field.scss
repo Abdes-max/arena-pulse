@@ -388,19 +388,37 @@
   border-top: var(--ap-border-width) solid var(--ap-color-border);
 }
 
+// Real buttons (the theme's shape): "Aujourd'hui" filled, "Effacer" framed.
 .ap-text-field__calendar-link {
-  padding: var(--ap-space-1) var(--ap-space-2);
-  border: none;
-  border-radius: var(--ap-radius-sm);
-  background: transparent;
-  color: var(--ap-color-primary);
+  min-height: 2rem;
+  padding: var(--ap-space-1) var(--ap-space-3);
+  border: var(--ap-border-width) solid var(--ap-color-primary);
+  border-radius: var(--ap-radius-md);
+  background: var(--ap-color-primary);
+  color: var(--ap-color-on-primary);
   font: inherit;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
 
   &:hover {
-    background: var(--ap-color-signal-soft);
+    filter: brightness(1.08);
+  }
+
+  &--secondary {
+    background: var(--ap-color-surface);
+    border-color: var(--ap-color-border);
+    color: var(--ap-color-fg);
+
+    &:hover {
+      filter: none;
+      border-color: var(--ap-color-primary);
+    }
+  }
+
+  &:focus-visible {
+    outline: var(--ap-border-width-strong) solid var(--ap-color-focus);
+    outline-offset: 2px;
   }
 }
 

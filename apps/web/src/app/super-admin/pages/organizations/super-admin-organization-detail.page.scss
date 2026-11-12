@@ -1,4 +1,5 @@
 @use '../../shared/ui';
+@use '../../../admin/section-card';
 
 .super-admin-organization-detail-page {
   max-width: 800px;
@@ -78,4 +79,20 @@
   gap: var(--ap-space-2);
   color: var(--ap-color-muted);
   font-size: 0.9rem;
+}
+
+// Blocks as separate cards, like the organizer admin.
+.super-admin-organization-detail-page__section,
+.super-admin-organization-detail-page__danger-zone {
+  @include section-card.section-card;
+}
+.super-admin-organization-detail-page__section table,
+.super-admin-organization-detail-page__danger-zone table {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.super-admin-organization-detail-page__danger-zone {
+  border-color: var(--ap-color-error);
 }
