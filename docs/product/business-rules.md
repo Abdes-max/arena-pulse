@@ -38,6 +38,21 @@ Toutes les règles ci-dessous sont issues du tournoi de référence "U10 Millois
 - **CONFIRMÉ (admin, écran "Classement"/structure)** : l'organisateur construit la compétition phase par phase depuis un éditeur dédié : chaque poule dispose de boutons "+POULE" (ajouter une poule), "+BRACKET" (ajouter un tableau à élimination directe alimenté par les positions de sortie d'une phase précédente, taille annoncée "5 jusqu'à 8" équipes), et "+MATCH AMICAL" (ajouter un match hors classement). Chaque bracket individuel propose un bouton "+MATCH" pour ajouter un match de classement (ex. petite finale) à la volée.
 - **CONFIRMÉ** : le bouton "AJOUTER UNE PHASE" porte l'aide contextuelle suivante : _"Ajoutez une phase supplémentaire si vous souhaitez affecter des équipes en fonction de leurs performances dans la ou les phases précédentes"_ — confirme explicitement que `QualificationRule` doit lier une position de sortie de phase à une phase suivante, comme modélisé dans `data-model.md`.
 
+## Validation des poules et tirage de la phase finale
+
+- La phase finale n'est **jamais tirée automatiquement** : l'organisateur clique sur « Valider les scores des phases de poules » une fois tous les matchs de poule terminés (joués, forfait ou annulés). Le tirage se fait à ce moment-là.
+- Tant que les poules ne sont pas validées, aucun score, forfait ou effacement n'est possible sur un match de phase finale, et le tableau n'affiche que les libellés (« 1er Poule A »).
+- Une fois validées, les poules sont verrouillées. « Modifier les scores » les rouvre : la phase finale revient aux libellés, et les scores déjà saisis en phase finale sont effacés après confirmation. La revalidation refait le tirage.
+- Les affiches du premier tour suivent par défaut le schéma standard (1er de la liste contre le dernier). L'organisateur peut les choisir lui-même (« 1er Poule A » contre « 2e Poule B »…) tant qu'aucun match du tableau n'a de score ; changer la taille du tableau revient à l'appariement automatique.
+
+## Pré-inscriptions
+
+- Pas de paiement en ligne : l'organisateur affiche un tarif indicatif par catégorie et des modalités de paiement (sur place, virement…), encaisse lui-même et coche chaque inscription payée, non payée ou dispensée.
+- Sport collectif : un capitaine inscrit son équipe et ses joueurs. Sport individuel (tennis, badminton) : chaque joueur s'inscrit à son nom. Le padel se joue en paires et compte comme collectif.
+- Chaque demande est validée à la main par l'organisateur (confirmer, refuser avec motif, mettre en liste d'attente). L'équipe n'apparaît dans le tournoi qu'une fois confirmée.
+- Places limitées par catégorie : au-delà, les demandes vont en liste d'attente ; une catégorie complète refuse la confirmation.
+- Le joueur peut annuler sa demande tant qu'elle n'est pas confirmée (« Mes inscriptions »).
+
 ## Classement final global
 
 - Ordonné d'abord par **valeur du tableau atteint** (Champions League > Europa League > Conférence League), puis par **performance dans ce tableau** (Vainqueur > Finaliste > 3e/4e > Demi-finaliste éliminé > Quart de finaliste éliminé, etc.).
