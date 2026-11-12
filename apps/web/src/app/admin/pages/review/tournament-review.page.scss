@@ -231,3 +231,17 @@
   margin: var(--ap-space-3) 0 0;
   font-weight: 700;
 }
+
+// At the bottom of Calendrier: no page padding of its own, a separator above.
+.review-page--compact {
+  max-width: none;
+  margin-top: var(--ap-space-8);
+  padding: var(--ap-space-6) 0 0;
+  border-top: var(--ap-border-width) solid var(--ap-color-border);
+}
+
+.review-page__compact-title {
+  margin: 0 0 var(--ap-space-2);
+  font-family: var(--ap-font-heading);
+  font-size: 1.5rem;
+}

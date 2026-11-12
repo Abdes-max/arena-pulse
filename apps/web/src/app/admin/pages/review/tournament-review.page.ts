@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal, input } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
@@ -42,6 +42,13 @@ export class TournamentReviewPage {
   private readonly competitionFormatsService = inject(CompetitionFormatsService);
   private readonly scheduleService = inject(ScheduleService);
   private readonly languageService = inject(LanguageService);
+
+  /**
+   * Shown at the bottom of Calendrier ("Vérifier mon programme"): only the
+   * key numbers, the venue and the publish block -- teams and the timetable
+   * are already on screen there.
+   */
+  readonly compact = input(false);
 
   protected readonly tournamentId = this.route.snapshot.paramMap.get('tournamentId') ?? '';
   private readonly organizationId = computed(() => this.authService.organizations()[0]?.id);
@@ -98,6 +105,11 @@ export class TournamentReviewPage {
   });
 
   constructor() {
+    void this.load();
+  }
+
+  /** Calendrier calls this after each change, so the numbers stay current. */
+  reload(): void {
     void this.load();
   }
 

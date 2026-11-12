@@ -1,3 +1,4 @@
+import { TournamentReviewPage } from '../review/tournament-review.page';
 import { NgTemplateOutlet } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
@@ -45,7 +46,15 @@ interface TimeSlotDraft {
 
 @Component({
   selector: 'app-schedule-page',
-  imports: [Button, Select, TextField, NgTemplateOutlet, FieldSelector, TranslocoPipe],
+  imports: [
+    Button,
+    Select,
+    TextField,
+    NgTemplateOutlet,
+    FieldSelector,
+    TournamentReviewPage,
+    TranslocoPipe,
+  ],
   templateUrl: './schedule.page.html',
   styleUrl: './schedule.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -336,6 +345,9 @@ export class SchedulePage {
     await this.loadMatches();
   }
 
+  // "Vérifier mon programme" at the bottom (key numbers + publish).
+  private readonly review = viewChild(TournamentReviewPage);
+
   private async loadMatches(): Promise<void> {
     const organizationId = this.organization()?.id;
     if (!organizationId) {
@@ -351,6 +363,7 @@ export class SchedulePage {
         ),
       );
       this.matches.set(results.flat());
+      this.review()?.reload();
     } catch {
       this.errorMessage.set('admin.schedule.errors.loadMatches');
     }
