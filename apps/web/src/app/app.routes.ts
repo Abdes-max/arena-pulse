@@ -66,6 +66,12 @@ export const routes: Routes = [
       import('./pages/player-auth/login/player-login.page').then((m) => m.PlayerLoginPage),
   },
   {
+    path: 'player/registrations',
+    canActivate: [playerAuthGuard],
+    loadComponent: () =>
+      import('./pages/my-registrations/my-registrations.page').then((m) => m.MyRegistrationsPage),
+  },
+  {
     path: 'player/register',
     loadComponent: () =>
       import('./pages/player-auth/register/player-register.page').then((m) => m.PlayerRegisterPage),

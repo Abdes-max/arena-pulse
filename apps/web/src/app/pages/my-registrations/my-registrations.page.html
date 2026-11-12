@@ -1,0 +1,49 @@
+<main class="my-registrations-page">
+  <h1>{{ 'myRegistrations.title' | transloco }}</h1>
+
+  @if (errorMessage(); as message) {
+    <p class="my-registrations-page__error" role="alert">{{ message | transloco }}</p>
+  }
+
+  @if (loading()) {
+    <p>{{ 'myRegistrations.loading' | transloco }}</p>
+  } @else {
+    <ul class="my-registrations-page__list">
+      @for (r of registrations(); track r.id) {
+        <li class="my-registrations-page__item">
+          <div class="my-registrations-page__head">
+            <a [routerLink]="['/', r.tournament.slug]">
+              <strong>{{ r.tournament.name }}</strong>
+            </a>
+            <span class="my-registrations-page__status" [attr.data-status]="r.status">{{
+              'myRegistrations.status.' + r.status | transloco
+            }}</span>
+          </div>
+          <p class="my-registrations-page__meta">{{ r.teamName }} · {{ r.category.name }}</p>
+          @if (r.rejectionReason) {
+            <p class="my-registrations-page__meta">
+              {{ 'myRegistrations.reason' | transloco }} : {{ r.rejectionReason }}
+            </p>
+          }
+          @if (cancellable(r)) {
+            <ap-button
+              type="button"
+              variant="ghost"
+              size="sm"
+              [disabled]="busyId() === r.id"
+              (click)="cancel(r)"
+              >{{ 'myRegistrations.cancel' | transloco }}</ap-button
+            >
+          }
+        </li>
+      } @empty {
+        <li class="my-registrations-page__empty">
+          {{ 'myRegistrations.empty' | transloco }}
+          <a routerLink="/decouvrir" [queryParams]="{ inscriptions: 1 }">{{
+            'myRegistrations.browse' | transloco
+          }}</a>
+        </li>
+      }
+    </ul>
+  }
+</main>

@@ -39,6 +39,7 @@
       <h1>Inscription annulée</h1>
     }
     <a [routerLink]="['/', context.slug()]">Retour au tournoi</a>
+    · <a routerLink="/player/registrations">Mes inscriptions</a>
   } @else {
     <h1>Inscription introuvable</h1>
     <a [routerLink]="['/', context.slug()]">Retour au tournoi</a>

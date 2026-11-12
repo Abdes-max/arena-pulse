@@ -476,6 +476,8 @@ export interface PlayerRegistration {
   id: string;
   teamName: string;
   status: RegistrationStatus;
+  paymentStatus?: RegistrationPaymentStatus;
+  rejectionReason?: string | null;
   amountCents: number;
   currency: string;
   createdAt: string;

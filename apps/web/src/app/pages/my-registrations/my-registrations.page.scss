@@ -1,0 +1,59 @@
+.my-registrations-page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--ap-space-6) var(--ap-space-4);
+}
+
+.my-registrations-page__error {
+  color: var(--ap-color-error);
+}
+
+.my-registrations-page__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-3);
+}
+
+.my-registrations-page__item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ap-space-2);
+  padding: var(--ap-space-3) var(--ap-space-4);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+}
+
+.my-registrations-page__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-2);
+  width: 100%;
+}
+
+.my-registrations-page__status {
+  padding: 2px var(--ap-space-2);
+  font-size: 0.8rem;
+  font-weight: 700;
+  border-radius: 999px;
+  background: var(--ap-color-surface);
+
+  &[data-status='CONFIRMED'],
+  &[data-status='PAID'] {
+    color: var(--ap-color-signal-text);
+    background: var(--ap-color-signal-soft);
+  }
+
+  &[data-status='REJECTED'] {
+    color: var(--ap-color-error);
+  }
+}
+
+.my-registrations-page__meta {
+  margin: 0;
+  color: var(--ap-color-muted);
+}

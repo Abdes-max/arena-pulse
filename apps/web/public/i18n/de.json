@@ -1711,5 +1711,26 @@
     "open": "Anmeldung offen ({{taken}}/{{total}})",
     "openNoLimit": "Anmeldung offen",
     "full": "Ausgebucht · Warteliste"
+  },
+  "myRegistrations": {
+    "title": "Meine Anmeldungen",
+    "loading": "Wird geladen…",
+    "empty": "Noch keine Anmeldung.",
+    "browse": "Turniere mit offener Anmeldung ansehen",
+    "cancel": "Anfrage zurückziehen",
+    "reason": "Grund",
+    "status": {
+      "PENDING": "Wartet auf Bestätigung",
+      "CONFIRMED": "Bestätigt",
+      "WAITLIST": "Warteliste",
+      "REJECTED": "Abgelehnt",
+      "CANCELLED": "Storniert",
+      "PAID": "Bestätigt",
+      "PENDING_PAYMENT": "Zahlung läuft"
+    },
+    "errors": {
+      "load": "Ihre Anmeldungen konnten nicht geladen werden.",
+      "cancel": "Diese Anfrage konnte nicht zurückgezogen werden."
+    }
   }
 }

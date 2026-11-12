@@ -1813,5 +1813,26 @@
     "open": "Registration open ({{taken}}/{{total}})",
     "openNoLimit": "Registration open",
     "full": "Full · waiting list"
+  },
+  "myRegistrations": {
+    "title": "My registrations",
+    "loading": "Loading…",
+    "empty": "No registration yet.",
+    "browse": "See tournaments open for registration",
+    "cancel": "Withdraw my request",
+    "reason": "Reason",
+    "status": {
+      "PENDING": "Waiting for approval",
+      "CONFIRMED": "Confirmed",
+      "WAITLIST": "Waiting list",
+      "REJECTED": "Refused",
+      "CANCELLED": "Cancelled",
+      "PAID": "Confirmed",
+      "PENDING_PAYMENT": "Payment in progress"
+    },
+    "errors": {
+      "load": "Could not load your registrations.",
+      "cancel": "Could not withdraw this request."
+    }
   }
 }
