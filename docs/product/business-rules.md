@@ -99,6 +99,12 @@ Décision TournArena, inspirée de Tournify (« Scoring and tiebreakers ») : ch
 
 - **CONFIRMÉ (Participants > Administrateurs)** : Tournify n'utilise pas des rôles nommés fixes mais une matrice de permissions granulaires cochées individuellement par administrateur : Gestion générale, Gérer les participants, Gérer la mise en page, Gérer le calendrier, Gérer la présentation, Gérer un site internet public, Gérer le diaporama, Gérer la conception, Gérer les scores, Gérer l'avancement des phases. Voir `roles-and-permissions.md` pour la reprise complète et la décision de modélisation associée.
 
+## Mode assistance (super-admin)
+
+- Le super-admin peut entrer dans l'admin de n'importe quel tournoi pour y faire les mêmes actions que l'organisateur ; il agit en tant que premier administrateur de l'organisation (le plus ancien).
+- La session dure 2 h au plus, n'est jamais prolongée et ne vaut que pour l'onglet ouvert ; elle survit à un rechargement de cet onglet. « Quitter l'assistance » ou une connexion normale y met fin.
+- Chaque entrée est inscrite au journal du super-admin (tournoi et compte utilisé). La suppression du compte de l'organisateur est refusée pendant l'assistance.
+
 ## Hors périmètre observable dans cette itération
 
 Les règles suivantes n'ont pas pu être confirmées (non ouvertes lors de cet audit pour rester dans un périmètre raisonnable, ou nécessitant un tournoi en cours) :
