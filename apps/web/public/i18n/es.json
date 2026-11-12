@@ -1359,7 +1359,8 @@
         "endLabel": "Fin",
         "labelLabel": "Etiqueta",
         "addSlot": "+ Turno",
-        "slotMinutesLabel": "Duración de la franja (minutos)"
+        "slotMinutesLabel": "Duración de la franja (minutos)",
+        "freeSlot": "Franja libre"
       },
       "round": "Ronda {{round}}",
       "addRefereeOption": "+ Árbitro…",

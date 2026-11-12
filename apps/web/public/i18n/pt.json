@@ -1359,7 +1359,8 @@
         "endLabel": "Fim",
         "labelLabel": "Etiqueta",
         "addSlot": "+ Horário",
-        "slotMinutesLabel": "Duração do horário (minutos)"
+        "slotMinutesLabel": "Duração do horário (minutos)",
+        "freeSlot": "Horário livre"
       },
       "round": "Ronda {{round}}",
       "addRefereeOption": "+ Árbitro…",
