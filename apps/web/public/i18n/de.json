@@ -712,7 +712,9 @@
         "all": "Alle",
         "upcoming": "Bevorstehend",
         "past": "Vergangene"
-      }
+      },
+      "share": "Teilen",
+      "slideshow": "Diashow (TV-Bildschirm)"
     },
     "onboarding": {
       "title": "Erste Schritte",

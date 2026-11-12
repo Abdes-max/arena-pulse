@@ -712,7 +712,9 @@
         "all": "Todos",
         "upcoming": "Próximos",
         "past": "Pasados"
-      }
+      },
+      "share": "Compartir",
+      "slideshow": "Presentación (pantalla TV)"
     },
     "onboarding": {
       "title": "Primeros pasos",

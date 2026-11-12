@@ -6,10 +6,10 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AssetUrlService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { Badge, BadgeStatus, Button, Select, SelectOption } from 'design-system';
+import { Badge, BadgeStatus, Button, QrCode, Select, SelectOption } from 'design-system';
 import { DEFAULT_THEME, LanguageService, ThemeService } from 'design-tokens';
 import { isTournamentPast } from 'shared-models';
 import { AuthService } from '../../core/auth.service';
@@ -59,7 +59,16 @@ const DISMISSED_STORAGE_PREFIX = 'arena-pulse:onboarding-dismissed:';
 
 @Component({
   selector: 'app-tournament-list-page',
-  imports: [Badge, Button, OnboardingChecklist, OrganizationDashboard, Select, TranslocoPipe],
+  imports: [
+    Badge,
+    Button,
+    OnboardingChecklist,
+    OrganizationDashboard,
+    QrCode,
+    RouterLink,
+    Select,
+    TranslocoPipe,
+  ],
   templateUrl: './tournament-list.page.html',
   styleUrl: './tournament-list.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -310,6 +319,50 @@ export class TournamentListPage {
 
   protected publicUrl(tournament: Tournament): string {
     return `/${tournament.slug}`;
+  }
+
+  // "Partager" menu: public link, slideshow (TV), QR code and export PDF in
+  // one button, listing only what this tournament gives access to -- link,
+  // slideshow and QR need it published, QR and PDF need premium features.
+  protected readonly shareMenuFor = signal<string | null>(null);
+  protected readonly qrFor = signal<Tournament | null>(null);
+
+  protected shareActions(tournament: Tournament): {
+    link: boolean;
+    tv: boolean;
+    qr: boolean;
+    pdf: boolean;
+  } {
+    const published = tournament.status === 'PUBLISHED';
+    const premium = tournament.premiumUnlocked ?? false;
+    return { link: published, tv: published, qr: published && premium, pdf: premium };
+  }
+
+  protected hasShareActions(tournament: Tournament): boolean {
+    const actions = this.shareActions(tournament);
+    return actions.link || actions.tv || actions.qr || actions.pdf;
+  }
+
+  protected toggleShareMenu(tournament: Tournament): void {
+    this.shareMenuFor.update((id) => (id === tournament.id ? null : tournament.id));
+  }
+
+  protected closeShareMenu(): void {
+    this.shareMenuFor.set(null);
+  }
+
+  protected openQr(tournament: Tournament): void {
+    this.closeShareMenu();
+    this.qrFor.set(tournament);
+  }
+
+  protected closeQr(): void {
+    this.qrFor.set(null);
+  }
+
+  // A scanned code has no "current page" to resolve a relative path against.
+  protected publicAbsoluteUrl(tournament: Tournament): string {
+    return `${window.location.origin}/${tournament.slug}`;
   }
 
   protected async duplicate(tournament: Tournament): Promise<void> {
