@@ -600,6 +600,7 @@
                 />
                 <ap-text-field
                   type="time"
+                  [nativePicker]="true"
                   [label]="'organizer.wizard.calendar.timeLabel' | transloco"
                   [value]="scheduleTime()"
                   (valueChange)="scheduleTime.set($event)"
