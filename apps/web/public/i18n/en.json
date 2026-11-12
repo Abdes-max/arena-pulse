@@ -1678,6 +1678,14 @@
       "field": "Field",
       "errors": {
         "load": "Unable to load the export."
+      },
+      "infos": {
+        "venues": "Venue",
+        "dates": "Dates",
+        "plannedStart": "Planned start",
+        "plannedEnd": "Planned end",
+        "poolMatch": "Pool matches",
+        "knockoutMatch": "Knockout matches"
       }
     },
     "dashboard": {

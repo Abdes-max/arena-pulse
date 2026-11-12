@@ -1,21 +1,25 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
+import { AssetUrlService } from 'api-client';
 import { Button } from 'design-system';
-import { LanguageService } from 'design-tokens';
+import { LanguageService, ThemeName } from 'design-tokens';
 import {
   Category,
   CompetitionPhase,
   Match,
   RoundLabelLang,
   Standings,
+  Venue,
   groupMatchesByPhaseSection,
   setUnitForSport,
 } from 'shared-models';
 import { AuthService } from '../../core/auth.service';
 import { CompetitionFormatsService } from '../../core/competition-formats.service';
+import { TournamentDetail } from '../../core/models';
 import { ScheduleService } from '../../core/schedule.service';
 import { StandingsService } from '../../core/standings.service';
+import { THEME_MAP } from '../../core/theme-map';
 import { TournamentsService } from '../../core/tournaments.service';
 
 interface ScheduleDay {
@@ -35,6 +39,8 @@ interface BracketSection {
 
 interface CategoryExport {
   category: Category;
+  phases: CompetitionPhase[];
+  matches: Match[];
   scheduleDays: ScheduleDay[];
   scheduleUnscheduled: Match[];
   standingsGroups: StandingsGroup[];
@@ -73,6 +79,7 @@ export class PrintExportPage {
   private readonly scheduleService = inject(ScheduleService);
   private readonly standingsService = inject(StandingsService);
   private readonly languageService = inject(LanguageService);
+  private readonly assetUrl = inject(AssetUrlService);
   // Sets sports: the table counts sets won/lost and the games/points
   // difference instead of goals.
   protected readonly isSets = signal(false);
@@ -88,6 +95,43 @@ export class PrintExportPage {
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly tournamentName = signal('');
   protected readonly categoryExports = signal<CategoryExport[]>([]);
+  protected readonly tournament = signal<TournamentDetail | null>(null);
+  protected readonly venues = signal<Venue[]>([]);
+
+  // Header in the tournament's own theme, like the public site's header:
+  // its header photo under a dark scrim, or the theme's dark palette.
+  protected readonly headerTheme = computed<ThemeName | null>(() => {
+    const tournament = this.tournament();
+    return tournament ? THEME_MAP[tournament.theme] : null;
+  });
+  protected readonly headerImage = computed(() => {
+    const url = this.assetUrl.resolve(this.tournament()?.headerBackgroundUrl ?? null);
+    return url
+      ? `linear-gradient(180deg, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.35)), url(${JSON.stringify(url)})`
+      : null;
+  });
+  protected readonly logo = computed(() =>
+    this.assetUrl.resolve(this.tournament()?.logoUrl ?? null),
+  );
+
+  // Infos block: planned start/end from the calendar, match length per kind of phase.
+  private readonly allMatches = computed(() => this.categoryExports().flatMap((e) => e.matches));
+  protected readonly plannedStart = computed(() => {
+    const starts = this.allMatches()
+      .map((match) => match.timeSlot?.startTime)
+      .filter((value): value is string => !!value)
+      .sort();
+    return starts[0] ?? null;
+  });
+  protected readonly plannedEnd = computed(() => {
+    const ends = this.allMatches()
+      .map((match) => match.timeSlot?.endTime)
+      .filter((value): value is string => !!value)
+      .sort();
+    return ends[ends.length - 1] ?? null;
+  });
+  protected readonly poolDuration = computed(() => this.durationLabel('GROUP_STAGE'));
+  protected readonly knockoutDuration = computed(() => this.durationLabel('KNOCKOUT'));
 
   constructor() {
     void this.loadAll();
@@ -105,10 +149,15 @@ export class PrintExportPage {
     }
     this.loading.set(true);
     try {
-      const [tournament, categories] = await Promise.all([
+      const [tournament, categories, venues] = await Promise.all([
         this.tournamentsService.getTournament(organizationId, this.tournamentId),
         this.tournamentsService.listCategories(organizationId, this.tournamentId),
+        this.tournamentsService
+          .listVenues(organizationId, this.tournamentId)
+          .catch(() => [] as Venue[]),
       ]);
+      this.tournament.set(tournament);
+      this.venues.set(venues);
       this.tournamentName.set(tournament.name);
       this.isSets.set(tournament.scoreFormat === 'SETS');
       this.sportName.set(tournament.sportName);
@@ -147,6 +196,8 @@ export class PrintExportPage {
 
     return {
       category,
+      phases,
+      matches: allMatches,
       scheduleDays: days,
       scheduleUnscheduled: unscheduled,
       standingsGroups,
@@ -230,6 +281,48 @@ export class PrintExportPage {
       }
     }
     return sections;
+  }
+
+  private durationLabel(type: CompetitionPhase['type']): string | null {
+    const minutes = [
+      ...new Set(
+        this.categoryExports()
+          .flatMap((entry) => entry.phases)
+          .filter((phase) => phase.type === type && !phase.isSeedPhase)
+          .map((phase) => phase.matchDurationMinutes)
+          .filter((minutes): minutes is number => typeof minutes === 'number'),
+      ),
+    ].sort((a, b) => a - b);
+    return minutes.length > 0 ? `${minutes.join(' / ')} min` : null;
+  }
+
+  protected formatDate(value: string | null): string | null {
+    return value
+      ? new Date(value).toLocaleDateString(this.languageService.language(), {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        })
+      : null;
+  }
+
+  protected formatDateTime(value: string): string {
+    return new Date(value).toLocaleString(this.languageService.language(), {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  }
+
+  protected venueLine(venue: Venue): string {
+    return venue.address ? `${venue.name}, ${venue.address}` : venue.name;
+  }
+
+  protected teamLogo(url: string | null | undefined): string | null {
+    return this.assetUrl.resolve(url ?? null);
   }
 
   protected formatTime(startTime: string): string {

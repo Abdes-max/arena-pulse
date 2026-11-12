@@ -15,7 +15,71 @@
       <p class="print-export-page__error" role="alert">{{ message | transloco }}</p>
     }
 
-    <h1>{{ tournamentName() }}</h1>
+    @if (tournament(); as t) {
+      <header
+        class="print-export-page__header"
+        [class.print-export-page__header--photo]="!!headerImage()"
+        [attr.data-theme]="headerTheme()"
+        data-mode="dark"
+        [style.background-image]="headerImage()"
+      >
+        @if (logo(); as logoSrc) {
+          <img class="print-export-page__logo" [src]="logoSrc" alt="" />
+        }
+        <div>
+          <p class="print-export-page__sport">{{ t.sportName }}</p>
+          <h1>{{ t.name }}</h1>
+        </div>
+      </header>
+
+      <dl class="print-export-page__infos">
+        @if (venues().length > 0) {
+          <div>
+            <dt>{{ 'admin.printExport.infos.venues' | transloco }}</dt>
+            <dd>
+              @for (venue of venues(); track venue.id) {
+                <span class="print-export-page__venue">{{ venueLine(venue) }}</span>
+              }
+            </dd>
+          </div>
+        }
+        @if (formatDate(t.startDate); as start) {
+          <div>
+            <dt>{{ 'admin.printExport.infos.dates' | transloco }}</dt>
+            <dd>
+              {{ start }}
+              @if (t.endDate && formatDate(t.endDate) !== start) {
+                → {{ formatDate(t.endDate) }}
+              }
+            </dd>
+          </div>
+        }
+        @if (plannedStart(); as start) {
+          <div>
+            <dt>{{ 'admin.printExport.infos.plannedStart' | transloco }}</dt>
+            <dd>{{ formatDateTime(start) }}</dd>
+          </div>
+        }
+        @if (plannedEnd(); as end) {
+          <div>
+            <dt>{{ 'admin.printExport.infos.plannedEnd' | transloco }}</dt>
+            <dd>{{ formatDateTime(end) }}</dd>
+          </div>
+        }
+        @if (poolDuration(); as duration) {
+          <div>
+            <dt>{{ 'admin.printExport.infos.poolMatch' | transloco }}</dt>
+            <dd>{{ duration }}</dd>
+          </div>
+        }
+        @if (knockoutDuration(); as duration) {
+          <div>
+            <dt>{{ 'admin.printExport.infos.knockoutMatch' | transloco }}</dt>
+            <dd>{{ duration }}</dd>
+          </div>
+        }
+      </dl>
+    }
 
     @if (categoryExports().length === 0) {
       <p>{{ 'admin.printExport.noCategories' | transloco }}</p>
@@ -46,11 +110,25 @@
                   <tr>
                     <td>{{ match.timeSlot ? formatTime(match.timeSlot.startTime) : '-' }}</td>
                     <td>{{ match.timeSlot?.field?.name ?? '-' }}</td>
-                    <td>{{ teamLabel(match.homeTeam, match.homeSourceLabel) }}</td>
+                    <td>
+                      <span class="print-export-page__team">
+                        @if (teamLogo(match.homeTeam?.logoUrl); as src) {
+                          <img [src]="src" alt="" />
+                        }
+                        {{ teamLabel(match.homeTeam, match.homeSourceLabel) }}
+                      </span>
+                    </td>
                     <td class="print-export-page__score">
                       {{ scoreLabel(match) ?? ('admin.printExport.vs' | transloco) }}
                     </td>
-                    <td>{{ teamLabel(match.awayTeam, match.awaySourceLabel) }}</td>
+                    <td>
+                      <span class="print-export-page__team">
+                        @if (teamLogo(match.awayTeam?.logoUrl); as src) {
+                          <img [src]="src" alt="" />
+                        }
+                        {{ teamLabel(match.awayTeam, match.awaySourceLabel) }}
+                      </span>
+                    </td>
                   </tr>
                 }
               </tbody>
@@ -63,11 +141,25 @@
               <tbody>
                 @for (match of entry.scheduleUnscheduled; track match.id) {
                   <tr>
-                    <td>{{ teamLabel(match.homeTeam, match.homeSourceLabel) }}</td>
+                    <td>
+                      <span class="print-export-page__team">
+                        @if (teamLogo(match.homeTeam?.logoUrl); as src) {
+                          <img [src]="src" alt="" />
+                        }
+                        {{ teamLabel(match.homeTeam, match.homeSourceLabel) }}
+                      </span>
+                    </td>
                     <td class="print-export-page__score">
                       {{ scoreLabel(match) ?? ('admin.printExport.vs' | transloco) }}
                     </td>
-                    <td>{{ teamLabel(match.awayTeam, match.awaySourceLabel) }}</td>
+                    <td>
+                      <span class="print-export-page__team">
+                        @if (teamLogo(match.awayTeam?.logoUrl); as src) {
+                          <img [src]="src" alt="" />
+                        }
+                        {{ teamLabel(match.awayTeam, match.awaySourceLabel) }}
+                      </span>
+                    </td>
                   </tr>
                 }
               </tbody>
@@ -136,7 +228,14 @@
                 @for (row of group.standings.rows; track row.teamId) {
                   <tr>
                     <td>{{ row.position }}</td>
-                    <td>{{ row.teamName }}</td>
+                    <td>
+                      <span class="print-export-page__team">
+                        @if (teamLogo(row.teamLogoUrl); as src) {
+                          <img [src]="src" alt="" />
+                        }
+                        {{ row.teamName }}
+                      </span>
+                    </td>
                     <td>{{ row.played }}</td>
                     <td>{{ row.won }}</td>
                     @if (!isSets()) {
@@ -167,11 +266,25 @@
               <tbody>
                 @for (match of section.matches; track match.id) {
                   <tr>
-                    <td>{{ teamLabel(match.homeTeam, match.homeSourceLabel) }}</td>
+                    <td>
+                      <span class="print-export-page__team">
+                        @if (teamLogo(match.homeTeam?.logoUrl); as src) {
+                          <img [src]="src" alt="" />
+                        }
+                        {{ teamLabel(match.homeTeam, match.homeSourceLabel) }}
+                      </span>
+                    </td>
                     <td class="print-export-page__score">
                       {{ scoreLabel(match) ?? ('admin.printExport.vs' | transloco) }}
                     </td>
-                    <td>{{ teamLabel(match.awayTeam, match.awaySourceLabel) }}</td>
+                    <td>
+                      <span class="print-export-page__team">
+                        @if (teamLogo(match.awayTeam?.logoUrl); as src) {
+                          <img [src]="src" alt="" />
+                        }
+                        {{ teamLabel(match.awayTeam, match.awaySourceLabel) }}
+                      </span>
+                    </td>
                   </tr>
                 }
               </tbody>

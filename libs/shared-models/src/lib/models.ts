@@ -273,6 +273,8 @@ export interface CompetitionPhase {
   // creates just to seed its bracket from -- no match is ever generated in
   // it, so it should never surface as a real "Poules"/"Classement" tab.
   isSeedPhase: boolean;
+  // Organizer endpoints only: planned length of one match in this phase.
+  matchDurationMinutes?: number;
   // Organizer endpoints only. A pool phase feeding a knockout phase has its
   // scores validated by the organizer (which draws the bracket); until then
   // the knockout scores are locked, and once validated the pool scores are.

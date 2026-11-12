@@ -1576,6 +1576,14 @@
       "field": "Campo",
       "errors": {
         "load": "Impossibile caricare l'esportazione."
+      },
+      "infos": {
+        "venues": "Luogo",
+        "dates": "Date",
+        "plannedStart": "Inizio previsto",
+        "plannedEnd": "Fine prevista",
+        "poolMatch": "Partite dei gironi",
+        "knockoutMatch": "Partite della fase finale"
       }
     },
     "dashboard": {

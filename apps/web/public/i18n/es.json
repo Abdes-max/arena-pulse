@@ -1576,6 +1576,14 @@
       "field": "Cancha",
       "errors": {
         "load": "No se pudo cargar la exportación."
+      },
+      "infos": {
+        "venues": "Lugar",
+        "dates": "Fechas",
+        "plannedStart": "Inicio previsto",
+        "plannedEnd": "Fin prevista",
+        "poolMatch": "Partidos de grupo",
+        "knockoutMatch": "Partidos de fase final"
       }
     },
     "dashboard": {
