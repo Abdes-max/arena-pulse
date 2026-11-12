@@ -315,7 +315,13 @@
     "resultsCount": "{{count}} tournoi(s) trouvé(s)",
     "empty": "Aucun tournoi ne correspond à votre recherche.",
     "loadMore": "Charger plus",
-    "loading": "Chargement…"
+    "loading": "Chargement…",
+    "registrationTitle": "Tournois ouverts aux inscriptions",
+    "registrationLede": "Trouvez un tournoi près de chez vous et envoyez la pré-inscription de votre équipe en quelques secondes.",
+    "emptyRegistrationTitle": "Aucun tournoi n'est ouvert aux inscriptions pour le moment",
+    "emptyRegistrationText": "Revenez bientôt, ou consultez tous les tournois publiés.",
+    "seeAll": "Voir tous les tournois",
+    "organize": "Organiser un tournoi"
   },
   "tv": {
     "current": "En cours",

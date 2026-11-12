@@ -315,7 +315,13 @@
     "resultsCount": "{{count}} tournament(s) found",
     "empty": "No tournament matches your search.",
     "loadMore": "Load more",
-    "loading": "Loading…"
+    "loading": "Loading…",
+    "registrationTitle": "Tournaments open for registration",
+    "registrationLede": "Find a tournament near you and send your team’s pre-registration in seconds.",
+    "emptyRegistrationTitle": "No tournament is open for registration right now",
+    "emptyRegistrationText": "Come back soon, or browse every published tournament.",
+    "seeAll": "See all tournaments",
+    "organize": "Organize a tournament"
   },
   "tv": {
     "current": "Now playing",
