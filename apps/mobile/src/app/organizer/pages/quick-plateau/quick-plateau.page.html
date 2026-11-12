@@ -53,6 +53,7 @@
       />
       <ap-text-field
         type="time"
+        [nativePicker]="true"
         [label]="'organizer.quickPlateau.startTime' | transloco"
         [value]="startTime()"
         (valueChange)="startTime.set($event)"

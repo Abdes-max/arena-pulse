@@ -42,7 +42,7 @@
       </button>
     </span>
   </div>
-} @else if (type() === 'date' && !nativePicker()) {
+} @else if (themedPicker()) {
   <!-- Themed calendar instead of the browser's own picker, so the field and
        its calendar look like the rest of the site. -->
   <div class="ap-text-field__date">
@@ -58,25 +58,38 @@
       (click)="toggleCalendar($event)"
     >
       <span class="ap-text-field__date-value">{{ dateLabel() ?? placeholder() ?? label() }}</span>
-      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-        <rect
-          x="3.5"
-          y="5"
-          width="17"
-          height="15"
-          rx="2.5"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.8"
-        />
-        <path
-          d="M3.5 9.5h17M8 3v4M16 3v4"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="1.8"
-          stroke-linecap="round"
-        />
-      </svg>
+      @if (type() === 'time') {
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+          <circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.8" />
+          <path
+            d="M12 7.5V12l3 2"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+          />
+        </svg>
+      } @else {
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+          <rect
+            x="3.5"
+            y="5"
+            width="17"
+            height="15"
+            rx="2.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+          />
+          <path
+            d="M3.5 9.5h17M8 3v4M16 3v4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+          />
+        </svg>
+      }
     </button>
     @if (dateLabel() && !disabled()) {
       <button
@@ -98,53 +111,99 @@
       ></button>
       <div
         class="ap-text-field__calendar"
+        [class.ap-text-field__calendar--time-only]="!showsCalendar()"
+        [class.ap-text-field__calendar--with-time]="showsCalendar() && showsTime()"
         [class.ap-text-field__calendar--end]="calendarAlignEnd()"
         role="dialog"
         [attr.aria-label]="label()"
       >
-        <div class="ap-text-field__calendar-head">
-          <button
-            type="button"
-            class="ap-text-field__calendar-nav"
-            [attr.aria-label]="previousMonthLabel()"
-            (click)="shiftMonth(-1)"
-          >
-            ‹
-          </button>
-          <strong>{{ monthLabel() }}</strong>
-          <button
-            type="button"
-            class="ap-text-field__calendar-nav"
-            [attr.aria-label]="nextMonthLabel()"
-            (click)="shiftMonth(1)"
-          >
-            ›
-          </button>
-        </div>
-        <div class="ap-text-field__calendar-grid">
-          @for (weekday of weekdays(); track $index) {
-            <span class="ap-text-field__calendar-weekday" aria-hidden="true">{{ weekday }}</span>
+        <div class="ap-text-field__picker-body">
+          @if (showsCalendar()) {
+            <div class="ap-text-field__calendar-month">
+              <div class="ap-text-field__calendar-head">
+                <button
+                  type="button"
+                  class="ap-text-field__calendar-nav"
+                  [attr.aria-label]="previousMonthLabel()"
+                  (click)="shiftMonth(-1)"
+                >
+                  ‹
+                </button>
+                <strong>{{ monthLabel() }}</strong>
+                <button
+                  type="button"
+                  class="ap-text-field__calendar-nav"
+                  [attr.aria-label]="nextMonthLabel()"
+                  (click)="shiftMonth(1)"
+                >
+                  ›
+                </button>
+              </div>
+              <div class="ap-text-field__calendar-grid">
+                @for (weekday of weekdays(); track $index) {
+                  <span class="ap-text-field__calendar-weekday" aria-hidden="true">{{
+                    weekday
+                  }}</span>
+                }
+                @for (day of days(); track day.iso) {
+                  <button
+                    type="button"
+                    class="ap-text-field__calendar-day"
+                    [class.ap-text-field__calendar-day--outside]="!day.inMonth"
+                    [class.ap-text-field__calendar-day--today]="day.today"
+                    [class.ap-text-field__calendar-day--selected]="day.selected"
+                    [disabled]="day.disabled"
+                    [attr.aria-pressed]="day.selected"
+                    [attr.aria-label]="day.iso"
+                    (click)="pickDate(day.iso)"
+                  >
+                    {{ day.day }}
+                  </button>
+                }
+              </div>
+            </div>
           }
-          @for (day of days(); track day.iso) {
-            <button
-              type="button"
-              class="ap-text-field__calendar-day"
-              [class.ap-text-field__calendar-day--outside]="!day.inMonth"
-              [class.ap-text-field__calendar-day--today]="day.today"
-              [class.ap-text-field__calendar-day--selected]="day.selected"
-              [disabled]="day.disabled"
-              [attr.aria-pressed]="day.selected"
-              [attr.aria-label]="day.iso"
-              (click)="pickDate(day.iso)"
-            >
-              {{ day.day }}
-            </button>
+          @if (showsTime()) {
+            <div class="ap-text-field__time">
+              <div class="ap-text-field__time-col" role="listbox" aria-label="h">
+                @for (hour of hours; track hour) {
+                  <button
+                    type="button"
+                    class="ap-text-field__time-item"
+                    [class.ap-text-field__time-item--selected]="hour === selectedHour()"
+                    [attr.aria-selected]="hour === selectedHour()"
+                    role="option"
+                    (click)="pickHour(hour)"
+                  >
+                    {{ hour }}
+                  </button>
+                }
+              </div>
+              <div class="ap-text-field__time-col" role="listbox" aria-label="min">
+                @for (minute of minutes(); track minute) {
+                  <button
+                    type="button"
+                    class="ap-text-field__time-item"
+                    [class.ap-text-field__time-item--selected]="minute === selectedMinute()"
+                    [attr.aria-selected]="minute === selectedMinute()"
+                    role="option"
+                    (click)="pickMinute(minute)"
+                  >
+                    {{ minute }}
+                  </button>
+                }
+              </div>
+            </div>
           }
         </div>
         <div class="ap-text-field__calendar-foot">
-          <button type="button" class="ap-text-field__calendar-link" (click)="pickToday()">
-            {{ todayLabel() }}
-          </button>
+          @if (showsCalendar()) {
+            <button type="button" class="ap-text-field__calendar-link" (click)="pickToday()">
+              {{ todayLabel() }}
+            </button>
+          } @else {
+            <span></span>
+          }
           @if (dateLabel()) {
             <button type="button" class="ap-text-field__calendar-link" (click)="clearDate()">
               {{ clearLabel() }}

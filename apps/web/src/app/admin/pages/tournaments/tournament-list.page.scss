@@ -193,11 +193,14 @@
     content: 'Statut';
   }
 
+  .tournament-list-page__actions-cell {
+    border-bottom: none;
+  }
+
   .tournament-list-page__actions {
     flex-direction: column;
     align-items: stretch;
     gap: var(--ap-space-2);
-    border-bottom: none;
 
     ap-button {
       display: block;

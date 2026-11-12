@@ -1,8 +1,10 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   computed,
   forwardRef,
+  inject,
   input,
   output,
   signal,
@@ -48,7 +50,7 @@ export class TextField implements ControlValueAccessor {
   /** type="number" only -- amount +/- steps by. */
   readonly step = input<number>(1);
   /**
-   * type="date" only: keep the browser's own picker (the mobile app, where the
+   * type="date" / "time" / "datetime-local": keep the browser's own picker (the mobile app, where the
    * native date wheel is the better control) instead of the themed calendar.
    */
   readonly nativePicker = input(false);
@@ -63,7 +65,8 @@ export class TextField implements ControlValueAccessor {
   /** type="password" only -- toggled by the eye button, swaps the input to type="text". */
   protected readonly passwordVisible = signal(false);
 
-  // ---- Themed calendar (type="date") ----
+  // ---- Themed date / time pickers (type="date", "time", "datetime-local") ----
+  private readonly host: ElementRef<HTMLElement> = inject(ElementRef);
   protected readonly calendarOpen = signal(false);
   // Opens toward the left when the field sits in the right half of the screen.
   protected readonly calendarAlignEnd = signal(false);
@@ -71,15 +74,43 @@ export class TextField implements ControlValueAccessor {
   protected readonly viewMonth = signal(
     new Date(new Date().getFullYear(), new Date().getMonth(), 1),
   );
+  protected readonly hours = Array.from({ length: 24 }, (_, i) => pad(i));
+
+  protected readonly themedPicker = computed(
+    () =>
+      !this.nativePicker() &&
+      (this.type() === 'date' || this.type() === 'time' || this.type() === 'datetime-local'),
+  );
+  protected readonly showsCalendar = computed(() => this.type() !== 'time');
+  protected readonly showsTime = computed(() => this.type() !== 'date');
 
   private lang(): string {
     return (typeof document !== 'undefined' && document.documentElement.lang) || 'fr';
   }
 
-  protected readonly dateLabel = computed(() => {
+  /** The value's date part (YYYY-MM-DD), or ''. */
+  private readonly datePart = computed(() =>
+    this.type() === 'time' ? '' : (/^\d{4}-\d{2}-\d{2}/.exec(this.displayValue())?.[0] ?? ''),
+  );
+  /** The value's time part (HH:mm), or ''. */
+  private readonly timePart = computed(() => {
     const value = this.displayValue();
-    const date = parseIsoDate(value);
-    return date
+    const time = this.type() === 'time' ? value : value.slice(11);
+    return /^\d{2}:\d{2}/.exec(time)?.[0] ?? '';
+  });
+  protected readonly selectedHour = computed(() => this.timePart().slice(0, 2));
+  protected readonly selectedMinute = computed(() => this.timePart().slice(3, 5));
+  // Every 5 minutes, plus the current value's minute if it is in between.
+  protected readonly minutes = computed(() => {
+    const list = Array.from({ length: 12 }, (_, i) => pad(i * 5));
+    const current = this.selectedMinute();
+    return current && !list.includes(current) ? [...list, current].sort() : list;
+  });
+
+  protected readonly dateLabel = computed(() => {
+    const date = parseIsoDate(this.datePart());
+    const time = this.timePart();
+    const dateText = date
       ? new Intl.DateTimeFormat(this.lang(), {
           weekday: 'short',
           day: 'numeric',
@@ -87,6 +118,14 @@ export class TextField implements ControlValueAccessor {
           year: 'numeric',
         }).format(date)
       : null;
+    switch (this.type()) {
+      case 'time':
+        return time || null;
+      case 'datetime-local':
+        return dateText ? (time ? `${dateText} · ${time}` : dateText) : null;
+      default:
+        return dateText;
+    }
   });
 
   protected readonly monthLabel = computed(() => {
@@ -112,9 +151,9 @@ export class TextField implements ControlValueAccessor {
     const month = this.viewMonth();
     const offset = (month.getDay() + 6) % 7;
     const start = new Date(month.getFullYear(), month.getMonth(), 1 - offset);
-    const selected = this.displayValue();
+    const selected = this.datePart();
     const today = toIsoDate(new Date());
-    const min = typeof this.min() === 'string' ? (this.min() as string) : null;
+    const min = typeof this.min() === 'string' ? (this.min() as string).slice(0, 10) : null;
     return Array.from({ length: 42 }, (_, i) => {
       const date = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
       const iso = toIsoDate(date);
@@ -138,8 +177,16 @@ export class TextField implements ControlValueAccessor {
       this.calendarAlignEnd.set(trigger.getBoundingClientRect().left > window.innerWidth / 2);
     }
     if (!this.calendarOpen()) {
-      const date = parseIsoDate(this.displayValue()) ?? new Date();
+      const date = parseIsoDate(this.datePart()) ?? new Date();
       this.viewMonth.set(new Date(date.getFullYear(), date.getMonth(), 1));
+      // Brings the selected hour / minute into view in their columns.
+      setTimeout(() => {
+        for (const item of this.host.nativeElement.querySelectorAll<HTMLElement>(
+          '.ap-text-field__time-item--selected',
+        )) {
+          item.parentElement?.scrollTo({ top: item.offsetTop - 64 });
+        }
+      });
     }
     this.calendarOpen.update((open) => !open);
   }
@@ -157,12 +204,34 @@ export class TextField implements ControlValueAccessor {
   }
 
   protected pickDate(iso: string): void {
+    if (this.type() === 'datetime-local') {
+      // Keeps the time already chosen (9:00 by default) and stays open for it.
+      this.setValue(`${iso}T${this.timePart() || '09:00'}`);
+      return;
+    }
     this.setValue(iso);
     this.closeCalendar();
   }
 
   protected pickToday(): void {
     this.pickDate(toIsoDate(new Date()));
+  }
+
+  protected pickHour(hour: string): void {
+    this.setTime(`${hour}:${this.selectedMinute() || '00'}`);
+  }
+
+  protected pickMinute(minute: string): void {
+    this.setTime(`${this.selectedHour() || '09'}:${minute}`);
+    this.closeCalendar();
+  }
+
+  private setTime(time: string): void {
+    if (this.type() === 'time') {
+      this.setValue(time);
+      return;
+    }
+    this.setValue(`${this.datePart() || toIsoDate(new Date())}T${time}`);
   }
 
   protected clearDate(event?: Event): void {
@@ -252,6 +321,10 @@ export class TextField implements ControlValueAccessor {
     this.onChange(value);
     this.valueChange.emit(value);
   }
+}
+
+function pad(value: number): string {
+  return String(value).padStart(2, '0');
 }
 
 function toIsoDate(date: Date): string {

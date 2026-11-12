@@ -403,3 +403,84 @@
     background: var(--ap-color-signal-soft);
   }
 }
+
+// Date + time side by side; time alone is a narrow two-column picker.
+.ap-text-field__picker-body {
+  display: flex;
+  gap: var(--ap-space-3);
+}
+
+.ap-text-field__calendar-month {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ap-text-field__calendar--with-time {
+  width: 400px;
+}
+
+.ap-text-field__calendar--time-only {
+  width: 160px;
+}
+
+.ap-text-field__time {
+  display: flex;
+  flex: none;
+  gap: var(--ap-space-1);
+  height: 268px;
+
+  .ap-text-field__calendar--time-only & {
+    flex: 1 1 auto;
+    height: 232px;
+  }
+}
+
+.ap-text-field__time-col {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 48px;
+  overflow-y: auto;
+  padding-right: 2px;
+  scrollbar-width: thin;
+}
+
+.ap-text-field__time-item {
+  flex: none;
+  padding: var(--ap-space-1) 0;
+  border: none;
+  border-radius: var(--ap-radius-sm);
+  background: transparent;
+  color: var(--ap-color-fg);
+  font: inherit;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--ap-color-signal-soft);
+  }
+
+  &:focus-visible {
+    outline: var(--ap-border-width-strong) solid var(--ap-color-focus);
+    outline-offset: -2px;
+  }
+}
+
+.ap-text-field__time-item--selected,
+.ap-text-field__time-item--selected:hover {
+  background: var(--ap-color-primary);
+  color: var(--ap-color-on-primary);
+  font-weight: 700;
+}
+
+@media (max-width: 480px) {
+  .ap-text-field__calendar--with-time .ap-text-field__picker-body {
+    flex-direction: column;
+  }
+
+  .ap-text-field__calendar--with-time .ap-text-field__time {
+    height: 160px;
+  }
+}
