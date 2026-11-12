@@ -5,6 +5,7 @@ import {
   headerBackgroundPresetOf,
   headerBackgroundPresetUrl,
   headerBackgroundPresetsFor,
+  RegistrationSettings,
 } from 'shared-models';
 import { HttpErrorResponse } from '@angular/common/http';
 import {
@@ -17,7 +18,7 @@ import {
 } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AddressSearchService, AssetUrlService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
@@ -43,6 +44,7 @@ import {
   Venue,
 } from '../../core/models';
 import { OrganizationsService } from '../../core/organizations.service';
+import { RegistrationsService } from '../../core/registrations.service';
 import { SponsorsService } from '../../core/sponsors.service';
 import { SportsService } from '../../core/sports.service';
 import { THEME_MAP } from '../../core/theme-map';
@@ -86,6 +88,7 @@ const STATUS_LABEL_KEYS: Record<TournamentStatus, string> = {
     TextField,
     Select,
     Badge,
+    RouterLink,
     TranslocoPipe,
   ],
   templateUrl: './tournament-form.page.html',
@@ -98,6 +101,7 @@ export class TournamentFormPage {
   private readonly formBuilder = inject(FormBuilder);
   private readonly tournamentsService = inject(TournamentsService);
   private readonly organizationsService = inject(OrganizationsService);
+  private readonly registrationsService = inject(RegistrationsService);
   private readonly sportsService = inject(SportsService);
   private readonly sponsorsService = inject(SponsorsService);
   private readonly authService = inject(AuthService);
@@ -562,7 +566,10 @@ export class TournamentFormPage {
       ),
     );
     this.venues.set(await this.tournamentsService.listVenues(organizationId, tournamentId));
+    this.regFormat.set(tournament.format ?? '');
+    this.regLevel.set(tournament.level ?? '');
     void this.loadPublicationOrders();
+    void this.loadRegistrations();
   }
 
   private async loadPublicationOrders(): Promise<void> {
@@ -1063,6 +1070,114 @@ export class TournamentFormPage {
         : t('free');
     const divisions = category.divisions.length;
     return divisions > 0 ? `${fee} · ${t('divisions', { count: divisions })}` : fee;
+  }
+
+  // Pre-registrations: one switch, and once on every setting (dates,
+  // format, level, payment details, fee and places per category). The
+  // requests themselves are handled on the Inscriptions page.
+  protected readonly regSettings = signal<RegistrationSettings | null>(null);
+  protected readonly regOpensAt = signal('');
+  protected readonly regClosesAt = signal('');
+  protected readonly regPaymentInfo = signal('');
+  protected readonly regFormat = signal('');
+  protected readonly regLevel = signal('');
+  protected readonly regPendingCount = signal(0);
+  protected readonly regBusy = signal(false);
+  protected readonly regIndividual = computed(
+    () => this.regSettings()?.participantType === 'INDIVIDUAL',
+  );
+
+  private async loadRegistrations(): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const tournamentId = this.tournamentId();
+    if (!organizationId || !tournamentId) {
+      return;
+    }
+    try {
+      const [settings, registrations] = await Promise.all([
+        this.registrationsService.getSettings(organizationId, tournamentId),
+        this.registrationsService.listRegistrations(organizationId, tournamentId),
+      ]);
+      this.applyRegSettings(settings);
+      this.regPendingCount.set(registrations.filter((r) => r.status === 'PENDING').length);
+    } catch {
+      // Section just stays hidden.
+    }
+  }
+
+  private applyRegSettings(settings: RegistrationSettings): void {
+    this.regSettings.set(settings);
+    this.regOpensAt.set(settings.opensAt ? settings.opensAt.slice(0, 10) : '');
+    this.regClosesAt.set(settings.closesAt ? settings.closesAt.slice(0, 10) : '');
+    this.regPaymentInfo.set(settings.paymentInfo ?? '');
+  }
+
+  protected onRegPaymentInfo(event: Event): void {
+    this.regPaymentInfo.set((event.target as HTMLTextAreaElement).value);
+  }
+
+  protected async toggleRegistrations(event: Event): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const tournamentId = this.tournamentId();
+    if (!organizationId || !tournamentId) {
+      return;
+    }
+    const input = event.target as HTMLInputElement;
+    this.regBusy.set(true);
+    try {
+      this.applyRegSettings(
+        await this.registrationsService.updateSettings(organizationId, tournamentId, {
+          open: input.checked,
+        }),
+      );
+    } catch {
+      input.checked = !input.checked;
+    } finally {
+      this.regBusy.set(false);
+    }
+  }
+
+  protected async saveRegistrations(): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const tournamentId = this.tournamentId();
+    if (!organizationId || !tournamentId || this.regBusy()) {
+      return;
+    }
+    this.regBusy.set(true);
+    try {
+      this.applyRegSettings(
+        await this.registrationsService.updateSettings(organizationId, tournamentId, {
+          opensAt: this.regOpensAt()
+            ? new Date(`${this.regOpensAt()}T00:00:00`).toISOString()
+            : null,
+          closesAt: this.regClosesAt()
+            ? new Date(`${this.regClosesAt()}T23:59:59`).toISOString()
+            : null,
+          paymentInfo: this.regPaymentInfo().trim() || null,
+        }),
+      );
+      await this.tournamentsService.updateTournament(organizationId, tournamentId, {
+        format: this.regFormat().trim() || null,
+        level: this.regLevel().trim() || null,
+      });
+      // Only the categories whose fee or places actually changed.
+      for (const category of this.categories()) {
+        const fee = this.categoryFeeDraftFor(category.id).trim();
+        const feeCents = fee ? Math.round(Number(fee.replace(',', '.')) * 100) : null;
+        if (feeCents !== category.registrationFeeCents) {
+          await this.saveCategoryFee(category);
+        }
+        const places = this.capacityDraftFor(category).trim();
+        const maxTeams = places ? Math.max(1, Math.round(Number(places))) : null;
+        if (maxTeams !== (category.maxTeams ?? null)) {
+          await this.saveCategoryCapacity(category);
+        }
+      }
+    } catch {
+      this.errorMessage.set('admin.registrationList.errors.save');
+    } finally {
+      this.regBusy.set(false);
+    }
   }
 
   // Places for pre-registrations, per category (empty = unlimited).

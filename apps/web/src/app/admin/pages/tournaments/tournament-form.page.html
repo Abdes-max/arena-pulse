@@ -621,46 +621,10 @@
                     </span>
                   </div>
                 }
-                <!-- Divisions and the registration fee are optional: folded away. -->
+                <!-- Divisions are optional: folded away (fee and places live in the Inscriptions section). -->
                 <details class="tournament-form-page__options">
                   <summary>{{ 'admin.tournamentForm.categories.options' | transloco }}</summary>
                   <div class="tournament-form-page__options-body">
-                    <div class="tournament-form-page__field-row">
-                      <ap-text-field
-                        [label]="'admin.tournamentForm.categories.feeEurosLabel' | transloco"
-                        type="number"
-                        [min]="0"
-                        [placeholder]="
-                          'admin.tournamentForm.categories.feeFreePlaceholder' | transloco
-                        "
-                        [value]="categoryFeeDraftFor(category.id)"
-                        (valueChange)="onCategoryFeeDraftChange(category.id, $event)"
-                      />
-                      <ap-button
-                        type="button"
-                        variant="secondary"
-                        (click)="saveCategoryFee(category)"
-                        >{{ 'admin.tournamentForm.categories.saveFee' | transloco }}</ap-button
-                      >
-                    </div>
-                    <div class="tournament-form-page__field-row">
-                      <ap-text-field
-                        [label]="'admin.tournamentForm.categories.capacityLabel' | transloco"
-                        type="number"
-                        [min]="1"
-                        [placeholder]="
-                          'admin.tournamentForm.categories.capacityPlaceholder' | transloco
-                        "
-                        [value]="capacityDraftFor(category)"
-                        (valueChange)="onCapacityDraftChange(category.id, $event)"
-                      />
-                      <ap-button
-                        type="button"
-                        variant="secondary"
-                        (click)="saveCategoryCapacity(category)"
-                        >{{ 'admin.tournamentForm.categories.saveCapacity' | transloco }}</ap-button
-                      >
-                    </div>
                     @if (category.divisions.length > 0) {
                       <ul class="tournament-form-page__chips">
                         @for (division of category.divisions; track division.id) {
@@ -716,6 +680,145 @@
             }}</ap-button>
           </div>
         </section>
+
+        @if (regSettings(); as reg) {
+          <section class="tournament-form-page__section">
+            <h2>{{ 'admin.tournamentForm.registrations.title' | transloco }}</h2>
+            <label class="tournament-form-page__reg-switch">
+              <input
+                type="checkbox"
+                [checked]="reg.open"
+                [disabled]="regBusy()"
+                (change)="toggleRegistrations($event)"
+              />
+              <span>
+                <strong>{{ 'admin.tournamentForm.registrations.open' | transloco }}</strong>
+                <small>{{
+                  (reg.open
+                    ? reg.openNow
+                      ? 'admin.registrationList.settings.openNow'
+                      : 'admin.registrationList.settings.closedNow'
+                    : 'admin.tournamentForm.registrations.offHint'
+                  ) | transloco
+                }}</small>
+              </span>
+            </label>
+
+            @if (reg.open) {
+              <p class="tournament-form-page__premium-hint">
+                {{
+                  (regIndividual()
+                    ? 'admin.registrationList.settings.individualHint'
+                    : 'admin.registrationList.settings.teamHint'
+                  ) | transloco
+                }}
+              </p>
+              <div class="tournament-form-page__reg-grid">
+                <ap-text-field
+                  type="date"
+                  [label]="'admin.registrationList.settings.opensAt' | transloco"
+                  [value]="regOpensAt()"
+                  (valueChange)="regOpensAt.set($event)"
+                />
+                <ap-text-field
+                  type="date"
+                  [label]="'admin.registrationList.settings.closesAt' | transloco"
+                  [value]="regClosesAt()"
+                  (valueChange)="regClosesAt.set($event)"
+                />
+                <ap-text-field
+                  [label]="'admin.registrationList.settings.format' | transloco"
+                  [placeholder]="'admin.registrationList.settings.formatPlaceholder' | transloco"
+                  [value]="regFormat()"
+                  (valueChange)="regFormat.set($event)"
+                />
+                <ap-text-field
+                  [label]="'admin.registrationList.settings.level' | transloco"
+                  [placeholder]="'admin.registrationList.settings.levelPlaceholder' | transloco"
+                  [value]="regLevel()"
+                  (valueChange)="regLevel.set($event)"
+                />
+              </div>
+
+              @if (categories().length > 0) {
+                <table class="tournament-form-page__reg-table">
+                  <thead>
+                    <tr>
+                      <th>{{ 'admin.tournamentForm.registrations.category' | transloco }}</th>
+                      <th>{{ 'admin.tournamentForm.categories.feeEurosLabel' | transloco }}</th>
+                      <th>{{ 'admin.tournamentForm.categories.capacityLabel' | transloco }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (category of categories(); track category.id) {
+                      <tr>
+                        <td>{{ category.name }}</td>
+                        <td>
+                          <ap-text-field
+                            [label]="'admin.tournamentForm.categories.feeEurosLabel' | transloco"
+                            [hideLabel]="true"
+                            type="number"
+                            [min]="0"
+                            [placeholder]="
+                              'admin.tournamentForm.categories.feeFreePlaceholder' | transloco
+                            "
+                            [value]="categoryFeeDraftFor(category.id)"
+                            (valueChange)="onCategoryFeeDraftChange(category.id, $event)"
+                          />
+                        </td>
+                        <td>
+                          <ap-text-field
+                            [label]="'admin.tournamentForm.categories.capacityLabel' | transloco"
+                            [hideLabel]="true"
+                            type="number"
+                            [min]="1"
+                            [placeholder]="
+                              'admin.tournamentForm.categories.capacityPlaceholder' | transloco
+                            "
+                            [value]="capacityDraftFor(category)"
+                            (valueChange)="onCapacityDraftChange(category.id, $event)"
+                          />
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              }
+
+              <label class="tournament-form-page__reg-textarea">
+                {{ 'admin.registrationList.settings.paymentInfo' | transloco }}
+                <textarea
+                  rows="3"
+                  [placeholder]="
+                    'admin.registrationList.settings.paymentInfoPlaceholder' | transloco
+                  "
+                  [value]="regPaymentInfo()"
+                  (input)="onRegPaymentInfo($event)"
+                ></textarea>
+              </label>
+
+              <div class="tournament-form-page__reg-actions">
+                <ap-button
+                  type="button"
+                  variant="secondary"
+                  [disabled]="regBusy()"
+                  (click)="saveRegistrations()"
+                >
+                  {{ 'admin.registrationList.settings.save' | transloco }}
+                </ap-button>
+                <a
+                  class="tournament-form-page__reg-link"
+                  [routerLink]="['/admin/tournaments', tournamentId(), 'registrations']"
+                >
+                  {{
+                    'admin.tournamentForm.registrations.requests'
+                      | transloco: { count: regPendingCount() }
+                  }}
+                </a>
+              </div>
+            }
+          </section>
+        }
 
         <section class="tournament-form-page__section">
           <h2>{{ 'admin.tournamentForm.venues.title' | transloco }}</h2>
