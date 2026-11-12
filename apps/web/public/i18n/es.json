@@ -425,7 +425,8 @@
         "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo.",
         "sessionExpired": "Tu sesión ha caducado, inicia sesión de nuevo.",
         "forgotPassword": "¿Has olvidado tu contraseña?",
-        "rememberMe": "Recordarme"
+        "rememberMe": "Recordarme",
+        "lede": "Encuentra tus torneos, tus resultados y tus inscripciones."
       },
       "register": {
         "title": "Regístrate",
@@ -443,7 +444,9 @@
         "resent": "Email reenviado.",
         "alreadyVerified": "¿Ya verificado?",
         "errorConflict": "Ya existe una cuenta con este email.",
-        "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo."
+        "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo.",
+        "lede": "Crea tu organización y publica tu primer torneo en pocos minutos.",
+        "sentLede": "Un último clic en tu correo y podrás empezar."
       },
       "verifyEmail": {
         "loading": "Verificando tu email…",
@@ -494,7 +497,8 @@
         "retry": "Solicitar un nuevo enlace"
       },
       "showPassword": "Mostrar contraseña",
-      "hidePassword": "Ocultar contraseña"
+      "hidePassword": "Ocultar contraseña",
+      "home": "Volver al inicio"
     },
     "collaborators": {
       "title": "Colaboradores",

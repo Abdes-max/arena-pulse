@@ -527,7 +527,8 @@
         "errorGeneric": "Something went wrong, please try again.",
         "sessionExpired": "Your session has expired, please sign in again.",
         "forgotPassword": "Forgot password?",
-        "rememberMe": "Remember me"
+        "rememberMe": "Remember me",
+        "lede": "Get back to your tournaments, scores and registrations."
       },
       "register": {
         "title": "Sign up",
@@ -545,7 +546,9 @@
         "resent": "Email resent.",
         "alreadyVerified": "Already verified?",
         "errorConflict": "An account already exists with this email.",
-        "errorGeneric": "Something went wrong, please try again."
+        "errorGeneric": "Something went wrong, please try again.",
+        "lede": "Create your organization and publish your first tournament in minutes.",
+        "sentLede": "One last click in your inbox and you can get started."
       },
       "verifyEmail": {
         "loading": "Verifying your email…",
@@ -596,7 +599,8 @@
         "retry": "Request a new link"
       },
       "showPassword": "Show password",
-      "hidePassword": "Hide password"
+      "hidePassword": "Hide password",
+      "home": "Back to home"
     },
     "collaborators": {
       "title": "Collaborators",

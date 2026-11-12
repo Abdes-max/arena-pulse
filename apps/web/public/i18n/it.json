@@ -425,7 +425,8 @@
         "errorGeneric": "Si è verificato un errore, riprova.",
         "sessionExpired": "La tua sessione è scaduta, accedi di nuovo.",
         "forgotPassword": "Password dimenticata?",
-        "rememberMe": "Ricordami"
+        "rememberMe": "Ricordami",
+        "lede": "Ritrova i tuoi tornei, i risultati e le iscrizioni."
       },
       "register": {
         "title": "Registrati",
@@ -443,7 +444,9 @@
         "resent": "Email inviata di nuovo.",
         "alreadyVerified": "Già verificato?",
         "errorConflict": "Esiste già un account con questa email.",
-        "errorGeneric": "Si è verificato un errore, riprova."
+        "errorGeneric": "Si è verificato un errore, riprova.",
+        "lede": "Crea la tua organizzazione e pubblica il tuo primo torneo in pochi minuti.",
+        "sentLede": "Un ultimo clic nella tua casella e potrai iniziare."
       },
       "verifyEmail": {
         "loading": "Verifica della tua email…",
@@ -494,7 +497,8 @@
         "retry": "Richiedi un nuovo link"
       },
       "showPassword": "Mostra password",
-      "hidePassword": "Nascondi password"
+      "hidePassword": "Nascondi password",
+      "home": "Torna alla home"
     },
     "collaborators": {
       "title": "Collaboratori",

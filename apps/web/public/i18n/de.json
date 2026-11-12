@@ -425,7 +425,8 @@
         "errorGeneric": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut.",
         "sessionExpired": "Ihre Sitzung ist abgelaufen, bitte melden Sie sich erneut an.",
         "forgotPassword": "Passwort vergessen?",
-        "rememberMe": "Angemeldet bleiben"
+        "rememberMe": "Angemeldet bleiben",
+        "lede": "Ihre Turniere, Ergebnisse und Anmeldungen an einem Ort."
       },
       "register": {
         "title": "Registrieren",
@@ -443,7 +444,9 @@
         "resent": "E-Mail erneut gesendet.",
         "alreadyVerified": "Bereits bestätigt?",
         "errorConflict": "Für diese E-Mail existiert bereits ein Konto.",
-        "errorGeneric": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut."
+        "errorGeneric": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut.",
+        "lede": "Erstellen Sie Ihre Organisation und veröffentlichen Sie Ihr erstes Turnier in wenigen Minuten.",
+        "sentLede": "Noch ein Klick in Ihrem Postfach, dann kann es losgehen."
       },
       "verifyEmail": {
         "loading": "E-Mail wird bestätigt…",
@@ -494,7 +497,8 @@
         "retry": "Neuen Link anfordern"
       },
       "showPassword": "Passwort anzeigen",
-      "hidePassword": "Passwort verbergen"
+      "hidePassword": "Passwort verbergen",
+      "home": "Zur Startseite"
     },
     "collaborators": {
       "title": "Mitarbeiter",
