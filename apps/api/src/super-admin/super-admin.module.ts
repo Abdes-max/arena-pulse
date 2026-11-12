@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { AuthModule } from '../auth/auth.module';
 import { SuperAdminAuthModule } from '../super-admin-auth/super-admin-auth.module';
 import { SuperAdminAuditLogService } from './super-admin-audit-log.service';
 import { SuperAdminOrganizationsController } from './super-admin-organizations.controller';
@@ -15,7 +16,8 @@ import { SuperAdminUsersService } from './super-admin-users.service';
 @Module({
   // SuperAdminAuthModule exports SuperAdminJwtAuthGuard, used locally
   // (@UseGuards) on every controller below.
-  imports: [SuperAdminAuthModule],
+  // AuthModule: TokenService, to open support sessions as an organizer.
+  imports: [SuperAdminAuthModule, AuthModule],
   controllers: [
     SuperAdminStatsController,
     SuperAdminOrganizationsController,

@@ -31,6 +31,18 @@ export class AuthService {
   private readonly organizationsSignal = signal<OrganizationSummary[]>([]);
 
   readonly isAuthenticated = computed(() => this.accessToken() !== null);
+
+  /**
+   * Assistance: a super-admin acting as this organizer (2 h token, kept in
+   * memory only, never refreshed -- a refresh would swap to whatever real
+   * organizer session the browser's cookie holds).
+   */
+  readonly supportSession = signal<{
+    organizationId: string;
+    tournamentId: string;
+    organizerEmail: string;
+    expiresAt: number;
+  } | null>(null);
   readonly currentUser = this.currentUserSignal.asReadonly();
   readonly organizations = this.organizationsSignal.asReadonly();
 
@@ -103,6 +115,14 @@ export class AuthService {
 
   /** Restores a session from the httpOnly refresh cookie on app startup. */
   async silentRefresh(): Promise<boolean> {
+    const support = this.supportSession();
+    if (support) {
+      if (Date.now() < support.expiresAt) {
+        return true;
+      }
+      this.endSupportSession();
+      return false;
+    }
     try {
       const response = await firstValueFrom(
         this.http.post<TokenResponse>(
@@ -126,7 +146,35 @@ export class AuthService {
     await this.loadProfile();
   }
 
+  /** Enters a tournament's admin as its organizer (see the super-admin tournament page). */
+  async startSupportSession(session: {
+    accessToken: string;
+    expiresIn: number;
+    organizationId: string;
+    tournamentId: string;
+    organizerEmail: string;
+  }): Promise<void> {
+    this.supportSession.set({
+      organizationId: session.organizationId,
+      tournamentId: session.tournamentId,
+      organizerEmail: session.organizerEmail,
+      expiresAt: Date.now() + session.expiresIn * 1000,
+    });
+    this.accessToken.set(session.accessToken);
+    await this.loadProfile();
+  }
+
+  /** Leaves assistance: drops the borrowed session (the real one, if any, comes back on the next refresh). */
+  endSupportSession(): void {
+    this.supportSession.set(null);
+    this.clearSession();
+  }
+
   async logout(): Promise<void> {
+    if (this.supportSession()) {
+      this.endSupportSession();
+      return;
+    }
     try {
       await firstValueFrom(
         this.http.post(`${environment.apiUrl}/auth/logout`, {}, { withCredentials: true }),
@@ -166,7 +214,16 @@ export class AuthService {
       lastName: me.lastName,
       adminUiMode: me.adminUiMode,
     });
-    this.organizationsSignal.set(me.organizations);
+    // Assistance: the tournament's organization first (pages use organizations()[0]).
+    const support = this.supportSession();
+    this.organizationsSignal.set(
+      support
+        ? [...me.organizations].sort(
+            (a, b) =>
+              Number(b.id === support.organizationId) - Number(a.id === support.organizationId),
+          )
+        : me.organizations,
+    );
   }
 
   /** Optimistic: the UI switches immediately, and reverts if the save fails. */

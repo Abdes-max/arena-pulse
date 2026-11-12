@@ -4,6 +4,7 @@ import { Badge, BadgeStatus, Button, TypeToConfirm } from 'design-system';
 import { SuperAdminService } from '../../core/super-admin.service';
 import { SuperAdminTournamentDetail } from '../../core/models';
 import { publicTournamentUrl } from '../../shared/list-filters';
+import { AuthService } from '../../../admin/core/auth.service';
 
 const STATUS_TO_BADGE: Record<string, BadgeStatus> = {
   DRAFT: 'draft',
@@ -32,6 +33,8 @@ export class SuperAdminTournamentDetailPage {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly superAdminService = inject(SuperAdminService);
+  private readonly organizerAuth = inject(AuthService);
+  protected readonly enteringSupport = signal(false);
 
   private readonly tournamentId = this.route.snapshot.paramMap.get('tournamentId')!;
 
@@ -78,6 +81,23 @@ export class SuperAdminTournamentDetailPage {
 
   protected cancelTournamentDeletion(): void {
     this.dangerZoneOpen.set(false);
+  }
+
+  /** Assistance: opens this tournament's admin as its organizer (2 h, logged). */
+  protected async enterAsOrganizer(): Promise<void> {
+    if (this.enteringSupport()) {
+      return;
+    }
+    this.enteringSupport.set(true);
+    try {
+      const session = await this.superAdminService.startSupportSession(this.tournamentId);
+      await this.organizerAuth.startSupportSession(session);
+      await this.router.navigate(['/admin/tournaments', session.tournamentId]);
+    } catch {
+      this.errorMessage.set("Impossible d'ouvrir le tournoi en mode assistance.");
+    } finally {
+      this.enteringSupport.set(false);
+    }
   }
 
   protected async deleteTournament(): Promise<void> {

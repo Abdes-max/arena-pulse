@@ -7,6 +7,8 @@ import { AccessTokenPayload } from '../token.service';
 export interface AuthenticatedUser {
   id: string;
   email: string;
+  /** Super-admin id when this is a support session (see AccessTokenPayload). */
+  supportBy?: string;
 }
 
 @Injectable()
@@ -25,6 +27,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (payload.type !== 'organizer') {
       throw new UnauthorizedException('Session invalide.');
     }
-    return { id: payload.sub, email: payload.email };
+    return {
+      id: payload.sub,
+      email: payload.email,
+      supportBy: payload.supportBy,
+    };
   }
 }

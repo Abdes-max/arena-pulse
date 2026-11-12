@@ -12,6 +12,7 @@ import {
   Req,
   Res,
   UnauthorizedException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
@@ -232,6 +233,12 @@ export class AuthController {
     @Query('confirmation') confirmation: string | undefined,
     @Res({ passthrough: true }) res: Response,
   ) {
+    // A super-admin helping an organizer can do what they do, not delete their account.
+    if (user.supportBy) {
+      throw new ForbiddenException(
+        "Action impossible en mode assistance : seul l'organisateur peut supprimer son compte.",
+      );
+    }
     await this.authService.deleteAccount(user.id, {
       confirmation: confirmation ?? '',
     });

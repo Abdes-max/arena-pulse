@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Post,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -30,6 +31,18 @@ export class SuperAdminTournamentsController {
   @Get()
   list() {
     return this.tournamentsService.list();
+  }
+
+  /** Assistance: a 2 h session in this tournament's admin, as its organizer. */
+  @Post(':tournamentId/support-session')
+  startSupportSession(
+    @Param('tournamentId') tournamentId: string,
+    @CurrentSuperAdmin() superAdmin: AuthenticatedSuperAdmin,
+  ) {
+    return this.tournamentsService.startSupportSession(
+      superAdmin.id,
+      tournamentId,
+    );
   }
 
   @Get(':tournamentId')

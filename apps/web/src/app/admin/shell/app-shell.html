@@ -3,6 +3,16 @@
     'admin.shell.skipLink' | transloco
   }}</a>
 
+  @if (authService.supportSession(); as support) {
+    <div class="app-shell__support" role="status">
+      <span>
+        <strong>Mode assistance</strong> : vous agissez à la place de {{ support.organizerEmail }}.
+      </span>
+      <button type="button" class="app-shell__support-exit" (click)="leaveSupport()">
+        Quitter l'assistance
+      </button>
+    </div>
+  }
   <header class="app-shell__header">
     <div class="app-shell__topbar">
       <div class="app-shell__topbar-left">
