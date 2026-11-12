@@ -45,6 +45,13 @@ Toutes les règles ci-dessous sont issues du tournoi de référence "U10 Millois
 - Une fois validées, les poules sont verrouillées. « Modifier les scores » les rouvre : la phase finale revient aux libellés, et les scores déjà saisis en phase finale sont effacés après confirmation. La revalidation refait le tirage.
 - Les affiches du premier tour suivent par défaut le schéma standard (1er de la liste contre le dernier). L'organisateur peut les choisir lui-même (« 1er Poule A » contre « 2e Poule B »…) tant qu'aucun match du tableau n'a de score ; changer la taille du tableau revient à l'appariement automatique.
 
+## Calendrier : déplacer un match ou un créneau
+
+- Un match (avec son créneau) ou un créneau libre peut être placé à n'importe quelle position de n'importe quel terrain, quelle que soit sa phase.
+- Les créneaux qui suivent sur le terrain d'arrivée sont décalés de la durée du créneau déplacé ; sur le terrain quitté, ceux qui suivaient sont avancés d'autant. Les autres écarts (pause entre deux phases) sont conservés.
+- Le déplacement est refusé en entier si une équipe se retrouvait sur deux matchs qui se chevauchent, sur n'importe quel terrain et dans n'importe quelle phase ; le message nomme l'équipe.
+- Un créneau ajouté prend une durée (et un libellé facultatif) et se place à la suite du dernier créneau du terrain.
+
 ## Pré-inscriptions
 
 - Pas de paiement en ligne : l'organisateur affiche un tarif indicatif par catégorie et des modalités de paiement (sur place, virement…), encaisse lui-même et coche chaque inscription payée, non payée ou dispensée.
