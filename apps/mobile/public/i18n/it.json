@@ -669,6 +669,19 @@
         "load": "Impossibile caricare le iscrizioni.",
         "save": "Impossibile salvare questa modifica."
       }
+    },
+    "schedule": {
+      "hint": "Tieni premuta una partita o una fascia e trascinala: uno spazio mostra dove andrà e a che ora. Le fasce successive vengono spostate; le pause tra le fasi restano. Una squadra non può giocare due partite contemporaneamente.",
+      "freeSlot": "Fascia libera",
+      "deleteSlot": "Elimina la fascia",
+      "minutes": "Durata (minuti)",
+      "label": "Etichetta",
+      "addSlot": "+ Fascia",
+      "phases": {
+        "ALL": "Tutte",
+        "GROUP_STAGE": "Gironi",
+        "KNOCKOUT": "Fase finale"
+      }
     }
   },
   "notifications": {

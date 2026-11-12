@@ -6,6 +6,7 @@ import {
   effect,
   inject,
   signal,
+  viewChild,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
@@ -29,7 +30,14 @@ import {
   headerBackgroundPresetOf,
   headerBackgroundPresetUrl,
 } from 'shared-models';
+import {
+  CompetitionPhase,
+  Match,
+  RoundLabelLang,
+  matchRoundLabel as boardRoundLabel,
+} from 'shared-models';
 import { OrganizerAuthService } from '../../core/auth.service';
+import { OrganizerScheduleService, ScheduleSlot } from '../../core/schedule.service';
 import { IapCancelledError, IapService } from '../../core/iap.service';
 import {
   OrganizerPhase,
@@ -137,6 +145,7 @@ export class OrganizerTournamentWizardPage {
   private readonly tournamentsApi = inject(OrganizerTournamentsService);
   private readonly teamsApi = inject(OrganizerTeamsService);
   private readonly creationApi = inject(TournamentCreationService);
+  private readonly scheduleApi = inject(OrganizerScheduleService);
   private readonly organizationsApi = inject(OrganizerOrganizationsService);
   private readonly publicApi = inject(PublicApiService);
   private readonly assetUrl = inject(AssetUrlService);
@@ -275,7 +284,360 @@ export class OrganizerTournamentWizardPage {
   // "Paiement de publication" section.
   protected readonly subscriptionStatus = signal<OrganizationSubscriptionStatus | null>(null);
 
+  // ---- Step 4: Calendrier board (slots per field, "+ Créneau", drag & drop
+  // with reflow -- same as the web Calendrier). Loaded whenever a calendar
+  // exists (edit mode, or once generated). ----
+  private readonly content = viewChild(IonContent);
+  protected readonly boardFields = signal<{ id: string; name: string }[]>([]);
+  protected readonly boardSlots = signal<Map<string, ScheduleSlot[]>>(new Map());
+  protected readonly boardMatches = signal<Match[]>([]);
+  private readonly boardPhases = signal<CompetitionPhase[]>([]);
+  protected readonly slotDrafts = signal<Record<string, { minutes: string; label: string }>>({});
+
+  protected readonly boardMatchBySlot = computed(() => {
+    const map = new Map<string, Match>();
+    for (const match of this.boardMatches()) {
+      if (match.timeSlot) {
+        map.set(match.timeSlot.id, match);
+      }
+    }
+    return map;
+  });
+
+  private async loadBoard(): Promise<void> {
+    const organizationId = this.organizationId;
+    const tournamentId = this.tournamentId;
+    const categoryId = this.categoryId;
+    if (!organizationId || !tournamentId || !categoryId) {
+      return;
+    }
+    try {
+      const [venues, phases] = await Promise.all([
+        this.scheduleApi.listVenues(organizationId, tournamentId),
+        this.scheduleApi.listPhases(organizationId, tournamentId, categoryId),
+      ]);
+      const fields = venues.flatMap((venue) =>
+        [...(venue.fields ?? [])]
+          .sort((a, b) => a.position - b.position)
+          .map((field) => ({ id: field.id, name: field.name })),
+      );
+      const realPhases = phases.filter((phase) => !phase.isSeedPhase);
+      const [slotLists, matchLists] = await Promise.all([
+        Promise.all(
+          fields.map((f) => this.scheduleApi.listSlots(organizationId, tournamentId, f.id)),
+        ),
+        Promise.all(
+          realPhases.map((p) => this.scheduleApi.listMatches(organizationId, tournamentId, p.id)),
+        ),
+      ]);
+      this.boardFields.set(fields);
+      this.boardPhases.set(realPhases);
+      this.boardSlots.set(
+        new Map(
+          fields.map((f, i) => [
+            f.id,
+            [...slotLists[i]].sort((a, b) => a.startTime.localeCompare(b.startTime)),
+          ]),
+        ),
+      );
+      this.boardMatches.set(matchLists.flat());
+    } catch {
+      // The plain list above stays usable.
+    }
+  }
+
+  // Phase filter: hides the other phase's matches (free slots stay visible).
+  protected readonly boardPhaseFilter = signal<'ALL' | 'GROUP_STAGE' | 'KNOCKOUT'>('ALL');
+  protected readonly boardHasKnockout = computed(() =>
+    this.boardPhases().some((phase) => phase.type === 'KNOCKOUT'),
+  );
+
+  protected slotShown(slot: ScheduleSlot): boolean {
+    const filter = this.boardPhaseFilter();
+    const match = this.boardMatchBySlot().get(slot.id);
+    if (filter === 'ALL' || !match) {
+      return true;
+    }
+    return filter === 'GROUP_STAGE' ? match.groupId !== null : match.knockoutBracketId !== null;
+  }
+
+  protected boardRound(match: Match): string {
+    const lang = (this.transloco.getActiveLang() || 'fr') as RoundLabelLang;
+    const phase = this.boardPhases().find((p) =>
+      match.groupId
+        ? p.groups.some((group) => group.id === match.groupId)
+        : p.knockoutBracket?.id === match.knockoutBracketId,
+    );
+    if (!phase) {
+      return '';
+    }
+    const label = boardRoundLabel(phase, match, 'compact', lang);
+    return phase.type === 'GROUP_STAGE' ? `${phase.name} · ${label}` : label;
+  }
+
+  protected boardTeam(team: { name: string } | null, fallback: string | null): string {
+    return team?.name ?? fallback ?? '?';
+  }
+
+  protected slotDraft(fieldId: string): { minutes: string; label: string } {
+    const phase = this.boardPhases()[0] as
+      (CompetitionPhase & { matchDurationMinutes?: number }) | undefined;
+    return (
+      this.slotDrafts()[fieldId] ?? {
+        minutes: String(phase?.matchDurationMinutes ?? 30),
+        label: '',
+      }
+    );
+  }
+
+  protected setSlotDraft(fieldId: string, key: 'minutes' | 'label', value: string): void {
+    this.slotDrafts.update((drafts) => ({
+      ...drafts,
+      [fieldId]: { ...this.slotDraft(fieldId), [key]: value },
+    }));
+  }
+
+  // "+ Créneau": the length (and a label), right after the field's last slot.
+  protected async addSlot(fieldId: string): Promise<void> {
+    const organizationId = this.organizationId;
+    const tournamentId = this.tournamentId;
+    const draft = this.slotDraft(fieldId);
+    const minutes = Math.round(Number(draft.minutes));
+    if (!organizationId || !tournamentId || !Number.isFinite(minutes) || minutes <= 0) {
+      return;
+    }
+    const own = this.boardSlots().get(fieldId) ?? [];
+    const starts = [...this.boardSlots().values()]
+      .flat()
+      .map((slot) => slot.startTime)
+      .sort();
+    const start = own.length
+      ? new Date(own[own.length - 1].endTime)
+      : starts.length
+        ? new Date(starts[0])
+        : new Date();
+    try {
+      await this.scheduleApi.createSlot(organizationId, tournamentId, fieldId, {
+        startTime: start.toISOString(),
+        endTime: new Date(start.getTime() + minutes * 60_000).toISOString(),
+        label: draft.label.trim() || undefined,
+      });
+      this.setSlotDraft(fieldId, 'label', '');
+      await this.loadBoard();
+    } catch (error) {
+      this.errorMessage.set(this.boardApiMessage(error) ?? 'organizer.wizard.errorGeneric');
+    }
+  }
+
+  protected async deleteSlot(slotId: string): Promise<void> {
+    const organizationId = this.organizationId;
+    const tournamentId = this.tournamentId;
+    if (!organizationId || !tournamentId) {
+      return;
+    }
+    try {
+      await this.scheduleApi.deleteSlot(organizationId, tournamentId, slotId);
+      await this.loadBoard();
+    } catch (error) {
+      this.errorMessage.set(this.boardApiMessage(error) ?? 'organizer.wizard.errorGeneric');
+    }
+  }
+
+  private boardApiMessage(error: unknown): string | null {
+    const message =
+      error && typeof error === 'object' && 'error' in error
+        ? ((error as { error?: { message?: unknown } }).error?.message ?? null)
+        : null;
+    return typeof message === 'string' ? message : null;
+  }
+
+  protected boardClock(iso: string): string {
+    return new Date(iso).toLocaleString(this.transloco.getActiveLang() || 'fr', {
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  }
+
+  // ---- drag & drop: hold, then the card follows the finger ----
+  protected readonly dragItem = signal<{
+    slotId: string;
+    matchId: string | null;
+    fieldId: string;
+    index: number;
+    width: number;
+    offsetX: number;
+    offsetY: number;
+  } | null>(null);
+  protected readonly ghost = signal<{ x: number; y: number } | null>(null);
+  protected readonly dropTarget = signal<{ fieldId: string; index: number } | null>(null);
+  private pressTimer: ReturnType<typeof setTimeout> | null = null;
+  private pressStart: { x: number; y: number } | null = null;
+
+  protected readonly draggedMatch = computed(() => {
+    const id = this.dragItem()?.matchId;
+    return id ? (this.boardMatches().find((match) => match.id === id) ?? null) : null;
+  });
+  protected readonly draggedSlot = computed(() => {
+    const item = this.dragItem();
+    return item
+      ? ((this.boardSlots().get(item.fieldId) ?? []).find((slot) => slot.id === item.slotId) ??
+          null)
+      : null;
+  });
+
+  protected onCardTouchStart(
+    event: TouchEvent,
+    fieldId: string,
+    index: number,
+    slot: ScheduleSlot,
+  ): void {
+    const touch = event.touches[0];
+    if (!touch || event.touches.length > 1) {
+      return;
+    }
+    const card = event.currentTarget as HTMLElement;
+    this.pressStart = { x: touch.clientX, y: touch.clientY };
+    this.clearPress();
+    this.pressTimer = setTimeout(() => {
+      const rect = card.getBoundingClientRect();
+      this.dragItem.set({
+        slotId: slot.id,
+        matchId: this.boardMatchBySlot().get(slot.id)?.id ?? null,
+        fieldId,
+        index,
+        width: rect.width,
+        offsetX: touch.clientX - rect.left,
+        offsetY: touch.clientY - rect.top,
+      });
+      this.ghost.set({ x: rect.left, y: rect.top });
+      navigator.vibrate?.(15);
+    }, 350);
+  }
+
+  protected onCardTouchMove(event: TouchEvent): void {
+    const touch = event.touches[0];
+    if (!touch) {
+      return;
+    }
+    const item = this.dragItem();
+    if (!item) {
+      // Moving before the hold completes is a scroll, not a drag.
+      if (
+        this.pressStart &&
+        Math.hypot(touch.clientX - this.pressStart.x, touch.clientY - this.pressStart.y) > 10
+      ) {
+        this.clearPress();
+      }
+      return;
+    }
+    event.preventDefault();
+    this.ghost.set({ x: touch.clientX - item.offsetX, y: touch.clientY - item.offsetY });
+    if (touch.clientY < 140) {
+      void this.content()?.scrollByPoint(0, -16, 0);
+    } else if (touch.clientY > window.innerHeight - 140) {
+      void this.content()?.scrollByPoint(0, 16, 0);
+    }
+    const element = document.elementFromPoint(touch.clientX, touch.clientY) as HTMLElement | null;
+    const fieldEl = element?.closest<HTMLElement>('[data-field-id]');
+    if (!fieldEl || element?.closest('[data-drop-placeholder]')) {
+      return;
+    }
+    const fieldId = fieldEl.dataset['fieldId']!;
+    const slotEl = element?.closest<HTMLElement>('[data-slot-index]');
+    let index = (this.boardSlots().get(fieldId) ?? []).length;
+    if (slotEl) {
+      const rect = slotEl.getBoundingClientRect();
+      index =
+        Number(slotEl.dataset['slotIndex']) + (touch.clientY > rect.top + rect.height / 2 ? 1 : 0);
+    }
+    const current = this.dropTarget();
+    if (current?.fieldId !== fieldId || current.index !== index) {
+      this.dropTarget.set({ fieldId, index });
+    }
+  }
+
+  protected async onCardTouchEnd(): Promise<void> {
+    this.clearPress();
+    const item = this.dragItem();
+    const target = this.dropTarget();
+    this.dragItem.set(null);
+    this.ghost.set(null);
+    this.dropTarget.set(null);
+    const organizationId = this.organizationId;
+    const tournamentId = this.tournamentId;
+    if (!item || !target || !organizationId || !tournamentId) {
+      return;
+    }
+    const index =
+      item.fieldId === target.fieldId && item.index < target.index
+        ? target.index - 1
+        : target.index;
+    if (item.fieldId === target.fieldId && index === item.index) {
+      return;
+    }
+    this.errorMessage.set(null);
+    try {
+      await this.scheduleApi.move(organizationId, tournamentId, {
+        timeSlotId: item.slotId,
+        fieldId: target.fieldId,
+        index,
+      });
+      await this.loadBoard();
+    } catch (error) {
+      this.errorMessage.set(this.boardApiMessage(error) ?? 'organizer.wizard.errorGeneric');
+    }
+  }
+
+  private clearPress(): void {
+    if (this.pressTimer) {
+      clearTimeout(this.pressTimer);
+      this.pressTimer = null;
+    }
+  }
+
+  // Time the dragged card will start at, shown in the open space.
+  protected readonly dropPreviewTime = computed(() => {
+    const target = this.dropTarget();
+    const item = this.dragItem();
+    const dragged = this.draggedSlot();
+    if (!target || !item || !dragged) {
+      return null;
+    }
+    const lengthMs = new Date(dragged.endTime).getTime() - new Date(dragged.startTime).getTime();
+    const draggedStart = new Date(dragged.startTime).getTime();
+    const column = (this.boardSlots().get(target.fieldId) ?? [])
+      .filter((slot) => slot.id !== dragged.id)
+      .map((slot) => {
+        const start = new Date(slot.startTime).getTime();
+        const moved = item.fieldId === target.fieldId && start >= draggedStart;
+        return {
+          start: start - (moved ? lengthMs : 0),
+          end: new Date(slot.endTime).getTime() - (moved ? lengthMs : 0),
+        };
+      });
+    const index =
+      item.fieldId === target.fieldId && item.index < target.index
+        ? target.index - 1
+        : target.index;
+    const start =
+      column.length === 0
+        ? draggedStart
+        : index < column.length
+          ? column[index].start
+          : column[column.length - 1].end;
+    return this.boardClock(new Date(start).toISOString());
+  });
+
   constructor() {
+    // The board follows the calendar: loaded once one exists, refreshed after a regeneration.
+    effect(() => {
+      if (this.matches()) {
+        void this.loadBoard();
+      }
+    });
     effect(() => {
       if (this.step() === 5 && this.isRepublish()) {
         void this.loadPublicationQuote();

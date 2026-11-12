@@ -669,6 +669,19 @@
         "load": "Impossible de charger les inscriptions.",
         "save": "Impossible d’enregistrer ce changement."
       }
+    },
+    "schedule": {
+      "hint": "Restez appuyé sur un match ou un créneau puis glissez-le : un emplacement montre où il va se placer et à quelle heure. Les créneaux suivants sont décalés, les pauses entre phases conservées. Une équipe ne peut pas jouer deux matchs en même temps.",
+      "freeSlot": "Créneau libre",
+      "deleteSlot": "Supprimer le créneau",
+      "minutes": "Durée (minutes)",
+      "label": "Libellé",
+      "addSlot": "+ Créneau",
+      "phases": {
+        "ALL": "Toutes",
+        "GROUP_STAGE": "Poules",
+        "KNOCKOUT": "Phase finale"
+      }
     }
   },
   "notifications": {
