@@ -57,6 +57,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/legal/privacy.page').then((m) => m.PrivacyPage),
   },
   {
+    // English address some links used: same search page (query params kept).
+    path: 'discover',
+    redirectTo: 'decouvrir',
+  },
+  {
     path: 'decouvrir',
     loadComponent: () => import('./pages/discover/discover.page').then((m) => m.DiscoverPage),
   },
