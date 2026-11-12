@@ -156,7 +156,8 @@
           "simple": "Simple",
           "full": "Complet"
         },
-        "structureAction": "Structure"
+        "structureAction": "Structure",
+        "registrationsAction": "Inscriptions"
       }
     },
     "account": {
@@ -621,6 +622,51 @@
       "cancel": "Annuler",
       "errors": {
         "load": "Impossible de charger la structure.",
+        "save": "Impossible d’enregistrer ce changement."
+      }
+    },
+    "registrations": {
+      "title": "Inscriptions",
+      "loading": "Chargement…",
+      "open": "Inscriptions ouvertes",
+      "openNow": "Les demandes sont possibles en ce moment.",
+      "closedNow": "Aucune demande possible en ce moment.",
+      "paymentInfo": "Modalités de paiement",
+      "paymentInfoPlaceholder": "ex. 40 € par équipe, sur place",
+      "save": "Enregistrer",
+      "moreOnWeb": "Dates, places par catégorie et carte du tournoi : sur le site web.",
+      "filters": {
+        "PENDING": "En attente",
+        "CONFIRMED": "Confirmées",
+        "WAITLIST": "Liste d'attente",
+        "REJECTED": "Refusées",
+        "ALL": "Toutes"
+      },
+      "status": {
+        "PENDING": "En attente",
+        "CONFIRMED": "Confirmée",
+        "WAITLIST": "Liste d'attente",
+        "REJECTED": "Refusée",
+        "CANCELLED": "Annulée",
+        "PAID": "Confirmée",
+        "PENDING_PAYMENT": "Paiement en cours"
+      },
+      "actions": {
+        "confirm": "Valider",
+        "waitlist": "Liste d'attente",
+        "reject": "Refuser",
+        "confirmReject": "Confirmer le refus"
+      },
+      "payment": {
+        "label": "Paiement",
+        "UNPAID": "Non payé",
+        "PAID": "Payé",
+        "EXEMPT": "Dispensé"
+      },
+      "reasonLabel": "Motif du refus (optionnel)",
+      "empty": "Aucune demande dans cette liste.",
+      "errors": {
+        "load": "Impossible de charger les inscriptions.",
         "save": "Impossible d’enregistrer ce changement."
       }
     }

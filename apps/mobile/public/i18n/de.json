@@ -156,7 +156,8 @@
           "simple": "Einfach",
           "full": "Vollständig"
         },
-        "structureAction": "Struktur"
+        "structureAction": "Struktur",
+        "registrationsAction": "Anmeldungen"
       }
     },
     "account": {
@@ -621,6 +622,51 @@
       "cancel": "Abbrechen",
       "errors": {
         "load": "Die Struktur konnte nicht geladen werden.",
+        "save": "Diese Änderung konnte nicht gespeichert werden."
+      }
+    },
+    "registrations": {
+      "title": "Anmeldungen",
+      "loading": "Wird geladen…",
+      "open": "Anmeldung offen",
+      "openNow": "Anfragen sind jetzt möglich.",
+      "closedNow": "Derzeit keine Anfrage möglich.",
+      "paymentInfo": "Zahlungsmodalitäten",
+      "paymentInfoPlaceholder": "z. B. 40 € pro Team, vor Ort",
+      "save": "Speichern",
+      "moreOnWeb": "Daten, Plätze pro Kategorie und Turnierkarte: auf der Website.",
+      "filters": {
+        "PENDING": "Offen",
+        "CONFIRMED": "Bestätigt",
+        "WAITLIST": "Warteliste",
+        "REJECTED": "Abgelehnt",
+        "ALL": "Alle"
+      },
+      "status": {
+        "PENDING": "Offen",
+        "CONFIRMED": "Bestätigt",
+        "WAITLIST": "Warteliste",
+        "REJECTED": "Abgelehnt",
+        "CANCELLED": "Storniert",
+        "PAID": "Bestätigt",
+        "PENDING_PAYMENT": "Zahlung läuft"
+      },
+      "actions": {
+        "confirm": "Bestätigen",
+        "waitlist": "Warteliste",
+        "reject": "Ablehnen",
+        "confirmReject": "Ablehnung bestätigen"
+      },
+      "payment": {
+        "label": "Zahlung",
+        "UNPAID": "Nicht bezahlt",
+        "PAID": "Bezahlt",
+        "EXEMPT": "Befreit"
+      },
+      "reasonLabel": "Ablehnungsgrund (optional)",
+      "empty": "Keine Anfrage in dieser Liste.",
+      "errors": {
+        "load": "Die Anmeldungen konnten nicht geladen werden.",
         "save": "Diese Änderung konnte nicht gespeichert werden."
       }
     }

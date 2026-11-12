@@ -1,0 +1,179 @@
+<ion-header>
+  <ion-toolbar>
+    <button
+      type="button"
+      class="reg-page__back"
+      slot="start"
+      (click)="goBack()"
+      [attr.aria-label]="'organizer.wizard.cancelAria' | transloco"
+    >
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+        <path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+      </svg>
+    </button>
+    <ion-title>{{ 'organizer.registrations.title' | transloco }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="reg-page">
+  <div class="reg-page__scroll">
+    @if (errorMessage(); as message) {
+      <p class="reg-page__error" role="alert">{{ message | transloco }}</p>
+    }
+
+    @if (loading()) {
+      <p class="reg-page__hint">{{ 'organizer.registrations.loading' | transloco }}</p>
+    } @else {
+      @if (settings(); as s) {
+        <section class="reg-page__settings">
+          <label class="reg-page__switch">
+            <input
+              type="checkbox"
+              [checked]="s.open"
+              [disabled]="busy()"
+              (change)="toggleOpen($event)"
+            />
+            <span>
+              <strong>{{ 'organizer.registrations.open' | transloco }}</strong>
+              <small>{{
+                (s.openNow
+                  ? 'organizer.registrations.openNow'
+                  : 'organizer.registrations.closedNow'
+                ) | transloco
+              }}</small>
+            </span>
+          </label>
+          <label class="reg-page__textarea">
+            {{ 'organizer.registrations.paymentInfo' | transloco }}
+            <textarea
+              rows="2"
+              [placeholder]="'organizer.registrations.paymentInfoPlaceholder' | transloco"
+              [value]="paymentInfo()"
+              (input)="onPaymentInfo($event)"
+            ></textarea>
+          </label>
+          <ap-button
+            type="button"
+            variant="secondary"
+            size="sm"
+            [disabled]="busy()"
+            (click)="savePaymentInfo()"
+          >
+            {{ 'organizer.registrations.save' | transloco }}
+          </ap-button>
+          <p class="reg-page__hint">{{ 'organizer.registrations.moreOnWeb' | transloco }}</p>
+        </section>
+      }
+
+      <div class="reg-page__filters" role="tablist">
+        @for (f of filters; track f) {
+          <button
+            type="button"
+            role="tab"
+            class="reg-page__filter"
+            [attr.aria-selected]="filter() === f"
+            (click)="filter.set(f)"
+          >
+            {{ 'organizer.registrations.filters.' + f | transloco }} ({{ counts()[f] }})
+          </button>
+        }
+      </div>
+
+      @for (registration of visible(); track registration.id) {
+        <div class="reg-page__item">
+          <div class="reg-page__item-head">
+            <strong>{{ registration.teamName }}</strong>
+            <span class="reg-page__status" [attr.data-status]="registration.status">{{
+              'organizer.registrations.status.' + registration.status | transloco
+            }}</span>
+          </div>
+          <p class="reg-page__meta">
+            {{ registration.categoryName }}
+            @if (formatAmount(registration); as amount) {
+              · {{ amount }}
+            }
+          </p>
+          <p class="reg-page__meta">
+            <a [href]="'mailto:' + registration.managerEmail">{{ registration.managerEmail }}</a>
+            @if (registration.managerPhone) {
+              · <a [href]="'tel:' + registration.managerPhone">{{ registration.managerPhone }}</a>
+            }
+          </p>
+
+          <div class="reg-page__actions">
+            @if (
+              registration.status === 'PENDING' ||
+              registration.status === 'WAITLIST' ||
+              registration.status === 'REJECTED'
+            ) {
+              <ap-button
+                type="button"
+                size="sm"
+                [disabled]="busy()"
+                (click)="decide(registration, 'confirm')"
+              >
+                {{ 'organizer.registrations.actions.confirm' | transloco }}
+              </ap-button>
+            }
+            @if (registration.status !== 'WAITLIST' && registration.status !== 'CANCELLED') {
+              <ap-button
+                type="button"
+                size="sm"
+                variant="ghost"
+                [disabled]="busy()"
+                (click)="decide(registration, 'waitlist')"
+              >
+                {{ 'organizer.registrations.actions.waitlist' | transloco }}
+              </ap-button>
+            }
+            @if (registration.status !== 'REJECTED' && registration.status !== 'CANCELLED') {
+              <ap-button
+                type="button"
+                size="sm"
+                variant="ghost"
+                [disabled]="busy()"
+                (click)="startReject(registration)"
+              >
+                {{ 'organizer.registrations.actions.reject' | transloco }}
+              </ap-button>
+            }
+          </div>
+          @if (registration.amountCents > 0) {
+            <label class="reg-page__payment">
+              {{ 'organizer.registrations.payment.label' | transloco }}
+              <select
+                [value]="registration.paymentStatus"
+                [disabled]="busy()"
+                (change)="setPayment(registration, $event)"
+              >
+                <option value="UNPAID">
+                  {{ 'organizer.registrations.payment.UNPAID' | transloco }}
+                </option>
+                <option value="PAID">
+                  {{ 'organizer.registrations.payment.PAID' | transloco }}
+                </option>
+                <option value="EXEMPT">
+                  {{ 'organizer.registrations.payment.EXEMPT' | transloco }}
+                </option>
+              </select>
+            </label>
+          }
+          @if (rejectingId() === registration.id) {
+            <div class="reg-page__reject">
+              <ap-text-field
+                [label]="'organizer.registrations.reasonLabel' | transloco"
+                [value]="rejectReason()"
+                (valueChange)="rejectReason.set($event)"
+              />
+              <ap-button type="button" size="sm" [disabled]="busy()" (click)="reject(registration)">
+                {{ 'organizer.registrations.actions.confirmReject' | transloco }}
+              </ap-button>
+            </div>
+          }
+        </div>
+      } @empty {
+        <p class="reg-page__hint">{{ 'organizer.registrations.empty' | transloco }}</p>
+      }
+    }
+  </div>
+</ion-content>
