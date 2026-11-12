@@ -127,7 +127,6 @@
                     />
                     <ap-button
                       type="button"
-                      variant="ghost"
                       [disabled]="saving()"
                       (click)="saveAnnotation(payment)"
                     >
@@ -138,7 +137,7 @@
                     </ap-button>
                   </div>
                 } @else {
-                  <ap-button type="button" variant="ghost" (click)="startAnnotating(payment)">
+                  <ap-button type="button" variant="secondary" (click)="startAnnotating(payment)">
                     Annoter
                   </ap-button>
                 }

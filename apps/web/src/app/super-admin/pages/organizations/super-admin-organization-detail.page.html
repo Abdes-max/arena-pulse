@@ -13,12 +13,12 @@
       }
       @if (org.suspendedAt) {
         <ap-badge status="cancelled" label="Suspendue" />
-        <ap-button type="button" variant="ghost" [disabled]="toggling()" (click)="reactivate()">
+        <ap-button type="button" [disabled]="toggling()" (click)="reactivate()">
           Réactiver
         </ap-button>
       } @else {
         <ap-badge status="published" label="Active" />
-        <ap-button type="button" variant="ghost" [disabled]="toggling()" (click)="suspend()">
+        <ap-button type="button" variant="secondary" [disabled]="toggling()" (click)="suspend()">
           Suspendre
         </ap-button>
       }
@@ -27,11 +27,16 @@
     <p class="super-admin-organization-detail-page__test-hint">
       @if (org.isTest) {
         Cette organisation est exclue des chiffres du tableau de bord.
-        <ap-button type="button" variant="ghost" [disabled]="toggling()" (click)="setTest(false)">
+        <ap-button
+          type="button"
+          variant="secondary"
+          [disabled]="toggling()"
+          (click)="setTest(false)"
+        >
           Retirer le marquage test
         </ap-button>
       } @else {
-        <ap-button type="button" variant="ghost" [disabled]="toggling()" (click)="setTest(true)">
+        <ap-button type="button" [disabled]="toggling()" (click)="setTest(true)">
           Marquer comme démo / test
         </ap-button>
         Les organisations de test sont exclues des chiffres du tableau de bord.

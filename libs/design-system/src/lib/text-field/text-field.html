@@ -205,7 +205,11 @@
             <span></span>
           }
           @if (dateLabel()) {
-            <button type="button" class="ap-text-field__calendar-link" (click)="clearDate()">
+            <button
+              type="button"
+              class="ap-text-field__calendar-link ap-text-field__calendar-link--secondary"
+              (click)="clearDate()"
+            >
               {{ clearLabel() }}
             </button>
           }

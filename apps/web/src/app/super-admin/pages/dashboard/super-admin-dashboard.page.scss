@@ -1,4 +1,5 @@
 @use '../../shared/ui';
+@use '../../../admin/section-card';
 
 .super-admin-dashboard-page {
   max-width: 1100px;
@@ -205,4 +206,21 @@
 
 .super-admin-dashboard-page__empty {
   color: var(--ap-color-muted);
+}
+
+// Blocks as separate cards, like the organizer admin.
+.super-admin-dashboard-page__section,
+.super-admin-dashboard-page__filters {
+  @include section-card.section-card;
+}
+.super-admin-dashboard-page__section table,
+.super-admin-dashboard-page__filters table {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.super-admin-dashboard-page__filters {
+  display: flex;
+  margin-top: 0;
 }

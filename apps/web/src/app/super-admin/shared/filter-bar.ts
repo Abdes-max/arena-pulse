@@ -27,6 +27,13 @@ import { Button } from 'design-system';
       flex-direction: column;
       gap: var(--ap-space-3);
       margin-bottom: var(--ap-space-4);
+      padding: var(--ap-space-4) var(--ap-space-5, var(--ap-space-4));
+      background: var(--ap-color-surface);
+      border: var(--ap-border-width) solid var(--ap-color-border);
+      border-radius: var(--ap-radius-lg);
+      box-shadow:
+        0 1px 2px rgba(15, 23, 42, 0.05),
+        0 6px 20px rgba(15, 23, 42, 0.04);
     }
     .filter-bar__controls {
       display: flex;
