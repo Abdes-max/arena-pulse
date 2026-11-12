@@ -409,7 +409,8 @@
       "share": "Teilen",
       "premiumLocked": "Nur für Turniere mit mehr als {{count}} Teams oder mit aktivem Jahresabonnement.",
       "stats": "Statistiken",
-      "slideshow": "Diashow (TV-Bildschirm)"
+      "slideshow": "Diashow (TV-Bildschirm)",
+      "registrations": "Anmeldungen"
     },
     "auth": {
       "login": {

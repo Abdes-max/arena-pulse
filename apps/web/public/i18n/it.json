@@ -409,7 +409,8 @@
       "share": "Condividi",
       "premiumLocked": "Riservato ai tornei con più di {{count}} squadre o con un abbonamento annuale attivo.",
       "stats": "Statistiche",
-      "slideshow": "Presentazione (schermo TV)"
+      "slideshow": "Presentazione (schermo TV)",
+      "registrations": "Iscrizioni"
     },
     "auth": {
       "login": {
