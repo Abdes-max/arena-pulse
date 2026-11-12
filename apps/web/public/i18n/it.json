@@ -1359,7 +1359,8 @@
         "endLabel": "Fine",
         "labelLabel": "Etichetta",
         "addSlot": "+ Slot",
-        "slotMinutesLabel": "Durata della fascia (minuti)"
+        "slotMinutesLabel": "Durata della fascia (minuti)",
+        "freeSlot": "Fascia libera"
       },
       "round": "Turno {{round}}",
       "addRefereeOption": "+ Arbitro…",

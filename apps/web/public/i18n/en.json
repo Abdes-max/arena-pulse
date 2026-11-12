@@ -1461,7 +1461,8 @@
         "endLabel": "End",
         "labelLabel": "Label",
         "addSlot": "+ Slot",
-        "slotMinutesLabel": "Slot length (minutes)"
+        "slotMinutesLabel": "Slot length (minutes)",
+        "freeSlot": "Free slot"
       },
       "round": "Round {{round}}",
       "addRefereeOption": "+ Referee…",

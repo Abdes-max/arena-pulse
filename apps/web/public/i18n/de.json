@@ -1359,7 +1359,8 @@
         "endLabel": "Ende",
         "labelLabel": "Beschriftung",
         "addSlot": "+ Slot",
-        "slotMinutesLabel": "Länge des Zeitfensters (Minuten)"
+        "slotMinutesLabel": "Länge des Zeitfensters (Minuten)",
+        "freeSlot": "Freies Zeitfenster"
       },
       "round": "Runde {{round}}",
       "addRefereeOption": "+ Schiedsrichter…",

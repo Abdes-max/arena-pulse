@@ -1461,7 +1461,8 @@
         "endLabel": "Fin",
         "labelLabel": "Libellé",
         "addSlot": "+ Créneau",
-        "slotMinutesLabel": "Durée du créneau (minutes)"
+        "slotMinutesLabel": "Durée du créneau (minutes)",
+        "freeSlot": "Créneau libre"
       },
       "round": "Tour {{round}}",
       "addRefereeOption": "+ Arbitre…",

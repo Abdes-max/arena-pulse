@@ -40,6 +40,7 @@ import { matchRoundLabel, RoundLabelLang } from 'shared-models';
 // Adding a slot: just a length; it goes right after the field's last slot.
 interface TimeSlotDraft {
   minutes: string;
+  label: string;
 }
 
 @Component({
@@ -104,7 +105,18 @@ export class SchedulePage {
   protected readonly selectedMatchId = signal<string | null>(null);
 
   protected readonly selectedFieldIds = signal<string[]>([]);
-  protected readonly summary = computed(() => summarizeSchedule(this.matches()));
+  protected readonly summary = computed(() => {
+    const type = this.selectedPhaseType();
+    return summarizeSchedule(
+      this.matches().filter((match) =>
+        type === 'GROUP_STAGE'
+          ? match.groupId !== null
+          : type === 'KNOCKOUT'
+            ? match.knockoutBracketId !== null
+            : true,
+      ),
+    );
+  });
   protected readonly startDateTime = signal('');
   protected readonly shifting = signal(false);
   // Knockout stage only -- its start isn't entered by hand, it's the pool
@@ -330,8 +342,11 @@ export class SchedulePage {
       return;
     }
     try {
+      // Every phase, whatever the filter: a slot holding a match of another
+      // phase must never look free in the grid.
+      const groupPhase = this.groupStagePhase();
       const results = await Promise.all(
-        this.activePhases().map((phase) =>
+        [...(groupPhase ? [groupPhase] : []), ...this.knockoutPhases()].map((phase) =>
           this.scheduleService.listMatches(organizationId, this.tournamentId, phase.id),
         ),
       );
@@ -600,6 +615,10 @@ export class SchedulePage {
       dateStyle: 'short',
       timeStyle: 'short',
     });
+  }
+
+  protected slotClock(slot: TimeSlot): string {
+    return this.formatSlotTime(slot.startTime);
   }
 
   protected slotTimeLabel(slot: TimeSlot): string {
@@ -963,7 +982,12 @@ export class SchedulePage {
   }
 
   protected draftFor(fieldId: string): TimeSlotDraft {
-    return this.newSlotDrafts().get(fieldId) ?? { minutes: this.matchDurationMinutes() || '30' };
+    return (
+      this.newSlotDrafts().get(fieldId) ?? {
+        minutes: this.matchDurationMinutes() || '30',
+        label: '',
+      }
+    );
   }
 
   // Right after the field's last slot; on an empty field, at the earliest
@@ -1004,6 +1028,7 @@ export class SchedulePage {
         {
           startTime: start.toISOString(),
           endTime: new Date(start.getTime() + minutes * 60_000).toISOString(),
+          label: this.draftFor(fieldId).label.trim() || undefined,
         },
       );
       this.timeSlotsByField.update((map) => {
@@ -1016,6 +1041,7 @@ export class SchedulePage {
         );
         return next;
       });
+      this.onSlotDraftChange(fieldId, 'label', '');
     } catch (error) {
       this.errorMessage.set(
         error instanceof HttpErrorResponse && error.status === 409

@@ -317,9 +317,12 @@
                               (keydown.enter)="onSlotTap(slot.id)"
                               (keydown.space)="onSlotTap(slot.id); $event.preventDefault()"
                             >
-                              <span class="schedule-page__slot-time">{{
-                                slotTimeLabel(slot)
-                              }}</span>
+                              <div class="schedule-page__slot-header">
+                                <span class="schedule-page__slot-header-label">{{
+                                  slot.label || ('admin.schedule.editor.freeSlot' | transloco)
+                                }}</span>
+                                <span>{{ slotClock(slot) }}</span>
+                              </div>
                               <button
                                 type="button"
                                 class="schedule-page__delete-slot ap-touch-target"
@@ -358,6 +361,14 @@
                           (valueChange)="onSlotDraftChange(field.id, 'minutes', $event)"
                         />
                         <span class="schedule-page__add-slot-unit">min</span>
+                        <ap-text-field
+                          class="schedule-page__add-slot-label"
+                          [label]="'admin.schedule.editor.labelLabel' | transloco"
+                          [hideLabel]="true"
+                          [placeholder]="'admin.schedule.editor.labelLabel' | transloco"
+                          [value]="draftFor(field.id).label"
+                          (valueChange)="onSlotDraftChange(field.id, 'label', $event)"
+                        />
                         <ap-button
                           type="button"
                           variant="secondary"
