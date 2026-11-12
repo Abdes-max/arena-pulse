@@ -1657,6 +1657,13 @@
       "noResults": "Ancora nessun risultato convalidato.",
       "noDefense": "Non ci sono ancora abbastanza partite giocate.",
       "noCategories": "Nessuna categoria."
+    },
+    "qrPoster": {
+      "scan": "Scansiona per aprire il torneo",
+      "addPoster": "Aggiungi la locandina del torneo in basso",
+      "print": "Stampa",
+      "loading": "Preparazione…",
+      "error": "Impossibile generare l'immagine."
     }
   },
   "wrapped": {

@@ -308,42 +308,10 @@
     }
   }
   @if (qrFor(); as qrTournament) {
-    <button
-      type="button"
-      class="tournament-list-page__qr-backdrop"
-      (click)="closeQr()"
-      [attr.aria-label]="'admin.submenu.close' | transloco"
-    ></button>
-    <div
-      class="tournament-list-page__qr-dialog"
-      role="dialog"
-      aria-modal="true"
-      [attr.aria-label]="'admin.submenu.qrCodeDialogTitle' | transloco"
-    >
-      <h2 class="tournament-list-page__qr-title">
-        {{ 'admin.submenu.qrCodeDialogTitle' | transloco }}
-      </h2>
-      <p class="tournament-list-page__qr-name">{{ qrTournament.name }}</p>
-      <ap-qr-code
-        class="tournament-list-page__qr-code"
-        [value]="publicAbsoluteUrl(qrTournament)"
-        [size]="220"
-        #qr
-      />
-      <div class="tournament-list-page__qr-actions">
-        @if (qr.dataUrl(); as downloadUrl) {
-          <a
-            class="tournament-list-page__qr-download"
-            [href]="downloadUrl"
-            [download]="qrTournament.slug + '-qrcode.png'"
-          >
-            {{ 'admin.submenu.downloadQrCode' | transloco }}
-          </a>
-        }
-        <ap-button type="button" variant="ghost" size="sm" (click)="closeQr()">
-          {{ 'admin.submenu.close' | transloco }}
-        </ap-button>
-      </div>
-    </div>
+    <app-qr-poster-dialog
+      [tournamentId]="qrTournament.id"
+      [url]="publicAbsoluteUrl(qrTournament)"
+      (closed)="closeQr()"
+    />
   }
 </main>

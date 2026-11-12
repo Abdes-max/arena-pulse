@@ -279,48 +279,5 @@
 </div>
 
 @if (qrDialogOpen() && publicAbsoluteUrl(); as url) {
-  <!-- A real <button>, not a clickable <div> -- natively focusable/keyboard-
-       operable, so this needs no extra keyup/keydown handler to satisfy
-       (or genuinely fulfil) accessibility. Sits as the dialog panel's
-       *sibling* rather than its parent specifically so the panel below
-       never needs a stopPropagation() click handler of its own to avoid
-       closing itself (a <div role="dialog"> nested inside a <button> would
-       also be invalid HTML -- buttons may only contain phrasing content). -->
-  <button
-    type="button"
-    class="tournament-submenu__qr-backdrop"
-    (click)="closeQrDialog()"
-    [attr.aria-label]="'admin.submenu.close' | transloco"
-  ></button>
-  <div
-    class="tournament-submenu__qr-dialog"
-    role="dialog"
-    aria-modal="true"
-    [attr.aria-label]="'admin.submenu.qrCodeDialogTitle' | transloco"
-  >
-    <h2 class="tournament-submenu__qr-title">
-      {{ 'admin.submenu.qrCodeDialogTitle' | transloco }}
-    </h2>
-    <!-- The dialog title above is generic ("Code QR") -- printed or
-         screenshotted on its own, the code needs to say which tournament
-         it points to. -->
-    @if (name(); as tournamentName) {
-      <p class="tournament-submenu__qr-tournament-name">{{ tournamentName }}</p>
-    }
-    <ap-qr-code class="tournament-submenu__qr-code" [value]="url" [size]="220" #qr />
-    <div class="tournament-submenu__qr-actions">
-      @if (qr.dataUrl(); as downloadUrl) {
-        <a
-          class="tournament-submenu__qr-download"
-          [href]="downloadUrl"
-          [download]="(slug() ?? 'tournoi') + '-qrcode.png'"
-        >
-          {{ 'admin.submenu.downloadQrCode' | transloco }}
-        </a>
-      }
-      <ap-button type="button" variant="ghost" size="sm" (click)="closeQrDialog()">
-        {{ 'admin.submenu.close' | transloco }}
-      </ap-button>
-    </div>
-  </div>
+  <app-qr-poster-dialog [tournamentId]="tournamentId()" [url]="url" (closed)="closeQrDialog()" />
 }

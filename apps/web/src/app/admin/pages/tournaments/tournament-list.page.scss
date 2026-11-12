@@ -75,8 +75,7 @@
   position: relative;
 }
 
-.tournament-list-page__share-backdrop,
-.tournament-list-page__qr-backdrop {
+.tournament-list-page__share-backdrop {
   position: fixed;
   inset: 0;
   z-index: 100;
@@ -84,11 +83,6 @@
   border: none;
   background: transparent;
   cursor: default;
-}
-
-.tournament-list-page__qr-backdrop {
-  background: rgb(0 0 0 / 50%);
-  cursor: pointer;
 }
 
 .tournament-list-page__share-menu {
@@ -133,55 +127,6 @@
   &:hover {
     background: var(--ap-color-signal-soft);
   }
-}
-
-.tournament-list-page__qr-dialog {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 101;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--ap-space-4);
-  padding: var(--ap-space-6);
-  background: var(--ap-color-surface);
-  border: var(--ap-border-width) solid var(--ap-color-border);
-  border-radius: var(--ap-radius-lg);
-  max-width: 320px;
-  width: calc(100% - var(--ap-space-8));
-}
-
-.tournament-list-page__qr-title {
-  margin: 0;
-  font-family: var(--ap-font-heading);
-  font-size: 1.1rem;
-  text-align: center;
-}
-
-.tournament-list-page__qr-name {
-  margin: calc(var(--ap-space-4) * -1) 0 0;
-  font-weight: 700;
-  text-align: center;
-}
-
-// Always black-on-white, framed so it stays legible on a dark theme.
-.tournament-list-page__qr-code {
-  padding: var(--ap-space-3);
-  background: #fff;
-  border-radius: var(--ap-radius-md);
-}
-
-.tournament-list-page__qr-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--ap-space-3);
-}
-
-.tournament-list-page__qr-download {
-  color: var(--ap-color-primary);
-  font-weight: 600;
 }
 
 // Post-login landing page -- highest exposure in the admin. Its 4-button

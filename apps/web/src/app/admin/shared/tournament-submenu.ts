@@ -14,7 +14,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { filter } from 'rxjs';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { Button, QrCode } from 'design-system';
+import { Button } from 'design-system';
+import { QrPosterDialog } from './qr-poster-dialog/qr-poster-dialog';
 import { AuthService } from '../core/auth.service';
 import { TournamentsService } from '../core/tournaments.service';
 
@@ -35,7 +36,7 @@ import { TournamentsService } from '../core/tournaments.service';
  */
 @Component({
   selector: 'app-tournament-submenu',
-  imports: [RouterLink, RouterLinkActive, Button, TranslocoPipe, QrCode],
+  imports: [RouterLink, RouterLinkActive, Button, TranslocoPipe, QrPosterDialog],
   templateUrl: './tournament-submenu.html',
   styleUrl: './tournament-submenu.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

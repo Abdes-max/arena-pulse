@@ -1759,6 +1759,13 @@
       "noResults": "Aucun score validé pour le moment.",
       "noDefense": "Pas encore assez de matchs joués.",
       "noCategories": "Aucune catégorie."
+    },
+    "qrPoster": {
+      "scan": "Scannez pour ouvrir le tournoi",
+      "addPoster": "Ajouter l'affiche du tournoi en bas",
+      "print": "Imprimer",
+      "loading": "Préparation…",
+      "error": "Impossible de générer l'image."
     }
   },
   "wrapped": {

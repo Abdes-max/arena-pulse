@@ -1657,6 +1657,13 @@
       "noResults": "Aún no hay resultados validados.",
       "noDefense": "Aún no hay suficientes partidos jugados.",
       "noCategories": "Ninguna categoría."
+    },
+    "qrPoster": {
+      "scan": "Escanea para abrir el torneo",
+      "addPoster": "Añadir el cartel del torneo abajo",
+      "print": "Imprimir",
+      "loading": "Preparando…",
+      "error": "No se pudo generar la imagen."
     }
   },
   "wrapped": {
