@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './admin/core/auth.guard';
+import { guestGuard } from './admin/core/guest.guard';
 import { resetThemeGuard } from './admin/core/reset-theme.guard';
 import { playerAuthGuard } from './core/player-auth.guard';
 import { superAdminAuthGuard } from './super-admin/core/super-admin-auth.guard';
@@ -12,10 +13,12 @@ export const routes: Routes = [
   },
   {
     path: 'login',
+    canActivate: [guestGuard],
     loadComponent: () => import('./admin/pages/login/login.page').then((m) => m.LoginPage),
   },
   {
     path: 'register',
+    canActivate: [guestGuard],
     loadComponent: () => import('./admin/pages/register/register.page').then((m) => m.RegisterPage),
   },
   {
