@@ -869,3 +869,91 @@
     color: var(--ap-color-error);
   }
 }
+
+// Inscriptions section: switch, then every setting once switched on.
+.tournament-form-page__reg-switch {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-3);
+  cursor: pointer;
+
+  input {
+    width: 22px;
+    height: 22px;
+    margin: 0;
+    accent-color: var(--ap-color-primary);
+  }
+
+  span {
+    display: flex;
+    flex-direction: column;
+  }
+
+  small {
+    color: var(--ap-color-muted);
+  }
+}
+
+.tournament-form-page__reg-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--ap-space-3);
+
+  ap-text-field {
+    min-width: 0;
+  }
+}
+
+.tournament-form-page__reg-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th {
+    padding: var(--ap-space-2);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-align: left;
+    text-transform: uppercase;
+    color: var(--ap-color-muted);
+  }
+
+  td {
+    padding: var(--ap-space-1) var(--ap-space-2);
+    border-top: var(--ap-border-width) solid var(--ap-color-border);
+  }
+
+  td:first-child {
+    font-weight: 600;
+  }
+}
+
+.tournament-form-page__reg-textarea {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+  font-weight: 600;
+
+  textarea {
+    padding: var(--ap-space-3);
+    font: inherit;
+    font-weight: 400;
+    color: var(--ap-color-fg);
+    background: var(--ap-color-bg);
+    border: var(--ap-border-width) solid var(--ap-color-border);
+    border-radius: var(--ap-radius-md);
+  }
+}
+
+.tournament-form-page__reg-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-3);
+}
+
+.tournament-form-page__reg-link {
+  color: var(--ap-color-primary);
+  font-weight: 600;
+}

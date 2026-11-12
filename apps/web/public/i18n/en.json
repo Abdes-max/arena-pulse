@@ -1057,7 +1057,14 @@
         "nameLabel": "New name"
       },
       "simpleModeNotice": "Simple mode: some advanced settings are hidden.",
-      "simpleModeSwitch": "Switch to full mode"
+      "simpleModeSwitch": "Switch to full mode",
+      "registrations": {
+        "title": "Registrations",
+        "open": "Registrations open",
+        "offHint": "Players cannot pre-register yet.",
+        "category": "Category",
+        "requests": "See the requests ({{count}} pending)"
+      }
     },
     "teamList": {
       "title": "Teams",
@@ -1243,7 +1250,8 @@
         "EXEMPT": "Exempt"
       },
       "reason": "Reason",
-      "reasonLabel": "Reason for refusal (emailed, optional)"
+      "reasonLabel": "Reason for refusal (emailed, optional)",
+      "settingsInGeneral": "Settings in General"
     },
     "structure": {
       "title": "Competition structure",

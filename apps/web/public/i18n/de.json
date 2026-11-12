@@ -955,7 +955,14 @@
         "nameLabel": "Neuer Name"
       },
       "simpleModeNotice": "Einfacher Modus: Einige erweiterte Einstellungen sind ausgeblendet.",
-      "simpleModeSwitch": "Zum vollständigen Modus wechseln"
+      "simpleModeSwitch": "Zum vollständigen Modus wechseln",
+      "registrations": {
+        "title": "Anmeldungen",
+        "open": "Anmeldung möglich",
+        "offHint": "Spieler können sich noch nicht voranmelden.",
+        "category": "Kategorie",
+        "requests": "Anfragen ansehen ({{count}} offen)"
+      }
     },
     "teamList": {
       "title": "Teams",
@@ -1141,7 +1148,8 @@
         "EXEMPT": "Befreit"
       },
       "reason": "Grund",
-      "reasonLabel": "Ablehnungsgrund (per E-Mail, optional)"
+      "reasonLabel": "Ablehnungsgrund (per E-Mail, optional)",
+      "settingsInGeneral": "Einstellungen unter Allgemein"
     },
     "structure": {
       "title": "Wettbewerbsstruktur",

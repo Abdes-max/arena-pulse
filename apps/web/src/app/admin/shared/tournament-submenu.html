@@ -24,13 +24,6 @@
       {{ 'admin.submenu.teams' | transloco }}
     </a>
     <a
-      [routerLink]="['/admin/tournaments', tournamentId(), 'registrations']"
-      routerLinkActive="tournament-submenu__link--active"
-      (click)="centerTab($event)"
-    >
-      {{ 'admin.submenu.registrations' | transloco }}
-    </a>
-    <a
       [routerLink]="['/admin/tournaments', tournamentId(), 'structure']"
       routerLinkActive="tournament-submenu__link--active"
       (click)="centerTab($event)"

@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Badge, BadgeStatus, Button, TextField } from 'design-system';
 import { LanguageService } from 'design-tokens';
@@ -12,7 +12,6 @@ import {
 } from 'shared-models';
 import { AuthService } from '../../core/auth.service';
 import { RegistrationsService } from '../../core/registrations.service';
-import { TournamentsService } from '../../core/tournaments.service';
 
 const STATUS_TO_BADGE: Record<RegistrationStatus, BadgeStatus> = {
   PENDING: 'draft',
@@ -27,14 +26,14 @@ const STATUS_TO_BADGE: Record<RegistrationStatus, BadgeStatus> = {
 type Filter = 'ALL' | 'PENDING' | 'CONFIRMED' | 'WAITLIST' | 'REJECTED';
 
 /**
- * Pre-registrations of a tournament: the opening settings (open, dates,
- * payment details, card details) and every request, which the organizer
- * confirms, refuses or puts on the waiting list -- payment is collected by
+ * Pre-registrations of a tournament: every request, which the organizer
+ * confirms, refuses or puts on the waiting list (the settings are in
+ * Général) -- payment is collected by
  * the organizer and ticked here by hand.
  */
 @Component({
   selector: 'app-registration-list-page',
-  imports: [Badge, Button, TextField, TranslocoPipe],
+  imports: [Badge, Button, RouterLink, TextField, TranslocoPipe],
   templateUrl: './registration-list.page.html',
   styleUrl: './registration-list.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -43,7 +42,6 @@ export class RegistrationListPage {
   private readonly route = inject(ActivatedRoute);
   private readonly authService = inject(AuthService);
   private readonly registrationsService = inject(RegistrationsService);
-  private readonly tournamentsService = inject(TournamentsService);
   private readonly languageService = inject(LanguageService);
   private readonly transloco = inject(TranslocoService);
 
@@ -60,14 +58,9 @@ export class RegistrationListPage {
   protected readonly rejectingId = signal<string | null>(null);
   protected readonly rejectReason = signal('');
 
-  // Settings drafts
-  protected readonly opensAt = signal('');
-  protected readonly closesAt = signal('');
-  protected readonly paymentInfo = signal('');
-  protected readonly format = signal('');
-  protected readonly level = signal('');
-
   protected readonly statusBadge = STATUS_TO_BADGE;
+
+  protected readonly individual = computed(() => this.settings()?.participantType === 'INDIVIDUAL');
 
   protected readonly counts = computed(() => {
     const counts: Record<Filter, number> = {
@@ -92,8 +85,6 @@ export class RegistrationListPage {
       ? this.registrations()
       : this.registrations().filter((r) => this.filterOf(r.status) === this.filter()),
   );
-
-  protected readonly individual = computed(() => this.settings()?.participantType === 'INDIVIDUAL');
 
   constructor() {
     void this.load();
@@ -122,15 +113,12 @@ export class RegistrationListPage {
       return;
     }
     try {
-      const [registrations, settings, tournament] = await Promise.all([
+      const [registrations, settings] = await Promise.all([
         this.registrationsService.listRegistrations(organizationId, this.tournamentId),
         this.registrationsService.getSettings(organizationId, this.tournamentId),
-        this.tournamentsService.getTournament(organizationId, this.tournamentId),
       ]);
       this.registrations.set(registrations);
-      this.applySettings(settings);
-      this.format.set(tournament.format ?? '');
-      this.level.set(tournament.level ?? '');
+      this.settings.set(settings);
       if (registrations.every((r) => r.status !== 'PENDING')) {
         this.filter.set('ALL');
       }
@@ -139,13 +127,6 @@ export class RegistrationListPage {
     } finally {
       this.loading.set(false);
     }
-  }
-
-  private applySettings(settings: RegistrationSettings): void {
-    this.settings.set(settings);
-    this.opensAt.set(settings.opensAt ? settings.opensAt.slice(0, 10) : '');
-    this.closesAt.set(settings.closesAt ? settings.closesAt.slice(0, 10) : '');
-    this.paymentInfo.set(settings.paymentInfo ?? '');
   }
 
   protected statusLabel(status: RegistrationStatus): string {
@@ -177,50 +158,6 @@ export class RegistrationListPage {
       style: 'currency',
       currency: registration.currency || 'eur',
     }).format(registration.amountCents / 100);
-  }
-
-  protected onPaymentInfo(event: Event): void {
-    this.paymentInfo.set((event.target as HTMLTextAreaElement).value);
-  }
-
-  protected async toggleOpen(event: Event): Promise<void> {
-    await this.saveSettings({ open: (event.target as HTMLInputElement).checked });
-  }
-
-  protected async saveDetails(): Promise<void> {
-    const organizationId = this.organization()?.id;
-    await this.saveSettings({
-      opensAt: this.opensAt() ? new Date(`${this.opensAt()}T00:00:00`).toISOString() : null,
-      closesAt: this.closesAt() ? new Date(`${this.closesAt()}T23:59:59`).toISOString() : null,
-      paymentInfo: this.paymentInfo().trim() || null,
-    });
-    if (organizationId) {
-      await this.run(() =>
-        this.tournamentsService.updateTournament(organizationId, this.tournamentId, {
-          format: this.format().trim() || null,
-          level: this.level().trim() || null,
-        }),
-      );
-    }
-  }
-
-  private async saveSettings(
-    patch: Partial<{
-      open: boolean;
-      opensAt: string | null;
-      closesAt: string | null;
-      paymentInfo: string | null;
-    }>,
-  ): Promise<void> {
-    const organizationId = this.organization()?.id;
-    if (!organizationId) {
-      return;
-    }
-    await this.run(async () =>
-      this.applySettings(
-        await this.registrationsService.updateSettings(organizationId, this.tournamentId, patch),
-      ),
-    );
   }
 
   protected async confirm(registration: OrganizerRegistration): Promise<void> {

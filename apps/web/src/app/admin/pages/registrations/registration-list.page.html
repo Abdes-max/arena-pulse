@@ -9,77 +9,20 @@
     }
 
     @if (settings(); as s) {
-      <!-- Opening settings: the switch, optional dates, payment details, card details. -->
-      <section class="registration-list-page__settings">
-        <label class="registration-list-page__switch">
-          <input
-            type="checkbox"
-            [checked]="s.open"
-            [disabled]="busy()"
-            (change)="toggleOpen($event)"
-          />
-          <span>
-            <strong>{{ 'admin.registrationList.settings.open' | transloco }}</strong>
-            <small>{{
-              (s.openNow
-                ? 'admin.registrationList.settings.openNow'
-                : 'admin.registrationList.settings.closedNow'
-              ) | transloco
-            }}</small>
-          </span>
-        </label>
-        <p class="registration-list-page__hint">
-          {{
-            (individual()
-              ? 'admin.registrationList.settings.individualHint'
-              : 'admin.registrationList.settings.teamHint'
-            ) | transloco
-          }}
-        </p>
-        <div class="registration-list-page__row">
-          <ap-text-field
-            type="date"
-            [label]="'admin.registrationList.settings.opensAt' | transloco"
-            [value]="opensAt()"
-            (valueChange)="opensAt.set($event)"
-          />
-          <ap-text-field
-            type="date"
-            [label]="'admin.registrationList.settings.closesAt' | transloco"
-            [value]="closesAt()"
-            (valueChange)="closesAt.set($event)"
-          />
-        </div>
-        <label class="registration-list-page__textarea">
-          {{ 'admin.registrationList.settings.paymentInfo' | transloco }}
-          <textarea
-            rows="3"
-            [placeholder]="'admin.registrationList.settings.paymentInfoPlaceholder' | transloco"
-            [value]="paymentInfo()"
-            (input)="onPaymentInfo($event)"
-          ></textarea>
-        </label>
-        <div class="registration-list-page__row">
-          <ap-text-field
-            [label]="'admin.registrationList.settings.format' | transloco"
-            [placeholder]="'admin.registrationList.settings.formatPlaceholder' | transloco"
-            [value]="format()"
-            (valueChange)="format.set($event)"
-          />
-          <ap-text-field
-            [label]="'admin.registrationList.settings.level' | transloco"
-            [placeholder]="'admin.registrationList.settings.levelPlaceholder' | transloco"
-            [value]="level()"
-            (valueChange)="level.set($event)"
-          />
-        </div>
-        <p class="registration-list-page__hint">
-          {{ 'admin.registrationList.settings.placesHint' | transloco }}
-        </p>
-        <ap-button type="button" variant="secondary" [disabled]="busy()" (click)="saveDetails()">
-          {{ 'admin.registrationList.settings.save' | transloco }}
-        </ap-button>
-      </section>
+      <p class="registration-list-page__hint">
+        {{
+          (s.open
+            ? s.openNow
+              ? 'admin.registrationList.settings.openNow'
+              : 'admin.registrationList.settings.closedNow'
+            : 'admin.tournamentForm.registrations.offHint'
+          ) | transloco
+        }}
+        ·
+        <a [routerLink]="['/admin/tournaments', tournamentId]">{{
+          'admin.registrationList.settingsInGeneral' | transloco
+        }}</a>
+      </p>
     }
 
     <div class="registration-list-page__filters" role="tablist">

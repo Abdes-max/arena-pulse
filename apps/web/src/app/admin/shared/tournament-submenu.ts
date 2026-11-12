@@ -123,7 +123,7 @@ export class TournamentSubmenu {
   // labeled with the unlock condition while locked.
   private readonly authService = inject(AuthService);
   private readonly tournamentsService = inject(TournamentsService);
-  // Simple mode keeps only the essential tabs (Général, Équipes, Inscriptions,
+  // Simple mode keeps only the essential tabs (Général, Équipes,
   // Structure, Calendrier, Scores, Classement) -- hidden pages stay reachable by URL.
   protected readonly simpleMode = this.authService.simpleMode;
   protected readonly premiumUnlocked = signal(true);

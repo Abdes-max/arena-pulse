@@ -955,7 +955,14 @@
         "nameLabel": "Nuevo nombre"
       },
       "simpleModeNotice": "Modo simple: algunos ajustes avanzados están ocultos.",
-      "simpleModeSwitch": "Cambiar al modo completo"
+      "simpleModeSwitch": "Cambiar al modo completo",
+      "registrations": {
+        "title": "Inscripciones",
+        "open": "Inscripciones posibles",
+        "offHint": "Los jugadores aún no pueden preinscribirse.",
+        "category": "Categoría",
+        "requests": "Ver las solicitudes ({{count}} pendientes)"
+      }
     },
     "teamList": {
       "title": "Equipos",
@@ -1141,7 +1148,8 @@
         "EXEMPT": "Exento"
       },
       "reason": "Motivo",
-      "reasonLabel": "Motivo del rechazo (enviado por correo, opcional)"
+      "reasonLabel": "Motivo del rechazo (enviado por correo, opcional)",
+      "settingsInGeneral": "Ajustes en General"
     },
     "structure": {
       "title": "Estructura de la competición",
