@@ -1,3 +1,5 @@
+@use '../../section-card';
+
 .review-page {
   max-width: 960px;
   margin: 0 auto;
@@ -244,4 +246,10 @@
   margin: 0 0 var(--ap-space-2);
   font-family: var(--ap-font-heading);
   font-size: 1.5rem;
+}
+
+// Vérifier mon programme, at the bottom of Calendrier: a card too.
+.review-page.review-page--compact {
+  @include section-card.section-card;
+  margin-top: var(--ap-space-6);
 }

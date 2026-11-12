@@ -1,3 +1,5 @@
+@use '../../section-card';
+
 .tournament-form-page {
   max-width: 1000px;
   margin: 0 auto;
@@ -956,4 +958,9 @@
 .tournament-form-page__reg-link {
   color: var(--ap-color-primary);
   font-weight: 600;
+}
+
+// Each block (Catégories, Inscriptions, Sites et terrains, Description...) as a card.
+.tournament-form-page .tournament-form-page__section {
+  @include section-card.section-card;
 }
