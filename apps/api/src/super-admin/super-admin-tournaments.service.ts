@@ -12,6 +12,7 @@ import { DeletePlayerDto } from './dto/delete-player.dto';
 import { DeleteTeamDto } from './dto/delete-team.dto';
 import { DeleteTournamentDto } from './dto/delete-tournament.dto';
 import { SuperAdminAuditLogService } from './super-admin-audit-log.service';
+import { SUPPORT_SESSION_SECONDS, TokenService } from '../auth/token.service';
 
 // A Match has no direct tournamentId -- it hangs off either a Group or a
 // KnockoutBracket, each of which reaches the tournament through
@@ -34,7 +35,61 @@ export class SuperAdminTournamentsService {
     private readonly prisma: PrismaService,
     private readonly configService: ConfigService,
     private readonly auditLog: SuperAdminAuditLogService,
+    private readonly tokenService: TokenService,
   ) {}
+
+  /**
+   * Assistance: lets a super-admin act in a tournament's admin exactly as its
+   * organizer would -- a 2 h organizer session for the organization's first
+   * admin, marked supportBy (no refresh token, account deletion refused) and
+   * written to the audit log.
+   */
+  async startSupportSession(superAdminId: string, tournamentId: string) {
+    const tournament = await this.prisma.tournament.findUnique({
+      where: { id: tournamentId },
+      select: { id: true, name: true, organizationId: true },
+    });
+    if (!tournament) {
+      throw new NotFoundException('Tournoi introuvable.');
+    }
+    const owner = await this.prisma.organizationMember.findFirst({
+      where: { organizationId: tournament.organizationId, role: 'ORG_ADMIN' },
+      orderBy: { createdAt: 'asc' },
+      include: {
+        user: {
+          select: { id: true, email: true, firstName: true, lastName: true },
+        },
+      },
+    });
+    if (!owner) {
+      throw new NotFoundException(
+        "Cette organisation n'a pas d'administrateur.",
+      );
+    }
+    const accessToken = this.tokenService.signSupportAccessToken({
+      sub: owner.user.id,
+      email: owner.user.email,
+      type: 'organizer',
+      supportBy: superAdminId,
+    });
+    await this.auditLog.record({
+      superAdminId,
+      action: 'SUPPORT_SESSION',
+      targetType: 'Tournament',
+      targetId: tournament.id,
+      note: `${tournament.name} (en tant que ${owner.user.email})`,
+    });
+    return {
+      accessToken,
+      expiresIn: SUPPORT_SESSION_SECONDS,
+      organizationId: tournament.organizationId,
+      tournamentId: tournament.id,
+      organizerEmail: owner.user.email,
+      organizerName: [owner.user.firstName, owner.user.lastName]
+        .filter(Boolean)
+        .join(' '),
+    };
+  }
 
   async list() {
     const tournaments = await this.prisma.tournament.findMany({

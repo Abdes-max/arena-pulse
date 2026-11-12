@@ -91,6 +91,27 @@ export class SuperAdminService {
     );
   }
 
+  /** Assistance: a 2 h session in this tournament's admin, as its organizer. */
+  startSupportSession(tournamentId: string): Promise<{
+    accessToken: string;
+    expiresIn: number;
+    organizationId: string;
+    tournamentId: string;
+    organizerEmail: string;
+    organizerName: string;
+  }> {
+    return firstValueFrom(
+      this.http.post<{
+        accessToken: string;
+        expiresIn: number;
+        organizationId: string;
+        tournamentId: string;
+        organizerEmail: string;
+        organizerName: string;
+      }>(`${this.base}/tournaments/${tournamentId}/support-session`, {}),
+    );
+  }
+
   deleteTournament(tournamentId: string, confirmation: string): Promise<void> {
     return firstValueFrom(
       this.http.delete<void>(`${this.base}/tournaments/${tournamentId}`, {

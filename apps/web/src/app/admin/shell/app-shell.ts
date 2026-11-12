@@ -202,4 +202,13 @@ export class AppShell {
   protected logoutFromWarning(): void {
     void this.logout();
   }
+
+  /** Back to the super-admin tournament page the assistance started from. */
+  protected async leaveSupport(): Promise<void> {
+    const tournamentId = this.authService.supportSession()?.tournamentId;
+    this.authService.endSupportSession();
+    await this.router.navigate(
+      tournamentId ? ['/super-admin/tournaments', tournamentId] : ['/super-admin'],
+    );
+  }
 }

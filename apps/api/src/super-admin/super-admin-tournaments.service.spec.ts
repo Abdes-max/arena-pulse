@@ -10,6 +10,7 @@ import { SuperAdminAuditLogService } from './super-admin-audit-log.service';
 // touching the real filesystem.
 type PrismaMock = {
   tournament: { findUnique: jest.Mock; delete: jest.Mock };
+  organizationMember: { findFirst: jest.Mock };
   team: { findMany: jest.Mock; findUnique: jest.Mock; delete: jest.Mock };
   tournamentSponsor: { findMany: jest.Mock };
   player: { findUnique: jest.Mock; delete: jest.Mock };
@@ -18,6 +19,7 @@ type PrismaMock = {
 function createPrismaMock(): PrismaMock {
   return {
     tournament: { findUnique: jest.fn(), delete: jest.fn() },
+    organizationMember: { findFirst: jest.fn() },
     team: {
       findMany: jest.fn().mockResolvedValue([]),
       findUnique: jest.fn(),
@@ -28,18 +30,25 @@ function createPrismaMock(): PrismaMock {
   };
 }
 
+import { TokenService } from '../auth/token.service';
+
 describe('SuperAdminTournamentsService deletions', () => {
   let prisma: PrismaMock;
   let auditLog: { record: jest.Mock };
   let service: SuperAdminTournamentsService;
+  let tokenService: { signSupportAccessToken: jest.Mock };
 
   beforeEach(() => {
     prisma = createPrismaMock();
     auditLog = { record: jest.fn().mockResolvedValue(undefined) };
+    tokenService = {
+      signSupportAccessToken: jest.fn().mockReturnValue('support-token'),
+    };
     service = new SuperAdminTournamentsService(
       prisma as unknown as PrismaService,
       new ConfigService({}),
       auditLog as unknown as SuperAdminAuditLogService,
+      tokenService as unknown as TokenService,
     );
   });
 
@@ -177,6 +186,49 @@ describe('SuperAdminTournamentsService deletions', () => {
           targetId: 'player-1',
           note: 'Ada Lovelace',
         }),
+      );
+    });
+  });
+
+  describe('startSupportSession', () => {
+    it("opens a 2 h session as the organization's first admin and logs it", async () => {
+      prisma.tournament.findUnique.mockResolvedValue({
+        id: 't-1',
+        name: 'Plateau U11',
+        organizationId: 'org-1',
+      });
+      prisma.organizationMember.findFirst.mockResolvedValue({
+        user: {
+          id: 'u-1',
+          email: 'orga@club.fr',
+          firstName: 'Ana',
+          lastName: 'B',
+        },
+      });
+
+      const result = await service.startSupportSession('sa-1', 't-1');
+
+      expect(tokenService.signSupportAccessToken).toHaveBeenCalledWith({
+        sub: 'u-1',
+        email: 'orga@club.fr',
+        type: 'organizer',
+        supportBy: 'sa-1',
+      });
+      expect(result).toEqual(
+        expect.objectContaining({
+          accessToken: 'support-token',
+          organizationId: 'org-1',
+        }),
+      );
+      expect(auditLog.record).toHaveBeenCalledWith(
+        expect.objectContaining({ action: 'SUPPORT_SESSION', targetId: 't-1' }),
+      );
+    });
+
+    it('refuses an unknown tournament', async () => {
+      prisma.tournament.findUnique.mockResolvedValue(null);
+      await expect(service.startSupportSession('sa-1', 'nope')).rejects.toThrow(
+        'introuvable',
       );
     });
   });

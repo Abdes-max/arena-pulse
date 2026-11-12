@@ -12,7 +12,12 @@ export interface AccessTokenPayload {
   sub: string;
   email: string;
   type: 'organizer';
+  /** Set when a super-admin entered as this organizer to help them (support session). */
+  supportBy?: string;
 }
+
+/** Length of a super-admin support session, never renewed. */
+export const SUPPORT_SESSION_SECONDS = 2 * 3600;
 
 export interface IssuedRefreshToken {
   token: string;
@@ -51,6 +56,13 @@ export class TokenService {
   signAccessToken<T extends object>(payload: T): string {
     return this.jwtService.sign(payload, {
       expiresIn: this.accessTokenExpiresInSeconds,
+    });
+  }
+
+  /** Support session token (see SuperAdminTournamentsService.startSupportSession): fixed 2 h, no refresh token. */
+  signSupportAccessToken(payload: AccessTokenPayload): string {
+    return this.jwtService.sign(payload, {
+      expiresIn: SUPPORT_SESSION_SECONDS,
     });
   }
 

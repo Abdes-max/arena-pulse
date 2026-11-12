@@ -9,6 +9,9 @@
     <div class="super-admin-tournament-detail-page__header">
       <h1>{{ t.name }}</h1>
       <ap-badge [status]="statusBadge[t.status]" />
+      <ap-button type="button" [disabled]="enteringSupport()" (click)="enterAsOrganizer()">
+        Entrer dans le tournoi (assistance)
+      </ap-button>
       @if (!dangerZoneOpen()) {
         <ap-button type="button" variant="ghost" (click)="openDangerZone()"
           >Supprimer ce tournoi</ap-button
