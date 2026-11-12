@@ -17,6 +17,19 @@ export interface RegisterResponse {
   email: string;
 }
 
+// Assistance survives a reload of this tab (sessionStorage: this tab only,
+// gone once it closes), otherwise the browser's own organizer cookie would
+// silently take over.
+const SUPPORT_STORAGE_KEY = 'ta.supportSession';
+
+interface StoredSupportSession {
+  accessToken: string;
+  organizationId: string;
+  tournamentId: string;
+  organizerEmail: string;
+  expiresAt: number;
+}
+
 interface TokenResponse {
   accessToken: string;
   expiresIn: number;
@@ -33,8 +46,8 @@ export class AuthService {
   readonly isAuthenticated = computed(() => this.accessToken() !== null);
 
   /**
-   * Assistance: a super-admin acting as this organizer (2 h token, kept in
-   * memory only, never refreshed -- a refresh would swap to whatever real
+   * Assistance: a super-admin acting as this organizer (2 h token, kept for
+   * this tab only, never refreshed -- a refresh would swap to whatever real
    * organizer session the browser's cookie holds).
    */
   readonly supportSession = signal<{
@@ -102,6 +115,8 @@ export class AuthService {
 
   /** rememberMe false: the API sets a session-only refresh cookie (gone once the browser closes). */
   async login(email: string, password: string, rememberMe = true): Promise<void> {
+    // a real login replaces any assistance left in this tab
+    this.endSupportSession();
     const response = await firstValueFrom(
       this.http.post<TokenResponse>(
         `${environment.apiUrl}/auth/login`,
@@ -115,6 +130,21 @@ export class AuthService {
 
   /** Restores a session from the httpOnly refresh cookie on app startup. */
   async silentRefresh(): Promise<boolean> {
+    if (!this.supportSession()) {
+      const stored = readStoredSupportSession();
+      if (stored && Date.now() < stored.expiresAt) {
+        const { accessToken, ...support } = stored;
+        this.supportSession.set(support);
+        this.accessToken.set(accessToken);
+        try {
+          await this.loadProfile();
+          return true;
+        } catch {
+          this.endSupportSession();
+          return false;
+        }
+      }
+    }
     const support = this.supportSession();
     if (support) {
       if (Date.now() < support.expiresAt) {
@@ -154,19 +184,33 @@ export class AuthService {
     tournamentId: string;
     organizerEmail: string;
   }): Promise<void> {
-    this.supportSession.set({
+    const support = {
       organizationId: session.organizationId,
       tournamentId: session.tournamentId,
       organizerEmail: session.organizerEmail,
       expiresAt: Date.now() + session.expiresIn * 1000,
-    });
+    };
+    this.supportSession.set(support);
     this.accessToken.set(session.accessToken);
+    try {
+      sessionStorage.setItem(
+        SUPPORT_STORAGE_KEY,
+        JSON.stringify({ ...support, accessToken: session.accessToken }),
+      );
+    } catch {
+      // storage blocked: assistance just won't survive a reload
+    }
     await this.loadProfile();
   }
 
   /** Leaves assistance: drops the borrowed session (the real one, if any, comes back on the next refresh). */
   endSupportSession(): void {
     this.supportSession.set(null);
+    try {
+      sessionStorage.removeItem(SUPPORT_STORAGE_KEY);
+    } catch {
+      // nothing stored
+    }
     this.clearSession();
   }
 
@@ -250,5 +294,22 @@ export class AuthService {
     this.accessToken.set(null);
     this.currentUserSignal.set(null);
     this.organizationsSignal.set([]);
+  }
+}
+
+function readStoredSupportSession(): StoredSupportSession | null {
+  try {
+    const raw = sessionStorage.getItem(SUPPORT_STORAGE_KEY);
+    const parsed = raw ? (JSON.parse(raw) as Partial<StoredSupportSession>) : null;
+    return parsed &&
+      typeof parsed.accessToken === 'string' &&
+      typeof parsed.organizationId === 'string' &&
+      typeof parsed.tournamentId === 'string' &&
+      typeof parsed.organizerEmail === 'string' &&
+      typeof parsed.expiresAt === 'number'
+      ? (parsed as StoredSupportSession)
+      : null;
+  } catch {
+    return null;
   }
 }
