@@ -26,7 +26,9 @@
   gap: var(--ap-space-3);
   max-width: 1000px;
   margin: 0 auto;
-  padding: var(--ap-space-3) var(--ap-space-6) 0;
+  // Same total height as before (12px), split evenly above and below so the
+  // logo and name sit centered between the top bar and the tabs.
+  padding: calc(var(--ap-space-3) / 2) var(--ap-space-6);
 }
 
 // Same size as the public site's own tournament-shell logo (feat/180,
