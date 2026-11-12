@@ -1711,5 +1711,26 @@
     "open": "Inscrições abertas ({{taken}}/{{total}})",
     "openNoLimit": "Inscrições abertas",
     "full": "Completo · lista de espera"
+  },
+  "myRegistrations": {
+    "title": "As minhas inscrições",
+    "loading": "A carregar…",
+    "empty": "Nenhuma inscrição por agora.",
+    "browse": "Ver torneios com inscrições abertas",
+    "cancel": "Anular o meu pedido",
+    "reason": "Motivo",
+    "status": {
+      "PENDING": "A aguardar validação",
+      "CONFIRMED": "Confirmada",
+      "WAITLIST": "Lista de espera",
+      "REJECTED": "Recusada",
+      "CANCELLED": "Cancelada",
+      "PAID": "Confirmada",
+      "PENDING_PAYMENT": "Pagamento em curso"
+    },
+    "errors": {
+      "load": "Não foi possível carregar as suas inscrições.",
+      "cancel": "Não foi possível anular este pedido."
+    }
   }
 }

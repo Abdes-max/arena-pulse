@@ -1711,5 +1711,26 @@
     "open": "Inscripciones abiertas ({{taken}}/{{total}})",
     "openNoLimit": "Inscripciones abiertas",
     "full": "Completo · lista de espera"
+  },
+  "myRegistrations": {
+    "title": "Mis inscripciones",
+    "loading": "Cargando…",
+    "empty": "Ninguna inscripción por ahora.",
+    "browse": "Ver torneos con inscripciones abiertas",
+    "cancel": "Anular mi solicitud",
+    "reason": "Motivo",
+    "status": {
+      "PENDING": "Pendiente de validación",
+      "CONFIRMED": "Confirmada",
+      "WAITLIST": "Lista de espera",
+      "REJECTED": "Rechazada",
+      "CANCELLED": "Cancelada",
+      "PAID": "Confirmada",
+      "PENDING_PAYMENT": "Pago en curso"
+    },
+    "errors": {
+      "load": "No se pudieron cargar tus inscripciones.",
+      "cancel": "No se pudo anular esta solicitud."
+    }
   }
 }

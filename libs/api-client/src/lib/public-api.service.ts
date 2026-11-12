@@ -139,6 +139,16 @@ export class PublicApiService {
     );
   }
 
+  /** Withdraws a request that isn't confirmed yet; returns the player's updated list. */
+  cancelRegistration(registrationId: string): Promise<PlayerRegistration[]> {
+    return firstValueFrom(
+      this.http.post<PlayerRegistration[]>(
+        `${this.config.apiUrl}/public/registrations/${registrationId}/cancel`,
+        {},
+      ),
+    );
+  }
+
   listMyRegistrations(): Promise<PlayerRegistration[]> {
     return firstValueFrom(
       this.http.get<PlayerRegistration[]>(`${this.config.apiUrl}/public/registrations/me`),
