@@ -1,3 +1,5 @@
+@use '../../section-card';
+
 .team-list-page {
   max-width: 1000px;
   margin: 0 auto;
@@ -361,4 +363,11 @@
   > ap-text-field {
     flex: 1 1 180px;
   }
+}
+
+// Arbitres under the teams: its own card.
+.team-list-page__referees {
+  @include section-card.section-card;
+  margin-top: var(--ap-space-8);
+  border-top: var(--ap-border-width) solid var(--ap-color-border);
 }
