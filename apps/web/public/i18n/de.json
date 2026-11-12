@@ -1344,7 +1344,7 @@
       "editor": {
         "title": "Spielplan-Editor",
         "empty": "Für diese Phase wurden keine Spiele erstellt.",
-        "dragHint": "Ziehen Sie ein Spiel per Drag-and-drop auf einen freien Slot, um es umzuplanen, oder auf „Nicht geplant“, um es aus dem Spielplan zu entfernen.",
+        "dragHint": "Ziehen Sie ein Spiel oder ein freies Zeitfenster: Eine Linie zeigt, wo es landet, auf jedem Platz. Die folgenden Zeitfenster verschieben sich (die des verlassenen Platzes rücken vor); Pausen zwischen Phasen bleiben erhalten. Eine Mannschaft kann nicht zwei Spiele gleichzeitig bestreiten.",
         "summary": "{{matches}} Spiele · {{rotations}} Runden · {{start}} → {{end}}",
         "selectMatchAria": "Dieses Spiel zum Umplanen auswählen",
         "removeOfficialAria": "Diesen Offiziellen entfernen",
@@ -1358,7 +1358,8 @@
         "startLabel": "Start",
         "endLabel": "Ende",
         "labelLabel": "Beschriftung",
-        "addSlot": "+ Slot"
+        "addSlot": "+ Slot",
+        "slotMinutesLabel": "Länge des Zeitfensters (Minuten)"
       },
       "round": "Runde {{round}}",
       "addRefereeOption": "+ Schiedsrichter…",

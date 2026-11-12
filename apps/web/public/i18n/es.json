@@ -1344,7 +1344,7 @@
       "editor": {
         "title": "Editor del calendario",
         "empty": "Ningún partido generado para esta fase.",
-        "dragHint": "Arrastra y suelta un partido a un turno libre para reprogramarlo, o a «Sin programar» para quitarlo del calendario.",
+        "dragHint": "Arrastra un partido o una franja libre: una línea muestra dónde se colocará, en cualquier campo. Las franjas siguientes se desplazan (y las del campo que deja se adelantan); se conservan las pausas entre fases. Un equipo no puede jugar dos partidos a la vez.",
         "summary": "{{matches}} partidos · {{rotations}} rotaciones · {{start}} → {{end}}",
         "selectMatchAria": "Seleccionar este partido para reprogramarlo",
         "removeOfficialAria": "Quitar este oficial",
@@ -1358,7 +1358,8 @@
         "startLabel": "Inicio",
         "endLabel": "Fin",
         "labelLabel": "Etiqueta",
-        "addSlot": "+ Turno"
+        "addSlot": "+ Turno",
+        "slotMinutesLabel": "Duración de la franja (minutos)"
       },
       "round": "Ronda {{round}}",
       "addRefereeOption": "+ Árbitro…",

@@ -1446,7 +1446,7 @@
       "editor": {
         "title": "Schedule editor",
         "empty": "No matches generated for this phase.",
-        "dragHint": "Drag and drop a match onto a free slot to reschedule it, or onto \"Unscheduled\" to remove it from the schedule.",
+        "dragHint": "Drag a match or a free slot: a line shows where it will land, on any field. The following slots shift (and those of the field it leaves move up); breaks between phases are kept. A team cannot play two matches at the same time.",
         "summary": "{{matches}} matches · {{rotations}} rotations · {{start}} → {{end}}",
         "selectMatchAria": "Select this match to reschedule it",
         "removeOfficialAria": "Remove this official",
@@ -1460,7 +1460,8 @@
         "startLabel": "Start",
         "endLabel": "End",
         "labelLabel": "Label",
-        "addSlot": "+ Slot"
+        "addSlot": "+ Slot",
+        "slotMinutesLabel": "Slot length (minutes)"
       },
       "round": "Round {{round}}",
       "addRefereeOption": "+ Referee…",
