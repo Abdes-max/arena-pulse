@@ -218,9 +218,6 @@
 
 // Assistance banner: always visible while a super-admin acts as the organizer.
 .app-shell__support {
-  position: sticky;
-  top: 0;
-  z-index: 150;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
