@@ -95,7 +95,7 @@
         } @else {
           @for (day of entry.scheduleDays; track day.label) {
             <h4>{{ day.label }}</h4>
-            <table class="print-export-page__table">
+            <table class="print-export-page__table print-export-page__table--matches">
               <thead>
                 <tr>
                   <th>{{ 'admin.printExport.time' | transloco }}</th>
@@ -137,10 +137,21 @@
 
           @if (entry.scheduleUnscheduled.length > 0) {
             <h4>{{ 'admin.printExport.unscheduled' | transloco }}</h4>
-            <table class="print-export-page__table">
+            <table class="print-export-page__table print-export-page__table--matches">
+              <thead>
+                <tr>
+                  <th>{{ 'admin.printExport.time' | transloco }}</th>
+                  <th>{{ 'admin.printExport.field' | transloco }}</th>
+                  <th>{{ 'admin.standings.table.team' | transloco }}</th>
+                  <th></th>
+                  <th>{{ 'admin.standings.table.team' | transloco }}</th>
+                </tr>
+              </thead>
               <tbody>
                 @for (match of entry.scheduleUnscheduled; track match.id) {
                   <tr>
+                    <td>{{ match.timeSlot ? formatTime(match.timeSlot.startTime) : '-' }}</td>
+                    <td>{{ match.timeSlot?.field?.name ?? '-' }}</td>
                     <td>
                       <span class="print-export-page__team">
                         @if (teamLogo(match.homeTeam?.logoUrl); as src) {
@@ -262,10 +273,21 @@
         } @else {
           @for (section of entry.bracketSections; track section.label) {
             <h4>{{ section.label }}</h4>
-            <table class="print-export-page__table">
+            <table class="print-export-page__table print-export-page__table--matches">
+              <thead>
+                <tr>
+                  <th>{{ 'admin.printExport.time' | transloco }}</th>
+                  <th>{{ 'admin.printExport.field' | transloco }}</th>
+                  <th>{{ 'admin.standings.table.team' | transloco }}</th>
+                  <th></th>
+                  <th>{{ 'admin.standings.table.team' | transloco }}</th>
+                </tr>
+              </thead>
               <tbody>
                 @for (match of section.matches; track match.id) {
                   <tr>
+                    <td>{{ match.timeSlot ? formatTime(match.timeSlot.startTime) : '-' }}</td>
+                    <td>{{ match.timeSlot?.field?.name ?? '-' }}</td>
                     <td>
                       <span class="print-export-page__team">
                         @if (teamLogo(match.homeTeam?.logoUrl); as src) {

@@ -408,7 +408,8 @@
       "exportPdf": "PDF exportieren",
       "share": "Teilen",
       "premiumLocked": "Nur für Turniere mit mehr als {{count}} Teams oder mit aktivem Jahresabonnement.",
-      "stats": "Statistiken"
+      "stats": "Statistiken",
+      "slideshow": "Diashow (TV-Bildschirm)"
     },
     "auth": {
       "login": {
