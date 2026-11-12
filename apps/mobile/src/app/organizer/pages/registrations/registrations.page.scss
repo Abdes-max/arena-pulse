@@ -1,3 +1,5 @@
+@use '../../section-card';
+
 .reg-page__back {
   display: inline-flex;
   align-items: center;
@@ -161,4 +163,8 @@
     min-height: 36px;
     font: inherit;
   }
+}
+
+.reg-page__settings {
+  @include section-card.section-card;
 }

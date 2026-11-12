@@ -672,7 +672,7 @@
               [value]="newCategoryName()"
               (valueChange)="onNewCategoryNameChange($event)"
             />
-            <ap-button type="button" variant="secondary" (click)="addCategory()">{{
+            <ap-button type="button" (click)="addCategory()">{{
               'admin.tournamentForm.categories.addCategory' | transloco
             }}</ap-button>
           </div>

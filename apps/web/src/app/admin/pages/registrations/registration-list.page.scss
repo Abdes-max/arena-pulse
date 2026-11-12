@@ -1,3 +1,5 @@
+@use '../../section-card';
+
 .registration-list-page {
   max-width: 900px;
   margin: 0 auto;
@@ -98,10 +100,11 @@
   }
 }
 
+// The requests in one card.
 .registration-list-page__list {
+  @include section-card.section-card;
   list-style: none;
   margin: 0;
-  padding: 0;
   display: flex;
   flex-direction: column;
   gap: var(--ap-space-3);

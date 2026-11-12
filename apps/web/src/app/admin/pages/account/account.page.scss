@@ -1,3 +1,5 @@
+@use '../../section-card';
+
 .account-page {
   max-width: 560px;
   margin: 0 auto;
@@ -10,7 +12,7 @@
   }
 
   section {
-    margin-bottom: var(--ap-space-8);
+    @include section-card.section-card;
   }
 
   h2 {
@@ -27,8 +29,7 @@
 
 // The first destructive-action zone in this app -- a visible border in the
 // error color signals "careful here" without needing a modal.
-.account-page__danger-zone {
-  padding: var(--ap-space-5);
+.account-page .account-page__danger-zone {
   border: var(--ap-border-width) solid var(--ap-color-error);
   border-radius: var(--ap-radius-md);
 

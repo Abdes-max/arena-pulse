@@ -948,6 +948,8 @@
 }
 
 .tournament-form-page__reg-actions {
+  // Not glued to "Modalités de paiement" just above.
+  margin-top: var(--ap-space-4);
   display: flex;
   flex-wrap: wrap;
   align-items: center;
