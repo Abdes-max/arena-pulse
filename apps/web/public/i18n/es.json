@@ -213,7 +213,13 @@
     "resultsCount": "{{count}} torneo(s) encontrado(s)",
     "empty": "Ningún torneo coincide con tu búsqueda.",
     "loadMore": "Cargar más",
-    "loading": "Cargando…"
+    "loading": "Cargando…",
+    "registrationTitle": "Torneos con inscripciones abiertas",
+    "registrationLede": "Encuentra un torneo cerca de ti y envía la preinscripción de tu equipo en segundos.",
+    "emptyRegistrationTitle": "Ningún torneo tiene inscripciones abiertas por ahora",
+    "emptyRegistrationText": "Vuelve pronto o consulta todos los torneos publicados.",
+    "seeAll": "Ver todos los torneos",
+    "organize": "Organizar un torneo"
   },
   "tv": {
     "current": "Now playing",

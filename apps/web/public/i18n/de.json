@@ -213,7 +213,13 @@
     "resultsCount": "{{count}} Turnier(e) gefunden",
     "empty": "Kein Turnier entspricht Ihrer Suche.",
     "loadMore": "Mehr laden",
-    "loading": "Wird geladen…"
+    "loading": "Wird geladen…",
+    "registrationTitle": "Turniere mit offener Anmeldung",
+    "registrationLede": "Finden Sie ein Turnier in Ihrer Nähe und senden Sie die Voranmeldung Ihrer Mannschaft in Sekunden.",
+    "emptyRegistrationTitle": "Derzeit ist kein Turnier zur Anmeldung geöffnet",
+    "emptyRegistrationText": "Schauen Sie bald wieder vorbei oder sehen Sie alle veröffentlichten Turniere.",
+    "seeAll": "Alle Turniere ansehen",
+    "organize": "Turnier organisieren"
   },
   "tv": {
     "current": "Now playing",

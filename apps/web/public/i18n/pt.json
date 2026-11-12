@@ -213,7 +213,13 @@
     "resultsCount": "{{count}} torneio(s) encontrado(s)",
     "empty": "Nenhum torneio corresponde à sua pesquisa.",
     "loadMore": "Carregar mais",
-    "loading": "A carregar…"
+    "loading": "A carregar…",
+    "registrationTitle": "Torneios com inscrições abertas",
+    "registrationLede": "Encontre um torneio perto de si e envie a pré-inscrição da sua equipa em segundos.",
+    "emptyRegistrationTitle": "Nenhum torneio tem inscrições abertas de momento",
+    "emptyRegistrationText": "Volte em breve ou consulte todos os torneios publicados.",
+    "seeAll": "Ver todos os torneios",
+    "organize": "Organizar um torneio"
   },
   "tv": {
     "current": "Now playing",
