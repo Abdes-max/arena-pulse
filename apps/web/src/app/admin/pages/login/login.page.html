@@ -1,7 +1,14 @@
-<main class="login-page">
-  <form class="login-page__card" [formGroup]="form" (ngSubmit)="submit()">
-    <ap-logo class="login-page__brand" />
-    <h1>{{ 'admin.auth.login.title' | transloco }}</h1>
+<main class="login-page auth-shell">
+  <header class="auth-shell__hero" data-theme="ink-signal" data-mode="dark">
+    <div class="auth-shell__hero-inner">
+      <a class="auth-shell__home" routerLink="/" [attr.aria-label]="'admin.auth.home' | transloco">
+        <ap-logo variant="on-dark" />
+      </a>
+      <h1>{{ 'admin.auth.login.title' | transloco }}</h1>
+      <p class="auth-shell__lede">{{ 'admin.auth.login.lede' | transloco }}</p>
+    </div>
+  </header>
+  <form class="login-page__card auth-shell__card" [formGroup]="form" (ngSubmit)="submit()">
     @if (sessionExpired) {
       <p class="login-page__hint">{{ 'admin.auth.login.sessionExpired' | transloco }}</p>
     }

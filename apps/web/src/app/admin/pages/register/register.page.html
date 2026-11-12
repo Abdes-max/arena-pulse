@@ -1,9 +1,26 @@
-<main class="register-page">
+<main class="register-page auth-shell">
+  <header class="auth-shell__hero" data-theme="ink-signal" data-mode="dark">
+    <div class="auth-shell__hero-inner">
+      <a class="auth-shell__home" routerLink="/" [attr.aria-label]="'admin.auth.home' | transloco">
+        <ap-logo variant="on-dark" />
+      </a>
+      <h1>
+        {{
+          (state() === 'sent' ? 'admin.auth.register.sentTitle' : 'admin.auth.register.title')
+            | transloco
+        }}
+      </h1>
+      <p class="auth-shell__lede">
+        {{
+          (state() === 'sent' ? 'admin.auth.register.sentLede' : 'admin.auth.register.lede')
+            | transloco
+        }}
+      </p>
+    </div>
+  </header>
   @switch (state()) {
     @case ('form') {
-      <form class="register-page__card" [formGroup]="form" (ngSubmit)="submit()">
-        <ap-logo class="register-page__brand" />
-        <h1>{{ 'admin.auth.register.title' | transloco }}</h1>
+      <form class="register-page__card auth-shell__card" [formGroup]="form" (ngSubmit)="submit()">
         <ap-text-field
           [label]="'admin.auth.register.orgNameLabel' | transloco"
           formControlName="organizationName"
@@ -46,9 +63,7 @@
       </form>
     }
     @case ('sent') {
-      <div class="register-page__card">
-        <ap-logo class="register-page__brand" />
-        <h1>{{ 'admin.auth.register.sentTitle' | transloco }}</h1>
+      <div class="register-page__card auth-shell__card">
         <p>
           {{ 'admin.auth.register.sentBody' | transloco: { email: registeredEmail() } }}
         </p>

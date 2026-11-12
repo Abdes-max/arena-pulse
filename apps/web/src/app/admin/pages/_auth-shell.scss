@@ -1,0 +1,82 @@
+// Login / sign-up look, same as the vitrine and Découvrir: a dark hero with
+// the signal/ember glow, then the form in a card lifted over it.
+.auth-shell {
+  display: block;
+  min-height: 100dvh;
+  padding: 0;
+  background: var(--ap-color-bg);
+  color: var(--ap-color-fg);
+}
+
+.auth-shell__hero {
+  position: relative;
+  overflow: hidden;
+  padding: var(--ap-space-8) var(--ap-space-6) calc(var(--ap-space-16) + var(--ap-space-8));
+  color: var(--ap-color-fg);
+  background: var(--ap-color-bg);
+  text-align: center;
+
+  h1 {
+    position: relative;
+    margin: var(--ap-space-6) 0 var(--ap-space-3);
+    font-family: var(--ap-font-heading);
+    font-size: clamp(1.9rem, 4.5vw, 2.6rem);
+    font-weight: 700;
+    letter-spacing: var(--ap-tracking-tight);
+    line-height: 1.1;
+  }
+}
+
+.auth-shell__hero::before {
+  content: '';
+  position: absolute;
+  inset: -30% -10% auto -10%;
+  height: 90%;
+  background:
+    radial-gradient(closest-side, var(--ap-color-signal-soft), transparent),
+    radial-gradient(closest-side at 80% 20%, var(--ap-color-ember-soft), transparent 70%);
+  filter: blur(10px);
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.auth-shell__hero-inner {
+  position: relative;
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.auth-shell__home {
+  display: inline-block;
+}
+
+.auth-shell__lede {
+  margin: 0 auto;
+  max-width: 46ch;
+  color: var(--ap-color-muted);
+  font-size: 1.05rem;
+}
+
+.auth-shell__card {
+  position: relative;
+  max-width: 420px;
+  margin: calc(-1 * var(--ap-space-16)) auto var(--ap-space-12);
+  padding: var(--ap-space-6);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: 20px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+}
+
+@media (max-width: 480px) {
+  .auth-shell__hero {
+    padding-left: var(--ap-space-4);
+    padding-right: var(--ap-space-4);
+  }
+
+  .auth-shell__card {
+    margin-left: var(--ap-space-4);
+    margin-right: var(--ap-space-4);
+    padding: var(--ap-space-4);
+  }
+}
