@@ -1,3 +1,5 @@
+@use '../../section-card';
+
 ion-toolbar {
   --padding-start: var(--ap-space-4);
   --padding-end: var(--ap-space-4);
@@ -223,4 +225,11 @@ ion-title {
   background: var(--ap-color-surface);
   color: var(--ap-color-fg);
   border: 1px solid var(--ap-color-border);
+}
+
+// The overview above the list, as a card.
+app-organizer-dashboard {
+  @include section-card.section-card;
+  display: block;
+  margin-bottom: var(--ap-space-3);
 }

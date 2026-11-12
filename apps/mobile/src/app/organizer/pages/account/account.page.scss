@@ -1,3 +1,5 @@
+@use '../../section-card';
+
 ion-toolbar {
   --padding-start: var(--ap-space-2);
   --padding-end: var(--ap-space-4);
@@ -77,4 +79,15 @@ ion-title {
   margin: 0 !important;
   color: var(--ap-color-error);
   font-size: 0.9rem;
+}
+
+// Identity and danger zone as cards (the danger zone keeps its red border).
+.organizer-account-page__identity,
+.organizer-account-page__danger-zone {
+  @include section-card.section-card;
+  margin-bottom: var(--ap-space-4);
+}
+
+.organizer-account-page__danger-zone {
+  border-color: var(--ap-color-error);
 }

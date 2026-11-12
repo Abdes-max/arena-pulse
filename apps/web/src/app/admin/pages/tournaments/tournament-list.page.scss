@@ -1,3 +1,5 @@
+@use '../../section-card';
+
 .tournament-list-page {
   max-width: 900px;
   margin: 0 auto;
@@ -232,4 +234,11 @@
     align-items: flex-end;
     text-align: right;
   }
+}
+
+// Overview and the list itself, each as its own card.
+app-organization-dashboard,
+.tournament-list-page__panel {
+  @include section-card.section-card;
+  display: block;
 }

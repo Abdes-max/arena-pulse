@@ -35,278 +35,283 @@
     @if (tournaments().length === 0) {
       <p>{{ 'admin.tournamentList.empty' | transloco }}</p>
     } @else {
-      <div class="tournament-list-page__selects-row">
-        <ap-select
-          class="tournament-list-page__select"
-          [label]="'admin.tournamentList.statusFilterLabel' | transloco"
-          [options]="statusOptions()"
-          [value]="selectedStatus()"
-          (valueChange)="onStatusFilterChange($event)"
-        />
-        <ap-select
-          class="tournament-list-page__select"
-          [label]="'admin.tournamentList.timeFilterLabel' | transloco"
-          [options]="timeOptions()"
-          [value]="selectedTime()"
-          (valueChange)="onTimeFilterChange($event)"
-        />
-      </div>
+      <section class="tournament-list-page__panel">
+        <div class="tournament-list-page__selects-row">
+          <ap-select
+            class="tournament-list-page__select"
+            [label]="'admin.tournamentList.statusFilterLabel' | transloco"
+            [options]="statusOptions()"
+            [value]="selectedStatus()"
+            (valueChange)="onStatusFilterChange($event)"
+          />
+          <ap-select
+            class="tournament-list-page__select"
+            [label]="'admin.tournamentList.timeFilterLabel' | transloco"
+            [options]="timeOptions()"
+            [value]="selectedTime()"
+            (valueChange)="onTimeFilterChange($event)"
+          />
+        </div>
 
-      @if (filteredTournaments().length === 0) {
-        <p>{{ 'admin.tournamentList.emptyFiltered' | transloco }}</p>
-      } @else {
-        <table class="tournament-list-page__table">
-          <thead>
-            <tr>
-              <th scope="col">{{ 'admin.tournamentList.table.logo' | transloco }}</th>
-              <th scope="col">{{ 'admin.tournamentList.table.name' | transloco }}</th>
-              <th scope="col">{{ 'admin.tournamentList.table.sport' | transloco }}</th>
-              <th scope="col">{{ 'admin.tournamentList.table.status' | transloco }}</th>
-              <th scope="col">{{ 'admin.tournamentList.table.actions' | transloco }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (tournament of filteredTournaments(); track tournament.id) {
-              <tr class="tournament-list-page__row">
-                <td class="tournament-list-page__cell tournament-list-page__logo-cell">
-                  @if (logoUrl(tournament.logoUrl); as logo) {
-                    <img class="tournament-list-page__logo" [src]="logo" alt="" />
-                  } @else {
-                    <span class="tournament-list-page__logo-placeholder" aria-hidden="true"></span>
-                  }
-                </td>
-                <td class="tournament-list-page__cell tournament-list-page__cell--name">
-                  <div class="tournament-list-page__name">
-                    <span>{{ tournament.name }}</span>
-                    @if (metaLine(tournament); as meta) {
-                      <span class="tournament-list-page__meta">{{ meta }}</span>
+        @if (filteredTournaments().length === 0) {
+          <p>{{ 'admin.tournamentList.emptyFiltered' | transloco }}</p>
+        } @else {
+          <table class="tournament-list-page__table">
+            <thead>
+              <tr>
+                <th scope="col">{{ 'admin.tournamentList.table.logo' | transloco }}</th>
+                <th scope="col">{{ 'admin.tournamentList.table.name' | transloco }}</th>
+                <th scope="col">{{ 'admin.tournamentList.table.sport' | transloco }}</th>
+                <th scope="col">{{ 'admin.tournamentList.table.status' | transloco }}</th>
+                <th scope="col">{{ 'admin.tournamentList.table.actions' | transloco }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (tournament of filteredTournaments(); track tournament.id) {
+                <tr class="tournament-list-page__row">
+                  <td class="tournament-list-page__cell tournament-list-page__logo-cell">
+                    @if (logoUrl(tournament.logoUrl); as logo) {
+                      <img class="tournament-list-page__logo" [src]="logo" alt="" />
+                    } @else {
+                      <span
+                        class="tournament-list-page__logo-placeholder"
+                        aria-hidden="true"
+                      ></span>
                     }
-                  </div>
-                </td>
-                <td class="tournament-list-page__cell tournament-list-page__cell--sport">
-                  {{ tournament.sportName }}
-                </td>
-                <td class="tournament-list-page__cell tournament-list-page__cell--status">
-                  <ap-badge
-                    [status]="statusBadge[tournament.status]"
-                    [label]="statusLabel(tournament.status)"
-                  />
-                </td>
-                <td class="tournament-list-page__cell tournament-list-page__actions-cell">
-                  <div class="tournament-list-page__actions">
-                    <ap-button
-                      type="button"
-                      variant="primary"
-                      size="sm"
-                      (click)="editTournament(tournament)"
-                    >
-                      {{ 'admin.tournamentList.edit' | transloco }}
-                    </ap-button>
-                    @if (!simpleMode()) {
-                      <ap-button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        (click)="duplicate(tournament)"
-                      >
-                        {{ 'admin.tournamentList.duplicate' | transloco }}
-                      </ap-button>
-                    }
-                    <div class="tournament-list-page__share">
-                      <ap-button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        [disabled]="!hasShareActions(tournament)"
-                        (click)="toggleShareMenu(tournament)"
-                      >
-                        {{ 'admin.tournamentList.share' | transloco }} ▾
-                      </ap-button>
-                      @if (shareMenuFor() === tournament.id) {
-                        @let actions = shareActions(tournament);
-                        <button
-                          type="button"
-                          class="tournament-list-page__share-backdrop"
-                          (click)="closeShareMenu()"
-                          [attr.aria-label]="'admin.submenu.close' | transloco"
-                        ></button>
-                        <div class="tournament-list-page__share-menu" role="menu">
-                          @if (actions.link) {
-                            <a
-                              class="tournament-list-page__share-item"
-                              role="menuitem"
-                              [href]="publicUrl(tournament)"
-                              target="_blank"
-                              (click)="closeShareMenu()"
-                            >
-                              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                                <path
-                                  d="M6.5 3H3.5C3.22386 3 3 3.22386 3 3.5V12.5C3 12.7761 3.22386 13 3.5 13H12.5C12.7761 13 13 12.7761 13 12.5V9.5"
-                                  stroke="currentColor"
-                                  stroke-width="1.3"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                />
-                                <path
-                                  d="M9.5 3H13V6.5M13 3L7.5 8.5"
-                                  stroke="currentColor"
-                                  stroke-width="1.3"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round"
-                                />
-                              </svg>
-                              {{ 'admin.tournamentList.publicLink' | transloco }}
-                            </a>
-                          }
-                          @if (actions.tv) {
-                            <a
-                              class="tournament-list-page__share-item"
-                              role="menuitem"
-                              [href]="publicUrl(tournament) + '/tv'"
-                              target="_blank"
-                              (click)="closeShareMenu()"
-                            >
-                              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                                <rect
-                                  x="1.75"
-                                  y="3"
-                                  width="12.5"
-                                  height="8.5"
-                                  rx="1"
-                                  stroke="currentColor"
-                                  stroke-width="1.3"
-                                />
-                                <path
-                                  d="M5.5 14H10.5M8 11.5V14"
-                                  stroke="currentColor"
-                                  stroke-width="1.3"
-                                  stroke-linecap="round"
-                                />
-                                <path d="M6.75 5.5L9.75 7.25L6.75 9V5.5Z" fill="currentColor" />
-                              </svg>
-                              {{ 'admin.tournamentList.slideshow' | transloco }}
-                            </a>
-                          }
-                          @if (actions.qr) {
-                            <button
-                              type="button"
-                              class="tournament-list-page__share-item"
-                              role="menuitem"
-                              (click)="openQr(tournament)"
-                            >
-                              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                                <rect
-                                  x="2"
-                                  y="2"
-                                  width="4.5"
-                                  height="4.5"
-                                  rx="0.5"
-                                  stroke="currentColor"
-                                  stroke-width="1.3"
-                                />
-                                <rect
-                                  x="9.5"
-                                  y="2"
-                                  width="4.5"
-                                  height="4.5"
-                                  rx="0.5"
-                                  stroke="currentColor"
-                                  stroke-width="1.3"
-                                />
-                                <rect
-                                  x="2"
-                                  y="9.5"
-                                  width="4.5"
-                                  height="4.5"
-                                  rx="0.5"
-                                  stroke="currentColor"
-                                  stroke-width="1.3"
-                                />
-                                <rect
-                                  x="9.75"
-                                  y="9.75"
-                                  width="1.5"
-                                  height="1.5"
-                                  fill="currentColor"
-                                />
-                                <rect
-                                  x="12.75"
-                                  y="9.75"
-                                  width="1.5"
-                                  height="1.5"
-                                  fill="currentColor"
-                                />
-                                <rect
-                                  x="9.75"
-                                  y="12.75"
-                                  width="1.5"
-                                  height="1.5"
-                                  fill="currentColor"
-                                />
-                                <rect
-                                  x="12.75"
-                                  y="12.75"
-                                  width="1.5"
-                                  height="1.5"
-                                  fill="currentColor"
-                                />
-                              </svg>
-                              {{ 'admin.submenu.qrCode' | transloco }}
-                            </button>
-                          }
-                          @if (actions.pdf) {
-                            <a
-                              class="tournament-list-page__share-item"
-                              role="menuitem"
-                              [routerLink]="['/admin/tournaments', tournament.id, 'export']"
-                              (click)="closeShareMenu()"
-                            >
-                              <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                                <path
-                                  d="M4 2.5C4 2.22386 4.22386 2 4.5 2H9.5L12 4.5V13.5C12 13.7761 11.7761 14 11.5 14H4.5C4.22386 14 4 13.7761 4 13.5V2.5Z"
-                                  stroke="currentColor"
-                                  stroke-width="1.3"
-                                  stroke-linejoin="round"
-                                />
-                                <path
-                                  d="M9.5 2V4.5H12"
-                                  stroke="currentColor"
-                                  stroke-width="1.3"
-                                  stroke-linejoin="round"
-                                />
-                                <path
-                                  d="M5.75 8.5H10.25M5.75 10.5H10.25M5.75 6.5H7.5"
-                                  stroke="currentColor"
-                                  stroke-width="1.1"
-                                  stroke-linecap="round"
-                                />
-                              </svg>
-                              {{ 'admin.submenu.exportPdf' | transloco }}
-                            </a>
-                          }
-                        </div>
+                  </td>
+                  <td class="tournament-list-page__cell tournament-list-page__cell--name">
+                    <div class="tournament-list-page__name">
+                      <span>{{ tournament.name }}</span>
+                      @if (metaLine(tournament); as meta) {
+                        <span class="tournament-list-page__meta">{{ meta }}</span>
                       }
                     </div>
-                    <ap-button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      (click)="toggleArchive(tournament)"
-                    >
-                      {{
-                        (tournament.status === 'ARCHIVED'
-                          ? 'admin.tournamentList.unarchive'
-                          : 'admin.tournamentList.archive'
-                        ) | transloco
-                      }}
-                    </ap-button>
-                  </div>
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      }
+                  </td>
+                  <td class="tournament-list-page__cell tournament-list-page__cell--sport">
+                    {{ tournament.sportName }}
+                  </td>
+                  <td class="tournament-list-page__cell tournament-list-page__cell--status">
+                    <ap-badge
+                      [status]="statusBadge[tournament.status]"
+                      [label]="statusLabel(tournament.status)"
+                    />
+                  </td>
+                  <td class="tournament-list-page__cell tournament-list-page__actions-cell">
+                    <div class="tournament-list-page__actions">
+                      <ap-button
+                        type="button"
+                        variant="primary"
+                        size="sm"
+                        (click)="editTournament(tournament)"
+                      >
+                        {{ 'admin.tournamentList.edit' | transloco }}
+                      </ap-button>
+                      @if (!simpleMode()) {
+                        <ap-button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          (click)="duplicate(tournament)"
+                        >
+                          {{ 'admin.tournamentList.duplicate' | transloco }}
+                        </ap-button>
+                      }
+                      <div class="tournament-list-page__share">
+                        <ap-button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          [disabled]="!hasShareActions(tournament)"
+                          (click)="toggleShareMenu(tournament)"
+                        >
+                          {{ 'admin.tournamentList.share' | transloco }} ▾
+                        </ap-button>
+                        @if (shareMenuFor() === tournament.id) {
+                          @let actions = shareActions(tournament);
+                          <button
+                            type="button"
+                            class="tournament-list-page__share-backdrop"
+                            (click)="closeShareMenu()"
+                            [attr.aria-label]="'admin.submenu.close' | transloco"
+                          ></button>
+                          <div class="tournament-list-page__share-menu" role="menu">
+                            @if (actions.link) {
+                              <a
+                                class="tournament-list-page__share-item"
+                                role="menuitem"
+                                [href]="publicUrl(tournament)"
+                                target="_blank"
+                                (click)="closeShareMenu()"
+                              >
+                                <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                                  <path
+                                    d="M6.5 3H3.5C3.22386 3 3 3.22386 3 3.5V12.5C3 12.7761 3.22386 13 3.5 13H12.5C12.7761 13 13 12.7761 13 12.5V9.5"
+                                    stroke="currentColor"
+                                    stroke-width="1.3"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                  />
+                                  <path
+                                    d="M9.5 3H13V6.5M13 3L7.5 8.5"
+                                    stroke="currentColor"
+                                    stroke-width="1.3"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                  />
+                                </svg>
+                                {{ 'admin.tournamentList.publicLink' | transloco }}
+                              </a>
+                            }
+                            @if (actions.tv) {
+                              <a
+                                class="tournament-list-page__share-item"
+                                role="menuitem"
+                                [href]="publicUrl(tournament) + '/tv'"
+                                target="_blank"
+                                (click)="closeShareMenu()"
+                              >
+                                <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                                  <rect
+                                    x="1.75"
+                                    y="3"
+                                    width="12.5"
+                                    height="8.5"
+                                    rx="1"
+                                    stroke="currentColor"
+                                    stroke-width="1.3"
+                                  />
+                                  <path
+                                    d="M5.5 14H10.5M8 11.5V14"
+                                    stroke="currentColor"
+                                    stroke-width="1.3"
+                                    stroke-linecap="round"
+                                  />
+                                  <path d="M6.75 5.5L9.75 7.25L6.75 9V5.5Z" fill="currentColor" />
+                                </svg>
+                                {{ 'admin.tournamentList.slideshow' | transloco }}
+                              </a>
+                            }
+                            @if (actions.qr) {
+                              <button
+                                type="button"
+                                class="tournament-list-page__share-item"
+                                role="menuitem"
+                                (click)="openQr(tournament)"
+                              >
+                                <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                                  <rect
+                                    x="2"
+                                    y="2"
+                                    width="4.5"
+                                    height="4.5"
+                                    rx="0.5"
+                                    stroke="currentColor"
+                                    stroke-width="1.3"
+                                  />
+                                  <rect
+                                    x="9.5"
+                                    y="2"
+                                    width="4.5"
+                                    height="4.5"
+                                    rx="0.5"
+                                    stroke="currentColor"
+                                    stroke-width="1.3"
+                                  />
+                                  <rect
+                                    x="2"
+                                    y="9.5"
+                                    width="4.5"
+                                    height="4.5"
+                                    rx="0.5"
+                                    stroke="currentColor"
+                                    stroke-width="1.3"
+                                  />
+                                  <rect
+                                    x="9.75"
+                                    y="9.75"
+                                    width="1.5"
+                                    height="1.5"
+                                    fill="currentColor"
+                                  />
+                                  <rect
+                                    x="12.75"
+                                    y="9.75"
+                                    width="1.5"
+                                    height="1.5"
+                                    fill="currentColor"
+                                  />
+                                  <rect
+                                    x="9.75"
+                                    y="12.75"
+                                    width="1.5"
+                                    height="1.5"
+                                    fill="currentColor"
+                                  />
+                                  <rect
+                                    x="12.75"
+                                    y="12.75"
+                                    width="1.5"
+                                    height="1.5"
+                                    fill="currentColor"
+                                  />
+                                </svg>
+                                {{ 'admin.submenu.qrCode' | transloco }}
+                              </button>
+                            }
+                            @if (actions.pdf) {
+                              <a
+                                class="tournament-list-page__share-item"
+                                role="menuitem"
+                                [routerLink]="['/admin/tournaments', tournament.id, 'export']"
+                                (click)="closeShareMenu()"
+                              >
+                                <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                                  <path
+                                    d="M4 2.5C4 2.22386 4.22386 2 4.5 2H9.5L12 4.5V13.5C12 13.7761 11.7761 14 11.5 14H4.5C4.22386 14 4 13.7761 4 13.5V2.5Z"
+                                    stroke="currentColor"
+                                    stroke-width="1.3"
+                                    stroke-linejoin="round"
+                                  />
+                                  <path
+                                    d="M9.5 2V4.5H12"
+                                    stroke="currentColor"
+                                    stroke-width="1.3"
+                                    stroke-linejoin="round"
+                                  />
+                                  <path
+                                    d="M5.75 8.5H10.25M5.75 10.5H10.25M5.75 6.5H7.5"
+                                    stroke="currentColor"
+                                    stroke-width="1.1"
+                                    stroke-linecap="round"
+                                  />
+                                </svg>
+                                {{ 'admin.submenu.exportPdf' | transloco }}
+                              </a>
+                            }
+                          </div>
+                        }
+                      </div>
+                      <ap-button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        (click)="toggleArchive(tournament)"
+                      >
+                        {{
+                          (tournament.status === 'ARCHIVED'
+                            ? 'admin.tournamentList.unarchive'
+                            : 'admin.tournamentList.archive'
+                          ) | transloco
+                        }}
+                      </ap-button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        }
+      </section>
     }
   }
   @if (qrFor(); as qrTournament) {
