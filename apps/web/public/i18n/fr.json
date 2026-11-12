@@ -510,7 +510,8 @@
       "exportPdf": "Export PDF",
       "share": "Partager",
       "premiumLocked": "Réservé aux tournois de plus de {{count}} équipes ou à un abonnement annuel actif.",
-      "stats": "Statistiques"
+      "stats": "Statistiques",
+      "slideshow": "Diaporama (écran TV)"
     },
     "auth": {
       "login": {

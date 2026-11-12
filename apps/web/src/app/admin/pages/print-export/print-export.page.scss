@@ -181,6 +181,32 @@
   }
 }
 
+// Match tables (calendar, unscheduled, knockout): same fixed columns so the
+// time, the score and both teams line up from one table to the next.
+.print-export-page__table--matches {
+  table-layout: fixed;
+
+  th:nth-child(1),
+  td:nth-child(1) {
+    width: 64px;
+  }
+
+  th:nth-child(2),
+  td:nth-child(2) {
+    width: 110px;
+  }
+
+  th:nth-child(4),
+  td:nth-child(4) {
+    width: 96px;
+    text-align: center;
+  }
+
+  td:nth-child(5) {
+    text-align: left;
+  }
+}
+
 .print-export-page__score {
   text-align: center;
   font-variant-numeric: tabular-nums;
