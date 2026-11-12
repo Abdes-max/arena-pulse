@@ -37,13 +37,10 @@ import { FieldSelector } from '../../shared/field-selector';
 import { summarizeSchedule } from '../../shared/schedule-summary';
 import { matchRoundLabel, RoundLabelLang } from 'shared-models';
 
+// Adding a slot: just a length; it goes right after the field's last slot.
 interface TimeSlotDraft {
-  start: string;
-  end: string;
-  label: string;
+  minutes: string;
 }
-
-const EMPTY_DRAFT: TimeSlotDraft = { start: '', end: '', label: '' };
 
 @Component({
   selector: 'app-schedule-page',
@@ -705,21 +702,157 @@ export class SchedulePage {
 
   protected onMatchDragStart(matchId: string, event: DragEvent): void {
     this.draggedMatchId.set(matchId);
+    this.draggedSlotId.set(null);
     event.dataTransfer?.setData('text/plain', matchId);
   }
 
-  protected onSlotDragOver(event: DragEvent): void {
-    event.preventDefault();
+  // ---- Drag & drop with reflow: the line shows where it lands, the
+  // following slots shift on both columns once dropped. ----
+  protected readonly draggedSlotId = signal<string | null>(null);
+  protected readonly dropTarget = signal<{ fieldId: string; index: number } | null>(null);
+
+  protected onSlotDragStart(slotId: string, event: DragEvent): void {
+    this.draggedMatchId.set(null);
+    this.draggedSlotId.set(slotId);
+    event.dataTransfer?.setData('text/plain', slotId);
   }
 
-  protected async onSlotDrop(timeSlotId: string, event: DragEvent): Promise<void> {
-    event.preventDefault();
-    const matchId = this.draggedMatchId();
+  protected onDragEnd(): void {
+    this.dropTarget.set(null);
     this.draggedMatchId.set(null);
-    if (!matchId || this.matchBySlotId().has(timeSlotId)) {
+    this.draggedSlotId.set(null);
+  }
+
+  // Slot being dragged (a match drags its own slot), to fade it and to
+  // compute where the rest of its column goes.
+  protected readonly draggedSlot = computed(() => {
+    const slotId =
+      this.draggedSlotId() ??
+      this.matches().find((match) => match.id === this.draggedMatchId())?.timeSlot?.id ??
+      null;
+    if (!slotId) {
+      return null;
+    }
+    for (const [fieldId, slots] of this.timeSlotsByField()) {
+      const index = slots.findIndex((slot) => slot.id === slotId);
+      if (index >= 0) {
+        return { fieldId, index, slot: slots[index] };
+      }
+    }
+    return null;
+  });
+
+  // Position in the target column once the dragged slot has left it (what the API expects).
+  private dropIndex(target: { fieldId: string; index: number }): number {
+    const dragged = this.draggedSlot();
+    return dragged && dragged.fieldId === target.fieldId && dragged.index < target.index
+      ? target.index - 1
+      : target.index;
+  }
+
+  // Time the dropped match / slot will start at, shown in the placeholder.
+  protected readonly dropPreviewTime = computed(() => {
+    const target = this.dropTarget();
+    if (!target) {
+      return null;
+    }
+    const dragged = this.draggedSlot();
+    const lengthMs = dragged
+      ? new Date(dragged.slot.endTime).getTime() - new Date(dragged.slot.startTime).getTime()
+      : 0;
+    const column = (this.timeSlotsByField().get(target.fieldId) ?? [])
+      .filter((slot) => slot.id !== dragged?.slot.id)
+      .map((slot) => {
+        const start = new Date(slot.startTime).getTime();
+        // Same column: what came after the dragged slot moves up.
+        const moved =
+          dragged?.fieldId === target.fieldId &&
+          start >= new Date(dragged.slot.startTime).getTime();
+        return {
+          start: start - (moved ? lengthMs : 0),
+          end: new Date(slot.endTime).getTime() - (moved ? lengthMs : 0),
+        };
+      });
+    const index = this.dropIndex(target);
+    const start =
+      column.length === 0
+        ? dragged
+          ? new Date(dragged.slot.startTime).getTime()
+          : null
+        : index < column.length
+          ? column[index].start
+          : column[column.length - 1].end;
+    return start === null ? null : this.formatClock(new Date(start).toISOString());
+  });
+
+  // Above or below the hovered slot, from the pointer's height.
+  protected onSlotDragOverAt(fieldId: string, index: number, event: DragEvent): void {
+    if (!this.draggedMatchId() && !this.draggedSlotId()) {
       return;
     }
-    await this.moveMatchToSlot(matchId, timeSlotId);
+    event.preventDefault();
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    const after = event.clientY > rect.top + rect.height / 2;
+    const target = { fieldId, index: index + (after ? 1 : 0) };
+    const current = this.dropTarget();
+    if (current?.fieldId !== target.fieldId || current.index !== target.index) {
+      this.dropTarget.set(target);
+    }
+  }
+
+  // Lets the drop happen anywhere in the column (the placeholder included).
+  protected onColumnDragOver(event: DragEvent): void {
+    if (this.draggedMatchId() || this.draggedSlotId()) {
+      event.preventDefault();
+    }
+  }
+
+  protected onColumnEndDragOver(fieldId: string, event: DragEvent): void {
+    if (!this.draggedMatchId() && !this.draggedSlotId()) {
+      return;
+    }
+    event.preventDefault();
+    const index = (this.timeSlotsByField().get(fieldId) ?? []).length;
+    const current = this.dropTarget();
+    if (current?.fieldId !== fieldId || current.index !== index) {
+      this.dropTarget.set({ fieldId, index });
+    }
+  }
+
+  protected async onColumnDrop(event: DragEvent): Promise<void> {
+    event.preventDefault();
+    const target = this.dropTarget();
+    const matchId = this.draggedMatchId();
+    const slotId = this.draggedSlotId();
+    const index = target ? this.dropIndex(target) : 0;
+    this.dropTarget.set(null);
+    this.draggedMatchId.set(null);
+    this.draggedSlotId.set(null);
+    const organizationId = this.organization()?.id;
+    if (!target || !organizationId || (!matchId && !slotId)) {
+      return;
+    }
+    this.errorMessage.set(null);
+    try {
+      await this.timeSlotsService.moveWithReflow(organizationId, this.tournamentId, {
+        ...(slotId ? { timeSlotId: slotId } : { matchId: matchId! }),
+        fieldId: target.fieldId,
+        index,
+        minutes: Number(this.matchDurationMinutes()) || undefined,
+      });
+      await Promise.all([this.loadTimeSlots(), this.loadMatches()]);
+    } catch (error) {
+      this.errorMessage.set(this.apiMessage(error) ?? 'admin.schedule.errors.moveMatchGeneric');
+    }
+  }
+
+  // The API's own sentence (it names the team) when it sends one.
+  private apiMessage(error: unknown): string | null {
+    const message =
+      error instanceof HttpErrorResponse
+        ? (error.error as { message?: unknown } | null)?.message
+        : null;
+    return typeof message === 'string' ? message : null;
   }
 
   // Tap #1: select a match (or deselect it if it's already selected).
@@ -760,7 +893,7 @@ export class SchedulePage {
     } catch (error) {
       this.errorMessage.set(
         error instanceof HttpErrorResponse && error.status === 409
-          ? 'admin.schedule.errors.slotUnavailable'
+          ? (this.apiMessage(error) ?? 'admin.schedule.errors.slotUnavailable')
           : 'admin.schedule.errors.moveMatchGeneric',
       );
     }
@@ -830,7 +963,21 @@ export class SchedulePage {
   }
 
   protected draftFor(fieldId: string): TimeSlotDraft {
-    return this.newSlotDrafts().get(fieldId) ?? EMPTY_DRAFT;
+    return this.newSlotDrafts().get(fieldId) ?? { minutes: this.matchDurationMinutes() || '30' };
+  }
+
+  // Right after the field's last slot; on an empty field, at the earliest
+  // slot of the others (or now).
+  private nextSlotStart(fieldId: string): Date {
+    const own = this.timeSlotsByField().get(fieldId) ?? [];
+    if (own.length > 0) {
+      return new Date(own[own.length - 1].endTime);
+    }
+    const starts = [...this.timeSlotsByField().values()]
+      .flat()
+      .map((slot) => slot.startTime)
+      .sort();
+    return starts.length > 0 ? new Date(starts[0]) : new Date();
   }
 
   protected onSlotDraftChange(fieldId: string, key: keyof TimeSlotDraft, value: string): void {
@@ -843,10 +990,11 @@ export class SchedulePage {
 
   protected async addTimeSlot(fieldId: string): Promise<void> {
     const organizationId = this.organization()?.id;
-    const draft = this.draftFor(fieldId);
-    if (!organizationId || !draft.start || !draft.end) {
+    const minutes = Math.round(Number(this.draftFor(fieldId).minutes));
+    if (!organizationId || !Number.isFinite(minutes) || minutes <= 0) {
       return;
     }
+    const start = this.nextSlotStart(fieldId);
     this.errorMessage.set(null);
     try {
       const slot = await this.timeSlotsService.createTimeSlot(
@@ -854,9 +1002,8 @@ export class SchedulePage {
         this.tournamentId,
         fieldId,
         {
-          startTime: new Date(draft.start).toISOString(),
-          endTime: new Date(draft.end).toISOString(),
-          label: draft.label || undefined,
+          startTime: start.toISOString(),
+          endTime: new Date(start.getTime() + minutes * 60_000).toISOString(),
         },
       );
       this.timeSlotsByField.update((map) => {
@@ -867,11 +1014,6 @@ export class SchedulePage {
             a.startTime.localeCompare(b.startTime),
           ),
         );
-        return next;
-      });
-      this.newSlotDrafts.update((drafts) => {
-        const next = new Map(drafts);
-        next.set(fieldId, EMPTY_DRAFT);
         return next;
       });
     } catch (error) {

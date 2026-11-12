@@ -1344,7 +1344,7 @@
       "editor": {
         "title": "Editor del calendario",
         "empty": "Nessuna partita generata per questa fase.",
-        "dragHint": "Trascina una partita su uno slot libero per riprogrammarla, oppure su «Non programmate» per rimuoverla dal calendario.",
+        "dragHint": "Trascina una partita o una fascia libera: una linea mostra dove verrà posizionata, su qualsiasi campo. Le fasce successive vengono spostate (e quelle del campo lasciato anticipate); le pause tra le fasi restano. Una squadra non può giocare due partite contemporaneamente.",
         "summary": "{{matches}} partite · {{rotations}} rotazioni · {{start}} → {{end}}",
         "selectMatchAria": "Seleziona questa partita per riprogrammarla",
         "removeOfficialAria": "Rimuovi questo ufficiale di gara",
@@ -1358,7 +1358,8 @@
         "startLabel": "Inizio",
         "endLabel": "Fine",
         "labelLabel": "Etichetta",
-        "addSlot": "+ Slot"
+        "addSlot": "+ Slot",
+        "slotMinutesLabel": "Durata della fascia (minuti)"
       },
       "round": "Turno {{round}}",
       "addRefereeOption": "+ Arbitro…",

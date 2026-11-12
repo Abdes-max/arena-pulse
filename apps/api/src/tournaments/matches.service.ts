@@ -272,9 +272,13 @@ export class MatchesService {
         timeSlot: { isNot: null },
         OR: [{ homeTeamId: { in: ids } }, { awayTeamId: { in: ids } }],
       },
-      include: { timeSlot: true },
+      include: {
+        timeSlot: true,
+        homeTeam: { select: { id: true, name: true } },
+        awayTeam: { select: { id: true, name: true } },
+      },
     });
-    const conflict = others.some(
+    const conflict = others.find(
       (other) =>
         other.timeSlot &&
         timeRangesOverlap(
@@ -285,8 +289,13 @@ export class MatchesService {
         ),
     );
     if (conflict) {
+      const team = [conflict.homeTeam, conflict.awayTeam].find(
+        (candidate) => candidate && ids.includes(candidate.id),
+      );
       throw new ConflictException(
-        'Une des deux équipes est déjà engagée sur un autre match à ce créneau.',
+        team
+          ? `« ${team.name} » joue déjà un autre match à ce moment-là (sur un autre terrain ou dans une autre phase).`
+          : 'Une des deux équipes est déjà engagée sur un autre match à ce créneau.',
       );
     }
   }

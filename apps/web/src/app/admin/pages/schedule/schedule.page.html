@@ -176,6 +176,7 @@
                 [attr.aria-pressed]="selectedMatchId() === match.id"
                 [attr.aria-label]="'admin.schedule.editor.selectMatchAria' | transloco"
                 (dragstart)="onMatchDragStart(match.id, $event)"
+                (dragend)="onDragEnd()"
                 (click)="onMatchTap(match.id)"
                 (keydown.enter)="onMatchTap(match.id)"
                 (keydown.space)="onMatchTap(match.id); $event.preventDefault()"
@@ -267,18 +268,30 @@
                 </div>
                 <div class="schedule-page__grid" #gridScroller>
                   @for (field of fields(); track field.id) {
-                    <div class="schedule-page__field-column">
+                    <div
+                      class="schedule-page__field-column"
+                      (dragover)="onColumnDragOver($event)"
+                      (drop)="onColumnDrop($event)"
+                      (dragleave)="$event.target === $event.currentTarget && dropTarget.set(null)"
+                    >
                       <h3>{{ field.venueName }}, {{ field.name }}</h3>
 
                       @for (slot of timeSlotsByField().get(field.id) ?? []; track slot.id) {
+                        @if (dropTarget()?.fieldId === field.id && dropTarget()?.index === $index) {
+                          <div class="schedule-page__drop-placeholder" aria-hidden="true">
+                            {{ dropPreviewTime() }}
+                          </div>
+                        }
                         <div
                           class="schedule-page__slot"
+                          [class.schedule-page__slot--dragging]="
+                            draggedSlot()?.slot?.id === slot.id
+                          "
                           [class.schedule-page__slot--occupied]="matchBySlotId().has(slot.id)"
                           [class.schedule-page__slot--target]="
                             selectedMatchId() && !matchBySlotId().has(slot.id)
                           "
-                          (dragover)="onSlotDragOver($event)"
-                          (drop)="onSlotDrop(slot.id, $event)"
+                          (dragover)="onSlotDragOverAt(field.id, $index, $event)"
                         >
                           @if (matchBySlotId().get(slot.id); as match) {
                             <ng-container
@@ -294,6 +307,9 @@
                           } @else {
                             <div
                               class="schedule-page__slot-empty"
+                              draggable="true"
+                              (dragstart)="onSlotDragStart(slot.id, $event)"
+                              (dragend)="onDragEnd()"
                               role="button"
                               tabindex="0"
                               [attr.aria-label]="'admin.schedule.editor.moveHereAria' | transloco"
@@ -318,25 +334,36 @@
                         </div>
                       }
 
-                      <div class="schedule-page__inline-form">
+                      @if (
+                        dropTarget()?.fieldId === field.id &&
+                        dropTarget()?.index === (timeSlotsByField().get(field.id) ?? []).length
+                      ) {
+                        <div class="schedule-page__drop-placeholder" aria-hidden="true">
+                          {{ dropPreviewTime() }}
+                        </div>
+                      }
+                      <div
+                        class="schedule-page__column-end"
+                        (dragover)="onColumnEndDragOver(field.id, $event)"
+                      ></div>
+
+                      <div class="schedule-page__add-slot">
                         <ap-text-field
-                          [label]="'admin.schedule.editor.startLabel' | transloco"
-                          type="datetime-local"
-                          [value]="draftFor(field.id).start"
-                          (valueChange)="onSlotDraftChange(field.id, 'start', $event)"
+                          [label]="'admin.schedule.editor.slotMinutesLabel' | transloco"
+                          [hideLabel]="true"
+                          type="number"
+                          [min]="5"
+                          [step]="5"
+                          [value]="draftFor(field.id).minutes"
+                          (valueChange)="onSlotDraftChange(field.id, 'minutes', $event)"
                         />
-                        <ap-text-field
-                          [label]="'admin.schedule.editor.endLabel' | transloco"
-                          type="datetime-local"
-                          [value]="draftFor(field.id).end"
-                          (valueChange)="onSlotDraftChange(field.id, 'end', $event)"
-                        />
-                        <ap-text-field
-                          [label]="'admin.schedule.editor.labelLabel' | transloco"
-                          [value]="draftFor(field.id).label"
-                          (valueChange)="onSlotDraftChange(field.id, 'label', $event)"
-                        />
-                        <ap-button type="button" variant="ghost" (click)="addTimeSlot(field.id)">
+                        <span class="schedule-page__add-slot-unit">min</span>
+                        <ap-button
+                          type="button"
+                          variant="secondary"
+                          size="sm"
+                          (click)="addTimeSlot(field.id)"
+                        >
                           {{ 'admin.schedule.editor.addSlot' | transloco }}
                         </ap-button>
                       </div>

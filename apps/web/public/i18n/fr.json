@@ -1446,7 +1446,7 @@
       "editor": {
         "title": "Éditeur du calendrier",
         "empty": "Aucun match généré pour cette phase.",
-        "dragHint": "Glissez-déposez un match vers un créneau libre pour le replanifier, ou vers « Non planifiés » pour le retirer du calendrier.",
+        "dragHint": "Glissez un match ou un créneau libre : une ligne montre où il va se placer, sur n'importe quel terrain. Les créneaux qui suivent sont décalés (et ceux du terrain quitté avancés), les pauses entre phases sont conservées. Une équipe ne peut pas jouer deux matchs en même temps.",
         "summary": "{{matches}} matchs · {{rotations}} rotations · {{start}} → {{end}}",
         "selectMatchAria": "Sélectionner ce match pour le replanifier",
         "removeOfficialAria": "Retirer cet officiel",
@@ -1460,7 +1460,8 @@
         "startLabel": "Début",
         "endLabel": "Fin",
         "labelLabel": "Libellé",
-        "addSlot": "+ Créneau"
+        "addSlot": "+ Créneau",
+        "slotMinutesLabel": "Durée du créneau (minutes)"
       },
       "round": "Tour {{round}}",
       "addRefereeOption": "+ Arbitre…",

@@ -322,3 +322,50 @@
 .schedule-page__summary {
   font-weight: 600;
 }
+
+// Drag & drop: an open space where the match / slot will land, with its time.
+.schedule-page__drop-placeholder {
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  margin: var(--ap-space-1) 0;
+  padding: 0 var(--ap-space-3);
+  border: 2px dashed var(--ap-color-primary);
+  border-radius: var(--ap-radius-md);
+  background: var(--ap-color-signal-soft);
+  color: var(--ap-color-primary);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+// The slot being dragged stays faded in place until dropped.
+.schedule-page__slot--dragging {
+  opacity: 0.35;
+}
+
+// Drop zone after the last slot of a column.
+.schedule-page__column-end {
+  min-height: 28px;
+}
+
+.schedule-page__slot-empty[draggable='true'] {
+  cursor: grab;
+}
+
+// "+ Créneau": a length on one line; the slot goes after the field's last one.
+.schedule-page__add-slot {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  margin-top: var(--ap-space-2);
+
+  ap-text-field {
+    width: 5.5rem;
+    flex: none;
+  }
+}
+
+.schedule-page__add-slot-unit {
+  color: var(--ap-color-muted);
+  font-size: 0.85rem;
+}

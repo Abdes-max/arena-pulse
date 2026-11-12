@@ -16,6 +16,7 @@ import { RequireOrgRole } from '../organizations/decorators/require-org-role.dec
 import { OrganizationRoleGuard } from '../organizations/guards/organization-role.guard';
 import { RequireTournamentPermission } from './decorators/require-tournament-permission.decorator';
 import { CreateTimeSlotDto } from './dto/create-timeslot.dto';
+import { MoveScheduleItemDto } from './dto/move-schedule-item.dto';
 import { UpdateTimeSlotDto } from './dto/update-timeslot.dto';
 import { TournamentPermissionGuard } from './guards/tournament-permission.guard';
 import { TimeSlotsService } from './timeslots.service';
@@ -25,6 +26,22 @@ import { TimeSlotsService } from './timeslots.service';
 @Controller('organizations/:organizationId/tournaments/:tournamentId')
 export class TimeSlotsController {
   constructor(private readonly timeSlotsService: TimeSlotsService) {}
+
+  @RequireOrgRole(OrganizationRole.ORG_MEMBER)
+  @RequireTournamentPermission('MANAGE_SCHEDULE')
+  @Post('schedule/move')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  moveWithReflow(
+    @Param('organizationId') organizationId: string,
+    @Param('tournamentId') tournamentId: string,
+    @Body() dto: MoveScheduleItemDto,
+  ): Promise<void> {
+    return this.timeSlotsService.moveWithReflow(
+      organizationId,
+      tournamentId,
+      dto,
+    );
+  }
 
   @RequireOrgRole(OrganizationRole.ORG_MEMBER)
   @RequireTournamentPermission('MANAGE_SCHEDULE')

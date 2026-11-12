@@ -30,6 +30,23 @@ export class TimeSlotsService {
     );
   }
 
+  /** Drag & drop: a slot or a match to a field, at a position; the following slots shift. */
+  moveWithReflow(
+    organizationId: string,
+    tournamentId: string,
+    payload: {
+      timeSlotId?: string;
+      matchId?: string;
+      fieldId: string;
+      index: number;
+      minutes?: number;
+    },
+  ): Promise<void> {
+    return firstValueFrom(
+      this.http.post<void>(`${this.base(organizationId, tournamentId)}/schedule/move`, payload),
+    );
+  }
+
   createTimeSlot(
     organizationId: string,
     tournamentId: string,

@@ -1344,7 +1344,7 @@
       "editor": {
         "title": "Editor do calendário",
         "empty": "Nenhum jogo gerado para esta fase.",
-        "dragHint": "Arraste um jogo para um horário livre para o reagendar, ou para «Não agendados» para o remover do calendário.",
+        "dragHint": "Arraste um jogo ou um horário livre: uma linha mostra onde vai ficar, em qualquer campo. Os horários seguintes são deslocados (e os do campo deixado antecipados); as pausas entre fases mantêm-se. Uma equipa não pode jogar dois jogos ao mesmo tempo.",
         "summary": "{{matches}} jogos · {{rotations}} rotações · {{start}} → {{end}}",
         "selectMatchAria": "Selecionar este jogo para o reagendar",
         "removeOfficialAria": "Remover este oficial",
@@ -1358,7 +1358,8 @@
         "startLabel": "Início",
         "endLabel": "Fim",
         "labelLabel": "Etiqueta",
-        "addSlot": "+ Horário"
+        "addSlot": "+ Horário",
+        "slotMinutesLabel": "Duração do horário (minutos)"
       },
       "round": "Ronda {{round}}",
       "addRefereeOption": "+ Árbitro…",
