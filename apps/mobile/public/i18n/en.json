@@ -669,6 +669,19 @@
         "load": "Could not load the registrations.",
         "save": "Could not save this change."
       }
+    },
+    "schedule": {
+      "hint": "Press and hold a match or a slot, then drag it: a space shows where it will land and at what time. The following slots shift; breaks between phases are kept. A team cannot play two matches at the same time.",
+      "freeSlot": "Free slot",
+      "deleteSlot": "Delete the slot",
+      "minutes": "Length (minutes)",
+      "label": "Label",
+      "addSlot": "+ Slot",
+      "phases": {
+        "ALL": "All",
+        "GROUP_STAGE": "Pools",
+        "KNOCKOUT": "Knockout"
+      }
     }
   },
   "notifications": {

@@ -887,3 +887,118 @@ ion-title {
     border-color: transparent;
   }
 }
+
+// ---- Calendrier board: slots per field, drag & drop (same as the web) ----
+.wizard-page__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+  margin-bottom: var(--ap-space-4);
+}
+
+.wizard-page__field-title {
+  margin: 0;
+  font-family: var(--ap-font-heading);
+  font-size: 0.95rem;
+}
+
+.wizard-page__slotcard {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.wizard-page__slotcard--free {
+  border-style: dashed;
+}
+
+.wizard-page__slotcard--dragging {
+  opacity: 0.35;
+}
+
+.wizard-page__slotcard-header--free {
+  background: var(--ap-color-muted);
+  color: var(--ap-color-surface);
+}
+
+.wizard-page__slot-delete {
+  margin: var(--ap-space-1) var(--ap-space-2) var(--ap-space-2);
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--ap-color-muted);
+  font: inherit;
+  font-size: 0.8rem;
+  text-decoration: underline;
+}
+
+// Where the dragged card will land, with its time.
+.wizard-page__drop-placeholder {
+  display: flex;
+  align-items: center;
+  min-height: 52px;
+  padding: 0 var(--ap-space-3);
+  border: 2px dashed var(--ap-color-primary);
+  border-radius: var(--ap-radius-md);
+  background: var(--ap-color-signal-soft);
+  color: var(--ap-color-primary);
+  font-weight: 700;
+}
+
+.wizard-page__field-end {
+  min-height: 20px;
+}
+
+// The card following the finger.
+.wizard-page__drag-ghost {
+  position: fixed;
+  z-index: 1000;
+  pointer-events: none;
+  box-shadow: 0 16px 32px rgba(15, 23, 42, 0.3);
+  transform: rotate(-1.5deg) scale(1.03);
+}
+
+.wizard-page__add-slot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ap-space-2);
+}
+
+.wizard-page__add-slot-minutes {
+  width: 5.5rem;
+  flex: none;
+}
+
+.wizard-page__add-slot-label {
+  flex: 1 1 7rem;
+  min-width: 0;
+}
+
+.wizard-page__add-slot-unit {
+  color: var(--ap-color-muted);
+  font-size: 0.85rem;
+}
+
+.wizard-page__phase-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ap-space-2);
+}
+
+.wizard-page__phase-pill {
+  padding: var(--ap-space-1) var(--ap-space-3);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: 999px;
+  background: var(--ap-color-surface);
+  color: var(--ap-color-fg);
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+
+  &[aria-pressed='true'] {
+    background: var(--ap-color-primary);
+    border-color: var(--ap-color-primary);
+    color: var(--ap-color-on-primary);
+  }
+}

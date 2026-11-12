@@ -546,34 +546,169 @@
                 >+5 min</ap-button
               >
             </div>
-            <div class="wizard-page__matchlist">
-              @for (match of generatedMatches; track match.id) {
-                <div class="wizard-page__matchcard">
-                  <div class="wizard-page__matchcard-header">
-                    <span class="wizard-page__matchcard-round">{{ matchHeaderLabel(match) }}</span>
-                    @if (match.timeSlot; as slot) {
-                      <span class="wizard-page__matchcard-time">
-                        {{ slot.startTime | date: 'EEE d MMM, HH:mm' }}
-                      </span>
-                    }
-                  </div>
-                  <div class="wizard-page__matchcard-teams">
-                    <span class="wizard-page__matchcard-team">
-                      @if (logoUrl(match.homeTeam?.logoUrl); as logo) {
-                        <img class="wizard-page__matchcard-team-logo" [src]="logo" alt="" />
-                      }
-                      {{ match.homeTeam?.name ?? '?' }}
-                    </span>
-                    <span class="wizard-page__matchcard-team">
-                      @if (logoUrl(match.awayTeam?.logoUrl); as logo) {
-                        <img class="wizard-page__matchcard-team-logo" [src]="logo" alt="" />
-                      }
-                      {{ match.awayTeam?.name ?? '?' }}
-                    </span>
-                  </div>
+            @if (boardFields().length > 0) {
+              @if (boardHasKnockout()) {
+                <div class="wizard-page__phase-filter" role="group">
+                  @for (f of ['ALL', 'GROUP_STAGE', 'KNOCKOUT']; track f) {
+                    <button
+                      type="button"
+                      class="wizard-page__phase-pill"
+                      [attr.aria-pressed]="boardPhaseFilter() === f"
+                      (click)="boardPhaseFilter.set($any(f))"
+                    >
+                      {{ 'organizer.schedule.phases.' + f | transloco }}
+                    </button>
+                  }
                 </div>
               }
-            </div>
+              <p class="wizard-page__hint">{{ 'organizer.schedule.hint' | transloco }}</p>
+              @for (field of boardFields(); track field.id) {
+                <section class="wizard-page__field" [attr.data-field-id]="field.id">
+                  <h4 class="wizard-page__field-title">{{ field.name }}</h4>
+                  <div class="wizard-page__matchlist">
+                    @for (slot of boardSlots().get(field.id) ?? []; track slot.id; let i = $index) {
+                      @if (dropTarget()?.fieldId === field.id && dropTarget()?.index === i) {
+                        <div class="wizard-page__drop-placeholder" data-drop-placeholder>
+                          {{ dropPreviewTime() }}
+                        </div>
+                      }
+                      @if (slotShown(slot)) {
+                        <div
+                          class="wizard-page__matchcard wizard-page__slotcard"
+                          [class.wizard-page__slotcard--free]="!boardMatchBySlot().get(slot.id)"
+                          [class.wizard-page__slotcard--dragging]="dragItem()?.slotId === slot.id"
+                          [attr.data-slot-index]="i"
+                          (touchstart)="onCardTouchStart($event, field.id, i, slot)"
+                          (touchmove)="onCardTouchMove($event)"
+                          (touchend)="onCardTouchEnd()"
+                          (touchcancel)="onCardTouchEnd()"
+                        >
+                          @if (boardMatchBySlot().get(slot.id); as match) {
+                            <div class="wizard-page__matchcard-header">
+                              <span class="wizard-page__matchcard-round">{{
+                                slot.label || boardRound(match)
+                              }}</span>
+                              <span class="wizard-page__matchcard-time">{{
+                                boardClock(slot.startTime)
+                              }}</span>
+                            </div>
+                            <div class="wizard-page__matchcard-teams">
+                              <span class="wizard-page__matchcard-team">
+                                @if (logoUrl(match.homeTeam?.logoUrl); as logo) {
+                                  <img
+                                    class="wizard-page__matchcard-team-logo"
+                                    [src]="logo"
+                                    alt=""
+                                  />
+                                }
+                                {{ boardTeam(match.homeTeam, match.homeSourceLabel) }}
+                              </span>
+                              <span class="wizard-page__matchcard-team">
+                                @if (logoUrl(match.awayTeam?.logoUrl); as logo) {
+                                  <img
+                                    class="wizard-page__matchcard-team-logo"
+                                    [src]="logo"
+                                    alt=""
+                                  />
+                                }
+                                {{ boardTeam(match.awayTeam, match.awaySourceLabel) }}
+                              </span>
+                            </div>
+                          } @else {
+                            <div
+                              class="wizard-page__matchcard-header wizard-page__slotcard-header--free"
+                            >
+                              <span class="wizard-page__matchcard-round">{{
+                                slot.label || ('organizer.schedule.freeSlot' | transloco)
+                              }}</span>
+                              <span class="wizard-page__matchcard-time">{{
+                                boardClock(slot.startTime)
+                              }}</span>
+                            </div>
+                            <button
+                              type="button"
+                              class="wizard-page__slot-delete"
+                              (click)="deleteSlot(slot.id)"
+                            >
+                              {{ 'organizer.schedule.deleteSlot' | transloco }}
+                            </button>
+                          }
+                        </div>
+                      }
+                    }
+                    @if (
+                      dropTarget()?.fieldId === field.id &&
+                      dropTarget()?.index === (boardSlots().get(field.id) ?? []).length
+                    ) {
+                      <div class="wizard-page__drop-placeholder" data-drop-placeholder>
+                        {{ dropPreviewTime() }}
+                      </div>
+                    }
+                    <div class="wizard-page__field-end"></div>
+                  </div>
+                  <div class="wizard-page__add-slot">
+                    <ap-text-field
+                      class="wizard-page__add-slot-minutes"
+                      type="number"
+                      [label]="'organizer.schedule.minutes' | transloco"
+                      [hideLabel]="true"
+                      [min]="5"
+                      [step]="5"
+                      [value]="slotDraft(field.id).minutes"
+                      (valueChange)="setSlotDraft(field.id, 'minutes', $event)"
+                    />
+                    <span class="wizard-page__add-slot-unit">min</span>
+                    <ap-text-field
+                      class="wizard-page__add-slot-label"
+                      [label]="'organizer.schedule.label' | transloco"
+                      [hideLabel]="true"
+                      [placeholder]="'organizer.schedule.label' | transloco"
+                      [value]="slotDraft(field.id).label"
+                      (valueChange)="setSlotDraft(field.id, 'label', $event)"
+                    />
+                    <ap-button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      (click)="addSlot(field.id)"
+                    >
+                      {{ 'organizer.schedule.addSlot' | transloco }}
+                    </ap-button>
+                  </div>
+                </section>
+              }
+            } @else {
+              <div class="wizard-page__matchlist">
+                @for (match of generatedMatches; track match.id) {
+                  <div class="wizard-page__matchcard">
+                    <div class="wizard-page__matchcard-header">
+                      <span class="wizard-page__matchcard-round">{{
+                        matchHeaderLabel(match)
+                      }}</span>
+                      @if (match.timeSlot; as slot) {
+                        <span class="wizard-page__matchcard-time">
+                          {{ slot.startTime | date: 'EEE d MMM, HH:mm' }}
+                        </span>
+                      }
+                    </div>
+                    <div class="wizard-page__matchcard-teams">
+                      <span class="wizard-page__matchcard-team">
+                        @if (logoUrl(match.homeTeam?.logoUrl); as logo) {
+                          <img class="wizard-page__matchcard-team-logo" [src]="logo" alt="" />
+                        }
+                        {{ match.homeTeam?.name ?? '?' }}
+                      </span>
+                      <span class="wizard-page__matchcard-team">
+                        @if (logoUrl(match.awayTeam?.logoUrl); as logo) {
+                          <img class="wizard-page__matchcard-team-logo" [src]="logo" alt="" />
+                        }
+                        {{ match.awayTeam?.name ?? '?' }}
+                      </span>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
             <p class="wizard-page__hint">
               {{ 'organizer.wizard.calendar.editLaterHint' | transloco }}
             </p>
@@ -851,6 +986,35 @@
       </div>
     }
   </div>
+  @if (ghost(); as g) {
+    <div
+      class="wizard-page__matchcard wizard-page__drag-ghost"
+      [style.left.px]="g.x"
+      [style.top.px]="g.y"
+      [style.width.px]="dragItem()?.width"
+      aria-hidden="true"
+    >
+      @if (draggedMatch(); as match) {
+        <div class="wizard-page__matchcard-header">
+          <span class="wizard-page__matchcard-round">{{ boardRound(match) }}</span>
+        </div>
+        <div class="wizard-page__matchcard-teams">
+          <span class="wizard-page__matchcard-team">{{
+            boardTeam(match.homeTeam, match.homeSourceLabel)
+          }}</span>
+          <span class="wizard-page__matchcard-team">{{
+            boardTeam(match.awayTeam, match.awaySourceLabel)
+          }}</span>
+        </div>
+      } @else if (draggedSlot(); as slot) {
+        <div class="wizard-page__matchcard-header wizard-page__slotcard-header--free">
+          <span class="wizard-page__matchcard-round">{{
+            slot.label || ('organizer.schedule.freeSlot' | transloco)
+          }}</span>
+        </div>
+      }
+    </div>
+  }
 </ion-content>
 
 @if (step() !== 'done' && !initializing()) {

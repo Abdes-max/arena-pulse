@@ -669,6 +669,19 @@
         "load": "No se pudieron cargar las inscripciones.",
         "save": "No se pudo guardar este cambio."
       }
+    },
+    "schedule": {
+      "hint": "Mantén pulsado un partido o una franja y arrástralo: un espacio muestra dónde se colocará y a qué hora. Las franjas siguientes se desplazan; se conservan las pausas entre fases. Un equipo no puede jugar dos partidos a la vez.",
+      "freeSlot": "Franja libre",
+      "deleteSlot": "Eliminar la franja",
+      "minutes": "Duración (minutos)",
+      "label": "Etiqueta",
+      "addSlot": "+ Franja",
+      "phases": {
+        "ALL": "Todas",
+        "GROUP_STAGE": "Grupos",
+        "KNOCKOUT": "Fase final"
+      }
     }
   },
   "notifications": {

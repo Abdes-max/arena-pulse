@@ -669,6 +669,19 @@
         "load": "Não foi possível carregar as inscrições.",
         "save": "Não foi possível guardar esta alteração."
       }
+    },
+    "schedule": {
+      "hint": "Mantenha premido um jogo ou um horário e arraste-o: um espaço mostra onde vai ficar e a que horas. Os horários seguintes são deslocados; as pausas entre fases mantêm-se. Uma equipa não pode jogar dois jogos ao mesmo tempo.",
+      "freeSlot": "Horário livre",
+      "deleteSlot": "Eliminar o horário",
+      "minutes": "Duração (minutos)",
+      "label": "Rótulo",
+      "addSlot": "+ Horário",
+      "phases": {
+        "ALL": "Todas",
+        "GROUP_STAGE": "Grupos",
+        "KNOCKOUT": "Fase final"
+      }
     }
   },
   "notifications": {

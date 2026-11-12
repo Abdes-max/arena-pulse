@@ -669,6 +669,19 @@
         "load": "Die Anmeldungen konnten nicht geladen werden.",
         "save": "Diese Änderung konnte nicht gespeichert werden."
       }
+    },
+    "schedule": {
+      "hint": "Halten Sie ein Spiel oder ein Zeitfenster gedrückt und ziehen Sie es: Eine Lücke zeigt, wo es landet und zu welcher Uhrzeit. Die folgenden Zeitfenster verschieben sich; Pausen zwischen Phasen bleiben. Eine Mannschaft kann nicht zwei Spiele gleichzeitig bestreiten.",
+      "freeSlot": "Freies Zeitfenster",
+      "deleteSlot": "Zeitfenster löschen",
+      "minutes": "Länge (Minuten)",
+      "label": "Bezeichnung",
+      "addSlot": "+ Zeitfenster",
+      "phases": {
+        "ALL": "Alle",
+        "GROUP_STAGE": "Gruppen",
+        "KNOCKOUT": "K.-o.-Phase"
+      }
     }
   },
   "notifications": {
