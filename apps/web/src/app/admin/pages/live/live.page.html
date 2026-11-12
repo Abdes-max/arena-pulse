@@ -206,7 +206,6 @@
                         <span>{{ 'admin.live.forfeitWho' | transloco }}</span>
                         <ap-button
                           type="button"
-                          variant="secondary"
                           size="sm"
                           [disabled]="saving()"
                           (click)="declareForfeit(match, match.homeTeam?.id)"
@@ -232,12 +231,7 @@
                 <ap-button type="button" [disabled]="saving()" (click)="save(rotation, true)">
                   {{ 'admin.live.validate' | transloco }}
                 </ap-button>
-                <ap-button
-                  type="button"
-                  variant="ghost"
-                  [disabled]="saving()"
-                  (click)="save(rotation, false)"
-                >
+                <ap-button type="button" [disabled]="saving()" (click)="save(rotation, false)">
                   {{ 'admin.live.saveRunning' | transloco }}
                 </ap-button>
               </div>

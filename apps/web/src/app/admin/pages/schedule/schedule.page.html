@@ -369,12 +369,7 @@
                           [value]="draftFor(field.id).label"
                           (valueChange)="onSlotDraftChange(field.id, 'label', $event)"
                         />
-                        <ap-button
-                          type="button"
-                          variant="secondary"
-                          size="sm"
-                          (click)="addTimeSlot(field.id)"
-                        >
+                        <ap-button type="button" size="sm" (click)="addTimeSlot(field.id)">
                           {{ 'admin.schedule.editor.addSlot' | transloco }}
                         </ap-button>
                       </div>

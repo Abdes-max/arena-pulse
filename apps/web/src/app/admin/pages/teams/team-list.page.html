@@ -431,7 +431,7 @@
                       [value]="newPlayerLastName()"
                       (valueChange)="onNewPlayerLastNameChange($event)"
                     />
-                    <ap-button type="button" variant="ghost" (click)="addPlayer(team)">
+                    <ap-button type="button" (click)="addPlayer(team)">
                       {{ 'admin.teamList.addPlayer' | transloco }}
                     </ap-button>
                   </div>

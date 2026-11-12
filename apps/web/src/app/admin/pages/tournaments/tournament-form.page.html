@@ -40,7 +40,7 @@
                 'admin.tournamentForm.lifecycle.unpublish' | transloco
               }}</ap-button>
             } @else {
-              <ap-button type="button" variant="ghost" (click)="publish()">{{
+              <ap-button type="button" (click)="publish()">{{
                 'admin.tournamentForm.lifecycle.publish' | transloco
               }}</ap-button>
             }
@@ -655,12 +655,9 @@
                         [value]="divisionNameFor(category.id)"
                         (valueChange)="onNewDivisionNameChange(category.id, $event)"
                       />
-                      <ap-button
-                        type="button"
-                        variant="secondary"
-                        (click)="addDivision(category)"
-                        >{{ 'admin.tournamentForm.categories.addDivision' | transloco }}</ap-button
-                      >
+                      <ap-button type="button" (click)="addDivision(category)">{{
+                        'admin.tournamentForm.categories.addDivision' | transloco
+                      }}</ap-button>
                     </div>
                   </div>
                 </details>
@@ -798,12 +795,7 @@
               </label>
 
               <div class="tournament-form-page__reg-actions">
-                <ap-button
-                  type="button"
-                  variant="secondary"
-                  [disabled]="regBusy()"
-                  (click)="saveRegistrations()"
-                >
+                <ap-button type="button" [disabled]="regBusy()" (click)="saveRegistrations()">
                   {{ 'admin.registrationList.settings.save' | transloco }}
                 </ap-button>
                 <a
@@ -955,7 +947,7 @@
               (valueChange)="onNewVenueNameChange($event)"
               (suggestionSelect)="onVenueSuggestionSelect($event)"
             />
-            <ap-button type="button" variant="secondary" (click)="addVenue()">{{
+            <ap-button type="button" (click)="addVenue()">{{
               'admin.tournamentForm.venues.addVenue' | transloco
             }}</ap-button>
           </div>
@@ -971,7 +963,7 @@
               [value]="descriptionDraft()"
               (input)="onDescriptionDraftChange($event)"
             ></textarea>
-            <ap-button type="button" variant="ghost" (click)="saveDescription()">
+            <ap-button type="button" (click)="saveDescription()">
               {{ 'admin.tournamentForm.description.save' | transloco }}
             </ap-button>
           </section>
@@ -985,7 +977,7 @@
               [value]="rulesDraft()"
               (input)="onRulesDraftChange($event)"
             ></textarea>
-            <ap-button type="button" variant="ghost" (click)="saveRules()">
+            <ap-button type="button" (click)="saveRules()">
               {{ 'admin.tournamentForm.rules.save' | transloco }}
             </ap-button>
           </section>
@@ -999,7 +991,7 @@
               [value]="practicalInfoDraft()"
               (input)="onPracticalInfoDraftChange($event)"
             ></textarea>
-            <ap-button type="button" variant="ghost" (click)="savePracticalInfo()">
+            <ap-button type="button" (click)="savePracticalInfo()">
               {{ 'admin.tournamentForm.practicalInfo.save' | transloco }}
             </ap-button>
           </section>
@@ -1066,7 +1058,7 @@
                 [value]="newSponsorLinkUrl()"
                 (valueChange)="onNewSponsorLinkUrlChange($event)"
               />
-              <ap-button type="button" variant="ghost" (click)="addSponsor()">{{
+              <ap-button type="button" (click)="addSponsor()">{{
                 'admin.tournamentForm.sponsors.add' | transloco
               }}</ap-button>
             </div>
