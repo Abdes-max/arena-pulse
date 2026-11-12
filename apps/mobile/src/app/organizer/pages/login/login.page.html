@@ -11,7 +11,9 @@
         <path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
       </svg>
     </button>
-    <ap-logo class="organizer-login-page__brand" slot="start" [wordmark]="false" />
+    <a class="organizer-login-page__brand" slot="start" routerLink="/" aria-label="TournArena"
+      ><ap-logo [wordmark]="false"
+    /></a>
     <ion-title>{{ 'organizer.auth.login.title' | transloco }}</ion-title>
     <button
       type="button"

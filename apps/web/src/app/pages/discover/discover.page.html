@@ -58,6 +58,7 @@
         class="discover-page__filter-date"
         type="date"
         [label]="'discover.filters.dateFromLabel' | transloco"
+        [hideLabel]="true"
         [value]="dateFrom()"
         (valueChange)="dateFrom.set($event)"
       />

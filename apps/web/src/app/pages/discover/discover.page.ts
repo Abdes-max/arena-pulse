@@ -1,7 +1,6 @@
-import { Location } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { registrationCard } from '../../core/registration-card';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { AssetUrlService, PublicApiService } from 'api-client';
@@ -15,7 +14,7 @@ import {
   TournamentCard,
 } from 'design-system';
 import { LanguageCode, LanguageService, SUPPORTED_LANGUAGES } from 'design-tokens';
-import { debounceTime } from 'rxjs';
+import { debounceTime, switchMap } from 'rxjs';
 import { PublicSport, PublicTournamentDirectoryItem } from 'shared-models';
 
 const PAGE_SIZE = 20;
@@ -37,7 +36,7 @@ const PAGE_SIZE = 20;
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DiscoverPage {
-  private readonly location = inject(Location);
+  private readonly router = inject(Router);
   private readonly languageService = inject(LanguageService);
   private readonly api = inject(PublicApiService);
   private readonly assetUrl = inject(AssetUrlService);
@@ -56,10 +55,15 @@ export class DiscoverPage {
   );
   private readonly transloco = inject(TranslocoService);
   protected readonly sports = signal<PublicSport[]>([]);
+  private readonly allSportsLabel = toSignal(
+    this.transloco.langChanges$.pipe(
+      switchMap((lang) => this.transloco.selectTranslate('discover.filters.allSports', {}, lang)),
+    ),
+    { initialValue: '' },
+  );
   protected readonly sportOptions = computed(() => {
-    const lang = this.language();
     return [
-      { value: '', label: this.transloco.translate('discover.filters.allSports', {}, lang) },
+      { value: '', label: this.allSportsLabel() },
       ...this.sports().map((sport) => ({ value: sport.id, label: sport.name })),
     ];
   });
@@ -116,7 +120,7 @@ export class DiscoverPage {
   }
 
   protected goBack(): void {
-    this.location.back();
+    void this.router.navigateByUrl('/');
   }
 
   protected onLanguageChange(code: string): void {

@@ -16,7 +16,12 @@
         'landing.nav.features' | transloco
       }}</a>
       <a class="landing-page__nav-link" href="#sports">{{ 'landing.nav.sports' | transloco }}</a>
-      <a class="landing-page__nav-link" href="#tournois">{{ 'landing.nav.events' | transloco }}</a>
+      <a
+        class="landing-page__nav-link"
+        routerLink="/decouvrir"
+        [queryParams]="{ inscriptions: 0 }"
+        >{{ 'landing.nav.events' | transloco }}</a
+      >
       <a class="landing-page__nav-link" href="#tarifs">{{ 'landing.nav.pricing' | transloco }}</a>
     </div>
     <div class="landing-page__nav-end">
@@ -75,9 +80,13 @@
       <a class="landing-page__mobile-menu-link" href="#sports" (click)="closeMobileMenu()">{{
         'landing.nav.sports' | transloco
       }}</a>
-      <a class="landing-page__mobile-menu-link" href="#tournois" (click)="closeMobileMenu()">{{
-        'landing.nav.events' | transloco
-      }}</a>
+      <a
+        class="landing-page__mobile-menu-link"
+        routerLink="/decouvrir"
+        [queryParams]="{ inscriptions: 0 }"
+        (click)="closeMobileMenu()"
+        >{{ 'landing.nav.events' | transloco }}</a
+      >
       <a class="landing-page__mobile-menu-link" href="#tarifs" (click)="closeMobileMenu()">{{
         'landing.nav.pricing' | transloco
       }}</a>

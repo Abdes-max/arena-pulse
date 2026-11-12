@@ -208,3 +208,10 @@
   justify-content: flex-end;
   gap: var(--ap-space-3);
 }
+
+// Logo: back to the TournArena home page.
+.app-shell__brand {
+  display: inline-flex;
+  color: inherit;
+  text-decoration: none;
+}
