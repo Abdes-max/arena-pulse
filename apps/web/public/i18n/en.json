@@ -1759,6 +1759,13 @@
       "noResults": "No validated score yet.",
       "noDefense": "Not enough matches played yet.",
       "noCategories": "No category."
+    },
+    "qrPoster": {
+      "scan": "Scan to open the tournament",
+      "addPoster": "Add the tournament's poster at the bottom",
+      "print": "Print",
+      "loading": "Preparing…",
+      "error": "Could not generate the image."
     }
   },
   "wrapped": {

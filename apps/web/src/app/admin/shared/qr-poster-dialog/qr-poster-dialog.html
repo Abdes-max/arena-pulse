@@ -1,0 +1,45 @@
+<button
+  type="button"
+  class="qr-poster__backdrop"
+  (click)="closed.emit()"
+  [attr.aria-label]="'admin.submenu.close' | transloco"
+></button>
+<div
+  class="qr-poster"
+  role="dialog"
+  aria-modal="true"
+  [attr.aria-label]="'admin.submenu.qrCodeDialogTitle' | transloco"
+>
+  <h2 class="qr-poster__title">{{ 'admin.submenu.qrCodeDialogTitle' | transloco }}</h2>
+
+  <div class="qr-poster__preview">
+    @if (image(); as src) {
+      <img [src]="src" [alt]="'admin.submenu.qrCodeDialogTitle' | transloco" />
+    } @else if (failed()) {
+      <p class="qr-poster__error">{{ 'admin.qrPoster.error' | transloco }}</p>
+    } @else {
+      <p class="qr-poster__hint">{{ 'admin.qrPoster.loading' | transloco }}</p>
+    }
+  </div>
+
+  @if (tournament()?.posterUrl) {
+    <label class="qr-poster__option">
+      <input type="checkbox" [checked]="withPoster()" (change)="togglePoster($event)" />
+      {{ 'admin.qrPoster.addPoster' | transloco }}
+    </label>
+  }
+
+  <div class="qr-poster__actions">
+    @if (image(); as src) {
+      <a class="qr-poster__download" [href]="src" [download]="fileName()">
+        {{ 'admin.submenu.downloadQrCode' | transloco }}
+      </a>
+    }
+    <ap-button type="button" variant="secondary" size="sm" [disabled]="!image()" (click)="print()">
+      {{ 'admin.qrPoster.print' | transloco }}
+    </ap-button>
+    <ap-button type="button" variant="ghost" size="sm" (click)="closed.emit()">
+      {{ 'admin.submenu.close' | transloco }}
+    </ap-button>
+  </div>
+</div>

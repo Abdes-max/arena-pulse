@@ -9,7 +9,7 @@ import {
 import { Router, RouterLink } from '@angular/router';
 import { AssetUrlService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { Badge, BadgeStatus, Button, QrCode, Select, SelectOption } from 'design-system';
+import { Badge, BadgeStatus, Button, Select, SelectOption } from 'design-system';
 import { DEFAULT_THEME, LanguageService, ThemeService } from 'design-tokens';
 import { isTournamentPast } from 'shared-models';
 import { AuthService } from '../../core/auth.service';
@@ -18,6 +18,7 @@ import { TeamsService } from '../../core/teams.service';
 import { TournamentsService } from '../../core/tournaments.service';
 import { OnboardingChecklist, OnboardingStep } from './onboarding-checklist';
 import { OrganizationDashboard } from './organization-dashboard';
+import { QrPosterDialog } from '../../shared/qr-poster-dialog/qr-poster-dialog';
 
 const STATUS_TO_BADGE: Record<TournamentStatus, BadgeStatus> = {
   DRAFT: 'draft',
@@ -64,7 +65,7 @@ const DISMISSED_STORAGE_PREFIX = 'arena-pulse:onboarding-dismissed:';
     Button,
     OnboardingChecklist,
     OrganizationDashboard,
-    QrCode,
+    QrPosterDialog,
     RouterLink,
     Select,
     TranslocoPipe,

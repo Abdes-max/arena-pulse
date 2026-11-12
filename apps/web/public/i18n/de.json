@@ -1657,6 +1657,13 @@
       "noResults": "Noch kein bestätigtes Ergebnis.",
       "noDefense": "Noch nicht genug Spiele gespielt.",
       "noCategories": "Keine Kategorie."
+    },
+    "qrPoster": {
+      "scan": "Scannen, um das Turnier zu öffnen",
+      "addPoster": "Turnierplakat unten hinzufügen",
+      "print": "Drucken",
+      "loading": "Wird vorbereitet…",
+      "error": "Das Bild konnte nicht erstellt werden."
     }
   },
   "wrapped": {

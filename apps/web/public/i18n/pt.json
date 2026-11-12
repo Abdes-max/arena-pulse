@@ -1657,6 +1657,13 @@
       "noResults": "Ainda não há resultados validados.",
       "noDefense": "Ainda não há jogos suficientes.",
       "noCategories": "Nenhuma categoria."
+    },
+    "qrPoster": {
+      "scan": "Digitalize para abrir o torneio",
+      "addPoster": "Adicionar o cartaz do torneio em baixo",
+      "print": "Imprimir",
+      "loading": "A preparar…",
+      "error": "Não foi possível gerar a imagem."
     }
   },
   "wrapped": {
