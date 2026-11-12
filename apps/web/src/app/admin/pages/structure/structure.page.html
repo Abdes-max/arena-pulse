@@ -151,7 +151,7 @@
                   }
                 </div>
               }
-              <ap-button type="button" variant="ghost" (click)="addPresetTier()">
+              <ap-button type="button" (click)="addPresetTier()">
                 {{ 'admin.structure.preset.addTier' | transloco }}
               </ap-button>
             }
@@ -497,11 +497,7 @@
                                 [value]="qualificationRuleFormFor(phase.id).targetPhaseId"
                                 (valueChange)="onTargetPhaseChange(phase.id, $event)"
                               />
-                              <ap-button
-                                type="button"
-                                variant="ghost"
-                                (click)="addQualificationRule(phase)"
-                              >
+                              <ap-button type="button" (click)="addQualificationRule(phase)">
                                 {{ 'admin.structure.phase.qualification.addRule' | transloco }}
                               </ap-button>
                             </div>
@@ -568,11 +564,7 @@
                                 [value]="crossGroupRuleFormFor(phase.id).targetPhaseId"
                                 (valueChange)="onCrossGroupTargetPhaseChange(phase.id, $event)"
                               />
-                              <ap-button
-                                type="button"
-                                variant="ghost"
-                                (click)="addCrossGroupRule(phase)"
-                              >
+                              <ap-button type="button" (click)="addCrossGroupRule(phase)">
                                 {{ 'admin.structure.phase.crossGroup.addRule' | transloco }}
                               </ap-button>
                             </div>
@@ -816,7 +808,7 @@
               {{ 'admin.structure.doubleRoundRobinLabel' | transloco }}
             </label>
           }
-          <ap-button type="button" variant="secondary" (click)="addPhase()">{{
+          <ap-button type="button" (click)="addPhase()">{{
             'admin.structure.addPhase.add' | transloco
           }}</ap-button>
         </div>
