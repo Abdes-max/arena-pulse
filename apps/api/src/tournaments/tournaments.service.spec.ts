@@ -1960,6 +1960,32 @@ describe('TournamentsService', () => {
         expect.objectContaining({ id: 't-2', venueName: null }),
       ]);
     });
+
+    it('flags which tournaments have QR code / export PDF unlocked', async () => {
+      prisma.tournament.findMany.mockResolvedValue([
+        tournamentFixture({ id: 'big', venues: [], _count: { teams: 20 } }),
+        tournamentFixture({
+          id: 'paid',
+          venues: [],
+          _count: { teams: 4 },
+          publicationOrders: [{ id: 'order-1' }],
+        }),
+        tournamentFixture({
+          id: 'small',
+          venues: [],
+          _count: { teams: 4 },
+          publicationOrders: [],
+        }),
+      ]);
+
+      const result = await service.list('org-1');
+
+      expect(result.map((t) => [t.id, t.premiumUnlocked])).toEqual([
+        ['big', true],
+        ['paid', true],
+        ['small', false],
+      ]);
+    });
   });
 
   describe('listPublished', () => {

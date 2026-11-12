@@ -137,23 +137,42 @@ export class TournamentsService {
 
   async list(organizationId: string, statusFilter?: string) {
     const status = this.parseStatusFilter(statusFilter);
-    const tournaments = await this.prisma.tournament.findMany({
-      where: { organizationId, ...(status ? { status } : {}) },
-      include: {
-        sport: true,
-        venues: {
-          select: { name: true },
-          orderBy: { position: 'asc' },
-          take: 1,
+    const [tournaments, hasActiveSubscription] = await Promise.all([
+      this.prisma.tournament.findMany({
+        where: { organizationId, ...(status ? { status } : {}) },
+        include: {
+          sport: true,
+          venues: {
+            select: { name: true },
+            orderBy: { position: 'asc' },
+            take: 1,
+          },
+          // Same rule as hasPremiumFeatures, for the whole list in one query.
+          _count: { select: { teams: true } },
+          publicationOrders: {
+            where: {
+              status: TournamentPublicationOrderStatus.PAID,
+              tierCents: { gt: 0 },
+            },
+            select: { id: true },
+            take: 1,
+          },
         },
-      },
-      orderBy: { createdAt: 'desc' },
-    });
+        orderBy: { createdAt: 'desc' },
+      }),
+      this.organizationsService.hasActiveSubscription(organizationId),
+    ]);
     // venueName: shown in small under each name in the admin list, next to
     // the dates, so tournaments with similar names can be told apart.
+    // premiumUnlocked: the list's Partager menu only offers QR code and
+    // export PDF when the tournament has them (see hasPremiumFeatures).
     return tournaments.map((tournament) => ({
       ...this.toSummary(tournament),
       venueName: tournament.venues[0]?.name ?? null,
+      premiumUnlocked:
+        hasActiveSubscription ||
+        (tournament._count?.teams ?? 0) > this.freeMaxTeams() ||
+        (tournament.publicationOrders?.length ?? 0) > 0,
     }));
   }
 

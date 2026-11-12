@@ -154,6 +154,8 @@ export interface Tournament {
   logoUrl: string | null;
   // List endpoint only: the first venue's name, shown under the name in the admin list.
   venueName?: string | null;
+  // List endpoint only: QR code / export PDF unlocked for this tournament.
+  premiumUnlocked?: boolean;
   createdAt: string;
 }
 

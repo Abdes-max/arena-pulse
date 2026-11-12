@@ -712,7 +712,9 @@
         "all": "Tutti",
         "upcoming": "In arrivo",
         "past": "Passati"
-      }
+      },
+      "share": "Condividi",
+      "slideshow": "Presentazione (schermo TV)"
     },
     "onboarding": {
       "title": "Per iniziare",

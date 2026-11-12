@@ -814,7 +814,9 @@
         "all": "All",
         "upcoming": "Upcoming",
         "past": "Past"
-      }
+      },
+      "share": "Share",
+      "slideshow": "Slideshow (TV screen)"
     },
     "onboarding": {
       "title": "Get started",

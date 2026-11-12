@@ -712,7 +712,9 @@
         "all": "Todos",
         "upcoming": "Próximos",
         "past": "Passados"
-      }
+      },
+      "share": "Partilhar",
+      "slideshow": "Apresentação (ecrã TV)"
     },
     "onboarding": {
       "title": "Comece por aqui",

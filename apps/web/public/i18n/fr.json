@@ -814,7 +814,9 @@
         "all": "Toutes",
         "upcoming": "À venir",
         "past": "Passés"
-      }
+      },
+      "share": "Partager",
+      "slideshow": "Diaporama (écran TV)"
     },
     "onboarding": {
       "title": "Bien démarrer",
