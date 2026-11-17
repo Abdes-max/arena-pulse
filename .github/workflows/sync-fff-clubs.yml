@@ -1,0 +1,49 @@
+# Quarterly refresh of the FFF club directory behind the team form's club
+# autocomplete (apps/api/prisma/sync-fff-clubs.ts): new clubs, renamed ones,
+# dissolved ones. Same mechanics as seed-padel-example.yml -- the already
+# built `migrate` image on the VPS, which has dist/prisma and DATABASE_URL --
+# but started detached (`run -d`): the very first run reads every club page
+# (~17 700, paced 1/s) and outlasts any SSH session. Follow it with
+#   docker logs -f fff-clubs-sync
+# on the VPS. Later runs only read new/renamed clubs and take minutes.
+name: Sync FFF club directory
+
+on:
+  schedule:
+    # 04:00 UTC on Jan 1, Apr 1, Jul 1 and Oct 1 (Jul 1 follows the
+    # off-season affiliations, creations and mergers).
+    - cron: '0 4 1 1,4,7,10 *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Only print the changes (FFF_SYNC_DRY_RUN=1)'
+        type: boolean
+        default: false
+
+jobs:
+  sync:
+    name: Sync on Hostinger VPS
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Start sync-fff-clubs.js inside the migrate image
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          timeout: 90s
+          command_timeout: 5m
+          script: |
+            set -euo pipefail
+            cd "${{ secrets.DEPLOY_PATH }}"
+            if docker ps --format '{{.Names}}' | grep -qx fff-clubs-sync; then
+              echo "A sync is already running (docker logs -f fff-clubs-sync)."
+              exit 0
+            fi
+            docker rm fff-clubs-sync 2>/dev/null || true
+            docker compose -f infra/deployment/docker-compose.prod.yml --env-file infra/deployment/.env run -d --name fff-clubs-sync \
+              -e FFF_SYNC_DRY_RUN=${{ inputs.dry_run && '1' || '0' }} \
+              migrate node dist/prisma/sync-fff-clubs.js
+            echo "Started -- follow with: docker logs -f fff-clubs-sync"

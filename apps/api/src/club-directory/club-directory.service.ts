@@ -37,6 +37,7 @@ const DEFAULT_LOGO_TEMPLATE =
 const CREST_PATH = '/api/v1/club-directory/logos/';
 const CREST_MIME_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
 const MAX_CREST_BYTES = 512 * 1024;
+const CREST_REFRESH_MS = 90 * 24 * 60 * 60 * 1000;
 const FOOTBALL_HINT = /foot|\bfc\b|\bas\b|\bus\b|\bes\b|olympique|sporting/i;
 
 /**
@@ -77,7 +78,7 @@ export class ClubDirectoryService {
     }
 
     const results =
-      (await this.prisma.fffClub.count()) > 0
+      (await this.prisma.fffClub.count({ where: { dissolvedAt: null } })) > 0
         ? await this.searchFff(q)
         : await this.searchGouv(q);
     if (this.cache.size >= CACHE_MAX_ENTRIES) {
@@ -102,8 +103,9 @@ export class ClubDirectoryService {
   }
 
   /**
-   * A directory club's crest, fetched once from the FFF CDN then kept under
-   * UPLOADS_DIR/fff-logos (like an uploaded logo). Only for clubs we know --
+   * A directory club's crest, fetched from the FFF CDN then kept under
+   * UPLOADS_DIR/fff-logos (like an uploaded logo) and refreshed after
+   * CREST_REFRESH_MS, so a club's new crest shows up eventually. Only for clubs we know --
    * the route is public (an <img> sends no token), so it must not become an
    * open proxy. Null when the club or its crest doesn't exist.
    */
@@ -115,7 +117,10 @@ export class ClubDirectoryService {
     }
     const file = join(this.uploadsDir(), 'fff-logos', code);
     const cached = await fs.readFile(file).catch(() => null);
-    if (cached) {
+    const cachedAt = cached
+      ? (await fs.stat(file).catch(() => null))?.mtimeMs
+      : undefined;
+    if (cached && cachedAt && Date.now() - cachedAt < CREST_REFRESH_MS) {
       return withImageType(cached);
     }
     if (!(await this.prisma.fffClub.findUnique({ where: { code } }))) {
@@ -127,11 +132,15 @@ export class ClubDirectoryService {
         signal: AbortSignal.timeout(5000),
       });
       if (!res.ok) {
-        return null;
+        // A stale copy beats no crest while the CDN misbehaves.
+        return cached ? withImageType(cached) : null;
       }
       const data = Buffer.from(await res.arrayBuffer());
       const crest =
         data.byteLength <= MAX_CREST_BYTES ? withImageType(data) : null;
+      if (!crest && cached) {
+        return withImageType(cached);
+      }
       if (crest) {
         await fs.mkdir(join(this.uploadsDir(), 'fff-logos'), {
           recursive: true,
@@ -143,7 +152,7 @@ export class ClubDirectoryService {
       this.logger.warn(
         `Crest fetch failed for ${code}: ${(error as Error).message}`,
       );
-      return null;
+      return cached ? withImageType(cached) : null;
     }
   }
 
@@ -156,6 +165,7 @@ export class ClubDirectoryService {
     // "consolat septemes" finds "FC Septemes Consolat".
     const clubs = await this.prisma.fffClub.findMany({
       where: {
+        dissolvedAt: null,
         AND: q.split(' ').map((word) => ({
           OR: [
             { name: { contains: word, mode: 'insensitive' as const } },

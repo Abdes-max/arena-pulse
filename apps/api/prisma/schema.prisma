@@ -254,17 +254,21 @@ enum ParticipantType {
 }
 
 // French football clubs (FFF affiliation number as code), loaded from a file
-// by prisma/import-fff-clubs.ts -- the FFF publishes no open API. Searched by
+// by prisma/import-fff-clubs.ts and kept up to date weekly by
+// prisma/sync-fff-clubs.ts -- the FFF publishes no open API. Searched by
 // ClubDirectoryService for the team form's club autocomplete.
 model FffClub {
-  code       String   @id
-  name       String
-  shortName  String?
-  city       String?
-  postalCode String?
-  department String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  code        String    @id
+  name        String
+  shortName   String?
+  city        String?
+  postalCode  String?
+  department  String?
+  // Set by prisma/sync-fff-clubs.ts when the club leaves the source listing
+  // (dissolved/merged): hidden from the search, kept for the teams linked to it.
+  dissolvedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   @@index([name])
 }

@@ -108,6 +108,9 @@ describe('ClubDirectoryService', () => {
     ];
     const where = args.where;
     expect(where.AND).toHaveLength(2);
+    expect(prisma.fffClub.count).toHaveBeenCalledWith({
+      where: { dissolvedAt: null },
+    });
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
