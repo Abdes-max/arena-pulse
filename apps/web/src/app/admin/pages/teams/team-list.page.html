@@ -627,13 +627,41 @@
          first, the rest only when it matters (category with several of them,
          division when the category has some, contact folded away). -->
     <ng-template #teamFields>
-      <ap-text-field
-        class="team-list-page__name-field"
-        [label]="'admin.teamList.nameLabel' | transloco"
-        [placeholder]="'admin.teamList.namePlaceholder' | transloco"
-        [value]="formName()"
-        (valueChange)="formName.set($event)"
-      />
+      @if (clubSearchAvailable()) {
+        <label class="team-list-page__checkbox">
+          <input type="checkbox" [checked]="useClubSearch()" (change)="toggleClubSearch($event)" />
+          {{ 'admin.teamList.club.toggle' | transloco }}
+        </label>
+      }
+      @if (clubSearchAvailable() && useClubSearch()) {
+        <ap-autocomplete-field
+          class="team-list-page__name-field"
+          [label]="'admin.teamList.nameLabel' | transloco"
+          [placeholder]="'admin.teamList.club.placeholder' | transloco"
+          [value]="formName()"
+          [suggestions]="clubSuggestions()"
+          [loading]="clubSearch.loading()"
+          [hint]="clubSearch.failed() ? ('admin.teamList.club.searchFailed' | transloco) : null"
+          (valueChange)="onNameInput($event)"
+          (suggestionSelect)="onClubSelect($event)"
+        />
+      } @else {
+        <ap-text-field
+          class="team-list-page__name-field"
+          [label]="'admin.teamList.nameLabel' | transloco"
+          [placeholder]="'admin.teamList.namePlaceholder' | transloco"
+          [value]="formName()"
+          (valueChange)="formName.set($event)"
+        />
+      }
+      @if (formExternalClubId()) {
+        <p class="team-list-page__club-linked">
+          <span>{{ 'admin.teamList.club.linked' | transloco: { club: formClubLabel() } }}</span>
+          <button type="button" class="team-list-page__club-unlink" (click)="unlinkClub()">
+            {{ 'admin.teamList.club.unlink' | transloco }}
+          </button>
+        </p>
+      }
       @if (categories().length > 1) {
         <ap-select
           [label]="'admin.teamList.categoryLabel' | transloco"

@@ -222,6 +222,8 @@ export interface Team {
   managerEmail: string | null;
   managerPhone: string | null;
   logoUrl: string | null;
+  // Club picked from the directory ("fff:553079" / "siren:..."), see ClubSearchService.
+  externalClubId: string | null;
   position: number;
 }
 

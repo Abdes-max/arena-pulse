@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -11,6 +12,7 @@ import { promises as fs } from 'fs';
 import { isIPv4, isIPv6 } from 'net';
 import { join } from 'path';
 import { Category, Division, Group, Team } from '../../generated/prisma/client';
+import { ClubDirectoryService } from '../club-directory/club-directory.service';
 import { matchesImageMagicBytes } from '../common/utils/image-magic-bytes.util';
 import { PrismaService } from '../prisma/prisma.service';
 import { CategoriesService } from './categories.service';
@@ -108,6 +110,8 @@ function isReservedOrUnroutableIp(ip: string): boolean {
 
 @Injectable()
 export class TeamsService {
+  private readonly logger = new Logger(TeamsService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly tournamentsService: TournamentsService,
@@ -115,6 +119,7 @@ export class TeamsService {
     private readonly divisionsService: DivisionsService,
     private readonly groupsService: GroupsService,
     private readonly configService: ConfigService,
+    private readonly clubDirectoryService: ClubDirectoryService,
   ) {}
 
   async create(
@@ -151,9 +156,19 @@ export class TeamsService {
         managerName: dto.managerName,
         managerEmail: dto.managerEmail,
         managerPhone: dto.managerPhone,
+        externalClubId: dto.externalClubId,
       },
     });
-    return this.toSummary({ ...team, category, division, group: null });
+    const logoUrl = dto.externalClubId
+      ? await this.importClubLogo(organizationId, tournamentId, team)
+      : null;
+    return this.toSummary({
+      ...team,
+      logoUrl: logoUrl ?? team.logoUrl,
+      category,
+      division,
+      group: null,
+    });
   }
 
   async list(
@@ -234,10 +249,17 @@ export class TeamsService {
         managerName: dto.managerName,
         managerEmail: dto.managerEmail,
         managerPhone: dto.managerPhone,
+        // "" unlinks the club (the logo it brought stays, like any upload).
+        externalClubId: dto.externalClubId === '' ? null : dto.externalClubId,
       },
     });
+    const clubLogoUrl =
+      dto.externalClubId && dto.externalClubId !== team.externalClubId
+        ? await this.importClubLogo(organizationId, tournamentId, updated)
+        : null;
     return this.toSummary({
       ...updated,
+      logoUrl: clubLogoUrl ?? updated.logoUrl,
       category,
       division: division !== undefined ? division : team.division,
       group: team.group,
@@ -318,6 +340,59 @@ export class TeamsService {
       division: team.division,
       group: team.group,
     });
+  }
+
+  /**
+   * Picking a club from the federation directory also brings its crest as
+   * the team logo -- same premium gate as uploadLogo, but best effort: a
+   * locked tournament or an unreachable crest just keeps the team without
+   * a (new) logo rather than failing the save. The URL comes from our own
+   * template (ClubDirectoryService.logoUrlForExternalId), never the client,
+   * and still goes through the SSRF-guarded fetch.
+   */
+  private async importClubLogo(
+    organizationId: string,
+    tournamentId: string,
+    team: Team,
+  ): Promise<string | null> {
+    const crestUrl = team.externalClubId
+      ? this.clubDirectoryService.logoUrlForExternalId(team.externalClubId)
+      : null;
+    if (
+      !crestUrl ||
+      !(await this.tournamentsService.hasPremiumFeatures(
+        organizationId,
+        tournamentId,
+      ))
+    ) {
+      return null;
+    }
+    try {
+      const response = await this.fetchLogoSafely(crestUrl);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      const contentType =
+        response.headers.get('content-type')?.split(';')[0]?.trim() ?? '';
+      const buffer = Buffer.from(await response.arrayBuffer());
+      const logoUrl = await this.saveLogoBuffer(
+        team.id,
+        buffer,
+        contentType,
+        buffer.byteLength,
+      );
+      await this.prisma.team.update({
+        where: { id: team.id },
+        data: { logoUrl },
+      });
+      await this.deleteLogoFile(team.logoUrl);
+      return logoUrl;
+    } catch (error) {
+      this.logger.warn(
+        `Club crest import failed for ${team.externalClubId}: ${(error as Error).message}`,
+      );
+      return null;
+    }
   }
 
   /**
@@ -723,6 +798,7 @@ export class TeamsService {
       managerEmail: team.managerEmail,
       managerPhone: team.managerPhone,
       logoUrl: team.logoUrl,
+      externalClubId: team.externalClubId,
       position: team.position,
     };
   }

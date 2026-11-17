@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { promises as fs } from 'fs';
+import { ClubDirectoryService } from '../club-directory/club-directory.service';
 import { CategoriesService } from './categories.service';
 import { DivisionsService } from './divisions.service';
 import { GroupsService } from './groups.service';
@@ -93,6 +94,7 @@ describe('TeamsService', () => {
   let categoriesService: { assertCategoryExists: jest.Mock };
   let divisionsService: { assertDivisionExists: jest.Mock };
   let groupsService: { assertGroupExists: jest.Mock };
+  let clubDirectoryService: { logoUrlForExternalId: jest.Mock };
   let service: TeamsService;
 
   const category = {
@@ -134,6 +136,11 @@ describe('TeamsService', () => {
     groupsService = {
       assertGroupExists: jest.fn(),
     };
+    clubDirectoryService = {
+      logoUrlForExternalId: jest
+        .fn()
+        .mockReturnValue('https://logos.example/BC2766.jpg'),
+    };
     fsMock.mkdir.mockClear();
     fsMock.writeFile.mockClear();
     fsMock.unlink.mockClear();
@@ -149,6 +156,7 @@ describe('TeamsService', () => {
       divisionsService as unknown as DivisionsService,
       groupsService as unknown as GroupsService,
       configService as unknown as ConfigService,
+      clubDirectoryService as unknown as ClubDirectoryService,
     );
   });
 
@@ -190,6 +198,91 @@ describe('TeamsService', () => {
           categoryId: 'category-1',
         }),
       ).rejects.toBeInstanceOf(ConflictException);
+    });
+
+    describe('with a club picked from the FFF directory', () => {
+      const clubTeam = {
+        id: 'team-1',
+        name: 'OLYMPIQUE DE MARSEILLE',
+        categoryId: 'category-1',
+        divisionId: null,
+        groupId: null,
+        logoUrl: null,
+        externalClubId: 'fff:2766',
+        position: 0,
+      };
+      const pngResponse = {
+        ok: true,
+        status: 200,
+        headers: { get: () => 'image/png' },
+        arrayBuffer: () =>
+          Promise.resolve(
+            Uint8Array.from(
+              Buffer.concat([PNG_MAGIC_BYTES, Buffer.from('fake-png')]),
+            ).buffer,
+          ),
+      };
+
+      beforeEach(() => {
+        prisma.team.findFirst.mockResolvedValue(null);
+        prisma.team.create.mockResolvedValue(clubTeam);
+      });
+
+      it('stores the link and imports the crest as the team logo', async () => {
+        const fetchMock = jest.fn().mockResolvedValue(pngResponse);
+        global.fetch = fetchMock;
+
+        const result = await service.create('org-1', 'tournament-1', {
+          name: 'OLYMPIQUE DE MARSEILLE',
+          categoryId: 'category-1',
+          externalClubId: 'fff:2766',
+        });
+
+        const [[createArgs]] = prisma.team.create.mock.calls as [
+          [{ data: { externalClubId?: string } }],
+        ];
+        expect(createArgs.data.externalClubId).toBe('fff:2766');
+        expect(clubDirectoryService.logoUrlForExternalId).toHaveBeenCalledWith(
+          'fff:2766',
+        );
+        expect(fetchMock).toHaveBeenCalledWith(
+          expect.objectContaining({
+            href: 'https://logos.example/BC2766.jpg',
+          }) as unknown,
+          expect.anything(),
+        );
+        expect(result.logoUrl).toMatch(/^\/uploads\/team-logos\/team-1-/);
+        expect(result.externalClubId).toBe('fff:2766');
+      });
+
+      it('keeps the name only when premium features are locked', async () => {
+        tournamentsService.hasPremiumFeatures.mockResolvedValue(false);
+        const fetchMock = jest.fn();
+        global.fetch = fetchMock;
+
+        const result = await service.create('org-1', 'tournament-1', {
+          name: 'OLYMPIQUE DE MARSEILLE',
+          categoryId: 'category-1',
+          externalClubId: 'fff:2766',
+        });
+
+        expect(fetchMock).not.toHaveBeenCalled();
+        expect(result.logoUrl).toBeNull();
+      });
+
+      it('still creates the team when the crest is unreachable', async () => {
+        global.fetch = jest.fn().mockResolvedValue({ ok: false, status: 404 });
+
+        const result = await service.create('org-1', 'tournament-1', {
+          name: 'OLYMPIQUE DE MARSEILLE',
+          categoryId: 'category-1',
+          externalClubId: 'fff:2766',
+        });
+
+        expect(result.id).toBe('team-1');
+        expect(result.logoUrl).toBeNull();
+        expect(prisma.team.update).not.toHaveBeenCalled();
+      });
     });
 
     it('creates a team without a division', async () => {

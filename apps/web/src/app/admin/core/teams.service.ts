@@ -11,6 +11,7 @@ export interface CreateTeamPayload {
   managerName?: string;
   managerEmail?: string;
   managerPhone?: string;
+  externalClubId?: string;
 }
 
 export interface UpdateTeamPayload {
@@ -20,6 +21,8 @@ export interface UpdateTeamPayload {
   managerName?: string;
   managerEmail?: string;
   managerPhone?: string;
+  /** "" unlinks the club. */
+  externalClubId?: string;
 }
 
 export interface CreatePlayerPayload {

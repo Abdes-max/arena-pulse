@@ -1054,6 +1054,13 @@
         "one": "Eine Mannschaft",
         "list": "Liste einfügen",
         "csv": "CSV-Datei"
+      },
+      "club": {
+        "toggle": "Verein suchen (Fußball)",
+        "placeholder": "Vereinsname oder Ort",
+        "searchFailed": "Vereinssuche nicht verfügbar: Namen bitte selbst eingeben.",
+        "linked": "Verknüpfter Verein: {{club}}",
+        "unlink": "Trennen"
       }
     },
     "refereeList": {

@@ -2,9 +2,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AssetUrlService } from 'api-client';
+import { AssetUrlService, ClubSearchService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { Button, Select, SelectOption, TextField } from 'design-system';
+import { AutocompleteField, Button, Select, SelectOption, TextField } from 'design-system';
 import { LanguageService } from 'design-tokens';
 import { AuthService } from '../../core/auth.service';
 import {
@@ -21,6 +21,10 @@ import { TeamsService } from '../../core/teams.service';
 import { TournamentsService } from '../../core/tournaments.service';
 
 type PublicationTierCode = 'FREE' | 'STANDARD' | 'LARGE';
+
+// Sports whose teams are FFF clubs -- the only ones offered the club search.
+const CLUB_SEARCH_SPORTS = new Set(['Football', 'Futsal']);
+const CLUB_SEARCH_STORAGE_KEY = 'ta.teamClubSearch';
 
 // Mirrors the structured body TournamentsService.assertTeamAdditionAllowed
 // (apps/api) throws (403, code PUBLICATION_TIER_EXCEEDED) -- enough for this
@@ -45,7 +49,7 @@ function isPublicationTierExceededError(
 
 @Component({
   selector: 'app-team-list-page',
-  imports: [Button, NgTemplateOutlet, Select, TextField, TranslocoPipe],
+  imports: [AutocompleteField, Button, NgTemplateOutlet, Select, TextField, TranslocoPipe],
   templateUrl: './team-list.page.html',
   styleUrl: './team-list.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -119,6 +123,23 @@ export class TeamListPage {
   protected readonly formManagerName = signal('');
   protected readonly formManagerEmail = signal('');
   protected readonly formManagerPhone = signal('');
+
+  // Club search (football/futsal only): the name field becomes an
+  // autocomplete over the club directory, picking a club links it
+  // (externalClubId) -- an FFF club's crest then becomes the team logo.
+  protected readonly clubSearch = inject(ClubSearchService).autocomplete();
+  protected readonly clubSearchAvailable = computed(() =>
+    CLUB_SEARCH_SPORTS.has(this.tournament()?.sportName ?? ''),
+  );
+  protected readonly useClubSearch = signal(readClubSearchPreference());
+  protected readonly clubSuggestions = computed(() =>
+    this.clubSearch.suggestions().map((club) => ({
+      label: club.name,
+      detail: [club.postalCode, club.city].filter(Boolean).join(' '),
+    })),
+  );
+  protected readonly formExternalClubId = signal('');
+  protected readonly formClubLabel = signal('');
 
   protected readonly importCsv = signal('');
 
@@ -195,6 +216,44 @@ export class TeamListPage {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  protected toggleClubSearch(event: Event): void {
+    const enabled = (event.target as HTMLInputElement).checked;
+    this.useClubSearch.set(enabled);
+    this.clubSearch.clear();
+    try {
+      localStorage.setItem(CLUB_SEARCH_STORAGE_KEY, enabled ? '1' : '0');
+    } catch {
+      // Storage unavailable (private mode...): the choice just isn't remembered.
+    }
+  }
+
+  protected onNameInput(value: string): void {
+    this.formName.set(value);
+    if (this.useClubSearch() && this.clubSearchAvailable()) {
+      this.clubSearch.query(value);
+    }
+  }
+
+  protected onClubSelect(index: number): void {
+    const club = this.clubSearch.suggestions()[index];
+    if (!club) {
+      return;
+    }
+    this.formName.set(club.name);
+    this.formExternalClubId.set(club.externalId);
+    this.formClubLabel.set(
+      [club.name, [club.postalCode, club.city].filter(Boolean).join(' ')]
+        .filter(Boolean)
+        .join(' · '),
+    );
+    this.clubSearch.clear();
+  }
+
+  protected unlinkClub(): void {
+    this.formExternalClubId.set('');
+    this.formClubLabel.set('');
   }
 
   private async loadReferees(organizationId: string): Promise<void> {
@@ -423,6 +482,9 @@ export class TeamListPage {
     this.formManagerName.set(team.managerName ?? '');
     this.formManagerEmail.set(team.managerEmail ?? '');
     this.formManagerPhone.set(team.managerPhone ?? '');
+    this.formExternalClubId.set(team.externalClubId ?? '');
+    this.formClubLabel.set(team.externalClubId ? team.name : '');
+    this.clubSearch.clear();
     // The division <select>'s options are populated from a computed that
     // depends on formCategoryId, set just above in this same tick -- the
     // browser only honors a <select> value once its matching <option>
@@ -444,6 +506,8 @@ export class TeamListPage {
     this.formManagerName.set('');
     this.formManagerEmail.set('');
     this.formManagerPhone.set('');
+    this.unlinkClub();
+    this.clubSearch.clear();
   }
 
   protected onFormSubmit(event: Event): void {
@@ -477,6 +541,7 @@ export class TeamListPage {
             managerName,
             managerEmail,
             managerPhone,
+            externalClubId: this.formExternalClubId(),
           },
         );
         this.teams.update((teams) => teams.map((t) => (t.id === updated.id ? updated : t)));
@@ -488,9 +553,12 @@ export class TeamListPage {
           managerName,
           managerEmail,
           managerPhone,
+          externalClubId: this.formExternalClubId() || undefined,
         });
         this.teams.update((teams) => [...teams, created]);
         this.formName.set('');
+        this.unlinkClub();
+        this.clubSearch.clear();
         this.formManagerName.set('');
         this.formManagerEmail.set('');
         this.formManagerPhone.set('');
@@ -825,5 +893,14 @@ export class TeamListPage {
           ? 'landing.pricing.standard.tag'
           : 'landing.pricing.large.tag';
     return this.transloco.translate(key, {}, this.languageService.language());
+  }
+}
+
+/** Club search is on unless the organizer turned it off (remembered per browser). */
+function readClubSearchPreference(): boolean {
+  try {
+    return localStorage.getItem(CLUB_SEARCH_STORAGE_KEY) !== '0';
+  } catch {
+    return true;
   }
 }
