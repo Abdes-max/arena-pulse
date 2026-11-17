@@ -7,9 +7,14 @@
 // Expected columns (header line, ";" or "," separated, any order):
 //   code (FFF affiliation n°), nom, nom_court, commune, code_postal, departement
 // Only code and nom are required. Rows are upserted by code, so re-running it
-// with a newer file updates names/cities without touching linked teams.
+// with a newer file updates names/cities without touching linked teams; a
+// column absent from the file keeps the stored values.
 //
-// Usage (from apps/api): npm run build && node dist/prisma/import-fff-clubs.js <file.csv>
+// The production copy lives in prisma/data/fff-clubs.csv (built into the
+// migrate image) and is loaded by .github/workflows/import-fff-clubs.yml.
+//
+// Usage (from apps/api): npm run build && node dist/prisma/import-fff-clubs.js [file.csv]
+// (default: prisma/data/fff-clubs.csv)
 
 import 'dotenv/config';
 import { readFileSync } from 'node:fs';
@@ -50,10 +55,7 @@ function splitLine(line: string, separator: string): string[] {
 }
 
 async function main(): Promise<void> {
-  const file = process.argv[2];
-  if (!file) {
-    throw new Error('Usage: node dist/prisma/import-fff-clubs.js <file.csv>');
-  }
+  const file = process.argv[2] ?? 'prisma/data/fff-clubs.csv';
   const lines = readFileSync(file, 'utf8')
     .replace(new RegExp('^' + String.fromCharCode(0xfeff)), '')
     .split(/\r?\n/)
@@ -90,12 +92,16 @@ async function main(): Promise<void> {
         skipped++;
         continue;
       }
+      // A column missing from the file leaves the stored value alone (a
+      // names-only file must not wipe cities a previous import brought).
+      const optional = (key: keyof typeof COLUMNS) =>
+        index[key] >= 0 ? { [key]: cell(cells, key) } : {};
       const data = {
         name: name.slice(0, 200),
-        shortName: cell(cells, 'shortName'),
-        city: cell(cells, 'city'),
-        postalCode: cell(cells, 'postalCode'),
-        department: cell(cells, 'department'),
+        ...optional('shortName'),
+        ...optional('city'),
+        ...optional('postalCode'),
+        ...optional('department'),
       };
       await prisma.fffClub.upsert({
         where: { code },
