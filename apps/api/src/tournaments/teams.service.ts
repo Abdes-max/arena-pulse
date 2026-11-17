@@ -355,11 +355,8 @@ export class TeamsService {
     tournamentId: string,
     team: Team,
   ): Promise<string | null> {
-    const crestUrl = team.externalClubId
-      ? this.clubDirectoryService.logoUrlForExternalId(team.externalClubId)
-      : null;
     if (
-      !crestUrl ||
+      !team.externalClubId ||
       !(await this.tournamentsService.hasPremiumFeatures(
         organizationId,
         tournamentId,
@@ -368,18 +365,17 @@ export class TeamsService {
       return null;
     }
     try {
-      const response = await this.fetchLogoSafely(crestUrl);
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
+      const crest = await this.clubDirectoryService.crestForExternalId(
+        team.externalClubId,
+      );
+      if (!crest) {
+        return null;
       }
-      const contentType =
-        response.headers.get('content-type')?.split(';')[0]?.trim() ?? '';
-      const buffer = Buffer.from(await response.arrayBuffer());
       const logoUrl = await this.saveLogoBuffer(
         team.id,
-        buffer,
-        contentType,
-        buffer.byteLength,
+        crest.data,
+        crest.contentType,
+        crest.data.byteLength,
       );
       await this.prisma.team.update({
         where: { id: team.id },

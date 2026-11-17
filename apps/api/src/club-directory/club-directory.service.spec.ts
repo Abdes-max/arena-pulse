@@ -146,12 +146,12 @@ describe('ClubDirectoryService', () => {
     );
   });
 
-  it('builds a crest URL only for FFF clubs', () => {
-    expect(service.logoUrlForExternalId('fff:553079')).toBe(
-      'https://cdn-transverse.azureedge.net/phlogos/BC553079.jpg',
-    );
-    expect(service.logoUrlForExternalId('siren:453133209')).toBeNull();
-    expect(service.logoUrlForExternalId('fff:../x')).toBeNull();
+  it('has a crest only for FFF clubs', async () => {
+    await expect(
+      service.crestForExternalId('siren:453133209'),
+    ).resolves.toBeNull();
+    await expect(service.crestForExternalId('fff:../x')).resolves.toBeNull();
+    expect(prisma.fffClub.findUnique).not.toHaveBeenCalled();
   });
 
   it('serves crests only for clubs of the directory, never as an open proxy', async () => {
