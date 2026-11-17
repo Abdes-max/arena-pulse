@@ -235,7 +235,7 @@ describe('TeamsService', () => {
         expect(result.externalClubId).toBe('fff:2766');
       });
 
-      it('keeps the name only when premium features are locked', async () => {
+      it('imports the crest on the free plan too (not a premium upload)', async () => {
         tournamentsService.hasPremiumFeatures.mockResolvedValue(false);
 
         const result = await service.create('org-1', 'tournament-1', {
@@ -244,8 +244,7 @@ describe('TeamsService', () => {
           externalClubId: 'fff:2766',
         });
 
-        expect(clubDirectoryService.crestForExternalId).not.toHaveBeenCalled();
-        expect(result.logoUrl).toBeNull();
+        expect(result.logoUrl).toMatch(/^\/uploads\/team-logos\/team-1-/);
       });
 
       it('still creates the team when the crest is unreachable', async () => {

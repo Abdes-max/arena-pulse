@@ -159,9 +159,7 @@ export class TeamsService {
         externalClubId: dto.externalClubId,
       },
     });
-    const logoUrl = dto.externalClubId
-      ? await this.importClubLogo(organizationId, tournamentId, team)
-      : null;
+    const logoUrl = dto.externalClubId ? await this.importClubLogo(team) : null;
     return this.toSummary({
       ...team,
       logoUrl: logoUrl ?? team.logoUrl,
@@ -255,7 +253,7 @@ export class TeamsService {
     });
     const clubLogoUrl =
       dto.externalClubId && dto.externalClubId !== team.externalClubId
-        ? await this.importClubLogo(organizationId, tournamentId, updated)
+        ? await this.importClubLogo(updated)
         : null;
     return this.toSummary({
       ...updated,
@@ -344,24 +342,14 @@ export class TeamsService {
 
   /**
    * Picking a club from the federation directory also brings its crest as
-   * the team logo -- same premium gate as uploadLogo, but best effort: a
-   * locked tournament or an unreachable crest just keeps the team without
-   * a (new) logo rather than failing the save. The URL comes from our own
-   * template (ClubDirectoryService.logoUrlForExternalId), never the client,
-   * and still goes through the SSRF-guarded fetch.
+   * the team logo -- on every plan, unlike uploadLogo's premium gate: it's
+   * the club's own official crest, not a customization. Best effort: an
+   * unreachable crest just keeps the team without a (new) logo rather than
+   * failing the save. The image comes from ClubDirectoryService (our FFF
+   * directory and CDN template), never from a client-supplied URL.
    */
-  private async importClubLogo(
-    organizationId: string,
-    tournamentId: string,
-    team: Team,
-  ): Promise<string | null> {
-    if (
-      !team.externalClubId ||
-      !(await this.tournamentsService.hasPremiumFeatures(
-        organizationId,
-        tournamentId,
-      ))
-    ) {
+  private async importClubLogo(team: Team): Promise<string | null> {
+    if (!team.externalClubId) {
       return null;
     }
     try {
