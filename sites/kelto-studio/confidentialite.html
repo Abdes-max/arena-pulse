@@ -8,6 +8,7 @@
 <link rel="icon" type="image/svg+xml" href="/brand/favicon.svg" />
 <link rel="icon" type="image/png" sizes="32x32" href="/brand/favicon-32.png" />
 <link rel="apple-touch-icon" href="/brand/favicon-180.png" />
+<script src="/theme-init.js"></script>
 <style>
   :root {
     --ink: #14161a;
@@ -29,17 +30,6 @@
     --parchment-dim: #4a4640;
     --line: rgba(20, 22, 26, 0.12);
     --line-strong: rgba(20, 22, 26, 0.24);
-  }
-
-  @media (prefers-color-scheme: light) {
-    :root:not([data-theme="dark"]) {
-      --ink: #f6f1e7;
-      --ink-soft: #ffffff;
-      --parchment: #1a1c20;
-      --parchment-dim: #4a4640;
-      --line: rgba(20, 22, 26, 0.12);
-      --line-strong: rgba(20, 22, 26, 0.24);
-    }
   }
 
   * { box-sizing: border-box; }
@@ -73,6 +63,49 @@
   }
 
   .back:hover { color: var(--bronze-bright); }
+
+  .page-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 40px;
+  }
+
+  .page-top .back { margin-bottom: 0; }
+
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    flex: none;
+    border: 1px solid var(--line-strong);
+    border-radius: 10px;
+    background: none;
+    color: var(--parchment);
+    cursor: pointer;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .theme-toggle:hover,
+  .theme-toggle:focus-visible {
+    border-color: var(--bronze-bright);
+    color: var(--bronze-bright);
+  }
+
+  .theme-toggle svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+  }
+
+  .theme-toggle .icon-moon { display: none; }
+  :root[data-theme="light"] .theme-toggle .icon-sun { display: none; }
+  :root[data-theme="light"] .theme-toggle .icon-moon { display: block; }
 
   h1 {
     font-family: var(--font-display);
@@ -117,7 +150,18 @@
 </head>
 <body>
   <div class="wrap">
-    <a class="back" href="/">← Retour à l'accueil</a>
+    <div class="page-top">
+      <a class="back" href="/">← Retour à l'accueil</a>
+      <button type="button" class="theme-toggle" data-theme-toggle aria-pressed="false" aria-label="Passer en mode clair">
+        <svg class="icon-sun" viewBox="0 0 20 20" aria-hidden="true">
+          <circle cx="10" cy="10" r="4" />
+          <path d="M10 1v2M10 17v2M1 10h2M17 10h2M3.5 3.5l1.4 1.4M15.1 15.1l1.4 1.4M3.5 16.5l1.4-1.4M15.1 4.9l1.4-1.4" />
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 20 20" aria-hidden="true">
+          <path d="M16.2 12.4A7 7 0 0 1 7.6 3.8a7 7 0 1 0 8.6 8.6Z" />
+        </svg>
+      </button>
+    </div>
     <h1>Politique de confidentialité</h1>
     <p class="updated">Dernière mise à jour : 4 novembre 2026</p>
 
@@ -136,7 +180,12 @@
     </p>
 
     <h2>3. Données collectées</h2>
-    <p>Ce site ne dépose aucun cookie ni traceur : il ne contient aucun JavaScript.</p>
+    <p>
+      Ce site ne dépose aucun cookie ni traceur. Le peu de JavaScript qu'il charge sert
+      uniquement aux animations visuelles et à mémoriser votre préférence d'affichage
+      (thème clair ou sombre) dans le stockage local de votre navigateur - cette
+      préférence reste sur votre appareil et n'est jamais transmise à Kelto Studio.
+    </p>
     <p>La seule donnée collectée l'est via le formulaire de contact, si vous le remplissez :</p>
     <ul>
       <li>Nom</li>
@@ -175,5 +224,6 @@
       (honeypot) qui ne collecte aucune donnée sur les visiteurs légitimes.
     </p>
   </div>
+<script src="/theme.js" defer></script>
 </body>
 </html>
