@@ -32,7 +32,7 @@ export class OrganizerTeamsService {
   createTeam(
     organizationId: string,
     tournamentId: string,
-    payload: { name: string; categoryId: string },
+    payload: { name: string; categoryId: string; externalClubId?: string },
   ): Promise<OrganizerTeam> {
     return firstValueFrom(
       this.http.post<OrganizerTeam>(this.base(organizationId, tournamentId), payload),

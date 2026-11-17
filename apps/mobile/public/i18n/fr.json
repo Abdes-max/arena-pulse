@@ -240,7 +240,13 @@
         "pastePlaceholder": "Un club par ligne (ou séparés par des virgules)",
         "pasteRename": "Renommer les équipes à confirmer",
         "pasteAdd": "Ajouter ces équipes",
-        "errorPaste": "Impossible d’enregistrer ces noms, réessayez."
+        "errorPaste": "Impossible d’enregistrer ces noms, réessayez.",
+        "club": {
+          "toggle": "Rechercher le club (football)",
+          "placeholder": "Nom du club ou ville",
+          "searchFailed": "Recherche de clubs indisponible : saisissez le nom à la main.",
+          "department": "Département {{code}}"
+        }
       },
       "structure": {
         "title": "Format de la compétition",
