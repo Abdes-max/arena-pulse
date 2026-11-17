@@ -39,10 +39,19 @@
           [attr.aria-selected]="$index === activeIndex()"
           (mousedown)="$event.preventDefault(); pick($index)"
         >
-          <span class="ap-autocomplete__option-label">{{ suggestion.label }}</span>
-          @if (suggestion.detail) {
-            <span class="ap-autocomplete__option-detail">{{ suggestion.detail }}</span>
+          @if (suggestion.imageUrl !== undefined) {
+            <span class="ap-autocomplete__option-media" aria-hidden="true">
+              @if (suggestion.imageUrl) {
+                <img [src]="suggestion.imageUrl" alt="" loading="lazy" />
+              }
+            </span>
           }
+          <span class="ap-autocomplete__option-text">
+            <span class="ap-autocomplete__option-label">{{ suggestion.label }}</span>
+            @if (suggestion.detail) {
+              <span class="ap-autocomplete__option-detail">{{ suggestion.detail }}</span>
+            }
+          </span>
         </li>
       }
     </ul>

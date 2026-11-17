@@ -41,6 +41,7 @@ describe('toGouvSuggestions', () => {
       name: 'AIX UNIVERSITE CLUB FOOTBALL (AUCF)',
       city: 'AIX-EN-PROVENCE',
       postalCode: '13100',
+      department: null,
       logoUrl: null,
     });
   });
@@ -58,12 +59,16 @@ describe('toGouvSuggestions', () => {
 });
 
 describe('ClubDirectoryService', () => {
-  let prisma: { fffClub: { count: jest.Mock; findMany: jest.Mock } };
+  let prisma: {
+    fffClub: { count: jest.Mock; findMany: jest.Mock; findUnique: jest.Mock };
+  };
   let fetchMock: jest.SpyInstance;
   let service: ClubDirectoryService;
 
   beforeEach(() => {
-    prisma = { fffClub: { count: jest.fn(), findMany: jest.fn() } };
+    prisma = {
+      fffClub: { count: jest.fn(), findMany: jest.fn(), findUnique: jest.fn() },
+    };
     fetchMock = jest.spyOn(global, 'fetch');
     service = new ClubDirectoryService(
       prisma as unknown as PrismaService,
@@ -94,7 +99,8 @@ describe('ClubDirectoryService', () => {
         name: 'FC Septemes Consolat',
         city: 'Septemes Les Vallons',
         postalCode: '13240',
-        logoUrl: 'https://cdn-transverse.azureedge.net/phlogos/BC553079.jpg',
+        department: '13',
+        logoUrl: '/api/v1/club-directory/logos/553079',
       },
     ]);
     const [[args]] = prisma.fffClub.findMany.mock.calls as [
@@ -143,5 +149,16 @@ describe('ClubDirectoryService', () => {
     );
     expect(service.logoUrlForExternalId('siren:453133209')).toBeNull();
     expect(service.logoUrlForExternalId('fff:../x')).toBeNull();
+  });
+
+  it('serves crests only for clubs of the directory, never as an open proxy', async () => {
+    prisma.fffClub.findUnique.mockResolvedValue(null);
+
+    await expect(service.crest('../../etc')).resolves.toBeNull();
+    await expect(service.crest('99999999')).resolves.toBeNull();
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(prisma.fffClub.findUnique).toHaveBeenCalledWith({
+      where: { code: '99999999' },
+    });
   });
 });

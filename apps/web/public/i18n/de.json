@@ -1060,7 +1060,8 @@
         "placeholder": "Vereinsname oder Ort",
         "searchFailed": "Vereinssuche nicht verfügbar: Namen bitte selbst eingeben.",
         "linked": "Verknüpfter Verein: {{club}}",
-        "unlink": "Trennen"
+        "unlink": "Trennen",
+        "department": "Département {{code}}"
       }
     },
     "refereeList": {

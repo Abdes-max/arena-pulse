@@ -1162,7 +1162,8 @@
         "placeholder": "Club name or town",
         "searchFailed": "Club search unavailable: type the name yourself.",
         "linked": "Linked club: {{club}}",
-        "unlink": "Unlink"
+        "unlink": "Unlink",
+        "department": "Department {{code}}"
       }
     },
     "refereeList": {

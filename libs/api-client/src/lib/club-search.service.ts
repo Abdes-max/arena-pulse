@@ -13,6 +13,9 @@ export interface ClubSuggestion {
   name: string;
   city: string | null;
   postalCode: string | null;
+  /** Department code ("13"), when the city isn't known. */
+  department: string | null;
+  /** API-relative crest path (resolve with AssetUrlService), FFF clubs only. */
   logoUrl: string | null;
 }
 

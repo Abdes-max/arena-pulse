@@ -1060,7 +1060,8 @@
         "placeholder": "Nome do clube ou cidade",
         "searchFailed": "Pesquisa de clubes indisponível: escreva o nome à mão.",
         "linked": "Clube associado: {{club}}",
-        "unlink": "Desassociar"
+        "unlink": "Desassociar",
+        "department": "Departamento {{code}}"
       }
     },
     "refereeList": {

@@ -1162,7 +1162,8 @@
         "placeholder": "Nom du club ou ville, ex. Septèmes",
         "searchFailed": "Recherche de clubs indisponible : saisissez le nom à la main.",
         "linked": "Club lié : {{club}}",
-        "unlink": "Délier"
+        "unlink": "Délier",
+        "department": "Département {{code}}"
       }
     },
     "refereeList": {

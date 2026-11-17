@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AssetUrlService, ClubSearchService } from 'api-client';
+import { AssetUrlService, ClubSearchService, ClubSuggestion } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { AutocompleteField, Button, Select, SelectOption, TextField } from 'design-system';
 import { LanguageService } from 'design-tokens';
@@ -135,7 +135,8 @@ export class TeamListPage {
   protected readonly clubSuggestions = computed(() =>
     this.clubSearch.suggestions().map((club) => ({
       label: club.name,
-      detail: [club.postalCode, club.city].filter(Boolean).join(' '),
+      detail: this.clubLocation(club),
+      imageUrl: this.assetUrl.resolve(club.logoUrl),
     })),
   );
   protected readonly formExternalClubId = signal('');
@@ -243,12 +244,22 @@ export class TeamListPage {
     }
     this.formName.set(club.name);
     this.formExternalClubId.set(club.externalId);
-    this.formClubLabel.set(
-      [club.name, [club.postalCode, club.city].filter(Boolean).join(' ')]
-        .filter(Boolean)
-        .join(' · '),
-    );
+    this.formClubLabel.set([club.name, this.clubLocation(club)].filter(Boolean).join(' · '));
     this.clubSearch.clear();
+  }
+
+  private clubLocation(club: ClubSuggestion): string {
+    const place = [club.postalCode, club.city].filter(Boolean).join(' ');
+    if (place) {
+      return place;
+    }
+    return club.department
+      ? this.transloco.translate(
+          'admin.teamList.club.department',
+          { code: club.department },
+          this.languageService.language(),
+        )
+      : '';
   }
 
   protected unlinkClub(): void {

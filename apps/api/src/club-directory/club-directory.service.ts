@@ -1,5 +1,8 @@
 import { BadGatewayException, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { promises as fs } from 'fs';
+import { join } from 'path';
+import { matchesImageMagicBytes } from '../common/utils/image-magic-bytes.util';
 import { PrismaService } from '../prisma/prisma.service';
 
 /** One club suggestion, ready to display and to create a Team from. */
@@ -11,6 +14,8 @@ export interface ClubSuggestion {
   name: string;
   city: string | null;
   postalCode: string | null;
+  /** Department code ("13"), when the city isn't known. */
+  department: string | null;
   logoUrl: string | null;
 }
 
@@ -27,6 +32,11 @@ const FFF_EXTERNAL_ID = /^fff:(\d{1,10})$/;
 // Same domain as the FFF's own sites: club crests by affiliation number.
 const DEFAULT_LOGO_TEMPLATE =
   'https://cdn-transverse.azureedge.net/phlogos/BC{id}.jpg';
+// Our own crest route (ClubDirectoryController.logo): the web CSP only allows
+// images from 'self', so the FFF CDN is never hit by the browser directly.
+const CREST_PATH = '/api/v1/club-directory/logos/';
+const CREST_MIME_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
+const MAX_CREST_BYTES = 512 * 1024;
 const FOOTBALL_HINT = /foot|\bfc\b|\bas\b|\bus\b|\bes\b|olympique|sporting/i;
 
 /**
@@ -91,6 +101,56 @@ export class ClubDirectoryService {
     return match ? this.logoUrlFor(match[1]) : null;
   }
 
+  /**
+   * A directory club's crest, fetched once from the FFF CDN then kept under
+   * UPLOADS_DIR/fff-logos (like an uploaded logo). Only for clubs we know --
+   * the route is public (an <img> sends no token), so it must not become an
+   * open proxy. Null when the club or its crest doesn't exist.
+   */
+  async crest(
+    code: string,
+  ): Promise<{ data: Buffer; contentType: string } | null> {
+    if (!/^\d{1,10}$/.test(code)) {
+      return null;
+    }
+    const file = join(this.uploadsDir(), 'fff-logos', code);
+    const cached = await fs.readFile(file).catch(() => null);
+    if (cached) {
+      return withImageType(cached);
+    }
+    if (!(await this.prisma.fffClub.findUnique({ where: { code } }))) {
+      return null;
+    }
+    try {
+      const res = await fetch(this.logoUrlFor(code), {
+        headers: { 'User-Agent': 'TournArena (https://tournarena.com)' },
+        signal: AbortSignal.timeout(5000),
+      });
+      if (!res.ok) {
+        return null;
+      }
+      const data = Buffer.from(await res.arrayBuffer());
+      const crest =
+        data.byteLength <= MAX_CREST_BYTES ? withImageType(data) : null;
+      if (crest) {
+        await fs.mkdir(join(this.uploadsDir(), 'fff-logos'), {
+          recursive: true,
+        });
+        await fs.writeFile(file, data);
+      }
+      return crest;
+    } catch (error) {
+      this.logger.warn(
+        `Crest fetch failed for ${code}: ${(error as Error).message}`,
+      );
+      return null;
+    }
+  }
+
+  private uploadsDir(): string {
+    return this.configService.get<string>('UPLOADS_DIR', './uploads');
+  }
+
   private async searchFff(q: string): Promise<ClubSuggestion[]> {
     // Every word must appear in the name, short name or city:
     // "consolat septemes" finds "FC Septemes Consolat".
@@ -113,7 +173,8 @@ export class ClubDirectoryService {
       name: club.name,
       city: club.city,
       postalCode: club.postalCode,
-      logoUrl: this.logoUrlFor(club.code),
+      department: club.department,
+      logoUrl: `${CREST_PATH}${club.code}`,
     }));
   }
 
@@ -157,6 +218,16 @@ export class ClubDirectoryService {
   }
 }
 
+/** The FFF CDN serves PNGs as .jpg: trust the bytes, not the name. */
+function withImageType(
+  data: Buffer,
+): { data: Buffer; contentType: string } | null {
+  const contentType = CREST_MIME_TYPES.find((type) =>
+    matchesImageMagicBytes(data, type),
+  );
+  return contentType ? { data, contentType } : null;
+}
+
 /**
  * Company register results -> suggestions. NAF 93.12Z covers every sport,
  * so names that look like a football club come first.
@@ -177,6 +248,7 @@ export function toGouvSuggestions(companies: GouvCompany[]): ClubSuggestion[] {
       name: name.slice(0, 200),
       city: company.siege?.libelle_commune?.trim() || null,
       postalCode: company.siege?.code_postal?.trim() || null,
+      department: null,
       logoUrl: null,
     });
   }
