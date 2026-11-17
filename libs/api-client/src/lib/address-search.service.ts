@@ -17,17 +17,17 @@ const DEBOUNCE_MS = 300;
 const MIN_CHARS = 3;
 
 /**
- * Debounced, last-query-wins state for one address field -- feed it every
+ * Debounced, last-query-wins state for one search field -- feed it every
  * keystroke with `query()`, bind `suggestions()`/`loading()`/`failed()`.
  */
-export class AddressAutocomplete {
-  readonly suggestions = signal<AddressSuggestion[]>([]);
+export class DebouncedAutocomplete<T> {
+  readonly suggestions = signal<T[]>([]);
   readonly loading = signal(false);
   readonly failed = signal(false);
   private timer: ReturnType<typeof setTimeout> | null = null;
   private latest = '';
 
-  constructor(private readonly search: (q: string) => Promise<AddressSuggestion[]>) {}
+  constructor(private readonly search: (q: string) => Promise<T[]>) {}
 
   query(text: string): void {
     this.latest = text.trim();
@@ -71,6 +71,8 @@ export class AddressAutocomplete {
     }
   }
 }
+
+export class AddressAutocomplete extends DebouncedAutocomplete<AddressSuggestion> {}
 
 /** Venue address suggestions through the API's geocoding proxy (Photon/OSM). */
 @Injectable({ providedIn: 'root' })

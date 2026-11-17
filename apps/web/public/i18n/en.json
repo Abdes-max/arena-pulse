@@ -1156,6 +1156,14 @@
         "one": "One team",
         "list": "Paste a list",
         "csv": "CSV file"
+      },
+      "club": {
+        "toggle": "Search for the club (football)",
+        "placeholder": "Club name or town",
+        "searchFailed": "Club search unavailable: type the name yourself.",
+        "linked": "Linked club: {{club}}",
+        "unlink": "Unlink",
+        "department": "Department {{code}}"
       }
     },
     "refereeList": {

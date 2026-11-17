@@ -3,6 +3,7 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  Matches,
   MaxLength,
   MinLength,
 } from 'class-validator';
@@ -38,4 +39,13 @@ export class UpdateTeamDto {
   @IsString()
   @MaxLength(30)
   managerPhone?: string;
+
+  /**
+   * Club picked from the federation directory (ClubDirectoryService), e.g.
+   * "fff:553079" or "siren:453133209" -- an FFF club's crest is then
+   * imported as the team logo (premium). Empty string unlinks the club.
+   */
+  @IsOptional()
+  @Matches(/^(fff:\d{1,10}|siren:\d{9})?$/)
+  externalClubId?: string;
 }

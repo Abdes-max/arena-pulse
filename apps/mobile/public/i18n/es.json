@@ -240,7 +240,13 @@
         "pastePlaceholder": "One club per line (or comma separated)",
         "pasteRename": "Rename the teams to confirm",
         "pasteAdd": "Add these teams",
-        "errorPaste": "Could not save these names, try again."
+        "errorPaste": "Could not save these names, try again.",
+        "club": {
+          "toggle": "Buscar el club (fútbol)",
+          "placeholder": "Nombre del club o ciudad",
+          "searchFailed": "Búsqueda de clubes no disponible: escribe el nombre a mano.",
+          "department": "Departamento {{code}}"
+        }
       },
       "structure": {
         "title": "Formato de la competición",

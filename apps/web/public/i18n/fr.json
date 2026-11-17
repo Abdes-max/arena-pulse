@@ -1156,6 +1156,14 @@
         "one": "Une équipe",
         "list": "Coller une liste",
         "csv": "Fichier CSV"
+      },
+      "club": {
+        "toggle": "Rechercher le club (football)",
+        "placeholder": "Nom du club ou ville, ex. Septèmes",
+        "searchFailed": "Recherche de clubs indisponible : saisissez le nom à la main.",
+        "linked": "Club lié : {{club}}",
+        "unlink": "Délier",
+        "department": "Département {{code}}"
       }
     },
     "refereeList": {

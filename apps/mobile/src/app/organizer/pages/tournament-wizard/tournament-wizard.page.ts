@@ -17,7 +17,13 @@ import {
   IonToolbar,
   NavController,
 } from '@ionic/angular/standalone';
-import { AddressSearchService, AssetUrlService, PublicApiService } from 'api-client';
+import {
+  AddressSearchService,
+  AssetUrlService,
+  ClubSearchService,
+  ClubSuggestion,
+  PublicApiService,
+} from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { AutocompleteField, Button, TextField } from 'design-system';
 import {
@@ -55,6 +61,19 @@ import { OrganizerTeamsService } from '../../core/teams.service';
 import { OrganizerTournamentsService } from '../../core/tournaments.service';
 import { environment } from '../../../../environments/environment';
 import { isIosNative } from '../../../core/native-platform.util';
+
+// Sports whose teams are FFF clubs -- the only ones offered the club search.
+const CLUB_SEARCH_SPORTS = new Set(['Football', 'Futsal']);
+const CLUB_SEARCH_STORAGE_KEY = 'ta.teamClubSearch';
+
+/** Club search is on unless the organizer turned it off (remembered per device). */
+function readClubSearchPreference(): boolean {
+  try {
+    return localStorage.getItem(CLUB_SEARCH_STORAGE_KEY) !== '0';
+  } catch {
+    return true;
+  }
+}
 
 type WizardStep = 1 | 2 | 3 | 4 | 5 | 'done';
 
@@ -235,7 +254,26 @@ export class OrganizerTournamentWizardPage {
   // id is null for a create-mode entry not yet committed to the API (see
   // submitTeams(), still batched at "Suivant" there) and always set in edit
   // mode, where add/remove act immediately -- see addTeam()/removeTeam().
-  protected readonly teams = signal<{ id: string | null; name: string }[]>([]);
+  protected readonly teams = signal<
+    { id: string | null; name: string; externalClubId?: string | null }[]
+  >([]);
+  // Club search (football/futsal only), same as apps/web's team-list.page:
+  // the name field becomes an autocomplete over the club directory, picking
+  // a club links it (externalClubId) and an FFF club's crest becomes the
+  // team logo. Retyping the name drops the link.
+  protected readonly clubSearch = inject(ClubSearchService).autocomplete();
+  protected readonly clubSearchAvailable = computed(() =>
+    CLUB_SEARCH_SPORTS.has(this.sports().find((s) => s.id === this.sportId())?.name ?? ''),
+  );
+  protected readonly useClubSearch = signal(readClubSearchPreference());
+  protected readonly clubSuggestions = computed(() =>
+    this.clubSearch.suggestions().map((club) => ({
+      label: club.name,
+      detail: this.clubLocation(club),
+      imageUrl: this.assetUrl.resolve(club.logoUrl),
+    })),
+  );
+  protected readonly teamClubId = signal('');
 
   // ---- Step 3: Structure ----
   protected readonly format = signal<WizardStructureFormat>('pools-knockout');
@@ -877,14 +915,58 @@ export class OrganizerTournamentWizardPage {
   }
 
   /** Create mode just queues the name (committed later, see submitTeams()); edit mode creates it right away since there's no later "Suivant" that owns Équipes changes there. */
+  protected toggleClubSearch(): void {
+    const enabled = !this.useClubSearch();
+    this.useClubSearch.set(enabled);
+    this.clubSearch.clear();
+    try {
+      localStorage.setItem(CLUB_SEARCH_STORAGE_KEY, enabled ? '1' : '0');
+    } catch {
+      // Storage unavailable: the choice just isn't remembered.
+    }
+  }
+
+  protected onTeamInput(value: string): void {
+    this.teamInput.set(value);
+    this.teamClubId.set('');
+    if (this.useClubSearch() && this.clubSearchAvailable()) {
+      this.clubSearch.query(value);
+    }
+  }
+
+  protected onClubSelect(index: number): void {
+    const club = this.clubSearch.suggestions()[index];
+    if (!club) {
+      return;
+    }
+    this.teamInput.set(club.name);
+    this.teamClubId.set(club.externalId);
+    this.clubSearch.clear();
+  }
+
+  private clubLocation(club: ClubSuggestion): string {
+    const place = [club.postalCode, club.city].filter(Boolean).join(' ');
+    if (place) {
+      return place;
+    }
+    return club.department
+      ? this.transloco.translate('organizer.wizard.teams.club.department', {
+          code: club.department,
+        })
+      : '';
+  }
+
   protected async addTeam(): Promise<void> {
     const name = this.teamInput().trim();
     if (!name || this.submitting()) {
       return;
     }
+    const externalClubId = this.teamClubId() || null;
     if (this.mode() === 'create') {
-      this.teams.update((teams) => [...teams, { id: null, name }]);
+      this.teams.update((teams) => [...teams, { id: null, name, externalClubId }]);
       this.teamInput.set('');
+      this.teamClubId.set('');
+      this.clubSearch.clear();
       return;
     }
     const organizationId = this.organizationId;
@@ -899,9 +981,12 @@ export class OrganizerTournamentWizardPage {
       const team = await this.teamsApi.createTeam(organizationId, tournamentId, {
         name,
         categoryId,
+        externalClubId: externalClubId ?? undefined,
       });
-      this.teams.update((teams) => [...teams, { id: team.id, name: team.name }]);
+      this.teams.update((teams) => [...teams, { id: team.id, name: team.name, externalClubId }]);
       this.teamInput.set('');
+      this.teamClubId.set('');
+      this.clubSearch.clear();
     } catch {
       this.errorMessage.set('organizer.wizard.teams.errorAdd');
     } finally {
@@ -1203,6 +1288,7 @@ export class OrganizerTournamentWizardPage {
       await this.teamsApi.createTeam(organizationId, tournamentId, {
         name: team.name,
         categoryId,
+        externalClubId: team.externalClubId ?? undefined,
       });
     }
   }

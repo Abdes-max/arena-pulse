@@ -372,14 +372,40 @@
               ) | transloco: { count: teams().length }
             }}
           </p>
+          @if (clubSearchAvailable()) {
+            <label class="wizard-page__switchrow">
+              <span class="wizard-page__switchrow-label">{{
+                'organizer.wizard.teams.club.toggle' | transloco
+              }}</span>
+              <input type="checkbox" [checked]="useClubSearch()" (change)="toggleClubSearch()" />
+            </label>
+          }
           <div class="wizard-page__teamadd">
-            <ap-text-field
-              [label]="'organizer.wizard.teams.addLabel' | transloco"
-              [hideLabel]="true"
-              [value]="teamInput()"
-              (valueChange)="teamInput.set($event)"
-              [placeholder]="'organizer.wizard.teams.addPlaceholder' | transloco"
-            />
+            @if (clubSearchAvailable() && useClubSearch()) {
+              <ap-autocomplete-field
+                [label]="'organizer.wizard.teams.addLabel' | transloco"
+                [hideLabel]="true"
+                [value]="teamInput()"
+                [suggestions]="clubSuggestions()"
+                [loading]="clubSearch.loading()"
+                [hint]="
+                  clubSearch.failed()
+                    ? ('organizer.wizard.teams.club.searchFailed' | transloco)
+                    : null
+                "
+                [placeholder]="'organizer.wizard.teams.club.placeholder' | transloco"
+                (valueChange)="onTeamInput($event)"
+                (suggestionSelect)="onClubSelect($event)"
+              />
+            } @else {
+              <ap-text-field
+                [label]="'organizer.wizard.teams.addLabel' | transloco"
+                [hideLabel]="true"
+                [value]="teamInput()"
+                (valueChange)="onTeamInput($event)"
+                [placeholder]="'organizer.wizard.teams.addPlaceholder' | transloco"
+              />
+            }
             <ap-button type="button" [disabled]="submitting()" (click)="addTeam()">
               {{ 'organizer.wizard.teams.add' | transloco }}
             </ap-button>

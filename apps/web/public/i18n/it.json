@@ -1054,6 +1054,14 @@
         "one": "Una squadra",
         "list": "Incolla un elenco",
         "csv": "File CSV"
+      },
+      "club": {
+        "toggle": "Cerca il club (calcio)",
+        "placeholder": "Nome del club o città",
+        "searchFailed": "Ricerca club non disponibile: inserisci il nome a mano.",
+        "linked": "Club collegato: {{club}}",
+        "unlink": "Scollega",
+        "department": "Dipartimento {{code}}"
       }
     },
     "refereeList": {

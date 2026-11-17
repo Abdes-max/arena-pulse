@@ -4,6 +4,11 @@ export interface AutocompleteSuggestion {
   label: string;
   /** Optional second, muted line (e.g. the rest of an address). */
   detail?: string;
+  /**
+   * Optional small image before the text (e.g. a club crest). null keeps
+   * the slot empty so labels stay aligned with suggestions that have one.
+   */
+  imageUrl?: string | null;
 }
 
 let nextId = 0;
