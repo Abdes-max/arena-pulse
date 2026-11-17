@@ -3,9 +3,8 @@
 // agreement (the FFF publishes no open API). Run quarterly by
 // .github/workflows/sync-fff-clubs.yml, or by hand.
 //
-// - new club (affiliation n° not in the table): created, then its city and
-//   postal code are read from its club page;
-// - renamed club, or one still missing its city: name refreshed, page re-read;
+// - new club (affiliation n° not in the table): created;
+// - renamed club, or one that moved department: updated;
 // - club gone from the listing (dissolved, merged into a new n°): marked
 //   dissolvedAt -- hidden from the search but kept, since teams may link to
 //   it -- and revived if it comes back.
@@ -13,9 +12,9 @@
 // Safety net: if the listing comes back much smaller than the active table
 // (source down, format change), nothing is marked dissolved.
 //
-// Paced politely: ~1.5 s between department listings, 1 s between club
-// pages. The first run on an empty table (every club page, ~17 700) takes
-// hours; later runs only read the pages of new/renamed clubs.
+// Only the department listings are read (~120 requests, ~1.5 s apart: a few
+// minutes) -- the club's city/postal code would need every club page and
+// was deliberately left out (the department tells homonyms apart well enough).
 //
 // Usage (from apps/api): npm run build && node dist/prisma/sync-fff-clubs.js
 // Env: DATABASE_URL; FFF_SYNC_DRY_RUN=1 to only print the changes.
@@ -57,7 +56,6 @@ const DRY_RUN = process.env.FFF_SYNC_DRY_RUN === '1';
 
 interface ListedClub {
   code: string;
-  slug: string;
   name: string;
   department: string;
 }
@@ -67,10 +65,6 @@ interface DepartmentListing {
   clubs?: {
     data?: { slug?: string; name?: string; logo_filename?: string }[];
   };
-}
-
-interface ClubPage {
-  club?: { city?: string | null; zip_code?: string | null };
 }
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -125,10 +119,9 @@ async function fetchListing(): Promise<Map<string, ListedClub>> {
       // (logo-fc-septemes-consolat-553079.jpg); leagues and districts have
       // 4 digits and are left out.
       const match = /-(\d{5,7})\.[a-z]+$/i.exec(club.logo_filename ?? '');
-      if (match && club.slug && club.name?.trim()) {
+      if (match && club.name?.trim()) {
         clubs.set(match[1], {
           code: match[1],
-          slug: club.slug,
           name: club.name.trim().slice(0, 200),
           department,
         });
@@ -156,29 +149,12 @@ async function main(): Promise<void> {
     let created = 0;
     let updated = 0;
     let revived = 0;
-    let pagesRead = 0;
     for (const club of listed.values()) {
       const current = existing.get(club.code);
       const renamed = !!current && current.name !== club.name;
-      const needsPage = !current || renamed || !current.city;
-      let place: { city: string | null; postalCode: string | null } = {
-        city: current?.city ?? null,
-        postalCode: current?.postalCode ?? null,
-      };
-      if (needsPage) {
-        const page = await getJson<ClubPage>(`${API}/clubs/${club.slug}`);
-        pagesRead++;
-        place = {
-          city: page?.club?.city?.trim() || place.city,
-          postalCode: page?.club?.zip_code?.trim() || place.postalCode,
-        };
-        await sleep(1000);
-      }
       const changed =
         !current ||
         renamed ||
-        current.city !== place.city ||
-        current.postalCode !== place.postalCode ||
         current.department !== club.department ||
         !!current.dissolvedAt;
       if (!changed) {
@@ -198,7 +174,6 @@ async function main(): Promise<void> {
         const data = {
           name: club.name,
           department: club.department,
-          ...place,
           dissolvedAt: null,
         };
         await prisma.fffClub.upsert({
@@ -206,9 +181,6 @@ async function main(): Promise<void> {
           create: { code: club.code, ...data },
           update: data,
         });
-      }
-      if (pagesRead > 0 && pagesRead % 500 === 0) {
-        console.log(`${pagesRead} club pages read...`);
       }
     }
 
@@ -234,7 +206,7 @@ async function main(): Promise<void> {
     }
 
     console.log(
-      `${DRY_RUN ? '[dry run] ' : ''}FFF clubs: ${created} created, ${updated} updated, ${revived} revived, ${dissolved} dissolved (${pagesRead} club pages read).`,
+      `${DRY_RUN ? '[dry run] ' : ''}FFF clubs: ${created} created, ${updated} updated, ${revived} revived, ${dissolved} dissolved.`,
     );
   } finally {
     await prisma.$disconnect();

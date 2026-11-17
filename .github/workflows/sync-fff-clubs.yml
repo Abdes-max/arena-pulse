@@ -1,11 +1,11 @@
 # Quarterly refresh of the FFF club directory behind the team form's club
 # autocomplete (apps/api/prisma/sync-fff-clubs.ts): new clubs, renamed ones,
-# dissolved ones. Same mechanics as seed-padel-example.yml -- the already
-# built `migrate` image on the VPS, which has dist/prisma and DATABASE_URL --
-# but started detached (`run -d`): the very first run reads every club page
-# (~17 700, paced 1/s) and outlasts any SSH session. Follow it with
+# dissolved ones; ~120 listing requests, a few minutes. Same mechanics as
+# seed-padel-example.yml -- the already built `migrate` image on the VPS,
+# which has dist/prisma and DATABASE_URL -- started detached (`run -d`) so a
+# slow source never trips the SSH timeout. Follow it with
 #   docker logs -f fff-clubs-sync
-# on the VPS. Later runs only read new/renamed clubs and take minutes.
+# on the VPS. The initial load is import-fff-clubs.yml (versioned file).
 name: Sync FFF club directory
 
 on:
