@@ -246,7 +246,16 @@
           "placeholder": "Club name or town",
           "searchFailed": "Club search unavailable: type the name yourself.",
           "department": "Department {{code}}"
-        }
+        },
+        "table": {
+          "logo": "Logo",
+          "name": "Team",
+          "actions": "Actions"
+        },
+        "edit": "Edit {{name}}",
+        "save": "Save",
+        "cancelEdit": "Cancel editing",
+        "errorRename": "Could not rename this team, please try again."
       },
       "structure": {
         "title": "Competition format",

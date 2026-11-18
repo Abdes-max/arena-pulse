@@ -66,6 +66,19 @@ import { isIosNative } from '../../../core/native-platform.util';
 const CLUB_SEARCH_SPORTS = new Set(['Football', 'Futsal']);
 const CLUB_SEARCH_STORAGE_KEY = 'ta.teamClubSearch';
 
+/**
+ * A team of the "Équipes" step. id is null for a create-mode entry not yet
+ * committed to the API (see submitTeams(), still batched at "Suivant"
+ * there) and always set in edit mode, where add/remove act immediately.
+ * logoUrl is the team logo, or before creation the picked club's crest.
+ */
+interface WizardTeam {
+  id: string | null;
+  name: string;
+  externalClubId?: string | null;
+  logoUrl?: string | null;
+}
+
 /** Club search is on unless the organizer turned it off (remembered per device). */
 function readClubSearchPreference(): boolean {
   try {
@@ -251,12 +264,11 @@ export class OrganizerTournamentWizardPage {
 
   // ---- Step 2: Équipes ----
   protected readonly teamInput = signal('');
-  // id is null for a create-mode entry not yet committed to the API (see
-  // submitTeams(), still batched at "Suivant" there) and always set in edit
-  // mode, where add/remove act immediately -- see addTeam()/removeTeam().
-  protected readonly teams = signal<
-    { id: string | null; name: string; externalClubId?: string | null }[]
-  >([]);
+  // See WizardTeam -- add/remove: addTeam()/removeTeam().
+  protected readonly teams = signal<WizardTeam[]>([]);
+  // Inline rename in the teams table (one row at a time).
+  protected readonly editingTeamIndex = signal<number | null>(null);
+  protected readonly editTeamName = signal('');
   // Club search (football/futsal only), same as apps/web's team-list.page:
   // the name field becomes an autocomplete over the club directory, picking
   // a club links it (externalClubId) and an FFF club's crest becomes the
@@ -274,6 +286,8 @@ export class OrganizerTournamentWizardPage {
     })),
   );
   protected readonly teamClubId = signal('');
+  // Crest of the picked club, shown in the table before the team exists.
+  private readonly teamClubLogo = signal<string | null>(null);
 
   // ---- Step 3: Structure ----
   protected readonly format = signal<WizardStructureFormat>('pools-knockout');
@@ -739,7 +753,9 @@ export class OrganizerTournamentWizardPage {
         this.teamsApi.listTeams(organizationId, tournamentId, category.id),
         this.creationApi.listPhases(organizationId, tournamentId, category.id),
       ]);
-      this.teams.set(teams.map((team) => ({ id: team.id, name: team.name })));
+      this.teams.set(
+        teams.map((team) => ({ id: team.id, name: team.name, logoUrl: team.logoUrl })),
+      );
 
       const realPhases = phases.filter((phase) => !phase.isSeedPhase);
       if (realPhases.length === 0) {
@@ -929,6 +945,7 @@ export class OrganizerTournamentWizardPage {
   protected onTeamInput(value: string): void {
     this.teamInput.set(value);
     this.teamClubId.set('');
+    this.teamClubLogo.set(null);
     if (this.useClubSearch() && this.clubSearchAvailable()) {
       this.clubSearch.query(value);
     }
@@ -941,6 +958,7 @@ export class OrganizerTournamentWizardPage {
     }
     this.teamInput.set(club.name);
     this.teamClubId.set(club.externalId);
+    this.teamClubLogo.set(club.logoUrl);
     this.clubSearch.clear();
   }
 
@@ -963,10 +981,9 @@ export class OrganizerTournamentWizardPage {
     }
     const externalClubId = this.teamClubId() || null;
     if (this.mode() === 'create') {
-      this.teams.update((teams) => [...teams, { id: null, name, externalClubId }]);
-      this.teamInput.set('');
-      this.teamClubId.set('');
-      this.clubSearch.clear();
+      const logoUrl = this.teamClubLogo();
+      this.teams.update((teams) => [...teams, { id: null, name, externalClubId, logoUrl }]);
+      this.resetTeamInput();
       return;
     }
     const organizationId = this.organizationId;
@@ -983,10 +1000,11 @@ export class OrganizerTournamentWizardPage {
         categoryId,
         externalClubId: externalClubId ?? undefined,
       });
-      this.teams.update((teams) => [...teams, { id: team.id, name: team.name, externalClubId }]);
-      this.teamInput.set('');
-      this.teamClubId.set('');
-      this.clubSearch.clear();
+      this.teams.update((teams) => [
+        ...teams,
+        { id: team.id, name: team.name, externalClubId, logoUrl: team.logoUrl },
+      ]);
+      this.resetTeamInput();
     } catch {
       this.errorMessage.set('organizer.wizard.teams.errorAdd');
     } finally {
@@ -1057,7 +1075,10 @@ export class OrganizerTournamentWizardPage {
           name,
           categoryId,
         });
-        this.teams.update((teams) => [...teams, { id: team.id, name: team.name }]);
+        this.teams.update((teams) => [
+          ...teams,
+          { id: team.id, name: team.name, logoUrl: team.logoUrl },
+        ]);
       }
       this.pastedNames.set('');
     } catch {
@@ -1065,6 +1086,76 @@ export class OrganizerTournamentWizardPage {
     } finally {
       this.submitting.set(false);
     }
+  }
+
+  private resetTeamInput(): void {
+    this.teamInput.set('');
+    this.teamClubId.set('');
+    this.teamClubLogo.set(null);
+    this.clubSearch.clear();
+  }
+
+  protected startEditTeam(index: number): void {
+    const team = this.teams()[index];
+    if (!team || this.submitting()) {
+      return;
+    }
+    this.editingTeamIndex.set(index);
+    this.editTeamName.set(team.name);
+  }
+
+  protected cancelEditTeam(): void {
+    this.editingTeamIndex.set(null);
+    this.editTeamName.set('');
+  }
+
+  /**
+   * Renames the row being edited -- locally in create mode (the queue is only
+   * sent at "Suivant"), through the API in edit mode. The club link and its
+   * logo stay: "ET.S Milloise U13" is still that club.
+   */
+  protected async saveEditTeam(): Promise<void> {
+    const index = this.editingTeamIndex();
+    const team = index === null ? undefined : this.teams()[index];
+    const name = this.editTeamName().trim();
+    if (index === null || !team || this.submitting()) {
+      return;
+    }
+    if (!name || name === team.name) {
+      this.cancelEditTeam();
+      return;
+    }
+    if (this.mode() === 'edit' && team.id) {
+      const organizationId = this.organizationId;
+      const tournamentId = this.tournamentId;
+      if (!organizationId || !tournamentId) {
+        return;
+      }
+      this.submitting.set(true);
+      this.errorMessage.set(null);
+      try {
+        await this.teamsApi.renameTeam(organizationId, tournamentId, team.id, name);
+      } catch {
+        this.errorMessage.set('organizer.wizard.teams.errorRename');
+        return;
+      } finally {
+        this.submitting.set(false);
+      }
+      // The Calendrier step's cards were preloaded with the old name.
+      const teamId = team.id;
+      const rename = <T extends { id: string; name: string } | null>(t: T): T =>
+        t && t.id === teamId ? { ...t, name } : t;
+      this.matches.update(
+        (matches) =>
+          matches?.map((match) => ({
+            ...match,
+            homeTeam: rename(match.homeTeam),
+            awayTeam: rename(match.awayTeam),
+          })) ?? null,
+      );
+    }
+    this.teams.update((teams) => teams.map((t, i) => (i === index ? { ...t, name } : t)));
+    this.cancelEditTeam();
   }
 
   /** Create mode just drops it from the local queue (never existed server-side yet); edit mode deletes the real team. */
@@ -1091,6 +1182,7 @@ export class OrganizerTournamentWizardPage {
       }
     }
     this.teams.update((teams) => teams.filter((_, i) => i !== index));
+    this.cancelEditTeam();
   }
 
   protected selectFormat(format: WizardStructureFormat): void {

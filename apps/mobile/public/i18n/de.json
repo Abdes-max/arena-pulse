@@ -246,7 +246,16 @@
           "placeholder": "Vereinsname oder Ort",
           "searchFailed": "Vereinssuche nicht verfügbar: Namen bitte selbst eingeben.",
           "department": "Département {{code}}"
-        }
+        },
+        "table": {
+          "logo": "Logo",
+          "name": "Team",
+          "actions": "Aktionen"
+        },
+        "edit": "{{name}} bearbeiten",
+        "save": "Speichern",
+        "cancelEdit": "Bearbeitung abbrechen",
+        "errorRename": "Team konnte nicht umbenannt werden, bitte erneut versuchen."
       },
       "structure": {
         "title": "Wettbewerbsformat",

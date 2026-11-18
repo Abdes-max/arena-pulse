@@ -109,6 +109,8 @@ export interface OrganizerTeam {
   id: string;
   name: string;
   categoryId: string;
+  /** API-relative path (resolve with AssetUrlService), null without a logo. */
+  logoUrl: string | null;
 }
 
 export interface OrganizerCategory {
