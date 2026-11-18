@@ -278,38 +278,114 @@ ion-title {
   }
 }
 
-.wizard-page__teamlist {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ap-space-2);
-}
-
-.wizard-page__teamrow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.wizard-page__teamtable {
+  width: 100%;
+  border-collapse: collapse;
   background: var(--ap-color-surface);
   border: var(--ap-border-width) solid var(--ap-color-border);
   border-radius: var(--ap-radius-md);
-  padding: var(--ap-space-2) var(--ap-space-3);
+  overflow: hidden;
   font-size: 0.85rem;
-  font-weight: 600;
+
+  th {
+    padding: var(--ap-space-2) var(--ap-space-3);
+    text-align: left;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ap-color-muted);
+    border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+  }
+
+  td {
+    padding: var(--ap-space-2) var(--ap-space-3);
+    vertical-align: middle;
+    border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
 }
 
-.wizard-page__teamrow-remove {
-  width: 22px;
-  height: 22px;
+.wizard-page__teamtable-logo {
+  width: 52px;
+}
+
+.wizard-page__teamtable-name {
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.wizard-page__teamtable-actions {
+  width: 1%;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.wizard-page__teamlogo {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: contain;
+  // Crests are drawn on white: keep them readable in dark mode.
+  background: #fff;
+  color-scheme: light;
+  border: var(--ap-border-width) solid var(--ap-color-border);
+}
+
+.wizard-page__teamlogo--empty {
+  background: var(--ap-color-signal-soft);
+  color: var(--ap-color-fg);
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.wizard-page__teamedit {
+  width: 100%;
+  min-width: 0;
+  padding: var(--ap-space-1) var(--ap-space-2);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-sm);
+  background: var(--ap-color-bg);
+  color: var(--ap-color-fg);
+  font: inherit;
+}
+
+.wizard-page__teamaction {
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   border: none;
   background: transparent;
   color: var(--ap-color-muted);
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   line-height: 1;
 
-  &:hover {
-    color: var(--ap-color-error);
+  &:disabled {
+    opacity: 0.4;
   }
+}
+
+.wizard-page__teamaction--save {
+  color: var(--ap-color-win);
+}
+
+.wizard-page__teamaction--remove:hover {
+  color: var(--ap-color-error);
+}
+
+.wizard-page__sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 // ---- step 3 + 5: format/visibility cards ----
@@ -773,24 +849,6 @@ ion-title {
 }
 
 // Teams as pills.
-.wizard-page__teamlist {
-  flex-direction: row;
-  flex-wrap: wrap;
-}
-
-.wizard-page__teamrow {
-  gap: var(--ap-space-2);
-  padding: var(--ap-space-1) var(--ap-space-1) var(--ap-space-1) var(--ap-space-3);
-  border-radius: 999px;
-  background: var(--ap-color-signal-soft);
-  border-color: transparent;
-}
-
-.wizard-page__teamrow-remove {
-  width: 28px;
-  height: 28px;
-}
-
 // Primary action: full width, the way back as a lighter button.
 .wizard-page__footer {
   padding: var(--ap-space-3) var(--ap-space-4)

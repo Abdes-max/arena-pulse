@@ -246,7 +246,16 @@
           "placeholder": "Nome del club o città",
           "searchFailed": "Ricerca club non disponibile: inserisci il nome a mano.",
           "department": "Dipartimento {{code}}"
-        }
+        },
+        "table": {
+          "logo": "Logo",
+          "name": "Squadra",
+          "actions": "Azioni"
+        },
+        "edit": "Modifica {{name}}",
+        "save": "Salva",
+        "cancelEdit": "Annulla la modifica",
+        "errorRename": "Impossibile rinominare questa squadra, riprova."
       },
       "structure": {
         "title": "Formato della competizione",

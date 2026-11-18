@@ -410,24 +410,99 @@
               {{ 'organizer.wizard.teams.add' | transloco }}
             </ap-button>
           </div>
-          <div class="wizard-page__teamlist">
-            @for (team of teams(); track team.id ?? $index) {
-              <div class="wizard-page__teamrow">
-                <span>{{ team.name }}</span>
-                <button
-                  type="button"
-                  class="wizard-page__teamrow-remove"
-                  [disabled]="submitting()"
-                  [attr.aria-label]="
-                    'organizer.wizard.teams.remove' | transloco: { name: team.name }
-                  "
-                  (click)="removeTeam($index)"
-                >
-                  ✕
-                </button>
-              </div>
-            }
-          </div>
+          @if (teams().length > 0) {
+            <table class="wizard-page__teamtable">
+              <thead>
+                <tr>
+                  <th scope="col" class="wizard-page__teamtable-logo">
+                    {{ 'organizer.wizard.teams.table.logo' | transloco }}
+                  </th>
+                  <th scope="col">{{ 'organizer.wizard.teams.table.name' | transloco }}</th>
+                  <th scope="col" class="wizard-page__teamtable-actions">
+                    <span class="wizard-page__sr-only">{{
+                      'organizer.wizard.teams.table.actions' | transloco
+                    }}</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (team of teams(); track team.id ?? $index) {
+                  <tr>
+                    <td class="wizard-page__teamtable-logo">
+                      @if (logoUrl(team.logoUrl); as logo) {
+                        <img class="wizard-page__teamlogo" [src]="logo" alt="" />
+                      } @else {
+                        <span
+                          class="wizard-page__teamlogo wizard-page__teamlogo--empty"
+                          aria-hidden="true"
+                          >{{ team.name.charAt(0).toUpperCase() }}</span
+                        >
+                      }
+                    </td>
+                    <td class="wizard-page__teamtable-name">
+                      @if (editingTeamIndex() === $index) {
+                        <input
+                          class="wizard-page__teamedit"
+                          type="text"
+                          [attr.aria-label]="'organizer.wizard.teams.addLabel' | transloco"
+                          [value]="editTeamName()"
+                          (input)="editTeamName.set($any($event.target).value)"
+                          (keydown.enter)="saveEditTeam()"
+                          (keydown.escape)="cancelEditTeam()"
+                        />
+                      } @else {
+                        {{ team.name }}
+                      }
+                    </td>
+                    <td class="wizard-page__teamtable-actions">
+                      @if (editingTeamIndex() === $index) {
+                        <button
+                          type="button"
+                          class="wizard-page__teamaction wizard-page__teamaction--save"
+                          [disabled]="submitting()"
+                          [attr.aria-label]="'organizer.wizard.teams.save' | transloco"
+                          (click)="saveEditTeam()"
+                        >
+                          ✓
+                        </button>
+                        <button
+                          type="button"
+                          class="wizard-page__teamaction"
+                          [attr.aria-label]="'organizer.wizard.teams.cancelEdit' | transloco"
+                          (click)="cancelEditTeam()"
+                        >
+                          ↺
+                        </button>
+                      } @else {
+                        <button
+                          type="button"
+                          class="wizard-page__teamaction"
+                          [disabled]="submitting()"
+                          [attr.aria-label]="
+                            'organizer.wizard.teams.edit' | transloco: { name: team.name }
+                          "
+                          (click)="startEditTeam($index)"
+                        >
+                          ✎
+                        </button>
+                        <button
+                          type="button"
+                          class="wizard-page__teamaction wizard-page__teamaction--remove"
+                          [disabled]="submitting()"
+                          [attr.aria-label]="
+                            'organizer.wizard.teams.remove' | transloco: { name: team.name }
+                          "
+                          (click)="removeTeam($index)"
+                        >
+                          ✕
+                        </button>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
           @if (mode() === 'create' && teams().length < 3) {
             <p class="wizard-page__hint">{{ 'organizer.wizard.teams.minHint' | transloco }}</p>
           }

@@ -246,7 +246,16 @@
           "placeholder": "Nome do clube ou cidade",
           "searchFailed": "Pesquisa de clubes indisponível: escreva o nome à mão.",
           "department": "Departamento {{code}}"
-        }
+        },
+        "table": {
+          "logo": "Logótipo",
+          "name": "Equipa",
+          "actions": "Ações"
+        },
+        "edit": "Editar {{name}}",
+        "save": "Guardar",
+        "cancelEdit": "Cancelar a edição",
+        "errorRename": "Não foi possível renomear esta equipa, tente novamente."
       },
       "structure": {
         "title": "Formato da competição",
