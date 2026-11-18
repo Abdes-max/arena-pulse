@@ -282,7 +282,7 @@
               <td class="team-list-page__cell team-list-page__cell--icon">
                 <label
                   class="team-list-page__icon-button"
-                  [class.team-list-page__icon-button--locked]="!premiumUnlocked()"
+                  [class.team-list-page__icon-button--locked]="!premiumUnlocked() && !team.logoUrl"
                   [attr.title]="
                     premiumUnlocked()
                       ? ((team.logoUrl ? 'admin.teamList.logoChange' : 'admin.teamList.logoAdd')

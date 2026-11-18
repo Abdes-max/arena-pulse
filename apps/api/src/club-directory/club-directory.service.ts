@@ -93,13 +93,16 @@ export class ClubDirectoryService {
   }
 
   /**
-   * Crest URL for a stored externalClubId -- built server-side from our own
-   * template, never taken from the client, so a team save can't be turned
-   * into an arbitrary fetch. Only FFF clubs have one.
+   * Crest of a team's linked club (Team.externalClubId), for TeamsService
+   * to store as the team logo -- same cached, byte-sniffed image as the
+   * suggestions show (the FFF CDN labels PNGs "image/jpg"). Only FFF clubs
+   * have one; the URL is never taken from the client.
    */
-  logoUrlForExternalId(externalId: string): string | null {
+  crestForExternalId(
+    externalId: string,
+  ): Promise<{ data: Buffer; contentType: string } | null> {
     const match = FFF_EXTERNAL_ID.exec(externalId);
-    return match ? this.logoUrlFor(match[1]) : null;
+    return match ? this.crest(match[1]) : Promise.resolve(null);
   }
 
   /**
