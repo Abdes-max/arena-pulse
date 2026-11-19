@@ -19,7 +19,12 @@
         }
       }
 
-      @if (info()?.open) {
+      @if (info()?.open && remainingAllowed() <= 0) {
+        <p class="register-page__note">
+          Vous avez déjà inscrit {{ alreadyMine() }} équipe(s) : c'est le maximum pour ce tournoi.
+        </p>
+        <a class="register-page__space" routerLink="/espace-responsable">Mon espace responsable</a>
+      } @else if (info()?.open) {
         <form class="register-page__form" [formGroup]="form" (ngSubmit)="submit()">
           <ap-select
             label="Catégorie"
@@ -87,6 +92,17 @@
                   <span>Club lié : {{ clubLabel() }}</span>
                   <button type="button" (click)="unlinkClub()">Délier</button>
                 </p>
+              }
+            }
+            @if (!individual() && remainingAllowed() > 1) {
+              <ap-select
+                label="Nombre d'équipes"
+                [options]="teamCountOptions()"
+                [value]="teamCount()"
+                (valueChange)="teamCount.set($event)"
+              />
+              @if (numberedNames(); as names) {
+                <p class="register-page__hint">Équipes inscrites : {{ names }}</p>
               }
             }
             <ap-text-field

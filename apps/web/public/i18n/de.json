@@ -286,7 +286,9 @@
       "full": "Ausgebucht · Warteliste",
       "places": "{{remaining}} Platz/Plätze von {{total}}",
       "payment": "Zahlung",
-      "mySpace": "Mein Verantwortlichen-Bereich"
+      "mySpace": "Mein Verantwortlichen-Bereich",
+      "alreadyRegistered": "Bereits angemeldet · {{count}} Team(s)",
+      "another": "Weiteres Team anmelden"
     }
   },
   "schedule": {
@@ -1148,7 +1150,8 @@
         "level": "Niveau",
         "levelPlaceholder": "z. B. Elite",
         "placesHint": "Plätze und Preis pro Kategorie unter Allgemein › Kategorien › Optionen.",
-        "save": "Speichern"
+        "save": "Speichern",
+        "maxTeams": "Max. Teams pro Verantwortlichem (Verein)"
       },
       "filters": {
         "PENDING": "Offen",

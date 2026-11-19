@@ -329,6 +329,9 @@ model Tournament {
   // Free text shown with the form: price, how and when to pay (on site, bank
   // transfer...). The organizer collects the money themselves.
   registrationPaymentInfo String?
+  // Teams one team manager (account) may register for this tournament --
+  // set by the organizer; 1 unless raised.
+  maxTeamsPerRegistrant Int @default(1)
   // Shown on the tournament card (e.g. "5 contre 5", "Elite"); free text.
   format              String?
   level               String?

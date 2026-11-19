@@ -1,5 +1,12 @@
 import { RouterLink } from '@angular/router';
-import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  inject,
+  signal,
+  computed,
+} from '@angular/core';
 import { MatchCard, MatchCardTeam } from 'design-system';
 import { AssetUrlService, PublicApiService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
@@ -51,10 +58,28 @@ export class HomePage {
     } catch {
       // No registration block then.
     }
+    if (this.player()) {
+      try {
+        const mine = await this.api.listMyRegistrations();
+        this.myTeams.set(
+          mine.filter(
+            (r) =>
+              r.tournament.slug === slug && r.status !== 'REJECTED' && r.status !== 'CANCELLED',
+          ).length,
+        );
+      } catch {
+        this.myTeams.set(0);
+      }
+    }
   }
 
   /** Pre-registrations of this tournament (shown while they're open). */
   protected readonly registration = signal<PublicRegistrationInfo | null>(null);
+  // Teams the signed-in manager already registered here ("Déjà inscrit").
+  protected readonly myTeams = signal(0);
+  protected readonly canRegisterMore = computed(
+    () => this.myTeams() < (this.registration()?.maxTeamsPerRegistrant ?? 1),
+  );
 
   protected formatFee(cents: number | null, currency: string): string | null {
     return cents

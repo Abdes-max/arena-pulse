@@ -694,7 +694,8 @@
       "errors": {
         "load": "Não foi possível carregar as inscrições.",
         "save": "Não foi possível guardar esta alteração."
-      }
+      },
+      "maxTeams": "Equipas máx. por responsável (clube)"
     },
     "schedule": {
       "hint": "Mantenha premido um jogo ou um horário e arraste-o: um espaço mostra onde vai ficar e a que horas. Os horários seguintes são deslocados; as pausas entre fases mantêm-se. Uma equipa não pode jogar dois jogos ao mesmo tempo.",
@@ -819,7 +820,10 @@
       "submit": "Enviar a pré-inscrição",
       "sent": "Pré-inscrição enviada: o organizador vai validá-la.",
       "error": "Não foi possível enviar a inscrição, tente novamente.",
-      "errorLoad": "Não foi possível carregar as categorias do torneio."
+      "errorLoad": "Não foi possível carregar as categorias do torneio.",
+      "teamCount": "Número de equipas",
+      "teamCountHint": "Equipas inscritas: {{names}}",
+      "limitReached": "Já inscreveu {{count}} equipa(s): é o máximo para este torneio."
     },
     "home": {
       "title": "Inscrições abertas",
@@ -827,7 +831,9 @@
       "mySpace": "Meu espaço de responsável",
       "unlimited": "Vagas disponíveis",
       "full": "Completo · lista de espera",
-      "places": "{{remaining}} vaga(s) de {{total}}"
+      "places": "{{remaining}} vaga(s) de {{total}}",
+      "alreadyRegistered": "Já inscrito · {{count}} equipa(s)",
+      "another": "Inscrever outra equipa"
     }
   },
   "myRegistrations": {

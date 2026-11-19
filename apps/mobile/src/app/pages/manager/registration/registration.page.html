@@ -8,6 +8,13 @@
       <p class="registration-page__muted">{{ 'manager.loading' | transloco }}</p>
     } @else if (!info()?.open) {
       <p class="registration-page__muted">{{ 'manager.form.closed' | transloco }}</p>
+    } @else if (remainingAllowed() <= 0) {
+      <p class="registration-page__note">
+        {{ 'manager.form.limitReached' | transloco: { count: alreadyMine() } }}
+      </p>
+      <ap-button type="button" [fullWidth]="true" routerLink="/espace-responsable">
+        {{ 'manager.home.mySpace' | transloco }}
+      </ap-button>
     } @else {
       <p class="registration-page__intro">{{ 'manager.form.intro' | transloco }}</p>
       @if (info()?.paymentInfo; as paymentInfo) {
@@ -80,6 +87,19 @@
                 <button type="button" (click)="unlinkClub()">
                   {{ 'manager.form.unlink' | transloco }}
                 </button>
+              </p>
+            }
+          }
+          @if (!individual() && remainingAllowed() > 1) {
+            <ap-select
+              [label]="'manager.form.teamCount' | transloco"
+              [options]="teamCountOptions()"
+              [value]="teamCount()"
+              (valueChange)="teamCount.set($event)"
+            />
+            @if (numberedNames(); as names) {
+              <p class="registration-page__hint">
+                {{ 'manager.form.teamCountHint' | transloco: { names: names } }}
               </p>
             }
           }

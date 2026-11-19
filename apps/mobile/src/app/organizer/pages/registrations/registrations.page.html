@@ -39,6 +39,13 @@
               }}</small>
             </span>
           </label>
+          <ap-text-field
+            [label]="'organizer.registrations.maxTeams' | transloco"
+            type="number"
+            [min]="1"
+            [value]="maxTeams()"
+            (valueChange)="maxTeams.set($event)"
+          />
           <label class="reg-page__textarea">
             {{ 'organizer.registrations.paymentInfo' | transloco }}
             <textarea

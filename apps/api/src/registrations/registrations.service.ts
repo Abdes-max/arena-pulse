@@ -24,7 +24,9 @@ import {
 import { SuperAdminNotificationService } from '../super-admin/notifications/super-admin-notification.service';
 
 export interface CreateRegistrationResult {
+  /** The first one when several teams were registered at once. */
   registrationId: string;
+  registrationIds: string[];
   status: RegistrationStatus;
   /** Always null now: pre-registrations are never paid online. */
   checkoutUrl: string | null;
@@ -77,6 +79,7 @@ export class RegistrationsService {
       closesAt: tournament.registrationClosesAt,
       paymentInfo: tournament.registrationPaymentInfo,
       participantType: tournament.sport.participantType,
+      maxTeamsPerRegistrant: tournament.maxTeamsPerRegistrant,
       categories: tournament.categories.map((category) => ({
         id: category.id,
         name: category.name,
@@ -127,17 +130,129 @@ export class RegistrationsService {
     if (!teamName) {
       throw new BadRequestException("Le nom de l'équipe est obligatoire.");
     }
-    await this.assertTeamNameAvailable(tournament.id, teamName);
 
-    const taken = (await this.placesTaken(tournament.id)).get(category.id) ?? 0;
-    const full = category.maxTeams !== null && taken >= category.maxTeams;
-    const status = full
-      ? RegistrationStatus.WAITLIST
-      : RegistrationStatus.PENDING;
-
-    const registration = await this.prisma.registration.create({
-      data: {
+    // Several teams of the same club at once, numbered -- within the
+    // organizer's per-manager limit, counting this manager's live requests.
+    const teamCount = individual ? 1 : (dto.teamCount ?? 1);
+    const alreadyRegistered = await this.prisma.registration.count({
+      where: {
         tournamentId: tournament.id,
+        playerAccountId,
+        status: {
+          notIn: [RegistrationStatus.REJECTED, RegistrationStatus.CANCELLED],
+        },
+      },
+    });
+    const max = tournament.maxTeamsPerRegistrant;
+    if (alreadyRegistered + teamCount > max) {
+      throw new ConflictException(
+        alreadyRegistered >= max
+          ? `Ce tournoi limite à ${max} équipe(s) par responsable : vous avez déjà atteint la limite.`
+          : `Ce tournoi limite à ${max} équipe(s) par responsable : vous pouvez encore en inscrire ${max - alreadyRegistered}.`,
+      );
+    }
+    const names =
+      teamCount === 1
+        ? [teamName]
+        : Array.from({ length: teamCount }, (_, i) => `${teamName} ${i + 1}`);
+    for (const name of names) {
+      await this.assertTeamNameAvailable(tournament.id, name);
+    }
+
+    let taken = (await this.placesTaken(tournament.id)).get(category.id) ?? 0;
+    const created: { id: string; status: RegistrationStatus }[] = [];
+    for (const name of names) {
+      const full = category.maxTeams !== null && taken >= category.maxTeams;
+      const status = full
+        ? RegistrationStatus.WAITLIST
+        : RegistrationStatus.PENDING;
+      if (!full) {
+        taken += 1;
+      }
+      const registration = await this.createOne(
+        tournament.id,
+        category,
+        playerAccountId,
+        name,
+        status,
+        individual,
+        players,
+        dto,
+      );
+      created.push({ id: registration.id, status });
+    }
+    const status = created[0].status;
+    const teamLabel = names.join(', ');
+
+    void this.mail(dto.managerEmail, {
+      subject: `Pré-inscription reçue : ${tournament.name}`,
+      title:
+        status === RegistrationStatus.WAITLIST
+          ? "Votre pré-inscription est sur liste d'attente (catégorie complète)."
+          : "Votre pré-inscription est bien reçue. L'organisateur va la valider.",
+      rows: [
+        { label: 'Tournoi', value: tournament.name },
+        { label: 'Catégorie', value: category.name },
+        {
+          label: individual
+            ? 'Joueur'
+            : names.length > 1
+              ? 'Équipes'
+              : 'Équipe',
+          value: teamLabel,
+        },
+        ...(tournament.registrationPaymentInfo
+          ? [{ label: 'Paiement', value: tournament.registrationPaymentInfo }]
+          : []),
+      ],
+    });
+    void this.notifyOrganizers(tournament.organizationId, {
+      subject: `Nouvelle pré-inscription : ${tournament.name}`,
+      title: 'Une nouvelle pré-inscription attend votre validation.',
+      rows: [
+        { label: 'Tournoi', value: tournament.name },
+        { label: 'Catégorie', value: category.name },
+        {
+          label: individual
+            ? 'Joueur'
+            : names.length > 1
+              ? 'Équipes'
+              : 'Équipe',
+          value: teamLabel,
+        },
+        { label: 'Contact', value: dto.managerEmail },
+      ],
+      link: {
+        url: `${this.webUrl()}/admin/tournaments/${tournament.id}/teams#inscriptions`,
+        label: 'Voir les inscriptions',
+      },
+    });
+
+    return {
+      registrationId: created[0].id,
+      registrationIds: created.map((registration) => registration.id),
+      status,
+      checkoutUrl: null,
+    };
+  }
+
+  private createOne(
+    tournamentId: string,
+    category: {
+      id: string;
+      registrationFeeCents: number | null;
+      registrationFeeCurrency: string | null;
+    },
+    playerAccountId: string,
+    teamName: string,
+    status: RegistrationStatus,
+    individual: boolean,
+    players: { firstName: string; lastName: string; jerseyNumber?: number }[],
+    dto: CreateRegistrationDto,
+  ) {
+    return this.prisma.registration.create({
+      data: {
+        tournamentId,
         categoryId: category.id,
         playerAccountId,
         teamName,
@@ -159,38 +274,6 @@ export class RegistrationsService {
         },
       },
     });
-
-    void this.mail(dto.managerEmail, {
-      subject: `Pré-inscription reçue : ${tournament.name}`,
-      title:
-        status === RegistrationStatus.WAITLIST
-          ? "Votre pré-inscription est sur liste d'attente (catégorie complète)."
-          : "Votre pré-inscription est bien reçue. L'organisateur va la valider.",
-      rows: [
-        { label: 'Tournoi', value: tournament.name },
-        { label: 'Catégorie', value: category.name },
-        { label: individual ? 'Joueur' : 'Équipe', value: teamName },
-        ...(tournament.registrationPaymentInfo
-          ? [{ label: 'Paiement', value: tournament.registrationPaymentInfo }]
-          : []),
-      ],
-    });
-    void this.notifyOrganizers(tournament.organizationId, {
-      subject: `Nouvelle pré-inscription : ${tournament.name}`,
-      title: 'Une nouvelle pré-inscription attend votre validation.',
-      rows: [
-        { label: 'Tournoi', value: tournament.name },
-        { label: 'Catégorie', value: category.name },
-        { label: individual ? 'Joueur' : 'Équipe', value: teamName },
-        { label: 'Contact', value: dto.managerEmail },
-      ],
-      link: {
-        url: `${this.webUrl()}/admin/tournaments/${tournament.id}/teams#inscriptions`,
-        label: 'Voir les inscriptions',
-      },
-    });
-
-    return { registrationId: registration.id, status, checkoutUrl: null };
   }
 
   /** A player withdraws a request that isn't confirmed yet. */
@@ -253,6 +336,7 @@ export class RegistrationsService {
         ...(dto.paymentInfo !== undefined && {
           registrationPaymentInfo: dto.paymentInfo?.trim() || null,
         }),
+        maxTeamsPerRegistrant: dto.maxTeamsPerRegistrant,
       },
       include: { sport: true },
     });
@@ -646,6 +730,7 @@ export class RegistrationsService {
     registrationOpensAt: Date | null;
     registrationClosesAt: Date | null;
     registrationPaymentInfo: string | null;
+    maxTeamsPerRegistrant: number;
     sport: { participantType: ParticipantType };
   }) {
     return {
@@ -654,6 +739,7 @@ export class RegistrationsService {
       opensAt: tournament.registrationOpensAt,
       closesAt: tournament.registrationClosesAt,
       paymentInfo: tournament.registrationPaymentInfo,
+      maxTeamsPerRegistrant: tournament.maxTeamsPerRegistrant,
       participantType: tournament.sport.participantType,
     };
   }

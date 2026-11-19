@@ -469,6 +469,7 @@
         [placeholder]="'tournamentEntry.published.searchPlaceholder' | transloco"
         [value]="q()"
         (valueChange)="q.set($event)"
+        (pointerdown)="expandSearch(false)"
         (focusin)="expandSearch(false)"
         (keyup.enter)="dismissKeyboard()"
       />

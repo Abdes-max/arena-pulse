@@ -1,7 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import {
   AssetUrlService,
   ClubSearchService,
@@ -27,7 +27,7 @@ function formatFee(category: Category): string {
 
 @Component({
   selector: 'app-register-page',
-  imports: [ReactiveFormsModule, AutocompleteField, Button, Select, TextField],
+  imports: [ReactiveFormsModule, AutocompleteField, Button, RouterLink, Select, TextField],
   templateUrl: './register.page.html',
   styleUrl: './register.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -55,6 +55,26 @@ export class RegisterPage {
       this.info()?.categories.find((c) => c.id === this.selectedCategoryId())?.remaining ?? null,
   );
   protected readonly selectedCategoryId = signal('');
+  // Several teams of the same club at once (numbered), within the organizer's
+  // per-manager limit, counting what this manager already registered here.
+  protected readonly alreadyMine = signal(0);
+  protected readonly remainingAllowed = computed(
+    () => (this.info()?.maxTeamsPerRegistrant ?? 1) - this.alreadyMine(),
+  );
+  protected readonly teamCount = signal('1');
+  protected readonly teamCountOptions = computed<SelectOption[]>(() =>
+    Array.from({ length: Math.min(10, Math.max(1, this.remainingAllowed())) }, (_, i) => ({
+      value: String(i + 1),
+      label: String(i + 1),
+    })),
+  );
+  protected readonly numberedNames = computed(() => {
+    const count = Number(this.teamCount());
+    const name = this.form.controls.teamName.value.trim();
+    return count > 1 && name
+      ? Array.from({ length: count }, (_, i) => `${name} ${i + 1}`).join(', ')
+      : '';
+  });
 
   protected readonly categoryOptions = computed<SelectOption[]>(() => [
     { value: '', label: 'Choisir une catégorie', disabled: true },
@@ -163,6 +183,12 @@ export class RegisterPage {
       ]);
       this.categories.set(categories);
       this.info.set(info);
+      const mine = await this.api.listMyRegistrations().catch(() => []);
+      this.alreadyMine.set(
+        mine.filter(
+          (r) => r.tournament.slug === slug && r.status !== 'REJECTED' && r.status !== 'CANCELLED',
+        ).length,
+      );
       if (info.participantType === 'INDIVIDUAL') {
         const { teamName, playerFirstName, playerLastName } = this.form.controls;
         teamName.clearValidators();
@@ -196,6 +222,7 @@ export class RegisterPage {
       const result = await this.api.createRegistration(slug, categoryId, {
         teamName: this.individual() ? undefined : teamName,
         externalClubId: (!this.individual() && this.externalClubId()) || undefined,
+        teamCount: this.individual() ? undefined : Number(this.teamCount()),
         managerEmail,
         managerPhone,
         players: this.individual()

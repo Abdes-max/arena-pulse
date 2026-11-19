@@ -694,7 +694,8 @@
       "errors": {
         "load": "Could not load the registrations.",
         "save": "Could not save this change."
-      }
+      },
+      "maxTeams": "Max teams per manager (club)"
     },
     "schedule": {
       "hint": "Press and hold a match or a slot, then drag it: a space shows where it will land and at what time. The following slots shift; breaks between phases are kept. A team cannot play two matches at the same time.",
@@ -819,7 +820,10 @@
       "submit": "Send the pre-registration",
       "sent": "Pre-registration sent: the organizer will review it.",
       "error": "Could not send this registration, try again.",
-      "errorLoad": "Could not load this tournament’s categories."
+      "errorLoad": "Could not load this tournament’s categories.",
+      "teamCount": "Number of teams",
+      "teamCountHint": "Teams registered: {{names}}",
+      "limitReached": "You've already registered {{count}} team(s): the maximum for this tournament."
     },
     "home": {
       "title": "Registrations open",
@@ -827,7 +831,9 @@
       "mySpace": "My team manager space",
       "unlimited": "Places available",
       "full": "Full · waiting list",
-      "places": "{{remaining}} place(s) out of {{total}}"
+      "places": "{{remaining}} place(s) out of {{total}}",
+      "alreadyRegistered": "Already registered · {{count}} team(s)",
+      "another": "Register another team"
     }
   },
   "myRegistrations": {

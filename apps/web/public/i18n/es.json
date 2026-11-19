@@ -286,7 +286,9 @@
       "full": "Completo · lista de espera",
       "places": "{{remaining}} plaza(s) de {{total}}",
       "payment": "Pago",
-      "mySpace": "Mi espacio de responsable"
+      "mySpace": "Mi espacio de responsable",
+      "alreadyRegistered": "Ya inscrito · {{count}} equipo(s)",
+      "another": "Inscribir otro equipo"
     }
   },
   "schedule": {
@@ -1148,7 +1150,8 @@
         "level": "Nivel",
         "levelPlaceholder": "p. ej. Élite",
         "placesHint": "Las plazas y el precio se ajustan por categoría en General › Categorías › Opciones.",
-        "save": "Guardar"
+        "save": "Guardar",
+        "maxTeams": "Equipos máx. por responsable (club)"
       },
       "filters": {
         "PENDING": "Pendientes",

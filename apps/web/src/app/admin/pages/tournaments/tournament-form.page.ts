@@ -1165,6 +1165,8 @@ export class TournamentFormPage {
   protected readonly regOpensAt = signal('');
   protected readonly regClosesAt = signal('');
   protected readonly regPaymentInfo = signal('');
+  // Teams one team manager may register (1 unless raised).
+  protected readonly regMaxTeams = signal('1');
   protected readonly regFormat = signal('');
   protected readonly regLevel = signal('');
   protected readonly regPendingCount = signal(0);
@@ -1196,6 +1198,7 @@ export class TournamentFormPage {
     this.regOpensAt.set(settings.opensAt ? settings.opensAt.slice(0, 10) : '');
     this.regClosesAt.set(settings.closesAt ? settings.closesAt.slice(0, 10) : '');
     this.regPaymentInfo.set(settings.paymentInfo ?? '');
+    this.regMaxTeams.set(String(settings.maxTeamsPerRegistrant ?? 1));
   }
 
   protected onRegPaymentInfo(event: Event): void {
@@ -1240,6 +1243,10 @@ export class TournamentFormPage {
             ? new Date(`${this.regClosesAt()}T23:59:59`).toISOString()
             : null,
           paymentInfo: this.regPaymentInfo().trim() || null,
+          maxTeamsPerRegistrant: Math.min(
+            50,
+            Math.max(1, Math.floor(Number(this.regMaxTeams())) || 1),
+          ),
         }),
       );
       await this.tournamentsService.updateTournament(organizationId, tournamentId, {

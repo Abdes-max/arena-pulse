@@ -694,7 +694,8 @@
       "errors": {
         "load": "Impossible de charger les inscriptions.",
         "save": "Impossible d’enregistrer ce changement."
-      }
+      },
+      "maxTeams": "Équipes max par responsable (club)"
     },
     "schedule": {
       "hint": "Restez appuyé sur un match ou un créneau puis glissez-le : un emplacement montre où il va se placer et à quelle heure. Les créneaux suivants sont décalés, les pauses entre phases conservées. Une équipe ne peut pas jouer deux matchs en même temps.",
@@ -819,7 +820,10 @@
       "submit": "Envoyer la pré-inscription",
       "sent": "Pré-inscription envoyée : l’organisateur va la valider.",
       "error": "Impossible d’envoyer cette inscription, réessayez.",
-      "errorLoad": "Impossible de charger les catégories de ce tournoi."
+      "errorLoad": "Impossible de charger les catégories de ce tournoi.",
+      "teamCount": "Nombre d'équipes",
+      "teamCountHint": "Équipes inscrites : {{names}}",
+      "limitReached": "Vous avez déjà inscrit {{count}} équipe(s) : c'est le maximum pour ce tournoi."
     },
     "home": {
       "title": "Inscriptions ouvertes",
@@ -827,7 +831,9 @@
       "mySpace": "Mon espace responsable",
       "unlimited": "Places disponibles",
       "full": "Complet · liste d’attente",
-      "places": "{{remaining}} place(s) sur {{total}}"
+      "places": "{{remaining}} place(s) sur {{total}}",
+      "alreadyRegistered": "Déjà inscrit · {{count}} équipe(s)",
+      "another": "Inscrire une autre équipe"
     }
   },
   "myRegistrations": {

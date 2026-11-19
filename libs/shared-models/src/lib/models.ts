@@ -424,6 +424,8 @@ export interface CreateRegistrationPayload {
   teamName?: string;
   // Team sports: club picked from the directory (its crest becomes the team logo).
   externalClubId?: string;
+  // Team sports: several teams at once, numbered "<teamName> 1", "<teamName> 2"...
+  teamCount?: number;
   managerEmail: string;
   // Required: the organizer calls the manager (or player) back.
   managerPhone: string;
@@ -451,6 +453,8 @@ export interface PublicRegistrationInfo {
   closesAt: string | null;
   paymentInfo: string | null;
   participantType: ParticipantType;
+  /** Teams one team manager may register (set by the organizer, 1 by default). */
+  maxTeamsPerRegistrant: number;
   categories: {
     id: string;
     name: string;
@@ -468,11 +472,13 @@ export interface RegistrationSettings {
   opensAt: string | null;
   closesAt: string | null;
   paymentInfo: string | null;
+  maxTeamsPerRegistrant: number;
   participantType: ParticipantType;
 }
 
 export interface CreateRegistrationResult {
   registrationId: string;
+  registrationIds?: string[];
   status: RegistrationStatus;
   checkoutUrl: string | null;
 }

@@ -388,7 +388,9 @@
       "full": "Full · waiting list",
       "places": "{{remaining}} place(s) out of {{total}}",
       "payment": "Payment",
-      "mySpace": "My team manager space"
+      "mySpace": "My team manager space",
+      "alreadyRegistered": "Already registered · {{count}} team(s)",
+      "another": "Register another team"
     }
   },
   "schedule": {
@@ -1250,7 +1252,8 @@
         "level": "Level",
         "levelPlaceholder": "e.g. Elite",
         "placesHint": "Places and price are set per category in General › Categories › Options.",
-        "save": "Save"
+        "save": "Save",
+        "maxTeams": "Max teams per manager (club)"
       },
       "filters": {
         "PENDING": "Pending",

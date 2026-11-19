@@ -301,13 +301,55 @@ describe('Registrations & payments (e2e)', () => {
       ...team,
       managerPhone: '06 12 34 56 78',
     }).expect(201);
-    // A club picked from the directory travels with the request.
-    await register(slug, categoryId, playerToken, {
-      ...team,
+  });
+
+  it('registers several numbered teams at once, within the per-manager limit', async () => {
+    const { slug, categoryId, auth, base, tournamentId } =
+      await setupPublishedTournament(app, {});
+    const { accessToken: playerToken } = await registerPlayer(app);
+    const club = {
       teamName: 'ET.S Milloise',
+      // A club picked from the directory travels with the request.
       externalClubId: 'fff:553079',
+      managerEmail: 'coach@example.com',
       managerPhone: '06 12 34 56 78',
+    };
+
+    // One team per manager unless the organizer raises it.
+    await register(slug, categoryId, playerToken, {
+      ...club,
+      teamCount: 2,
+    }).expect(409);
+
+    await auth(
+      request(app.getHttpServer()).patch(
+        `${base}/${tournamentId}/registrations/settings`,
+      ),
+    )
+      .send({ maxTeamsPerRegistrant: 3 })
+      .expect(200);
+    const res = await register(slug, categoryId, playerToken, {
+      ...club,
+      teamCount: 2,
     }).expect(201);
+    expect(
+      (res.body as { registrationIds: string[] }).registrationIds,
+    ).toHaveLength(2);
+
+    const mine = await request(app.getHttpServer())
+      .get('/api/v1/public/registrations/me')
+      .set('Authorization', `Bearer ${playerToken}`)
+      .expect(200);
+    expect(
+      (mine.body as { teamName: string }[]).map((r) => r.teamName).sort(),
+    ).toEqual(['ET.S Milloise 1', 'ET.S Milloise 2']);
+
+    // 2 of 3 used: two more is over the limit.
+    await register(slug, categoryId, playerToken, {
+      ...club,
+      teamName: 'ET.S Milloise B',
+      teamCount: 2,
+    }).expect(409);
   });
 
   it('refuses requests while registrations are closed', async () => {

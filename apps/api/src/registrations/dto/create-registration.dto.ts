@@ -3,6 +3,7 @@ import {
   ArrayMinSize,
   IsEmail,
   IsInt,
+  Max,
   IsOptional,
   IsString,
   Matches,
@@ -36,6 +37,17 @@ export class CreateRegistrationDto {
   @MinLength(1)
   @MaxLength(200)
   teamName?: string;
+
+  /**
+   * Team sports: how many teams to register at once (same club), named
+   * "<teamName> 1", "<teamName> 2"... Within the organizer's
+   * maxTeamsPerRegistrant, counting the manager's other requests.
+   */
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(50)
+  teamCount?: number;
 
   /** Team sports: club picked from the directory (fff:<n°>, club:<sport>:<slug>, siren:<n°>). */
   @IsOptional()
