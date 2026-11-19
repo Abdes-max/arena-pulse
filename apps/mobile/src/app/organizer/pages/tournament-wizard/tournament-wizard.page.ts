@@ -1,4 +1,6 @@
 import { DatePipe, NgTemplateOutlet } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -40,6 +42,7 @@ import {
 import {
   CompetitionPhase,
   Match,
+  OrganizerRegistration,
   RoundLabelLang,
   matchRoundLabel as boardRoundLabel,
 } from 'shared-models';
@@ -65,6 +68,19 @@ import { isIosNative } from '../../../core/native-platform.util';
 import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 const CLUB_SEARCH_STORAGE_KEY = 'ta.teamClubSearch';
+// Infos step's sport tiles.
+const SPORT_EMOJI: Record<string, string> = {
+  Football: '⚽',
+  Futsal: '🥅',
+  Basketball: '🏀',
+  Volleyball: '🏐',
+  Handball: '🤾',
+  Rugby: '🏉',
+  Tennis: '🎾',
+  Padel: '🎾',
+  Badminton: '🏸',
+  Esport: '🎮',
+};
 
 /**
  * A team of the "Équipes" step. id is null for a create-mode entry not yet
@@ -185,6 +201,7 @@ export class OrganizerTournamentWizardPage {
   private readonly transloco = inject(TranslocoService);
   private readonly navController = inject(NavController);
   private readonly router = inject(Router);
+  private readonly http = inject(HttpClient);
   private readonly route = inject(ActivatedRoute);
 
   protected readonly mode = signal<'create' | 'edit'>('create');
@@ -242,6 +259,14 @@ export class OrganizerTournamentWizardPage {
     'CRIMSON_CHARGE',
   ];
   protected readonly logoFile = signal<File | null>(null);
+  // What the Logo field shows: the picked file, else the organizing club's
+  // crest (it becomes the tournament logo, see TournamentsService).
+  private readonly logoFileUrl = signal<string | null>(null);
+  protected readonly organizerClubLogo = signal<string | null>(null);
+  protected readonly logoPreview = computed(() => this.logoFileUrl() ?? this.organizerClubLogo());
+  // Pre-registrations waiting for a decision (Équipes step + rail badge).
+  protected readonly pendingRegistrations = signal<OrganizerRegistration[]>([]);
+  protected readonly registrationBusy = signal(false);
 
   // Header background: one of the ready-made presets, or "other" with an
   // uploaded photo (premium, best-effort like the logo). headerBackgroundSaved
@@ -750,6 +775,11 @@ export class OrganizerTournamentWizardPage {
       this.theme.set(tournament.theme);
       this.organizerClubId.set(tournament.organizerClubId ?? '');
       this.organizerByClub.set(!!tournament.organizerClubId);
+      this.organizerClubLabel.set(tournament.organizerClubName ?? '');
+      this.organizerClubLogo.set(
+        tournament.organizerClubId ? this.assetUrl.resolve(tournament.logoUrl) : null,
+      );
+      void this.loadPendingRegistrations(organizationId, tournamentId);
       this.currentStatus.set(tournament.status);
       if (tournament.startDate) {
         this.startDate.set(tournament.startDate.slice(0, 10));
@@ -957,6 +987,75 @@ export class OrganizerTournamentWizardPage {
   protected onLogoFileSelected(event: Event): void {
     const file = (event.target as HTMLInputElement).files?.[0] ?? null;
     this.logoFile.set(file);
+    const previous = this.logoFileUrl();
+    if (previous) {
+      URL.revokeObjectURL(previous);
+    }
+    this.logoFileUrl.set(file ? URL.createObjectURL(file) : null);
+  }
+
+  /** Pending (and waiting-list) pre-registrations of this tournament. */
+  private async loadPendingRegistrations(
+    organizationId: string,
+    tournamentId: string,
+  ): Promise<void> {
+    try {
+      const all = await firstValueFrom(
+        this.http.get<OrganizerRegistration[]>(
+          `${environment.apiUrl}/organizations/${organizationId}/tournaments/${tournamentId}/registrations`,
+        ),
+      );
+      this.pendingRegistrations.set(
+        all.filter((r) => r.status === 'PENDING' || r.status === 'WAITLIST'),
+      );
+    } catch {
+      this.pendingRegistrations.set([]);
+    }
+  }
+
+  /** Validating a request creates its team: the list below is reloaded. */
+  protected async decideRegistration(
+    registration: OrganizerRegistration,
+    action: 'confirm' | 'reject',
+  ): Promise<void> {
+    const organizationId = this.organizationId;
+    const tournamentId = this.tournamentId;
+    if (!organizationId || !tournamentId || this.registrationBusy()) {
+      return;
+    }
+    this.registrationBusy.set(true);
+    try {
+      const all = await firstValueFrom(
+        this.http.post<OrganizerRegistration[]>(
+          `${environment.apiUrl}/organizations/${organizationId}/tournaments/${tournamentId}/registrations/${registration.id}/${action}`,
+          {},
+        ),
+      );
+      this.pendingRegistrations.set(
+        all.filter((r) => r.status === 'PENDING' || r.status === 'WAITLIST'),
+      );
+      if (action === 'confirm' && this.categoryId) {
+        const teams = await this.teamsApi.listTeams(organizationId, tournamentId, this.categoryId);
+        this.teams.set(
+          teams.map((team) => ({ id: team.id, name: team.name, logoUrl: team.logoUrl })),
+        );
+      }
+    } catch {
+      this.errorMessage.set('organizer.pendingRegistrations.error');
+    } finally {
+      this.registrationBusy.set(false);
+    }
+  }
+
+  protected openRegistrations(): void {
+    if (this.tournamentId) {
+      void this.router.navigateByUrl(`/organizer/tournaments/${this.tournamentId}/registrations`);
+    }
+  }
+
+  /** Colorful sport tiles (Infos step): one emoji per seeded sport. */
+  protected sportEmoji(name: string): string {
+    return SPORT_EMOJI[name] ?? '🏆';
   }
 
   /** Create mode just queues the name (committed later, see submitTeams()); edit mode creates it right away since there's no later "Suivant" that owns Équipes changes there. */
@@ -1007,6 +1106,7 @@ export class OrganizerTournamentWizardPage {
     }
     this.organizerClubId.set(club.externalId);
     this.organizerClubLabel.set(club.name);
+    this.organizerClubLogo.set(this.assetUrl.resolve(club.logoUrl));
     this.organizerClubQuery.set('');
     this.organizerClubSearch.clear();
   }
@@ -1014,6 +1114,7 @@ export class OrganizerTournamentWizardPage {
   protected unlinkOrganizerClub(): void {
     this.organizerClubId.set('');
     this.organizerClubLabel.set('');
+    this.organizerClubLogo.set(null);
   }
 
   // Only while the box is ticked and the club is of the chosen sport

@@ -230,7 +230,8 @@
           "linked": "Organizing club: {{club}}",
           "linkedUnknown": "An organizing club is linked.",
           "change": "Change",
-          "hint": "The club's logo becomes the tournament logo."
+          "hint": "The club's logo becomes the tournament logo.",
+          "logoFromClub": "{{club}} logo"
         }
       },
       "teams": {
@@ -707,6 +708,15 @@
         "GROUP_STAGE": "Pools",
         "KNOCKOUT": "Knockout"
       }
+    },
+    "pendingRegistrations": {
+      "title": "Pre-registrations to review",
+      "waitlist": "Waiting list",
+      "confirm": "Accept",
+      "reject": "Decline",
+      "manageAll": "Manage all registrations",
+      "error": "Could not save this decision.",
+      "badgeAria": "{{count}} pre-registration(s) to review"
     }
   },
   "notifications": {

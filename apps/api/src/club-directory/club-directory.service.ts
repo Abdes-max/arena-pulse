@@ -158,6 +158,28 @@ export class ClubDirectoryService {
     return club ? this.sportClubCrest(club[1], club[2]) : Promise.resolve(null);
   }
 
+  /** A linked club's name (Tournament.organizerClubId...), null when unknown or not from a directory. */
+  async nameForExternalId(externalId: string): Promise<string | null> {
+    const fff = FFF_EXTERNAL_ID.exec(externalId);
+    if (fff) {
+      return (
+        (await this.prisma.fffClub.findUnique({ where: { code: fff[1] } }))
+          ?.name ?? null
+      );
+    }
+    const club = CLUB_EXTERNAL_ID.exec(externalId);
+    if (club) {
+      return (
+        (
+          await this.prisma.sportClub.findUnique({
+            where: { sport_slug: { sport: club[1], slug: club[2] } },
+          })
+        )?.name ?? null
+      );
+    }
+    return null;
+  }
+
   /**
    * An FFF club's crest, fetched from the FFF CDN then kept under
    * UPLOADS_DIR/fff-logos. Only for clubs we know -- the route is public

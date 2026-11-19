@@ -178,6 +178,22 @@ ion-title {
   gap: var(--ap-space-2);
 }
 
+// Pending pre-registrations count on the "Inscriptions" action.
+.tcard__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  margin-left: 4px;
+  padding: 0 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--ap-color-error);
+  border-radius: 999px;
+}
+
 .tcard__action {
   font: inherit;
   font-size: 0.74rem;

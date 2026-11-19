@@ -230,7 +230,8 @@
           "linked": "Club organizzatore: {{club}}",
           "linkedUnknown": "È collegato un club organizzatore.",
           "change": "Cambia",
-          "hint": "Il logo del club diventa quello del torneo."
+          "hint": "Il logo del club diventa quello del torneo.",
+          "logoFromClub": "Logo di {{club}}"
         }
       },
       "teams": {
@@ -707,6 +708,15 @@
         "GROUP_STAGE": "Gironi",
         "KNOCKOUT": "Fase finale"
       }
+    },
+    "pendingRegistrations": {
+      "title": "Preiscrizioni da convalidare",
+      "waitlist": "Lista d'attesa",
+      "confirm": "Convalida",
+      "reject": "Rifiuta",
+      "manageAll": "Gestisci tutte le iscrizioni",
+      "error": "Impossibile salvare questa decisione.",
+      "badgeAria": "{{count}} preiscrizione/i da convalidare"
     }
   },
   "notifications": {
