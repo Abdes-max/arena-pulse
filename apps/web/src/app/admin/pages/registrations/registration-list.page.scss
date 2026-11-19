@@ -1,12 +1,15 @@
 @use '../../section-card';
 
+// Same card as the Équipes tab's other blocks (Arbitres...).
 .registration-list-page {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: var(--ap-space-6) var(--ap-space-4);
+  @include section-card.section-card;
   display: flex;
   flex-direction: column;
   gap: var(--ap-space-4);
+
+  > h2 {
+    margin-bottom: 0;
+  }
 }
 
 .registration-list-page__error {

@@ -137,6 +137,11 @@ import { WrappedService } from './wrapped.service';
   // RegistrationsModule (feat/036), which resolves a public tournament by
   // slug and validates a categoryId the same way PublicService already does
   // from inside this module.
-  exports: [TournamentPermissionGuard, TournamentsService, CategoriesService],
+  exports: [
+    TournamentPermissionGuard,
+    TournamentsService,
+    CategoriesService,
+    TeamsService,
+  ],
 })
 export class TournamentsModule {}

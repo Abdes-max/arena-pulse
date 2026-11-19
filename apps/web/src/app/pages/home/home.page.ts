@@ -6,6 +6,7 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { LanguageService } from 'design-tokens';
 import { TournamentContextService } from '../../core/tournament-context.service';
 import { Match, PublicTournament, PublicRegistrationInfo } from 'shared-models';
+import { PlayerAuthService } from '../../core/player-auth.service';
 
 @Component({
   selector: 'app-home-page',
@@ -20,6 +21,7 @@ export class HomePage {
   private readonly assetUrl = inject(AssetUrlService);
   private readonly languageService = inject(LanguageService);
   private readonly transloco = inject(TranslocoService);
+  protected readonly player = inject(PlayerAuthService).currentPlayer;
 
   protected readonly tournament = this.context.tournament;
   // Venue (moved to the shell header) and categories (same) are no longer

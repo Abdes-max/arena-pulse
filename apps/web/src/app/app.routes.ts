@@ -73,22 +73,30 @@ export const routes: Routes = [
     data: { meta: { title: 'seo.discover.title', description: 'seo.discover.description' } },
     loadComponent: () => import('./pages/discover/discover.page').then((m) => m.DiscoverPage),
   },
+  // Team manager's space (PlayerAccount): French addresses, like /decouvrir.
+  // Declared before the ':slug' catch-all below.
   {
-    path: 'player/login',
-    loadComponent: () =>
-      import('./pages/player-auth/login/player-login.page').then((m) => m.PlayerLoginPage),
-  },
-  {
-    path: 'player/registrations',
+    path: 'espace-responsable',
+    pathMatch: 'full',
     canActivate: [playerAuthGuard],
     loadComponent: () =>
       import('./pages/my-registrations/my-registrations.page').then((m) => m.MyRegistrationsPage),
   },
   {
-    path: 'player/register',
+    path: 'espace-responsable/connexion',
+    loadComponent: () =>
+      import('./pages/player-auth/login/player-login.page').then((m) => m.PlayerLoginPage),
+  },
+  {
+    path: 'espace-responsable/creer-un-compte',
     loadComponent: () =>
       import('./pages/player-auth/register/player-register.page').then((m) => m.PlayerRegisterPage),
   },
+  // Former English addresses (links already sent, bookmarks): query params
+  // (returnUrl) carry over through the redirect.
+  { path: 'player/registrations', redirectTo: 'espace-responsable' },
+  { path: 'player/login', redirectTo: 'espace-responsable/connexion' },
+  { path: 'player/register', redirectTo: 'espace-responsable/creer-un-compte' },
   {
     path: 'super-admin/login',
     loadComponent: () =>
@@ -237,11 +245,9 @@ export const routes: Routes = [
           import('./admin/pages/print-export/print-export.page').then((m) => m.PrintExportPage),
       },
       {
+        // Now a block of the Équipes tab; old links (e-mails...) still land there.
         path: 'tournaments/:tournamentId/registrations',
-        loadComponent: () =>
-          import('./admin/pages/registrations/registration-list.page').then(
-            (m) => m.RegistrationListPage,
-          ),
+        redirectTo: 'tournaments/:tournamentId/teams',
       },
       {
         path: 'tournaments/:tournamentId/live',

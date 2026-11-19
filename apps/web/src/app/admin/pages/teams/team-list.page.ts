@@ -20,6 +20,7 @@ import { RefereesService } from '../../core/referees.service';
 import { TeamsService } from '../../core/teams.service';
 import { TournamentsService } from '../../core/tournaments.service';
 import { showErrorsInSnackbar } from '../../../core/error-snackbar';
+import { RegistrationListPage } from '../registrations/registration-list.page';
 
 type PublicationTierCode = 'FREE' | 'STANDARD' | 'LARGE';
 
@@ -48,7 +49,15 @@ function isPublicationTierExceededError(
 
 @Component({
   selector: 'app-team-list-page',
-  imports: [AutocompleteField, Button, NgTemplateOutlet, Select, TextField, TranslocoPipe],
+  imports: [
+    AutocompleteField,
+    Button,
+    NgTemplateOutlet,
+    RegistrationListPage,
+    Select,
+    TextField,
+    TranslocoPipe,
+  ],
   templateUrl: './team-list.page.html',
   styleUrl: './team-list.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -200,6 +209,14 @@ export class TeamListPage {
 
   constructor() {
     void this.load();
+  }
+
+  /** A pre-registration was confirmed in the Inscriptions block: its team now exists. */
+  protected async reloadTeams(): Promise<void> {
+    const organizationId = this.organization()?.id;
+    if (organizationId) {
+      this.teams.set(await this.teamsService.listTeams(organizationId, this.tournamentId));
+    }
   }
 
   private async load(): Promise<void> {

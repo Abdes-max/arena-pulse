@@ -1,13 +1,14 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Button, TextField } from 'design-system';
+import { Button, Logo, TextField } from 'design-system';
 import { PlayerAuthService } from '../../../core/player-auth.service';
 import { isSafeReturnUrl } from '../../../core/safe-return-url.util';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 @Component({
   selector: 'app-player-login-page',
-  imports: [ReactiveFormsModule, RouterLink, Button, TextField],
+  imports: [ReactiveFormsModule, RouterLink, Button, Logo, TextField],
   templateUrl: './player-login.page.html',
   styleUrl: './player-login.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -25,6 +26,8 @@ export class PlayerLoginPage {
 
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage, { translate: false });
 
   protected async submit(): Promise<void> {
     if (this.form.invalid || this.submitting()) {
@@ -36,7 +39,9 @@ export class PlayerLoginPage {
       const { email, password } = this.form.getRawValue();
       await this.playerAuthService.login(email, password);
       const requestedReturnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
-      const returnUrl = isSafeReturnUrl(requestedReturnUrl) ? requestedReturnUrl : '/';
+      const returnUrl = isSafeReturnUrl(requestedReturnUrl)
+        ? requestedReturnUrl
+        : '/espace-responsable';
       await this.router.navigateByUrl(returnUrl);
     } catch {
       this.errorMessage.set('Email ou mot de passe incorrect.');

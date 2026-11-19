@@ -256,6 +256,18 @@ describe('Registrations & payments (e2e)', () => {
     });
     expect(rows[0].teamId).toEqual(expect.any(String));
 
+    // The manager's space counts it, with the team's (still empty) record.
+    const stats = await request(app.getHttpServer())
+      .get('/api/v1/public/registrations/me/stats')
+      .set('Authorization', `Bearer ${playerToken}`)
+      .expect(200);
+    expect(stats.body).toMatchObject({
+      registrations: { total: 1, confirmed: 1, pending: 0 },
+      tournaments: 1,
+      totals: { played: 0, won: 0 },
+      teams: [expect.objectContaining({ teamName: roster.teamName })],
+    });
+
     const teamsAfter = await auth(
       request(app.getHttpServer()).get(`${base}/${tournamentId}/teams`),
     ).expect(200);
@@ -274,6 +286,28 @@ describe('Registrations & payments (e2e)', () => {
     expect((paid.body as { paymentStatus: string }[])[0].paymentStatus).toBe(
       'PAID',
     );
+  });
+
+  it('registers a team without its roster, but never without a phone number', async () => {
+    const { slug, categoryId } = await setupPublishedTournament(app, {});
+    const { accessToken: playerToken } = await registerPlayer(app);
+    const team = {
+      teamName: 'Les Faucons',
+      managerEmail: 'coach@example.com',
+    };
+
+    await register(slug, categoryId, playerToken, team).expect(400);
+    await register(slug, categoryId, playerToken, {
+      ...team,
+      managerPhone: '06 12 34 56 78',
+    }).expect(201);
+    // A club picked from the directory travels with the request.
+    await register(slug, categoryId, playerToken, {
+      ...team,
+      teamName: 'ET.S Milloise',
+      externalClubId: 'fff:553079',
+      managerPhone: '06 12 34 56 78',
+    }).expect(201);
   });
 
   it('refuses requests while registrations are closed', async () => {
@@ -344,11 +378,13 @@ describe('Registrations & payments (e2e)', () => {
     // Two players is a team, not an individual registration.
     await register(slug, categoryId, playerToken, {
       managerEmail: 'rafa@example.com',
+      managerPhone: '0611111111',
       players: [player, { firstName: 'Roger', lastName: 'Federer' }],
     }).expect(400);
 
     await register(slug, categoryId, playerToken, {
       managerEmail: 'rafa@example.com',
+      managerPhone: '0611111111',
       players: [player],
     }).expect(201);
     const mine = await request(app.getHttpServer())

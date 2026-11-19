@@ -13,6 +13,7 @@ import { CategoriesService } from '../tournaments/categories.service';
 import { TournamentsService } from '../tournaments/tournaments.service';
 import { StripeService } from '../payments/stripe.service';
 import { MailService } from '../mail/mail.service';
+import { TeamsService } from '../tournaments/teams.service';
 import { CreateRegistrationDto } from './dto/create-registration.dto';
 import { RegistrationSettingsDto } from './dto/registration-settings.dto';
 import {
@@ -53,6 +54,7 @@ export class RegistrationsService {
     private readonly categoriesService: CategoriesService,
     private readonly stripeService: StripeService,
     private readonly configService: ConfigService,
+    private readonly teamsService: TeamsService,
     @Optional() private readonly mailService?: MailService,
     @Optional()
     private readonly superAdminNotifications?: SuperAdminNotificationService,
@@ -113,13 +115,14 @@ export class RegistrationsService {
     // Individual sport: one player, the "team" is named after them.
     const individual =
       tournament.sport.participantType === ParticipantType.INDIVIDUAL;
-    if (individual && dto.players.length !== 1) {
+    const players = dto.players ?? [];
+    if (individual && players.length !== 1) {
       throw new BadRequestException(
         'Une inscription individuelle concerne un seul joueur.',
       );
     }
     const teamName = individual
-      ? `${dto.players[0].firstName} ${dto.players[0].lastName}`.trim()
+      ? `${players[0].firstName} ${players[0].lastName}`.trim()
       : dto.teamName?.trim();
     if (!teamName) {
       throw new BadRequestException("Le nom de l'équipe est obligatoire.");
@@ -138,8 +141,9 @@ export class RegistrationsService {
         categoryId: category.id,
         playerAccountId,
         teamName,
+        externalClubId: individual ? null : (dto.externalClubId ?? null),
         managerEmail: dto.managerEmail,
-        managerPhone: dto.managerPhone,
+        managerPhone: dto.managerPhone.trim(),
         amountCents: category.registrationFeeCents ?? 0,
         currency: category.registrationFeeCurrency ?? 'eur',
         status,
@@ -147,7 +151,7 @@ export class RegistrationsService {
           ? RegistrationPaymentStatus.UNPAID
           : RegistrationPaymentStatus.EXEMPT,
         players: {
-          create: dto.players.map((player) => ({
+          create: players.map((player) => ({
             firstName: player.firstName,
             lastName: player.lastName,
             jerseyNumber: player.jerseyNumber,
@@ -181,7 +185,7 @@ export class RegistrationsService {
         { label: 'Contact', value: dto.managerEmail },
       ],
       link: {
-        url: `${this.webUrl()}/admin/tournaments/${tournament.id}/registrations`,
+        url: `${this.webUrl()}/admin/tournaments/${tournament.id}/teams#inscriptions`,
         label: 'Voir les inscriptions',
       },
     });
@@ -439,6 +443,118 @@ export class RegistrationsService {
     }));
   }
 
+  /**
+   * The team manager's space: their requests by status, and how the teams
+   * they registered (once confirmed, so turned into real teams) did --
+   * validated scores only, per team and in total.
+   */
+  async statsForPlayer(playerAccountId: string) {
+    const registrations = await this.prisma.registration.findMany({
+      where: { playerAccountId },
+      select: {
+        status: true,
+        teamId: true,
+        teamName: true,
+        tournament: { select: { name: true, slug: true } },
+        category: { select: { name: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    const teamIds = registrations
+      .map((registration) => registration.teamId)
+      .filter((teamId): teamId is string => teamId !== null);
+    const matches = teamIds.length
+      ? await this.prisma.match.findMany({
+          where: {
+            OR: [
+              { homeTeamId: { in: teamIds } },
+              { awayTeamId: { in: teamIds } },
+            ],
+            score: { isValidated: true },
+          },
+          select: {
+            homeTeamId: true,
+            awayTeamId: true,
+            score: { select: { homeScore: true, awayScore: true } },
+          },
+        })
+      : [];
+
+    const emptyLine = () => ({
+      played: 0,
+      won: 0,
+      drawn: 0,
+      lost: 0,
+      scored: 0,
+      conceded: 0,
+    });
+    const byTeam = new Map(teamIds.map((teamId) => [teamId, emptyLine()]));
+    for (const match of matches) {
+      if (!match.score) {
+        continue;
+      }
+      for (const side of ['home', 'away'] as const) {
+        const teamId = side === 'home' ? match.homeTeamId : match.awayTeamId;
+        const line = teamId ? byTeam.get(teamId) : undefined;
+        if (!line) {
+          continue;
+        }
+        const own =
+          side === 'home' ? match.score.homeScore : match.score.awayScore;
+        const other =
+          side === 'home' ? match.score.awayScore : match.score.homeScore;
+        line.played += 1;
+        line.scored += own;
+        line.conceded += other;
+        if (own > other) {
+          line.won += 1;
+        } else if (own < other) {
+          line.lost += 1;
+        } else {
+          line.drawn += 1;
+        }
+      }
+    }
+
+    const teams = registrations
+      .filter((registration) => registration.teamId !== null)
+      .map((registration) => ({
+        tournament: registration.tournament,
+        categoryName: registration.category.name,
+        teamName: registration.teamName,
+        ...(byTeam.get(registration.teamId!) ?? emptyLine()),
+      }));
+    const totals = teams.reduce((sum, team) => {
+      for (const key of Object.keys(sum) as (keyof typeof sum)[]) {
+        sum[key] += team[key];
+      }
+      return sum;
+    }, emptyLine());
+    const count = (...statuses: RegistrationStatus[]) =>
+      registrations.filter((registration) =>
+        statuses.includes(registration.status),
+      ).length;
+
+    return {
+      registrations: {
+        total: registrations.length,
+        confirmed: count(RegistrationStatus.CONFIRMED, RegistrationStatus.PAID),
+        pending: count(
+          RegistrationStatus.PENDING,
+          RegistrationStatus.PENDING_PAYMENT,
+        ),
+        waitlist: count(RegistrationStatus.WAITLIST),
+        refused: count(
+          RegistrationStatus.REJECTED,
+          RegistrationStatus.CANCELLED,
+        ),
+      },
+      tournaments: new Set(teams.map((team) => team.tournament.slug)).size,
+      totals,
+      teams,
+    };
+  }
+
   // --------------------------------------------- legacy online payments
 
   /** Called by PaymentsWebhookController after Stripe signature verification. */
@@ -604,12 +720,13 @@ export class RegistrationsService {
       },
     });
 
-    await this.prisma.$transaction(async (tx) => {
+    const teamId = await this.prisma.$transaction(async (tx) => {
       const team = await tx.team.create({
         data: {
           tournamentId: registration.tournamentId,
           categoryId: registration.categoryId,
           name: registration.teamName,
+          externalClubId: registration.externalClubId,
           managerEmail: registration.managerEmail,
           managerPhone: registration.managerPhone,
           players: {
@@ -634,7 +751,13 @@ export class RegistrationsService {
           }),
         },
       });
+      return team.id;
     });
+    // The club picked on the form brings its crest, as when the organizer
+    // adds the team from the club search (best effort, never blocks).
+    if (registration.externalClubId) {
+      await this.teamsService.applyClubCrest(teamId);
+    }
 
     if (status === RegistrationStatus.PAID) {
       // Super-admin notification (never throws, see SuperAdminNotificationService).

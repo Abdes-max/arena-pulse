@@ -5,6 +5,7 @@ import {
   IsInt,
   IsOptional,
   IsString,
+  Matches,
   Min,
   MaxLength,
   MinLength,
@@ -36,17 +37,28 @@ export class CreateRegistrationDto {
   @MaxLength(200)
   teamName?: string;
 
+  /** Team sports: club picked from the directory (fff:<n°>, club:<sport>:<slug>, siren:<n°>). */
+  @IsOptional()
+  @Matches(/^(fff:\d{1,10}|club:[a-z]+:[a-z0-9-]{1,150}|siren:\d{9})$/)
+  externalClubId?: string;
+
   @IsEmail()
   @MaxLength(254)
   managerEmail!: string;
 
-  @IsOptional()
+  /** Required: the organizer calls the team manager (or the player) back. */
   @IsString()
+  @MinLength(6)
   @MaxLength(30)
-  managerPhone?: string;
+  managerPhone!: string;
 
+  /**
+   * Individual sports: the single player. Team sports register the team
+   * only (name + manager contact) -- the roster is optional.
+   */
+  @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => RegistrationPlayerDto)
   @ArrayMinSize(1)
-  players!: RegistrationPlayerDto[];
+  players?: RegistrationPlayerDto[];
 }

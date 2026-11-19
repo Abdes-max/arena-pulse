@@ -386,7 +386,8 @@
       "unlimited": "Places available",
       "full": "Full · waiting list",
       "places": "{{remaining}} place(s) out of {{total}}",
-      "payment": "Payment"
+      "payment": "Payment",
+      "mySpace": "My team manager space"
     }
   },
   "schedule": {
@@ -1876,7 +1877,7 @@
     "full": "Full · waiting list"
   },
   "myRegistrations": {
-    "title": "My registrations",
+    "title": "My team manager space",
     "loading": "Loading…",
     "empty": "No registration yet.",
     "browse": "See tournaments open for registration",
@@ -1894,6 +1895,35 @@
     "errors": {
       "load": "Could not load your registrations.",
       "cancel": "Could not withdraw this request."
+    },
+    "hello": "Hello {{name}}.",
+    "lede": "Your pre-registrations and how your teams did.",
+    "logout": "Sign out",
+    "statsTitle": "My statistics",
+    "registrationsTitle": "My registrations",
+    "tiles": {
+      "tournaments": "Tournaments",
+      "tournamentsHint": "{{count}} registration(s) in total",
+      "played": "Matches played",
+      "won": "Wins",
+      "wonHint": "{{drawn}} draw(s) · {{lost}} loss(es)",
+      "scored": "Goals / points scored",
+      "scoredHint": "{{conceded}} conceded",
+      "pending": "Pending",
+      "pendingHint": "{{count}} on the waiting list"
+    },
+    "outcomesTitle": "Match record",
+    "perTeamTitle": "By team",
+    "noTeams": "Your teams will show here once a registration is confirmed.",
+    "table": {
+      "team": "Team",
+      "played": "P",
+      "won": "W",
+      "drawn": "D",
+      "lost": "L",
+      "wonLong": "Wins",
+      "drawnLong": "Draws",
+      "lostLong": "Losses"
     }
   },
   "notFound": {
