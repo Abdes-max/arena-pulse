@@ -1,0 +1,80 @@
+// Shared by the team manager's login and sign-up screens -- same layout as
+// the organizer's (organizer/pages/login/login.page.scss): toolbar with back
+// and close, fields in ion-content, actions pinned in ion-footer.
+
+// display: contents keeps ion-header/ion-content/ion-footer the .ion-page's
+// direct flex children while the <form> still wraps fields and submit.
+.manager-auth__form {
+  display: contents;
+}
+
+ion-toolbar {
+  --padding-start: var(--ap-space-4);
+  --padding-end: var(--ap-space-4);
+}
+
+ion-title {
+  padding-inline: 0;
+  text-align: start;
+  font-family: var(--ap-font-heading);
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.manager-auth__icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--ap-color-fg);
+  cursor: pointer;
+}
+
+.manager-auth__brand {
+  margin-inline: var(--ap-space-2);
+}
+
+.manager-auth {
+  --padding-top: var(--ap-space-4);
+  --padding-bottom: var(--ap-space-4);
+  --padding-start: var(--ap-space-4);
+  --padding-end: var(--ap-space-4);
+}
+
+.manager-auth__fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-4);
+}
+
+.manager-auth__lede {
+  margin: 0;
+  color: var(--ap-color-muted);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.manager-auth__footer {
+  --background: var(--ap-color-bg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+  padding: var(--ap-space-3) var(--ap-space-4) var(--ap-space-6);
+  border-top: var(--ap-border-width) solid var(--ap-color-border);
+  background: var(--ap-color-bg);
+}
+
+.manager-auth__linkrow {
+  margin: 0;
+  text-align: center;
+  font-size: 0.83rem;
+  color: var(--ap-color-muted);
+
+  a {
+    color: var(--ap-color-primary);
+  }
+}

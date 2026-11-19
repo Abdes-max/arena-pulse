@@ -1,5 +1,42 @@
 @if (tournament(); as t) {
   <ion-content class="home-page">
+    @if (registration(); as r) {
+      @if (r.open) {
+        <section class="home-page__registration">
+          <h3>{{ 'manager.home.title' | transloco }}</h3>
+          <ul class="home-page__registration-categories">
+            @for (c of r.categories; track c.id) {
+              <li>
+                <strong>{{ c.name }}</strong>
+                <span>
+                  @if (c.remaining === null) {
+                    {{ 'manager.home.unlimited' | transloco }}
+                  } @else if (c.remaining === 0) {
+                    {{ 'manager.home.full' | transloco }}
+                  } @else {
+                    {{
+                      'manager.home.places'
+                        | transloco: { remaining: c.remaining, total: c.maxTeams }
+                    }}
+                  }
+                </span>
+              </li>
+            }
+          </ul>
+          <div class="home-page__registration-actions">
+            <a class="home-page__registration-cta" [routerLink]="['/', t.slug, 'register']">
+              {{ 'manager.home.cta' | transloco }}
+            </a>
+            @if (player()) {
+              <a class="home-page__registration-space" routerLink="/espace-responsable">
+                {{ 'manager.home.mySpace' | transloco }}
+              </a>
+            }
+          </div>
+        </section>
+      }
+    }
+
     @if (t.venues.length === 0 && t.isOnline) {
       <section class="home-page__section">
         <h3 class="home-page__section-title">Lieu</h3>

@@ -754,5 +754,119 @@
   },
   "feedback": {
     "close": "Fermer"
+  },
+  "manager": {
+    "back": "Retour",
+    "loading": "Chargement…",
+    "settingsRow": "Espace responsable d’équipe",
+    "fields": {
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "email": "Email",
+      "password": "Mot de passe"
+    },
+    "login": {
+      "title": "Connexion responsable",
+      "lede": "Pour pré-inscrire votre équipe aux tournois et suivre vos demandes.",
+      "submit": "Se connecter",
+      "noAccount": "Pas encore de compte ?",
+      "create": "Créer un compte responsable",
+      "error": "Email ou mot de passe incorrect."
+    },
+    "register": {
+      "title": "Compte responsable",
+      "lede": "Il sert à pré-inscrire votre équipe aux tournois. Il est distinct d’un compte organisateur. Mot de passe : 10 caractères minimum.",
+      "submit": "Créer mon compte",
+      "hasAccount": "Déjà un compte ?",
+      "login": "Se connecter",
+      "error": "Impossible de créer le compte, réessayez.",
+      "errorTaken": "Un compte existe déjà avec cet email."
+    },
+    "form": {
+      "title": "Pré-inscrire une équipe",
+      "titleIndividual": "Pré-inscription",
+      "closed": "Les inscriptions ne sont pas ouvertes pour ce tournoi.",
+      "intro": "Votre demande sera validée par l’organisateur, qui vous confirmera votre place par e-mail.",
+      "payment": "Paiement :",
+      "category": "Catégorie",
+      "chooseCategory": "Choisir une catégorie",
+      "fee": "Tarif : {{fee}} (réglé directement à l’organisateur)",
+      "free": "Gratuit",
+      "full": "Catégorie complète : votre demande ira en liste d’attente.",
+      "playerFirstName": "Prénom du joueur",
+      "playerLastName": "Nom du joueur",
+      "clubSearch": "Rechercher le club dans l’annuaire",
+      "teamName": "Nom de l’équipe",
+      "clubPlaceholder": "Nom du club",
+      "clubSearchFailed": "Recherche de clubs indisponible : saisissez le nom à la main.",
+      "clubLinked": "Club lié : {{club}}",
+      "unlink": "Délier",
+      "department": "Département {{code}}",
+      "email": "Email du responsable",
+      "phone": "Téléphone du responsable",
+      "phoneHint": "L’organisateur vous contactera à ce numéro au sujet de l’inscription.",
+      "submit": "Envoyer la pré-inscription",
+      "sent": "Pré-inscription envoyée : l’organisateur va la valider.",
+      "error": "Impossible d’envoyer cette inscription, réessayez.",
+      "errorLoad": "Impossible de charger les catégories de ce tournoi."
+    },
+    "home": {
+      "title": "Inscriptions ouvertes",
+      "cta": "Se pré-inscrire",
+      "mySpace": "Mon espace responsable",
+      "unlimited": "Places disponibles",
+      "full": "Complet · liste d’attente",
+      "places": "{{remaining}} place(s) sur {{total}}"
+    }
+  },
+  "myRegistrations": {
+    "title": "Mon espace responsable",
+    "loading": "Chargement…",
+    "empty": "Aucune inscription pour le moment.",
+    "browse": "Voir les tournois ouverts aux inscriptions",
+    "cancel": "Annuler ma demande",
+    "reason": "Motif",
+    "status": {
+      "PENDING": "En attente de validation",
+      "CONFIRMED": "Confirmée",
+      "WAITLIST": "Liste d'attente",
+      "REJECTED": "Refusée",
+      "CANCELLED": "Annulée",
+      "PAID": "Confirmée",
+      "PENDING_PAYMENT": "Paiement en cours"
+    },
+    "errors": {
+      "load": "Impossible de charger vos inscriptions.",
+      "cancel": "Impossible d’annuler cette demande."
+    },
+    "hello": "Bonjour {{name}}.",
+    "lede": "Vos pré-inscriptions et le bilan de vos équipes.",
+    "logout": "Se déconnecter",
+    "statsTitle": "Mes statistiques",
+    "registrationsTitle": "Mes inscriptions",
+    "tiles": {
+      "tournaments": "Tournois",
+      "tournamentsHint": "{{count}} inscription(s) au total",
+      "played": "Matchs joués",
+      "won": "Victoires",
+      "wonHint": "{{drawn}} nul(s) · {{lost}} défaite(s)",
+      "scored": "Buts / points marqués",
+      "scoredHint": "{{conceded}} encaissés",
+      "pending": "En attente",
+      "pendingHint": "{{count}} en liste d'attente"
+    },
+    "outcomesTitle": "Bilan des matchs",
+    "perTeamTitle": "Par équipe",
+    "noTeams": "Vos équipes apparaîtront ici dès qu'une inscription est confirmée.",
+    "table": {
+      "team": "Équipe",
+      "played": "J",
+      "won": "G",
+      "drawn": "N",
+      "lost": "P",
+      "wonLong": "Victoires",
+      "drawnLong": "Nuls",
+      "lostLong": "Défaites"
+    }
   }
 }

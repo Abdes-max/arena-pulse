@@ -754,5 +754,119 @@
   },
   "feedback": {
     "close": "Close"
+  },
+  "manager": {
+    "back": "Back",
+    "loading": "Loading…",
+    "settingsRow": "Team manager space",
+    "fields": {
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "password": "Password"
+    },
+    "login": {
+      "title": "Team manager sign-in",
+      "lede": "To pre-register your team for tournaments and follow your requests.",
+      "submit": "Sign in",
+      "noAccount": "No account yet?",
+      "create": "Create a team manager account",
+      "error": "Wrong email or password."
+    },
+    "register": {
+      "title": "Team manager account",
+      "lede": "Used to pre-register your team for tournaments. Separate from an organizer account. Password: at least 10 characters.",
+      "submit": "Create my account",
+      "hasAccount": "Already have an account?",
+      "login": "Sign in",
+      "error": "Could not create the account, try again.",
+      "errorTaken": "An account already exists with this email."
+    },
+    "form": {
+      "title": "Pre-register a team",
+      "titleIndividual": "Pre-registration",
+      "closed": "Registrations are not open for this tournament.",
+      "intro": "The organizer will review your request and confirm your place by e-mail.",
+      "payment": "Payment:",
+      "category": "Category",
+      "chooseCategory": "Choose a category",
+      "fee": "Fee: {{fee}} (paid directly to the organizer)",
+      "free": "Free",
+      "full": "Category full: your request will go on the waiting list.",
+      "playerFirstName": "Player first name",
+      "playerLastName": "Player last name",
+      "clubSearch": "Search the club directory",
+      "teamName": "Team name",
+      "clubPlaceholder": "Club name",
+      "clubSearchFailed": "Club search unavailable: type the name yourself.",
+      "clubLinked": "Linked club: {{club}}",
+      "unlink": "Unlink",
+      "department": "Department {{code}}",
+      "email": "Manager email",
+      "phone": "Manager phone",
+      "phoneHint": "The organizer will call you on this number about the registration.",
+      "submit": "Send the pre-registration",
+      "sent": "Pre-registration sent: the organizer will review it.",
+      "error": "Could not send this registration, try again.",
+      "errorLoad": "Could not load this tournament’s categories."
+    },
+    "home": {
+      "title": "Registrations open",
+      "cta": "Pre-register",
+      "mySpace": "My team manager space",
+      "unlimited": "Places available",
+      "full": "Full · waiting list",
+      "places": "{{remaining}} place(s) out of {{total}}"
+    }
+  },
+  "myRegistrations": {
+    "title": "My team manager space",
+    "loading": "Loading…",
+    "empty": "No registration yet.",
+    "browse": "See tournaments open for registration",
+    "cancel": "Withdraw my request",
+    "reason": "Reason",
+    "status": {
+      "PENDING": "Waiting for approval",
+      "CONFIRMED": "Confirmed",
+      "WAITLIST": "Waiting list",
+      "REJECTED": "Refused",
+      "CANCELLED": "Cancelled",
+      "PAID": "Confirmed",
+      "PENDING_PAYMENT": "Payment in progress"
+    },
+    "errors": {
+      "load": "Could not load your registrations.",
+      "cancel": "Could not withdraw this request."
+    },
+    "hello": "Hello {{name}}.",
+    "lede": "Your pre-registrations and how your teams did.",
+    "logout": "Sign out",
+    "statsTitle": "My statistics",
+    "registrationsTitle": "My registrations",
+    "tiles": {
+      "tournaments": "Tournaments",
+      "tournamentsHint": "{{count}} registration(s) in total",
+      "played": "Matches played",
+      "won": "Wins",
+      "wonHint": "{{drawn}} draw(s) · {{lost}} loss(es)",
+      "scored": "Goals / points scored",
+      "scoredHint": "{{conceded}} conceded",
+      "pending": "Pending",
+      "pendingHint": "{{count}} on the waiting list"
+    },
+    "outcomesTitle": "Match record",
+    "perTeamTitle": "By team",
+    "noTeams": "Your teams will show here once a registration is confirmed.",
+    "table": {
+      "team": "Team",
+      "played": "P",
+      "won": "W",
+      "drawn": "D",
+      "lost": "L",
+      "wonLong": "Wins",
+      "drawnLong": "Draws",
+      "lostLong": "Losses"
+    }
   }
 }
