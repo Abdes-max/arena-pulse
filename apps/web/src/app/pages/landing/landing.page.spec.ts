@@ -38,11 +38,22 @@ describe('LandingPage', () => {
     const fixture = TestBed.createComponent(LandingPage);
     fixture.detectChanges();
 
-    const links = fixture.nativeElement.querySelectorAll('a.landing-page__cta');
+    const links = fixture.nativeElement.querySelectorAll(
+      'a.landing-page__cta:not(.landing-page__cta--ghost)',
+    );
     expect(links.length).toBeGreaterThan(0);
     for (const link of links) {
       expect(link.getAttribute('href')).toBe('/register');
     }
+  });
+
+  it('sends the "register for a tournament" button to upcoming open registrations', async () => {
+    await configureTestBed();
+    const fixture = TestBed.createComponent(LandingPage);
+    fixture.detectChanges();
+
+    const join = fixture.nativeElement.querySelector('a.landing-page__cta--ghost');
+    expect(join.getAttribute('href')).toBe('/decouvrir?inscriptions=1&periode=a-venir');
   });
 
   it('links "Se connecter" to the login page', async () => {

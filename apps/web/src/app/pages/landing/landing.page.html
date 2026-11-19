@@ -188,6 +188,13 @@
       <a class="landing-page__cta" routerLink="/register">{{
         'landing.hero.ctaCreate' | transloco
       }}</a>
+      <!-- Découvrir, filtered on tournaments taking registrations, upcoming. -->
+      <a
+        class="landing-page__cta landing-page__cta--ghost"
+        routerLink="/decouvrir"
+        [queryParams]="{ inscriptions: 1, periode: 'a-venir' }"
+        >{{ 'landing.hero.ctaJoin' | transloco }}</a
+      >
     </div>
 
     <!-- The hero is permanently dark (data-mode="dark" above, regardless of
@@ -271,28 +278,6 @@
         </a>
       </div>
     </div>
-    @if (openRegistrations().length > 0) {
-      <div class="landing-page__tournaments-grid">
-        @for (t of openRegistrations(); track t.id) {
-          <a class="landing-page__tournament-link" [routerLink]="['/', t.slug]">
-            <ap-tournament-card
-              [name]="t.name"
-              [sportName]="t.sportName"
-              [startDate]="t.startDate"
-              [endDate]="t.endDate"
-              [isOnline]="t.isOnline"
-              [location]="t.location"
-              [logoUrl]="logoUrl(t.logoUrl)"
-              [organizerName]="t.organizerName"
-              [format]="t.format ?? null"
-              [level]="t.level ?? null"
-              [registrationLabel]="t.band.label"
-              [priceLabel]="t.band.price"
-            />
-          </a>
-        }
-      </div>
-    }
   </section>
 
   <section id="tournois" class="landing-page__tournaments">
@@ -360,6 +345,11 @@
               [isOnline]="t.isOnline"
               [location]="t.location"
               [logoUrl]="logoUrl(t.logoUrl)"
+              [tag]="
+                openRegistrationIds()?.has(t.id)
+                  ? ('discover.filters.registrationOpen' | transloco)
+                  : null
+              "
             />
           </a>
         }

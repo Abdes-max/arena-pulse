@@ -7,7 +7,8 @@
       "marqueeLabel": "Happening now",
       "titleMain": "Run tournaments and championships",
       "titleEmphasis": "followed live by everyone.",
-      "ctaCreate": "Create my tournament"
+      "ctaCreate": "Create my tournament",
+      "ctaJoin": "Register for a tournament"
     },
     "published": {
       "title": "Published events",

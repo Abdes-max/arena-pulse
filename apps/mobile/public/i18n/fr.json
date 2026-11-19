@@ -7,7 +7,8 @@
       "marqueeLabel": "En ce moment",
       "titleMain": "Organisez tournois et championnats",
       "titleEmphasis": "suivis en direct par tout le monde.",
-      "ctaCreate": "Créer mon tournoi"
+      "ctaCreate": "Créer mon tournoi",
+      "ctaJoin": "M'inscrire à un tournoi"
     },
     "published": {
       "title": "Événements publiés",

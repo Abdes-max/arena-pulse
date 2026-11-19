@@ -7,7 +7,8 @@
       "marqueeLabel": "Ahora mismo",
       "titleMain": "Organiza torneos y campeonatos",
       "titleEmphasis": "seguidos en directo por todos.",
-      "ctaCreate": "Crear mi torneo"
+      "ctaCreate": "Crear mi torneo",
+      "ctaJoin": "Inscribirme en un torneo"
     },
     "published": {
       "title": "Eventos publicados",

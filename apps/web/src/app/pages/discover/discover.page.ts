@@ -48,11 +48,16 @@ export class DiscoverPage {
   protected readonly sportId = signal('');
   protected readonly place = signal('');
   protected readonly dateFrom = signal('');
-  protected readonly timeFilter = signal<TimeFilterValue>('');
-  // Shareable: /discover?inscriptions=1 opens on the tournaments taking pre-registrations.
-  protected readonly registrationOnly = signal(
-    inject(ActivatedRoute).snapshot.queryParamMap.get('inscriptions') === '1',
+  private readonly query = inject(ActivatedRoute).snapshot.queryParamMap;
+  // Shareable: ?periode=a-venir|passes, and ?inscriptions=1 for the
+  // tournaments taking pre-registrations (the "M'inscrire à un tournoi"
+  // buttons use both).
+  protected readonly timeFilter = signal<TimeFilterValue>(
+    ({ 'a-venir': 'upcoming', passes: 'past' } as Record<string, TimeFilterValue>)[
+      this.query.get('periode') ?? ''
+    ] ?? '',
   );
+  protected readonly registrationOnly = signal(this.query.get('inscriptions') === '1');
   private readonly transloco = inject(TranslocoService);
   protected readonly sports = signal<PublicSport[]>([]);
   private readonly allSportsLabel = toSignal(

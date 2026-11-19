@@ -35,6 +35,10 @@ export class TournamentCard {
   readonly registrationLabel = input<string | null>(null);
   /** e.g. "40 €". */
   readonly priceLabel = input<string | null>(null);
+  // Small tag in the bottom-right corner (e.g. "Inscriptions ouvertes" in a
+  // list mixing every tournament): flags the card without changing its size,
+  // unlike the full-width registration band above.
+  readonly tag = input<string | null>(null);
 
   protected readonly locationLabel = computed(() =>
     this.isOnline() ? 'En ligne' : this.location(),

@@ -411,6 +411,9 @@
       <ap-button type="button" [fullWidth]="true" routerLink="/organizer/register">
         {{ 'tournamentEntry.hero.ctaCreate' | transloco }}
       </ap-button>
+      <ap-button type="button" variant="secondary" [fullWidth]="true" (click)="findRegistrations()">
+        {{ 'tournamentEntry.hero.ctaJoin' | transloco }}
+      </ap-button>
     </div>
     @if (tournaments().length > 0) {
       <p class="tournament-entry-page__marquee-label">
@@ -425,8 +428,8 @@
   </div>
 </ion-header>
 
-<ion-content class="tournament-entry-page">
-  <section class="tournament-entry-page__published">
+<ion-content class="tournament-entry-page" #content>
+  <section class="tournament-entry-page__published" #published>
     <h2 class="tournament-entry-page__published-title">
       <span class="tournament-entry-page__published-pulse" aria-hidden="true"></span>
       {{ 'tournamentEntry.published.title' | transloco }}
@@ -501,6 +504,11 @@
               [location]="t.location"
               [logoUrl]="t.logoUrl"
               [organizerName]="t.organizerName"
+              [tag]="
+                t.registration
+                  ? ('tournamentEntry.published.filters.registrationOpen' | transloco)
+                  : null
+              "
             />
           </button>
         }

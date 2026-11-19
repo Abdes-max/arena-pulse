@@ -144,3 +144,28 @@
     text-transform: none;
   }
 }
+
+// Corner tag: pushed to the bottom-right of the card (the card is a flex
+// column, height 100%), same ember dot and look as the "Inscriptions
+// ouvertes" filter pill.
+.ap-tournament-card__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ap-space-1);
+  align-self: flex-end;
+  margin-top: auto;
+  padding: 2px var(--ap-space-2);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--ap-color-fg);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: 999px;
+
+  &::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--ap-color-ember);
+  }
+}

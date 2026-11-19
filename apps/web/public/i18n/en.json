@@ -25,7 +25,8 @@
       "subtitle": "Pools, knockout brackets, schedule, officiating and standings, plus a public site generated automatically for each of your competitions, updated the instant a score is entered.",
       "ctaCreate": "Create my tournament",
       "storeApple": "Download on the App Store",
-      "storeGoogle": "Get it on Google Play"
+      "storeGoogle": "Get it on Google Play",
+      "ctaJoin": "Register for a tournament"
     },
     "marquee": {
       "label": "Happening now on TournArena"
