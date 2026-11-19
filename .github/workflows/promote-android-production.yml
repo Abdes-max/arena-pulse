@@ -26,6 +26,18 @@ on:
           then re-run with a higher value later to increase it.
         required: false
         default: '1.0'
+      target_track:
+        description: >-
+          Track to promote to: production, or a testing track (the closed
+          testing track is usually "alpha" -- a dry run lists them all).
+          Updating a testing track's build keeps its test running.
+        required: false
+        default: production
+      dry_run:
+        description: List the tracks and what would be promoted, change nothing.
+        required: false
+        default: false
+        type: boolean
 
 jobs:
   promote:
@@ -43,7 +55,8 @@ jobs:
           GOOGLE_PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
           PACKAGE_NAME: com.arenapulse.mobile
           SOURCE_TRACK: internal
-          TARGET_TRACK: production
+          TARGET_TRACK: ${{ inputs.target_track || 'production' }}
+          DRY_RUN: ${{ inputs.dry_run }}
           VERSION_CODE: ${{ inputs.version_code }}
           ROLLOUT_FRACTION: ${{ inputs.rollout_fraction }}
         run: node infra/scripts/promote-android-release.mjs
