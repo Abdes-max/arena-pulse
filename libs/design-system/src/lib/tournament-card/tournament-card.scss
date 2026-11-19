@@ -5,6 +5,7 @@
 }
 
 .ap-tournament-card {
+  position: relative;
   background: var(--ap-color-surface);
   border: var(--ap-border-width) solid var(--ap-color-border);
   border-radius: var(--ap-radius-lg);
@@ -145,20 +146,21 @@
   }
 }
 
-// Corner tag: pushed to the bottom-right of the card (the card is a flex
-// column, height 100%), same ember dot and look as the "Inscriptions
-// ouvertes" filter pill.
+// Corner tag: pinned to the bottom-right corner, out of the flow, so a
+// tagged card keeps exactly the size of the others (it sits on the last
+// line's right, usually the dates). Dark, like the registration band.
 .ap-tournament-card__tag {
+  position: absolute;
+  right: var(--ap-space-4);
+  bottom: var(--ap-space-4);
   display: inline-flex;
   align-items: center;
   gap: var(--ap-space-1);
-  align-self: flex-end;
-  margin-top: auto;
   padding: 2px var(--ap-space-2);
   font-size: 0.72rem;
   font-weight: 700;
-  color: var(--ap-color-fg);
-  border: var(--ap-border-width) solid var(--ap-color-border);
+  color: var(--ap-color-on-primary);
+  background: var(--ap-color-primary);
   border-radius: 999px;
 
   &::before {
