@@ -12,7 +12,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { MatchCard, MatchCardTeam } from 'design-system';
 import { AssetUrlService, PublicApiService } from 'api-client';
 import { Match, PublicRegistrationInfo } from 'shared-models';
-import { PlayerAuthService } from '../../core/player-auth.service';
+import { OrganizerAuthService } from '../../organizer/core/auth.service';
 import { TournamentContextService } from '../../core/tournament-context.service';
 
 /** Mirrors apps/web's home.page.ts (the "Tournoi" tab's content). */
@@ -33,7 +33,7 @@ export class HomePage {
   // "Inscriptions ouvertes" block (same as apps/web's home page): pre-register
   // a team, and the manager's space once signed in.
   protected readonly registration = signal<PublicRegistrationInfo | null>(null);
-  protected readonly player = inject(PlayerAuthService).currentPlayer;
+  protected readonly player = inject(OrganizerAuthService).currentUser;
   // Teams the signed-in manager already registered here ("Déjà inscrit").
   protected readonly myTeams = signal(0);
   protected readonly canRegisterMore = computed(

@@ -11,9 +11,19 @@
         }
         {{ 'myRegistrations.lede' | transloco }}
       </p>
-      <button type="button" class="my-registrations-page__logout" (click)="logout()">
-        {{ 'myRegistrations.logout' | transloco }}
-      </button>
+      <div class="my-registrations-page__hero-actions">
+        <!-- Same account for organizing: its admin, or creating the organization. -->
+        <a
+          class="my-registrations-page__logout"
+          [routerLink]="organizes() ? '/admin/tournaments' : '/organiser'"
+          >{{
+            (organizes() ? 'myRegistrations.myTournaments' : 'myRegistrations.organize') | transloco
+          }}</a
+        >
+        <button type="button" class="my-registrations-page__logout" (click)="logout()">
+          {{ 'myRegistrations.logout' | transloco }}
+        </button>
+      </div>
     </div>
   </header>
 

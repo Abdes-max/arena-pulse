@@ -24,7 +24,15 @@
   }
 }
 
+.my-registrations-page__hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--ap-space-2);
+}
+
 .my-registrations-page__logout {
+  text-decoration: none;
   margin-top: var(--ap-space-4);
   padding: var(--ap-space-2) var(--ap-space-4);
   font: inherit;

@@ -6,7 +6,7 @@ import { PublicApiService } from 'api-client';
 import { Button, Logo, StatsDatum, StatsSegments } from 'design-system';
 import { PlayerRegistration, PlayerRegistrationStats } from 'shared-models';
 import { showErrorsInSnackbar } from '../../core/error-snackbar';
-import { PlayerAuthService } from '../../core/player-auth.service';
+import { AuthService } from '../../admin/core/auth.service';
 
 /**
  * The team manager's space: how the teams they registered did (same tiles
@@ -22,11 +22,13 @@ import { PlayerAuthService } from '../../core/player-auth.service';
 })
 export class MyRegistrationsPage {
   private readonly api = inject(PublicApiService);
-  private readonly playerAuth = inject(PlayerAuthService);
+  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly transloco = inject(TranslocoService);
 
-  protected readonly player = this.playerAuth.currentPlayer;
+  protected readonly player = this.authService.currentUser;
+  // Same account may also organize: a way to its admin (or to create the organization).
+  protected readonly organizes = computed(() => this.authService.organizations().length > 0);
   protected readonly loading = signal(true);
   protected readonly busyId = signal<string | null>(null);
   protected readonly errorMessage = signal<string | null>(null);
@@ -102,7 +104,7 @@ export class MyRegistrationsPage {
   }
 
   protected async logout(): Promise<void> {
-    await this.playerAuth.logout();
+    await this.authService.logout();
     await this.router.navigateByUrl('/');
   }
 }

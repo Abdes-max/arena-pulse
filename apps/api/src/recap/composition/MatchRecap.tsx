@@ -1,5 +1,11 @@
 import React from 'react';
-import { AbsoluteFill, interpolate, spring, useCurrentFrame, useVideoConfig } from 'remotion';
+import {
+  AbsoluteFill,
+  interpolate,
+  spring,
+  useCurrentFrame,
+  useVideoConfig,
+} from 'remotion';
 import { MatchRecapProps } from './schema';
 import { THEME_PALETTES } from './theme-palette';
 import { Logo } from './Logo';
@@ -36,7 +42,11 @@ function TeamRow({
 }) {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const entrance = spring({ frame: frame - delay, fps, config: { damping: 200 } });
+  const entrance = spring({
+    frame: frame - delay,
+    fps,
+    config: { damping: 200 },
+  });
   const slideFrom = align === 'flex-start' ? -60 : 60;
   const translateX = interpolate(entrance, [0, 1], [slideFrom, 0]);
   const opacity = interpolate(entrance, [0, 1], [0, 1]);
@@ -100,18 +110,31 @@ export function MatchRecap({
   const { fps, durationInFrames } = useVideoConfig();
   const palette = THEME_PALETTES[theme];
 
-  const introOpacity = interpolate(frame, [0, 15], [0, 1], { extrapolateRight: 'clamp' });
-  const introY = interpolate(frame, [0, 20], [-20, 0], { extrapolateRight: 'clamp' });
+  const introOpacity = interpolate(frame, [0, 15], [0, 1], {
+    extrapolateRight: 'clamp',
+  });
+  const introY = interpolate(frame, [0, 20], [-20, 0], {
+    extrapolateRight: 'clamp',
+  });
 
-  const badgeAppear = spring({ frame: frame - 95, fps, config: { damping: 12, mass: 0.5 } });
+  const badgeAppear = spring({
+    frame: frame - 95,
+    fps,
+    config: { damping: 12, mass: 0.5 },
+  });
   const badgeScale = interpolate(badgeAppear, [0, 1], [0.6, 1]);
   const badgeOpacity = interpolate(badgeAppear, [0, 1], [0, 1]);
 
   const outroStart = durationInFrames - 30;
-  const outroOpacity = interpolate(frame, [outroStart, outroStart + 20], [0, 1], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-  });
+  const outroOpacity = interpolate(
+    frame,
+    [outroStart, outroStart + 20],
+    [0, 1],
+    {
+      extrapolateLeft: 'clamp',
+      extrapolateRight: 'clamp',
+    },
+  );
 
   const homeIsWinner = homeScore > awayScore;
   const awayIsWinner = awayScore > homeScore;
@@ -162,7 +185,13 @@ export function MatchRecap({
             padding: '64px 56px',
           }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'flex-start',
+            }}
+          >
             <TeamRow
               name={homeTeamName}
               score={homeScore}

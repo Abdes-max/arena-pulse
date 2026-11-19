@@ -11,6 +11,7 @@ import { OrganizationSubscriptionController } from './organization-subscription.
 import { OrganizationsController } from './organizations.controller';
 import { OrganizationsService } from './organizations.service';
 import { OrganizationRoleGuard } from './guards/organization-role.guard';
+import { MyOrganizationController } from './my-organization.controller';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { OrganizationRoleGuard } from './guards/organization-role.guard';
     SuperAdminNotificationsModule,
   ],
   controllers: [
+    MyOrganizationController,
     OrganizationsController,
     OrganizationInvitationsController,
     InvitationsController,

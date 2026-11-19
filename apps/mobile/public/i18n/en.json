@@ -58,7 +58,7 @@
       "register": {
         "title": "Create my account",
         "lede": "Create your organizer account to manage your tournaments directly from the app.",
-        "orgNameLabel": "Organization name",
+        "orgNameLabel": "Organization name (optional)",
         "firstNameLabel": "First name",
         "lastNameLabel": "Last name",
         "emailLabel": "Email",
@@ -79,7 +79,8 @@
           "email": "Invalid email address.",
           "passwordMinLength": "Password must be at least 10 characters."
         },
-        "cancelAria": "Cancel"
+        "cancelAria": "Cancel",
+        "orgNameHint": "Only if you organize tournaments. To register a team, leave it empty."
       },
       "login": {
         "title": "Log in",
@@ -718,6 +719,13 @@
       "manageAll": "Manage all registrations",
       "error": "Could not save this decision.",
       "badgeAria": "{{count}} pre-registration(s) to review"
+    },
+    "createOrganization": {
+      "title": "Create your organization",
+      "lede": "Your TournArena account also lets you organize: name your organization (club, association, league…).",
+      "submit": "Create the organization",
+      "back": "Back to my team manager space",
+      "error": "Could not create the organization."
     }
   },
   "notifications": {
@@ -771,29 +779,6 @@
     "back": "Back",
     "loading": "Loading…",
     "settingsRow": "Team manager space",
-    "fields": {
-      "firstName": "First name",
-      "lastName": "Last name",
-      "email": "Email",
-      "password": "Password"
-    },
-    "login": {
-      "title": "Team manager sign-in",
-      "lede": "To pre-register your team for tournaments and follow your requests.",
-      "submit": "Sign in",
-      "noAccount": "No account yet?",
-      "create": "Create a team manager account",
-      "error": "Wrong email or password."
-    },
-    "register": {
-      "title": "Team manager account",
-      "lede": "Used to pre-register your team for tournaments. Separate from an organizer account. Password: at least 10 characters.",
-      "submit": "Create my account",
-      "hasAccount": "Already have an account?",
-      "login": "Sign in",
-      "error": "Could not create the account, try again.",
-      "errorTaken": "An account already exists with this email."
-    },
     "form": {
       "title": "Pre-register a team",
       "titleIndividual": "Pre-registration",
@@ -884,6 +869,8 @@
       "wonLong": "Wins",
       "drawnLong": "Draws",
       "lostLong": "Losses"
-    }
+    },
+    "myTournaments": "My tournaments",
+    "organize": "Organize a tournament"
   }
 }

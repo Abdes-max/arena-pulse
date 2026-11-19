@@ -58,7 +58,7 @@
       "register": {
         "title": "Créer mon compte",
         "lede": "Créez votre compte organisateur pour gérer vos tournois directement depuis l'application.",
-        "orgNameLabel": "Nom de l'organisation",
+        "orgNameLabel": "Nom de l'organisation (facultatif)",
         "firstNameLabel": "Prénom",
         "lastNameLabel": "Nom",
         "emailLabel": "Email",
@@ -79,7 +79,8 @@
           "email": "Adresse email invalide.",
           "passwordMinLength": "Le mot de passe doit contenir au moins 10 caractères."
         },
-        "cancelAria": "Annuler"
+        "cancelAria": "Annuler",
+        "orgNameHint": "Seulement si vous organisez des tournois. Pour inscrire une équipe, laissez vide."
       },
       "login": {
         "title": "Connexion",
@@ -718,6 +719,13 @@
       "manageAll": "Gérer toutes les inscriptions",
       "error": "Impossible d'enregistrer cette décision.",
       "badgeAria": "{{count}} pré-inscription(s) à valider"
+    },
+    "createOrganization": {
+      "title": "Créer votre organisation",
+      "lede": "Votre compte TournArena sert aussi à organiser : donnez un nom à votre organisation (club, association, ligue…).",
+      "submit": "Créer l'organisation",
+      "back": "Retour à mon espace responsable",
+      "error": "Impossible de créer l'organisation."
     }
   },
   "notifications": {
@@ -771,29 +779,6 @@
     "back": "Retour",
     "loading": "Chargement…",
     "settingsRow": "Espace responsable d’équipe",
-    "fields": {
-      "firstName": "Prénom",
-      "lastName": "Nom",
-      "email": "Email",
-      "password": "Mot de passe"
-    },
-    "login": {
-      "title": "Connexion responsable",
-      "lede": "Pour pré-inscrire votre équipe aux tournois et suivre vos demandes.",
-      "submit": "Se connecter",
-      "noAccount": "Pas encore de compte ?",
-      "create": "Créer un compte responsable",
-      "error": "Email ou mot de passe incorrect."
-    },
-    "register": {
-      "title": "Compte responsable",
-      "lede": "Il sert à pré-inscrire votre équipe aux tournois. Il est distinct d’un compte organisateur. Mot de passe : 10 caractères minimum.",
-      "submit": "Créer mon compte",
-      "hasAccount": "Déjà un compte ?",
-      "login": "Se connecter",
-      "error": "Impossible de créer le compte, réessayez.",
-      "errorTaken": "Un compte existe déjà avec cet email."
-    },
     "form": {
       "title": "Pré-inscrire une équipe",
       "titleIndividual": "Pré-inscription",
@@ -884,6 +869,8 @@
       "wonLong": "Victoires",
       "drawnLong": "Nuls",
       "lostLong": "Défaites"
-    }
+    },
+    "myTournaments": "Mes tournois",
+    "organize": "Organiser un tournoi"
   }
 }

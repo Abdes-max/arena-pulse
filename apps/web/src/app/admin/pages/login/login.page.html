@@ -47,7 +47,9 @@
     }}</ap-button>
     <p class="login-page__footer">
       {{ 'admin.auth.login.noAccount' | transloco }}
-      <a routerLink="/register">{{ 'admin.auth.login.createOrg' | transloco }}</a>
+      <a routerLink="/register" queryParamsHandling="preserve">{{
+        'admin.auth.login.createOrg' | transloco
+      }}</a>
     </p>
   </form>
 </main>

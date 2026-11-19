@@ -425,7 +425,7 @@
         "resend": "Reenviar o email de verificação",
         "resent": "Email reenviado.",
         "noAccount": "Ainda não tem conta?",
-        "createOrg": "Criar uma organização",
+        "createOrg": "Criar uma conta",
         "errorVerify": "Verifique o seu email antes de iniciar sessão.",
         "errorCredentials": "Email ou palavra-passe incorretos.",
         "errorGeneric": "Ocorreu um erro, tente novamente.",
@@ -436,7 +436,7 @@
       },
       "register": {
         "title": "Registe-se",
-        "orgNameLabel": "Nome da organização",
+        "orgNameLabel": "Nome da organização (opcional)",
         "firstNameLabel": "Nome próprio",
         "lastNameLabel": "Apelido",
         "emailLabel": "Email",
@@ -452,7 +452,8 @@
         "errorConflict": "Já existe uma conta com este email.",
         "errorGeneric": "Ocorreu um erro, tente novamente.",
         "lede": "Crie a sua organização e publique o seu primeiro torneio em poucos minutos.",
-        "sentLede": "Um último clique no seu e-mail e pode começar."
+        "sentLede": "Um último clique no seu e-mail e pode começar.",
+        "orgNameHint": "Só se organiza torneios. Para inscrever uma equipa, deixe vazio."
       },
       "verifyEmail": {
         "loading": "A verificar o seu email…",
@@ -1702,6 +1703,13 @@
       "print": "Imprimir",
       "loading": "A preparar…",
       "error": "Não foi possível gerar a imagem."
+    },
+    "createOrganization": {
+      "title": "Crie a sua organização",
+      "lede": "A sua conta TournArena também serve para organizar: dê um nome à sua organização (clube, associação, liga…).",
+      "submit": "Criar a organização",
+      "back": "Voltar ao meu espaço de responsável",
+      "error": "Não foi possível criar a organização."
     }
   },
   "wrapped": {
@@ -1826,7 +1834,9 @@
       "wonLong": "Vitórias",
       "drawnLong": "Empates",
       "lostLong": "Derrotas"
-    }
+    },
+    "myTournaments": "Os meus torneios",
+    "organize": "Organizar um torneio"
   },
   "notFound": {
     "title": "Página não encontrada",

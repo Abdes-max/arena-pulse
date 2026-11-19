@@ -1,6 +1,9 @@
 import { Routes } from '@angular/router';
-import { organizerAuthGuard, organizerGuestGuard } from './organizer/core/auth.guard';
-import { playerAuthGuard } from './core/player-auth.guard';
+import {
+  organizerAuthGuard,
+  organizerGuestGuard,
+  organizerOrgGuard,
+} from './organizer/core/auth.guard';
 
 export const routes: Routes = [
   {
@@ -34,7 +37,7 @@ export const routes: Routes = [
   },
   {
     path: 'organizer/tournaments',
-    canActivate: [organizerAuthGuard],
+    canActivate: [organizerAuthGuard, organizerOrgGuard],
     loadComponent: () =>
       import('./organizer/pages/tournaments/tournaments.page').then(
         (m) => m.OrganizerTournamentsPage,
@@ -51,7 +54,7 @@ export const routes: Routes = [
   // of a future ':tournamentId' param's way, same reasoning as ':slug' below).
   {
     path: 'organizer/tournaments/new-plateau',
-    canActivate: [organizerAuthGuard],
+    canActivate: [organizerAuthGuard, organizerOrgGuard],
     loadComponent: () =>
       import('./organizer/pages/quick-plateau/quick-plateau.page').then(
         (m) => m.OrganizerQuickPlateauPage,
@@ -59,7 +62,7 @@ export const routes: Routes = [
   },
   {
     path: 'organizer/tournaments/new',
-    canActivate: [organizerAuthGuard],
+    canActivate: [organizerAuthGuard, organizerOrgGuard],
     loadComponent: () =>
       import('./organizer/pages/tournament-wizard/tournament-wizard.page').then(
         (m) => m.OrganizerTournamentWizardPage,
@@ -69,7 +72,7 @@ export const routes: Routes = [
   // OrganizerTournamentWizardPage's own constructor (reads paramMap's 'id').
   {
     path: 'organizer/tournaments/:id/edit',
-    canActivate: [organizerAuthGuard],
+    canActivate: [organizerAuthGuard, organizerOrgGuard],
     loadComponent: () =>
       import('./organizer/pages/tournament-wizard/tournament-wizard.page').then(
         (m) => m.OrganizerTournamentWizardPage,
@@ -80,7 +83,7 @@ export const routes: Routes = [
   {
     // The day-of page (by rotation) is the one Scores page now.
     path: 'organizer/tournaments/:id/scores',
-    canActivate: [organizerAuthGuard],
+    canActivate: [organizerAuthGuard, organizerOrgGuard],
     loadComponent: () =>
       import('./organizer/pages/live/live.page').then((m) => m.OrganizerLivePage),
   },
@@ -90,7 +93,7 @@ export const routes: Routes = [
   },
   {
     path: 'organizer/tournaments/:id/registrations',
-    canActivate: [organizerAuthGuard],
+    canActivate: [organizerAuthGuard, organizerOrgGuard],
     loadComponent: () =>
       import('./organizer/pages/registrations/registrations.page').then(
         (m) => m.OrganizerRegistrationsPage,
@@ -98,19 +101,19 @@ export const routes: Routes = [
   },
   {
     path: 'organizer/tournaments/:id/structure',
-    canActivate: [organizerAuthGuard],
+    canActivate: [organizerAuthGuard, organizerOrgGuard],
     loadComponent: () =>
       import('./organizer/pages/structure/structure.page').then((m) => m.OrganizerStructurePage),
   },
   {
     path: 'organizer/tournaments/:id/standings',
-    canActivate: [organizerAuthGuard],
+    canActivate: [organizerAuthGuard, organizerOrgGuard],
     loadComponent: () =>
       import('./organizer/pages/standings/standings.page').then((m) => m.OrganizerStandingsPage),
   },
   {
     path: 'organizer/tournaments/:id/stats',
-    canActivate: [organizerAuthGuard],
+    canActivate: [organizerAuthGuard, organizerOrgGuard],
     loadComponent: () =>
       import('./organizer/pages/stats/stats.page').then((m) => m.OrganizerStatsPage),
   },
@@ -124,19 +127,21 @@ export const routes: Routes = [
   {
     path: 'espace-responsable',
     pathMatch: 'full',
-    canActivate: [playerAuthGuard],
+    canActivate: [organizerAuthGuard],
     loadComponent: () =>
       import('./pages/manager/space/manager-space.page').then((m) => m.ManagerSpacePage),
   },
+  // One account: the organizer sign-in/sign-up serve team managers too.
+  { path: 'espace-responsable/connexion', redirectTo: 'organizer/login' },
+  { path: 'espace-responsable/creer-un-compte', redirectTo: 'organizer/register' },
+  // An account without an organization starts organizing here.
   {
-    path: 'espace-responsable/connexion',
+    path: 'organizer/organisation',
+    canActivate: [organizerAuthGuard],
     loadComponent: () =>
-      import('./pages/manager/login/manager-login.page').then((m) => m.ManagerLoginPage),
-  },
-  {
-    path: 'espace-responsable/creer-un-compte',
-    loadComponent: () =>
-      import('./pages/manager/register/manager-register.page').then((m) => m.ManagerRegisterPage),
+      import('./organizer/pages/create-organization/create-organization.page').then(
+        (m) => m.CreateOrganizationPage,
+      ),
   },
   {
     path: ':slug',
@@ -172,7 +177,7 @@ export const routes: Routes = [
       },
       {
         path: 'register',
-        canActivate: [playerAuthGuard],
+        canActivate: [organizerAuthGuard],
         loadComponent: () =>
           import('./pages/manager/registration/registration.page').then((m) => m.RegistrationPage),
       },

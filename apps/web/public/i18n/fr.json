@@ -527,7 +527,7 @@
         "resend": "Renvoyer l'email de vérification",
         "resent": "Email renvoyé.",
         "noAccount": "Pas encore de compte ?",
-        "createOrg": "Créer une organisation",
+        "createOrg": "Créer un compte",
         "errorVerify": "Vérifiez votre email avant de vous connecter.",
         "errorCredentials": "Email ou mot de passe incorrect.",
         "errorGeneric": "Une erreur est survenue, réessayez.",
@@ -538,7 +538,7 @@
       },
       "register": {
         "title": "Inscrivez-vous",
-        "orgNameLabel": "Nom de l'organisation",
+        "orgNameLabel": "Nom de l'organisation (facultatif)",
         "firstNameLabel": "Prénom",
         "lastNameLabel": "Nom",
         "emailLabel": "Email",
@@ -554,7 +554,8 @@
         "errorConflict": "Un compte existe déjà avec cet email.",
         "errorGeneric": "Une erreur est survenue, réessayez.",
         "lede": "Créez votre organisation et publiez votre premier tournoi en quelques minutes.",
-        "sentLede": "Un dernier clic dans votre boîte mail et vous pourrez commencer."
+        "sentLede": "Un dernier clic dans votre boîte mail et vous pourrez commencer.",
+        "orgNameHint": "Seulement si vous organisez des tournois. Pour inscrire une équipe, laissez vide."
       },
       "verifyEmail": {
         "loading": "Vérification de votre email…",
@@ -1804,6 +1805,13 @@
       "print": "Imprimer",
       "loading": "Préparation…",
       "error": "Impossible de générer l'image."
+    },
+    "createOrganization": {
+      "title": "Créer votre organisation",
+      "lede": "Votre compte TournArena sert aussi à organiser : donnez un nom à votre organisation (club, association, ligue…).",
+      "submit": "Créer l'organisation",
+      "back": "Retour à mon espace responsable",
+      "error": "Impossible de créer l'organisation."
     }
   },
   "wrapped": {
@@ -1928,7 +1936,9 @@
       "wonLong": "Victoires",
       "drawnLong": "Nuls",
       "lostLong": "Défaites"
-    }
+    },
+    "myTournaments": "Mes tournois",
+    "organize": "Organiser un tournoi"
   },
   "notFound": {
     "title": "Page introuvable",

@@ -40,6 +40,47 @@ export class OrganizationsService {
     private readonly superAdminNotifications?: SuperAdminNotificationService,
   ) {}
 
+  /**
+   * An account without an organization (a team manager's) starts
+   * organizing: creates its organization, with it as admin. One
+   * organization per account, as at sign-up.
+   */
+  async createForUser(userId: string, name: string) {
+    const existing = await this.prisma.organizationMember.findFirst({
+      where: { userId },
+    });
+    if (existing) {
+      throw new ConflictException('Ce compte a déjà une organisation.');
+    }
+    const user = await this.prisma.user.findUniqueOrThrow({
+      where: { id: userId },
+    });
+    const organization = await this.prisma.$transaction(async (tx) => {
+      const created = await tx.organization.create({
+        data: { name: name.trim() },
+      });
+      await tx.organizationMember.create({
+        data: {
+          organizationId: created.id,
+          userId,
+          role: OrganizationRole.ORG_ADMIN,
+        },
+      });
+      return created;
+    });
+    void this.superAdminNotifications?.organizationCreated({
+      organizationId: organization.id,
+      organizationName: organization.name,
+      adminName: `${user.firstName} ${user.lastName}`,
+      adminEmail: user.email,
+    });
+    return {
+      id: organization.id,
+      name: organization.name,
+      role: OrganizationRole.ORG_ADMIN,
+    };
+  }
+
   async listMembers(organizationId: string) {
     const members = await this.prisma.organizationMember.findMany({
       where: { organizationId },

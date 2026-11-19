@@ -1,0 +1,13 @@
+@use '../auth-shell';
+
+// Same hero + card shell as the login and sign-up pages (_auth-shell.scss).
+.create-organization-page__card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-4);
+}
+
+.create-organization-page__back {
+  font-size: 0.9rem;
+  color: var(--ap-color-primary);
+}

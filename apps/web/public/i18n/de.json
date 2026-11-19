@@ -425,7 +425,7 @@
         "resend": "Bestätigungs-E-Mail erneut senden",
         "resent": "E-Mail erneut gesendet.",
         "noAccount": "Noch kein Konto?",
-        "createOrg": "Organisation erstellen",
+        "createOrg": "Konto erstellen",
         "errorVerify": "Bestätigen Sie Ihre E-Mail, bevor Sie sich anmelden.",
         "errorCredentials": "Falsche E-Mail oder falsches Passwort.",
         "errorGeneric": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut.",
@@ -436,7 +436,7 @@
       },
       "register": {
         "title": "Registrieren",
-        "orgNameLabel": "Name der Organisation",
+        "orgNameLabel": "Name der Organisation (optional)",
         "firstNameLabel": "Vorname",
         "lastNameLabel": "Nachname",
         "emailLabel": "E-Mail",
@@ -452,7 +452,8 @@
         "errorConflict": "Für diese E-Mail existiert bereits ein Konto.",
         "errorGeneric": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut.",
         "lede": "Erstellen Sie Ihre Organisation und veröffentlichen Sie Ihr erstes Turnier in wenigen Minuten.",
-        "sentLede": "Noch ein Klick in Ihrem Postfach, dann kann es losgehen."
+        "sentLede": "Noch ein Klick in Ihrem Postfach, dann kann es losgehen.",
+        "orgNameHint": "Nur wenn du Turniere veranstaltest. Um ein Team anzumelden, leer lassen."
       },
       "verifyEmail": {
         "loading": "E-Mail wird bestätigt…",
@@ -1702,6 +1703,13 @@
       "print": "Drucken",
       "loading": "Wird vorbereitet…",
       "error": "Das Bild konnte nicht erstellt werden."
+    },
+    "createOrganization": {
+      "title": "Deine Organisation erstellen",
+      "lede": "Mit deinem TournArena-Konto kannst du auch veranstalten: gib deiner Organisation einen Namen (Verein, Verband, Liga…).",
+      "submit": "Organisation erstellen",
+      "back": "Zurück zu meinem Bereich",
+      "error": "Die Organisation konnte nicht erstellt werden."
     }
   },
   "wrapped": {
@@ -1826,7 +1834,9 @@
       "wonLong": "Siege",
       "drawnLong": "Unentschieden",
       "lostLong": "Niederlagen"
-    }
+    },
+    "myTournaments": "Meine Turniere",
+    "organize": "Ein Turnier veranstalten"
   },
   "notFound": {
     "title": "Seite nicht gefunden",

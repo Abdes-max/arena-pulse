@@ -2,7 +2,7 @@ import { Routes } from '@angular/router';
 import { authGuard } from './admin/core/auth.guard';
 import { guestGuard } from './admin/core/guest.guard';
 import { resetThemeGuard } from './admin/core/reset-theme.guard';
-import { playerAuthGuard } from './core/player-auth.guard';
+import { organizationGuard } from './admin/core/organization.guard';
 import { superAdminAuthGuard } from './super-admin/core/super-admin-auth.guard';
 
 export const routes: Routes = [
@@ -73,30 +73,30 @@ export const routes: Routes = [
     data: { meta: { title: 'seo.discover.title', description: 'seo.discover.description' } },
     loadComponent: () => import('./pages/discover/discover.page').then((m) => m.DiscoverPage),
   },
-  // Team manager's space (PlayerAccount): French addresses, like /decouvrir.
-  // Declared before the ':slug' catch-all below.
+  // One account for organizers and team managers: the manager's space,
+  // signed in with the same /login (no separate manager sign-in any more).
   {
     path: 'espace-responsable',
     pathMatch: 'full',
-    canActivate: [playerAuthGuard],
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/my-registrations/my-registrations.page').then((m) => m.MyRegistrationsPage),
   },
+  // An account without an organization starts organizing here.
   {
-    path: 'espace-responsable/connexion',
+    path: 'organiser',
+    canActivate: [authGuard],
     loadComponent: () =>
-      import('./pages/player-auth/login/player-login.page').then((m) => m.PlayerLoginPage),
+      import('./admin/pages/create-organization/create-organization.page').then(
+        (m) => m.CreateOrganizationPage,
+      ),
   },
-  {
-    path: 'espace-responsable/creer-un-compte',
-    loadComponent: () =>
-      import('./pages/player-auth/register/player-register.page').then((m) => m.PlayerRegisterPage),
-  },
-  // Former English addresses (links already sent, bookmarks): query params
-  // (returnUrl) carry over through the redirect.
+  // Former addresses (links already sent): query params (returnUrl) carry over.
+  { path: 'espace-responsable/connexion', redirectTo: 'login' },
+  { path: 'espace-responsable/creer-un-compte', redirectTo: 'register' },
   { path: 'player/registrations', redirectTo: 'espace-responsable' },
-  { path: 'player/login', redirectTo: 'espace-responsable/connexion' },
-  { path: 'player/register', redirectTo: 'espace-responsable/creer-un-compte' },
+  { path: 'player/login', redirectTo: 'login' },
+  { path: 'player/register', redirectTo: 'register' },
   {
     path: 'super-admin/login',
     loadComponent: () =>
@@ -174,7 +174,7 @@ export const routes: Routes = [
   },
   {
     path: 'admin',
-    canActivate: [resetThemeGuard, authGuard],
+    canActivate: [resetThemeGuard, authGuard, organizationGuard],
     loadComponent: () => import('./admin/shell/app-shell').then((m) => m.AppShell),
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'tournaments' },
@@ -329,12 +329,12 @@ export const routes: Routes = [
       },
       {
         path: 'register',
-        canActivate: [playerAuthGuard],
+        canActivate: [authGuard],
         loadComponent: () => import('./pages/register/register.page').then((m) => m.RegisterPage),
       },
       {
         path: 'register/success',
-        canActivate: [playerAuthGuard],
+        canActivate: [authGuard],
         loadComponent: () =>
           import('./pages/register-success/register-success.page').then(
             (m) => m.RegisterSuccessPage,

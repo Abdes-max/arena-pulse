@@ -151,6 +151,15 @@
         </ul>
       </section>
 
+      <ap-button
+        type="button"
+        [fullWidth]="true"
+        [routerLink]="organizes() ? '/organizer/tournaments' : '/organizer/organisation'"
+      >
+        {{
+          (organizes() ? 'myRegistrations.myTournaments' : 'myRegistrations.organize') | transloco
+        }}
+      </ap-button>
       <ap-button type="button" variant="secondary" [fullWidth]="true" (click)="logout()">
         {{ 'myRegistrations.logout' | transloco }}
       </ap-button>

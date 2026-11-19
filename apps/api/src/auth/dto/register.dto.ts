@@ -1,4 +1,10 @@
-import { IsEmail, IsString, MaxLength, MinLength } from 'class-validator';
+import {
+  IsOptional,
+  IsEmail,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class RegisterDto {
   @IsEmail()
@@ -20,8 +26,13 @@ export class RegisterDto {
   @MaxLength(100)
   lastName!: string;
 
+  /**
+   * Optional: without it the account only registers teams (team manager);
+   * the organization can be created later (POST /organizations).
+   */
+  @IsOptional()
   @IsString()
   @MinLength(1)
   @MaxLength(200)
-  organizationName!: string;
+  organizationName?: string;
 }

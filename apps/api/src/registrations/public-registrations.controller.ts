@@ -7,22 +7,19 @@ import {
   Param,
   Post,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
-import { Public } from '../auth/decorators/public.decorator';
 import { ClubDirectoryService } from '../club-directory/club-directory.service';
-import { CurrentPlayer } from '../player-auth/decorators/current-player.decorator';
-import { PlayerJwtAuthGuard } from '../player-auth/guards/player-jwt-auth.guard';
-import type { AuthenticatedPlayer } from '../player-auth/strategies/player-jwt.strategy';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import type { AuthenticatedUser } from '../auth/strategies/jwt.strategy';
 import { ConfirmRegistrationPaymentDto } from './dto/confirm-registration-payment.dto';
 import { CreateRegistrationDto } from './dto/create-registration.dto';
 import { RegistrationsService } from './registrations.service';
 
+// Signed-in TournArena account (the global JwtAuthGuard): the same account
+// whether it also organizes tournaments or only registers teams.
 @ApiTags('public')
-@Public()
-@UseGuards(PlayerJwtAuthGuard)
 @Controller('public')
 export class PublicRegistrationsController {
   constructor(
@@ -34,13 +31,13 @@ export class PublicRegistrationsController {
   create(
     @Param('slug') slug: string,
     @Param('categoryId') categoryId: string,
-    @CurrentPlayer() player: AuthenticatedPlayer,
+    @CurrentUser() user: AuthenticatedUser,
     @Body() dto: CreateRegistrationDto,
   ) {
     return this.registrationsService.createForPlayer(
       slug,
       categoryId,
-      player.id,
+      user.id,
       dto,
     );
   }
@@ -48,15 +45,15 @@ export class PublicRegistrationsController {
   @HttpCode(HttpStatus.OK)
   @Post('registrations/:registrationId/cancel')
   cancel(
-    @CurrentPlayer() player: AuthenticatedPlayer,
+    @CurrentUser() user: AuthenticatedUser,
     @Param('registrationId') registrationId: string,
   ) {
-    return this.registrationsService.cancelForPlayer(player.id, registrationId);
+    return this.registrationsService.cancelForPlayer(user.id, registrationId);
   }
 
   @Get('registrations/me')
-  listMine(@CurrentPlayer() player: AuthenticatedPlayer) {
-    return this.registrationsService.listForPlayer(player.id);
+  listMine(@CurrentUser() user: AuthenticatedUser) {
+    return this.registrationsService.listForPlayer(user.id);
   }
 
   // The registration form's club search -- same directory and limit as the
@@ -68,20 +65,20 @@ export class PublicRegistrationsController {
   }
 
   @Get('registrations/me/stats')
-  myStats(@CurrentPlayer() player: AuthenticatedPlayer) {
-    return this.registrationsService.statsForPlayer(player.id);
+  myStats(@CurrentUser() user: AuthenticatedUser) {
+    return this.registrationsService.statsForPlayer(user.id);
   }
 
   @HttpCode(HttpStatus.OK)
   @Post('registrations/confirm')
   async confirmPayment(
-    @CurrentPlayer() player: AuthenticatedPlayer,
+    @CurrentUser() user: AuthenticatedUser,
     @Body() dto: ConfirmRegistrationPaymentDto,
   ) {
     await this.registrationsService.confirmRegistrationPayment(
-      player.id,
+      user.id,
       dto.sessionId,
     );
-    return this.registrationsService.listForPlayer(player.id);
+    return this.registrationsService.listForPlayer(user.id);
   }
 }

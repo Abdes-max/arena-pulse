@@ -67,6 +67,8 @@ model User {
   tournamentAdministratorRoles TournamentAdministrator[]
   validatedMatchScores         MatchScore[]              @relation("MatchScoreValidatedBy")
   recordedMatchScores          MatchScore[]              @relation("MatchScoreRecordedBy")
+  // Pre-registrations sent as a team manager (same account as an organizer).
+  registrations                Registration[]
 }
 
 model Organization {
@@ -873,7 +875,6 @@ model PlayerAccount {
   updatedAt    DateTime @updatedAt
 
   refreshTokens PlayerRefreshToken[]
-  registrations Registration[]
 }
 
 model PlayerRefreshToken {
@@ -921,7 +922,9 @@ model Registration {
   id                      String             @id @default(uuid())
   tournamentId            String
   categoryId              String
-  playerAccountId         String
+  // The TournArena account that sent the request (one account for team
+  // managers and organizers; former PlayerAccounts were merged by email).
+  userId                  String
   teamName                String
   // Club picked from the club directory on the form (same link as
   // Team.externalClubId) -- copied to the team on confirmation, crest included.
@@ -942,13 +945,13 @@ model Registration {
 
   tournament    Tournament           @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   category      Category             @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  playerAccount PlayerAccount        @relation(fields: [playerAccountId], references: [id], onDelete: Cascade)
+  user          User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   team          Team?                @relation(fields: [teamId], references: [id], onDelete: SetNull)
   players       RegistrationPlayer[]
 
   @@index([tournamentId])
   @@index([categoryId])
-  @@index([playerAccountId])
+  @@index([userId])
 }
 
 // The roster submitted at registration time -- copied into real Player rows

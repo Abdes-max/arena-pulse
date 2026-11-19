@@ -97,7 +97,7 @@ export class RegistrationsService {
   async createForPlayer(
     slug: string,
     categoryId: string,
-    playerAccountId: string,
+    userId: string,
     dto: CreateRegistrationDto,
   ): Promise<CreateRegistrationResult> {
     const published = await this.tournamentsService.getPublicBySlug(slug);
@@ -137,7 +137,7 @@ export class RegistrationsService {
     const alreadyRegistered = await this.prisma.registration.count({
       where: {
         tournamentId: tournament.id,
-        playerAccountId,
+        userId,
         status: {
           notIn: [RegistrationStatus.REJECTED, RegistrationStatus.CANCELLED],
         },
@@ -172,7 +172,7 @@ export class RegistrationsService {
       const registration = await this.createOne(
         tournament.id,
         category,
-        playerAccountId,
+        userId,
         name,
         status,
         individual,
@@ -243,7 +243,7 @@ export class RegistrationsService {
       registrationFeeCents: number | null;
       registrationFeeCurrency: string | null;
     },
-    playerAccountId: string,
+    userId: string,
     teamName: string,
     status: RegistrationStatus,
     individual: boolean,
@@ -254,7 +254,7 @@ export class RegistrationsService {
       data: {
         tournamentId,
         categoryId: category.id,
-        playerAccountId,
+        userId,
         teamName,
         externalClubId: individual ? null : (dto.externalClubId ?? null),
         managerEmail: dto.managerEmail,
@@ -277,11 +277,11 @@ export class RegistrationsService {
   }
 
   /** A player withdraws a request that isn't confirmed yet. */
-  async cancelForPlayer(playerAccountId: string, registrationId: string) {
+  async cancelForPlayer(userId: string, registrationId: string) {
     const registration = await this.prisma.registration.findUnique({
       where: { id: registrationId },
     });
-    if (!registration || registration.playerAccountId !== playerAccountId) {
+    if (!registration || registration.userId !== userId) {
       throw new NotFoundException('Inscription introuvable.');
     }
     const cancellable: RegistrationStatus[] = [
@@ -297,7 +297,7 @@ export class RegistrationsService {
       where: { id: registrationId },
       data: { status: RegistrationStatus.CANCELLED, decidedAt: new Date() },
     });
-    return this.listForPlayer(playerAccountId);
+    return this.listForPlayer(userId);
   }
 
   // ------------------------------------------------------------- organizer
@@ -350,7 +350,7 @@ export class RegistrationsService {
     );
     const registrations = await this.prisma.registration.findMany({
       where: { tournamentId },
-      include: { category: true, playerAccount: true, players: true },
+      include: { category: true, user: true, players: true },
       orderBy: { createdAt: 'desc' },
     });
     return registrations.map((registration) => ({
@@ -370,9 +370,9 @@ export class RegistrationsService {
       decidedAt: registration.decidedAt,
       paidAt: registration.paidAt,
       registrant: {
-        firstName: registration.playerAccount.firstName,
-        lastName: registration.playerAccount.lastName,
-        email: registration.playerAccount.email,
+        firstName: registration.user.firstName,
+        lastName: registration.user.lastName,
+        email: registration.user.email,
       },
       players: registration.players.map((player) => ({
         firstName: player.firstName,
@@ -500,9 +500,9 @@ export class RegistrationsService {
 
   // ---------------------------------------------------------------- player
 
-  async listForPlayer(playerAccountId: string) {
+  async listForPlayer(userId: string) {
     const registrations = await this.prisma.registration.findMany({
-      where: { playerAccountId },
+      where: { userId },
       include: { category: true, tournament: true },
       orderBy: { createdAt: 'desc' },
     });
@@ -532,9 +532,9 @@ export class RegistrationsService {
    * they registered (once confirmed, so turned into real teams) did --
    * validated scores only, per team and in total.
    */
-  async statsForPlayer(playerAccountId: string) {
+  async statsForPlayer(userId: string) {
     const registrations = await this.prisma.registration.findMany({
-      where: { playerAccountId },
+      where: { userId },
       select: {
         status: true,
         teamId: true,
@@ -651,7 +651,7 @@ export class RegistrationsService {
 
   /** Former flow: a player back from Stripe checks their session directly. */
   async confirmRegistrationPayment(
-    playerAccountId: string,
+    userId: string,
     stripeCheckoutSessionId: string,
   ): Promise<void> {
     const registration = await this.prisma.registration.findUnique({
@@ -659,7 +659,7 @@ export class RegistrationsService {
     });
     if (
       !registration ||
-      registration.playerAccountId !== playerAccountId ||
+      registration.userId !== userId ||
       registration.status !== RegistrationStatus.PENDING_PAYMENT
     ) {
       return;

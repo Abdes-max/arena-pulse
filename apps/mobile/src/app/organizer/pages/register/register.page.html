@@ -40,6 +40,9 @@
             autocomplete="organization"
             [errorMessage]="fieldError('organizationName') | transloco"
           />
+          <p class="organizer-register-page__lede">
+            {{ 'organizer.auth.register.orgNameHint' | transloco }}
+          </p>
           <ap-text-field
             [label]="'organizer.auth.register.firstNameLabel' | transloco"
             formControlName="firstName"

@@ -8,10 +8,11 @@ import { OrganizerAuthService } from './auth.service';
 // signed in who comes back to "Connexion" (e.g. from the home screen's
 // settings) lands on their tournaments instead of a pointless login form.
 export const organizerGuestGuard: CanActivateFn = () => {
-  if (!inject(OrganizerAuthService).isAuthenticated()) {
+  const auth = inject(OrganizerAuthService);
+  if (!auth.isAuthenticated()) {
     return true;
   }
-  return inject(Router).createUrlTree(['/organizer/tournaments']);
+  return inject(Router).parseUrl(auth.homeUrl());
 };
 
 export const organizerAuthGuard: CanActivateFn = (_route, state) => {
@@ -22,3 +23,12 @@ export const organizerAuthGuard: CanActivateFn = (_route, state) => {
   const router = inject(Router);
   return router.createUrlTree(['/organizer/login'], { queryParams: { returnUrl: state.url } });
 };
+
+/**
+ * The organizer area needs an organization: an account without one (a team
+ * manager's) is offered to create it first.
+ */
+export const organizerOrgGuard: CanActivateFn = () =>
+  inject(OrganizerAuthService).organizations().length > 0
+    ? true
+    : inject(Router).createUrlTree(['/organizer/organisation']);
