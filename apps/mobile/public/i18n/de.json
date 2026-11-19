@@ -158,7 +158,9 @@
           "full": "Vollständig"
         },
         "structureAction": "Struktur",
-        "registrationsAction": "Anmeldungen"
+        "registrationsAction": "Anmeldungen",
+        "openFilter": "Anmeldung offen",
+        "managerSpace": "Mein Teamverantwortlichen-Bereich"
       }
     },
     "account": {

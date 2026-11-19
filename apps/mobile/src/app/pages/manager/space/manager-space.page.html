@@ -20,6 +20,13 @@
 
 <ion-content class="manager-space">
   <div class="manager-space__body">
+    <!-- Same account as an organizer: its tournaments, when it has an organization. -->
+    @if (organizes()) {
+      <a class="manager-space__switch" routerLink="/organizer/tournaments">
+        <span>{{ 'myRegistrations.myTournaments' | transloco }}</span>
+        <span aria-hidden="true">→</span>
+      </a>
+    }
     <p class="manager-space__lede">
       @if (player(); as p) {
         {{ 'myRegistrations.hello' | transloco: { name: p.firstName } }}
@@ -151,15 +158,6 @@
         </ul>
       </section>
 
-      <ap-button
-        type="button"
-        [fullWidth]="true"
-        [routerLink]="organizes() ? '/organizer/tournaments' : '/organizer/organisation'"
-      >
-        {{
-          (organizes() ? 'myRegistrations.myTournaments' : 'myRegistrations.organize') | transloco
-        }}
-      </ap-button>
       <ap-button type="button" variant="secondary" [fullWidth]="true" (click)="logout()">
         {{ 'myRegistrations.logout' | transloco }}
       </ap-button>

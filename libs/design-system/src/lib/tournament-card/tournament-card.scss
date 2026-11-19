@@ -7,8 +7,10 @@
 .ap-tournament-card {
   position: relative;
   background: var(--ap-color-surface);
-  border: var(--ap-border-width) solid var(--ap-color-border);
+  // Teal outline at rest (web and app lists alike); hover only lifts it.
+  border: var(--ap-border-width) solid var(--ap-color-signal);
   border-radius: var(--ap-radius-lg);
+  box-shadow: var(--ap-shadow-sm);
   padding: var(--ap-space-4);
   display: flex;
   flex-direction: column;

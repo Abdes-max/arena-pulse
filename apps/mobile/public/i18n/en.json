@@ -158,7 +158,9 @@
           "full": "Full"
         },
         "structureAction": "Structure",
-        "registrationsAction": "Registrations"
+        "registrationsAction": "Registrations",
+        "openFilter": "Registrations open",
+        "managerSpace": "My team manager space"
       }
     },
     "account": {

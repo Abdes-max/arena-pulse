@@ -44,6 +44,10 @@
           <a routerLink="/admin/account" routerLinkActive="app-shell__link--active">{{
             'admin.shell.nav.account' | transloco
           }}</a>
+          <!-- Same account as a team manager: its space, when it has requests. -->
+          @if (hasRegistrations()) {
+            <a routerLink="/espace-responsable">{{ 'admin.shell.nav.managerSpace' | transloco }}</a>
+          }
         </nav>
       </div>
       <div class="app-shell__nav-end">
@@ -144,6 +148,14 @@
           (click)="closeMobileMenu()"
           >{{ 'admin.shell.nav.account' | transloco }}</a
         >
+        @if (hasRegistrations()) {
+          <a
+            class="app-shell__mobile-menu-link"
+            routerLink="/espace-responsable"
+            (click)="closeMobileMenu()"
+            >{{ 'admin.shell.nav.managerSpace' | transloco }}</a
+          >
+        }
         <div class="app-shell__mobile-menu-controls">
           <div
             class="app-shell__ui-mode"

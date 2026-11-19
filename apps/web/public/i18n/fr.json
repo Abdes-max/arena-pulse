@@ -480,7 +480,8 @@
         "tournaments": "Tournois",
         "collaborators": "Collaborateurs",
         "subscription": "Abonnement",
-        "account": "Mon compte"
+        "account": "Mon compte",
+        "managerSpace": "Mon espace responsable"
       },
       "logout": "Se déconnecter",
       "menu": "Menu",

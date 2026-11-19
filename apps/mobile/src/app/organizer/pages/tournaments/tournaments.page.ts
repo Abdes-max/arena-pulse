@@ -9,7 +9,7 @@ import {
   IonToolbar,
   RefresherCustomEvent,
 } from '@ionic/angular/standalone';
-import { AssetUrlService } from 'api-client';
+import { AssetUrlService, PublicApiService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Badge, Logo, Select, SelectOption } from 'design-system';
 import { isTournamentPast } from 'shared-models';
@@ -68,6 +68,7 @@ export class OrganizerTournamentsPage {
   private readonly tournamentsApi = inject(OrganizerTournamentsService);
   private readonly router = inject(Router);
   private readonly assetUrl = inject(AssetUrlService);
+  private readonly publicApi = inject(PublicApiService);
   private readonly transloco = inject(TranslocoService);
 
   protected readonly user = this.auth.currentUser;
@@ -79,6 +80,8 @@ export class OrganizerTournamentsPage {
 
   protected readonly selectedStatus = signal<StatusFilter>('NOT_ARCHIVED');
   protected readonly selectedTime = signal<TimeFilter>('ALL');
+  // Only the tournaments taking pre-registrations right now.
+  protected readonly openOnly = signal(false);
   protected readonly timeFilters = TIME_FILTERS;
   protected readonly filteredTournaments = computed(() => {
     const status = this.selectedStatus();
@@ -91,14 +94,30 @@ export class OrganizerTournamentsPage {
           ? tournament.status !== 'ARCHIVED'
           : tournament.status === status);
       const timeOk = time === 'ALL' || isTournamentPast(tournament, now) === (time === 'PAST');
-      return statusOk && timeOk;
+      return statusOk && timeOk && (!this.openOnly() || this.registrationsPossible(tournament));
     });
   });
+
+  // Same account as a team manager: a way to its space when it has requests.
+  protected readonly hasRegistrations = signal(false);
 
   private loadedOnce = false;
 
   constructor() {
     void this.load();
+    void this.publicApi
+      .listMyRegistrations()
+      .then((mine) => this.hasRegistrations.set(mine.length > 0))
+      .catch(() => undefined);
+  }
+
+  /** Teams can pre-register right now: switched on, and the tournament is public. */
+  protected registrationsPossible(tournament: OrganizerTournament): boolean {
+    return !!tournament.registrationsOpen && tournament.status === 'PUBLISHED';
+  }
+
+  protected toggleOpenOnly(): void {
+    this.openOnly.update((value) => !value);
   }
 
   /** Ionic keeps this page alive when navigating away: reload (quietly) on every return. */

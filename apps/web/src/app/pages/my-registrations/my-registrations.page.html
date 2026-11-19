@@ -12,14 +12,12 @@
         {{ 'myRegistrations.lede' | transloco }}
       </p>
       <div class="my-registrations-page__hero-actions">
-        <!-- Same account for organizing: its admin, or creating the organization. -->
-        <a
-          class="my-registrations-page__logout"
-          [routerLink]="organizes() ? '/admin/tournaments' : '/organiser'"
-          >{{
-            (organizes() ? 'myRegistrations.myTournaments' : 'myRegistrations.organize') | transloco
-          }}</a
-        >
+        <!-- Same account as an organizer: its tournaments, when it has an organization. -->
+        @if (organizes()) {
+          <a class="my-registrations-page__logout" routerLink="/admin/tournaments">{{
+            'myRegistrations.myTournaments' | transloco
+          }}</a>
+        }
         <button type="button" class="my-registrations-page__logout" (click)="logout()">
           {{ 'myRegistrations.logout' | transloco }}
         </button>

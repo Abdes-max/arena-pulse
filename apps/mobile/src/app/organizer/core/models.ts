@@ -55,6 +55,8 @@ export interface OrganizerTournament {
   organizerClubName?: string | null;
   // List endpoint only: pre-registrations waiting for a decision.
   pendingRegistrations?: number;
+  /** Pre-registrations switched on (the public "Inscriptions ouvertes" tag once published). */
+  registrationsOpen?: boolean;
   headerBackgroundUrl?: string | null;
   startDate?: string | null;
   endDate?: string | null;

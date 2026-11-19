@@ -156,3 +156,17 @@ ion-title {
   font-size: 0.85rem;
   color: var(--ap-color-muted);
 }
+
+// Link to the same account's organizer area.
+.manager-space__switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--ap-space-3) var(--ap-space-4);
+  border-radius: var(--ap-radius-lg);
+  background: var(--ap-color-primary);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-decoration: none;
+}

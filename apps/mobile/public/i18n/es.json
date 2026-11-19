@@ -158,7 +158,9 @@
           "full": "Completo"
         },
         "structureAction": "Estructura",
-        "registrationsAction": "Inscripciones"
+        "registrationsAction": "Inscripciones",
+        "openFilter": "Inscripciones abiertas",
+        "managerSpace": "Mi espacio de responsable"
       }
     },
     "account": {
