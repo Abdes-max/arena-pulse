@@ -301,6 +301,13 @@ describe('Registrations & payments (e2e)', () => {
       ...team,
       managerPhone: '06 12 34 56 78',
     }).expect(201);
+    // A club picked from the directory travels with the request.
+    await register(slug, categoryId, playerToken, {
+      ...team,
+      teamName: 'ET.S Milloise',
+      externalClubId: 'fff:553079',
+      managerPhone: '06 12 34 56 78',
+    }).expect(201);
   });
 
   it('refuses requests while registrations are closed', async () => {

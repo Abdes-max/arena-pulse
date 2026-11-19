@@ -39,7 +39,7 @@ export class CreateRegistrationDto {
 
   /** Team sports: club picked from the directory (fff:<n°>, club:<sport>:<slug>, siren:<n°>). */
   @IsOptional()
-  @Matches(/^(fff:d{1,10}|club:[a-z]+:[a-z0-9-]{1,150}|siren:d{9})$/)
+  @Matches(/^(fff:\d{1,10}|club:[a-z]+:[a-z0-9-]{1,150}|siren:\d{9})$/)
   externalClubId?: string;
 
   @IsEmail()
