@@ -435,6 +435,30 @@ export class TeamListPage {
     }
   }
 
+  /**
+   * The form's category, creating a default one (named after the sport,
+   * like the app's wizard) when the tournament has none yet -- e.g. created
+   * from the web form, which adds no category. Without it the add silently
+   * did nothing: a team must belong to a category. Null if it can't be had.
+   */
+  private async ensureCategoryId(organizationId: string): Promise<string | null> {
+    this.selectDefaultCategory();
+    if (this.formCategoryId()) {
+      return this.formCategoryId();
+    }
+    if (this.categories().length > 0) {
+      return null;
+    }
+    const category = await this.tournamentsService.createCategory(
+      organizationId,
+      this.tournamentId,
+      this.tournament()?.sportName || 'Équipes',
+    );
+    this.categories.set([category]);
+    this.formCategoryId.set(category.id);
+    return category.id;
+  }
+
   private focusNameField(): void {
     setTimeout(() =>
       document.querySelector<HTMLInputElement>('.team-list-page__name-field input')?.focus(),
@@ -453,9 +477,16 @@ export class TeamListPage {
   /** One name per line, through the CSV import (header line, then "name;category"). */
   protected async addPastedList(): Promise<void> {
     const organizationId = this.organization()?.id;
-    this.selectDefaultCategory();
-    const category = this.categories().find((c) => c.id === this.formCategoryId());
     const names = this.pastedNames();
+    if (organizationId && names.length > 0) {
+      try {
+        await this.ensureCategoryId(organizationId);
+      } catch {
+        this.errorMessage.set('admin.teamList.errors.import');
+        return;
+      }
+    }
+    const category = this.categories().find((c) => c.id === this.formCategoryId());
     if (!organizationId || !category || names.length === 0) {
       if (!category) {
         this.errorMessage.set('admin.teamList.errors.chooseCategory');
@@ -529,8 +560,20 @@ export class TeamListPage {
   protected async submitForm(): Promise<void> {
     const organizationId = this.organization()?.id;
     const name = this.formName().trim();
-    const categoryId = this.formCategoryId();
-    if (!organizationId || !name || !categoryId) {
+    if (!organizationId || !name) {
+      return;
+    }
+    let categoryId: string | null;
+    try {
+      categoryId = this.editingTeamId()
+        ? this.formCategoryId()
+        : await this.ensureCategoryId(organizationId);
+    } catch {
+      this.errorMessage.set('admin.teamList.errors.save');
+      return;
+    }
+    if (!categoryId) {
+      this.errorMessage.set('admin.teamList.errors.chooseCategory');
       return;
     }
     const managerName = this.formManagerName().trim() || undefined;
