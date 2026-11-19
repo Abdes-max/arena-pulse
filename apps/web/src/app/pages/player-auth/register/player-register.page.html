@@ -27,7 +27,7 @@
     />
     <ap-button type="submit" [disabled]="submitting()">Créer mon compte</ap-button>
     <p class="player-register-page__footer">
-      Déjà un compte ? <a routerLink="/player/login">Se connecter</a>
+      Déjà un compte ? <a routerLink="/player/login" queryParamsHandling="preserve">Se connecter</a>
     </p>
   </form>
 </main>

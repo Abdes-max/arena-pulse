@@ -20,7 +20,10 @@
     />
     <ap-button type="submit" [disabled]="submitting()">Se connecter</ap-button>
     <p class="player-login-page__footer">
-      Pas encore de compte ? <a routerLink="/player/register">Créer un compte responsable</a>
+      Pas encore de compte ?
+      <a routerLink="/player/register" queryParamsHandling="preserve"
+        >Créer un compte responsable</a
+      >
     </p>
   </form>
 </main>
