@@ -33,8 +33,6 @@ export interface CreateRegistrationResult {
 }
 
 /** Registrations that hold (or wait for) a place: confirmed ones and the legacy paid ones. */
-const PLACE_HOLDING = [RegistrationStatus.CONFIRMED, RegistrationStatus.PAID];
-
 /**
  * Pre-registrations: a player account sends a request (a team and its roster,
  * or themselves for an individual sport), the organizer confirms it, turns it
@@ -714,12 +712,17 @@ export class RegistrationsService {
   }
 
   /** Places held per category (confirmed requests). */
+  /**
+   * Places taken per category: the teams actually in it -- the organizer's
+   * own additions as well as confirmed requests (each confirmed request has
+   * its team; one the organizer deleted no longer holds a place).
+   */
   private async placesTaken(
     tournamentId: string,
   ): Promise<Map<string, number>> {
-    const rows = await this.prisma.registration.groupBy({
+    const rows = await this.prisma.team.groupBy({
       by: ['categoryId'],
-      where: { tournamentId, status: { in: PLACE_HOLDING } },
+      where: { tournamentId },
       _count: { _all: true },
     });
     return new Map(rows.map((row) => [row.categoryId, row._count._all]));

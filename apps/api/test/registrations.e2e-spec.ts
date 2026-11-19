@@ -408,6 +408,59 @@ describe('Registrations & payments (e2e)', () => {
     ).toBe(0);
   });
 
+  it("counts the category's actual teams as places, and frees a deleted team's", async () => {
+    const { slug, categoryId, auth, base, tournamentId } =
+      await setupPublishedTournament(app, { maxTeams: 2 });
+    const remaining = async () =>
+      (
+        (
+          await request(app.getHttpServer())
+            .get(`/api/v1/public/tournaments/${slug}/registration-info`)
+            .expect(200)
+        ).body as { categories: { remaining: number }[] }
+      ).categories[0].remaining;
+
+    // A team the organizer adds themselves takes a place too.
+    await auth(
+      request(app.getHttpServer()).post(`${base}/${tournamentId}/teams`),
+    )
+      .send({ name: 'Les Hiboux', categoryId })
+      .expect(201);
+    expect(await remaining()).toBe(1);
+
+    const { accessToken } = await registerPlayer(app);
+    const sent = await register(slug, categoryId, accessToken, roster).expect(
+      201,
+    );
+    const registrationId = (sent.body as RegistrationResponseBody)
+      .registrationId;
+    await auth(
+      request(app.getHttpServer()).post(
+        `${base}/${tournamentId}/registrations/${registrationId}/confirm`,
+      ),
+    ).expect(200);
+    expect(await remaining()).toBe(0);
+
+    // The organizer deletes the confirmed team: its place is free again and
+    // the request no longer counts as registered.
+    const { teamId } = await prisma.registration.findUniqueOrThrow({
+      where: { id: registrationId },
+    });
+    await auth(
+      request(app.getHttpServer()).delete(
+        `${base}/${tournamentId}/teams/${teamId}`,
+      ),
+    ).expect(204);
+    expect(await remaining()).toBe(1);
+    expect(
+      (
+        await prisma.registration.findUniqueOrThrow({
+          where: { id: registrationId },
+        })
+      ).status,
+    ).toBe('REJECTED');
+  });
+
   it('registers a single player, named after them, for an individual sport', async () => {
     const { slug, categoryId } = await setupPublishedTournament(
       app,

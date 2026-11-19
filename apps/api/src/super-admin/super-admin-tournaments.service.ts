@@ -240,7 +240,22 @@ export class SuperAdminTournamentsService {
     if (!team || team.tournamentId !== tournamentId) {
       throw new NotFoundException('Équipe introuvable.');
     }
-    await this.prisma.team.delete({ where: { id: teamId } });
+    await this.prisma.$transaction([
+      // A confirmed request whose team the organizer removes no longer holds
+      // a place (nor counts as "already registered" for its manager).
+      this.prisma.registration.updateMany({
+        where: {
+          teamId: { in: [teamId] },
+          status: { in: ['CONFIRMED', 'PAID'] },
+        },
+        data: {
+          status: 'REJECTED',
+          rejectionReason: "Équipe retirée par l'organisateur.",
+          decidedAt: new Date(),
+        },
+      }),
+      this.prisma.team.delete({ where: { id: teamId } }),
+    ]);
     await this.deleteLogoFile('team-logos', team.logoUrl);
     await this.auditLog.record({
       superAdminId,
