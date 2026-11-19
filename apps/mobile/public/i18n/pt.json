@@ -58,7 +58,7 @@
       "register": {
         "title": "Criar a minha conta",
         "lede": "Crie a sua conta de organizador·a para gerir os seus torneios diretamente a partir da app.",
-        "orgNameLabel": "Nome da organização",
+        "orgNameLabel": "Nome da organização (opcional)",
         "firstNameLabel": "Nome próprio",
         "lastNameLabel": "Apelido",
         "emailLabel": "Email",
@@ -79,7 +79,8 @@
           "email": "Endereço de email inválido.",
           "passwordMinLength": "A palavra-passe deve ter pelo menos 10 caracteres."
         },
-        "cancelAria": "Cancelar"
+        "cancelAria": "Cancelar",
+        "orgNameHint": "Só se organiza torneios. Para inscrever uma equipa, deixe vazio."
       },
       "login": {
         "title": "Iniciar sessão",
@@ -718,6 +719,13 @@
       "manageAll": "Gerir todas as inscrições",
       "error": "Não foi possível guardar esta decisão.",
       "badgeAria": "{{count}} pré-inscrição(ões) a validar"
+    },
+    "createOrganization": {
+      "title": "Crie a sua organização",
+      "lede": "A sua conta TournArena também serve para organizar: dê um nome à sua organização (clube, associação, liga…).",
+      "submit": "Criar a organização",
+      "back": "Voltar ao meu espaço de responsável",
+      "error": "Não foi possível criar a organização."
     }
   },
   "notifications": {
@@ -771,29 +779,6 @@
     "back": "Voltar",
     "loading": "Carregando…",
     "settingsRow": "Espaço do responsável",
-    "fields": {
-      "firstName": "Nome",
-      "lastName": "Sobrenome",
-      "email": "Email",
-      "password": "Senha"
-    },
-    "login": {
-      "title": "Acesso do responsável",
-      "lede": "Para pré-inscrever sua equipe em torneios e acompanhar seus pedidos.",
-      "submit": "Entrar",
-      "noAccount": "Ainda não tem conta?",
-      "create": "Criar uma conta de responsável",
-      "error": "Email ou senha incorretos."
-    },
-    "register": {
-      "title": "Conta de responsável",
-      "lede": "Serve para pré-inscrever sua equipe em torneios. É distinta de uma conta de organizador. Senha: no mínimo 10 caracteres.",
-      "submit": "Criar minha conta",
-      "hasAccount": "Já tem uma conta?",
-      "login": "Entrar",
-      "error": "Não foi possível criar a conta, tente novamente.",
-      "errorTaken": "Já existe uma conta com este email."
-    },
     "form": {
       "title": "Pré-inscrever uma equipe",
       "titleIndividual": "Pré-inscrição",
@@ -884,6 +869,8 @@
       "wonLong": "Vitórias",
       "drawnLong": "Empates",
       "lostLong": "Derrotas"
-    }
+    },
+    "myTournaments": "Os meus torneios",
+    "organize": "Organizar um torneio"
   }
 }

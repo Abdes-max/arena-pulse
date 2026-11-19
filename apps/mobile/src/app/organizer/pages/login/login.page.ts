@@ -79,7 +79,7 @@ export class OrganizerLoginPage {
       const requestedReturnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
       const returnUrl = isSafeReturnUrl(requestedReturnUrl)
         ? requestedReturnUrl
-        : '/organizer/tournaments';
+        : this.auth.homeUrl();
       await this.router.navigateByUrl(returnUrl);
     } catch (error) {
       if (error instanceof HttpErrorResponse && error.status === 403) {

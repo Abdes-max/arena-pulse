@@ -55,7 +55,7 @@ export class LoginPage {
       const requestedReturnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
       const returnUrl = isSafeReturnUrl(requestedReturnUrl)
         ? requestedReturnUrl
-        : '/admin/tournaments';
+        : this.authService.homeUrl();
       await this.router.navigateByUrl(returnUrl);
     } catch (error) {
       if (error instanceof HttpErrorResponse && error.status === 403) {

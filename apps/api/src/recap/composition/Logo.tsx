@@ -7,11 +7,22 @@ import { loadFont } from '@remotion/google-fonts/SpaceGrotesk';
 // theme-palette.ts). Colors/font are fixed regardless of the selected
 // tournament theme, mirroring that component's own doc comment: the brand
 // mark must not shift with the organizer's theme choice.
-const { fontFamily } = loadFont('normal', { weights: ['700'], subsets: ['latin'] });
+const { fontFamily } = loadFont('normal', {
+  weights: ['700'],
+  subsets: ['latin'],
+});
 
-export function Logo({ size = 64, wordmark = true }: { size?: number; wordmark?: boolean }) {
+export function Logo({
+  size = 64,
+  wordmark = true,
+}: {
+  size?: number;
+  wordmark?: boolean;
+}) {
   return (
-    <div style={{ display: 'inline-flex', alignItems: 'center', gap: size * 0.2 }}>
+    <div
+      style={{ display: 'inline-flex', alignItems: 'center', gap: size * 0.2 }}
+    >
       <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden="true">
         <rect
           x={2}

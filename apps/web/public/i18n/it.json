@@ -425,7 +425,7 @@
         "resend": "Invia di nuovo l'email di verifica",
         "resent": "Email inviata di nuovo.",
         "noAccount": "Non hai ancora un account?",
-        "createOrg": "Crea un'organizzazione",
+        "createOrg": "Crea un account",
         "errorVerify": "Verifica la tua email prima di accedere.",
         "errorCredentials": "Email o password errati.",
         "errorGeneric": "Si è verificato un errore, riprova.",
@@ -436,7 +436,7 @@
       },
       "register": {
         "title": "Registrati",
-        "orgNameLabel": "Nome dell'organizzazione",
+        "orgNameLabel": "Nome dell'organizzazione (facoltativo)",
         "firstNameLabel": "Nome",
         "lastNameLabel": "Cognome",
         "emailLabel": "Email",
@@ -452,7 +452,8 @@
         "errorConflict": "Esiste già un account con questa email.",
         "errorGeneric": "Si è verificato un errore, riprova.",
         "lede": "Crea la tua organizzazione e pubblica il tuo primo torneo in pochi minuti.",
-        "sentLede": "Un ultimo clic nella tua casella e potrai iniziare."
+        "sentLede": "Un ultimo clic nella tua casella e potrai iniziare.",
+        "orgNameHint": "Solo se organizzi tornei. Per iscrivere una squadra, lascia vuoto."
       },
       "verifyEmail": {
         "loading": "Verifica della tua email…",
@@ -1702,6 +1703,13 @@
       "print": "Stampa",
       "loading": "Preparazione…",
       "error": "Impossibile generare l'immagine."
+    },
+    "createOrganization": {
+      "title": "Crea la tua organizzazione",
+      "lede": "Il tuo account TournArena serve anche a organizzare: dai un nome alla tua organizzazione (club, associazione, lega…).",
+      "submit": "Crea l'organizzazione",
+      "back": "Torna al mio spazio responsabile",
+      "error": "Impossibile creare l'organizzazione."
     }
   },
   "wrapped": {
@@ -1826,7 +1834,9 @@
       "wonLong": "Vittorie",
       "drawnLong": "Pareggi",
       "lostLong": "Sconfitte"
-    }
+    },
+    "myTournaments": "I miei tornei",
+    "organize": "Organizza un torneo"
   },
   "notFound": {
     "title": "Pagina non trovata",

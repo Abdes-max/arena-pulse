@@ -12,5 +12,7 @@ export const guestGuard: CanActivateFn = (route) => {
     return true;
   }
   const returnUrl = route.queryParamMap.get('returnUrl');
-  return inject(Router).parseUrl(isSafeReturnUrl(returnUrl) ? returnUrl : '/admin/tournaments');
+  return inject(Router).parseUrl(
+    isSafeReturnUrl(returnUrl) ? returnUrl : inject(AuthService).homeUrl(),
+  );
 };

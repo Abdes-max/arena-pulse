@@ -14,7 +14,7 @@ import { AutocompleteField, Button, Select, SelectOption, TextField } from 'desi
 import { LanguageService } from 'design-tokens';
 import { Category, PublicRegistrationInfo } from 'shared-models';
 import { showErrorsInSnackbar } from '../../../core/error-snackbar';
-import { PlayerAuthService } from '../../../core/player-auth.service';
+import { OrganizerAuthService } from '../../../organizer/core/auth.service';
 import { SnackbarService } from '../../../core/snackbar.service';
 import { TournamentContextService } from '../../../core/tournament-context.service';
 
@@ -46,7 +46,7 @@ export class RegistrationPage {
   private readonly api = inject(PublicApiService);
   private readonly router = inject(Router);
   private readonly assetUrl = inject(AssetUrlService);
-  private readonly playerAuth = inject(PlayerAuthService);
+  private readonly auth = inject(OrganizerAuthService);
   private readonly snackbar = inject(SnackbarService);
   private readonly transloco = inject(TranslocoService);
   private readonly languageService = inject(LanguageService);
@@ -105,10 +105,7 @@ export class RegistrationPage {
     teamName: ['', Validators.required],
     playerFirstName: [''],
     playerLastName: [''],
-    managerEmail: [
-      this.playerAuth.currentPlayer()?.email ?? '',
-      [Validators.required, Validators.email],
-    ],
+    managerEmail: [this.auth.currentUser()?.email ?? '', [Validators.required, Validators.email]],
     managerPhone: ['', [Validators.required, Validators.minLength(6)]],
   });
 
@@ -202,7 +199,7 @@ export class RegistrationPage {
         teamName.clearValidators();
         playerFirstName.setValidators(Validators.required);
         playerLastName.setValidators(Validators.required);
-        const player = this.playerAuth.currentPlayer();
+        const player = this.auth.currentUser();
         playerFirstName.setValue(player?.firstName ?? '');
         playerLastName.setValue(player?.lastName ?? '');
         for (const control of [teamName, playerFirstName, playerLastName]) {

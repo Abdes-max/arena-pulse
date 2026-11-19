@@ -88,8 +88,14 @@ export class AuthService {
             ),
           },
         });
+        // No organization name: a team manager's account (organizes nothing
+        // yet -- POST /organizations creates one later).
+        const organizationName = dto.organizationName?.trim();
+        if (!organizationName) {
+          return { user: createdUser, organization: null };
+        }
         const createdOrganization = await tx.organization.create({
-          data: { name: dto.organizationName },
+          data: { name: organizationName },
         });
         await tx.organizationMember.create({
           data: {
@@ -118,25 +124,27 @@ export class AuthService {
         `Failed to send verification email to ${user.email}: ${(error as Error).message}`,
       );
     }
-    try {
-      await this.mailService.sendAccountCreatedEmail(
-        user.email,
-        user.firstName,
-        organization.name,
-        lang,
-      );
-    } catch (error) {
-      this.logger.warn(
-        `Failed to send account confirmation email to ${user.email}: ${(error as Error).message}`,
-      );
-    }
+    if (organization) {
+      try {
+        await this.mailService.sendAccountCreatedEmail(
+          user.email,
+          user.firstName,
+          organization.name,
+          lang,
+        );
+      } catch (error) {
+        this.logger.warn(
+          `Failed to send account confirmation email to ${user.email}: ${(error as Error).message}`,
+        );
+      }
 
-    void this.superAdminNotifications?.organizationCreated({
-      organizationId: organization.id,
-      organizationName: organization.name,
-      adminName: `${user.firstName} ${user.lastName}`,
-      adminEmail: user.email,
-    });
+      void this.superAdminNotifications?.organizationCreated({
+        organizationId: organization.id,
+        organizationName: organization.name,
+        adminName: `${user.firstName} ${user.lastName}`,
+        adminEmail: user.email,
+      });
+    }
 
     // No session issued here -- register() no longer logs the account in.
     // The account only becomes usable once verifyEmail() confirms the

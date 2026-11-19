@@ -10,7 +10,7 @@ import {
 } from 'api-client';
 import { AutocompleteField, Button, Select, SelectOption, TextField } from 'design-system';
 import { Category, PublicRegistrationInfo } from 'shared-models';
-import { PlayerAuthService } from '../../core/player-auth.service';
+import { AuthService } from '../../admin/core/auth.service';
 import { TournamentContextService } from '../../core/tournament-context.service';
 import { showErrorsInSnackbar } from '../../core/error-snackbar';
 
@@ -37,7 +37,7 @@ export class RegisterPage {
   private readonly api = inject(PublicApiService);
   private readonly router = inject(Router);
   protected readonly context = inject(TournamentContextService);
-  private readonly playerAuth = inject(PlayerAuthService);
+  private readonly authService = inject(AuthService);
   private readonly assetUrl = inject(AssetUrlService);
 
   protected readonly loading = signal(true);
@@ -101,7 +101,7 @@ export class RegisterPage {
     playerFirstName: [''],
     playerLastName: [''],
     managerEmail: [
-      this.playerAuth.currentPlayer()?.email ?? '',
+      this.authService.currentUser()?.email ?? '',
       [Validators.required, Validators.email],
     ],
     managerPhone: ['', [Validators.required, Validators.minLength(6)]],
@@ -194,7 +194,7 @@ export class RegisterPage {
         teamName.clearValidators();
         playerFirstName.setValidators(Validators.required);
         playerLastName.setValidators(Validators.required);
-        const player = this.playerAuth.currentPlayer();
+        const player = this.authService.currentUser();
         playerFirstName.setValue(player?.firstName ?? '');
         playerLastName.setValue(player?.lastName ?? '');
         for (const control of [teamName, playerFirstName, playerLastName]) {

@@ -58,7 +58,7 @@
       "register": {
         "title": "Crear mi cuenta",
         "lede": "Crea tu cuenta de organizador·a para gestionar tus torneos directamente desde la app.",
-        "orgNameLabel": "Nombre de la organización",
+        "orgNameLabel": "Nombre de la organización (opcional)",
         "firstNameLabel": "Nombre",
         "lastNameLabel": "Apellidos",
         "emailLabel": "Correo electrónico",
@@ -79,7 +79,8 @@
           "email": "Dirección de correo no válida.",
           "passwordMinLength": "La contraseña debe tener al menos 10 caracteres."
         },
-        "cancelAria": "Cancelar"
+        "cancelAria": "Cancelar",
+        "orgNameHint": "Solo si organizas torneos. Para inscribir un equipo, déjalo vacío."
       },
       "login": {
         "title": "Iniciar sesión",
@@ -718,6 +719,13 @@
       "manageAll": "Gestionar todas las inscripciones",
       "error": "No se pudo guardar esta decisión.",
       "badgeAria": "{{count}} preinscripción(es) por validar"
+    },
+    "createOrganization": {
+      "title": "Crea tu organización",
+      "lede": "Tu cuenta TournArena también sirve para organizar: ponle nombre a tu organización (club, asociación, liga…).",
+      "submit": "Crear la organización",
+      "back": "Volver a mi espacio de responsable",
+      "error": "No se pudo crear la organización."
     }
   },
   "notifications": {
@@ -771,29 +779,6 @@
     "back": "Volver",
     "loading": "Cargando…",
     "settingsRow": "Espacio del responsable",
-    "fields": {
-      "firstName": "Nombre",
-      "lastName": "Apellido",
-      "email": "Email",
-      "password": "Contraseña"
-    },
-    "login": {
-      "title": "Acceso responsable",
-      "lede": "Para preinscribir a tu equipo en torneos y seguir tus solicitudes.",
-      "submit": "Iniciar sesión",
-      "noAccount": "¿Aún no tienes cuenta?",
-      "create": "Crear una cuenta de responsable",
-      "error": "Email o contraseña incorrectos."
-    },
-    "register": {
-      "title": "Cuenta de responsable",
-      "lede": "Sirve para preinscribir a tu equipo en torneos. Es distinta de una cuenta de organizador. Contraseña: 10 caracteres como mínimo.",
-      "submit": "Crear mi cuenta",
-      "hasAccount": "¿Ya tienes cuenta?",
-      "login": "Iniciar sesión",
-      "error": "No se pudo crear la cuenta, inténtalo de nuevo.",
-      "errorTaken": "Ya existe una cuenta con este email."
-    },
     "form": {
       "title": "Preinscribir un equipo",
       "titleIndividual": "Preinscripción",
@@ -884,6 +869,8 @@
       "wonLong": "Victorias",
       "drawnLong": "Empates",
       "lostLong": "Derrotas"
-    }
+    },
+    "myTournaments": "Mis torneos",
+    "organize": "Organizar un torneo"
   }
 }

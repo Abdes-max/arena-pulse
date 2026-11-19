@@ -50,7 +50,8 @@ export class OrganizerRegisterPage {
   private readonly router = inject(Router);
 
   protected readonly form = this.formBuilder.nonNullable.group({
-    organizationName: ['', Validators.required],
+    // Optional: only to organize tournaments (a team manager leaves it empty).
+    organizationName: [''],
     firstName: ['', Validators.required],
     lastName: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],

@@ -1,0 +1,28 @@
+<main class="create-organization-page auth-shell">
+  <header class="auth-shell__hero" data-theme="ink-signal" data-mode="dark">
+    <div class="auth-shell__hero-inner">
+      <a class="auth-shell__home" routerLink="/" [attr.aria-label]="'admin.auth.home' | transloco">
+        <ap-logo variant="on-dark" />
+      </a>
+      <h1>{{ 'admin.createOrganization.title' | transloco }}</h1>
+      <p class="auth-shell__lede">{{ 'admin.createOrganization.lede' | transloco }}</p>
+    </div>
+  </header>
+  <form
+    class="create-organization-page__card auth-shell__card"
+    [formGroup]="form"
+    (ngSubmit)="submit()"
+  >
+    <ap-text-field
+      [label]="'admin.auth.register.orgNameLabel' | transloco"
+      formControlName="name"
+      autocomplete="organization"
+    />
+    <ap-button type="submit" [disabled]="form.invalid || submitting()">{{
+      'admin.createOrganization.submit' | transloco
+    }}</ap-button>
+    <a class="create-organization-page__back" routerLink="/espace-responsable">{{
+      'admin.createOrganization.back' | transloco
+    }}</a>
+  </form>
+</main>

@@ -13,11 +13,6 @@ interface OrganizerAuthResponseBody {
   organization?: { id: string };
 }
 
-interface PlayerAuthResponseBody {
-  accessToken: string;
-  playerAccount: { id: string };
-}
-
 interface RegistrationResponseBody {
   registrationId: string;
   status: string;
@@ -78,23 +73,28 @@ async function registerOrganizer(app: INestApplication<App>) {
   return { accessToken, organizationId: organizations[0].id };
 }
 
+/**
+ * A team manager: a TournArena account without an organization (one account
+ * for managers and organizers), verified in DB like registerOrganizer above.
+ */
 async function registerPlayer(
   app: INestApplication<App>,
   email = 'player@example.com',
 ) {
-  const res = await request(app.getHttpServer())
-    .post('/api/v1/player-auth/register')
-    .send({
-      email,
-      password: 'a-very-strong-password',
-      firstName: 'Léa',
-      lastName: 'Martin',
-    })
+  const password = 'a-very-strong-password';
+  await request(app.getHttpServer())
+    .post('/api/v1/auth/register')
+    .send({ email, password, firstName: 'Léa', lastName: 'Martin' })
     .expect(201);
-  const body = res.body as PlayerAuthResponseBody;
+  await app
+    .get(PrismaService)
+    .user.update({ where: { email }, data: { emailVerifiedAt: new Date() } });
+  const loginRes = await request(app.getHttpServer())
+    .post('/api/v1/auth/login')
+    .send({ email, password })
+    .expect(200);
   return {
-    accessToken: body.accessToken,
-    playerAccountId: body.playerAccount.id,
+    accessToken: (loginRes.body as OrganizerAuthResponseBody).accessToken,
   };
 }
 
@@ -486,7 +486,34 @@ describe('Registrations & payments (e2e)', () => {
       .expect(409);
   });
 
-  it('requires a player access token to submit a registration', async () => {
+  it('lets a team manager account (no organization) start organizing', async () => {
+    const { accessToken } = await registerPlayer(app);
+    const me = () =>
+      request(app.getHttpServer())
+        .get('/api/v1/auth/me')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(200);
+    expect((await me()).body).toMatchObject({ organizations: [] });
+
+    await request(app.getHttpServer())
+      .post('/api/v1/organizations')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({ name: 'Les Faucons Organisation' })
+      .expect(201);
+    expect(
+      ((await me()).body as { organizations: { name: string }[] })
+        .organizations,
+    ).toEqual([expect.objectContaining({ name: 'Les Faucons Organisation' })]);
+
+    // One organization per account, as at sign-up.
+    await request(app.getHttpServer())
+      .post('/api/v1/organizations')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({ name: 'Encore une' })
+      .expect(409);
+  });
+
+  it('requires a signed-in account to submit a registration', async () => {
     const { slug, categoryId } = await setupPublishedTournament(app);
 
     await request(app.getHttpServer())

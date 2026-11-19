@@ -58,7 +58,7 @@
       "register": {
         "title": "Crea il mio account",
         "lede": "Crea il tuo account organizzatore·rice per gestire i tuoi tornei direttamente dall'app.",
-        "orgNameLabel": "Nome dell'organizzazione",
+        "orgNameLabel": "Nome dell'organizzazione (facoltativo)",
         "firstNameLabel": "Nome",
         "lastNameLabel": "Cognome",
         "emailLabel": "Email",
@@ -79,7 +79,8 @@
           "email": "Indirizzo email non valido.",
           "passwordMinLength": "La password deve contenere almeno 10 caratteri."
         },
-        "cancelAria": "Annulla"
+        "cancelAria": "Annulla",
+        "orgNameHint": "Solo se organizzi tornei. Per iscrivere una squadra, lascia vuoto."
       },
       "login": {
         "title": "Accedi",
@@ -718,6 +719,13 @@
       "manageAll": "Gestisci tutte le iscrizioni",
       "error": "Impossibile salvare questa decisione.",
       "badgeAria": "{{count}} preiscrizione/i da convalidare"
+    },
+    "createOrganization": {
+      "title": "Crea la tua organizzazione",
+      "lede": "Il tuo account TournArena serve anche a organizzare: dai un nome alla tua organizzazione (club, associazione, lega…).",
+      "submit": "Crea l'organizzazione",
+      "back": "Torna al mio spazio responsabile",
+      "error": "Impossibile creare l'organizzazione."
     }
   },
   "notifications": {
@@ -771,29 +779,6 @@
     "back": "Indietro",
     "loading": "Caricamento…",
     "settingsRow": "Spazio responsabile squadra",
-    "fields": {
-      "firstName": "Nome",
-      "lastName": "Cognome",
-      "email": "Email",
-      "password": "Password"
-    },
-    "login": {
-      "title": "Accesso responsabile",
-      "lede": "Per preiscrivere la tua squadra ai tornei e seguire le tue richieste.",
-      "submit": "Accedi",
-      "noAccount": "Non hai ancora un account?",
-      "create": "Crea un account responsabile",
-      "error": "Email o password errati."
-    },
-    "register": {
-      "title": "Account responsabile",
-      "lede": "Serve a preiscrivere la tua squadra ai tornei. È distinto da un account organizzatore. Password: almeno 10 caratteri.",
-      "submit": "Crea il mio account",
-      "hasAccount": "Hai già un account?",
-      "login": "Accedi",
-      "error": "Impossibile creare l’account, riprova.",
-      "errorTaken": "Esiste già un account con questa email."
-    },
     "form": {
       "title": "Preiscrivi una squadra",
       "titleIndividual": "Preiscrizione",
@@ -884,6 +869,8 @@
       "wonLong": "Vittorie",
       "drawnLong": "Pareggi",
       "lostLong": "Sconfitte"
-    }
+    },
+    "myTournaments": "I miei tornei",
+    "organize": "Organizza un torneo"
   }
 }

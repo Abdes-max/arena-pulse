@@ -9,7 +9,8 @@ export interface RegisterPayload {
   password: string;
   firstName: string;
   lastName: string;
-  organizationName: string;
+  /** Optional: without it, a team manager's account (no organization yet). */
+  organizationName?: string;
 }
 
 export interface RegisterResponse {
@@ -58,6 +59,13 @@ export class AuthService {
   } | null>(null);
   readonly currentUser = this.currentUserSignal.asReadonly();
   readonly organizations = this.organizationsSignal.asReadonly();
+  /**
+   * One account for organizers and team managers: where it lands by default
+   * -- the admin with an organization, the manager's space otherwise.
+   */
+  readonly homeUrl = computed(() =>
+    this.organizationsSignal().length > 0 ? '/admin/tournaments' : '/espace-responsable',
+  );
 
   // Simple mode hides advanced navigation (tabs, form sections) -- display
   // only, every page stays reachable by URL. Anything but an explicit FULL
@@ -245,6 +253,12 @@ export class AuthService {
       }),
     );
     this.clearSession();
+  }
+
+  /** An account without an organization starts organizing (POST /organizations). */
+  async createOrganization(name: string): Promise<void> {
+    await firstValueFrom(this.http.post(`${environment.apiUrl}/organizations`, { name }));
+    await this.loadProfile();
   }
 
   async loadProfile(): Promise<void> {

@@ -26,6 +26,7 @@
           formControlName="organizationName"
           autocomplete="organization"
         />
+        <p class="register-page__hint">{{ 'admin.auth.register.orgNameHint' | transloco }}</p>
         <ap-text-field
           [label]="'admin.auth.register.firstNameLabel' | transloco"
           formControlName="firstName"
@@ -55,7 +56,9 @@
         }}</ap-button>
         <p class="register-page__footer">
           {{ 'admin.auth.register.alreadyAccount' | transloco }}
-          <a routerLink="/login">{{ 'admin.auth.register.login' | transloco }}</a>
+          <a routerLink="/login" queryParamsHandling="preserve">{{
+            'admin.auth.register.login' | transloco
+          }}</a>
         </p>
       </form>
     }
@@ -72,7 +75,9 @@
         </ap-button>
         <p class="register-page__footer">
           {{ 'admin.auth.register.alreadyVerified' | transloco }}
-          <a routerLink="/login">{{ 'admin.auth.register.login' | transloco }}</a>
+          <a routerLink="/login" queryParamsHandling="preserve">{{
+            'admin.auth.register.login' | transloco
+          }}</a>
         </p>
       </div>
     }

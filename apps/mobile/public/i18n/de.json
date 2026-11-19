@@ -58,7 +58,7 @@
       "register": {
         "title": "Konto erstellen",
         "lede": "Erstellen Sie Ihr Organisator·innen-Konto, um Ihre Turniere direkt über die App zu verwalten.",
-        "orgNameLabel": "Name der Organisation",
+        "orgNameLabel": "Name der Organisation (optional)",
         "firstNameLabel": "Vorname",
         "lastNameLabel": "Nachname",
         "emailLabel": "E-Mail",
@@ -79,7 +79,8 @@
           "email": "Ungültige E-Mail-Adresse.",
           "passwordMinLength": "Das Passwort muss mindestens 10 Zeichen lang sein."
         },
-        "cancelAria": "Abbrechen"
+        "cancelAria": "Abbrechen",
+        "orgNameHint": "Nur wenn du Turniere veranstaltest. Um ein Team anzumelden, leer lassen."
       },
       "login": {
         "title": "Anmelden",
@@ -718,6 +719,13 @@
       "manageAll": "Alle Anmeldungen verwalten",
       "error": "Diese Entscheidung konnte nicht gespeichert werden.",
       "badgeAria": "{{count}} Voranmeldung(en) zu bestätigen"
+    },
+    "createOrganization": {
+      "title": "Deine Organisation erstellen",
+      "lede": "Mit deinem TournArena-Konto kannst du auch veranstalten: gib deiner Organisation einen Namen (Verein, Verband, Liga…).",
+      "submit": "Organisation erstellen",
+      "back": "Zurück zu meinem Bereich",
+      "error": "Die Organisation konnte nicht erstellt werden."
     }
   },
   "notifications": {
@@ -771,29 +779,6 @@
     "back": "Zurück",
     "loading": "Wird geladen…",
     "settingsRow": "Bereich für Teamverantwortliche",
-    "fields": {
-      "firstName": "Vorname",
-      "lastName": "Nachname",
-      "email": "E-Mail",
-      "password": "Passwort"
-    },
-    "login": {
-      "title": "Anmeldung Teamverantwortliche",
-      "lede": "Um dein Team für Turniere vorzumelden und deine Anfragen zu verfolgen.",
-      "submit": "Anmelden",
-      "noAccount": "Noch kein Konto?",
-      "create": "Verantwortlichen-Konto erstellen",
-      "error": "E-Mail oder Passwort falsch."
-    },
-    "register": {
-      "title": "Verantwortlichen-Konto",
-      "lede": "Damit meldest du dein Team für Turniere vor. Getrennt von einem Veranstalterkonto. Passwort: mindestens 10 Zeichen.",
-      "submit": "Konto erstellen",
-      "hasAccount": "Schon ein Konto?",
-      "login": "Anmelden",
-      "error": "Konto konnte nicht erstellt werden, bitte erneut versuchen.",
-      "errorTaken": "Mit dieser E-Mail existiert bereits ein Konto."
-    },
     "form": {
       "title": "Team vormelden",
       "titleIndividual": "Voranmeldung",
@@ -884,6 +869,8 @@
       "wonLong": "Siege",
       "drawnLong": "Unentschieden",
       "lostLong": "Niederlagen"
-    }
+    },
+    "myTournaments": "Meine Turniere",
+    "organize": "Ein Turnier veranstalten"
   }
 }

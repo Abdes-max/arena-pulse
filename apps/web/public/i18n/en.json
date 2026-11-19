@@ -527,7 +527,7 @@
         "resend": "Resend verification email",
         "resent": "Email resent.",
         "noAccount": "Don't have an account yet?",
-        "createOrg": "Create an organization",
+        "createOrg": "Create an account",
         "errorVerify": "Verify your email before signing in.",
         "errorCredentials": "Incorrect email or password.",
         "errorGeneric": "Something went wrong, please try again.",
@@ -538,7 +538,7 @@
       },
       "register": {
         "title": "Sign up",
-        "orgNameLabel": "Organization name",
+        "orgNameLabel": "Organization name (optional)",
         "firstNameLabel": "First name",
         "lastNameLabel": "Last name",
         "emailLabel": "Email",
@@ -554,7 +554,8 @@
         "errorConflict": "An account already exists with this email.",
         "errorGeneric": "Something went wrong, please try again.",
         "lede": "Create your organization and publish your first tournament in minutes.",
-        "sentLede": "One last click in your inbox and you can get started."
+        "sentLede": "One last click in your inbox and you can get started.",
+        "orgNameHint": "Only if you organize tournaments. To register a team, leave it empty."
       },
       "verifyEmail": {
         "loading": "Verifying your email…",
@@ -1804,6 +1805,13 @@
       "print": "Print",
       "loading": "Preparing…",
       "error": "Could not generate the image."
+    },
+    "createOrganization": {
+      "title": "Create your organization",
+      "lede": "Your TournArena account also lets you organize: name your organization (club, association, league…).",
+      "submit": "Create the organization",
+      "back": "Back to my team manager space",
+      "error": "Could not create the organization."
     }
   },
   "wrapped": {
@@ -1928,7 +1936,9 @@
       "wonLong": "Wins",
       "drawnLong": "Draws",
       "lostLong": "Losses"
-    }
+    },
+    "myTournaments": "My tournaments",
+    "organize": "Organize a tournament"
   },
   "notFound": {
     "title": "Page not found",

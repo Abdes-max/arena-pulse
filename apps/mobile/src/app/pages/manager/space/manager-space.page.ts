@@ -8,7 +8,7 @@ import { PublicApiService } from 'api-client';
 import { Button, Logo, StatsDatum, StatsSegments } from 'design-system';
 import { PlayerRegistration, PlayerRegistrationStats } from 'shared-models';
 import { showErrorsInSnackbar } from '../../../core/error-snackbar';
-import { PlayerAuthService } from '../../../core/player-auth.service';
+import { OrganizerAuthService } from '../../../organizer/core/auth.service';
 
 /**
  * The team manager's space in the app (same as apps/web's
@@ -35,12 +35,14 @@ import { PlayerAuthService } from '../../../core/player-auth.service';
 })
 export class ManagerSpacePage {
   private readonly api = inject(PublicApiService);
-  private readonly playerAuth = inject(PlayerAuthService);
+  private readonly auth = inject(OrganizerAuthService);
   private readonly router = inject(Router);
   private readonly location = inject(Location);
   private readonly transloco = inject(TranslocoService);
 
-  protected readonly player = this.playerAuth.currentPlayer;
+  protected readonly player = this.auth.currentUser;
+  // Same account may also organize: its tournaments, or creating the organization.
+  protected readonly organizes = computed(() => this.auth.organizations().length > 0);
   protected readonly loading = signal(true);
   protected readonly busyId = signal<string | null>(null);
   protected readonly errorMessage = signal<string | null>(null);
@@ -117,7 +119,7 @@ export class ManagerSpacePage {
   }
 
   protected async logout(): Promise<void> {
-    await this.playerAuth.logout();
+    await this.auth.logout();
     await this.router.navigateByUrl('/');
   }
 
