@@ -254,6 +254,56 @@
               </button>
             }
           </div>
+          @if (clubSearchAvailable()) {
+            <label class="wizard-page__switchrow">
+              <span class="wizard-page__switchrow-label">{{
+                'organizer.wizard.infos.organizerClub.toggle'
+                  | transloco: { sport: organizerSportLabel() }
+              }}</span>
+              <input
+                type="checkbox"
+                [checked]="organizerByClub()"
+                (change)="toggleOrganizerByClub()"
+              />
+            </label>
+            @if (organizerByClub()) {
+              @if (organizerClubId()) {
+                <p class="wizard-page__hint">
+                  {{
+                    organizerClubLabel()
+                      ? ('organizer.wizard.infos.organizerClub.linked'
+                        | transloco: { club: organizerClubLabel() })
+                      : ('organizer.wizard.infos.organizerClub.linkedUnknown' | transloco)
+                  }}
+                  <button
+                    type="button"
+                    class="wizard-page__linkbutton"
+                    (click)="unlinkOrganizerClub()"
+                  >
+                    {{ 'organizer.wizard.infos.organizerClub.change' | transloco }}
+                  </button>
+                </p>
+              } @else {
+                <ap-autocomplete-field
+                  [label]="'organizer.wizard.infos.organizerClub.label' | transloco"
+                  [value]="organizerClubQuery()"
+                  [suggestions]="organizerClubSuggestions()"
+                  [loading]="organizerClubSearch.loading()"
+                  [hint]="
+                    organizerClubSearch.failed()
+                      ? ('organizer.wizard.teams.club.searchFailed' | transloco)
+                      : null
+                  "
+                  [placeholder]="'organizer.wizard.infos.organizerClub.placeholder' | transloco"
+                  (valueChange)="onOrganizerClubInput($event)"
+                  (suggestionSelect)="onOrganizerClubSelect($event)"
+                />
+              }
+              <p class="wizard-page__hint">
+                {{ 'organizer.wizard.infos.organizerClub.hint' | transloco }}
+              </p>
+            }
+          }
           <ap-text-field
             [label]="'organizer.wizard.infos.dateLabel' | transloco"
             type="date"

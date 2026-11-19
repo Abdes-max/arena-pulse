@@ -255,7 +255,7 @@ enum ParticipantType {
 
 // French football clubs (FFF affiliation number as code), loaded from a file
 // by prisma/import-fff-clubs.ts and kept up to date weekly by
-// prisma/sync-fff-clubs.ts -- the FFF publishes no open API. Searched by
+// prisma/sync-clubs.ts -- the FFF publishes no open API. Searched by
 // ClubDirectoryService for the team form's club autocomplete.
 model FffClub {
   code        String    @id
@@ -264,13 +264,37 @@ model FffClub {
   city        String?
   postalCode  String?
   department  String?
-  // Set by prisma/sync-fff-clubs.ts when the club leaves the source listing
+  // Set by prisma/sync-clubs.ts when the club leaves the source listing
   // (dissolved/merged): hidden from the search, kept for the teams linked to it.
   dissolvedAt DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
   @@index([name])
+}
+
+// Club directory for the other sports with a club search (basketball,
+// handball, rugby, volleyball, tennis) -- SportCorico's listings, used with
+// their agreement, kept in line by prisma/sync-clubs.ts. Keyed by
+// SportCorico's own club slug: the federations publish no open register
+// (no affiliation n° here, unlike FffClub).
+model SportClub {
+  // ClubDirectoryService's directory key: "basketball", "rugby"...
+  sport       String
+  slug        String
+  name        String
+  department  String?
+  // Crest on SportCorico's media storage; null when they only have their
+  // generic placeholder. Served through our own cached crest route.
+  logoSource  String?
+  // Set by prisma/sync-clubs.ts when the club leaves the listing: hidden
+  // from the search, kept for the teams/tournaments linked to it.
+  dissolvedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@id([sport, slug])
+  @@index([sport, name])
 }
 
 model Sport {
@@ -319,6 +343,10 @@ model Tournament {
   // Public path served by the API (e.g. /uploads/tournament-logos/<file>) --
   // see TournamentsService.uploadLogo. Null until an organizer uploads one.
   logoUrl             String?
+  // Organizing club picked from the club directory (same "fff:<n°>" /
+  // "club:<sport>:<slug>" / "siren:<n°>" link as Team.externalClubId); its
+  // crest is imported as the tournament logo.
+  organizerClubId     String?
   // Wide photo shown behind the public site's header (TournamentShell hero)
   // -- see TournamentsService.uploadHeaderBackground. Same
   // premium-feature gate and storage pattern as logoUrl, own
@@ -425,7 +453,8 @@ model Team {
   // Public path served by the API (e.g. /uploads/team-logos/<file>) -- see
   // TeamsService.uploadLogo. Null until an organizer uploads one.
   logoUrl      String?
-  // Link to a club directory entry ("fff:<affiliation n°>" or "siren:<n°>"),
+  // Link to a club directory entry ("fff:<affiliation n°>",
+  // "club:<sport>:<slug>" or "siren:<n°>"),
   // set when the team was picked from ClubDirectoryService's search.
   externalClubId String?
   position     Int      @default(0)

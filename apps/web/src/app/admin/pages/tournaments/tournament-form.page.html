@@ -538,6 +538,58 @@
           [options]="sportOptions()"
           formControlName="sportId"
         />
+        @if (organizerClubAvailable()) {
+          <div class="tournament-form-page__organizer-club">
+            <label class="tournament-form-page__checkbox-label">
+              <input
+                type="checkbox"
+                [checked]="organizerByClub()"
+                (change)="toggleOrganizerByClub($event)"
+              />
+              {{
+                'admin.tournamentForm.form.organizerClub.toggle'
+                  | transloco: { sport: selectedSportName().toLowerCase() }
+              }}
+            </label>
+            @if (organizerByClub()) {
+              @if (organizerClubId()) {
+                <p class="tournament-form-page__club-linked">
+                  <span>{{
+                    organizerClubLabel()
+                      ? ('admin.tournamentForm.form.organizerClub.linked'
+                        | transloco: { club: organizerClubLabel() })
+                      : ('admin.tournamentForm.form.organizerClub.linkedUnknown' | transloco)
+                  }}</span>
+                  <button
+                    type="button"
+                    class="tournament-form-page__club-unlink"
+                    (click)="unlinkOrganizerClub()"
+                  >
+                    {{ 'admin.tournamentForm.form.organizerClub.change' | transloco }}
+                  </button>
+                </p>
+              } @else {
+                <ap-autocomplete-field
+                  [label]="'admin.tournamentForm.form.organizerClub.label' | transloco"
+                  [placeholder]="'admin.tournamentForm.form.organizerClub.placeholder' | transloco"
+                  [value]="organizerClubQuery()"
+                  [suggestions]="organizerClubSuggestions()"
+                  [loading]="organizerClubSearch.loading()"
+                  [hint]="
+                    organizerClubSearch.failed()
+                      ? ('admin.tournamentForm.form.organizerClub.searchFailed' | transloco)
+                      : null
+                  "
+                  (valueChange)="onOrganizerClubInput($event)"
+                  (suggestionSelect)="onOrganizerClubSelect($event)"
+                />
+              }
+              <p class="tournament-form-page__premium-hint">
+                {{ 'admin.tournamentForm.form.organizerClub.hint' | transloco }}
+              </p>
+            }
+          </div>
+        }
         <ap-text-field
           [label]="'admin.tournamentForm.form.startDateLabel' | transloco"
           type="date"

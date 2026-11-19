@@ -140,6 +140,16 @@ ion-title {
   font-size: 0.78rem;
 }
 
+.wizard-page__linkbutton {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ap-color-primary);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .wizard-page__error-detail {
   margin: 0;
   color: var(--ap-color-muted);

@@ -1,15 +1,37 @@
-import { BadGatewayException, Injectable, Logger } from '@nestjs/common';
+import {
+  BadGatewayException,
+  BadRequestException,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { promises as fs } from 'fs';
 import { join } from 'path';
 import { matchesImageMagicBytes } from '../common/utils/image-magic-bytes.util';
 import { PrismaService } from '../prisma/prisma.service';
 
-/** One club suggestion, ready to display and to create a Team from. */
+/** Sports with a club directory (the `sport` search parameter). */
+export const CLUB_DIRECTORY_SPORTS = [
+  'football',
+  'basketball',
+  'handball',
+  'rugby',
+  'volleyball',
+  'tennis',
+] as const;
+export type ClubDirectorySport = (typeof CLUB_DIRECTORY_SPORTS)[number];
+
+/** One club suggestion, ready to display and to link a Team/Tournament to. */
 export interface ClubSuggestion {
-  /** "fff": our FffClub directory; "siren": the State's company register. */
-  source: 'fff' | 'siren';
-  /** Stable link kept on Team.externalClubId, e.g. "fff:553079". */
+  /**
+   * "fff": our FffClub directory; "club": SportClub (other sports);
+   * "siren": the State's company register (fallback while empty).
+   */
+  source: 'fff' | 'club' | 'siren';
+  /**
+   * Stable link kept on Team.externalClubId / Tournament.organizerClubId,
+   * e.g. "fff:553079" or "club:handball:allauch-handball".
+   */
   externalId: string;
   name: string;
   city: string | null;
@@ -25,30 +47,46 @@ interface GouvCompany {
   siege?: { libelle_commune?: string; code_postal?: string };
 }
 
+type Crest = { data: Buffer; contentType: string };
+
 const CACHE_TTL_MS = 10 * 60 * 1000;
 const CACHE_MAX_ENTRIES = 500;
 const MAX_RESULTS = 8;
 const FFF_EXTERNAL_ID = /^fff:(\d{1,10})$/;
+const CLUB_EXTERNAL_ID = /^club:([a-z]+):([a-z0-9-]{1,150})$/;
+const SLUG = /^[a-z0-9-]{1,150}$/;
 // Same domain as the FFF's own sites: club crests by affiliation number.
 const DEFAULT_LOGO_TEMPLATE =
   'https://cdn-transverse.azureedge.net/phlogos/BC{id}.jpg';
+// Only crests on SportCorico's media storage are fetched for SportClub --
+// the URL comes from the sync, never from a client, but stays pinned anyway.
+const SPORTCORICO_MEDIA = 'https://s3.pub2.infomaniak.cloud/';
 // Our own crest route (ClubDirectoryController.logo): the web CSP only allows
-// images from 'self', so the FFF CDN is never hit by the browser directly.
+// images from 'self', so the source CDNs are never hit by the browser directly.
 const CREST_PATH = '/api/v1/club-directory/logos/';
 const CREST_MIME_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
 const MAX_CREST_BYTES = 512 * 1024;
 const CREST_REFRESH_MS = 90 * 24 * 60 * 60 * 1000;
 const FOOTBALL_HINT = /foot|\bfc\b|\bas\b|\bus\b|\bes\b|olympique|sporting/i;
 
+export function isClubDirectorySport(
+  value: string,
+): value is ClubDirectorySport {
+  return (CLUB_DIRECTORY_SPORTS as readonly string[]).includes(value);
+}
+
 /**
- * Football club search behind the team form's autocomplete.
+ * Club search behind the team form's autocomplete and the tournament's
+ * organizing club.
  *
- * The FFF publishes no open API, so the reference is our own FffClub table
- * (FFF affiliation number, name, city), loaded from a file by
- * prisma/import-fff-clubs.ts; picking one of those also brings the club's
- * crest. Until that table is filled, it falls back to the State's company
+ * The federations publish no open API, so the reference is our own tables:
+ * FffClub for football (FFF affiliation number, crest on the FFF CDN) and
+ * SportClub for basketball, handball, rugby, volleyball and tennis
+ * (SportCorico's listings, used with their agreement), both kept in line by
+ * prisma/sync-clubs.ts. Picking a club also brings its crest. While a
+ * sport's table is empty, the search falls back to the State's company
  * register (recherche-entreprises.api.gouv.fr, free, no key), restricted to
- * sports clubs (NAF 93.12Z) -- no FFF number nor crest there, just the name.
+ * sports clubs (NAF 93.12Z) -- just the name there, no crest.
  *
  * Proxied through the API like GeocodingService (the web app's CSP only
  * allows connect-src 'self'), with the same small in-memory cache.
@@ -66,21 +104,34 @@ export class ClubDirectoryService {
     private readonly configService: ConfigService,
   ) {}
 
-  async search(query: string): Promise<ClubSuggestion[]> {
+  async search(
+    query: string,
+    sport: string = 'football',
+  ): Promise<ClubSuggestion[]> {
+    if (!isClubDirectorySport(sport)) {
+      throw new BadRequestException('Sport sans annuaire de clubs.');
+    }
     const q = query.trim().replace(/\s+/g, ' ');
     if (q.length < 3) {
       return [];
     }
-    const key = q.toLowerCase();
+    const key = `${sport}:${q.toLowerCase()}`;
     const cached = this.cache.get(key);
     if (cached && Date.now() - cached.at < CACHE_TTL_MS) {
       return cached.results;
     }
 
     const results =
-      (await this.prisma.fffClub.count({ where: { dissolvedAt: null } })) > 0
-        ? await this.searchFff(q)
-        : await this.searchGouv(q);
+      sport === 'football'
+        ? (await this.prisma.fffClub.count({ where: { dissolvedAt: null } })) >
+          0
+          ? await this.searchFff(q)
+          : await this.searchGouv(q, sport)
+        : (await this.prisma.sportClub.count({
+              where: { sport, dissolvedAt: null },
+            })) > 0
+          ? await this.searchSportClubs(q, sport)
+          : await this.searchGouv(q, sport);
     if (this.cache.size >= CACHE_MAX_ENTRIES) {
       // Map keeps insertion order: the first key is the oldest entry.
       for (const oldest of this.cache.keys()) {
@@ -93,32 +144,74 @@ export class ClubDirectoryService {
   }
 
   /**
-   * Crest of a team's linked club (Team.externalClubId), for TeamsService
-   * to store as the team logo -- same cached, byte-sniffed image as the
-   * suggestions show (the FFF CDN labels PNGs "image/jpg"). Only FFF clubs
-   * have one; the URL is never taken from the client.
+   * Crest of a linked club (Team.externalClubId, Tournament.organizerClubId),
+   * for TeamsService/TournamentsService to store as the logo -- same cached,
+   * byte-sniffed image as the suggestions show (the FFF CDN labels PNGs
+   * "image/jpg"). The URL is never taken from the client.
    */
-  crestForExternalId(
-    externalId: string,
-  ): Promise<{ data: Buffer; contentType: string } | null> {
-    const match = FFF_EXTERNAL_ID.exec(externalId);
-    return match ? this.crest(match[1]) : Promise.resolve(null);
+  crestForExternalId(externalId: string): Promise<Crest | null> {
+    const fff = FFF_EXTERNAL_ID.exec(externalId);
+    if (fff) {
+      return this.crest(fff[1]);
+    }
+    const club = CLUB_EXTERNAL_ID.exec(externalId);
+    return club ? this.sportClubCrest(club[1], club[2]) : Promise.resolve(null);
   }
 
   /**
-   * A directory club's crest, fetched from the FFF CDN then kept under
-   * UPLOADS_DIR/fff-logos (like an uploaded logo) and refreshed after
-   * CREST_REFRESH_MS, so a club's new crest shows up eventually. Only for clubs we know --
-   * the route is public (an <img> sends no token), so it must not become an
-   * open proxy. Null when the club or its crest doesn't exist.
+   * An FFF club's crest, fetched from the FFF CDN then kept under
+   * UPLOADS_DIR/fff-logos. Only for clubs we know -- the route is public
+   * (an <img> sends no token), so it must not become an open proxy. Null
+   * when the club or its crest doesn't exist.
    */
-  async crest(
-    code: string,
-  ): Promise<{ data: Buffer; contentType: string } | null> {
+  async crest(code: string): Promise<Crest | null> {
     if (!/^\d{1,10}$/.test(code)) {
       return null;
     }
-    const file = join(this.uploadsDir(), 'fff-logos', code);
+    return this.cachedCrest(
+      join(this.uploadsDir(), 'fff-logos'),
+      code,
+      async () =>
+        (await this.prisma.fffClub.findUnique({ where: { code } }))
+          ? this.logoUrlFor(code)
+          : null,
+    );
+  }
+
+  /** Same as crest() for a SportClub, cached under UPLOADS_DIR/club-logos/<sport>. */
+  async sportClubCrest(sport: string, slug: string): Promise<Crest | null> {
+    if (
+      !isClubDirectorySport(sport) ||
+      sport === 'football' ||
+      !SLUG.test(slug)
+    ) {
+      return null;
+    }
+    return this.cachedCrest(
+      join(this.uploadsDir(), 'club-logos', sport),
+      slug,
+      async () => {
+        const club = await this.prisma.sportClub.findUnique({
+          where: { sport_slug: { sport, slug } },
+        });
+        return club?.logoSource?.startsWith(SPORTCORICO_MEDIA)
+          ? club.logoSource
+          : null;
+      },
+    );
+  }
+
+  /**
+   * A crest kept on disk (like an uploaded logo) and refreshed after
+   * CREST_REFRESH_MS, so a club's new crest shows up eventually; a stale
+   * copy beats no crest while the source misbehaves.
+   */
+  private async cachedCrest(
+    dir: string,
+    name: string,
+    sourceUrl: () => Promise<string | null>,
+  ): Promise<Crest | null> {
+    const file = join(dir, name);
     const cached = await fs.readFile(file).catch(() => null);
     const cachedAt = cached
       ? (await fs.stat(file).catch(() => null))?.mtimeMs
@@ -126,16 +219,16 @@ export class ClubDirectoryService {
     if (cached && cachedAt && Date.now() - cachedAt < CREST_REFRESH_MS) {
       return withImageType(cached);
     }
-    if (!(await this.prisma.fffClub.findUnique({ where: { code } }))) {
+    const url = await sourceUrl();
+    if (!url) {
       return null;
     }
     try {
-      const res = await fetch(this.logoUrlFor(code), {
+      const res = await fetch(url, {
         headers: { 'User-Agent': 'TournArena (https://tournarena.com)' },
         signal: AbortSignal.timeout(5000),
       });
       if (!res.ok) {
-        // A stale copy beats no crest while the CDN misbehaves.
         return cached ? withImageType(cached) : null;
       }
       const data = Buffer.from(await res.arrayBuffer());
@@ -145,15 +238,13 @@ export class ClubDirectoryService {
         return withImageType(cached);
       }
       if (crest) {
-        await fs.mkdir(join(this.uploadsDir(), 'fff-logos'), {
-          recursive: true,
-        });
+        await fs.mkdir(dir, { recursive: true });
         await fs.writeFile(file, data);
       }
       return crest;
     } catch (error) {
       this.logger.warn(
-        `Crest fetch failed for ${code}: ${(error as Error).message}`,
+        `Crest fetch failed for ${name}: ${(error as Error).message}`,
       );
       return cached ? withImageType(cached) : null;
     }
@@ -191,7 +282,36 @@ export class ClubDirectoryService {
     }));
   }
 
-  private async searchGouv(q: string): Promise<ClubSuggestion[]> {
+  private async searchSportClubs(
+    q: string,
+    sport: ClubDirectorySport,
+  ): Promise<ClubSuggestion[]> {
+    const clubs = await this.prisma.sportClub.findMany({
+      where: {
+        sport,
+        dissolvedAt: null,
+        AND: q.split(' ').map((word) => ({
+          name: { contains: word, mode: 'insensitive' as const },
+        })),
+      },
+      orderBy: { name: 'asc' },
+      take: MAX_RESULTS,
+    });
+    return clubs.map((club) => ({
+      source: 'club',
+      externalId: `club:${sport}:${club.slug}`,
+      name: club.name,
+      city: null,
+      postalCode: null,
+      department: club.department,
+      logoUrl: club.logoSource ? `${CREST_PATH}${sport}/${club.slug}` : null,
+    }));
+  }
+
+  private async searchGouv(
+    q: string,
+    sport: ClubDirectorySport,
+  ): Promise<ClubSuggestion[]> {
     const baseUrl = this.configService.get<string>(
       'RECHERCHE_ENTREPRISES_URL',
       'https://recherche-entreprises.api.gouv.fr',
@@ -219,7 +339,7 @@ export class ClubDirectoryService {
         'Recherche des clubs indisponible pour le moment.',
       );
     }
-    return toGouvSuggestions(companies);
+    return toGouvSuggestions(companies, sport);
   }
 
   private logoUrlFor(clubNumber: string): string {
@@ -232,20 +352,31 @@ export class ClubDirectoryService {
 }
 
 /** The FFF CDN serves PNGs as .jpg: trust the bytes, not the name. */
-function withImageType(
-  data: Buffer,
-): { data: Buffer; contentType: string } | null {
+function withImageType(data: Buffer): Crest | null {
   const contentType = CREST_MIME_TYPES.find((type) =>
     matchesImageMagicBytes(data, type),
   );
   return contentType ? { data, contentType } : null;
 }
 
+const SPORT_HINTS: Record<ClubDirectorySport, RegExp> = {
+  football: FOOTBALL_HINT,
+  basketball: /basket|\bbc\b|\bbb\b/i,
+  handball: /hand|\bhb\b|\bhbc\b/i,
+  rugby: /rugby|\brc\b|\bxv\b/i,
+  volleyball: /volley|\bvb\b|\bvbc\b/i,
+  tennis: /tennis|\btc\b/i,
+};
+
 /**
  * Company register results -> suggestions. NAF 93.12Z covers every sport,
- * so names that look like a football club come first.
+ * so names that look like a club of the searched sport come first.
  */
-export function toGouvSuggestions(companies: GouvCompany[]): ClubSuggestion[] {
+export function toGouvSuggestions(
+  companies: GouvCompany[],
+  sport: ClubDirectorySport = 'football',
+): ClubSuggestion[] {
+  const hint = SPORT_HINTS[sport];
   const seen = new Set<string>();
   const results: ClubSuggestion[] = [];
   for (const company of companies) {
@@ -266,14 +397,8 @@ export function toGouvSuggestions(companies: GouvCompany[]): ClubSuggestion[] {
     });
   }
   return results
-    .map((club, index) => ({
-      club,
-      index,
-      football: FOOTBALL_HINT.test(club.name),
-    }))
-    .sort(
-      (a, b) => Number(b.football) - Number(a.football) || a.index - b.index,
-    )
+    .map((club, index) => ({ club, index, match: hint.test(club.name) }))
+    .sort((a, b) => Number(b.match) - Number(a.match) || a.index - b.index)
     .slice(0, MAX_RESULTS)
     .map(({ club }) => club);
 }

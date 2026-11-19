@@ -21,6 +21,7 @@ import {
   AddressSearchService,
   AssetUrlService,
   ClubSearchService,
+  clubDirectorySport,
   ClubSuggestion,
   PublicApiService,
 } from 'api-client';
@@ -62,8 +63,6 @@ import { OrganizerTournamentsService } from '../../core/tournaments.service';
 import { environment } from '../../../../environments/environment';
 import { isIosNative } from '../../../core/native-platform.util';
 
-// Sports whose teams are FFF clubs -- the only ones offered the club search.
-const CLUB_SEARCH_SPORTS = new Set(['Football', 'Futsal']);
 const CLUB_SEARCH_STORAGE_KEY = 'ta.teamClubSearch';
 
 /**
@@ -269,13 +268,36 @@ export class OrganizerTournamentWizardPage {
   // Inline rename in the teams table (one row at a time).
   protected readonly editingTeamIndex = signal<number | null>(null);
   protected readonly editTeamName = signal('');
-  // Club search (football/futsal only), same as apps/web's team-list.page:
-  // the name field becomes an autocomplete over the club directory, picking
-  // a club links it (externalClubId) and an FFF club's crest becomes the
-  // team logo. Retyping the name drops the link.
-  protected readonly clubSearch = inject(ClubSearchService).autocomplete();
-  protected readonly clubSearchAvailable = computed(() =>
-    CLUB_SEARCH_SPORTS.has(this.sports().find((s) => s.id === this.sportId())?.name ?? ''),
+  // Club search (sports with a club directory, see clubDirectorySport),
+  // same as apps/web's team-list.page: the name field becomes an
+  // autocomplete over that sport's clubs, picking a club links it
+  // (externalClubId) and its crest becomes the team logo. Retyping the name
+  // drops the link.
+  private readonly sportName = computed(
+    () => this.sports().find((s) => s.id === this.sportId())?.name ?? '',
+  );
+  private readonly clubSport = computed(() => clubDirectorySport(this.sportName()));
+  protected readonly clubSearch = inject(ClubSearchService).autocomplete(
+    () => this.clubSport() ?? 'football',
+  );
+  protected readonly clubSearchAvailable = computed(() => this.clubSport() !== null);
+
+  // "Organisé par un club de <sport>" (Infos step): the organizer picks
+  // their club, whose crest becomes the tournament logo (apps/api).
+  protected readonly organizerSportLabel = computed(() => this.sportName().toLowerCase());
+  protected readonly organizerByClub = signal(false);
+  protected readonly organizerClubId = signal('');
+  protected readonly organizerClubLabel = signal('');
+  protected readonly organizerClubQuery = signal('');
+  protected readonly organizerClubSearch = inject(ClubSearchService).autocomplete(
+    () => this.clubSport() ?? 'football',
+  );
+  protected readonly organizerClubSuggestions = computed(() =>
+    this.organizerClubSearch.suggestions().map((club) => ({
+      label: club.name,
+      detail: this.clubLocation(club),
+      imageUrl: this.assetUrl.resolve(club.logoUrl),
+    })),
   );
   protected readonly useClubSearch = signal(readClubSearchPreference());
   protected readonly clubSuggestions = computed(() =>
@@ -721,6 +743,8 @@ export class OrganizerTournamentWizardPage {
       this.isOnline.set(tournament.isOnline);
       this.isListed.set(tournament.isListed);
       this.theme.set(tournament.theme);
+      this.organizerClubId.set(tournament.organizerClubId ?? '');
+      this.organizerByClub.set(!!tournament.organizerClubId);
       this.currentStatus.set(tournament.status);
       if (tournament.startDate) {
         this.startDate.set(tournament.startDate.slice(0, 10));
@@ -960,6 +984,43 @@ export class OrganizerTournamentWizardPage {
     this.teamClubId.set(club.externalId);
     this.teamClubLogo.set(club.logoUrl);
     this.clubSearch.clear();
+  }
+
+  protected toggleOrganizerByClub(): void {
+    this.organizerByClub.update((value) => !value);
+  }
+
+  protected onOrganizerClubInput(value: string): void {
+    this.organizerClubQuery.set(value);
+    this.organizerClubSearch.query(value);
+  }
+
+  protected onOrganizerClubSelect(index: number): void {
+    const club = this.organizerClubSearch.suggestions()[index];
+    if (!club) {
+      return;
+    }
+    this.organizerClubId.set(club.externalId);
+    this.organizerClubLabel.set(club.name);
+    this.organizerClubQuery.set('');
+    this.organizerClubSearch.clear();
+  }
+
+  protected unlinkOrganizerClub(): void {
+    this.organizerClubId.set('');
+    this.organizerClubLabel.set('');
+  }
+
+  // Only while the box is ticked and the club is of the chosen sport
+  // (the sport may have changed since it was picked).
+  private organizerClubToSave(): string {
+    const id = this.organizerClubId();
+    const sport = this.clubSport();
+    if (!this.organizerByClub() || !id || !sport) {
+      return '';
+    }
+    const idSport = id.startsWith('fff:') ? 'football' : id.split(':')[1];
+    return idSport === sport ? id : '';
   }
 
   private clubLocation(club: ClubSuggestion): string {
@@ -1288,6 +1349,7 @@ export class OrganizerTournamentWizardPage {
       sportId: this.sportId(),
       isOnline: this.isOnline(),
       startDate: this.startDate(),
+      organizerClubId: this.organizerClubToSave() || undefined,
     });
     this.tournamentId = tournament.id;
     this.scheduleDate.set(this.startDate());
@@ -1331,6 +1393,7 @@ export class OrganizerTournamentWizardPage {
       sportId: this.sportId(),
       isOnline: this.isOnline(),
       startDate,
+      organizerClubId: this.organizerClubToSave(),
       ...(this.loadedEndDate && this.loadedEndDate < startDate ? { endDate: startDate } : {}),
     });
     const venue = this.existingVenue;

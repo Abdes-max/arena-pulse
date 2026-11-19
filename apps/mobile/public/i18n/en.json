@@ -222,7 +222,16 @@
           "recommended": "Recommended"
         },
         "venuePlaceholder": "Search a stadium, gym or address…",
-        "venueSearchFailed": "Address search unavailable: the typed name will be used as is."
+        "venueSearchFailed": "Address search unavailable: the typed name will be used as is.",
+        "organizerClub": {
+          "toggle": "Organized by a {{sport}} club",
+          "label": "Organizing club",
+          "placeholder": "Club name",
+          "linked": "Organizing club: {{club}}",
+          "linkedUnknown": "An organizing club is linked.",
+          "change": "Change",
+          "hint": "The club's logo becomes the tournament logo."
+        }
       },
       "teams": {
         "title": "Participating teams",
@@ -242,7 +251,7 @@
         "pasteAdd": "Add these teams",
         "errorPaste": "Could not save these names, try again.",
         "club": {
-          "toggle": "Search for the club (football)",
+          "toggle": "Search the club directory",
           "placeholder": "Club name or town",
           "searchFailed": "Club search unavailable: type the name yourself.",
           "department": "Department {{code}}"
