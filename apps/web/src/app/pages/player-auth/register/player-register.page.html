@@ -1,10 +1,21 @@
-<main class="player-register-page">
-  <form class="player-register-page__card" [formGroup]="form" (ngSubmit)="submit()">
-    <h1>Créer un compte joueur</h1>
-    <p class="player-register-page__hint">
-      Ce compte sert à vous inscrire à des tournois sur leur site public. Il est distinct d'un
-      compte organisateur.
-    </p>
+<main class="player-register-page auth-shell">
+  <header class="auth-shell__hero" data-theme="ink-signal" data-mode="dark">
+    <div class="auth-shell__hero-inner">
+      <a class="auth-shell__home" routerLink="/" aria-label="TournArena">
+        <ap-logo variant="on-dark" />
+      </a>
+      <h1>Créer un compte responsable d'équipe</h1>
+      <p class="auth-shell__lede">
+        Il sert à pré-inscrire votre équipe aux tournois depuis leur site public. Il est distinct
+        d'un compte organisateur.
+      </p>
+    </div>
+  </header>
+  <form
+    class="player-register-page__card auth-shell__card"
+    [formGroup]="form"
+    (ngSubmit)="submit()"
+  >
     <ap-text-field label="Prénom" formControlName="firstName" autocomplete="given-name" />
     <ap-text-field label="Nom" formControlName="lastName" autocomplete="family-name" />
     <ap-text-field label="Email" type="email" formControlName="email" autocomplete="email" />
@@ -14,9 +25,6 @@
       formControlName="password"
       autocomplete="new-password"
     />
-    @if (errorMessage(); as message) {
-      <p class="player-register-page__error" role="alert">{{ message }}</p>
-    }
     <ap-button type="submit" [disabled]="submitting()">Créer mon compte</ap-button>
     <p class="player-register-page__footer">
       Déjà un compte ? <a routerLink="/player/login">Se connecter</a>

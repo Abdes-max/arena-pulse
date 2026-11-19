@@ -1,11 +1,13 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { PublicApiService } from 'api-client';
 import { Button, Select, SelectOption, TextField } from 'design-system';
 import { Category, PublicRegistrationInfo } from 'shared-models';
+import { PlayerAuthService } from '../../core/player-auth.service';
 import { TournamentContextService } from '../../core/tournament-context.service';
+import { showErrorsInSnackbar } from '../../core/error-snackbar';
 
 function formatFee(category: Category): string {
   if (category.registrationFeeCents === null || category.registrationFeeCents === 0) {
@@ -30,10 +32,13 @@ export class RegisterPage {
   private readonly api = inject(PublicApiService);
   private readonly router = inject(Router);
   protected readonly context = inject(TournamentContextService);
+  private readonly playerAuth = inject(PlayerAuthService);
 
   protected readonly loading = signal(true);
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage, { translate: false });
 
   protected readonly categories = signal<Category[]>([]);
   protected readonly info = signal<PublicRegistrationInfo | null>(null);
@@ -61,37 +66,23 @@ export class RegisterPage {
     return category ? formatFee(category) : '';
   });
 
+  // A team registers itself (name + the manager's contact): the roster is
+  // the organizer's business once the team is confirmed. The phone is
+  // required so the organizer can call the manager back. Individual sports
+  // name their single player instead of a team.
   protected readonly form = this.formBuilder.nonNullable.group({
     teamName: ['', Validators.required],
-    managerEmail: ['', [Validators.required, Validators.email]],
-    managerPhone: [''],
-    players: this.formBuilder.array([this.buildPlayerGroup()]),
+    playerFirstName: [''],
+    playerLastName: [''],
+    managerEmail: [
+      this.playerAuth.currentPlayer()?.email ?? '',
+      [Validators.required, Validators.email],
+    ],
+    managerPhone: ['', [Validators.required, Validators.minLength(6)]],
   });
-
-  protected get playersArray(): FormArray {
-    return this.form.controls.players;
-  }
 
   constructor() {
     void this.load();
-  }
-
-  private buildPlayerGroup() {
-    return this.formBuilder.nonNullable.group({
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
-      jerseyNumber: [''],
-    });
-  }
-
-  protected addPlayer(): void {
-    this.playersArray.push(this.buildPlayerGroup());
-  }
-
-  protected removePlayer(index: number): void {
-    if (this.playersArray.length > 1) {
-      this.playersArray.removeAt(index);
-    }
   }
 
   protected onCategoryChange(categoryId: string): void {
@@ -112,8 +103,16 @@ export class RegisterPage {
       this.categories.set(categories);
       this.info.set(info);
       if (info.participantType === 'INDIVIDUAL') {
-        this.form.controls.teamName.clearValidators();
-        this.form.controls.teamName.updateValueAndValidity();
+        const { teamName, playerFirstName, playerLastName } = this.form.controls;
+        teamName.clearValidators();
+        playerFirstName.setValidators(Validators.required);
+        playerLastName.setValidators(Validators.required);
+        const player = this.playerAuth.currentPlayer();
+        playerFirstName.setValue(player?.firstName ?? '');
+        playerLastName.setValue(player?.lastName ?? '');
+        for (const control of [teamName, playerFirstName, playerLastName]) {
+          control.updateValueAndValidity();
+        }
       }
     } catch {
       this.errorMessage.set('Impossible de charger les catégories de ce tournoi.');
@@ -131,16 +130,15 @@ export class RegisterPage {
     this.submitting.set(true);
     this.errorMessage.set(null);
     try {
-      const { teamName, managerEmail, managerPhone, players } = this.form.getRawValue();
+      const { teamName, playerFirstName, playerLastName, managerEmail, managerPhone } =
+        this.form.getRawValue();
       const result = await this.api.createRegistration(slug, categoryId, {
         teamName: this.individual() ? undefined : teamName,
         managerEmail,
-        managerPhone: managerPhone || undefined,
-        players: players.map((player) => ({
-          firstName: player.firstName,
-          lastName: player.lastName,
-          jerseyNumber: player.jerseyNumber ? Number(player.jerseyNumber) : undefined,
-        })),
+        managerPhone,
+        players: this.individual()
+          ? [{ firstName: playerFirstName, lastName: playerLastName }]
+          : undefined,
       });
       if (result.checkoutUrl) {
         window.location.href = result.checkoutUrl;

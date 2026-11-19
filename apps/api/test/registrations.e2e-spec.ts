@@ -276,6 +276,21 @@ describe('Registrations & payments (e2e)', () => {
     );
   });
 
+  it('registers a team without its roster, but never without a phone number', async () => {
+    const { slug, categoryId } = await setupPublishedTournament(app, {});
+    const { accessToken: playerToken } = await registerPlayer(app);
+    const team = {
+      teamName: 'Les Faucons',
+      managerEmail: 'coach@example.com',
+    };
+
+    await register(slug, categoryId, playerToken, team).expect(400);
+    await register(slug, categoryId, playerToken, {
+      ...team,
+      managerPhone: '06 12 34 56 78',
+    }).expect(201);
+  });
+
   it('refuses requests while registrations are closed', async () => {
     const { slug, categoryId } = await setupPublishedTournament(
       app,
@@ -344,11 +359,13 @@ describe('Registrations & payments (e2e)', () => {
     // Two players is a team, not an individual registration.
     await register(slug, categoryId, playerToken, {
       managerEmail: 'rafa@example.com',
+      managerPhone: '0611111111',
       players: [player, { firstName: 'Roger', lastName: 'Federer' }],
     }).expect(400);
 
     await register(slug, categoryId, playerToken, {
       managerEmail: 'rafa@example.com',
+      managerPhone: '0611111111',
       players: [player],
     }).expect(201);
     const mine = await request(app.getHttpServer())

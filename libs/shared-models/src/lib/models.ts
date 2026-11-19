@@ -423,8 +423,10 @@ export interface CreateRegistrationPayload {
   /** Team sports only (an individual registration is named after its player). */
   teamName?: string;
   managerEmail: string;
-  managerPhone?: string;
-  players: RegistrationPlayerInput[];
+  // Required: the organizer calls the manager (or player) back.
+  managerPhone: string;
+  // Individual sports: the single player. Team sports register the team only.
+  players?: RegistrationPlayerInput[];
 }
 
 export type RegistrationStatus =

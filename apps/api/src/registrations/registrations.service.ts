@@ -113,13 +113,14 @@ export class RegistrationsService {
     // Individual sport: one player, the "team" is named after them.
     const individual =
       tournament.sport.participantType === ParticipantType.INDIVIDUAL;
-    if (individual && dto.players.length !== 1) {
+    const players = dto.players ?? [];
+    if (individual && players.length !== 1) {
       throw new BadRequestException(
         'Une inscription individuelle concerne un seul joueur.',
       );
     }
     const teamName = individual
-      ? `${dto.players[0].firstName} ${dto.players[0].lastName}`.trim()
+      ? `${players[0].firstName} ${players[0].lastName}`.trim()
       : dto.teamName?.trim();
     if (!teamName) {
       throw new BadRequestException("Le nom de l'équipe est obligatoire.");
@@ -139,7 +140,7 @@ export class RegistrationsService {
         playerAccountId,
         teamName,
         managerEmail: dto.managerEmail,
-        managerPhone: dto.managerPhone,
+        managerPhone: dto.managerPhone.trim(),
         amountCents: category.registrationFeeCents ?? 0,
         currency: category.registrationFeeCurrency ?? 'eur',
         status,
@@ -147,7 +148,7 @@ export class RegistrationsService {
           ? RegistrationPaymentStatus.UNPAID
           : RegistrationPaymentStatus.EXEMPT,
         players: {
-          create: dto.players.map((player) => ({
+          create: players.map((player) => ({
             firstName: player.firstName,
             lastName: player.lastName,
             jerseyNumber: player.jerseyNumber,

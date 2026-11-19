@@ -29,29 +29,8 @@
   margin: 0;
 }
 
-.register-page__roster {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ap-space-3);
-  border: 1px solid var(--ap-color-border);
-  border-radius: var(--ap-radius-md, 8px);
-  padding: var(--ap-space-4);
-
-  legend {
-    padding: 0 var(--ap-space-2);
-    color: var(--ap-color-fg);
-  }
-}
-
-.register-page__player-row {
-  display: grid;
-  grid-template-columns: 2fr 2fr 1fr auto;
-  gap: var(--ap-space-2);
-  align-items: center;
-
-  // Four columns of text inputs get too cramped to use below ~480px --
-  // two-up instead (firstName/lastName on one row, jersey/remove on the next).
-  @media (max-width: 480px) {
-    grid-template-columns: 1fr 1fr;
-  }
+.register-page__hint {
+  color: var(--ap-color-muted);
+  font-size: 0.85rem;
+  margin: calc(-1 * var(--ap-space-2)) 0 0;
 }

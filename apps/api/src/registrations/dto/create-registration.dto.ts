@@ -40,13 +40,19 @@ export class CreateRegistrationDto {
   @MaxLength(254)
   managerEmail!: string;
 
-  @IsOptional()
+  /** Required: the organizer calls the team manager (or the player) back. */
   @IsString()
+  @MinLength(6)
   @MaxLength(30)
-  managerPhone?: string;
+  managerPhone!: string;
 
+  /**
+   * Individual sports: the single player. Team sports register the team
+   * only (name + manager contact) -- the roster is optional.
+   */
+  @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => RegistrationPlayerDto)
   @ArrayMinSize(1)
-  players!: RegistrationPlayerDto[];
+  players?: RegistrationPlayerDto[];
 }

@@ -2,13 +2,14 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { Button, TextField } from 'design-system';
+import { Button, Logo, TextField } from 'design-system';
 import { PlayerAuthService } from '../../../core/player-auth.service';
 import { isSafeReturnUrl } from '../../../core/safe-return-url.util';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 @Component({
   selector: 'app-player-register-page',
-  imports: [ReactiveFormsModule, RouterLink, Button, TextField],
+  imports: [ReactiveFormsModule, RouterLink, Button, Logo, TextField],
   templateUrl: './player-register.page.html',
   styleUrl: './player-register.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -28,6 +29,8 @@ export class PlayerRegisterPage {
 
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage, { translate: false });
 
   protected async submit(): Promise<void> {
     if (this.form.invalid || this.submitting()) {
