@@ -922,7 +922,18 @@
         "themeLabel": "Public site theme",
         "save": "Save",
         "create": "Create the tournament",
-        "themePremiumHint": "Choosing a theme is reserved for tournaments with more than {{count}} teams, or an active annual subscription."
+        "themePremiumHint": "Choosing a theme is reserved for tournaments with more than {{count}} teams, or an active annual subscription.",
+        "organizerClub": {
+          "toggle": "Organized by a {{sport}} club",
+          "label": "Organizing club",
+          "placeholder": "Club name, e.g. Allauch",
+          "linked": "Organizing club: {{club}}",
+          "linkedUnknown": "An organizing club is linked.",
+          "change": "Change",
+          "hint": "The club's logo becomes the tournament logo.",
+          "searchFailed": "Club search is unavailable right now.",
+          "department": "Department {{code}}"
+        }
       },
       "categories": {
         "title": "Categories",
@@ -1158,7 +1169,7 @@
         "csv": "CSV file"
       },
       "club": {
-        "toggle": "Search for the club (football)",
+        "toggle": "Search the club directory",
         "placeholder": "Club name or town",
         "searchFailed": "Club search unavailable: type the name yourself.",
         "linked": "Linked club: {{club}}",

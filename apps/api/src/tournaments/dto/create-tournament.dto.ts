@@ -7,6 +7,7 @@ import {
   IsUUID,
   MaxLength,
   MinLength,
+  Matches,
 } from 'class-validator';
 import { PublicTheme } from '../../../generated/prisma/client';
 
@@ -40,4 +41,13 @@ export class CreateTournamentDto {
   @IsOptional()
   @IsEnum(PublicTheme)
   theme?: PublicTheme;
+
+  /**
+   * Organizing club picked from the club directory (ClubDirectoryService),
+   * e.g. "fff:553079" or "club:handball:allauch-handball" -- its crest is
+   * then imported as the tournament logo (every plan).
+   */
+  @IsOptional()
+  @Matches(/^(fff:\d{1,10}|club:[a-z]+:[a-z0-9-]{1,150}|siren:\d{9})$/)
+  organizerClubId?: string;
 }

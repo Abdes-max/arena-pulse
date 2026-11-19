@@ -8,6 +8,7 @@ import {
   MaxLength,
   ValidateIf,
   MinLength,
+  Matches,
 } from 'class-validator';
 import { PublicTheme } from '../../../generated/prisma/client';
 
@@ -55,6 +56,11 @@ export class UpdateTournamentDto {
   @IsOptional()
   @IsBoolean()
   isListed?: boolean;
+
+  /** Same as CreateTournamentDto.organizerClubId; empty string unlinks the club. */
+  @IsOptional()
+  @Matches(/^(fff:\d{1,10}|club:[a-z]+:[a-z0-9-]{1,150}|siren:\d{9})?$/)
+  organizerClubId?: string;
 
   @IsOptional()
   @IsEnum(PublicTheme)

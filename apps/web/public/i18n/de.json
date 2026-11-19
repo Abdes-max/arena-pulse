@@ -820,7 +820,18 @@
         "themeLabel": "Design der öffentlichen Seite",
         "save": "Speichern",
         "create": "Turnier erstellen",
-        "themePremiumHint": "Die Themenwahl ist nur für Turniere mit mehr als {{count}} Teams oder mit aktivem Jahresabonnement verfügbar."
+        "themePremiumHint": "Die Themenwahl ist nur für Turniere mit mehr als {{count}} Teams oder mit aktivem Jahresabonnement verfügbar.",
+        "organizerClub": {
+          "toggle": "Organisiert von einem {{sport}}-Verein",
+          "label": "Veranstaltender Verein",
+          "placeholder": "Vereinsname, z. B. Allauch",
+          "linked": "Veranstaltender Verein: {{club}}",
+          "linkedUnknown": "Ein veranstaltender Verein ist verknüpft.",
+          "change": "Ändern",
+          "hint": "Das Vereinslogo wird zum Turnierlogo.",
+          "searchFailed": "Die Vereinssuche ist gerade nicht verfügbar.",
+          "department": "Département {{code}}"
+        }
       },
       "categories": {
         "title": "Kategorien",
@@ -1056,7 +1067,7 @@
         "csv": "CSV-Datei"
       },
       "club": {
-        "toggle": "Verein suchen (Fußball)",
+        "toggle": "Verein im Verzeichnis suchen",
         "placeholder": "Vereinsname oder Ort",
         "searchFailed": "Vereinssuche nicht verfügbar: Namen bitte selbst eingeben.",
         "linked": "Verknüpfter Verein: {{club}}",

@@ -16,10 +16,15 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { AddressSearchService, AssetUrlService } from 'api-client';
+import {
+  AddressSearchService,
+  AssetUrlService,
+  ClubSearchService,
+  clubDirectorySport,
+} from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import {
   AutocompleteField,
@@ -137,6 +142,75 @@ export class TournamentFormPage {
       ...this.sports().map((sport) => ({ value: sport.id, label: sport.name })),
     ];
   });
+
+  // "Organisé par un club de <sport>": for sports with a club directory
+  // (clubDirectorySport), the organizer can pick their club -- its crest
+  // then becomes the tournament logo (TournamentsService, apps/api).
+  private readonly selectedSportId = signal('');
+  protected readonly selectedSportName = computed(
+    () => this.sports().find((sport) => sport.id === this.selectedSportId())?.name ?? '',
+  );
+  private readonly organizerClubSport = computed(() =>
+    clubDirectorySport(this.selectedSportName()),
+  );
+  protected readonly organizerClubAvailable = computed(() => this.organizerClubSport() !== null);
+  protected readonly organizerByClub = signal(false);
+  protected readonly organizerClubId = signal('');
+  protected readonly organizerClubLabel = signal('');
+  protected readonly organizerClubQuery = signal('');
+  protected readonly organizerClubSearch = inject(ClubSearchService).autocomplete(
+    () => this.organizerClubSport() ?? 'football',
+  );
+  protected readonly organizerClubSuggestions = computed(() =>
+    this.organizerClubSearch.suggestions().map((club) => ({
+      label: club.name,
+      detail: club.department
+        ? this.transloco.translate(
+            'admin.tournamentForm.form.organizerClub.department',
+            { code: club.department },
+            this.languageService.language(),
+          )
+        : [club.postalCode, club.city].filter(Boolean).join(' ') || undefined,
+      imageUrl: this.assetUrl.resolve(club.logoUrl),
+    })),
+  );
+
+  protected toggleOrganizerByClub(event: Event): void {
+    this.organizerByClub.set((event.target as HTMLInputElement).checked);
+  }
+
+  protected onOrganizerClubInput(value: string): void {
+    this.organizerClubQuery.set(value);
+    this.organizerClubSearch.query(value);
+  }
+
+  protected onOrganizerClubSelect(index: number): void {
+    const club = this.organizerClubSearch.suggestions()[index];
+    if (!club) {
+      return;
+    }
+    this.organizerClubId.set(club.externalId);
+    this.organizerClubLabel.set(club.name);
+    this.organizerClubQuery.set('');
+    this.organizerClubSearch.clear();
+  }
+
+  protected unlinkOrganizerClub(): void {
+    this.organizerClubId.set('');
+    this.organizerClubLabel.set('');
+  }
+
+  // The club only applies while its sport still has a directory and the
+  // box is ticked; a club of another sport (sport changed since) is dropped.
+  private organizerClubToSave(): string {
+    const id = this.organizerClubId();
+    const sport = this.organizerClubSport();
+    if (!this.organizerByClub() || !id || !sport) {
+      return '';
+    }
+    const idSport = id.startsWith('fff:') ? 'football' : id.split(':')[1];
+    return idSport === sport ? id : '';
+  }
   // Choosing a non-default theme is a premium touch (see
   // TournamentsService.assertPremiumFeaturesUnlocked, apps/api) -- the
   // default itself always stays selectable, the other four disable
@@ -451,6 +525,9 @@ export class TournamentFormPage {
   });
 
   constructor() {
+    this.form.controls.sportId.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((sportId) => this.selectedSportId.set(sportId));
     effect(() => {
       this.tournamentId();
       void this.load();
@@ -539,6 +616,9 @@ export class TournamentFormPage {
     }
     const tournament = await this.tournamentsService.getTournament(organizationId, tournamentId);
     this.tournament.set(tournament);
+    this.organizerClubId.set(tournament.organizerClubId ?? '');
+    this.organizerByClub.set(!!tournament.organizerClubId);
+    this.organizerClubLabel.set('');
     this.form.patchValue({
       name: tournament.name,
       sportId: tournament.sportId,
@@ -617,6 +697,7 @@ export class TournamentFormPage {
             isOnline,
             isListed,
             theme,
+            organizerClubId: this.organizerClubToSave(),
           },
         );
         this.tournament.set(updated);
@@ -629,6 +710,7 @@ export class TournamentFormPage {
           isOnline,
           isListed,
           theme,
+          organizerClubId: this.organizerClubToSave() || undefined,
         });
         await this.router.navigate(['/admin/tournaments', created.id]);
       }

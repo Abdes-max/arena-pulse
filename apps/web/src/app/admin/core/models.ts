@@ -165,6 +165,8 @@ export interface TournamentDetail extends Tournament {
   updatedAt: string;
   teamsCanReferee: boolean;
   isListed: boolean;
+  // Club directory link ("fff:<n°>", "club:<sport>:<slug>"), see ClubSearchService.
+  organizerClubId?: string | null;
   format?: string | null;
   level?: string | null;
   registrationsOpen?: boolean;

@@ -46,6 +46,6 @@ export class UpdateTeamDto {
    * imported as the team logo (every plan). Empty string unlinks the club.
    */
   @IsOptional()
-  @Matches(/^(fff:\d{1,10}|siren:\d{9})?$/)
+  @Matches(/^(fff:\d{1,10}|club:[a-z]+:[a-z0-9-]{1,150}|siren:\d{9})?$/)
   externalClubId?: string;
 }

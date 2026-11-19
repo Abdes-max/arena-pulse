@@ -24,6 +24,8 @@ export interface CreateTournamentPayload {
   isOnline?: boolean;
   isListed?: boolean;
   theme?: PublicTheme;
+  // Organizing club (club directory) -- its crest becomes the tournament logo.
+  organizerClubId?: string;
 }
 
 export interface CreateQuickPlateauPayload {
@@ -60,6 +62,8 @@ export interface UpdateTournamentPayload {
   teamsCanReferee?: boolean;
   isListed?: boolean;
   theme?: PublicTheme;
+  // '' unlinks the organizing club.
+  organizerClubId?: string;
   description?: string;
   rules?: string;
   practicalInfo?: string;

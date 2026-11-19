@@ -222,7 +222,16 @@
           "recommended": "Recomendado"
         },
         "venuePlaceholder": "Buscar un estadio, pabellón o dirección…",
-        "venueSearchFailed": "Búsqueda de direcciones no disponible: se usará el nombre escrito."
+        "venueSearchFailed": "Búsqueda de direcciones no disponible: se usará el nombre escrito.",
+        "organizerClub": {
+          "toggle": "Organizado por un club de {{sport}}",
+          "label": "Club organizador",
+          "placeholder": "Nombre del club",
+          "linked": "Club organizador: {{club}}",
+          "linkedUnknown": "Hay un club organizador vinculado.",
+          "change": "Cambiar",
+          "hint": "El logo del club pasa a ser el del torneo."
+        }
       },
       "teams": {
         "title": "Equipos participantes",
@@ -242,7 +251,7 @@
         "pasteAdd": "Add these teams",
         "errorPaste": "Could not save these names, try again.",
         "club": {
-          "toggle": "Buscar el club (fútbol)",
+          "toggle": "Buscar el club en el directorio",
           "placeholder": "Nombre del club o ciudad",
           "searchFailed": "Búsqueda de clubes no disponible: escribe el nombre a mano.",
           "department": "Departamento {{code}}"

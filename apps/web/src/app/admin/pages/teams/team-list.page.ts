@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AssetUrlService, ClubSearchService, ClubSuggestion } from 'api-client';
+import { AssetUrlService, ClubSearchService, ClubSuggestion, clubDirectorySport } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { AutocompleteField, Button, Select, SelectOption, TextField } from 'design-system';
 import { LanguageService } from 'design-tokens';
@@ -22,8 +22,6 @@ import { TournamentsService } from '../../core/tournaments.service';
 
 type PublicationTierCode = 'FREE' | 'STANDARD' | 'LARGE';
 
-// Sports whose teams are FFF clubs -- the only ones offered the club search.
-const CLUB_SEARCH_SPORTS = new Set(['Football', 'Futsal']);
 const CLUB_SEARCH_STORAGE_KEY = 'ta.teamClubSearch';
 
 // Mirrors the structured body TournamentsService.assertTeamAdditionAllowed
@@ -124,13 +122,15 @@ export class TeamListPage {
   protected readonly formManagerEmail = signal('');
   protected readonly formManagerPhone = signal('');
 
-  // Club search (football/futsal only): the name field becomes an
-  // autocomplete over the club directory, picking a club links it
-  // (externalClubId) -- an FFF club's crest then becomes the team logo.
-  protected readonly clubSearch = inject(ClubSearchService).autocomplete();
-  protected readonly clubSearchAvailable = computed(() =>
-    CLUB_SEARCH_SPORTS.has(this.tournament()?.sportName ?? ''),
+  // Club search (sports with a club directory, see clubDirectorySport):
+  // the name field becomes an autocomplete over that sport's clubs,
+  // picking one links it (externalClubId) -- its crest then becomes the
+  // team logo.
+  private readonly clubSport = computed(() => clubDirectorySport(this.tournament()?.sportName));
+  protected readonly clubSearch = inject(ClubSearchService).autocomplete(
+    () => this.clubSport() ?? 'football',
   );
+  protected readonly clubSearchAvailable = computed(() => this.clubSport() !== null);
   protected readonly useClubSearch = signal(readClubSearchPreference());
   protected readonly clubSuggestions = computed(() =>
     this.clubSearch.suggestions().map((club) => ({

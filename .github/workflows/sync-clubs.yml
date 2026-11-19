@@ -1,0 +1,63 @@
+# Quarterly refresh of the club directories behind the team form's club
+# autocomplete and the tournament's organizing club
+# (apps/api/prisma/sync-clubs.ts): football (FffClub) plus basketball,
+# handball, rugby, volleyball and tennis (SportClub) -- new clubs, renamed
+# ones, dissolved ones; ~100 listing requests per sport, 15-20 minutes in
+# all. Same mechanics as seed-padel-example.yml -- the already built
+# `migrate` image on the VPS, which has dist/prisma and DATABASE_URL --
+# started detached (`run -d`) so a slow source never trips the SSH timeout.
+# Follow it with
+#   docker logs -f clubs-sync
+# on the VPS. The initial football load is import-fff-clubs.yml (versioned
+# file); the other sports' first load is a manual run of this workflow.
+name: Sync club directories
+
+on:
+  schedule:
+    # 04:00 UTC on Jan 1, Apr 1, Jul 1 and Oct 1 (Jul 1 follows the
+    # off-season affiliations, creations and mergers).
+    - cron: '0 4 1 1,4,7,10 *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Only print the changes (FFF_SYNC_DRY_RUN=1)'
+        type: boolean
+        default: false
+      sports:
+        description: 'Comma-separated sports to sync (empty = all), e.g. basketball,handball'
+        type: string
+        default: ''
+
+jobs:
+  sync:
+    name: Sync on Hostinger VPS
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Start sync-clubs.js inside the migrate image
+        uses: appleboy/ssh-action@v1
+        env:
+          CLUB_SYNC_SPORTS: ${{ inputs.sports }}
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          timeout: 90s
+          command_timeout: 5m
+          envs: CLUB_SYNC_SPORTS
+          script: |
+            set -euo pipefail
+            cd "${{ secrets.DEPLOY_PATH }}"
+            if docker ps --format '{{.Names}}' | grep -qx clubs-sync; then
+              echo "A sync is already running (docker logs -f clubs-sync)."
+              exit 0
+            fi
+            docker rm clubs-sync 2>/dev/null || true
+            # Only letters, digits and commas reach the container.
+            SPORTS="$(printf '%s' "${CLUB_SYNC_SPORTS:-}" | tr -cd 'a-z,')"
+            docker compose -f infra/deployment/docker-compose.prod.yml --env-file infra/deployment/.env run -d --name clubs-sync \
+              -e FFF_SYNC_DRY_RUN=${{ inputs.dry_run && '1' || '0' }} \
+              -e CLUB_SYNC_SPORTS="$SPORTS" \
+              migrate node dist/prisma/sync-clubs.js
+            echo "Started -- follow with: docker logs -f clubs-sync"

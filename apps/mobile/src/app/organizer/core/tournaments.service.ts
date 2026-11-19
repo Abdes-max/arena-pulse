@@ -137,6 +137,8 @@ export class OrganizerTournamentsService {
       isOnline?: boolean;
       isListed?: boolean;
       theme?: PublicTheme;
+      // '' unlinks the organizing club.
+      organizerClubId?: string;
       startDate?: string | null;
       endDate?: string | null;
     },

@@ -820,7 +820,18 @@
         "themeLabel": "Tema do site público",
         "save": "Guardar",
         "create": "Criar o torneio",
-        "themePremiumHint": "A escolha de tema está reservada a torneios com mais de {{count}} equipas ou com uma subscrição anual ativa."
+        "themePremiumHint": "A escolha de tema está reservada a torneios com mais de {{count}} equipas ou com uma subscrição anual ativa.",
+        "organizerClub": {
+          "toggle": "Organizado por um clube de {{sport}}",
+          "label": "Clube organizador",
+          "placeholder": "Nome do clube, ex. Allauch",
+          "linked": "Clube organizador: {{club}}",
+          "linkedUnknown": "Há um clube organizador vinculado.",
+          "change": "Alterar",
+          "hint": "O logo do clube passa a ser o do torneio.",
+          "searchFailed": "A pesquisa de clubes está indisponível no momento.",
+          "department": "Departamento {{code}}"
+        }
       },
       "categories": {
         "title": "Categorias",
@@ -1056,7 +1067,7 @@
         "csv": "Ficheiro CSV"
       },
       "club": {
-        "toggle": "Procurar o clube (futebol)",
+        "toggle": "Pesquisar o clube no diretório",
         "placeholder": "Nome do clube ou cidade",
         "searchFailed": "Pesquisa de clubes indisponível: escreva o nome à mão.",
         "linked": "Clube associado: {{club}}",

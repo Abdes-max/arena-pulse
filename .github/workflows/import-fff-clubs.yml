@@ -3,7 +3,7 @@
 # same mechanics as seed-padel-example.yml, the file being part of the
 # already-built `migrate` image. Upserts by affiliation n°, so it's safe to
 # re-run after updating the file; a column absent from the file keeps the
-# stored values. sync-fff-clubs.yml then keeps the table current quarterly.
+# stored values. sync-clubs.yml then keeps the table current quarterly.
 name: Import FFF club directory
 
 on:

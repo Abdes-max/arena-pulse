@@ -49,6 +49,8 @@ export interface OrganizerTournament {
   isListed: boolean;
   theme: PublicTheme;
   logoUrl: string | null;
+  // Club directory link ("fff:<n°>", "club:<sport>:<slug>"), see ClubSearchService.
+  organizerClubId?: string | null;
   headerBackgroundUrl?: string | null;
   startDate?: string | null;
   endDate?: string | null;
@@ -63,6 +65,8 @@ export interface CreateTournamentPayload {
   isOnline?: boolean;
   isListed?: boolean;
   theme?: PublicTheme;
+  // Organizing club (club directory) -- its crest becomes the tournament logo.
+  organizerClubId?: string;
   startDate?: string;
 }
 
