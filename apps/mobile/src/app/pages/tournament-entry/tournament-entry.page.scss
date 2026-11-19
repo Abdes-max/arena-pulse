@@ -593,3 +593,28 @@ ap-tournament-marquee {
   background-clip: text;
   color: transparent;
 }
+
+// The folded hero while the search is full screen: just a back button.
+.tournament-entry-page__hero-back {
+  position: relative;
+  padding: var(--ap-space-1) var(--ap-space-4) var(--ap-space-3);
+}
+
+.tournament-entry-page__back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ap-space-1);
+  padding: var(--ap-space-2) var(--ap-space-3);
+  margin-left: calc(-1 * var(--ap-space-3));
+  border: none;
+  background: none;
+  color: var(--ap-color-fg);
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border-radius: var(--ap-radius-md);
+}
+
+.tournament-entry-page__published-title {
+  cursor: pointer;
+}

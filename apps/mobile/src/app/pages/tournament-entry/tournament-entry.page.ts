@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
   computed,
   inject,
   signal,
@@ -102,7 +101,6 @@ export class TournamentEntryPage {
   // logic rather than duplicating it.
   private readonly shareButton = viewChild<ShareButton>('shareButton');
   private readonly content = viewChild<IonContent>('content');
-  private readonly publishedSection = viewChild<ElementRef<HTMLElement>>('published');
 
   // ap-tournament-marquee's TournamentMarqueeItem needs a resolved (absolute)
   // logoUrl -- it's a dumb presenter, same reason ap-tournament-card gets
@@ -205,13 +203,48 @@ export class TournamentEntryPage {
     void this.router.navigate(['/', tournament.slug]);
   }
 
-  /** "M'inscrire à un tournoi": the list below, on upcoming tournaments taking registrations. */
+  // The search opened full screen: the hero (a fixed ion-header, so the
+  // list could never scroll it away) folds down to a back bar.
+  protected readonly searchExpanded = signal(false);
+
+  /** "M'inscrire à un tournoi": the search full screen, on upcoming tournaments taking registrations. */
   protected findRegistrations(): void {
     this.registrationOnly.set(true);
     this.timeFilter.set('upcoming');
-    const section = this.publishedSection()?.nativeElement;
-    if (section) {
-      void this.content()?.scrollToPoint(0, section.offsetTop, 400);
+    this.expandSearch();
+  }
+
+  /**
+   * Opens the search full screen -- from the title, a filter or the button
+   * above -- without the keyboard (dismissKeyboard), except when the search
+   * field itself was tapped (`withKeyboard`).
+   */
+  protected expandSearch(withoutKeyboard = true): void {
+    this.searchExpanded.set(true);
+    if (withoutKeyboard) {
+      this.dismissKeyboard();
+    }
+    void this.content()?.scrollToTop(200);
+  }
+
+  protected collapseSearch(): void {
+    this.dismissKeyboard();
+    this.searchExpanded.set(false);
+  }
+
+  /** Closes the on-screen keyboard: blurs whatever field has the focus. */
+  protected dismissKeyboard(): void {
+    const active = document.activeElement;
+    if (active instanceof HTMLElement && active.matches('input, textarea')) {
+      active.blur();
+    }
+  }
+
+  /** A tap anywhere but on a field closes the keyboard. */
+  protected onContentTap(event: Event): void {
+    const target = event.target as HTMLElement | null;
+    if (!target?.closest('input, textarea, select')) {
+      this.dismissKeyboard();
     }
   }
 

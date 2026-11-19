@@ -398,41 +398,68 @@
     </div>
   }
 
-  <div class="tournament-entry-page__hero-body">
-    <!-- Same headline and call to action as apps/web's landing page. -->
-    <h1 class="tournament-entry-page__title">
-      {{ 'tournamentEntry.hero.titleMain' | transloco }}
-      <em>{{ 'tournamentEntry.hero.titleEmphasis' | transloco }}</em>
-    </h1>
-    <p class="tournament-entry-page__hint">
-      {{ 'tournamentEntry.hero.hint' | transloco }}
-    </p>
-    <div class="tournament-entry-page__hero-ctas">
-      <ap-button type="button" [fullWidth]="true" routerLink="/organizer/register">
-        {{ 'tournamentEntry.hero.ctaCreate' | transloco }}
-      </ap-button>
-      <ap-button type="button" variant="secondary" [fullWidth]="true" (click)="findRegistrations()">
-        {{ 'tournamentEntry.hero.ctaJoin' | transloco }}
-      </ap-button>
+  @if (searchExpanded()) {
+    <!-- Search opened full screen: the hero folds away, back brings it back. -->
+    <div class="tournament-entry-page__hero-back">
+      <button type="button" class="tournament-entry-page__back-btn" (click)="collapseSearch()">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+          <path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+        </svg>
+        {{ 'manager.back' | transloco }}
+      </button>
     </div>
-    @if (tournaments().length > 0) {
-      <p class="tournament-entry-page__marquee-label">
-        <span class="tournament-entry-page__marquee-pulse" aria-hidden="true"></span>
-        {{ 'tournamentEntry.hero.marqueeLabel' | transloco }}
+  } @else {
+    <div class="tournament-entry-page__hero-body">
+      <!-- Same headline and call to action as apps/web's landing page. -->
+      <h1 class="tournament-entry-page__title">
+        {{ 'tournamentEntry.hero.titleMain' | transloco }}
+        <em>{{ 'tournamentEntry.hero.titleEmphasis' | transloco }}</em>
+      </h1>
+      <p class="tournament-entry-page__hint">
+        {{ 'tournamentEntry.hero.hint' | transloco }}
       </p>
-      <ap-tournament-marquee
-        [tournaments]="marqueeTournaments()"
-        (tournamentClick)="goToTournament($event)"
-      />
-    }
-  </div>
+      <div class="tournament-entry-page__hero-ctas">
+        <ap-button type="button" [fullWidth]="true" routerLink="/organizer/register">
+          {{ 'tournamentEntry.hero.ctaCreate' | transloco }}
+        </ap-button>
+        <ap-button
+          type="button"
+          variant="secondary"
+          [fullWidth]="true"
+          (click)="findRegistrations()"
+        >
+          {{ 'tournamentEntry.hero.ctaJoin' | transloco }}
+        </ap-button>
+      </div>
+      @if (tournaments().length > 0) {
+        <p class="tournament-entry-page__marquee-label">
+          <span class="tournament-entry-page__marquee-pulse" aria-hidden="true"></span>
+          {{ 'tournamentEntry.hero.marqueeLabel' | transloco }}
+        </p>
+        <ap-tournament-marquee
+          [tournaments]="marqueeTournaments()"
+          (tournamentClick)="goToTournament($event)"
+        />
+      }
+    </div>
+  }
 </ion-header>
 
-<ion-content class="tournament-entry-page" #content>
-  <section class="tournament-entry-page__published" #published>
+<!-- Tapping outside a field or scrolling closes the keyboard. -->
+<ion-content
+  class="tournament-entry-page"
+  #content
+  [scrollEvents]="true"
+  (ionScrollStart)="dismissKeyboard()"
+  (click)="onContentTap($event)"
+>
+  <section class="tournament-entry-page__published">
     <h2 class="tournament-entry-page__published-title">
-      <span class="tournament-entry-page__published-pulse" aria-hidden="true"></span>
-      {{ 'tournamentEntry.published.title' | transloco }}
+      <!-- A button: tapping the title opens the search full screen too. -->
+      <button type="button" class="tournament-entry-page__title-btn" (click)="expandSearch()">
+        <span class="tournament-entry-page__published-pulse" aria-hidden="true"></span>
+        {{ 'tournamentEntry.published.title' | transloco }}
+      </button>
     </h2>
     <div class="tournament-entry-page__published-filters">
       <ap-text-field
@@ -442,6 +469,8 @@
         [placeholder]="'tournamentEntry.published.searchPlaceholder' | transloco"
         [value]="q()"
         (valueChange)="q.set($event)"
+        (focusin)="expandSearch(false)"
+        (keyup.enter)="dismissKeyboard()"
       />
       <div class="tournament-entry-page__pills">
         <ap-time-filter
@@ -449,14 +478,14 @@
           [upcomingLabel]="'tournamentEntry.published.filters.upcoming' | transloco"
           [pastLabel]="'tournamentEntry.published.filters.past' | transloco"
           [value]="timeFilter()"
-          (valueChange)="timeFilter.set($event)"
+          (valueChange)="timeFilter.set($event); expandSearch()"
         />
         <!-- Same pill (and colors) as apps/web's Découvrir page. -->
         <button
           type="button"
           class="tournament-entry-page__registration-filter"
           [attr.aria-pressed]="registrationOnly()"
-          (click)="registrationOnly.set(!registrationOnly())"
+          (click)="registrationOnly.set(!registrationOnly()); expandSearch()"
         >
           {{ 'tournamentEntry.published.filters.registrationOpen' | transloco }}
         </button>
