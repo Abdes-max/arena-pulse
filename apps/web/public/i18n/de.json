@@ -1779,5 +1779,11 @@
       "load": "Ihre Anmeldungen konnten nicht geladen werden.",
       "cancel": "Diese Anfrage konnte nicht zurückgezogen werden."
     }
+  },
+  "notFound": {
+    "title": "Seite nicht gefunden",
+    "body": "Diese Seite existiert nicht oder wurde verschoben.",
+    "home": "Zur Startseite",
+    "discover": "Turniere entdecken"
   }
 }

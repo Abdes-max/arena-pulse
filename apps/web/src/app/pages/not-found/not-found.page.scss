@@ -1,0 +1,40 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+  background: var(--ap-color-bg);
+  color: var(--ap-color-fg);
+}
+
+.not-found-page {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: var(--ap-space-16) var(--ap-space-6);
+  text-align: center;
+}
+
+.not-found-page__brand {
+  display: inline-block;
+  margin-bottom: var(--ap-space-6);
+}
+
+.not-found-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--ap-space-3);
+  margin-top: var(--ap-space-6);
+}
+
+.not-found-page__link {
+  padding: var(--ap-space-2) var(--ap-space-4);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  color: var(--ap-color-fg);
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color var(--ap-motion-fast) var(--ap-easing-standard);
+
+  &:hover {
+    border-color: var(--ap-color-signal);
+  }
+}

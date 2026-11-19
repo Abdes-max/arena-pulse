@@ -1881,5 +1881,11 @@
       "load": "Impossible de charger vos inscriptions.",
       "cancel": "Impossible d’annuler cette demande."
     }
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "body": "Cette page n'existe pas ou a été déplacée.",
+    "home": "Retour à l'accueil",
+    "discover": "Découvrir des tournois"
   }
 }
