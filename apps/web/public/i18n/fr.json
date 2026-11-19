@@ -25,7 +25,8 @@
       "subtitle": "Poules, tableaux à élimination, calendrier, arbitrage et classements, et un site public généré automatiquement pour chacune de vos compétitions, mis à jour à la seconde où un score est saisi.",
       "ctaCreate": "Créer mon tournoi",
       "storeApple": "Télécharger sur l'App Store",
-      "storeGoogle": "Disponible sur Google Play"
+      "storeGoogle": "Disponible sur Google Play",
+      "ctaJoin": "M'inscrire à un tournoi"
     },
     "marquee": {
       "label": "En ce moment sur TournArena"

@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   computed,
   inject,
   signal,
@@ -100,6 +101,8 @@ export class TournamentEntryPage {
   // triggerShare() -- reuses its timeout/clipboard-fallback/failure-state
   // logic rather than duplicating it.
   private readonly shareButton = viewChild<ShareButton>('shareButton');
+  private readonly content = viewChild<IonContent>('content');
+  private readonly publishedSection = viewChild<ElementRef<HTMLElement>>('published');
 
   // ap-tournament-marquee's TournamentMarqueeItem needs a resolved (absolute)
   // logoUrl -- it's a dumb presenter, same reason ap-tournament-card gets
@@ -200,6 +203,16 @@ export class TournamentEntryPage {
   // happens to carry.
   protected goToTournament(tournament: { slug: string }): void {
     void this.router.navigate(['/', tournament.slug]);
+  }
+
+  /** "M'inscrire à un tournoi": the list below, on upcoming tournaments taking registrations. */
+  protected findRegistrations(): void {
+    this.registrationOnly.set(true);
+    this.timeFilter.set('upcoming');
+    const section = this.publishedSection()?.nativeElement;
+    if (section) {
+      void this.content()?.scrollToPoint(0, section.offsetTop, 400);
+    }
   }
 
   protected toggleSettings(): void {

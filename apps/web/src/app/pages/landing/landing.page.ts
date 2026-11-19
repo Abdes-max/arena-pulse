@@ -3,8 +3,6 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AssetUrlService, PublicApiService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { PublicTournamentDirectoryItem } from 'shared-models';
-import { registrationCard } from '../../core/registration-card';
 import {
   Button,
   LanguageSwitcher,
@@ -120,7 +118,7 @@ export class LandingPage {
   // list to the tournaments taking pre-registrations right now. Their ids
   // come from the directory search, fetched the first time the pill is on.
   protected readonly registrationOnly = signal(false);
-  private readonly openRegistrationIds = signal<Set<string> | null>(null);
+  protected readonly openRegistrationIds = signal<Set<string> | null>(null);
 
   protected readonly filteredTournaments = computed(() => {
     const time = this.timeFilter();
@@ -140,14 +138,7 @@ export class LandingPage {
   });
 
   protected toggleRegistrationOnly(): void {
-    const next = !this.registrationOnly();
-    this.registrationOnly.set(next);
-    if (next && this.openRegistrationIds() === null) {
-      void this.api
-        .searchTournaments({ registration: 'open', page: 1, pageSize: 50 })
-        .then((result) => this.openRegistrationIds.set(new Set(result.items.map((t) => t.id))))
-        .catch(() => this.openRegistrationIds.set(new Set()));
-    }
+    this.registrationOnly.update((on) => !on);
   }
 
   // ap-tournament-marquee's TournamentMarqueeItem needs a resolved (absolute)
@@ -169,27 +160,11 @@ export class LandingPage {
     this.tournaments().length >= 50 ? '+' : '',
   );
 
-  // Tournaments taking pre-registrations right now (the "Inscriptions ouvertes" section).
-  protected readonly openRegistrations = signal<
-    (PublicTournamentDirectoryItem & { band: { label: string | null; price: string | null } })[]
-  >([]);
-
   constructor() {
     void this.api
-      .searchTournaments({ registration: 'open', page: 1, pageSize: 6 })
-      .then((result) =>
-        this.openRegistrations.set(
-          result.items.map((item) => ({
-            ...item,
-            band: registrationCard(
-              item,
-              (key, params) => this.transloco.translate(key, params),
-              this.transloco.getActiveLang(),
-            ),
-          })),
-        ),
-      )
-      .catch(() => undefined);
+      .searchTournaments({ registration: 'open', page: 1, pageSize: 50 })
+      .then((result) => this.openRegistrationIds.set(new Set(result.items.map((t) => t.id))))
+      .catch(() => this.openRegistrationIds.set(new Set()));
     const tournamentsLoaded = this.api
       .listTournaments(50)
       .then((tournaments) => this.tournaments.set(tournaments));

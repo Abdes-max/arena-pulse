@@ -25,7 +25,8 @@
       "subtitle": "Gironi, tabelloni a eliminazione, calendario, arbitraggio e classifiche, e un sito pubblico generato automaticamente per ogni tua competizione, aggiornato nell'istante in cui viene inserito un risultato.",
       "ctaCreate": "Crea il mio torneo",
       "storeApple": "Scarica su App Store",
-      "storeGoogle": "Disponibile su Google Play"
+      "storeGoogle": "Disponibile su Google Play",
+      "ctaJoin": "Iscrivermi a un torneo"
     },
     "marquee": {
       "label": "In questo momento su TournArena"
