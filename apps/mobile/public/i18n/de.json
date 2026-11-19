@@ -230,7 +230,8 @@
           "linked": "Veranstaltender Verein: {{club}}",
           "linkedUnknown": "Ein veranstaltender Verein ist verknüpft.",
           "change": "Ändern",
-          "hint": "Das Vereinslogo wird zum Turnierlogo."
+          "hint": "Das Vereinslogo wird zum Turnierlogo.",
+          "logoFromClub": "Logo von {{club}}"
         }
       },
       "teams": {
@@ -707,6 +708,15 @@
         "GROUP_STAGE": "Gruppen",
         "KNOCKOUT": "K.-o.-Phase"
       }
+    },
+    "pendingRegistrations": {
+      "title": "Zu bestätigende Voranmeldungen",
+      "waitlist": "Warteliste",
+      "confirm": "Bestätigen",
+      "reject": "Ablehnen",
+      "manageAll": "Alle Anmeldungen verwalten",
+      "error": "Diese Entscheidung konnte nicht gespeichert werden.",
+      "badgeAria": "{{count}} Voranmeldung(en) zu bestätigen"
     }
   },
   "notifications": {

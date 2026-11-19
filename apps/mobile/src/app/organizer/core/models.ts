@@ -51,6 +51,10 @@ export interface OrganizerTournament {
   logoUrl: string | null;
   // Club directory link ("fff:<n°>", "club:<sport>:<slug>"), see ClubSearchService.
   organizerClubId?: string | null;
+  // Detail endpoint only: the linked club's name.
+  organizerClubName?: string | null;
+  // List endpoint only: pre-registrations waiting for a decision.
+  pendingRegistrations?: number;
   headerBackgroundUrl?: string | null;
   startDate?: string | null;
   endDate?: string | null;

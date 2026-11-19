@@ -137,6 +137,17 @@
             </button>
             <button type="button" class="tcard__action" (click)="openRegistrations($event, t)">
               {{ 'organizer.tournaments.list.registrationsAction' | transloco }}
+              <!-- Requests waiting for a decision: a badge so they're not missed. -->
+              @if (t.pendingRegistrations) {
+                <span
+                  class="tcard__count"
+                  [attr.aria-label]="
+                    'organizer.pendingRegistrations.badgeAria'
+                      | transloco: { count: t.pendingRegistrations }
+                  "
+                  >{{ t.pendingRegistrations }}</span
+                >
+              }
             </button>
             <button type="button" class="tcard__action" (click)="openStructure($event, t)">
               {{ 'organizer.tournaments.list.structureAction' | transloco }}

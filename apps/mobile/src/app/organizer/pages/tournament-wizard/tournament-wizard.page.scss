@@ -244,10 +244,19 @@ ion-title {
   color: var(--ap-color-muted);
 }
 
-.wizard-page__sportcard-icon svg {
-  width: 26px;
-  height: 26px;
-  display: block;
+// Colorful tile per sport (an emoji on a soft tint), like the website's
+// "Par sport" list.
+.wizard-page__sportcard-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  font-size: 1.45rem;
+  line-height: 1;
+  background: #fff;
+  border-radius: var(--ap-radius-md);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
 }
 
 .wizard-page__sportcard-name {
@@ -1069,4 +1078,106 @@ ion-title {
     border-color: var(--ap-color-primary);
     color: var(--ap-color-on-primary);
   }
+}
+
+// Logo field: preview of the picked file or the organizing club's crest.
+.wizard-page__logo-preview {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+
+  img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    background: #fff;
+    border: var(--ap-border-width) solid var(--ap-color-border);
+    border-radius: var(--ap-radius-md);
+  }
+
+  small {
+    font-weight: 400;
+    color: var(--ap-color-muted);
+  }
+}
+
+// Rail: pending pre-registrations on "Équipes".
+.wizard-page__rail-badge,
+.wizard-page__pending-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--ap-color-error);
+  border-radius: 999px;
+}
+
+.wizard-page__rail-badge {
+  position: absolute;
+  top: -4px;
+  right: 18%;
+}
+
+.wizard-page__rail-step {
+  position: relative;
+}
+
+// Teams step: pending pre-registrations, above the teams.
+.wizard-page__pending {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+  margin-bottom: var(--ap-space-4);
+  padding: var(--ap-space-3);
+  background: var(--ap-color-surface);
+  border: 1.5px solid var(--ap-color-warning);
+  border-radius: var(--ap-radius-lg);
+
+  .wizard-page__section-title {
+    display: flex;
+    align-items: center;
+    gap: var(--ap-space-2);
+    margin: 0;
+  }
+}
+
+.wizard-page__pending-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-1);
+  padding: var(--ap-space-2) 0;
+  border-top: var(--ap-border-width) solid var(--ap-color-border);
+}
+
+.wizard-page__pending-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-2);
+}
+
+.wizard-page__pending-waitlist {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--ap-color-warning);
+}
+
+.wizard-page__pending-contact {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--ap-color-muted);
+
+  a {
+    color: inherit;
+  }
+}
+
+.wizard-page__pending-actions {
+  display: flex;
+  gap: var(--ap-space-2);
 }

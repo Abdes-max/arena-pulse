@@ -156,7 +156,14 @@ export class TournamentsService {
             take: 1,
           },
           // Same rule as hasPremiumFeatures, for the whole list in one query.
-          _count: { select: { teams: true } },
+          // pendingRegistrations: requests waiting for the organizer's
+          // decision -- the app's "to validate" badge.
+          _count: {
+            select: {
+              teams: true,
+              registrations: { where: { status: 'PENDING' } },
+            },
+          },
           publicationOrders: {
             where: {
               status: TournamentPublicationOrderStatus.PAID,
@@ -177,6 +184,7 @@ export class TournamentsService {
     return tournaments.map((tournament) => ({
       ...this.toSummary(tournament),
       venueName: tournament.venues[0]?.name ?? null,
+      pendingRegistrations: tournament._count?.registrations ?? 0,
       premiumUnlocked:
         hasActiveSubscription ||
         (tournament._count?.teams ?? 0) > this.freeMaxTeams() ||
@@ -186,7 +194,14 @@ export class TournamentsService {
 
   async getDetail(organizationId: string, tournamentId: string) {
     const tournament = await this.getOrThrow(organizationId, tournamentId);
-    return this.toDetail(tournament);
+    // The organizing club's name, for the form to show which club is linked.
+    const organizerClubName =
+      tournament.organizerClubId && this.clubDirectoryService
+        ? await this.clubDirectoryService.nameForExternalId(
+            tournament.organizerClubId,
+          )
+        : null;
+    return { ...this.toDetail(tournament), organizerClubName };
   }
 
   async update(

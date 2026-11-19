@@ -230,7 +230,8 @@
           "linked": "Club organizador: {{club}}",
           "linkedUnknown": "Hay un club organizador vinculado.",
           "change": "Cambiar",
-          "hint": "El logo del club pasa a ser el del torneo."
+          "hint": "El logo del club pasa a ser el del torneo.",
+          "logoFromClub": "Logo de {{club}}"
         }
       },
       "teams": {
@@ -707,6 +708,15 @@
         "GROUP_STAGE": "Grupos",
         "KNOCKOUT": "Fase final"
       }
+    },
+    "pendingRegistrations": {
+      "title": "Preinscripciones por validar",
+      "waitlist": "Lista de espera",
+      "confirm": "Validar",
+      "reject": "Rechazar",
+      "manageAll": "Gestionar todas las inscripciones",
+      "error": "No se pudo guardar esta decisión.",
+      "badgeAria": "{{count}} preinscripción(es) por validar"
     }
   },
   "notifications": {
