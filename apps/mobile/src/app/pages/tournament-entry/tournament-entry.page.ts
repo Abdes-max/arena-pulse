@@ -15,7 +15,6 @@ import {
   Button,
   LanguageSwitcher,
   Logo,
-  Select,
   ShareButton,
   TextField,
   ThemeModeToggle,
@@ -33,7 +32,6 @@ import {
 } from 'design-tokens';
 import { debounceTime } from 'rxjs';
 import {
-  PublicSport,
   PublicTournamentDirectoryItem,
   PublicTournamentSummary,
   isTournamentCurrentOrUpcoming,
@@ -53,7 +51,6 @@ const PAGE_SIZE = 20;
     LanguageSwitcher,
     Logo,
     RouterLink,
-    Select,
     ShareButton,
     TextField,
     ThemeModeToggle,
@@ -95,19 +92,6 @@ export class TournamentEntryPage {
   protected readonly privacyUrl = `${environment.webUrl}/privacy`;
   protected readonly termsUrl = `${environment.webUrl}/terms`;
   protected readonly appUrl = environment.webUrl;
-  // Governs the hero's own CTA: this screen's H1 promises "Suivre une
-  // compétition", so its primary action should deliver on that (jump to
-  // the published-events list already on this same page) rather than
-  // "Créer un tournoi" -- an organizer action, and one this app can't even
-  // complete itself. That link still lives in the nav next to Connexion,
-  // just no longer competing for the hero's single most prominent button.
-  protected readonly hasTournaments = computed(() => this.tournaments().length > 0);
-  // Whether the hero (title/hint/CTAs/marquee) is shown, or collapsed down
-  // to just a back arrow -- toggled by "Voir les événements" so the
-  // published list gets the whole screen instead of sharing it below the
-  // fold, and the dark hero doesn't stay competing for attention once its
-  // job (getting the visitor to the list) is done.
-  protected readonly showHero = signal(true);
   protected readonly showSettings = signal(false);
   // Lets the whole "Partager l'app" row act as the tap target (matching
   // every other row) instead of just the small ap-share-button icon inside
@@ -131,22 +115,12 @@ export class TournamentEntryPage {
 
   // --- "Événements publiés" section: server-side directory search (mirrors
   // apps/web's discover.page, same debounce/filters/load-more logic) ---
+  // Kept light on a phone: the name search, À venir / Passés and
+  // "Inscriptions ouvertes" only (no sport/place/date, which apps/web's
+  // Découvrir page still offers).
   protected readonly q = signal('');
-  protected readonly sportId = signal('');
-  protected readonly place = signal('');
-  protected readonly dateFrom = signal('');
   protected readonly timeFilter = signal<TimeFilterValue>('');
-  protected readonly sports = signal<PublicSport[]>([]);
-  protected readonly sportOptions = computed(() => {
-    const lang = this.language();
-    return [
-      {
-        value: '',
-        label: this.transloco.translate('tournamentEntry.published.filters.allSports', {}, lang),
-      },
-      ...this.sports().map((sport) => ({ value: sport.id, label: sport.name })),
-    ];
-  });
+  protected readonly registrationOnly = signal(false);
 
   protected readonly searchItems = signal<PublicTournamentDirectoryItem[]>([]);
   protected readonly searchTotal = signal(0);
@@ -162,15 +136,12 @@ export class TournamentEntryPage {
   private searchPage = 1;
   private readonly searchFilters = computed(() => ({
     q: this.q().trim(),
-    sportId: this.sportId(),
-    location: this.place().trim(),
-    dateFrom: this.dateFrom(),
     time: this.timeFilter(),
+    registrationOnly: this.registrationOnly(),
   }));
 
   constructor() {
     void this.api.listTournaments(50).then((tournaments) => this.tournaments.set(tournaments));
-    void this.api.listSports().then((sports) => this.sports.set(sports));
 
     toObservable(this.searchFilters)
       .pipe(debounceTime(300), takeUntilDestroyed())
@@ -188,10 +159,8 @@ export class TournamentEntryPage {
   private async runSearch(
     filters: {
       q: string;
-      sportId: string;
-      location: string;
-      dateFrom: string;
       time: TimeFilterValue;
+      registrationOnly: boolean;
     },
     append: boolean,
   ): Promise<void> {
@@ -199,10 +168,8 @@ export class TournamentEntryPage {
     try {
       const result = await this.api.searchTournaments({
         q: filters.q || undefined,
-        sportId: filters.sportId || undefined,
-        location: filters.location || undefined,
-        dateFrom: filters.dateFrom || undefined,
         time: filters.time || undefined,
+        registration: filters.registrationOnly ? 'open' : undefined,
         page: this.searchPage,
         pageSize: PAGE_SIZE,
       });
@@ -233,14 +200,6 @@ export class TournamentEntryPage {
   // happens to carry.
   protected goToTournament(tournament: { slug: string }): void {
     void this.router.navigate(['/', tournament.slug]);
-  }
-
-  protected viewEvents(): void {
-    this.showHero.set(false);
-  }
-
-  protected backToHero(): void {
-    this.showHero.set(true);
   }
 
   protected toggleSettings(): void {

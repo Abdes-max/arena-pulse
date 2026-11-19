@@ -1,31 +1,30 @@
 {
   "tournamentEntry": {
     "settingsAria": "Settings",
-    "back": "Back",
     "shareText": "Discover TournArena, the app to follow your competitions.",
     "hero": {
-      "title": "Follow a competition",
       "hint": "Pools, knockout brackets, schedule and live standings.",
-      "ctaViewEvents": "See events",
-      "marqueeLabel": "Happening now"
+      "marqueeLabel": "Happening now",
+      "titleMain": "Run tournaments and championships",
+      "titleEmphasis": "followed live by everyone.",
+      "ctaCreate": "Create my tournament"
     },
     "published": {
       "title": "Published events",
       "searchLabel": "Search an event",
       "searchPlaceholder": "Search an event…",
       "filters": {
-        "sportLabel": "Sport",
-        "allSports": "All sports",
-        "locationLabel": "Location",
-        "locationPlaceholder": "City, venue…",
-        "dateFromLabel": "From",
         "timeLabel": "Period",
         "upcoming": "Upcoming",
-        "past": "Past"
+        "past": "Past",
+        "registrationOpen": "Registration open"
       },
       "empty": "No event found.",
       "loadMore": "Load more",
-      "loading": "Loading…"
+      "loading": "Loading…",
+      "emptyRegistrationTitle": "No tournament is open for registration right now",
+      "emptyRegistrationText": "Come back soon, or browse every published tournament.",
+      "seeAll": "See all tournaments"
     },
     "settings": {
       "title": "Settings",

@@ -1,31 +1,30 @@
 {
   "tournamentEntry": {
     "settingsAria": "Paramètres",
-    "back": "Retour",
     "shareText": "Découvrez TournArena, l'app pour suivre vos compétitions.",
     "hero": {
-      "title": "Suivre une compétition",
       "hint": "Poules, tableaux à élimination, calendrier et classements en direct.",
-      "ctaViewEvents": "Voir les événements",
-      "marqueeLabel": "En ce moment"
+      "marqueeLabel": "En ce moment",
+      "titleMain": "Organisez tournois et championnats",
+      "titleEmphasis": "suivis en direct par tout le monde.",
+      "ctaCreate": "Créer mon tournoi"
     },
     "published": {
       "title": "Événements publiés",
       "searchLabel": "Rechercher un événement",
       "searchPlaceholder": "Rechercher un événement…",
       "filters": {
-        "sportLabel": "Sport",
-        "allSports": "Tous les sports",
-        "locationLabel": "Lieu",
-        "locationPlaceholder": "Ville, salle…",
-        "dateFromLabel": "À partir du",
         "timeLabel": "Période",
         "upcoming": "À venir",
-        "past": "Passés"
+        "past": "Passés",
+        "registrationOpen": "Inscriptions ouvertes"
       },
       "empty": "Aucun événement trouvé.",
       "loadMore": "Charger plus",
-      "loading": "Chargement…"
+      "loading": "Chargement…",
+      "emptyRegistrationTitle": "Aucun tournoi n'est ouvert aux inscriptions pour le moment",
+      "emptyRegistrationText": "Revenez bientôt, ou consultez tous les tournois publiés.",
+      "seeAll": "Voir tous les tournois"
     },
     "settings": {
       "title": "Paramètres",
