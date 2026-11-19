@@ -82,3 +82,39 @@ textarea {
     outline-offset: 2px;
   }
 }
+
+// "Inscriptions ouvertes" filter pill -- shared by the Découvrir page and
+// the landing page's "Événements publiés" (and mirrored in apps/mobile's
+// home screen): ember dot, signal-to-ember gradient once pressed. Global
+// rather than per page to keep each page's stylesheet within its budget.
+.registration-filter-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  padding: var(--ap-space-2) var(--ap-space-4);
+  font: inherit;
+  font-weight: 600;
+  color: var(--ap-color-fg);
+  background: var(--ap-color-bg);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: 999px;
+  cursor: pointer;
+
+  &::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--ap-color-ember);
+  }
+
+  &[aria-pressed='true'] {
+    color: #fff;
+    background: linear-gradient(100deg, var(--ap-color-signal), var(--ap-color-ember));
+    border-color: transparent;
+
+    &::before {
+      background: currentColor;
+    }
+  }
+}
