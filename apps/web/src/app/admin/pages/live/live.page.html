@@ -2,10 +2,6 @@
   <h1>{{ 'admin.live.title' | transloco }}</h1>
   <p class="live-page__intro">{{ 'admin.live.intro' | transloco }}</p>
 
-  @if (errorMessage(); as message) {
-    <p class="live-page__error" role="alert">{{ message | transloco }}</p>
-  }
-
   @if (loading()) {
     <p>{{ 'admin.live.loading' | transloco }}</p>
   } @else if (rotations().length === 0) {

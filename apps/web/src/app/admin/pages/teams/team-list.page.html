@@ -4,10 +4,6 @@
   @if (loading()) {
     <p>{{ 'admin.teamList.loading' | transloco }}</p>
   } @else {
-    @if (errorMessage(); as message) {
-      <p class="team-list-page__error" role="alert">{{ message | transloco }}</p>
-    }
-
     @if (tierExceededModal(); as tier) {
       <!-- Same backdrop-button-sibling modal pattern as
            tournament-form.page.html's own personalization dialog. -->

@@ -23,6 +23,7 @@ import {
 import { OrganizationsService } from '../../core/organizations.service';
 import { PermissionsService } from '../../core/permissions.service';
 import { TournamentsService } from '../../core/tournaments.service';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 @Component({
   selector: 'app-collaborators-page',
@@ -66,6 +67,8 @@ export class CollaboratorsPage {
   protected readonly pendingInvitations = signal<PendingInvitation[]>([]);
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage);
   protected readonly inviting = signal(false);
 
   protected readonly inviteForm = this.formBuilder.nonNullable.group({

@@ -9,10 +9,6 @@
     }
     <p class="review-page__intro">{{ 'admin.review.intro' | transloco }}</p>
 
-    @if (errorMessage(); as message) {
-      <p class="review-page__error" role="alert">{{ message | transloco }}</p>
-    }
-
     <dl class="review-page__stats">
       <div>
         <dt>{{ 'admin.review.stats.teams' | transloco }}</dt>

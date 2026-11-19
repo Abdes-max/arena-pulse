@@ -50,9 +50,6 @@
           formControlName="password"
           autocomplete="new-password"
         />
-        @if (errorMessage(); as message) {
-          <p class="register-page__error" role="alert">{{ message | transloco }}</p>
-        }
         <ap-button type="submit" [disabled]="submitting()">{{
           'admin.auth.register.submit' | transloco
         }}</ap-button>
@@ -69,9 +66,6 @@
         </p>
         @if (resent()) {
           <p class="register-page__hint">{{ 'admin.auth.register.resent' | transloco }}</p>
-        }
-        @if (errorMessage(); as message) {
-          <p class="register-page__error" role="alert">{{ message | transloco }}</p>
         }
         <ap-button type="button" [disabled]="submitting()" (click)="resendVerification()">
           {{ 'admin.auth.register.resend' | transloco }}

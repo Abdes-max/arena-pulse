@@ -25,9 +25,6 @@
         êtes le dernier compte super-administrateur restant.
       </p>
 
-      @if (errorMessage(); as message) {
-        <p class="super-admin-account-page__error" role="alert">{{ message }}</p>
-      }
       <ap-type-to-confirm
         [pending]="deleting()"
         (confirm)="deleteAccount()"

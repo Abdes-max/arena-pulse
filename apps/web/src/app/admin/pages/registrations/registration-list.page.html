@@ -4,10 +4,6 @@
   @if (loading()) {
     <p>{{ 'admin.registrationList.loading' | transloco }}</p>
   } @else {
-    @if (errorMessage(); as message) {
-      <p class="registration-list-page__error" role="alert">{{ message | transloco }}</p>
-    }
-
     @if (settings(); as s) {
       <p class="registration-list-page__hint">
         {{

@@ -19,6 +19,7 @@ import { OrganizationsService } from '../../core/organizations.service';
 import { RefereesService } from '../../core/referees.service';
 import { TeamsService } from '../../core/teams.service';
 import { TournamentsService } from '../../core/tournaments.service';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 type PublicationTierCode = 'FREE' | 'STANDARD' | 'LARGE';
 
@@ -68,6 +69,8 @@ export class TeamListPage {
 
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage);
   protected readonly teams = signal<Team[]>([]);
 
   // "You're on the Découverte plan" upsell dialog (see
@@ -435,6 +438,19 @@ export class TeamListPage {
     }
   }
 
+  /**
+   * A team must belong to a category: with none in the tournament (e.g.
+   * created from the web form, which adds none), say so instead of
+   * silently doing nothing. True when the add can go on.
+   */
+  private assertHasCategory(): boolean {
+    if (this.categories().length > 0) {
+      return true;
+    }
+    this.errorMessage.set('admin.teamList.errors.noCategory');
+    return false;
+  }
+
   private focusNameField(): void {
     setTimeout(() =>
       document.querySelector<HTMLInputElement>('.team-list-page__name-field input')?.focus(),
@@ -453,6 +469,9 @@ export class TeamListPage {
   /** One name per line, through the CSV import (header line, then "name;category"). */
   protected async addPastedList(): Promise<void> {
     const organizationId = this.organization()?.id;
+    if (!this.assertHasCategory()) {
+      return;
+    }
     this.selectDefaultCategory();
     const category = this.categories().find((c) => c.id === this.formCategoryId());
     const names = this.pastedNames();
@@ -529,8 +548,12 @@ export class TeamListPage {
   protected async submitForm(): Promise<void> {
     const organizationId = this.organization()?.id;
     const name = this.formName().trim();
+    if (!organizationId || !name || !this.assertHasCategory()) {
+      return;
+    }
     const categoryId = this.formCategoryId();
-    if (!organizationId || !name || !categoryId) {
+    if (!categoryId) {
+      this.errorMessage.set('admin.teamList.errors.chooseCategory');
       return;
     }
     const managerName = this.formManagerName().trim() || undefined;

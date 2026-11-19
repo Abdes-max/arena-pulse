@@ -33,9 +33,6 @@
     <a class="login-page__forgot" routerLink="/forgot-password">{{
       'admin.auth.login.forgotPassword' | transloco
     }}</a>
-    @if (errorMessage(); as message) {
-      <p class="login-page__error" role="alert">{{ message | transloco }}</p>
-    }
     @if (needsVerification()) {
       @if (resent()) {
         <p class="login-page__hint">{{ 'admin.auth.login.resent' | transloco }}</p>

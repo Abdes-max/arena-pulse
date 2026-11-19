@@ -1139,7 +1139,8 @@
         "addPlayer": "Impossible d'ajouter ce joueur.",
         "removePlayer": "Impossible de retirer ce joueur.",
         "logoPremiumLocked": "Réservé aux tournois de plus de {{count}} équipes ou à un abonnement annuel actif.",
-        "chooseCategory": "Choisissez d’abord une catégorie."
+        "chooseCategory": "Choisissez d’abord une catégorie.",
+        "noCategory": "Ajoutez d’abord une catégorie dans l’onglet Général."
       },
       "logoPremiumHint": "Les logos d’équipe sont réservés aux tournois de plus de {{count}} équipes ou à un abonnement annuel actif.",
       "tierModal": {

@@ -54,6 +54,7 @@ import { SponsorsService } from '../../core/sponsors.service';
 import { SportsService } from '../../core/sports.service';
 import { THEME_MAP } from '../../core/theme-map';
 import { TournamentsService } from '../../core/tournaments.service';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 const STATUS_TO_BADGE: Record<TournamentStatus, BadgeStatus> = {
   DRAFT: 'draft',
@@ -129,6 +130,8 @@ export class TournamentFormPage {
   protected readonly loading = signal(true);
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage);
 
   protected readonly sports = signal<Sport[]>([]);
   protected readonly sportOptions = computed<SelectOption[]>(() => {

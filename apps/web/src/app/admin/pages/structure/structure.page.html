@@ -4,10 +4,6 @@
   @if (loading()) {
     <p>{{ 'admin.structure.loading' | transloco }}</p>
   } @else {
-    @if (errorMessage(); as message) {
-      <p class="structure-page__error" role="alert">{{ message | transloco }}</p>
-    }
-
     @if (categories().length === 0) {
       <p>{{ 'admin.structure.addCategoryFirst' | transloco }}</p>
     } @else {

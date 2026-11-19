@@ -1037,7 +1037,8 @@
         "addPlayer": "No se ha podido añadir este jugador.",
         "removePlayer": "No se ha podido quitar este jugador.",
         "logoPremiumLocked": "Reservado a torneos con más de {{count}} equipos o con una suscripción anual activa.",
-        "chooseCategory": "Elige primero una categoría."
+        "chooseCategory": "Elige primero una categoría.",
+        "noCategory": "Añade primero una categoría en la pestaña General."
       },
       "logoPremiumHint": "Los logos de equipo están reservados a torneos con más de {{count}} equipos o con una suscripción anual activa.",
       "tierModal": {

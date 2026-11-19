@@ -12,6 +12,7 @@ import {
 } from 'shared-models';
 import { AuthService } from '../../core/auth.service';
 import { RegistrationsService } from '../../core/registrations.service';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 const STATUS_TO_BADGE: Record<RegistrationStatus, BadgeStatus> = {
   PENDING: 'draft',
@@ -51,6 +52,8 @@ export class RegistrationListPage {
   protected readonly loading = signal(true);
   protected readonly busy = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage);
   protected readonly registrations = signal<OrganizerRegistration[]>([]);
   protected readonly settings = signal<RegistrationSettings | null>(null);
   protected readonly filter = signal<Filter>('PENDING');

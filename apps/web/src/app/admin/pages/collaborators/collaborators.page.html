@@ -4,10 +4,6 @@
   @if (loading()) {
     <p>{{ 'admin.collaborators.loading' | transloco }}</p>
   } @else {
-    @if (errorMessage(); as message) {
-      <p class="collaborators-page__error" role="alert">{{ message | transloco }}</p>
-    }
-
     <section>
       <h2>{{ 'admin.collaborators.membersTitle' | transloco }}</h2>
       <table class="collaborators-page__table">
