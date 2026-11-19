@@ -1,0 +1,96 @@
+@use '../../../organizer/section-card';
+
+.registration-page {
+  --padding-top: var(--ap-space-4);
+  --padding-bottom: var(--ap-space-8);
+  --padding-start: var(--ap-space-4);
+  --padding-end: var(--ap-space-4);
+}
+
+// Same card as the app's other blocks (organizer/_section-card.scss).
+.registration-page__block {
+  @include section-card.section-card;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-4);
+
+  > h2 {
+    margin-bottom: 0;
+  }
+}
+
+.registration-page__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-4);
+}
+
+.registration-page__intro,
+.registration-page__muted {
+  margin: 0;
+}
+
+.registration-page__muted,
+.registration-page__hint {
+  color: var(--ap-color-muted);
+}
+
+.registration-page__note {
+  margin: 0;
+  padding: var(--ap-space-3);
+  background: var(--ap-color-bg);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  font-size: 0.9rem;
+}
+
+.registration-page__warning {
+  margin: 0;
+  color: var(--ap-color-warning);
+  font-weight: 600;
+}
+
+.registration-page__hint {
+  margin: calc(-1 * var(--ap-space-2)) 0 0;
+  font-size: 0.8rem;
+}
+
+.registration-page__switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-3);
+  font-weight: 600;
+
+  input {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--ap-color-primary);
+  }
+}
+
+.registration-page__club-linked {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ap-space-2);
+  margin: calc(-1 * var(--ap-space-2)) 0 0;
+  font-size: 0.85rem;
+  color: var(--ap-color-muted);
+
+  img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    border-radius: 50%;
+  }
+
+  button {
+    padding: 0;
+    font: inherit;
+    color: var(--ap-color-primary);
+    text-decoration: underline;
+    background: none;
+    border: 0;
+  }
+}

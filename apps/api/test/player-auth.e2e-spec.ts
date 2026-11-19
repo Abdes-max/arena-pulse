@@ -130,6 +130,35 @@ describe('Player auth (e2e)', () => {
       .expect(401);
   });
 
+  it('hands the refresh token to the mobile app in the body (native mode)', async () => {
+    const registerRes = await request(app.getHttpServer())
+      .post('/api/v1/player-auth/register')
+      .set('x-client', 'native')
+      .send(credentials)
+      .expect(201);
+    const { refreshToken } = registerRes.body as { refreshToken?: string };
+    expect(refreshToken).toEqual(expect.any(String));
+
+    // No cookie: the token comes back in the body, and rotates.
+    const refreshRes = await request(app.getHttpServer())
+      .post('/api/v1/player-auth/refresh')
+      .set('x-client', 'native')
+      .send({ refreshToken })
+      .expect(200);
+    const rotated = (refreshRes.body as { refreshToken?: string }).refreshToken;
+    expect(rotated).toEqual(expect.any(String));
+    expect(rotated).not.toBe(refreshToken);
+
+    await request(app.getHttpServer())
+      .post('/api/v1/player-auth/logout')
+      .send({ refreshToken: rotated })
+      .expect(204);
+    await request(app.getHttpServer())
+      .post('/api/v1/player-auth/refresh')
+      .send({ refreshToken: rotated })
+      .expect(401);
+  });
+
   it('logs out and invalidates the refresh token', async () => {
     const registerRes = await request(app.getHttpServer())
       .post('/api/v1/player-auth/register')

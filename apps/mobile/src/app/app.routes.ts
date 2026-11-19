@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { organizerAuthGuard, organizerGuestGuard } from './organizer/core/auth.guard';
+import { playerAuthGuard } from './core/player-auth.guard';
 
 export const routes: Routes = [
   {
@@ -119,6 +120,24 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./pages/notifications/notifications.page').then((m) => m.NotificationsPage),
   },
+  // Team manager (pre-registrations): same French addresses as the website.
+  {
+    path: 'espace-responsable',
+    pathMatch: 'full',
+    canActivate: [playerAuthGuard],
+    loadComponent: () =>
+      import('./pages/manager/space/manager-space.page').then((m) => m.ManagerSpacePage),
+  },
+  {
+    path: 'espace-responsable/connexion',
+    loadComponent: () =>
+      import('./pages/manager/login/manager-login.page').then((m) => m.ManagerLoginPage),
+  },
+  {
+    path: 'espace-responsable/creer-un-compte',
+    loadComponent: () =>
+      import('./pages/manager/register/manager-register.page').then((m) => m.ManagerRegisterPage),
+  },
   {
     path: ':slug',
     loadComponent: () => import('./shell/tournament-shell').then((m) => m.TournamentShell),
@@ -150,6 +169,12 @@ export const routes: Routes = [
         path: 'favorites',
         loadComponent: () =>
           import('./pages/favorites/favorites.page').then((m) => m.FavoritesPage),
+      },
+      {
+        path: 'register',
+        canActivate: [playerAuthGuard],
+        loadComponent: () =>
+          import('./pages/manager/registration/registration.page').then((m) => m.RegistrationPage),
       },
       {
         path: 'team/:teamId',

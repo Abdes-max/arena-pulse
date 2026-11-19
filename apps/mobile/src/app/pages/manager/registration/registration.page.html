@@ -1,0 +1,107 @@
+<ion-content class="registration-page">
+  <section class="registration-page__block">
+    <h2>
+      {{ (individual() ? 'manager.form.titleIndividual' : 'manager.form.title') | transloco }}
+    </h2>
+
+    @if (loading()) {
+      <p class="registration-page__muted">{{ 'manager.loading' | transloco }}</p>
+    } @else if (!info()?.open) {
+      <p class="registration-page__muted">{{ 'manager.form.closed' | transloco }}</p>
+    } @else {
+      <p class="registration-page__intro">{{ 'manager.form.intro' | transloco }}</p>
+      @if (info()?.paymentInfo; as paymentInfo) {
+        <p class="registration-page__note">
+          <strong>{{ 'manager.form.payment' | transloco }}</strong> {{ paymentInfo }}
+        </p>
+      }
+
+      <form class="registration-page__form" [formGroup]="form" (ngSubmit)="submit()">
+        <ap-select
+          [label]="'manager.form.category' | transloco"
+          [options]="categoryOptions()"
+          [value]="selectedCategoryId()"
+          (valueChange)="selectedCategoryId.set($event)"
+        />
+
+        @if (selectedCategory(); as category) {
+          <p class="registration-page__note">
+            {{ 'manager.form.fee' | transloco: { fee: feeLabel(category) } }}
+          </p>
+          @if (remaining() === 0) {
+            <p class="registration-page__warning">{{ 'manager.form.full' | transloco }}</p>
+          }
+
+          @if (individual()) {
+            <ap-text-field
+              [label]="'manager.form.playerFirstName' | transloco"
+              formControlName="playerFirstName"
+              autocomplete="given-name"
+            />
+            <ap-text-field
+              [label]="'manager.form.playerLastName' | transloco"
+              formControlName="playerLastName"
+              autocomplete="family-name"
+            />
+          } @else {
+            @if (clubSearchAvailable()) {
+              <label class="registration-page__switch">
+                <span>{{ 'manager.form.clubSearch' | transloco }}</span>
+                <input
+                  type="checkbox"
+                  [checked]="useClubSearch()"
+                  (change)="toggleClubSearch($event)"
+                />
+              </label>
+            }
+            @if (clubSearchAvailable() && useClubSearch()) {
+              <ap-autocomplete-field
+                [label]="'manager.form.teamName' | transloco"
+                [placeholder]="'manager.form.clubPlaceholder' | transloco"
+                [value]="form.controls.teamName.value"
+                [suggestions]="clubSuggestions()"
+                [loading]="clubSearch.loading()"
+                [hint]="clubSearch.failed() ? ('manager.form.clubSearchFailed' | transloco) : null"
+                (valueChange)="onTeamNameInput($event)"
+                (suggestionSelect)="onClubSelect($event)"
+              />
+            } @else {
+              <ap-text-field
+                [label]="'manager.form.teamName' | transloco"
+                formControlName="teamName"
+              />
+            }
+            @if (externalClubId()) {
+              <p class="registration-page__club-linked">
+                @if (clubLogo(); as logo) {
+                  <img [src]="logo" alt="" />
+                }
+                <span>{{ 'manager.form.clubLinked' | transloco: { club: clubLabel() } }}</span>
+                <button type="button" (click)="unlinkClub()">
+                  {{ 'manager.form.unlink' | transloco }}
+                </button>
+              </p>
+            }
+          }
+          <ap-text-field
+            [label]="'manager.form.email' | transloco"
+            type="email"
+            formControlName="managerEmail"
+            autocomplete="email"
+          />
+          <ap-text-field
+            [label]="'manager.form.phone' | transloco"
+            type="tel"
+            formControlName="managerPhone"
+            autocomplete="tel"
+          />
+          <p class="registration-page__hint">{{ 'manager.form.phoneHint' | transloco }}</p>
+
+          <ap-button type="submit" [fullWidth]="true" [disabled]="form.invalid || submitting()">
+            {{ 'manager.form.submit' | transloco }}
+          </ap-button>
+        }
+      </form>
+    }
+  </section>
+</ion-content>

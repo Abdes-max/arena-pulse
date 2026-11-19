@@ -754,5 +754,119 @@
   },
   "feedback": {
     "close": "Cerrar"
+  },
+  "manager": {
+    "back": "Volver",
+    "loading": "Cargando…",
+    "settingsRow": "Espacio del responsable",
+    "fields": {
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "email": "Email",
+      "password": "Contraseña"
+    },
+    "login": {
+      "title": "Acceso responsable",
+      "lede": "Para preinscribir a tu equipo en torneos y seguir tus solicitudes.",
+      "submit": "Iniciar sesión",
+      "noAccount": "¿Aún no tienes cuenta?",
+      "create": "Crear una cuenta de responsable",
+      "error": "Email o contraseña incorrectos."
+    },
+    "register": {
+      "title": "Cuenta de responsable",
+      "lede": "Sirve para preinscribir a tu equipo en torneos. Es distinta de una cuenta de organizador. Contraseña: 10 caracteres como mínimo.",
+      "submit": "Crear mi cuenta",
+      "hasAccount": "¿Ya tienes cuenta?",
+      "login": "Iniciar sesión",
+      "error": "No se pudo crear la cuenta, inténtalo de nuevo.",
+      "errorTaken": "Ya existe una cuenta con este email."
+    },
+    "form": {
+      "title": "Preinscribir un equipo",
+      "titleIndividual": "Preinscripción",
+      "closed": "Las inscripciones no están abiertas para este torneo.",
+      "intro": "El organizador validará tu solicitud y te confirmará la plaza por e-mail.",
+      "payment": "Pago:",
+      "category": "Categoría",
+      "chooseCategory": "Elegir una categoría",
+      "fee": "Tarifa: {{fee}} (pagada directamente al organizador)",
+      "free": "Gratis",
+      "full": "Categoría completa: tu solicitud irá a la lista de espera.",
+      "playerFirstName": "Nombre del jugador",
+      "playerLastName": "Apellido del jugador",
+      "clubSearch": "Buscar el club en el directorio",
+      "teamName": "Nombre del equipo",
+      "clubPlaceholder": "Nombre del club",
+      "clubSearchFailed": "Búsqueda de clubes no disponible: escribe el nombre.",
+      "clubLinked": "Club vinculado: {{club}}",
+      "unlink": "Desvincular",
+      "department": "Departamento {{code}}",
+      "email": "Email del responsable",
+      "phone": "Teléfono del responsable",
+      "phoneHint": "El organizador te llamará a este número sobre la inscripción.",
+      "submit": "Enviar la preinscripción",
+      "sent": "Preinscripción enviada: el organizador la validará.",
+      "error": "No se pudo enviar la inscripción, inténtalo de nuevo.",
+      "errorLoad": "No se pudieron cargar las categorías del torneo."
+    },
+    "home": {
+      "title": "Inscripciones abiertas",
+      "cta": "Preinscribirse",
+      "mySpace": "Mi espacio de responsable",
+      "unlimited": "Plazas disponibles",
+      "full": "Completo · lista de espera",
+      "places": "{{remaining}} plaza(s) de {{total}}"
+    }
+  },
+  "myRegistrations": {
+    "title": "Mi espacio de responsable",
+    "loading": "Cargando…",
+    "empty": "Ninguna inscripción por ahora.",
+    "browse": "Ver torneos con inscripciones abiertas",
+    "cancel": "Anular mi solicitud",
+    "reason": "Motivo",
+    "status": {
+      "PENDING": "Pendiente de validación",
+      "CONFIRMED": "Confirmada",
+      "WAITLIST": "Lista de espera",
+      "REJECTED": "Rechazada",
+      "CANCELLED": "Cancelada",
+      "PAID": "Confirmada",
+      "PENDING_PAYMENT": "Pago en curso"
+    },
+    "errors": {
+      "load": "No se pudieron cargar tus inscripciones.",
+      "cancel": "No se pudo anular esta solicitud."
+    },
+    "hello": "Hola {{name}}.",
+    "lede": "Tus preinscripciones y el balance de tus equipos.",
+    "logout": "Cerrar sesión",
+    "statsTitle": "Mis estadísticas",
+    "registrationsTitle": "Mis inscripciones",
+    "tiles": {
+      "tournaments": "Torneos",
+      "tournamentsHint": "{{count}} inscripción(es) en total",
+      "played": "Partidos jugados",
+      "won": "Victorias",
+      "wonHint": "{{drawn}} empate(s) · {{lost}} derrota(s)",
+      "scored": "Goles / puntos marcados",
+      "scoredHint": "{{conceded}} recibidos",
+      "pending": "Pendientes",
+      "pendingHint": "{{count}} en lista de espera"
+    },
+    "outcomesTitle": "Balance de partidos",
+    "perTeamTitle": "Por equipo",
+    "noTeams": "Tus equipos aparecerán aquí cuando se confirme una inscripción.",
+    "table": {
+      "team": "Equipo",
+      "played": "PJ",
+      "won": "G",
+      "drawn": "E",
+      "lost": "P",
+      "wonLong": "Victorias",
+      "drawnLong": "Empates",
+      "lostLong": "Derrotas"
+    }
   }
 }

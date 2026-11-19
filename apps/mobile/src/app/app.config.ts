@@ -21,6 +21,8 @@ import { NotificationsService } from './core/notifications.service';
 import { languageInterceptor } from './core/language.interceptor';
 import { OrganizerAuthService } from './organizer/core/auth.service';
 import { organizerAuthInterceptor } from './organizer/core/auth.interceptor';
+import { playerAuthInterceptor } from './core/player-auth.interceptor';
+import { PlayerAuthService } from './core/player-auth.service';
 import { SessionTimeoutService } from './organizer/core/session-timeout.service';
 
 export const appConfig: ApplicationConfig = {
@@ -28,7 +30,9 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     { provide: ErrorHandler, useClass: GlobalErrorHandler },
     provideRouter(routes),
-    provideHttpClient(withInterceptors([languageInterceptor, organizerAuthInterceptor])),
+    provideHttpClient(
+      withInterceptors([languageInterceptor, organizerAuthInterceptor, playerAuthInterceptor]),
+    ),
     // Forced to 'md' (rather than Ionic's default per-platform auto-detect,
     // which picks 'ios' on a real iPhone) -- every page in this app was
     // built and visually tuned against 'md' mode's toolbar layout (a normal
@@ -51,6 +55,10 @@ export const appConfig: ApplicationConfig = {
     // Harmless 401 when there's no session yet, caught silently inside
     // OrganizerAuthService.silentRefresh().
     provideAppInitializer(() => inject(OrganizerAuthService).silentRefresh()),
+    // Team manager session (pre-registrations, manager space), never blocking start-up.
+    provideAppInitializer(() => {
+      void inject(PlayerAuthService).silentRefresh();
+    }),
     // Forces SessionTimeoutService's constructor to run at startup -- it
     // self-starts/stops by reacting to OrganizerAuthService.isAuthenticated()
     // (see its own doc comment for why, unlike apps/web's version, which a

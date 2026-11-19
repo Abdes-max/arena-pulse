@@ -1,13 +1,16 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
+import { isPlayerScopedRequest } from '../../core/player-auth.interceptor';
 import { OrganizerAuthService } from './auth.service';
 
-// Simpler than apps/web/src/app/admin/core/auth.interceptor.ts: this app has
-// only one kind of authenticated caller (the organizer), so there's no
-// player-/super-admin-scoped token to avoid overriding. The public endpoints
+// The team manager's requests (player-auth, registrations) carry their own
+// token (playerAuthInterceptor) -- never the organizer's. The public endpoints
 // PublicApiService calls are all @Public() server-side and ignore the
 // Authorization header entirely, so attaching it unconditionally is harmless.
 export const organizerAuthInterceptor: HttpInterceptorFn = (req, next) => {
+  if (isPlayerScopedRequest(req.url)) {
+    return next(req);
+  }
   const token = inject(OrganizerAuthService).getAccessToken();
   if (!token) {
     return next(req);
