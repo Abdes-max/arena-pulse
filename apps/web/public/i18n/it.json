@@ -1779,5 +1779,11 @@
       "load": "Impossibile caricare le tue iscrizioni.",
       "cancel": "Impossibile annullare questa richiesta."
     }
+  },
+  "notFound": {
+    "title": "Pagina non trovata",
+    "body": "Questa pagina non esiste o è stata spostata.",
+    "home": "Torna alla home",
+    "discover": "Scopri i tornei"
   }
 }

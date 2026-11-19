@@ -1881,5 +1881,11 @@
       "load": "Could not load your registrations.",
       "cancel": "Could not withdraw this request."
     }
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "This page doesn't exist or has moved.",
+    "home": "Back to home",
+    "discover": "Discover tournaments"
   }
 }
