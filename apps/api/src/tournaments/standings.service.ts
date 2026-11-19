@@ -244,11 +244,14 @@ export class StandingsService {
       tournamentId,
       groupId,
     );
-    const rules = await this.prisma.qualificationRule.findMany({
-      where: { groupId },
-      include: { targetPhase: { select: { name: true } } },
-      orderBy: { fromPosition: 'asc' },
-    });
+    const [rules, final] = await Promise.all([
+      this.prisma.qualificationRule.findMany({
+        where: { groupId },
+        include: { targetPhase: { select: { name: true } } },
+        orderBy: { fromPosition: 'asc' },
+      }),
+      this.qualificationsAreFinal(groupId),
+    ]);
 
     return rules.map((rule) => ({
       ruleId: rule.id,
@@ -259,6 +262,7 @@ export class StandingsService {
       qualifiedTeams: rows
         .filter(
           (row) =>
+            final &&
             row.position >= rule.fromPosition &&
             row.position <= rule.toPosition,
         )
@@ -268,5 +272,25 @@ export class StandingsService {
           position: row.position,
         })),
     }));
+  }
+
+  /**
+   * Who goes through is only known once the pool's scores are validated by
+   * the organizer ("Valider les scores des phases de poules", which needs
+   * every match settled) -- until then every client (admin, public site,
+   * apps) got "Qualifié" badges from the live order, even at 0-0. The
+   * fictitious seed pool of a knockout-only format never needs validating.
+   */
+  async qualificationsAreFinal(groupId: string): Promise<boolean> {
+    const group = await this.prisma.group.findUnique({
+      where: { id: groupId },
+      select: {
+        phase: { select: { isSeedPhase: true, scoresValidatedAt: true } },
+      },
+    });
+    return (
+      !!group &&
+      (group.phase.isSeedPhase || group.phase.scoresValidatedAt !== null)
+    );
   }
 }

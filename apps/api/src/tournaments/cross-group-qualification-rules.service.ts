@@ -201,6 +201,9 @@ export class CrossGroupQualificationRulesService {
       orderBy: { createdAt: 'asc' },
     });
     const results: QualificationResult[] = [];
+    // Same gate as StandingsService.getQualifications: no qualified team
+    // before the pool scores are validated.
+    const final = await this.standingsService.qualificationsAreFinal(groupId);
     for (const rule of rules) {
       const ranking = await this.rankRule(organizationId, tournamentId, rule, {
         rankEvenIfIncomplete: true,
@@ -209,7 +212,8 @@ export class CrossGroupQualificationRulesService {
       const qualifiedTeams = (ranking?.ranked ?? [])
         .slice(0, rule.bestCount)
         .filter(
-          (row) => row.groupId === groupId && !tiedTeamIds.has(row.teamId),
+          (row) =>
+            final && row.groupId === groupId && !tiedTeamIds.has(row.teamId),
         )
         .map((row) => ({
           id: row.teamId,
