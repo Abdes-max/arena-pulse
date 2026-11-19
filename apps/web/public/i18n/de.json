@@ -284,7 +284,8 @@
       "unlimited": "Plätze verfügbar",
       "full": "Ausgebucht · Warteliste",
       "places": "{{remaining}} Platz/Plätze von {{total}}",
-      "payment": "Zahlung"
+      "payment": "Zahlung",
+      "mySpace": "Mein Verantwortlichen-Bereich"
     }
   },
   "schedule": {
@@ -1774,7 +1775,7 @@
     "full": "Ausgebucht · Warteliste"
   },
   "myRegistrations": {
-    "title": "Meine Anmeldungen",
+    "title": "Mein Teamverantwortlichen-Bereich",
     "loading": "Wird geladen…",
     "empty": "Noch keine Anmeldung.",
     "browse": "Turniere mit offener Anmeldung ansehen",
@@ -1792,6 +1793,35 @@
     "errors": {
       "load": "Ihre Anmeldungen konnten nicht geladen werden.",
       "cancel": "Diese Anfrage konnte nicht zurückgezogen werden."
+    },
+    "hello": "Hallo {{name}}.",
+    "lede": "Deine Voranmeldungen und die Bilanz deiner Teams.",
+    "logout": "Abmelden",
+    "statsTitle": "Meine Statistiken",
+    "registrationsTitle": "Meine Anmeldungen",
+    "tiles": {
+      "tournaments": "Turniere",
+      "tournamentsHint": "{{count}} Anmeldung(en) insgesamt",
+      "played": "Gespielte Spiele",
+      "won": "Siege",
+      "wonHint": "{{drawn}} Unentschieden · {{lost}} Niederlage(n)",
+      "scored": "Erzielte Tore / Punkte",
+      "scoredHint": "{{conceded}} kassiert",
+      "pending": "Ausstehend",
+      "pendingHint": "{{count}} auf der Warteliste"
+    },
+    "outcomesTitle": "Spielbilanz",
+    "perTeamTitle": "Nach Team",
+    "noTeams": "Deine Teams erscheinen hier, sobald eine Anmeldung bestätigt ist.",
+    "table": {
+      "team": "Team",
+      "played": "Sp",
+      "won": "S",
+      "drawn": "U",
+      "lost": "N",
+      "wonLong": "Siege",
+      "drawnLong": "Unentschieden",
+      "lostLong": "Niederlagen"
     }
   },
   "notFound": {

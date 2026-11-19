@@ -284,7 +284,8 @@
       "unlimited": "Plazas disponibles",
       "full": "Completo · lista de espera",
       "places": "{{remaining}} plaza(s) de {{total}}",
-      "payment": "Pago"
+      "payment": "Pago",
+      "mySpace": "Mi espacio de responsable"
     }
   },
   "schedule": {
@@ -1774,7 +1775,7 @@
     "full": "Completo · lista de espera"
   },
   "myRegistrations": {
-    "title": "Mis inscripciones",
+    "title": "Mi espacio de responsable",
     "loading": "Cargando…",
     "empty": "Ninguna inscripción por ahora.",
     "browse": "Ver torneos con inscripciones abiertas",
@@ -1792,6 +1793,35 @@
     "errors": {
       "load": "No se pudieron cargar tus inscripciones.",
       "cancel": "No se pudo anular esta solicitud."
+    },
+    "hello": "Hola {{name}}.",
+    "lede": "Tus preinscripciones y el balance de tus equipos.",
+    "logout": "Cerrar sesión",
+    "statsTitle": "Mis estadísticas",
+    "registrationsTitle": "Mis inscripciones",
+    "tiles": {
+      "tournaments": "Torneos",
+      "tournamentsHint": "{{count}} inscripción(es) en total",
+      "played": "Partidos jugados",
+      "won": "Victorias",
+      "wonHint": "{{drawn}} empate(s) · {{lost}} derrota(s)",
+      "scored": "Goles / puntos marcados",
+      "scoredHint": "{{conceded}} recibidos",
+      "pending": "Pendientes",
+      "pendingHint": "{{count}} en lista de espera"
+    },
+    "outcomesTitle": "Balance de partidos",
+    "perTeamTitle": "Por equipo",
+    "noTeams": "Tus equipos aparecerán aquí cuando se confirme una inscripción.",
+    "table": {
+      "team": "Equipo",
+      "played": "PJ",
+      "won": "G",
+      "drawn": "E",
+      "lost": "P",
+      "wonLong": "Victorias",
+      "drawnLong": "Empates",
+      "lostLong": "Derrotas"
     }
   },
   "notFound": {

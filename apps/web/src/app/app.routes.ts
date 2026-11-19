@@ -237,11 +237,9 @@ export const routes: Routes = [
           import('./admin/pages/print-export/print-export.page').then((m) => m.PrintExportPage),
       },
       {
+        // Now a block of the Équipes tab; old links (e-mails...) still land there.
         path: 'tournaments/:tournamentId/registrations',
-        loadComponent: () =>
-          import('./admin/pages/registrations/registration-list.page').then(
-            (m) => m.RegistrationListPage,
-          ),
+        redirectTo: 'tournaments/:tournamentId/teams',
       },
       {
         path: 'tournaments/:tournamentId/live',

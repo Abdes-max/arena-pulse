@@ -39,7 +39,9 @@ export class PlayerLoginPage {
       const { email, password } = this.form.getRawValue();
       await this.playerAuthService.login(email, password);
       const requestedReturnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
-      const returnUrl = isSafeReturnUrl(requestedReturnUrl) ? requestedReturnUrl : '/';
+      const returnUrl = isSafeReturnUrl(requestedReturnUrl)
+        ? requestedReturnUrl
+        : '/player/registrations';
       await this.router.navigateByUrl(returnUrl);
     } catch {
       this.errorMessage.set('Email ou mot de passe incorrect.');

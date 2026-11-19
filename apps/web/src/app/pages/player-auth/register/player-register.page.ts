@@ -41,7 +41,9 @@ export class PlayerRegisterPage {
     try {
       await this.playerAuthService.register(this.form.getRawValue());
       const requestedReturnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
-      const returnUrl = isSafeReturnUrl(requestedReturnUrl) ? requestedReturnUrl : '/';
+      const returnUrl = isSafeReturnUrl(requestedReturnUrl)
+        ? requestedReturnUrl
+        : '/player/registrations';
       await this.router.navigateByUrl(returnUrl);
     } catch (error) {
       if (error instanceof HttpErrorResponse && error.status === 409) {

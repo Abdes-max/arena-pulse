@@ -843,7 +843,8 @@
                 </ap-button>
                 <a
                   class="tournament-form-page__reg-link"
-                  [routerLink]="['/admin/tournaments', tournamentId(), 'registrations']"
+                  [routerLink]="['/admin/tournaments', tournamentId(), 'teams']"
+                  fragment="inscriptions"
                 >
                   {{
                     'admin.tournamentForm.registrations.requests'

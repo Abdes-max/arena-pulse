@@ -1,49 +1,172 @@
-<main class="my-registrations-page">
-  <h1>{{ 'myRegistrations.title' | transloco }}</h1>
+<main class="my-registrations-page auth-shell">
+  <header class="auth-shell__hero" data-theme="ink-signal" data-mode="dark">
+    <div class="auth-shell__hero-inner">
+      <a class="auth-shell__home" routerLink="/" aria-label="TournArena">
+        <ap-logo variant="on-dark" />
+      </a>
+      <h1>{{ 'myRegistrations.title' | transloco }}</h1>
+      <p class="auth-shell__lede">
+        @if (player(); as p) {
+          {{ 'myRegistrations.hello' | transloco: { name: p.firstName } }}
+        }
+        {{ 'myRegistrations.lede' | transloco }}
+      </p>
+      <button type="button" class="my-registrations-page__logout" (click)="logout()">
+        {{ 'myRegistrations.logout' | transloco }}
+      </button>
+    </div>
+  </header>
 
-  @if (errorMessage(); as message) {
-    <p class="my-registrations-page__error" role="alert">{{ message | transloco }}</p>
-  }
-
-  @if (loading()) {
-    <p>{{ 'myRegistrations.loading' | transloco }}</p>
-  } @else {
-    <ul class="my-registrations-page__list">
-      @for (r of registrations(); track r.id) {
-        <li class="my-registrations-page__item">
-          <div class="my-registrations-page__head">
-            <a [routerLink]="['/', r.tournament.slug]">
-              <strong>{{ r.tournament.name }}</strong>
-            </a>
-            <span class="my-registrations-page__status" [attr.data-status]="r.status">{{
-              'myRegistrations.status.' + r.status | transloco
-            }}</span>
+  <div class="my-registrations-page__body">
+    @if (loading()) {
+      <p class="my-registrations-page__muted">{{ 'myRegistrations.loading' | transloco }}</p>
+    } @else {
+      @if (stats(); as s) {
+        <section class="my-registrations-page__block">
+          <h2>{{ 'myRegistrations.statsTitle' | transloco }}</h2>
+          <div class="stats-dashboard__tiles">
+            <div class="stats-dashboard__tile stats-dashboard__tile--signal">
+              <span class="stats-dashboard__tile-label">{{
+                'myRegistrations.tiles.tournaments' | transloco
+              }}</span>
+              <span class="stats-dashboard__tile-value">{{ s.tournaments }}</span>
+              <span class="stats-dashboard__tile-hint">{{
+                'myRegistrations.tiles.tournamentsHint'
+                  | transloco: { count: s.registrations.total }
+              }}</span>
+            </div>
+            <div class="stats-dashboard__tile">
+              <span class="stats-dashboard__tile-label">{{
+                'myRegistrations.tiles.played' | transloco
+              }}</span>
+              <span class="stats-dashboard__tile-value">{{ s.totals.played }}</span>
+            </div>
+            <div class="stats-dashboard__tile stats-dashboard__tile--success">
+              <span class="stats-dashboard__tile-label">{{
+                'myRegistrations.tiles.won' | transloco
+              }}</span>
+              <span class="stats-dashboard__tile-value">{{ s.totals.won }}</span>
+              <span class="stats-dashboard__tile-hint">{{
+                'myRegistrations.tiles.wonHint'
+                  | transloco: { drawn: s.totals.drawn, lost: s.totals.lost }
+              }}</span>
+            </div>
+            <div class="stats-dashboard__tile">
+              <span class="stats-dashboard__tile-label">{{
+                'myRegistrations.tiles.scored' | transloco
+              }}</span>
+              <span class="stats-dashboard__tile-value">{{ s.totals.scored }}</span>
+              <span class="stats-dashboard__tile-hint">{{
+                'myRegistrations.tiles.scoredHint' | transloco: { conceded: s.totals.conceded }
+              }}</span>
+            </div>
+            <div class="stats-dashboard__tile stats-dashboard__tile--warning">
+              <span class="stats-dashboard__tile-label">{{
+                'myRegistrations.tiles.pending' | transloco
+              }}</span>
+              <span class="stats-dashboard__tile-value">{{ s.registrations.pending }}</span>
+              <span class="stats-dashboard__tile-hint">{{
+                'myRegistrations.tiles.pendingHint' | transloco: { count: s.registrations.waitlist }
+              }}</span>
+            </div>
           </div>
-          <p class="my-registrations-page__meta">{{ r.teamName }} · {{ r.category.name }}</p>
-          @if (r.rejectionReason) {
-            <p class="my-registrations-page__meta">
-              {{ 'myRegistrations.reason' | transloco }} : {{ r.rejectionReason }}
+
+          @if (s.totals.played > 0) {
+            <h3 class="my-registrations-page__subheading">
+              {{ 'myRegistrations.outcomesTitle' | transloco }}
+            </h3>
+            <ap-stats-segments [items]="outcomes()" />
+          }
+
+          @if (s.teams.length > 0) {
+            <h3 class="my-registrations-page__subheading">
+              {{ 'myRegistrations.perTeamTitle' | transloco }}
+            </h3>
+            <div class="my-registrations-page__table-wrap">
+              <table class="my-registrations-page__table">
+                <thead>
+                  <tr>
+                    <th scope="col">{{ 'myRegistrations.table.team' | transloco }}</th>
+                    <th scope="col">{{ 'myRegistrations.table.played' | transloco }}</th>
+                    <th scope="col">{{ 'myRegistrations.table.won' | transloco }}</th>
+                    <th scope="col">{{ 'myRegistrations.table.drawn' | transloco }}</th>
+                    <th scope="col">{{ 'myRegistrations.table.lost' | transloco }}</th>
+                    <th scope="col">+/-</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (team of s.teams; track $index) {
+                    <tr>
+                      <td>
+                        <strong>{{ team.teamName }}</strong>
+                        <small>
+                          <a [routerLink]="['/', team.tournament.slug]">{{
+                            team.tournament.name
+                          }}</a>
+                          · {{ team.categoryName }}
+                        </small>
+                      </td>
+                      <td>{{ team.played }}</td>
+                      <td>{{ team.won }}</td>
+                      <td>{{ team.drawn }}</td>
+                      <td>{{ team.lost }}</td>
+                      <td>{{ team.scored - team.conceded }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          } @else {
+            <p class="my-registrations-page__muted">
+              {{ 'myRegistrations.noTeams' | transloco }}
             </p>
           }
-          @if (cancellable(r)) {
-            <ap-button
-              type="button"
-              variant="ghost"
-              size="sm"
-              [disabled]="busyId() === r.id"
-              (click)="cancel(r)"
-              >{{ 'myRegistrations.cancel' | transloco }}</ap-button
-            >
-          }
-        </li>
-      } @empty {
-        <li class="my-registrations-page__empty">
-          {{ 'myRegistrations.empty' | transloco }}
-          <a routerLink="/decouvrir" [queryParams]="{ inscriptions: 1 }">{{
-            'myRegistrations.browse' | transloco
-          }}</a>
-        </li>
+        </section>
       }
-    </ul>
-  }
+
+      <section class="my-registrations-page__block">
+        <h2>{{ 'myRegistrations.registrationsTitle' | transloco }}</h2>
+        <ul class="my-registrations-page__list">
+          @for (r of registrations(); track r.id) {
+            <li class="my-registrations-page__item">
+              <div class="my-registrations-page__head">
+                <a [routerLink]="['/', r.tournament.slug]">
+                  <strong>{{ r.tournament.name }}</strong>
+                </a>
+                <span class="my-registrations-page__status" [attr.data-status]="r.status">{{
+                  'myRegistrations.status.' + r.status | transloco
+                }}</span>
+              </div>
+              <p class="my-registrations-page__meta">{{ r.teamName }} · {{ r.category.name }}</p>
+              @if (r.rejectionReason) {
+                <p class="my-registrations-page__meta">
+                  {{ 'myRegistrations.reason' | transloco }} : {{ r.rejectionReason }}
+                </p>
+              }
+              @if (cancellable(r)) {
+                <ap-button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  [disabled]="busyId() === r.id"
+                  (click)="cancel(r)"
+                  >{{ 'myRegistrations.cancel' | transloco }}</ap-button
+                >
+              }
+            </li>
+          } @empty {
+            <li class="my-registrations-page__empty">
+              {{ 'myRegistrations.empty' | transloco }}
+            </li>
+          }
+        </ul>
+        <a
+          class="my-registrations-page__browse"
+          routerLink="/decouvrir"
+          [queryParams]="{ inscriptions: 1 }"
+          >{{ 'myRegistrations.browse' | transloco }}</a
+        >
+      </section>
+    }
+  </div>
 </main>

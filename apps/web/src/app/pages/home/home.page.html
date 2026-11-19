@@ -4,9 +4,16 @@
       <section class="home-page__registration">
         <div class="home-page__registration-head">
           <h2>{{ 'home.registration.title' | transloco }}</h2>
-          <a class="home-page__registration-cta" [routerLink]="['/', t.slug, 'register']">
-            {{ 'home.registration.cta' | transloco }}
-          </a>
+          <span class="home-page__registration-actions">
+            @if (player()) {
+              <a class="home-page__registration-space" routerLink="/player/registrations">
+                {{ 'home.registration.mySpace' | transloco }}
+              </a>
+            }
+            <a class="home-page__registration-cta" [routerLink]="['/', t.slug, 'register']">
+              {{ 'home.registration.cta' | transloco }}
+            </a>
+          </span>
         </div>
         <ul class="home-page__registration-categories">
           @for (c of r.categories; track c.id) {

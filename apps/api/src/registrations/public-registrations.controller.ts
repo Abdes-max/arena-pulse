@@ -53,6 +53,11 @@ export class PublicRegistrationsController {
     return this.registrationsService.listForPlayer(player.id);
   }
 
+  @Get('registrations/me/stats')
+  myStats(@CurrentPlayer() player: AuthenticatedPlayer) {
+    return this.registrationsService.statsForPlayer(player.id);
+  }
+
   @HttpCode(HttpStatus.OK)
   @Post('registrations/confirm')
   async confirmPayment(

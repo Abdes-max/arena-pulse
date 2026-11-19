@@ -164,6 +164,18 @@
   gap: var(--ap-space-3);
 }
 
+.home-page__registration-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ap-space-3);
+}
+
+.home-page__registration-space {
+  font-weight: 600;
+  color: inherit;
+}
+
 .home-page__registration-cta {
   padding: var(--ap-space-2) var(--ap-space-4);
   font-weight: 700;
