@@ -6,6 +6,7 @@ import { Button, TextField } from 'design-system';
 import { AuthService } from '../../core/auth.service';
 import { InvitationsService } from '../../core/invitations.service';
 import { InvitationLookup } from '../../core/models';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 type PageState = 'loading' | 'error' | 'new-account' | 'log-in-required' | 'ready-to-accept';
 
@@ -29,6 +30,8 @@ export class AcceptInvitationPage {
   protected readonly invitation = signal<InvitationLookup | null>(null);
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage);
 
   protected readonly form = this.formBuilder.nonNullable.group({
     firstName: ['', Validators.required],

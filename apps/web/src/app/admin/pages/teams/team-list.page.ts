@@ -19,6 +19,7 @@ import { OrganizationsService } from '../../core/organizations.service';
 import { RefereesService } from '../../core/referees.service';
 import { TeamsService } from '../../core/teams.service';
 import { TournamentsService } from '../../core/tournaments.service';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 type PublicationTierCode = 'FREE' | 'STANDARD' | 'LARGE';
 
@@ -68,6 +69,8 @@ export class TeamListPage {
 
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage);
   protected readonly teams = signal<Team[]>([]);
 
   // "You're on the Découverte plan" upsell dialog (see
@@ -436,27 +439,16 @@ export class TeamListPage {
   }
 
   /**
-   * The form's category, creating a default one (named after the sport,
-   * like the app's wizard) when the tournament has none yet -- e.g. created
-   * from the web form, which adds no category. Without it the add silently
-   * did nothing: a team must belong to a category. Null if it can't be had.
+   * A team must belong to a category: with none in the tournament (e.g.
+   * created from the web form, which adds none), say so instead of
+   * silently doing nothing. True when the add can go on.
    */
-  private async ensureCategoryId(organizationId: string): Promise<string | null> {
-    this.selectDefaultCategory();
-    if (this.formCategoryId()) {
-      return this.formCategoryId();
-    }
+  private assertHasCategory(): boolean {
     if (this.categories().length > 0) {
-      return null;
+      return true;
     }
-    const category = await this.tournamentsService.createCategory(
-      organizationId,
-      this.tournamentId,
-      this.tournament()?.sportName || 'Équipes',
-    );
-    this.categories.set([category]);
-    this.formCategoryId.set(category.id);
-    return category.id;
+    this.errorMessage.set('admin.teamList.errors.noCategory');
+    return false;
   }
 
   private focusNameField(): void {
@@ -477,16 +469,12 @@ export class TeamListPage {
   /** One name per line, through the CSV import (header line, then "name;category"). */
   protected async addPastedList(): Promise<void> {
     const organizationId = this.organization()?.id;
-    const names = this.pastedNames();
-    if (organizationId && names.length > 0) {
-      try {
-        await this.ensureCategoryId(organizationId);
-      } catch {
-        this.errorMessage.set('admin.teamList.errors.import');
-        return;
-      }
+    if (!this.assertHasCategory()) {
+      return;
     }
+    this.selectDefaultCategory();
     const category = this.categories().find((c) => c.id === this.formCategoryId());
+    const names = this.pastedNames();
     if (!organizationId || !category || names.length === 0) {
       if (!category) {
         this.errorMessage.set('admin.teamList.errors.chooseCategory');
@@ -560,18 +548,10 @@ export class TeamListPage {
   protected async submitForm(): Promise<void> {
     const organizationId = this.organization()?.id;
     const name = this.formName().trim();
-    if (!organizationId || !name) {
+    if (!organizationId || !name || !this.assertHasCategory()) {
       return;
     }
-    let categoryId: string | null;
-    try {
-      categoryId = this.editingTeamId()
-        ? this.formCategoryId()
-        : await this.ensureCategoryId(organizationId);
-    } catch {
-      this.errorMessage.set('admin.teamList.errors.save');
-      return;
-    }
+    const categoryId = this.formCategoryId();
     if (!categoryId) {
       this.errorMessage.set('admin.teamList.errors.chooseCategory');
       return;

@@ -12,6 +12,7 @@ import { CompetitionPhase, TournamentDetail } from '../../core/models';
 import { ScheduleService } from '../../core/schedule.service';
 import { ScoresService } from '../../core/scores.service';
 import { TournamentsService } from '../../core/tournaments.service';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 interface DraftScore {
   home: number;
@@ -55,6 +56,8 @@ export class LivePage {
   protected readonly loading = signal(true);
   protected readonly saving = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage);
   protected readonly apiError = signal<string | null>(null);
   protected readonly matches = signal<Match[]>([]);
   protected readonly drafts = signal<Map<string, DraftScore>>(new Map());

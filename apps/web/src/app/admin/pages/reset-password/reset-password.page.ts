@@ -5,6 +5,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Button, Logo, TextField } from 'design-system';
 import { AuthService } from '../../core/auth.service';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 type PageState = 'form' | 'success' | 'error';
 
@@ -34,6 +35,8 @@ export class ResetPasswordPage {
   protected readonly state = signal<PageState>('form');
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage);
   // Only shown once a submit was actually attempted -- matches this
   // codebase's submitAttempted convention (see mobile's register.page.ts)
   // for surfacing the mismatch instead of a disabled button silently

@@ -29,6 +29,7 @@ import {
 } from '../../core/models';
 import { TeamsService } from '../../core/teams.service';
 import { TournamentsService } from '../../core/tournaments.service';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 /**
  * The barème/qualification rules are stored per-group in the API (each
@@ -69,6 +70,8 @@ export class StructurePage {
 
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage);
 
   protected readonly categories = signal<Category[]>([]);
   protected readonly selectedCategoryId = signal('');

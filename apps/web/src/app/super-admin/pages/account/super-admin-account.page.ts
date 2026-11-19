@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { Router } from '@angular/router';
 import { Button, TypeToConfirm } from 'design-system';
 import { SuperAdminAuthService } from '../../core/super-admin-auth.service';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 @Component({
   selector: 'app-super-admin-account-page',
@@ -20,6 +21,8 @@ export class SuperAdminAccountPage {
   protected readonly dangerZoneOpen = signal(false);
   protected readonly deleting = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage, { translate: false });
 
   protected openDangerZone(): void {
     this.dangerZoneOpen.set(true);

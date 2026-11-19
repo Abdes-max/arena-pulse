@@ -6,6 +6,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { Button, Logo, TextField } from 'design-system';
 import { AuthService } from '../../core/auth.service';
 import { isSafeReturnUrl } from '../../../core/safe-return-url.util';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 @Component({
   selector: 'app-login-page',
@@ -29,6 +30,8 @@ export class LoginPage {
 
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage);
   protected readonly needsVerification = signal(false);
   protected readonly resent = signal(false);
   // Set by SessionTimeoutService's own redirect (apps/web/src/app/admin/core)

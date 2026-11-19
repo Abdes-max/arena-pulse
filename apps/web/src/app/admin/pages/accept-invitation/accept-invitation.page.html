@@ -40,9 +40,6 @@
             formControlName="password"
             autocomplete="new-password"
           />
-          @if (errorMessage(); as message) {
-            <p class="accept-invitation-page__error" role="alert">{{ message | transloco }}</p>
-          }
           <ap-button type="submit" [disabled]="submitting()">{{
             'admin.auth.acceptInvitation.accept' | transloco
           }}</ap-button>
@@ -75,9 +72,6 @@
         <p>
           {{ 'admin.auth.acceptInvitation.readyBody' | transloco: { email: invitation()?.email } }}
         </p>
-        @if (errorMessage(); as message) {
-          <p class="accept-invitation-page__error" role="alert">{{ message | transloco }}</p>
-        }
         <ap-button type="button" [disabled]="submitting()" (click)="acceptAsCurrentUser()">
           {{ 'admin.auth.acceptInvitation.accept' | transloco }}
         </ap-button>

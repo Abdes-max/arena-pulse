@@ -3,10 +3,6 @@
     <p>{{ 'admin.tournamentForm.loading' | transloco }}</p>
   } @else {
     <div class="tournament-form-page__no-print">
-      @if (errorMessage(); as message) {
-        <p class="tournament-form-page__error" role="alert">{{ message | transloco }}</p>
-      }
-
       <h1>
         {{
           (isEditMode() ? 'admin.tournamentForm.generalTitle' : 'admin.tournamentForm.createTitle')

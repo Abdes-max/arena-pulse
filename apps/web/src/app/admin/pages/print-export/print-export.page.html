@@ -11,10 +11,6 @@
   @if (loading()) {
     <p>{{ 'admin.printExport.loading' | transloco }}</p>
   } @else {
-    @if (errorMessage(); as message) {
-      <p class="print-export-page__error" role="alert">{{ message | transloco }}</p>
-    }
-
     @if (tournament(); as t) {
       <header
         class="print-export-page__header"

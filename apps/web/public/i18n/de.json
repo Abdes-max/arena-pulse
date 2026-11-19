@@ -1037,7 +1037,8 @@
         "addPlayer": "Dieser Spieler konnte nicht hinzugefügt werden.",
         "removePlayer": "Dieser Spieler konnte nicht entfernt werden.",
         "logoPremiumLocked": "Nur für Turniere mit mehr als {{count}} Teams oder mit aktivem Jahresabonnement.",
-        "chooseCategory": "Wählen Sie zuerst eine Kategorie."
+        "chooseCategory": "Wählen Sie zuerst eine Kategorie.",
+        "noCategory": "Füge zuerst eine Kategorie im Tab Allgemein hinzu."
       },
       "logoPremiumHint": "Team-Logos sind nur für Turniere mit mehr als {{count}} Teams oder mit aktivem Jahresabonnement verfügbar.",
       "tierModal": {

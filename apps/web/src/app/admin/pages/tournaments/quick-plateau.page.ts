@@ -11,6 +11,7 @@ import { Sport } from '../../core/models';
 import { SportsService } from '../../core/sports.service';
 import { TournamentsService } from '../../core/tournaments.service';
 import { knockoutSizesFor, previewPlateau } from '../../shared/plateau-preview';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 function toInt(value: string): number {
   const parsed = Number.parseInt(value, 10);
@@ -98,6 +99,8 @@ export class QuickPlateauPage {
 
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage);
 
   private readonly sports = signal<Sport[]>([]);
   protected readonly sportOptions = computed<SelectOption[]>(() =>

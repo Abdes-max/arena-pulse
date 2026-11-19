@@ -22,6 +22,7 @@ import {
   RoundLabelLang,
   setUnitForSport,
 } from 'shared-models';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 interface QualificationTier {
   label: string;
@@ -66,6 +67,8 @@ export class StandingsPage {
 
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage);
 
   protected readonly categories = signal<Category[]>([]);
   protected readonly selectedCategoryId = signal('');

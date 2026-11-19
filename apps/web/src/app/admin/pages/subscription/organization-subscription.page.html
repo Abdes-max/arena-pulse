@@ -8,10 +8,6 @@
     @if (loading()) {
       <p>{{ 'admin.subscription.loading' | transloco }}</p>
     } @else {
-      @if (errorMessage(); as message) {
-        <p class="subscription-page__error" role="alert">{{ message | transloco }}</p>
-      }
-
       @if (!isAdmin()) {
         <p>{{ 'admin.subscription.adminOnly' | transloco }}</p>
       } @else if (status(); as s) {

@@ -16,10 +16,6 @@
   @if (loading()) {
     <p>{{ 'admin.tournamentList.loading' | transloco }}</p>
   } @else {
-    @if (errorMessage(); as message) {
-      <p class="tournament-list-page__error" role="alert">{{ message | transloco }}</p>
-    }
-
     @if (showOnboarding()) {
       <app-onboarding-checklist
         [steps]="onboardingSteps()"

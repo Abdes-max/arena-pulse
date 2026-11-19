@@ -13,6 +13,7 @@ import { TeamsService } from '../../core/teams.service';
 import { TournamentsService } from '../../core/tournaments.service';
 import { assignPastedNames, isPlaceholderTeamName } from '../../shared/placeholder-teams';
 import { summarizeSchedule } from '../../shared/schedule-summary';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 interface ScheduleRow {
   startTime: string;
@@ -55,6 +56,8 @@ export class TournamentReviewPage {
 
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage);
   protected readonly tournament = signal<TournamentDetail | null>(null);
   protected readonly teams = signal<Team[]>([]);
   protected readonly matches = signal<Match[]>([]);

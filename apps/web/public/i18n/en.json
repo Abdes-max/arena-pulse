@@ -1139,7 +1139,8 @@
         "addPlayer": "Unable to add this player.",
         "removePlayer": "Unable to remove this player.",
         "logoPremiumLocked": "Reserved for tournaments with more than {{count}} teams, or an active annual subscription.",
-        "chooseCategory": "Choose a category first."
+        "chooseCategory": "Choose a category first.",
+        "noCategory": "Add a category first, in the General tab."
       },
       "logoPremiumHint": "Team logos are reserved for tournaments with more than {{count}} teams, or an active annual subscription.",
       "tierModal": {

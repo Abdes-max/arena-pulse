@@ -1037,7 +1037,8 @@
         "addPlayer": "Impossibile aggiungere questo giocatore.",
         "removePlayer": "Impossibile rimuovere questo giocatore.",
         "logoPremiumLocked": "Riservato ai tornei con più di {{count}} squadre o con un abbonamento annuale attivo.",
-        "chooseCategory": "Scegli prima una categoria."
+        "chooseCategory": "Scegli prima una categoria.",
+        "noCategory": "Aggiungi prima una categoria nella scheda Generale."
       },
       "logoPremiumHint": "I loghi delle squadre sono riservati ai tornei con più di {{count}} squadre o con un abbonamento annuale attivo.",
       "tierModal": {
