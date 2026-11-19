@@ -17,10 +17,6 @@
 
 <ion-content class="reg-page">
   <div class="reg-page__scroll">
-    @if (errorMessage(); as message) {
-      <p class="reg-page__error" role="alert">{{ message | transloco }}</p>
-    }
-
     @if (loading()) {
       <p class="reg-page__hint">{{ 'organizer.registrations.loading' | transloco }}</p>
     } @else {

@@ -751,5 +751,8 @@
       "android": "To see banners: Settings > Apps > TournArena > Notifications, then turn on \"Match alerts\".",
       "web": "Notifications are available in the mobile app."
     }
+  },
+  "feedback": {
+    "close": "Close"
   }
 }

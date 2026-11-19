@@ -62,6 +62,7 @@ import { OrganizerTeamsService } from '../../core/teams.service';
 import { OrganizerTournamentsService } from '../../core/tournaments.service';
 import { environment } from '../../../../environments/environment';
 import { isIosNative } from '../../../core/native-platform.util';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 const CLUB_SEARCH_STORAGE_KEY = 'ta.teamClubSearch';
 
@@ -212,6 +213,10 @@ export class OrganizerTournamentWizardPage {
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly errorDetail = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage, {
+    detail: this.errorDetail,
+  });
 
   // ---- Step 1: Infos ----
   protected readonly sports = signal<PublicSport[]>([]);

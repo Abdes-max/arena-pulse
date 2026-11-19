@@ -175,6 +175,9 @@ export class StructurePage {
   protected readonly presetKnockoutHasRankingMatch = signal(false);
   protected readonly presetSubmitting = signal(false);
   protected readonly presetError = signal<string | null>(null);
+  private readonly presetErrorSnackbar = showErrorsInSnackbar(this.presetError, {
+    translate: false,
+  });
   protected readonly presetSuccessMessage = signal<string | null>(null);
 
   // "Qualifier vers plusieurs compétitions" -- off by default, the pool
@@ -415,6 +418,9 @@ export class StructurePage {
   /** Round 1 of each bracket, by bracket id. */
   protected readonly firstRounds = signal<Map<string, BracketFirstRound>>(new Map());
   protected readonly pairingError = signal<string | null>(null);
+  private readonly pairingErrorSnackbar = showErrorsInSnackbar(this.pairingError, {
+    translate: false,
+  });
 
   private async loadFirstRounds(bracketIds: string[]): Promise<void> {
     const organizationId = this.organization()?.id;

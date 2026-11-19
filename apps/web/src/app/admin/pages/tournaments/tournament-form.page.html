@@ -234,11 +234,6 @@
                 | transloco: { from: change.fromLabel, to: change.toLabel }
             }}
           </p>
-          @if (tierChangeError()) {
-            <p class="tournament-form-page__error">
-              {{ tierChangeError() | transloco }}
-            </p>
-          }
           <div class="tournament-form-page__plan-dialog-actions">
             <ap-button
               type="button"

@@ -1,13 +1,27 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { SnackbarService } from '../../core/snackbar.service';
 
-/** Renders SnackbarService's messages, stacked at the bottom of every page. */
+/**
+ * Renders SnackbarService's messages, stacked at the bottom of every page.
+ *
+ * Pinned to the *visible* part of the page (window.visualViewport), not the
+ * layout viewport plain `position: fixed` uses: on a phone, with the
+ * keyboard still open after typing in a form (or the page zoomed), the
+ * latter's bottom sits under the keyboard / off screen, and the message
+ * only showed after scrolling.
+ */
 @Component({
   selector: 'app-snackbar-host',
   imports: [TranslocoPipe],
   template: `
-    <div class="snackbar-host" aria-live="polite">
+    <div
+      class="snackbar-host"
+      aria-live="polite"
+      [style.--snackbar-lift.px]="viewport().lift"
+      [style.--snackbar-center.px]="viewport().center"
+      [style.--snackbar-width.px]="viewport().width"
+    >
       @for (message of snackbar.messages(); track message.id) {
         <div
           class="snackbar-host__item"
@@ -30,13 +44,13 @@ import { SnackbarService } from '../../core/snackbar.service';
   styles: `
     .snackbar-host {
       position: fixed;
-      left: 50%;
-      bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+      left: var(--snackbar-center, 50%);
+      bottom: calc(16px + var(--snackbar-lift, 0px) + env(safe-area-inset-bottom, 0px));
       z-index: 1000;
       display: flex;
       flex-direction: column;
       gap: 8px;
-      width: min(560px, calc(100vw - 32px));
+      width: min(560px, var(--snackbar-width, calc(100vw - 32px)));
       transform: translateX(-50%);
       pointer-events: none;
     }
@@ -94,4 +108,33 @@ import { SnackbarService } from '../../core/snackbar.service';
 })
 export class SnackbarHost {
   protected readonly snackbar = inject(SnackbarService);
+  // lift: px between the layout viewport's bottom and the visible one's;
+  // center/width: the visible area's middle and usable width (null = CSS default).
+  protected readonly viewport = signal<{
+    lift: number;
+    center: number | null;
+    width: number | null;
+  }>({ lift: 0, center: null, width: null });
+
+  constructor() {
+    const visual = typeof window === 'undefined' ? undefined : window.visualViewport;
+    if (!visual) {
+      return;
+    }
+    const update = () => {
+      const layoutHeight = document.documentElement.clientHeight;
+      this.viewport.set({
+        lift: Math.max(0, layoutHeight - (visual.offsetTop + visual.height)),
+        center: visual.offsetLeft + visual.width / 2,
+        width: visual.width - 32,
+      });
+    };
+    visual.addEventListener('resize', update);
+    visual.addEventListener('scroll', update);
+    update();
+    inject(DestroyRef).onDestroy(() => {
+      visual.removeEventListener('resize', update);
+      visual.removeEventListener('scroll', update);
+    });
+  }
 }

@@ -26,9 +26,6 @@
               | transloco: { currentPlan: tierLabel(tier.currentTier) }
           }}
         </p>
-        @if (tierUpgradeError(); as message) {
-          <p class="team-list-page__error" role="alert">{{ message | transloco }}</p>
-        }
         <div class="team-list-page__tier-modal-actions">
           <ap-button type="button" [disabled]="tierUpgrading()" (click)="upgradeToNextTier()">
             {{
