@@ -14,6 +14,8 @@ type PrismaMock = {
   team: { findMany: jest.Mock; findUnique: jest.Mock; delete: jest.Mock };
   tournamentSponsor: { findMany: jest.Mock };
   player: { findUnique: jest.Mock; delete: jest.Mock };
+  registration: { updateMany: jest.Mock };
+  $transaction: jest.Mock;
 };
 
 function createPrismaMock(): PrismaMock {
@@ -27,6 +29,9 @@ function createPrismaMock(): PrismaMock {
     },
     tournamentSponsor: { findMany: jest.fn().mockResolvedValue([]) },
     player: { findUnique: jest.fn(), delete: jest.fn() },
+    registration: { updateMany: jest.fn() },
+    // Batch form: the operations are already-started mock calls.
+    $transaction: jest.fn((ops: unknown[]) => Promise.all(ops)),
   };
 }
 

@@ -63,6 +63,8 @@ type PrismaMock = {
   };
   category: { findFirst: jest.Mock };
   division: { findFirst: jest.Mock };
+  registration: { updateMany: jest.Mock };
+  $transaction: jest.Mock;
 };
 
 function createPrismaMock(): PrismaMock {
@@ -78,6 +80,9 @@ function createPrismaMock(): PrismaMock {
     },
     category: { findFirst: jest.fn() },
     division: { findFirst: jest.fn() },
+    registration: { updateMany: jest.fn() },
+    // Batch form: the operations are already-started mock calls.
+    $transaction: jest.fn((ops: unknown[]) => Promise.all(ops)),
   };
 }
 

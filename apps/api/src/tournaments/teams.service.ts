@@ -274,7 +274,22 @@ export class TeamsService {
       tournamentId,
     );
     const team = await this.getOrThrow(tournamentId, teamId);
-    await this.prisma.team.delete({ where: { id: teamId } });
+    await this.prisma.$transaction([
+      // A confirmed request whose team the organizer removes no longer holds
+      // a place (nor counts as "already registered" for its manager).
+      this.prisma.registration.updateMany({
+        where: {
+          teamId: { in: [teamId] },
+          status: { in: ['CONFIRMED', 'PAID'] },
+        },
+        data: {
+          status: 'REJECTED',
+          rejectionReason: "Équipe retirée par l'organisateur.",
+          decidedAt: new Date(),
+        },
+      }),
+      this.prisma.team.delete({ where: { id: teamId } }),
+    ]);
     await this.deleteLogoFile(team.logoUrl);
   }
 
@@ -289,11 +304,26 @@ export class TeamsService {
     );
     const teams = await this.prisma.team.findMany({
       where: { tournamentId, id: { in: dto.teamIds } },
-      select: { logoUrl: true },
+      select: { id: true, logoUrl: true },
     });
-    await this.prisma.team.deleteMany({
-      where: { tournamentId, id: { in: dto.teamIds } },
-    });
+    await this.prisma.$transaction([
+      // A confirmed request whose team the organizer removes no longer holds
+      // a place (nor counts as "already registered" for its manager).
+      this.prisma.registration.updateMany({
+        where: {
+          teamId: { in: teams.map((team) => team.id) },
+          status: { in: ['CONFIRMED', 'PAID'] },
+        },
+        data: {
+          status: 'REJECTED',
+          rejectionReason: "Équipe retirée par l'organisateur.",
+          decidedAt: new Date(),
+        },
+      }),
+      this.prisma.team.deleteMany({
+        where: { tournamentId, id: { in: dto.teamIds } },
+      }),
+    ]);
     await Promise.all(teams.map((team) => this.deleteLogoFile(team.logoUrl)));
   }
 
