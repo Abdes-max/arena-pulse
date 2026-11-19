@@ -496,7 +496,8 @@
         "errorTitle": "Enlace no válido",
         "errorExpired": "Este enlace de restablecimiento no es válido, ha caducado o ya se ha usado.",
         "errorGeneric": "Ha ocurrido un error, inténtalo de nuevo.",
-        "retry": "Solicitar un nuevo enlace"
+        "retry": "Solicitar un nuevo enlace",
+        "lede": "Al menos 10 caracteres, introducidos dos veces."
       },
       "showPassword": "Mostrar contraseña",
       "hidePassword": "Ocultar contraseña",

@@ -598,7 +598,8 @@
         "errorTitle": "Lien invalide",
         "errorExpired": "Ce lien de réinitialisation est invalide, expiré ou déjà utilisé.",
         "errorGeneric": "Une erreur est survenue, réessayez.",
-        "retry": "Demander un nouveau lien"
+        "retry": "Demander un nouveau lien",
+        "lede": "Au moins 10 caractères, à saisir deux fois."
       },
       "showPassword": "Afficher le mot de passe",
       "hidePassword": "Masquer le mot de passe",

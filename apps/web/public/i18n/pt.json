@@ -496,7 +496,8 @@
         "errorTitle": "Link inválido",
         "errorExpired": "Este link de redefinição é inválido, expirou ou já foi utilizado.",
         "errorGeneric": "Ocorreu um erro, tente novamente.",
-        "retry": "Pedir um novo link"
+        "retry": "Pedir um novo link",
+        "lede": "Pelo menos 10 caracteres, digitados duas vezes."
       },
       "showPassword": "Mostrar palavra-passe",
       "hidePassword": "Ocultar palavra-passe",
