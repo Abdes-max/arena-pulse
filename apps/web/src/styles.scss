@@ -91,8 +91,10 @@ textarea {
   display: inline-flex;
   align-items: center;
   gap: var(--ap-space-2);
-  padding: var(--ap-space-2) var(--ap-space-4);
+  padding: var(--ap-pill-padding, var(--ap-space-2) var(--ap-space-4));
   font: inherit;
+  font-size: var(--ap-pill-font-size, inherit);
+  white-space: nowrap;
   font-weight: 600;
   color: var(--ap-color-fg);
   background: var(--ap-color-bg);
@@ -116,5 +118,31 @@ textarea {
     &::before {
       background: currentColor;
     }
+  }
+}
+
+// Phones: "À venir", "Passés" and "Inscriptions ouvertes" on one line
+// (vitrine and Découvrir) -- compact pills, ap-time-filter's included through
+// its --ap-pill-* variables, and a sideways scroll rather than wrapping if a
+// language's labels run longer. Here rather than in each page's stylesheet
+// to keep those within their budget.
+@media (max-width: 600px) {
+  .landing-page__tournaments-pills,
+  .discover-page__pills {
+    --ap-pill-padding: var(--ap-space-2) var(--ap-space-3);
+    --ap-pill-font-size: 0.85rem;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    scrollbar-width: none;
+
+    > * {
+      flex: none;
+    }
+  }
+
+  // Centered while it fits, then from the start once it scrolls.
+  .landing-page__tournaments-pills {
+    justify-content: safe center;
   }
 }
