@@ -424,7 +424,7 @@ describe('Registrations & payments (e2e)', () => {
     await auth(
       request(app.getHttpServer()).post(`${base}/${tournamentId}/teams`),
     )
-      .send({ name: 'Les Aigles', categoryId })
+      .send({ name: 'Les Hiboux', categoryId })
       .expect(201);
     expect(await remaining()).toBe(1);
 
