@@ -16,6 +16,7 @@ import { routes } from './app.routes';
 import { authInterceptor } from './admin/core/auth.interceptor';
 import { AuthService } from './admin/core/auth.service';
 import { AnalyticsService } from './core/analytics.service';
+import { PageMetaService } from './core/page-meta.service';
 import { GlobalErrorHandler } from './core/global-error-handler';
 import { feedbackInterceptor } from './core/feedback.interceptor';
 import { languageInterceptor } from './core/language.interceptor';
@@ -89,5 +90,7 @@ export const appConfig: ApplicationConfig = {
     // Google Analytics -- started unconditionally for now; a consent banner
     // will call AnalyticsService.start() itself instead, once accepted.
     provideAppInitializer(() => inject(AnalyticsService).start()),
+    // Per-page <title>, description and canonical (SEO) -- see PageMetaService.
+    provideAppInitializer(() => inject(PageMetaService).start()),
   ],
 };

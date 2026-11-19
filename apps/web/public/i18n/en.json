@@ -1887,5 +1887,58 @@
     "body": "This page doesn't exist or has moved.",
     "home": "Back to home",
     "discover": "Discover tournaments"
+  },
+  "seo": {
+    "siteDescription": "TournArena: create and run your sports tournaments — teams, schedule, live scores and standings.",
+    "landing": {
+      "title": "Sports tournament management software",
+      "description": "Set up your tournament in minutes: registrations, groups, match schedule, live scores and automatic standings."
+    },
+    "discover": {
+      "title": "Discover tournaments",
+      "description": "Find a tournament near you: football, padel, basketball… dates, venues and registration."
+    },
+    "contact": {
+      "title": "Contact",
+      "description": "A question about TournArena? Write to us, we reply quickly."
+    },
+    "terms": {
+      "title": "Terms of use",
+      "description": "TournArena's terms of use."
+    },
+    "privacy": {
+      "title": "Privacy policy",
+      "description": "How TournArena collects, uses and protects your personal data."
+    },
+    "tournament": {
+      "home": {
+        "title": "{{name}}",
+        "description": "{{name}}, {{sport}} tournament: match schedule, live results and standings."
+      },
+      "teams": {
+        "title": "Teams – {{name}}",
+        "description": "The teams entered in the {{name}} tournament ({{sport}})."
+      },
+      "team": {
+        "title": "{{team}} – {{name}}",
+        "description": "Matches, results and standings of {{team}} at the {{name}} tournament ({{sport}})."
+      },
+      "standings": {
+        "title": "Standings – {{name}}",
+        "description": "Up-to-date standings of the {{name}} tournament ({{sport}})."
+      },
+      "schedule": {
+        "title": "Matches – {{name}}",
+        "description": "Schedule and results of the {{name}} tournament matches ({{sport}})."
+      },
+      "wrapped": {
+        "title": "Recap – {{name}}",
+        "description": "The {{name}} tournament recap ({{sport}}): key figures and highlights."
+      },
+      "register": {
+        "title": "Registration – {{name}}",
+        "description": "Register your team for the {{name}} tournament ({{sport}})."
+      }
+    }
   }
 }

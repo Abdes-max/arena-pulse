@@ -1785,5 +1785,58 @@
     "body": "Diese Seite existiert nicht oder wurde verschoben.",
     "home": "Zur Startseite",
     "discover": "Turniere entdecken"
+  },
+  "seo": {
+    "siteDescription": "TournArena: Sportturniere erstellen und verwalten — Teams, Spielplan, Live-Ergebnisse und Tabellen.",
+    "landing": {
+      "title": "Software für die Verwaltung von Sportturnieren",
+      "description": "Erstelle dein Turnier in wenigen Minuten: Anmeldungen, Gruppen, Spielplan, Live-Ergebnisse und automatische Tabellen."
+    },
+    "discover": {
+      "title": "Turniere entdecken",
+      "description": "Finde ein Turnier in deiner Nähe: Fußball, Padel, Basketball… Termine, Orte und Anmeldung."
+    },
+    "contact": {
+      "title": "Kontakt",
+      "description": "Eine Frage zu TournArena? Schreib uns, wir antworten schnell."
+    },
+    "terms": {
+      "title": "Nutzungsbedingungen",
+      "description": "Allgemeine Nutzungsbedingungen von TournArena."
+    },
+    "privacy": {
+      "title": "Datenschutzerklärung",
+      "description": "Wie TournArena deine personenbezogenen Daten erhebt, nutzt und schützt."
+    },
+    "tournament": {
+      "home": {
+        "title": "{{name}}",
+        "description": "{{name}}, {{sport}}-Turnier: Spielplan, Live-Ergebnisse und Tabelle."
+      },
+      "teams": {
+        "title": "Teams – {{name}}",
+        "description": "Die gemeldeten Teams des Turniers {{name}} ({{sport}})."
+      },
+      "team": {
+        "title": "{{team}} – {{name}}",
+        "description": "Spiele, Ergebnisse und Tabelle von {{team}} beim Turnier {{name}} ({{sport}})."
+      },
+      "standings": {
+        "title": "Tabelle – {{name}}",
+        "description": "Aktuelle Tabelle des Turniers {{name}} ({{sport}})."
+      },
+      "schedule": {
+        "title": "Spiele – {{name}}",
+        "description": "Spielplan und Ergebnisse des Turniers {{name}} ({{sport}})."
+      },
+      "wrapped": {
+        "title": "Rückblick – {{name}}",
+        "description": "Der Rückblick auf das Turnier {{name}} ({{sport}}): Kennzahlen und Höhepunkte."
+      },
+      "register": {
+        "title": "Anmeldung – {{name}}",
+        "description": "Melde dein Team für das Turnier {{name}} ({{sport}}) an."
+      }
+    }
   }
 }
