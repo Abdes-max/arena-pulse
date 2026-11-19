@@ -79,6 +79,24 @@ export class StandingsPage {
   protected readonly groupStandings = computed(
     () => this.groupStandingsByPhase().get(this.selectedPhaseId()) ?? [],
   );
+  // Ties are only settled once the pool is over -- every match played and,
+  // for a pool feeding a knockout phase, its scores validated in the Scores
+  // tab ("Valider les scores des phases de poules"): until then the order
+  // can still change, so asking who goes ahead would be premature.
+  protected readonly tiesAwaitValidation = computed(() => {
+    const phase = this.phases().find((p) => p.id === this.selectedPhaseId());
+    return !!phase?.feedsKnockout && !phase.scoresValidatedAt;
+  });
+  protected readonly crossGroupTiesOpen = computed(
+    () =>
+      !this.tiesAwaitValidation() &&
+      this.groupStandings().length > 0 &&
+      this.groupStandings().every((group) => group.standings.isComplete),
+  );
+
+  protected canBreakTies(group: { standings: { isComplete: boolean } }): boolean {
+    return group.standings.isComplete && !this.tiesAwaitValidation();
+  }
   // Cross-group (inter-poule) ties -- distinct from a pool's own
   // group.standings.unresolvedTies, since these involve candidates from
   // several pools at once (e.g. "best 3rd place") rather than one pool's

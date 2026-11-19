@@ -215,3 +215,9 @@ ion-title {
   font-weight: 700;
   text-align: center;
 }
+
+.standings-page__ties-pending {
+  margin: var(--ap-space-2) 0 0;
+  color: var(--ap-color-muted);
+  font-size: 0.85rem;
+}

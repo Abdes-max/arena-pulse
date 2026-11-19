@@ -448,7 +448,8 @@
         "loadGeneric": "Impossible de charger les classements.",
         "saveTieChoice": "Impossible d'enregistrer ce choix.",
         "resetTieChoice": "Impossible de réinitialiser ce départage."
-      }
+      },
+      "tiesAfterValidation": "Égalité à départager après la validation des scores des poules (onglet Scores)."
     },
     "quickPlateau": {
       "title": "Créer un événement",

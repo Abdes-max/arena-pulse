@@ -1524,7 +1524,8 @@
         "loadStandings": "Tabellen konnten nicht geladen werden.",
         "saveTieChoice": "Diese Auswahl konnte nicht gespeichert werden.",
         "resetTieChoice": "Dieser Stichentscheid konnte nicht zurückgesetzt werden."
-      }
+      },
+      "tiesAfterValidation": "Gleichstand wird nach der Bestätigung der Gruppenergebnisse aufgelöst (Tab Ergebnisse)."
     },
     "subscription": {
       "title": "Jahresabonnement",

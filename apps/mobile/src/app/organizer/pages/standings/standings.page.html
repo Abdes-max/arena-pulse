@@ -118,7 +118,17 @@
                   </table>
                 </div>
 
-                @if (group.standings.unresolvedTies.length > 0) {
+                @if (
+                  group.standings.unresolvedTies.length > 0 &&
+                  group.standings.isComplete &&
+                  tiesAwaitValidation()
+                ) {
+                  <p class="standings-page__ties-pending">
+                    {{ 'organizer.standings.tiesAfterValidation' | transloco }}
+                  </p>
+                }
+
+                @if (group.standings.unresolvedTies.length > 0 && canBreakTies(group)) {
                   <div class="standings-page__ties">
                     @for (tie of group.standings.unresolvedTies; track tie) {
                       <p class="standings-page__tie">
@@ -148,7 +158,7 @@
               </section>
             }
 
-            @if (crossGroupTies().length > 0) {
+            @if (crossGroupTies().length > 0 && crossGroupTiesOpen()) {
               <section class="standings-page__group">
                 <h2 class="standings-page__group-title">
                   {{ 'organizer.standings.crossGroupTiesTitle' | transloco }}
