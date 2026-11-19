@@ -24,12 +24,22 @@
             }
           </ul>
           <div class="home-page__registration-actions">
-            <a class="home-page__registration-cta" [routerLink]="['/', t.slug, 'register']">
-              {{ 'manager.home.cta' | transloco }}
-            </a>
-            @if (player()) {
-              <a class="home-page__registration-space" routerLink="/espace-responsable">
+            @if (myTeams() > 0) {
+              <!-- Already registered: the manager's space, and more teams if allowed. -->
+              <span class="home-page__registration-done">{{
+                'manager.home.alreadyRegistered' | transloco: { count: myTeams() }
+              }}</span>
+              <a class="home-page__registration-cta" routerLink="/espace-responsable">
                 {{ 'manager.home.mySpace' | transloco }}
+              </a>
+              @if (canRegisterMore()) {
+                <a class="home-page__registration-space" [routerLink]="['/', t.slug, 'register']">
+                  {{ 'manager.home.another' | transloco }}
+                </a>
+              }
+            } @else {
+              <a class="home-page__registration-cta" [routerLink]="['/', t.slug, 'register']">
+                {{ 'manager.home.cta' | transloco }}
               </a>
             }
           </div>

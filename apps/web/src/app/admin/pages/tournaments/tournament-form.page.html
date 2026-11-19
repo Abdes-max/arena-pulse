@@ -825,6 +825,13 @@
                 </table>
               }
 
+              <ap-text-field
+                [label]="'admin.registrationList.settings.maxTeams' | transloco"
+                type="number"
+                [min]="1"
+                [value]="regMaxTeams()"
+                (valueChange)="regMaxTeams.set($event)"
+              />
               <label class="tournament-form-page__reg-textarea">
                 {{ 'admin.registrationList.settings.paymentInfo' | transloco }}
                 <textarea

@@ -388,7 +388,9 @@
       "full": "Complet · liste d'attente",
       "places": "{{remaining}} place(s) sur {{total}}",
       "payment": "Paiement",
-      "mySpace": "Mon espace responsable"
+      "mySpace": "Mon espace responsable",
+      "alreadyRegistered": "Déjà inscrit · {{count}} équipe(s)",
+      "another": "Inscrire une autre équipe"
     }
   },
   "schedule": {
@@ -1250,7 +1252,8 @@
         "level": "Niveau",
         "levelPlaceholder": "ex. Elite",
         "placesHint": "Les places et le tarif se règlent par catégorie dans Général › Catégories › Options.",
-        "save": "Enregistrer"
+        "save": "Enregistrer",
+        "maxTeams": "Équipes max par responsable (club)"
       },
       "filters": {
         "PENDING": "En attente",

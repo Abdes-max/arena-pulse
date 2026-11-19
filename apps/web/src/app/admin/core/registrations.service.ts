@@ -41,6 +41,7 @@ export class RegistrationsService {
       opensAt: string | null;
       closesAt: string | null;
       paymentInfo: string | null;
+      maxTeamsPerRegistrant: number;
     }>,
   ): Promise<RegistrationSettings> {
     return firstValueFrom(

@@ -43,6 +43,8 @@ export class OrganizerRegistrationsPage {
   protected readonly registrations = signal<OrganizerRegistration[]>([]);
   protected readonly settings = signal<RegistrationSettings | null>(null);
   protected readonly paymentInfo = signal('');
+  // Teams one team manager may register (1 unless raised).
+  protected readonly maxTeams = signal('1');
   protected readonly filter = signal<Filter>('PENDING');
   protected readonly filters: Filter[] = ['PENDING', 'CONFIRMED', 'WAITLIST', 'REJECTED', 'ALL'];
   protected readonly rejectingId = signal<string | null>(null);
@@ -140,12 +142,16 @@ export class OrganizerRegistrationsPage {
   }
 
   protected async savePaymentInfo(): Promise<void> {
-    await this.saveSettings({ paymentInfo: this.paymentInfo().trim() || null });
+    await this.saveSettings({
+      paymentInfo: this.paymentInfo().trim() || null,
+      maxTeamsPerRegistrant: Math.min(50, Math.max(1, Math.floor(Number(this.maxTeams())) || 1)),
+    });
   }
 
   private async saveSettings(patch: {
     open?: boolean;
     paymentInfo?: string | null;
+    maxTeamsPerRegistrant?: number;
   }): Promise<void> {
     const base = this.base();
     if (base) {

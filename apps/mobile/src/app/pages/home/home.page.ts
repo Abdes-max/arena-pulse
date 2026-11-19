@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IonContent } from '@ionic/angular/standalone';
 import { TranslocoPipe } from '@jsverse/transloco';
@@ -27,6 +34,11 @@ export class HomePage {
   // a team, and the manager's space once signed in.
   protected readonly registration = signal<PublicRegistrationInfo | null>(null);
   protected readonly player = inject(PlayerAuthService).currentPlayer;
+  // Teams the signed-in manager already registered here ("Déjà inscrit").
+  protected readonly myTeams = signal(0);
+  protected readonly canRegisterMore = computed(
+    () => this.myTeams() < (this.registration()?.maxTeamsPerRegistrant ?? 1),
+  );
 
   constructor() {
     void this.load();
@@ -48,6 +60,19 @@ export class HomePage {
       .getRegistrationInfo(slug)
       .then((info) => this.registration.set(info))
       .catch(() => this.registration.set(null));
+    if (this.player()) {
+      void this.api
+        .listMyRegistrations()
+        .then((mine) =>
+          this.myTeams.set(
+            mine.filter(
+              (r) =>
+                r.tournament.slug === slug && r.status !== 'REJECTED' && r.status !== 'CANCELLED',
+            ).length,
+          ),
+        )
+        .catch(() => this.myTeams.set(0));
+    }
     this.upcomingMatches.set(await this.api.listUpcomingMatches(slug, 3));
   }
 

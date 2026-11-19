@@ -694,7 +694,8 @@
       "errors": {
         "load": "Die Anmeldungen konnten nicht geladen werden.",
         "save": "Diese Änderung konnte nicht gespeichert werden."
-      }
+      },
+      "maxTeams": "Max. Teams pro Verantwortlichem (Verein)"
     },
     "schedule": {
       "hint": "Halten Sie ein Spiel oder ein Zeitfenster gedrückt und ziehen Sie es: Eine Lücke zeigt, wo es landet und zu welcher Uhrzeit. Die folgenden Zeitfenster verschieben sich; Pausen zwischen Phasen bleiben. Eine Mannschaft kann nicht zwei Spiele gleichzeitig bestreiten.",
@@ -819,7 +820,10 @@
       "submit": "Voranmeldung senden",
       "sent": "Voranmeldung gesendet: der Veranstalter prüft sie.",
       "error": "Anmeldung konnte nicht gesendet werden, bitte erneut versuchen.",
-      "errorLoad": "Kategorien des Turniers konnten nicht geladen werden."
+      "errorLoad": "Kategorien des Turniers konnten nicht geladen werden.",
+      "teamCount": "Anzahl der Teams",
+      "teamCountHint": "Angemeldete Teams: {{names}}",
+      "limitReached": "Du hast bereits {{count}} Team(s) angemeldet: das Maximum für dieses Turnier."
     },
     "home": {
       "title": "Anmeldungen offen",
@@ -827,7 +831,9 @@
       "mySpace": "Mein Verantwortlichen-Bereich",
       "unlimited": "Plätze verfügbar",
       "full": "Voll · Warteliste",
-      "places": "{{remaining}} von {{total}} Plätzen"
+      "places": "{{remaining}} von {{total}} Plätzen",
+      "alreadyRegistered": "Bereits angemeldet · {{count}} Team(s)",
+      "another": "Weiteres Team anmelden"
     }
   },
   "myRegistrations": {

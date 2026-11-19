@@ -220,6 +220,12 @@ export class TournamentEntryPage {
    * field itself was tapped (`withKeyboard`).
    */
   protected expandSearch(withoutKeyboard = true): void {
+    // Folded on pointerdown, before the field takes the focus: iOS then has
+    // no reason to scroll the page up to reveal it under the keyboard (which
+    // left a blank screen once the hero had folded away).
+    if (this.searchExpanded() && !withoutKeyboard) {
+      return;
+    }
     this.searchExpanded.set(true);
     if (withoutKeyboard) {
       this.dismissKeyboard();
