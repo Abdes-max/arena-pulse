@@ -353,6 +353,24 @@ export class OrganizerStandingsPage {
     return tierColor ? { label: qualification.targetPhaseName, ...tierColor } : null;
   }
 
+  // Row shading by position: the ranges the qualification rules send
+  // through (e.g. 1st-2nd), known from the start -- unlike the "Qualifié"
+  // badge (isQualified/qualificationTier above), which waits for the pool
+  // scores to be validated: the API names no qualified team before.
+  protected zoneTier(group: GroupStandings, position: number): QualificationTier | null {
+    if (this.qualificationTierPhases().length < 2) {
+      return null;
+    }
+    const qualification = group.qualifications.find(
+      (qual) => position >= qual.fromPosition && position <= qual.toPosition,
+    );
+    if (!qualification) {
+      return null;
+    }
+    const tierColor = this.tierColorByPhaseId().get(qualification.targetPhaseId);
+    return tierColor ? { label: qualification.targetPhaseName, ...tierColor } : null;
+  }
+
   private async loadStandings(): Promise<void> {
     const organizationId = this.organizationId();
     const phase = this.phases().find((p) => p.id === this.selectedPhaseId());
