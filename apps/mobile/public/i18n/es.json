@@ -448,7 +448,8 @@
         "loadGeneric": "No se han podido cargar las clasificaciones.",
         "saveTieChoice": "No se ha podido guardar esta elección.",
         "resetTieChoice": "No se ha podido reiniciar este desempate."
-      }
+      },
+      "tiesAfterValidation": "Empate a resolver tras validar los resultados de los grupos (pestaña Resultados)."
     },
     "quickPlateau": {
       "title": "Create an event",

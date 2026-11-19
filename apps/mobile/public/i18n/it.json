@@ -448,7 +448,8 @@
         "loadGeneric": "Impossibile caricare le classifiche.",
         "saveTieChoice": "Impossibile salvare questa scelta.",
         "resetTieChoice": "Impossibile azzerare questo spareggio."
-      }
+      },
+      "tiesAfterValidation": "Parità da risolvere dopo la convalida dei risultati dei gironi (scheda Risultati)."
     },
     "quickPlateau": {
       "title": "Create an event",

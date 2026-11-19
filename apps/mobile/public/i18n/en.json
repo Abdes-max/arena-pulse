@@ -448,7 +448,8 @@
         "loadGeneric": "Unable to load standings.",
         "saveTieChoice": "Unable to save this choice.",
         "resetTieChoice": "Unable to reset this tie-break."
-      }
+      },
+      "tiesAfterValidation": "Tie to be broken once the pool scores are validated (Scores tab)."
     },
     "quickPlateau": {
       "title": "Create an event",
