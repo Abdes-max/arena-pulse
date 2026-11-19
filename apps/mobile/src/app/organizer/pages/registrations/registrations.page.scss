@@ -168,3 +168,17 @@
 .reg-page__settings {
   @include section-card.section-card;
 }
+
+// Optional settings, folded by default.
+.reg-page__options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-3);
+
+  > summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--ap-color-primary);
+    margin-bottom: var(--ap-space-3);
+  }
+}

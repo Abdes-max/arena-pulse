@@ -378,7 +378,8 @@
         "tournaments": "Tornei",
         "collaborators": "Collaboratori",
         "subscription": "Abbonamento",
-        "account": "Account"
+        "account": "Account",
+        "managerSpace": "Il mio spazio responsabile"
       },
       "logout": "Disconnetti",
       "menu": "Menu",
@@ -978,7 +979,12 @@
         "open": "Iscrizioni possibili",
         "offHint": "I giocatori non possono ancora preiscriversi.",
         "category": "Categoria",
-        "requests": "Vedi le richieste ({{count}} in attesa)"
+        "requests": "Vedi le richieste ({{count}} in attesa)",
+        "places": "Numero di posti",
+        "placesFor": "Posti · {{name}}",
+        "fee": "Tariffa per squadra (€)",
+        "feeFor": "Tariffa · {{name}} (€)",
+        "options": "Opzioni (date, tariffa per categoria, pagamento…)"
       }
     },
     "teamList": {

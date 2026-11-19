@@ -158,7 +158,9 @@
           "full": "Vollständig"
         },
         "structureAction": "Struktur",
-        "registrationsAction": "Anmeldungen"
+        "registrationsAction": "Anmeldungen",
+        "openFilter": "Anmeldung offen",
+        "managerSpace": "Mein Teamverantwortlichen-Bereich"
       }
     },
     "account": {
@@ -661,7 +663,7 @@
       "paymentInfo": "Zahlungsmodalitäten",
       "paymentInfoPlaceholder": "z. B. 40 € pro Team, vor Ort",
       "save": "Speichern",
-      "moreOnWeb": "Daten, Plätze pro Kategorie und Turnierkarte: auf der Website.",
+      "moreOnWeb": "Anmeldedaten und Turnierkarte: auf der Website.",
       "filters": {
         "PENDING": "Offen",
         "CONFIRMED": "Bestätigt",
@@ -696,7 +698,13 @@
         "load": "Die Anmeldungen konnten nicht geladen werden.",
         "save": "Diese Änderung konnte nicht gespeichert werden."
       },
-      "maxTeams": "Max. Teams pro Verantwortlichem (Verein)"
+      "maxTeams": "Max. Teams pro Verantwortlichem (Verein)",
+      "places": "Anzahl der Plätze",
+      "placesFor": "Plätze · {{name}}",
+      "placesUnlimited": "Unbegrenzt",
+      "fee": "Preis pro Team (€)",
+      "feeFor": "Preis · {{name}} (€)",
+      "options": "Optionen (Daten, Preis pro Kategorie, Zahlung…)"
     },
     "schedule": {
       "hint": "Halten Sie ein Spiel oder ein Zeitfenster gedrückt und ziehen Sie es: Eine Lücke zeigt, wo es landet und zu welcher Uhrzeit. Die folgenden Zeitfenster verschieben sich; Pausen zwischen Phasen bleiben. Eine Mannschaft kann nicht zwei Spiele gleichzeitig bestreiten.",

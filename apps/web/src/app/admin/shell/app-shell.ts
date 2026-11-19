@@ -17,7 +17,7 @@ import {
   RouterOutlet,
 } from '@angular/router';
 import { filter, map, startWith } from 'rxjs';
-import { AssetUrlService } from 'api-client';
+import { AssetUrlService, PublicApiService } from 'api-client';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Button, LanguageSwitcher, Logo, ThemeModeToggle } from 'design-system';
 import {
@@ -52,6 +52,10 @@ import { TournamentsService } from '../core/tournaments.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppShell {
+  // Same account as a team manager: a link to its space when it has requests.
+  protected readonly hasRegistrations = signal(false);
+  private readonly publicApi = inject(PublicApiService);
+
   protected readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
@@ -121,6 +125,10 @@ export class AppShell {
   }
 
   constructor() {
+    void this.publicApi
+      .listMyRegistrations()
+      .then((mine) => this.hasRegistrations.set(mine.length > 0))
+      .catch(() => undefined);
     // 30 min idle / 8h absolute session policy, with its own 1-minute
     // warning popup (template below) -- see SessionTimeoutService's own
     // doc comment for why start()/stop() (not the service's own lifetime)

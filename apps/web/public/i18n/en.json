@@ -480,7 +480,8 @@
         "tournaments": "Tournaments",
         "collaborators": "Collaborators",
         "subscription": "Subscription",
-        "account": "Account"
+        "account": "Account",
+        "managerSpace": "My team manager space"
       },
       "logout": "Log out",
       "menu": "Menu",
@@ -1080,7 +1081,12 @@
         "open": "Registrations open",
         "offHint": "Players cannot pre-register yet.",
         "category": "Category",
-        "requests": "See the requests ({{count}} pending)"
+        "requests": "See the requests ({{count}} pending)",
+        "places": "Number of places",
+        "placesFor": "Places · {{name}}",
+        "fee": "Price per team (€)",
+        "feeFor": "Price · {{name}} (€)",
+        "options": "Options (dates, price per category, payment…)"
       }
     },
     "teamList": {

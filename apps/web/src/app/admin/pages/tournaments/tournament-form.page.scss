@@ -992,3 +992,18 @@
 .tournament-form-page .tournament-form-page__section {
   @include section-card.section-card;
 }
+
+// Optional registration settings, folded by default.
+.tournament-form-page__reg-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-3);
+  margin-top: var(--ap-space-2);
+
+  > summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--ap-color-primary);
+    margin-bottom: var(--ap-space-3);
+  }
+}

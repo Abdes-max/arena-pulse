@@ -17,6 +17,14 @@ import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 type Filter = 'PENDING' | 'CONFIRMED' | 'WAITLIST' | 'REJECTED' | 'ALL';
 
+/** What the registration settings need of a category: its places and price. */
+interface RegistrationCategory {
+  id: string;
+  name: string;
+  registrationFeeCents: number | null;
+  maxTeams: number | null;
+}
+
 /**
  * Pre-registrations on the go -- app port of apps/web's admin Inscriptions
  * page: open/close the registrations, then confirm, refuse or wait-list each
@@ -45,6 +53,10 @@ export class OrganizerRegistrationsPage {
   protected readonly paymentInfo = signal('');
   // Teams one team manager may register (1 unless raised).
   protected readonly maxTeams = signal('1');
+  // Places and price per category (drafts; empty places = unlimited).
+  protected readonly categories = signal<RegistrationCategory[]>([]);
+  private readonly placesDrafts = signal<Record<string, string>>({});
+  private readonly feeDrafts = signal<Record<string, string>>({});
   protected readonly filter = signal<Filter>('PENDING');
   protected readonly filters: Filter[] = ['PENDING', 'CONFIRMED', 'WAITLIST', 'REJECTED', 'ALL'];
   protected readonly rejectingId = signal<string | null>(null);
@@ -107,13 +119,18 @@ export class OrganizerRegistrationsPage {
       return;
     }
     try {
-      const [registrations, settings] = await Promise.all([
+      const [registrations, settings, categories] = await Promise.all([
         firstValueFrom(this.http.get<OrganizerRegistration[]>(base)),
         firstValueFrom(this.http.get<RegistrationSettings>(`${base}/settings`)),
+        firstValueFrom(
+          this.http.get<RegistrationCategory[]>(base.replace(/\/registrations$/, '/categories')),
+        ),
       ]);
       this.registrations.set(registrations);
       this.settings.set(settings);
       this.paymentInfo.set(settings.paymentInfo ?? '');
+      this.maxTeams.set(String(settings.maxTeamsPerRegistrant ?? 1));
+      this.categories.set(categories);
       if (registrations.every((r) => r.status !== 'PENDING')) {
         this.filter.set('ALL');
       }
@@ -141,11 +158,80 @@ export class OrganizerRegistrationsPage {
     this.paymentInfo.set((event.target as HTMLTextAreaElement).value);
   }
 
+  protected placesFor(categoryId: string): string {
+    const draft = this.placesDrafts()[categoryId];
+    if (draft !== undefined) {
+      return draft;
+    }
+    const maxTeams = this.categories().find((c) => c.id === categoryId)?.maxTeams;
+    return maxTeams ? String(maxTeams) : '';
+  }
+
+  protected setPlaces(categoryId: string, value: string): void {
+    this.placesDrafts.update((drafts) => ({ ...drafts, [categoryId]: value }));
+  }
+
+  protected feeFor(categoryId: string): string {
+    const draft = this.feeDrafts()[categoryId];
+    if (draft !== undefined) {
+      return draft;
+    }
+    const cents = this.categories().find((c) => c.id === categoryId)?.registrationFeeCents;
+    return cents ? String(cents / 100) : '0';
+  }
+
+  protected setFee(categoryId: string, value: string): void {
+    this.feeDrafts.update((drafts) => ({ ...drafts, [categoryId]: value }));
+  }
+
+  /** One price for every category (0 = free); per category in the options. */
+  protected defaultFee(): string {
+    const first = this.categories()[0];
+    return first ? this.feeFor(first.id) : '0';
+  }
+
+  protected setDefaultFee(value: string): void {
+    this.feeDrafts.set(Object.fromEntries(this.categories().map((c) => [c.id, value])));
+  }
+
   protected async savePaymentInfo(): Promise<void> {
     await this.saveSettings({
       paymentInfo: this.paymentInfo().trim() || null,
       maxTeamsPerRegistrant: Math.min(50, Math.max(1, Math.floor(Number(this.maxTeams())) || 1)),
     });
+    await this.saveCategories();
+  }
+
+  /** Only the categories whose places or price changed. */
+  private async saveCategories(): Promise<void> {
+    const base = this.base()?.replace(/\/registrations$/, '/categories');
+    if (!base) {
+      return;
+    }
+    for (const category of this.categories()) {
+      const places = this.placesFor(category.id).trim();
+      const maxTeams = places ? Math.max(1, Math.round(Number(places))) : null;
+      const fee = Number(this.feeFor(category.id).replace(',', '.')) || 0;
+      const registrationFeeCents = fee > 0 ? Math.round(fee * 100) : null;
+      if (
+        maxTeams === category.maxTeams &&
+        registrationFeeCents === (category.registrationFeeCents || null)
+      ) {
+        continue;
+      }
+      await this.run(async () => {
+        const updated = await firstValueFrom(
+          this.http.patch<RegistrationCategory>(`${base}/${category.id}`, {
+            maxTeams,
+            registrationFeeCents,
+            ...(registrationFeeCents ? { registrationFeeCurrency: 'eur' } : {}),
+          }),
+        );
+        this.categories.update((list) =>
+          list.map((c) => (c.id === updated.id ? { ...c, ...updated } : c)),
+        );
+      });
+    }
   }
 
   private async saveSettings(patch: {

@@ -39,6 +39,21 @@
               }}</small>
             </span>
           </label>
+          <!-- Essentials, always shown: places, teams per manager, price (0 = free). -->
+          @for (category of categories(); track category.id) {
+            <ap-text-field
+              [label]="
+                categories().length > 1
+                  ? ('organizer.registrations.placesFor' | transloco: { name: category.name })
+                  : ('organizer.registrations.places' | transloco)
+              "
+              type="number"
+              [min]="1"
+              [placeholder]="'organizer.registrations.placesUnlimited' | transloco"
+              [value]="placesFor(category.id)"
+              (valueChange)="setPlaces(category.id, $event)"
+            />
+          }
           <ap-text-field
             [label]="'organizer.registrations.maxTeams' | transloco"
             type="number"
@@ -46,15 +61,37 @@
             [value]="maxTeams()"
             (valueChange)="maxTeams.set($event)"
           />
-          <label class="reg-page__textarea">
-            {{ 'organizer.registrations.paymentInfo' | transloco }}
-            <textarea
-              rows="2"
-              [placeholder]="'organizer.registrations.paymentInfoPlaceholder' | transloco"
-              [value]="paymentInfo()"
-              (input)="onPaymentInfo($event)"
-            ></textarea>
-          </label>
+          <ap-text-field
+            [label]="'organizer.registrations.fee' | transloco"
+            type="number"
+            [min]="0"
+            [value]="defaultFee()"
+            (valueChange)="setDefaultFee($event)"
+          />
+          <!-- Everything else: optional, folded away. -->
+          <details class="reg-page__options">
+            <summary>{{ 'organizer.registrations.options' | transloco }}</summary>
+            @if (categories().length > 1) {
+              @for (category of categories(); track category.id) {
+                <ap-text-field
+                  [label]="'organizer.registrations.feeFor' | transloco: { name: category.name }"
+                  type="number"
+                  [min]="0"
+                  [value]="feeFor(category.id)"
+                  (valueChange)="setFee(category.id, $event)"
+                />
+              }
+            }
+            <label class="reg-page__textarea">
+              {{ 'organizer.registrations.paymentInfo' | transloco }}
+              <textarea
+                rows="2"
+                [placeholder]="'organizer.registrations.paymentInfoPlaceholder' | transloco"
+                [value]="paymentInfo()"
+                (input)="onPaymentInfo($event)"
+              ></textarea>
+            </label>
+          </details>
           <ap-button
             type="button"
             variant="secondary"

@@ -39,6 +39,13 @@
     <ion-refresher-content />
   </ion-refresher>
   <div class="organizer-tournaments-page__list">
+    <!-- Same account as a team manager: its space, when it has requests. -->
+    @if (hasRegistrations()) {
+      <a class="organizer-tournaments-page__switch" routerLink="/espace-responsable">
+        <span>{{ 'organizer.tournaments.list.managerSpace' | transloco }}</span>
+        <span aria-hidden="true">→</span>
+      </a>
+    }
     @if (user()) {
       <div
         class="organizer-tournaments-page__mode"
@@ -96,6 +103,16 @@
               {{ timeLabel(time) }}
             </button>
           }
+          <button
+            type="button"
+            class="organizer-tournaments-page__chip organizer-tournaments-page__chip--open"
+            [class.organizer-tournaments-page__chip--open-active]="openOnly()"
+            [attr.aria-pressed]="openOnly()"
+            (click)="toggleOpenOnly()"
+          >
+            <span class="organizer-tournaments-page__dot" aria-hidden="true"></span>
+            {{ 'organizer.tournaments.list.openFilter' | transloco }}
+          </button>
         </div>
         <ap-select
           [label]="'organizer.tournaments.list.statusFilterLabel' | transloco"
@@ -135,7 +152,13 @@
             <button type="button" class="tcard__action" (click)="openScores($event, t)">
               {{ 'organizer.tournaments.list.scoresAction' | transloco }}
             </button>
-            <button type="button" class="tcard__action" (click)="openRegistrations($event, t)">
+            <!-- Dark while teams can pre-register (same as the public tag). -->
+            <button
+              type="button"
+              class="tcard__action"
+              [class.tcard__action--open]="registrationsPossible(t)"
+              (click)="openRegistrations($event, t)"
+            >
               {{ 'organizer.tournaments.list.registrationsAction' | transloco }}
               <!-- Requests waiting for a decision: a badge so they're not missed. -->
               @if (t.pendingRegistrations) {

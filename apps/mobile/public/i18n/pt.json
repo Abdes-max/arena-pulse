@@ -158,7 +158,9 @@
           "full": "Completo"
         },
         "structureAction": "Estrutura",
-        "registrationsAction": "Inscrições"
+        "registrationsAction": "Inscrições",
+        "openFilter": "Inscrições abertas",
+        "managerSpace": "O meu espaço de responsável"
       }
     },
     "account": {
@@ -661,7 +663,7 @@
       "paymentInfo": "Modalidades de pagamento",
       "paymentInfoPlaceholder": "ex. 40 € por equipa, no local",
       "save": "Guardar",
-      "moreOnWeb": "Datas, lugares por categoria e cartão do torneio: no site.",
+      "moreOnWeb": "Datas de inscrição e mapa do torneio: no site.",
       "filters": {
         "PENDING": "Pendentes",
         "CONFIRMED": "Confirmadas",
@@ -696,7 +698,13 @@
         "load": "Não foi possível carregar as inscrições.",
         "save": "Não foi possível guardar esta alteração."
       },
-      "maxTeams": "Equipas máx. por responsável (clube)"
+      "maxTeams": "Equipas máx. por responsável (clube)",
+      "places": "Número de vagas",
+      "placesFor": "Vagas · {{name}}",
+      "placesUnlimited": "Ilimitado",
+      "fee": "Preço por equipa (€)",
+      "feeFor": "Preço · {{name}} (€)",
+      "options": "Opções (datas, preço por categoria, pagamento…)"
     },
     "schedule": {
       "hint": "Mantenha premido um jogo ou um horário e arraste-o: um espaço mostra onde vai ficar e a que horas. Os horários seguintes são deslocados; as pausas entre fases mantêm-se. Uma equipa não pode jogar dois jogos ao mesmo tempo.",
