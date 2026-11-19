@@ -3,13 +3,13 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { SnackbarService } from '../../core/snackbar.service';
 
 /**
- * Renders SnackbarService's messages, stacked at the bottom of every page.
+ * Renders SnackbarService's messages, stacked at the top of every page.
  *
- * Pinned to the *visible* part of the page (window.visualViewport), not the
- * layout viewport plain `position: fixed` uses: on a phone, with the
- * keyboard still open after typing in a form (or the page zoomed), the
- * latter's bottom sits under the keyboard / off screen, and the message
- * only showed after scrolling.
+ * Top, not bottom: on a phone the bottom of the screen is where the
+ * browser's own toolbar and the keyboard sit -- the admin scrolls inside
+ * its shell, not the document, so Safari's bottom bar never collapses and
+ * a bottom snackbar was only seen after scrolling. Also pinned to the
+ * *visible* part of the page (window.visualViewport), for a zoomed page.
  */
 @Component({
   selector: 'app-snackbar-host',
@@ -18,7 +18,7 @@ import { SnackbarService } from '../../core/snackbar.service';
     <div
       class="snackbar-host"
       aria-live="polite"
-      [style.--snackbar-lift.px]="viewport().lift"
+      [style.--snackbar-top.px]="viewport().top"
       [style.--snackbar-center.px]="viewport().center"
       [style.--snackbar-width.px]="viewport().width"
     >
@@ -45,7 +45,7 @@ import { SnackbarService } from '../../core/snackbar.service';
     .snackbar-host {
       position: fixed;
       left: var(--snackbar-center, 50%);
-      bottom: calc(16px + var(--snackbar-lift, 0px) + env(safe-area-inset-bottom, 0px));
+      top: calc(12px + var(--snackbar-top, 0px) + env(safe-area-inset-top, 0px));
       z-index: 1000;
       display: flex;
       flex-direction: column;
@@ -94,7 +94,7 @@ import { SnackbarService } from '../../core/snackbar.service';
     @keyframes snackbar-in {
       from {
         opacity: 0;
-        transform: translateY(8px);
+        transform: translateY(-8px);
       }
     }
 
@@ -108,13 +108,13 @@ import { SnackbarService } from '../../core/snackbar.service';
 })
 export class SnackbarHost {
   protected readonly snackbar = inject(SnackbarService);
-  // lift: px between the layout viewport's bottom and the visible one's;
+  // top: how far the visible area starts below the layout viewport's top;
   // center/width: the visible area's middle and usable width (null = CSS default).
   protected readonly viewport = signal<{
-    lift: number;
+    top: number;
     center: number | null;
     width: number | null;
-  }>({ lift: 0, center: null, width: null });
+  }>({ top: 0, center: null, width: null });
 
   constructor() {
     const visual = typeof window === 'undefined' ? undefined : window.visualViewport;
@@ -122,9 +122,8 @@ export class SnackbarHost {
       return;
     }
     const update = () => {
-      const layoutHeight = document.documentElement.clientHeight;
       this.viewport.set({
-        lift: Math.max(0, layoutHeight - (visual.offsetTop + visual.height)),
+        top: Math.max(0, visual.offsetTop),
         center: visual.offsetLeft + visual.width / 2,
         width: visual.width - 32,
       });

@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { SnackbarService } from '../../core/snackbar.service';
 
-/** Renders SnackbarService's messages above the footers and tab bar of every page (same look as apps/web). */
+/** Renders SnackbarService's messages at the top of every page, over the header (same look and place as apps/web). */
 @Component({
   selector: 'app-snackbar-host',
   imports: [TranslocoPipe],
@@ -31,8 +31,7 @@ import { SnackbarService } from '../../core/snackbar.service';
     .snackbar-host {
       position: fixed;
       left: 50%;
-      /* Clears the ion-footer action bars and the public site tab bar. */
-      bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+      top: calc(8px + env(safe-area-inset-top, 0px));
       z-index: 1000;
       display: flex;
       flex-direction: column;
@@ -81,7 +80,7 @@ import { SnackbarService } from '../../core/snackbar.service';
     @keyframes snackbar-in {
       from {
         opacity: 0;
-        transform: translateY(8px);
+        transform: translateY(-8px);
       }
     }
 
