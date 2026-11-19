@@ -13,6 +13,7 @@ import { AssetUrlService, PublicApiService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { LanguageService } from 'design-tokens';
 import { FavoritesService } from '../../core/favorites.service';
+import { PageMetaService } from '../../core/page-meta.service';
 import { TournamentContextService } from '../../core/tournament-context.service';
 import {
   CompetitionPhase,
@@ -40,6 +41,7 @@ export class TeamDetailPage {
   protected readonly assetUrl = inject(AssetUrlService);
   private readonly languageService = inject(LanguageService);
   private readonly transloco = inject(TranslocoService);
+  private readonly pageMeta = inject(PageMetaService);
   protected readonly language = this.languageService.language;
 
   protected readonly loading = signal(true);
@@ -136,6 +138,16 @@ export class TeamDetailPage {
     try {
       const team = await this.api.getTeam(slug, teamId);
       this.team.set(team);
+      const tournament = this.context.tournament();
+      if (tournament) {
+        const params = { team: team.name, name: tournament.name, sport: tournament.sportName };
+        this.pageMeta.set({
+          title: 'seo.tournament.team.title',
+          titleParams: params,
+          description: 'seo.tournament.team.description',
+          descriptionParams: params,
+        });
+      }
       // The whole pool's table, so the team's numbers read in context (its
       // row is highlighted) -- a failure here just falls back to the
       // team's own figures, it never blanks the page.

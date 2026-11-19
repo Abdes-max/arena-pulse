@@ -1887,5 +1887,58 @@
     "body": "Cette page n'existe pas ou a été déplacée.",
     "home": "Retour à l'accueil",
     "discover": "Découvrir des tournois"
+  },
+  "seo": {
+    "siteDescription": "TournArena : créez et gérez vos tournois sportifs — équipes, planning, scores en direct et classements.",
+    "landing": {
+      "title": "Logiciel de gestion de tournois sportifs",
+      "description": "Créez votre tournoi en quelques minutes : inscriptions, poules, planning des matchs, scores en direct et classements automatiques."
+    },
+    "discover": {
+      "title": "Découvrir des tournois",
+      "description": "Trouvez un tournoi près de chez vous : football, padel, basket… dates, lieux et inscriptions."
+    },
+    "contact": {
+      "title": "Contact",
+      "description": "Une question sur TournArena ? Écrivez-nous, nous vous répondons rapidement."
+    },
+    "terms": {
+      "title": "Conditions d'utilisation",
+      "description": "Conditions générales d'utilisation de TournArena."
+    },
+    "privacy": {
+      "title": "Politique de confidentialité",
+      "description": "Comment TournArena collecte, utilise et protège vos données personnelles."
+    },
+    "tournament": {
+      "home": {
+        "title": "{{name}}",
+        "description": "{{name}}, tournoi de {{sport}} : programme des matchs, résultats en direct et classement."
+      },
+      "teams": {
+        "title": "Équipes – {{name}}",
+        "description": "Les équipes engagées au tournoi {{name}} ({{sport}})."
+      },
+      "team": {
+        "title": "{{team}} – {{name}}",
+        "description": "Matchs, résultats et classement de {{team}} au tournoi {{name}} ({{sport}})."
+      },
+      "standings": {
+        "title": "Classement – {{name}}",
+        "description": "Classement à jour du tournoi {{name}} ({{sport}})."
+      },
+      "schedule": {
+        "title": "Matchs – {{name}}",
+        "description": "Programme et résultats des matchs du tournoi {{name}} ({{sport}})."
+      },
+      "wrapped": {
+        "title": "Récap – {{name}}",
+        "description": "Le récap du tournoi {{name}} ({{sport}}) : chiffres clés et moments forts."
+      },
+      "register": {
+        "title": "Inscription – {{name}}",
+        "description": "Inscrivez votre équipe au tournoi {{name}} ({{sport}})."
+      }
+    }
   }
 }

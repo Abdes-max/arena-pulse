@@ -26,7 +26,7 @@ describe('SeoService', () => {
       }),
     );
     expect(xml).toContain('<loc>https://tournarena.com/</loc>');
-    expect(xml).toContain('<loc>https://tournarena.com/discover</loc>');
+    expect(xml).toContain('<loc>https://tournarena.com/decouvrir</loc>');
     expect(xml).toContain(
       '<loc>https://tournarena.com/coupe-a%26b</loc><lastmod>2026-11-02</lastmod>',
     );

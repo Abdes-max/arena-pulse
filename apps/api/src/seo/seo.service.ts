@@ -4,7 +4,7 @@ import { TournamentStatus } from '../../generated/prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
 /** Public pages worth indexing besides each tournament's own site. */
-const STATIC_PATHS = ['/', '/discover', '/contact', '/terms', '/privacy'];
+const STATIC_PATHS = ['/', '/decouvrir', '/contact', '/terms', '/privacy'];
 
 // Google ignores anything past 50 000 URLs per sitemap file.
 const MAX_TOURNAMENTS = 49_000;

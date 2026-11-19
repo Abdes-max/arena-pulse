@@ -1785,5 +1785,58 @@
     "body": "Esta página não existe ou foi movida.",
     "home": "Voltar ao início",
     "discover": "Descobrir torneios"
+  },
+  "seo": {
+    "siteDescription": "TournArena: crie e gerencie seus torneios esportivos — equipes, calendário, resultados ao vivo e classificações.",
+    "landing": {
+      "title": "Software de gestão de torneios esportivos",
+      "description": "Crie seu torneio em minutos: inscrições, grupos, calendário de jogos, resultados ao vivo e classificações automáticas."
+    },
+    "discover": {
+      "title": "Descobrir torneios",
+      "description": "Encontre um torneio perto de você: futebol, padel, basquete… datas, locais e inscrições."
+    },
+    "contact": {
+      "title": "Contato",
+      "description": "Uma dúvida sobre o TournArena? Escreva para nós, respondemos rapidamente."
+    },
+    "terms": {
+      "title": "Termos de uso",
+      "description": "Termos gerais de uso do TournArena."
+    },
+    "privacy": {
+      "title": "Política de privacidade",
+      "description": "Como o TournArena coleta, usa e protege seus dados pessoais."
+    },
+    "tournament": {
+      "home": {
+        "title": "{{name}}",
+        "description": "{{name}}, torneio de {{sport}}: calendário de jogos, resultados ao vivo e classificação."
+      },
+      "teams": {
+        "title": "Equipes – {{name}}",
+        "description": "As equipes inscritas no torneio {{name}} ({{sport}})."
+      },
+      "team": {
+        "title": "{{team}} – {{name}}",
+        "description": "Jogos, resultados e classificação de {{team}} no torneio {{name}} ({{sport}})."
+      },
+      "standings": {
+        "title": "Classificação – {{name}}",
+        "description": "Classificação atualizada do torneio {{name}} ({{sport}})."
+      },
+      "schedule": {
+        "title": "Jogos – {{name}}",
+        "description": "Calendário e resultados dos jogos do torneio {{name}} ({{sport}})."
+      },
+      "wrapped": {
+        "title": "Resumo – {{name}}",
+        "description": "O resumo do torneio {{name}} ({{sport}}): números-chave e destaques."
+      },
+      "register": {
+        "title": "Inscrição – {{name}}",
+        "description": "Inscreva sua equipe no torneio {{name}} ({{sport}})."
+      }
+    }
   }
 }

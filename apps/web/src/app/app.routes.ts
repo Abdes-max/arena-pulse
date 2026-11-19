@@ -9,6 +9,7 @@ export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
+    data: { meta: { title: 'seo.landing.title', description: 'seo.landing.description' } },
     loadComponent: () => import('./pages/landing/landing.page').then((m) => m.LandingPage),
   },
   {
@@ -49,14 +50,17 @@ export const routes: Routes = [
     // Top-level, before the ':slug' catch-all below -- otherwise it would
     // swallow '/contact', '/terms' and '/privacy' as tournament slugs.
     path: 'contact',
+    data: { meta: { title: 'seo.contact.title', description: 'seo.contact.description' } },
     loadComponent: () => import('./pages/contact/contact.page').then((m) => m.ContactPage),
   },
   {
     path: 'terms',
+    data: { meta: { title: 'seo.terms.title', description: 'seo.terms.description' } },
     loadComponent: () => import('./pages/legal/terms.page').then((m) => m.TermsPage),
   },
   {
     path: 'privacy',
+    data: { meta: { title: 'seo.privacy.title', description: 'seo.privacy.description' } },
     loadComponent: () => import('./pages/legal/privacy.page').then((m) => m.PrivacyPage),
   },
   {
@@ -66,6 +70,7 @@ export const routes: Routes = [
   },
   {
     path: 'decouvrir',
+    data: { meta: { title: 'seo.discover.title', description: 'seo.discover.description' } },
     loadComponent: () => import('./pages/discover/discover.page').then((m) => m.DiscoverPage),
   },
   {
