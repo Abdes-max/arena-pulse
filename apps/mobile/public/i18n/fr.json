@@ -663,7 +663,7 @@
       "paymentInfo": "Modalités de paiement",
       "paymentInfoPlaceholder": "ex. 40 € par équipe, sur place",
       "save": "Enregistrer",
-      "moreOnWeb": "Dates, places par catégorie et carte du tournoi : sur le site web.",
+      "moreOnWeb": "Dates d'inscription et carte du tournoi : sur le site web.",
       "filters": {
         "PENDING": "En attente",
         "CONFIRMED": "Confirmées",
@@ -698,7 +698,13 @@
         "load": "Impossible de charger les inscriptions.",
         "save": "Impossible d’enregistrer ce changement."
       },
-      "maxTeams": "Équipes max par responsable (club)"
+      "maxTeams": "Équipes max par responsable (club)",
+      "places": "Nombre de places",
+      "placesFor": "Places · {{name}}",
+      "placesUnlimited": "Illimité",
+      "fee": "Tarif par équipe (€)",
+      "feeFor": "Tarif · {{name}} (€)",
+      "options": "Options (dates, tarif par catégorie, paiement…)"
     },
     "schedule": {
       "hint": "Restez appuyé sur un match ou un créneau puis glissez-le : un emplacement montre où il va se placer et à quelle heure. Les créneaux suivants sont décalés, les pauses entre phases conservées. Une équipe ne peut pas jouer deux matchs en même temps.",

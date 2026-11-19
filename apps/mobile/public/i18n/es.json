@@ -663,7 +663,7 @@
       "paymentInfo": "Modalidades de pago",
       "paymentInfoPlaceholder": "p. ej. 40 € por equipo, in situ",
       "save": "Guardar",
-      "moreOnWeb": "Fechas, plazas por categoría y tarjeta del torneo: en la web.",
+      "moreOnWeb": "Fechas de inscripción y mapa del torneo: en el sitio web.",
       "filters": {
         "PENDING": "Pendientes",
         "CONFIRMED": "Confirmadas",
@@ -698,7 +698,13 @@
         "load": "No se pudieron cargar las inscripciones.",
         "save": "No se pudo guardar este cambio."
       },
-      "maxTeams": "Equipos máx. por responsable (club)"
+      "maxTeams": "Equipos máx. por responsable (club)",
+      "places": "Número de plazas",
+      "placesFor": "Plazas · {{name}}",
+      "placesUnlimited": "Ilimitado",
+      "fee": "Precio por equipo (€)",
+      "feeFor": "Precio · {{name}} (€)",
+      "options": "Opciones (fechas, precio por categoría, pago…)"
     },
     "schedule": {
       "hint": "Mantén pulsado un partido o una franja y arrástralo: un espacio muestra dónde se colocará y a qué hora. Las franjas siguientes se desplazan; se conservan las pausas entre fases. Un equipo no puede jugar dos partidos a la vez.",

@@ -979,7 +979,12 @@
         "open": "Anmeldung möglich",
         "offHint": "Spieler können sich noch nicht voranmelden.",
         "category": "Kategorie",
-        "requests": "Anfragen ansehen ({{count}} offen)"
+        "requests": "Anfragen ansehen ({{count}} offen)",
+        "places": "Anzahl der Plätze",
+        "placesFor": "Plätze · {{name}}",
+        "fee": "Preis pro Team (€)",
+        "feeFor": "Preis · {{name}} (€)",
+        "options": "Optionen (Daten, Preis pro Kategorie, Zahlung…)"
       }
     },
     "teamList": {

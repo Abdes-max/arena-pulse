@@ -979,7 +979,12 @@
         "open": "Inscrições possíveis",
         "offHint": "Os jogadores ainda não se podem pré-inscrever.",
         "category": "Categoria",
-        "requests": "Ver os pedidos ({{count}} pendentes)"
+        "requests": "Ver os pedidos ({{count}} pendentes)",
+        "places": "Número de vagas",
+        "placesFor": "Vagas · {{name}}",
+        "fee": "Preço por equipa (€)",
+        "feeFor": "Preço · {{name}} (€)",
+        "options": "Opções (datas, preço por categoria, pagamento…)"
       }
     },
     "teamList": {

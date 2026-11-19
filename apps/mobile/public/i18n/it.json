@@ -663,7 +663,7 @@
       "paymentInfo": "Modalità di pagamento",
       "paymentInfoPlaceholder": "es. 40 € a squadra, sul posto",
       "save": "Salva",
-      "moreOnWeb": "Date, posti per categoria e scheda del torneo: sul sito web.",
+      "moreOnWeb": "Date di iscrizione e mappa del torneo: sul sito web.",
       "filters": {
         "PENDING": "In attesa",
         "CONFIRMED": "Confermate",
@@ -698,7 +698,13 @@
         "load": "Impossibile caricare le iscrizioni.",
         "save": "Impossibile salvare questa modifica."
       },
-      "maxTeams": "Squadre max per responsabile (club)"
+      "maxTeams": "Squadre max per responsabile (club)",
+      "places": "Numero di posti",
+      "placesFor": "Posti · {{name}}",
+      "placesUnlimited": "Illimitato",
+      "fee": "Tariffa per squadra (€)",
+      "feeFor": "Tariffa · {{name}} (€)",
+      "options": "Opzioni (date, tariffa per categoria, pagamento…)"
     },
     "schedule": {
       "hint": "Tieni premuta una partita o una fascia e trascinala: uno spazio mostra dove andrà e a che ora. Le fasce successive vengono spostate; le pause tra le fasi restano. Una squadra non può giocare due partite contemporaneamente.",

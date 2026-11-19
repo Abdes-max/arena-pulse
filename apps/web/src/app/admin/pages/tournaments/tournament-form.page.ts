@@ -1273,6 +1273,27 @@ export class TournamentFormPage {
     }
   }
 
+  // One price for every category (0 = free), the essentials' field; a
+  // different price per category stays possible in the folded options.
+  private readonly regFeeDraft = signal<string | null>(null);
+
+  protected regDefaultFee(): string {
+    const draft = this.regFeeDraft();
+    if (draft !== null) {
+      return draft;
+    }
+    const first = this.categories()[0];
+    return (first && this.categoryFeeDraftFor(first.id)) || '0';
+  }
+
+  protected onRegDefaultFeeChange(value: string): void {
+    this.regFeeDraft.set(value);
+    const fee = Number(value.replace(',', '.')) > 0 ? value : '';
+    for (const category of this.categories()) {
+      this.onCategoryFeeDraftChange(category.id, fee);
+    }
+  }
+
   // Places for pre-registrations, per category (empty = unlimited).
   private readonly capacityDrafts = signal<Record<string, string>>({});
 

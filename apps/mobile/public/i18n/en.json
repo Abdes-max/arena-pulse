@@ -663,7 +663,7 @@
       "paymentInfo": "Payment details",
       "paymentInfoPlaceholder": "e.g. €40 per team, on site",
       "save": "Save",
-      "moreOnWeb": "Dates, places per category and tournament card: on the website.",
+      "moreOnWeb": "Registration dates and tournament map: on the website.",
       "filters": {
         "PENDING": "Pending",
         "CONFIRMED": "Confirmed",
@@ -698,7 +698,13 @@
         "load": "Could not load the registrations.",
         "save": "Could not save this change."
       },
-      "maxTeams": "Max teams per manager (club)"
+      "maxTeams": "Max teams per manager (club)",
+      "places": "Number of places",
+      "placesFor": "Places · {{name}}",
+      "placesUnlimited": "Unlimited",
+      "fee": "Price per team (€)",
+      "feeFor": "Price · {{name}} (€)",
+      "options": "Options (dates, price per category, payment…)"
     },
     "schedule": {
       "hint": "Press and hold a match or a slot, then drag it: a space shows where it will land and at what time. The following slots shift; breaks between phases are kept. A team cannot play two matches at the same time.",
