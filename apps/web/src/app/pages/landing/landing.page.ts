@@ -116,11 +116,19 @@ export class LandingPage {
   // "Événements publiés" list (tournament-entry.page.ts's searchItems,
   // which never applies that filter either).
   protected readonly timeFilter = signal<TimeFilterValue>('');
+  // "Inscriptions ouvertes" pill (same as the Découvrir page): narrows the
+  // list to the tournaments taking pre-registrations right now. Their ids
+  // come from the directory search, fetched the first time the pill is on.
+  protected readonly registrationOnly = signal(false);
+  private readonly openRegistrationIds = signal<Set<string> | null>(null);
 
   protected readonly filteredTournaments = computed(() => {
     const time = this.timeFilter();
+    const openIds = this.registrationOnly() ? this.openRegistrationIds() : null;
     const all = this.tournaments().filter(
-      (t) => !time || isTournamentPastPublic(t) === (time === 'past'),
+      (t) =>
+        (!time || isTournamentPastPublic(t) === (time === 'past')) &&
+        (!this.registrationOnly() || !!openIds?.has(t.id)),
     );
     const q = this.query().trim().toLowerCase();
     if (!q) {
@@ -130,6 +138,17 @@ export class LandingPage {
       (t) => t.name.toLowerCase().includes(q) || t.sportName.toLowerCase().includes(q),
     );
   });
+
+  protected toggleRegistrationOnly(): void {
+    const next = !this.registrationOnly();
+    this.registrationOnly.set(next);
+    if (next && this.openRegistrationIds() === null) {
+      void this.api
+        .searchTournaments({ registration: 'open', page: 1, pageSize: 50 })
+        .then((result) => this.openRegistrationIds.set(new Set(result.items.map((t) => t.id))))
+        .catch(() => this.openRegistrationIds.set(new Set()));
+    }
+  }
 
   // ap-tournament-marquee's TournamentMarqueeItem needs a resolved (absolute)
   // logoUrl -- it's a dumb presenter, same reason ap-tournament-card gets

@@ -306,15 +306,42 @@
       [value]="query()"
       (valueChange)="onQueryChange($event)"
     />
-    <ap-time-filter
-      class="landing-page__tournaments-time"
-      [label]="'landing.tournaments.timeLabel' | transloco"
-      [upcomingLabel]="'landing.tournaments.upcoming' | transloco"
-      [pastLabel]="'landing.tournaments.past' | transloco"
-      [value]="timeFilter()"
-      (valueChange)="timeFilter.set($event)"
-    />
-    @if (filteredTournaments().length === 0) {
+    <div class="landing-page__tournaments-pills">
+      <ap-time-filter
+        [label]="'landing.tournaments.timeLabel' | transloco"
+        [upcomingLabel]="'landing.tournaments.upcoming' | transloco"
+        [pastLabel]="'landing.tournaments.past' | transloco"
+        [value]="timeFilter()"
+        (valueChange)="timeFilter.set($event)"
+      />
+      <!-- Same pill (and colors) as the Découvrir page. -->
+      <button
+        type="button"
+        class="registration-filter-pill"
+        [attr.aria-pressed]="registrationOnly()"
+        (click)="toggleRegistrationOnly()"
+      >
+        {{ 'discover.filters.registrationOpen' | transloco }}
+      </button>
+    </div>
+    @if (registrationOnly() && filteredTournaments().length === 0) {
+      <div class="landing-page__tournaments-empty-card">
+        <span class="landing-page__tournaments-empty-icon" aria-hidden="true">🏆</span>
+        <p class="landing-page__tournaments-empty-title">
+          {{ 'discover.emptyRegistrationTitle' | transloco }}
+        </p>
+        <p class="landing-page__tournaments-empty-text">
+          {{ 'discover.emptyRegistrationText' | transloco }}
+        </p>
+        <button
+          type="button"
+          class="landing-page__tournaments-empty-btn"
+          (click)="registrationOnly.set(false)"
+        >
+          {{ 'discover.seeAll' | transloco }}
+        </button>
+      </div>
+    } @else if (filteredTournaments().length === 0) {
       <p class="landing-page__tournaments-empty">{{ 'landing.tournaments.empty' | transloco }}</p>
     } @else {
       <div class="landing-page__tournaments-grid">

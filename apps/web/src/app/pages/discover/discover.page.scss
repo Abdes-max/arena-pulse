@@ -109,44 +109,6 @@
   gap: var(--ap-space-2);
 }
 
-.discover-page__registration-filter {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--ap-space-2);
-  padding: var(--ap-space-2) var(--ap-space-4);
-  font: inherit;
-  font-weight: 600;
-  color: var(--ap-color-fg);
-  background: var(--ap-color-bg);
-  border: var(--ap-border-width) solid var(--ap-color-border);
-  border-radius: 999px;
-  cursor: pointer;
-
-  &::before {
-    content: '';
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--ap-color-ember);
-  }
-
-  &[aria-pressed='true'] {
-    color: #fff;
-    background: linear-gradient(100deg, var(--ap-color-signal), var(--ap-color-ember));
-    border-color: transparent;
-
-    &::before {
-      background: currentColor;
-    }
-  }
-}
-
-.discover-page__count {
-  margin: 0 0 var(--ap-space-4);
-  color: var(--ap-color-muted);
-  font-size: 0.85rem;
-}
-
 .discover-page__grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
