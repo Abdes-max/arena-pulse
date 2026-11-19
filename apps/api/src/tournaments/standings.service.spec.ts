@@ -9,6 +9,7 @@ type PrismaMock = {
   match: { findMany: jest.Mock };
   standingRule: { findUnique: jest.Mock; update: jest.Mock };
   qualificationRule: { findMany: jest.Mock };
+  group: { findUnique: jest.Mock };
 };
 
 function createPrismaMock(): PrismaMock {
@@ -20,6 +21,12 @@ function createPrismaMock(): PrismaMock {
       update: jest.fn(),
     },
     qualificationRule: { findMany: jest.fn().mockResolvedValue([]) },
+    // Pool scores validated by default (see qualificationsAreFinal).
+    group: {
+      findUnique: jest.fn().mockResolvedValue({
+        phase: { isSeedPhase: false, scoresValidatedAt: new Date() },
+      }),
+    },
   };
 }
 
@@ -381,6 +388,34 @@ describe('StandingsService', () => {
           ],
         },
       ]);
+    });
+
+    it('names no qualified team before the pool scores are validated', async () => {
+      prisma.team.findMany.mockResolvedValue([
+        { id: 'a', name: 'Alpha' },
+        { id: 'b', name: 'Beta' },
+      ]);
+      prisma.qualificationRule.findMany.mockResolvedValue([
+        {
+          id: 'rule-1',
+          fromPosition: 1,
+          toPosition: 1,
+          targetPhaseId: 'phase-2',
+          targetPhase: { name: 'Finale' },
+        },
+      ]);
+      prisma.group.findUnique.mockResolvedValue({
+        phase: { isSeedPhase: false, scoresValidatedAt: null },
+      });
+
+      const [qualification] = await service.getQualifications(
+        'org-1',
+        'tournament-1',
+        'group-1',
+      );
+
+      expect(qualification.targetPhaseName).toBe('Finale');
+      expect(qualification.qualifiedTeams).toEqual([]);
     });
   });
 });
