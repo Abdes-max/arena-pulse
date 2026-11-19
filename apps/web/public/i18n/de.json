@@ -496,7 +496,8 @@
         "errorTitle": "Ungültiger Link",
         "errorExpired": "Dieser Link zum Zurücksetzen ist ungültig, abgelaufen oder bereits verwendet.",
         "errorGeneric": "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut.",
-        "retry": "Neuen Link anfordern"
+        "retry": "Neuen Link anfordern",
+        "lede": "Mindestens 10 Zeichen, zweimal eingeben."
       },
       "showPassword": "Passwort anzeigen",
       "hidePassword": "Passwort verbergen",

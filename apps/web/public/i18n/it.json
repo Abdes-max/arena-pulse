@@ -496,7 +496,8 @@
         "errorTitle": "Link non valido",
         "errorExpired": "Questo link di reimpostazione non è valido, è scaduto o è già stato usato.",
         "errorGeneric": "Si è verificato un errore, riprova.",
-        "retry": "Richiedi un nuovo link"
+        "retry": "Richiedi un nuovo link",
+        "lede": "Almeno 10 caratteri, da inserire due volte."
       },
       "showPassword": "Mostra password",
       "hidePassword": "Nascondi password",

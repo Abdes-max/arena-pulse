@@ -598,7 +598,8 @@
         "errorTitle": "Invalid link",
         "errorExpired": "This reset link is invalid, expired, or already used.",
         "errorGeneric": "Something went wrong, please try again.",
-        "retry": "Request a new link"
+        "retry": "Request a new link",
+        "lede": "At least 10 characters, entered twice."
       },
       "showPassword": "Show password",
       "hidePassword": "Hide password",
