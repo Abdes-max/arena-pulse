@@ -52,6 +52,7 @@ export class OrganizationSubscriptionPage {
   protected readonly promoCode = signal('');
   protected readonly redeemingPromo = signal(false);
   protected readonly promoError = signal<string | null>(null);
+  private readonly promoErrorSnackbar = showErrorsInSnackbar(this.promoError);
 
   constructor() {
     void this.load();

@@ -751,5 +751,8 @@
       "android": "Para ver os banners: Definições > Aplicações > TournArena > Notificações, e ative «Alertas de jogos».",
       "web": "As notificações estão disponíveis na app móvel."
     }
+  },
+  "feedback": {
+    "close": "Fechar"
   }
 }

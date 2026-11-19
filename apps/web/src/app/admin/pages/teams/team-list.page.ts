@@ -79,6 +79,7 @@ export class TeamListPage {
   // published tournament's paid tier.
   protected readonly tierExceededModal = signal<PublicationTierExceededError | null>(null);
   protected readonly tierUpgradeError = signal<string | null>(null);
+  private readonly tierUpgradeErrorSnackbar = showErrorsInSnackbar(this.tierUpgradeError);
   protected readonly tierUpgrading = signal(false);
 
   // Team logos are a premium touch (see

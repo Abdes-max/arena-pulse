@@ -751,5 +751,8 @@
       "android": "Pour voir les bannières : Paramètres > Applications > TournArena > Notifications, puis activez « Alertes de matchs ».",
       "web": "Les notifications sont disponibles dans l'app mobile."
     }
+  },
+  "feedback": {
+    "close": "Fermer"
   }
 }

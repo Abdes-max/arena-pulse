@@ -20,10 +20,6 @@
     @if (loading()) {
       <p class="standings-page__hint">{{ 'organizer.standings.loading' | transloco }}</p>
     } @else {
-      @if (errorMessage(); as message) {
-        <p class="standings-page__error" role="alert">{{ message | transloco }}</p>
-      }
-
       @if (categories().length === 0) {
         <p class="standings-page__hint">{{ 'organizer.standings.addCategoryFirst' | transloco }}</p>
       } @else {

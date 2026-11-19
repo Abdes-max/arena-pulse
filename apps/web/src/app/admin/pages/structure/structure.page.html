@@ -52,9 +52,6 @@
           @if (presetSuccessMessage(); as message) {
             <p class="structure-page__success">{{ message }}</p>
           }
-          @if (presetError(); as message) {
-            <p class="structure-page__error" role="alert">{{ message }}</p>
-          }
 
           <h3>{{ 'admin.structure.preset.poolsTitle' | transloco }}</h3>
           <div class="structure-page__inline-form">
@@ -726,9 +723,6 @@
                               }
                             }
                           </div>
-                          @if (pairingError(); as message) {
-                            <p class="structure-page__error" role="alert">{{ message }}</p>
-                          }
                         } @else {
                           <ul class="structure-page__card-list">
                             @for (label of qualifierLabelsFor(phase.id); track $index) {

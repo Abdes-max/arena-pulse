@@ -16,6 +16,7 @@ import {
   StructureTeam,
 } from '../../core/structure.service';
 import { TournamentCreationService } from '../../core/tournament-creation.service';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 /** One rule of a pool phase ("1er à 2e → Phase finale"), stored once per pool. */
 interface QualificationRuleGroup {
@@ -61,6 +62,8 @@ export class OrganizerStructurePage {
   protected readonly loading = signal(true);
   protected readonly busy = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage);
 
   protected readonly categories = signal<OrganizerCategory[]>([]);
   protected readonly categoryId = signal('');

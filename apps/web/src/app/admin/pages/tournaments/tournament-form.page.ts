@@ -407,6 +407,7 @@ export class TournamentFormPage {
   } | null>(null);
   protected readonly tierChanging = signal(false);
   protected readonly tierChangeError = signal<string | null>(null);
+  private readonly tierChangeErrorSnackbar = showErrorsInSnackbar(this.tierChangeError);
 
   protected selectTier(tier: 'FREE' | 'STANDARD' | 'LARGE'): void {
     if (tier === 'FREE' || this.tierOrder[tier] <= this.tierOrder[this.currentTierCode()]) {

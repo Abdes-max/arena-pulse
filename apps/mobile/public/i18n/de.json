@@ -751,5 +751,8 @@
       "android": "Für Banner: Einstellungen > Apps > TournArena > Benachrichtigungen, dann „Spielmeldungen“ einschalten.",
       "web": "Benachrichtigungen sind in der mobilen App verfügbar."
     }
+  },
+  "feedback": {
+    "close": "Schließen"
   }
 }

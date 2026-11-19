@@ -13,6 +13,7 @@ import type {
 } from 'shared-models';
 import { environment } from '../../../../environments/environment';
 import { OrganizerAuthService } from '../../core/auth.service';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 type Filter = 'PENDING' | 'CONFIRMED' | 'WAITLIST' | 'REJECTED' | 'ALL';
 
@@ -37,6 +38,8 @@ export class OrganizerRegistrationsPage {
   protected readonly loading = signal(true);
   protected readonly busy = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage);
   protected readonly registrations = signal<OrganizerRegistration[]>([]);
   protected readonly settings = signal<RegistrationSettings | null>(null);
   protected readonly paymentInfo = signal('');

@@ -59,6 +59,7 @@ export class LivePage {
   // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
   private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage);
   protected readonly apiError = signal<string | null>(null);
+  private readonly apiErrorSnackbar = showErrorsInSnackbar(this.apiError, { translate: false });
   protected readonly matches = signal<Match[]>([]);
   protected readonly drafts = signal<Map<string, DraftScore>>(new Map());
   // Pools whose standing rule settles a draw with a shootout (knockout
@@ -319,6 +320,7 @@ export class LivePage {
 
   /** Error from validating/reopening the pools, shown inside the block itself. */
   protected readonly poolError = signal<string | null>(null);
+  private readonly poolErrorSnackbar = showErrorsInSnackbar(this.poolError, { translate: false });
 
   protected async validatePool(phaseId: string): Promise<void> {
     const organizationId = this.authService.organizations()[0]?.id;

@@ -73,9 +73,6 @@
               {{ 'organizer.auth.register.passwordHint' | transloco }}
             </p>
           }
-          @if (errorMessage(); as message) {
-            <p class="organizer-register-page__error" role="alert">{{ message | transloco }}</p>
-          }
         </div>
       </ion-content>
       <ion-footer class="organizer-register-page__footer">
@@ -100,9 +97,6 @@
           <p class="organizer-register-page__hint">
             {{ 'organizer.auth.register.resent' | transloco }}
           </p>
-        }
-        @if (errorMessage(); as message) {
-          <p class="organizer-register-page__error" role="alert">{{ message | transloco }}</p>
         }
       </div>
     </ion-content>

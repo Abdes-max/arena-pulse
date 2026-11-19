@@ -220,9 +220,6 @@
                   }
                 </div>
               }
-              @if (apiError(); as message) {
-                <p class="live-page__error" role="alert">{{ message }}</p>
-              }
               <div class="live-page__actions">
                 <ap-button type="button" [disabled]="saving()" (click)="save(rotation, true)">
                   {{ 'admin.live.validate' | transloco }}
@@ -258,9 +255,6 @@
               >
                 {{ 'admin.scores.pools.validate' | transloco }}
               </ap-button>
-            }
-            @if (poolError(); as message) {
-              <p class="live-page__error" role="alert">{{ message }}</p>
             }
           </li>
         }

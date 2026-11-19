@@ -17,10 +17,6 @@
 
 <ion-content class="structure-page">
   <div class="structure-page__scroll">
-    @if (errorMessage(); as message) {
-      <p class="structure-page__error" role="alert">{{ message | transloco }}</p>
-    }
-
     @if (loading()) {
       <p class="structure-page__hint">{{ 'organizer.structure.loading' | transloco }}</p>
     } @else {

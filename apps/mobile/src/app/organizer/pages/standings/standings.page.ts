@@ -19,6 +19,7 @@ import { OrganizerAuthService } from '../../core/auth.service';
 import { OrganizerCategory } from '../../core/models';
 import { CrossGroupUnresolvedTie, OrganizerStandingsService } from '../../core/standings.service';
 import { TournamentCreationService } from '../../core/tournament-creation.service';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 interface QualificationTier {
   label: string;
@@ -70,6 +71,8 @@ export class OrganizerStandingsPage {
 
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage);
 
   protected readonly categories = signal<OrganizerCategory[]>([]);
   protected readonly selectedCategoryId = signal('');

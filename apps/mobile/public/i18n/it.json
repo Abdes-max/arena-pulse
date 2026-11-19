@@ -751,5 +751,8 @@
       "android": "Per vedere i banner: Impostazioni > App > TournArena > Notifiche, poi attiva «Avvisi delle partite».",
       "web": "Le notifiche sono disponibili nell'app mobile."
     }
+  },
+  "feedback": {
+    "close": "Chiudi"
   }
 }

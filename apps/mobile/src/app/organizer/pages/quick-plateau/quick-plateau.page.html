@@ -19,10 +19,6 @@
   <form class="quick-plateau-page__form" (submit)="submit(); $event.preventDefault()">
     <p class="quick-plateau-page__intro">{{ 'organizer.quickPlateau.intro' | transloco }}</p>
 
-    @if (errorMessage(); as message) {
-      <p class="quick-plateau-page__error" role="alert">{{ message | transloco }}</p>
-    }
-
     <ap-text-field
       [label]="'organizer.quickPlateau.name' | transloco"
       [placeholder]="'organizer.quickPlateau.namePlaceholder' | transloco"
