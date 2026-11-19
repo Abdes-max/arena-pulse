@@ -1,77 +1,116 @@
 <main class="register-page">
-  <h1>{{ individual() ? 'Pré-inscription' : 'Pré-inscrire une équipe' }}</h1>
+  <section class="register-page__block">
+    <h2>{{ individual() ? 'Pré-inscription' : 'Pré-inscrire une équipe' }}</h2>
 
-  @if (loading()) {
-    <p>Chargement…</p>
-  } @else {
-    @if (info(); as i) {
-      @if (!i.open) {
-        <p class="register-page__closed">Les inscriptions ne sont pas ouvertes pour ce tournoi.</p>
-      } @else {
-        <p class="register-page__intro">
-          Votre demande sera validée par l'organisateur, qui vous confirmera votre place par e-mail.
-        </p>
-        @if (i.paymentInfo) {
-          <p class="register-page__payment"><strong>Paiement :</strong> {{ i.paymentInfo }}</p>
+    @if (loading()) {
+      <p class="register-page__muted">Chargement…</p>
+    } @else {
+      @if (info(); as i) {
+        @if (!i.open) {
+          <p class="register-page__muted">Les inscriptions ne sont pas ouvertes pour ce tournoi.</p>
+        } @else {
+          <p class="register-page__intro">
+            Votre demande sera validée par l'organisateur, qui vous confirmera votre place par
+            e-mail.
+          </p>
+          @if (i.paymentInfo) {
+            <p class="register-page__note"><strong>Paiement :</strong> {{ i.paymentInfo }}</p>
+          }
         }
       }
-    }
 
-    @if (info()?.open) {
-      <form class="register-page__form" [formGroup]="form" (ngSubmit)="submit()">
-        <ap-select
-          label="Catégorie"
-          [options]="categoryOptions()"
-          [value]="selectedCategoryId()"
-          (valueChange)="onCategoryChange($event)"
-        />
+      @if (info()?.open) {
+        <form class="register-page__form" [formGroup]="form" (ngSubmit)="submit()">
+          <ap-select
+            label="Catégorie"
+            [options]="categoryOptions()"
+            [value]="selectedCategoryId()"
+            (valueChange)="onCategoryChange($event)"
+          />
 
-        @if (selectedCategory(); as category) {
-          <p class="register-page__fee">
-            Tarif : <strong>{{ selectedCategoryFee() }}</strong> (réglé directement à
-            l'organisateur)
-          </p>
-          @if (remaining() === 0) {
-            <p class="register-page__full">
-              Catégorie complète : votre demande ira en liste d'attente.
+          @if (selectedCategory(); as category) {
+            <p class="register-page__note">
+              Tarif : <strong>{{ selectedCategoryFee() }}</strong> (réglé directement à
+              l'organisateur)
             </p>
-          }
+            @if (remaining() === 0) {
+              <p class="register-page__warning">
+                Catégorie complète : votre demande ira en liste d'attente.
+              </p>
+            }
 
-          @if (individual()) {
+            @if (individual()) {
+              <ap-text-field
+                label="Prénom du joueur"
+                formControlName="playerFirstName"
+                autocomplete="given-name"
+              />
+              <ap-text-field
+                label="Nom du joueur"
+                formControlName="playerLastName"
+                autocomplete="family-name"
+              />
+            } @else {
+              @if (clubSearchAvailable()) {
+                <label class="register-page__checkbox">
+                  <input
+                    type="checkbox"
+                    [checked]="useClubSearch()"
+                    (change)="toggleClubSearch($event)"
+                  />
+                  Rechercher le club dans l'annuaire
+                </label>
+              }
+              @if (clubSearchAvailable() && useClubSearch()) {
+                <ap-autocomplete-field
+                  label="Nom de l'équipe"
+                  placeholder="Nom du club, ex. Septèmes"
+                  [value]="form.controls.teamName.value"
+                  [suggestions]="clubSuggestions()"
+                  [loading]="clubSearch.loading()"
+                  [hint]="
+                    clubSearch.failed()
+                      ? 'Recherche de clubs indisponible : saisissez le nom à la main.'
+                      : null
+                  "
+                  (valueChange)="onTeamNameInput($event)"
+                  (suggestionSelect)="onClubSelect($event)"
+                />
+              } @else {
+                <ap-text-field label="Nom de l'équipe" formControlName="teamName" />
+              }
+              @if (externalClubId()) {
+                <p class="register-page__club-linked">
+                  @if (clubLogo(); as logo) {
+                    <img [src]="logo" alt="" />
+                  }
+                  <span>Club lié : {{ clubLabel() }}</span>
+                  <button type="button" (click)="unlinkClub()">Délier</button>
+                </p>
+              }
+            }
             <ap-text-field
-              label="Prénom du joueur"
-              formControlName="playerFirstName"
-              autocomplete="given-name"
+              [label]="individual() ? 'Email' : 'Email du responsable'"
+              type="email"
+              formControlName="managerEmail"
+              autocomplete="email"
             />
             <ap-text-field
-              label="Nom du joueur"
-              formControlName="playerLastName"
-              autocomplete="family-name"
+              [label]="individual() ? 'Téléphone' : 'Téléphone du responsable'"
+              type="tel"
+              formControlName="managerPhone"
+              autocomplete="tel"
             />
-          } @else {
-            <ap-text-field label="Nom de l'équipe" formControlName="teamName" />
-          }
-          <ap-text-field
-            [label]="individual() ? 'Email' : 'Email du responsable'"
-            type="email"
-            formControlName="managerEmail"
-            autocomplete="email"
-          />
-          <ap-text-field
-            [label]="individual() ? 'Téléphone' : 'Téléphone du responsable'"
-            type="tel"
-            formControlName="managerPhone"
-            autocomplete="tel"
-          />
-          <p class="register-page__hint">
-            L'organisateur vous contactera à ce numéro au sujet de l'inscription.
-          </p>
+            <p class="register-page__hint">
+              L'organisateur vous contactera à ce numéro au sujet de l'inscription.
+            </p>
 
-          <ap-button type="submit" [disabled]="form.invalid || submitting()">
-            Envoyer la pré-inscription
-          </ap-button>
-        }
-      </form>
+            <ap-button type="submit" [disabled]="form.invalid || submitting()">
+              Envoyer la pré-inscription
+            </ap-button>
+          }
+        </form>
+      }
     }
-  }
+  </section>
 </main>

@@ -2,8 +2,13 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { PublicApiService } from 'api-client';
-import { Button, Select, SelectOption, TextField } from 'design-system';
+import {
+  AssetUrlService,
+  ClubSearchService,
+  PublicApiService,
+  clubDirectorySport,
+} from 'api-client';
+import { AutocompleteField, Button, Select, SelectOption, TextField } from 'design-system';
 import { Category, PublicRegistrationInfo } from 'shared-models';
 import { PlayerAuthService } from '../../core/player-auth.service';
 import { TournamentContextService } from '../../core/tournament-context.service';
@@ -22,7 +27,7 @@ function formatFee(category: Category): string {
 
 @Component({
   selector: 'app-register-page',
-  imports: [ReactiveFormsModule, Button, Select, TextField],
+  imports: [ReactiveFormsModule, AutocompleteField, Button, Select, TextField],
   templateUrl: './register.page.html',
   styleUrl: './register.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -33,6 +38,7 @@ export class RegisterPage {
   private readonly router = inject(Router);
   protected readonly context = inject(TournamentContextService);
   private readonly playerAuth = inject(PlayerAuthService);
+  private readonly assetUrl = inject(AssetUrlService);
 
   protected readonly loading = signal(true);
   protected readonly submitting = signal(false);
@@ -81,8 +87,63 @@ export class RegisterPage {
     managerPhone: ['', [Validators.required, Validators.minLength(6)]],
   });
 
+  // Club search on the team name (sports with a club directory), same as
+  // the organizer's Équipes tab: picking a club links it, and its crest
+  // becomes the team logo once the organizer confirms the request.
+  private readonly clubSport = computed(() =>
+    clubDirectorySport(this.context.tournament()?.sportName),
+  );
+  protected readonly clubSearchAvailable = computed(
+    () => this.clubSport() !== null && !this.individual(),
+  );
+  protected readonly useClubSearch = signal(true);
+  protected readonly clubSearch = inject(ClubSearchService).autocomplete(
+    () => this.clubSport() ?? 'football',
+    'public/registrations/club-search',
+  );
+  protected readonly clubSuggestions = computed(() =>
+    this.clubSearch.suggestions().map((club) => ({
+      label: club.name,
+      detail: club.department
+        ? `Département ${club.department}`
+        : [club.postalCode, club.city].filter(Boolean).join(' ') || undefined,
+      imageUrl: this.assetUrl.resolve(club.logoUrl),
+    })),
+  );
+  protected readonly externalClubId = signal('');
+  protected readonly clubLabel = signal('');
+  protected readonly clubLogo = signal<string | null>(null);
+
   constructor() {
     void this.load();
+  }
+
+  protected toggleClubSearch(event: Event): void {
+    this.useClubSearch.set((event.target as HTMLInputElement).checked);
+    this.clubSearch.clear();
+  }
+
+  protected onTeamNameInput(value: string): void {
+    this.form.controls.teamName.setValue(value);
+    this.clubSearch.query(value);
+  }
+
+  protected onClubSelect(index: number): void {
+    const club = this.clubSearch.suggestions()[index];
+    if (!club) {
+      return;
+    }
+    this.form.controls.teamName.setValue(club.name);
+    this.externalClubId.set(club.externalId);
+    this.clubLabel.set(club.name);
+    this.clubLogo.set(this.assetUrl.resolve(club.logoUrl));
+    this.clubSearch.clear();
+  }
+
+  protected unlinkClub(): void {
+    this.externalClubId.set('');
+    this.clubLabel.set('');
+    this.clubLogo.set(null);
   }
 
   protected onCategoryChange(categoryId: string): void {
@@ -134,6 +195,7 @@ export class RegisterPage {
         this.form.getRawValue();
       const result = await this.api.createRegistration(slug, categoryId, {
         teamName: this.individual() ? undefined : teamName,
+        externalClubId: (!this.individual() && this.externalClubId()) || undefined,
         managerEmail,
         managerPhone,
         players: this.individual()

@@ -8,6 +8,7 @@ Disallow: /admin/
 Disallow: /super-admin$
 Disallow: /super-admin/
 Disallow: /player/
+Disallow: /espace-responsable
 Disallow: /api/
 Disallow: /login$
 Disallow: /register$

@@ -422,6 +422,8 @@ export interface RegistrationPlayerInput {
 export interface CreateRegistrationPayload {
   /** Team sports only (an individual registration is named after its player). */
   teamName?: string;
+  // Team sports: club picked from the directory (its crest becomes the team logo).
+  externalClubId?: string;
   managerEmail: string;
   // Required: the organizer calls the manager (or player) back.
   managerPhone: string;

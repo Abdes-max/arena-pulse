@@ -920,6 +920,9 @@ model Registration {
   categoryId              String
   playerAccountId         String
   teamName                String
+  // Club picked from the club directory on the form (same link as
+  // Team.externalClubId) -- copied to the team on confirmation, crest included.
+  externalClubId          String?
   managerEmail            String
   managerPhone            String?
   status                  RegistrationStatus @default(PENDING_PAYMENT)

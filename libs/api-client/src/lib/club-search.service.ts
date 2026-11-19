@@ -25,6 +25,8 @@ export interface ClubSuggestion {
   logoUrl: string | null;
 }
 
+const ORGANIZER_PATH = 'club-directory/search';
+
 // Sport.name (as seeded) -> the API's club directory key.
 const CLUB_DIRECTORY_SPORTS: Record<string, string> = {
   Football: 'football',
@@ -47,9 +49,13 @@ export class ClubSearchService {
   private readonly http = inject(HttpClient);
   private readonly config = inject(API_CLIENT_CONFIG);
 
-  search(q: string, sport = 'football'): Promise<ClubSuggestion[]> {
+  /**
+   * `path`: the organizer's club-directory/search by default; the public
+   * registration form uses public/registrations/club-search (team managers).
+   */
+  search(q: string, sport = 'football', path = ORGANIZER_PATH): Promise<ClubSuggestion[]> {
     return firstValueFrom(
-      this.http.get<ClubSuggestion[]>(`${this.config.apiUrl}/club-directory/search`, {
+      this.http.get<ClubSuggestion[]>(`${this.config.apiUrl}/${path}`, {
         params: new HttpParams().set('q', q).set('sport', sport),
       }),
     );
@@ -59,7 +65,10 @@ export class ClubSearchService {
    * A fresh debounced autocomplete bound to this service; `sport` is read
    * on every search, so it follows a sport change in the form.
    */
-  autocomplete(sport: () => string = () => 'football'): DebouncedAutocomplete<ClubSuggestion> {
-    return new DebouncedAutocomplete((q) => this.search(q, sport()));
+  autocomplete(
+    sport: () => string = () => 'football',
+    path = ORGANIZER_PATH,
+  ): DebouncedAutocomplete<ClubSuggestion> {
+    return new DebouncedAutocomplete((q) => this.search(q, sport(), path));
   }
 }

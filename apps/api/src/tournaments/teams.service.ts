@@ -348,6 +348,18 @@ export class TeamsService {
    * failing the save. The image comes from ClubDirectoryService (our FFF
    * directory and CDN template), never from a client-supplied URL.
    */
+  /**
+   * For a team created outside this service (a confirmed pre-registration,
+   * RegistrationsService): imports its linked club's crest as the logo,
+   * same as create() does. Best effort, never throws.
+   */
+  async applyClubCrest(teamId: string): Promise<void> {
+    const team = await this.prisma.team.findUnique({ where: { id: teamId } });
+    if (team) {
+      await this.importClubLogo(team);
+    }
+  }
+
   private async importClubLogo(team: Team): Promise<string | null> {
     if (!team.externalClubId) {
       return null;

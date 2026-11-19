@@ -1,15 +1,21 @@
+@use '../../admin/section-card';
+
 .register-page {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: var(--ap-space-6) var(--ap-space-4) var(--ap-space-12);
+}
+
+// Same card as the other blocks (section-card): titled header, surface.
+.register-page__block {
+  @include section-card.section-card;
   display: flex;
   flex-direction: column;
   gap: var(--ap-space-4);
-  max-width: 560px;
-  margin: 0 auto;
-  padding: var(--ap-space-6) var(--ap-space-4);
+  margin-top: 0;
 
-  h1 {
-    font-family: var(--ap-font-body);
-    color: var(--ap-color-fg);
-    margin: 0;
+  > h2 {
+    margin-bottom: 0;
   }
 }
 
@@ -19,18 +25,65 @@
   gap: var(--ap-space-4);
 }
 
-.register-page__error {
-  color: var(--ap-color-error);
+.register-page__intro,
+.register-page__note,
+.register-page__muted {
   margin: 0;
 }
 
-.register-page__fee {
-  color: var(--ap-color-fg);
+.register-page__muted,
+.register-page__hint {
+  color: var(--ap-color-muted);
+}
+
+.register-page__note {
+  padding: var(--ap-space-3) var(--ap-space-4);
+  background: var(--ap-color-bg);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+}
+
+.register-page__warning {
   margin: 0;
+  color: var(--ap-color-warning);
+  font-weight: 600;
 }
 
 .register-page__hint {
-  color: var(--ap-color-muted);
   font-size: 0.85rem;
   margin: calc(-1 * var(--ap-space-2)) 0 0;
+}
+
+.register-page__checkbox {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  font-weight: 600;
+}
+
+.register-page__club-linked {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ap-space-2);
+  margin: calc(-1 * var(--ap-space-2)) 0 0;
+  font-size: 0.85rem;
+  color: var(--ap-color-muted);
+
+  img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    border-radius: 50%;
+  }
+
+  button {
+    padding: 0;
+    font: inherit;
+    color: var(--ap-color-primary);
+    text-decoration: underline;
+    background: none;
+    border: 0;
+    cursor: pointer;
+  }
 }

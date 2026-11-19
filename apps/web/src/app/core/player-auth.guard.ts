@@ -8,5 +8,7 @@ export const playerAuthGuard: CanActivateFn = (_route, state) => {
     return true;
   }
   const router = inject(Router);
-  return router.createUrlTree(['/player/login'], { queryParams: { returnUrl: state.url } });
+  return router.createUrlTree(['/espace-responsable/connexion'], {
+    queryParams: { returnUrl: state.url },
+  });
 };

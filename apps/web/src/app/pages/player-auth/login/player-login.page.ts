@@ -41,7 +41,7 @@ export class PlayerLoginPage {
       const requestedReturnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
       const returnUrl = isSafeReturnUrl(requestedReturnUrl)
         ? requestedReturnUrl
-        : '/player/registrations';
+        : '/espace-responsable';
       await this.router.navigateByUrl(returnUrl);
     } catch {
       this.errorMessage.set('Email ou mot de passe incorrect.');

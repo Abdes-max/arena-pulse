@@ -13,6 +13,7 @@ import { CategoriesService } from '../tournaments/categories.service';
 import { TournamentsService } from '../tournaments/tournaments.service';
 import { StripeService } from '../payments/stripe.service';
 import { MailService } from '../mail/mail.service';
+import { TeamsService } from '../tournaments/teams.service';
 import { CreateRegistrationDto } from './dto/create-registration.dto';
 import { RegistrationSettingsDto } from './dto/registration-settings.dto';
 import {
@@ -53,6 +54,7 @@ export class RegistrationsService {
     private readonly categoriesService: CategoriesService,
     private readonly stripeService: StripeService,
     private readonly configService: ConfigService,
+    private readonly teamsService: TeamsService,
     @Optional() private readonly mailService?: MailService,
     @Optional()
     private readonly superAdminNotifications?: SuperAdminNotificationService,
@@ -139,6 +141,7 @@ export class RegistrationsService {
         categoryId: category.id,
         playerAccountId,
         teamName,
+        externalClubId: individual ? null : (dto.externalClubId ?? null),
         managerEmail: dto.managerEmail,
         managerPhone: dto.managerPhone.trim(),
         amountCents: category.registrationFeeCents ?? 0,
@@ -717,12 +720,13 @@ export class RegistrationsService {
       },
     });
 
-    await this.prisma.$transaction(async (tx) => {
+    const teamId = await this.prisma.$transaction(async (tx) => {
       const team = await tx.team.create({
         data: {
           tournamentId: registration.tournamentId,
           categoryId: registration.categoryId,
           name: registration.teamName,
+          externalClubId: registration.externalClubId,
           managerEmail: registration.managerEmail,
           managerPhone: registration.managerPhone,
           players: {
@@ -747,7 +751,13 @@ export class RegistrationsService {
           }),
         },
       });
+      return team.id;
     });
+    // The club picked on the form brings its crest, as when the organizer
+    // adds the team from the club search (best effort, never blocks).
+    if (registration.externalClubId) {
+      await this.teamsService.applyClubCrest(teamId);
+    }
 
     if (status === RegistrationStatus.PAID) {
       // Super-admin notification (never throws, see SuperAdminNotificationService).
