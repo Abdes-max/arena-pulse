@@ -46,7 +46,8 @@ ion-title {
 
 .organizer-tournaments-page {
   --padding-top: var(--ap-space-4);
-  --padding-bottom: var(--ap-space-24); // room for the two stacked creation buttons
+  // Room for the setup guide pill + the two stacked creation buttons.
+  --padding-bottom: calc(var(--ap-space-24) + var(--ap-space-16));
   --padding-start: var(--ap-space-4);
   --padding-end: var(--ap-space-4);
   position: relative;

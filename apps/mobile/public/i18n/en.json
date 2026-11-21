@@ -550,6 +550,25 @@
       "matchesProgress": "{{played}}/{{total}} matches",
       "noActiveTournament": "No active tournament."
     },
+    "setupGuide": {
+      "title": "Setup guide",
+      "subtitle": "Get your organization up and running, step by step",
+      "close": "Collapse the guide",
+      "dismiss": "Hide",
+      "done": "(done)",
+      "progress": "Guide progress",
+      "steps": {
+        "createTournament": "Create your first tournament",
+        "customize": "Customize your tournament",
+        "addTeams": "Add your teams",
+        "schedule": "Generate pools and schedule",
+        "publish": "Publish your tournament",
+        "share": "Share your tournament",
+        "slideshow": "Launch the slideshow on a screen",
+        "pdf": "Generate the tournament PDF",
+        "firstScore": "Enter a first score"
+      }
+    },
     "stats": {
       "title": "Statistics",
       "loading": "Loading…",

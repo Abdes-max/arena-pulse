@@ -550,6 +550,25 @@
       "matchesProgress": "{{played}}/{{total}} partidos",
       "noActiveTournament": "Ningún torneo activo."
     },
+    "setupGuide": {
+      "title": "Guía de configuración",
+      "subtitle": "Pon en marcha tu organización, paso a paso",
+      "close": "Plegar la guía",
+      "dismiss": "Ocultar",
+      "done": "(hecho)",
+      "progress": "Progreso de la guía",
+      "steps": {
+        "createTournament": "Crea tu primer torneo",
+        "customize": "Personaliza tu torneo",
+        "addTeams": "Añade tus equipos",
+        "schedule": "Genera los grupos y el calendario",
+        "publish": "Publica tu torneo",
+        "share": "Comparte tu torneo",
+        "slideshow": "Lanza la presentación en pantalla",
+        "pdf": "Genera el PDF del torneo",
+        "firstScore": "Introduce un primer resultado"
+      }
+    },
     "stats": {
       "title": "Estadísticas",
       "loading": "Cargando…",

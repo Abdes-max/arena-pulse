@@ -17,6 +17,7 @@ import { OrganizerAuthService } from '../../core/auth.service';
 import { AdminUiMode, OrganizerTournament } from '../../core/models';
 import { OrganizerTournamentsService } from '../../core/tournaments.service';
 import { OrganizerDashboard } from './organizer-dashboard';
+import { OrganizerSetupGuide } from './organizer-setup-guide';
 
 // Real "Mes tournois" list -- replaces the PR 1 placeholder (register ->
 // verify -> login -> land somewhere real) now that the creation wizard
@@ -55,6 +56,7 @@ const TIME_FILTERS: TimeFilter[] = ['ALL', 'UPCOMING', 'PAST'];
     IonToolbar,
     Logo,
     OrganizerDashboard,
+    OrganizerSetupGuide,
     RouterLink,
     Select,
     TranslocoPipe,
@@ -97,6 +99,9 @@ export class OrganizerTournamentsPage {
       return statusOk && timeOk && (!this.openOnly() || this.registrationsPossible(tournament));
     });
   });
+
+  /** Bumped on every successful load so the setup guide re-reads its progress. */
+  protected readonly guideRefresh = signal(0);
 
   // Same account as a team manager: a way to its space when it has requests.
   protected readonly hasRegistrations = signal(false);
@@ -146,6 +151,7 @@ export class OrganizerTournamentsPage {
     try {
       const tournaments = await this.tournamentsApi.listTournaments(organizationId);
       this.tournaments.set(tournaments);
+      this.guideRefresh.update((n) => n + 1);
       this.loadedOnce = true;
     } catch {
       this.errorMessage.set('organizer.tournaments.list.errorGeneric');
