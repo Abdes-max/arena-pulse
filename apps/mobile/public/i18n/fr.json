@@ -527,6 +527,25 @@
       "matchesProgress": "{{played}}/{{total}} matchs",
       "noActiveTournament": "Aucun tournoi actif."
     },
+    "setupGuide": {
+      "title": "Guide de configuration",
+      "subtitle": "Mets ton organisation en route, étape par étape",
+      "close": "Replier le guide",
+      "dismiss": "Masquer",
+      "done": "(terminé)",
+      "progress": "Progression du guide",
+      "steps": {
+        "createTournament": "Crée ton premier tournoi",
+        "customize": "Personnalise ton tournoi",
+        "addTeams": "Ajoute tes équipes",
+        "schedule": "Génère les poules et le calendrier",
+        "publish": "Publie ton tournoi",
+        "share": "Partage ton tournoi",
+        "slideshow": "Lance le diaporama sur écran",
+        "pdf": "Génère le PDF du tournoi",
+        "firstScore": "Saisis un premier score"
+      }
+    },
     "stats": {
       "title": "Statistiques",
       "loading": "Chargement…",
