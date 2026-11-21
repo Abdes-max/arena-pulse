@@ -14,10 +14,9 @@ import { DEFAULT_THEME, LanguageService, ThemeService } from 'design-tokens';
 import { isTournamentPast } from 'shared-models';
 import { AuthService } from '../../core/auth.service';
 import { Tournament, TournamentStatus } from '../../core/models';
-import { TeamsService } from '../../core/teams.service';
 import { TournamentsService } from '../../core/tournaments.service';
-import { OnboardingChecklist, OnboardingStep } from './onboarding-checklist';
 import { OrganizationDashboard } from './organization-dashboard';
+import { SetupGuide } from './setup-guide';
 import { QrPosterDialog } from '../../shared/qr-poster-dialog/qr-poster-dialog';
 import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
@@ -57,18 +56,16 @@ const TIME_LABEL_KEYS: Record<TimeFilter, string> = {
   PAST: 'admin.tournamentList.time.past',
 };
 
-const DISMISSED_STORAGE_PREFIX = 'arena-pulse:onboarding-dismissed:';
-
 @Component({
   selector: 'app-tournament-list-page',
   imports: [
     Badge,
     Button,
-    OnboardingChecklist,
     OrganizationDashboard,
     QrPosterDialog,
     RouterLink,
     Select,
+    SetupGuide,
     TranslocoPipe,
   ],
   templateUrl: './tournament-list.page.html',
@@ -77,7 +74,6 @@ const DISMISSED_STORAGE_PREFIX = 'arena-pulse:onboarding-dismissed:';
 })
 export class TournamentListPage {
   private readonly tournamentsService = inject(TournamentsService);
-  private readonly teamsService = inject(TeamsService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly themeService = inject(ThemeService);
@@ -130,67 +126,9 @@ export class TournamentListPage {
     });
   });
 
-  private readonly hasTeam = signal(false);
-  private readonly hasStructure = signal(false);
-  private readonly onboardingDismissed = signal(false);
-
-  protected readonly onboardingSteps = computed<OnboardingStep[]>(() => {
-    const tournaments = this.tournaments();
-    const lang = this.languageService.language();
-    const t = (key: string) => this.transloco.translate(`admin.onboarding.steps.${key}`, {}, lang);
-    const createStep: OnboardingStep = {
-      key: 'create-tournament',
-      title: t('createTournament.title'),
-      description: t('createTournament.description'),
-      done: tournaments.length > 0,
-      actionLabel: t('createTournament.action'),
-    };
-
-    // The remaining steps all refer to "your most recent tournament" -- with
-    // no tournament at all yet, they'd have nothing to point to and would
-    // just read as confusing filler, so only the create step shows.
-    if (tournaments.length === 0) {
-      return [createStep];
-    }
-
-    return [
-      createStep,
-      {
-        key: 'add-team',
-        title: t('addTeam.title'),
-        description: t('addTeam.description'),
-        done: this.hasTeam(),
-        actionLabel: t('addTeam.action'),
-      },
-      // Simple mode hides the Structure tab -- no step pointing at it.
-      ...(this.simpleMode()
-        ? []
-        : [
-            {
-              key: 'structure',
-              title: t('structure.title'),
-              description: t('structure.description'),
-              done: this.hasStructure(),
-              actionLabel: t('structure.action'),
-            },
-          ]),
-      {
-        key: 'publish',
-        title: t('publish.title'),
-        description: t('publish.description'),
-        done: tournaments.some((tournament) => tournament.status === 'PUBLISHED'),
-        actionLabel: t('publish.action'),
-      },
-    ];
-  });
-
   protected statusLabel(status: TournamentStatus): string {
     return this.transloco.translate(STATUS_LABEL_KEYS[status], {}, this.languageService.language());
   }
-
-  protected readonly showOnboarding = computed(
-    () => !this.onboardingDismissed() && this.onboardingSteps().some((step) => !step.done),
-  );
 
   constructor() {
     void this.load();
@@ -211,70 +149,14 @@ export class TournamentListPage {
       this.loading.set(false);
       return;
     }
-    this.onboardingDismissed.set(
-      localStorage.getItem(DISMISSED_STORAGE_PREFIX + organizationId) === '1',
-    );
     this.loading.set(true);
     try {
       const tournaments = await this.tournamentsService.listTournaments(organizationId);
       this.tournaments.set(tournaments);
-      await this.loadOnboardingSignals(organizationId, tournaments);
     } catch {
       this.errorMessage.set('admin.tournamentList.errorLoad');
     } finally {
       this.loading.set(false);
-    }
-  }
-
-  private async loadOnboardingSignals(
-    organizationId: string,
-    tournaments: Tournament[],
-  ): Promise<void> {
-    const latest = tournaments[0];
-    if (!latest) {
-      return;
-    }
-    try {
-      const [teams, categories] = await Promise.all([
-        this.teamsService.listTeams(organizationId, latest.id),
-        this.tournamentsService.listCategories(organizationId, latest.id),
-      ]);
-      this.hasTeam.set(teams.length > 0);
-      this.hasStructure.set(categories.length > 0);
-    } catch {
-      // Onboarding hints are best-effort -- a failure here shouldn't block the dashboard.
-    }
-  }
-
-  protected dismissOnboarding(): void {
-    const organizationId = this.organization()?.id;
-    if (organizationId) {
-      localStorage.setItem(DISMISSED_STORAGE_PREFIX + organizationId, '1');
-    }
-    this.onboardingDismissed.set(true);
-  }
-
-  protected onOnboardingStepClick(stepKey: string): void {
-    const latest = this.tournaments()[0];
-    switch (stepKey) {
-      case 'create-tournament':
-        this.goToCreate();
-        break;
-      case 'add-team':
-        if (latest) {
-          void this.router.navigate(['/admin/tournaments', latest.id, 'teams']);
-        }
-        break;
-      case 'structure':
-        if (latest) {
-          void this.router.navigate(['/admin/tournaments', latest.id, 'structure']);
-        }
-        break;
-      case 'publish':
-        if (latest) {
-          void this.router.navigate(['/admin/tournaments', latest.id]);
-        }
-        break;
     }
   }
 

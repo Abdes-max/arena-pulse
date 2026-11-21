@@ -16,14 +16,6 @@
   @if (loading()) {
     <p>{{ 'admin.tournamentList.loading' | transloco }}</p>
   } @else {
-    @if (showOnboarding()) {
-      <app-onboarding-checklist
-        [steps]="onboardingSteps()"
-        (stepClick)="onOnboardingStepClick($event)"
-        (dismiss)="dismissOnboarding()"
-      />
-    }
-
     @if (tournaments().length > 0 && organization(); as org) {
       <app-organization-dashboard [organizationId]="org.id" />
     }
@@ -315,6 +307,13 @@
       [tournamentId]="qrTournament.id"
       [url]="publicAbsoluteUrl(qrTournament)"
       (closed)="closeQr()"
+    />
+  }
+  @if (!loading() && organization(); as org) {
+    <app-setup-guide
+      [organizationId]="org.id"
+      [tournaments]="tournaments()"
+      [simpleMode]="simpleMode()"
     />
   }
 </main>

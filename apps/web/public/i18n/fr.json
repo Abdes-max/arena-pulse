@@ -827,32 +827,23 @@
       "share": "Partager",
       "slideshow": "Diaporama (écran TV)"
     },
-    "onboarding": {
-      "title": "Bien démarrer",
-      "progress": "{{done}} / {{total}} étapes complétées",
-      "later": "Plus tard",
-      "done": "Fait",
+    "setupGuide": {
+      "title": "Guide de configuration",
+      "subtitle": "Mettez votre organisation en route, étape par étape",
+      "close": "Replier le guide",
+      "dismiss": "Masquer",
+      "done": "(terminé)",
+      "progress": "Progression du guide",
       "steps": {
-        "createTournament": {
-          "title": "Créer votre premier tournoi",
-          "description": "Nom, sport et dates de votre compétition.",
-          "action": "Créer"
-        },
-        "addTeam": {
-          "title": "Ajouter au moins une équipe",
-          "description": "Sur votre tournoi le plus récent.",
-          "action": "Ajouter"
-        },
-        "structure": {
-          "title": "Structurer votre tournoi",
-          "description": "Poules et/ou tableaux à élimination.",
-          "action": "Structurer"
-        },
-        "publish": {
-          "title": "Publier le tournoi",
-          "description": "Rendre son site public visible.",
-          "action": "Publier"
-        }
+        "createTournament": "Créez votre premier tournoi",
+        "customize": "Personnalisez votre tournoi",
+        "addTeams": "Ajoutez vos équipes",
+        "schedule": "Générez les poules et le calendrier",
+        "publish": "Publiez votre tournoi",
+        "share": "Partagez votre tournoi",
+        "slideshow": "Lancez le diaporama sur écran",
+        "pdf": "Générez le PDF du tournoi",
+        "firstScore": "Saisissez un premier score"
       }
     },
     "publishSuccess": {

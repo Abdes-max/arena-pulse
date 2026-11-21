@@ -725,32 +725,23 @@
       "share": "Compartir",
       "slideshow": "Presentación (pantalla TV)"
     },
-    "onboarding": {
-      "title": "Primeros pasos",
-      "progress": "{{done}} / {{total}} pasos completados",
-      "later": "Más tarde",
-      "done": "Hecho",
+    "setupGuide": {
+      "title": "Guía de configuración",
+      "subtitle": "Pon en marcha tu organización, paso a paso",
+      "close": "Plegar la guía",
+      "dismiss": "Ocultar",
+      "done": "(hecho)",
+      "progress": "Progreso de la guía",
       "steps": {
-        "createTournament": {
-          "title": "Crea tu primer torneo",
-          "description": "Nombre, deporte y fechas de tu competición.",
-          "action": "Crear"
-        },
-        "addTeam": {
-          "title": "Añade al menos un equipo",
-          "description": "En tu torneo más reciente.",
-          "action": "Añadir"
-        },
-        "structure": {
-          "title": "Estructura tu torneo",
-          "description": "Grupos y/o cuadros de eliminación.",
-          "action": "Estructurar"
-        },
-        "publish": {
-          "title": "Publica el torneo",
-          "description": "Haz visible su sitio público.",
-          "action": "Publicar"
-        }
+        "createTournament": "Crea tu primer torneo",
+        "customize": "Personaliza tu torneo",
+        "addTeams": "Añade tus equipos",
+        "schedule": "Genera los grupos y el calendario",
+        "publish": "Publica tu torneo",
+        "share": "Comparte tu torneo",
+        "slideshow": "Lanza la presentación en pantalla",
+        "pdf": "Genera el PDF del torneo",
+        "firstScore": "Introduce un primer resultado"
       }
     },
     "publishSuccess": {

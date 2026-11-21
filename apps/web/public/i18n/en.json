@@ -827,32 +827,23 @@
       "share": "Share",
       "slideshow": "Slideshow (TV screen)"
     },
-    "onboarding": {
-      "title": "Get started",
-      "progress": "{{done}} / {{total}} steps completed",
-      "later": "Later",
-      "done": "Done",
+    "setupGuide": {
+      "title": "Setup guide",
+      "subtitle": "Get your organization up and running, step by step",
+      "close": "Collapse the guide",
+      "dismiss": "Hide",
+      "done": "(done)",
+      "progress": "Guide progress",
       "steps": {
-        "createTournament": {
-          "title": "Create your first tournament",
-          "description": "Name, sport, and dates for your competition.",
-          "action": "Create"
-        },
-        "addTeam": {
-          "title": "Add at least one team",
-          "description": "On your most recent tournament.",
-          "action": "Add"
-        },
-        "structure": {
-          "title": "Structure your tournament",
-          "description": "Pools and/or knockout brackets.",
-          "action": "Structure"
-        },
-        "publish": {
-          "title": "Publish the tournament",
-          "description": "Make its public site visible.",
-          "action": "Publish"
-        }
+        "createTournament": "Create your first tournament",
+        "customize": "Customize your tournament",
+        "addTeams": "Add your teams",
+        "schedule": "Generate pools and schedule",
+        "publish": "Publish your tournament",
+        "share": "Share your tournament",
+        "slideshow": "Launch the slideshow on a screen",
+        "pdf": "Generate the tournament PDF",
+        "firstScore": "Enter a first score"
       }
     },
     "publishSuccess": {
