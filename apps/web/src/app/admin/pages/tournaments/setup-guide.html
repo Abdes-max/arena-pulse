@@ -1,0 +1,130 @@
+@if (visible()) {
+  @if (open()) {
+    <section
+      id="setup-guide-panel"
+      class="setup-guide__panel"
+      [attr.aria-label]="'admin.setupGuide.title' | transloco"
+    >
+      <div class="setup-guide__header">
+        <h2>{{ 'admin.setupGuide.title' | transloco }}</h2>
+        <button
+          type="button"
+          class="setup-guide__close"
+          [attr.aria-label]="'admin.setupGuide.close' | transloco"
+          (click)="toggle()"
+        >
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+            <path
+              d="M6 6l12 12M18 6L6 18"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+      </div>
+      <p class="setup-guide__subtitle">{{ 'admin.setupGuide.subtitle' | transloco }}</p>
+
+      <ol class="setup-guide__steps">
+        @for (step of steps(); track step.key) {
+          <li>
+            @switch (step.target.kind) {
+              @case ('route') {
+                <a
+                  class="setup-guide__step"
+                  [class.setup-guide__step--done]="step.done"
+                  [routerLink]="$any(step.target).link"
+                  (click)="onStepClick(step)"
+                >
+                  <ng-container *ngTemplateOutlet="stepBody; context: { $implicit: step }" />
+                </a>
+              }
+              @case ('external') {
+                <a
+                  class="setup-guide__step"
+                  [class.setup-guide__step--done]="step.done"
+                  [href]="$any(step.target).href"
+                  target="_blank"
+                  rel="noopener"
+                  (click)="onStepClick(step)"
+                >
+                  <ng-container *ngTemplateOutlet="stepBody; context: { $implicit: step }" />
+                </a>
+              }
+              @case ('share') {
+                <button
+                  type="button"
+                  class="setup-guide__step"
+                  [class.setup-guide__step--done]="step.done"
+                  (click)="onStepClick(step)"
+                >
+                  <ng-container *ngTemplateOutlet="stepBody; context: { $implicit: step }" />
+                </button>
+              }
+            }
+          </li>
+        }
+      </ol>
+
+      <ng-template #stepBody let-step>
+        <span class="setup-guide__check" aria-hidden="true">
+          @if (step.done) {
+            <svg viewBox="0 0 24 24" width="14" height="14">
+              <path
+                d="M5 12.5l4.5 4.5L19 7.5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          }
+        </span>
+        <span class="setup-guide__label">
+          {{ 'admin.setupGuide.steps.' + step.key | transloco }}
+          @if (step.done) {
+            <span class="setup-guide__sr">{{ 'admin.setupGuide.done' | transloco }}</span>
+          }
+        </span>
+        <span class="setup-guide__chevron" aria-hidden="true">›</span>
+      </ng-template>
+
+      <!-- Not shown: the "share" step drives its share flow (native sheet,
+           clipboard fallback) through triggerShare(), same as the
+           organizer app's own setup guide. -->
+      @if (tournament(); as t) {
+        <ap-share-button
+          #shareButton
+          class="setup-guide__share"
+          [title]="t.name"
+          [url]="publicUrl()"
+        />
+      }
+
+      <div class="setup-guide__footer">
+        <progress
+          class="setup-guide__progress"
+          [value]="doneCount()"
+          [max]="steps().length"
+          [attr.aria-label]="'admin.setupGuide.progress' | transloco"
+        ></progress>
+        <span class="setup-guide__count">{{ doneCount() }}/{{ steps().length }}</span>
+        <button type="button" class="setup-guide__dismiss" (click)="dismiss()">
+          {{ 'admin.setupGuide.dismiss' | transloco }}
+        </button>
+      </div>
+    </section>
+  }
+
+  <button
+    type="button"
+    class="setup-guide__pill"
+    [attr.aria-expanded]="open()"
+    aria-controls="setup-guide-panel"
+    (click)="toggle()"
+  >
+    <span aria-hidden="true">🚀</span>
+    {{ 'admin.setupGuide.title' | transloco }} {{ doneCount() }}/{{ steps().length }}
+  </button>
+}

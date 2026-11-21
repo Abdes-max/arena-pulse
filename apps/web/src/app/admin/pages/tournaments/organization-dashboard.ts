@@ -19,7 +19,7 @@ const COLLAPSED_STORAGE_KEY = 'arena-pulse:org-dashboard-collapsed';
 
 /**
  * Organization-wide KPI strip shown above the tournament list -- the
- * "how is my season going" view. Best-effort like the onboarding hints:
+ * "how is my season going" view. Best-effort like the setup guide:
  * a failed load just hides the block, it never blocks the list below it.
  */
 @Component({

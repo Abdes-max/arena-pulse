@@ -1,0 +1,189 @@
+// Pinned to the viewport bottom-right, the panel unfolding above the pill.
+:host {
+  position: fixed;
+  right: var(--ap-space-4);
+  bottom: var(--ap-space-4);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.setup-guide__pill {
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--ap-color-fg);
+  background: var(--ap-color-surface);
+  border: 1px solid var(--ap-color-border);
+  border-radius: var(--ap-radius-lg);
+  padding: var(--ap-space-3) var(--ap-space-4);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  cursor: pointer;
+  box-shadow: 0 10px 24px -8px rgba(0, 0, 0, 0.25);
+}
+
+.setup-guide__panel {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + var(--ap-space-2));
+  width: min(360px, calc(100vw - 2 * var(--ap-space-4)));
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: var(--ap-space-4);
+  background: var(--ap-color-surface);
+  border: 1px solid var(--ap-color-border);
+  border-radius: var(--ap-radius-lg);
+  box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.35);
+}
+
+.setup-guide__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-2);
+
+  h2 {
+    margin: 0;
+    font-family: var(--ap-font-heading);
+    font-size: 1.15rem;
+    font-weight: 800;
+  }
+}
+
+.setup-guide__close {
+  width: 32px;
+  height: 32px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--ap-color-fg);
+  cursor: pointer;
+}
+
+.setup-guide__subtitle {
+  margin: var(--ap-space-1) 0 var(--ap-space-3);
+  color: var(--ap-color-muted);
+  font-size: 0.88rem;
+}
+
+.setup-guide__steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+}
+
+.setup-guide__step {
+  width: 100%;
+  font: inherit;
+  text-align: start;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-3);
+  padding: var(--ap-space-3);
+  border-radius: var(--ap-radius-md);
+  background: var(--ap-color-signal-soft);
+  color: var(--ap-color-fg);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.setup-guide__check {
+  width: 24px;
+  height: 24px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 2px solid var(--ap-color-muted);
+}
+
+.setup-guide__label {
+  flex: 1;
+}
+
+.setup-guide__chevron {
+  color: var(--ap-color-muted);
+  font-size: 1.3rem;
+  line-height: 1;
+}
+
+.setup-guide__step--done {
+  .setup-guide__check {
+    border-color: var(--ap-color-success);
+    background: var(--ap-color-success);
+    color: #fff;
+  }
+
+  .setup-guide__label {
+    color: var(--ap-color-muted);
+    text-decoration: line-through;
+  }
+}
+
+.setup-guide__sr,
+.setup-guide__share {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.setup-guide__footer {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-3);
+  margin-top: var(--ap-space-4);
+}
+
+.setup-guide__progress {
+  flex: 1;
+  height: 6px;
+  appearance: none;
+  border: none;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--ap-color-border);
+
+  &::-webkit-progress-bar {
+    background: var(--ap-color-border);
+  }
+
+  &::-webkit-progress-value {
+    background: var(--ap-color-signal);
+    border-radius: 999px;
+  }
+
+  &::-moz-progress-bar {
+    background: var(--ap-color-signal);
+  }
+}
+
+.setup-guide__count {
+  font-weight: 800;
+}
+
+.setup-guide__dismiss {
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--ap-color-muted);
+  background: transparent;
+  border: 1px solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  padding: var(--ap-space-1) var(--ap-space-3);
+  cursor: pointer;
+}

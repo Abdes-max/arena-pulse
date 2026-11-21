@@ -725,32 +725,23 @@
       "share": "Teilen",
       "slideshow": "Diashow (TV-Bildschirm)"
     },
-    "onboarding": {
-      "title": "Erste Schritte",
-      "progress": "{{done}} / {{total}} Schritte abgeschlossen",
-      "later": "Später",
-      "done": "Erledigt",
+    "setupGuide": {
+      "title": "Einrichtungsleitfaden",
+      "subtitle": "Bringen Sie Ihre Organisation Schritt für Schritt an den Start",
+      "close": "Leitfaden einklappen",
+      "dismiss": "Ausblenden",
+      "done": "(erledigt)",
+      "progress": "Fortschritt des Leitfadens",
       "steps": {
-        "createTournament": {
-          "title": "Erstellen Sie Ihr erstes Turnier",
-          "description": "Name, Sportart und Termine Ihres Wettbewerbs.",
-          "action": "Erstellen"
-        },
-        "addTeam": {
-          "title": "Fügen Sie mindestens ein Team hinzu",
-          "description": "In Ihrem neuesten Turnier.",
-          "action": "Hinzufügen"
-        },
-        "structure": {
-          "title": "Strukturieren Sie Ihr Turnier",
-          "description": "Gruppen und/oder K.-o.-Runden.",
-          "action": "Strukturieren"
-        },
-        "publish": {
-          "title": "Veröffentlichen Sie das Turnier",
-          "description": "Machen Sie die öffentliche Seite sichtbar.",
-          "action": "Veröffentlichen"
-        }
+        "createTournament": "Erstellen Sie Ihr erstes Turnier",
+        "customize": "Gestalten Sie Ihr Turnier",
+        "addTeams": "Fügen Sie Ihre Teams hinzu",
+        "schedule": "Gruppen und Spielplan erstellen",
+        "publish": "Veröffentlichen Sie Ihr Turnier",
+        "share": "Teilen Sie Ihr Turnier",
+        "slideshow": "Starten Sie die Diashow auf einem Bildschirm",
+        "pdf": "Erstellen Sie das Turnier-PDF",
+        "firstScore": "Tragen Sie ein erstes Ergebnis ein"
       }
     },
     "publishSuccess": {

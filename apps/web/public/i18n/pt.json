@@ -725,32 +725,23 @@
       "share": "Partilhar",
       "slideshow": "Apresentação (ecrã TV)"
     },
-    "onboarding": {
-      "title": "Comece por aqui",
-      "progress": "{{done}} / {{total}} etapas concluídas",
-      "later": "Mais tarde",
-      "done": "Concluído",
+    "setupGuide": {
+      "title": "Guia de configuração",
+      "subtitle": "Ponha a sua organização a funcionar, passo a passo",
+      "close": "Recolher o guia",
+      "dismiss": "Ocultar",
+      "done": "(concluído)",
+      "progress": "Progresso do guia",
       "steps": {
-        "createTournament": {
-          "title": "Crie o seu primeiro torneio",
-          "description": "Nome, desporto e datas da sua competição.",
-          "action": "Criar"
-        },
-        "addTeam": {
-          "title": "Adicione pelo menos uma equipa",
-          "description": "No seu torneio mais recente.",
-          "action": "Adicionar"
-        },
-        "structure": {
-          "title": "Estruture o seu torneio",
-          "description": "Grupos e/ou quadros eliminatórios.",
-          "action": "Estruturar"
-        },
-        "publish": {
-          "title": "Publique o torneio",
-          "description": "Torne o seu site público visível.",
-          "action": "Publicar"
-        }
+        "createTournament": "Crie o seu primeiro torneio",
+        "customize": "Personalize o seu torneio",
+        "addTeams": "Adicione as suas equipas",
+        "schedule": "Gere os grupos e o calendário",
+        "publish": "Publique o seu torneio",
+        "share": "Partilhe o seu torneio",
+        "slideshow": "Inicie a apresentação no ecrã",
+        "pdf": "Gere o PDF do torneio",
+        "firstScore": "Registe um primeiro resultado"
       }
     },
     "publishSuccess": {
