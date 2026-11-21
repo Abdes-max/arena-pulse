@@ -1,31 +1,31 @@
 {
   "tournamentEntry": {
     "settingsAria": "Paramètres",
-    "back": "Retour",
     "shareText": "Découvrez TournArena, l'app pour suivre vos compétitions.",
     "hero": {
-      "title": "Suivre une compétition",
       "hint": "Poules, tableaux à élimination, calendrier et classements en direct.",
-      "ctaViewEvents": "Voir les événements",
-      "marqueeLabel": "En ce moment"
+      "marqueeLabel": "En ce moment",
+      "titleMain": "Organisez tournois et championnats",
+      "titleEmphasis": "suivis en direct par tout le monde.",
+      "ctaCreate": "Créer mon tournoi",
+      "ctaJoin": "M'inscrire à un tournoi"
     },
     "published": {
       "title": "Événements publiés",
       "searchLabel": "Rechercher un événement",
       "searchPlaceholder": "Rechercher un événement…",
       "filters": {
-        "sportLabel": "Sport",
-        "allSports": "Tous les sports",
-        "locationLabel": "Lieu",
-        "locationPlaceholder": "Ville, salle…",
-        "dateFromLabel": "À partir du",
         "timeLabel": "Période",
         "upcoming": "À venir",
-        "past": "Passés"
+        "past": "Passés",
+        "registrationOpen": "Inscriptions ouvertes"
       },
       "empty": "Aucun événement trouvé.",
       "loadMore": "Charger plus",
-      "loading": "Chargement…"
+      "loading": "Chargement…",
+      "emptyRegistrationTitle": "Aucun tournoi n'est ouvert aux inscriptions pour le moment",
+      "emptyRegistrationText": "Revenez bientôt, ou consultez tous les tournois publiés.",
+      "seeAll": "Voir tous les tournois"
     },
     "settings": {
       "title": "Paramètres",
@@ -58,7 +58,7 @@
       "register": {
         "title": "Créer mon compte",
         "lede": "Créez votre compte organisateur pour gérer vos tournois directement depuis l'application.",
-        "orgNameLabel": "Nom de l'organisation",
+        "orgNameLabel": "Nom de l'organisation (facultatif)",
         "firstNameLabel": "Prénom",
         "lastNameLabel": "Nom",
         "emailLabel": "Email",
@@ -79,7 +79,8 @@
           "email": "Adresse email invalide.",
           "passwordMinLength": "Le mot de passe doit contenir au moins 10 caractères."
         },
-        "cancelAria": "Annuler"
+        "cancelAria": "Annuler",
+        "orgNameHint": "Seulement si vous organisez des tournois. Pour inscrire une équipe, laissez vide."
       },
       "login": {
         "title": "Connexion",
@@ -157,7 +158,9 @@
           "full": "Complet"
         },
         "structureAction": "Structure",
-        "registrationsAction": "Inscriptions"
+        "registrationsAction": "Inscriptions",
+        "openFilter": "Inscriptions ouvertes",
+        "managerSpace": "Mon espace responsable"
       }
     },
     "account": {
@@ -222,7 +225,17 @@
           "recommended": "Recommandé"
         },
         "venuePlaceholder": "Rechercher un stade, un gymnase ou une adresse…",
-        "venueSearchFailed": "Recherche d'adresse indisponible : le nom saisi sera utilisé tel quel."
+        "venueSearchFailed": "Recherche d'adresse indisponible : le nom saisi sera utilisé tel quel.",
+        "organizerClub": {
+          "toggle": "Organisé par un club de {{sport}}",
+          "label": "Club organisateur",
+          "placeholder": "Nom du club",
+          "linked": "Club organisateur : {{club}}",
+          "linkedUnknown": "Un club organisateur est lié.",
+          "change": "Changer",
+          "hint": "Le logo du club devient celui du tournoi.",
+          "logoFromClub": "Logo de {{club}}"
+        }
       },
       "teams": {
         "title": "Équipes participantes",
@@ -242,11 +255,20 @@
         "pasteAdd": "Ajouter ces équipes",
         "errorPaste": "Impossible d’enregistrer ces noms, réessayez.",
         "club": {
-          "toggle": "Rechercher le club (football)",
+          "toggle": "Rechercher le club dans l’annuaire",
           "placeholder": "Nom du club ou ville",
           "searchFailed": "Recherche de clubs indisponible : saisissez le nom à la main.",
           "department": "Département {{code}}"
-        }
+        },
+        "table": {
+          "logo": "Logo",
+          "name": "Équipe",
+          "actions": "Actions"
+        },
+        "edit": "Modifier {{name}}",
+        "save": "Enregistrer",
+        "cancelEdit": "Annuler la modification",
+        "errorRename": "Impossible de renommer cette équipe, réessayez."
       },
       "structure": {
         "title": "Format de la compétition",
@@ -430,7 +452,8 @@
         "loadGeneric": "Impossible de charger les classements.",
         "saveTieChoice": "Impossible d'enregistrer ce choix.",
         "resetTieChoice": "Impossible de réinitialiser ce départage."
-      }
+      },
+      "tiesAfterValidation": "Égalité à départager après la validation des scores des poules (onglet Scores)."
     },
     "quickPlateau": {
       "title": "Créer un événement",
@@ -659,7 +682,7 @@
       "paymentInfo": "Modalités de paiement",
       "paymentInfoPlaceholder": "ex. 40 € par équipe, sur place",
       "save": "Enregistrer",
-      "moreOnWeb": "Dates, places par catégorie et carte du tournoi : sur le site web.",
+      "moreOnWeb": "Dates d'inscription et carte du tournoi : sur le site web.",
       "filters": {
         "PENDING": "En attente",
         "CONFIRMED": "Confirmées",
@@ -693,7 +716,14 @@
       "errors": {
         "load": "Impossible de charger les inscriptions.",
         "save": "Impossible d’enregistrer ce changement."
-      }
+      },
+      "maxTeams": "Équipes max par responsable (club)",
+      "places": "Nombre de places",
+      "placesFor": "Places · {{name}}",
+      "placesUnlimited": "Illimité",
+      "fee": "Tarif par équipe (€)",
+      "feeFor": "Tarif · {{name}} (€)",
+      "options": "Options (dates, tarif par catégorie, paiement…)"
     },
     "schedule": {
       "hint": "Restez appuyé sur un match ou un créneau puis glissez-le : un emplacement montre où il va se placer et à quelle heure. Les créneaux suivants sont décalés, les pauses entre phases conservées. Une équipe ne peut pas jouer deux matchs en même temps.",
@@ -707,6 +737,22 @@
         "GROUP_STAGE": "Poules",
         "KNOCKOUT": "Phase finale"
       }
+    },
+    "pendingRegistrations": {
+      "title": "Pré-inscriptions à valider",
+      "waitlist": "Liste d'attente",
+      "confirm": "Valider",
+      "reject": "Refuser",
+      "manageAll": "Gérer toutes les inscriptions",
+      "error": "Impossible d'enregistrer cette décision.",
+      "badgeAria": "{{count}} pré-inscription(s) à valider"
+    },
+    "createOrganization": {
+      "title": "Créer votre organisation",
+      "lede": "Votre compte TournArena sert aussi à organiser : donnez un nom à votre organisation (club, association, ligue…).",
+      "submit": "Créer l'organisation",
+      "back": "Retour à mon espace responsable",
+      "error": "Impossible de créer l'organisation."
     }
   },
   "notifications": {
@@ -752,5 +798,106 @@
       "android": "Pour voir les bannières : Paramètres > Applications > TournArena > Notifications, puis activez « Alertes de matchs ».",
       "web": "Les notifications sont disponibles dans l'app mobile."
     }
+  },
+  "feedback": {
+    "close": "Fermer"
+  },
+  "manager": {
+    "back": "Retour",
+    "loading": "Chargement…",
+    "settingsRow": "Espace responsable d’équipe",
+    "form": {
+      "title": "Pré-inscrire une équipe",
+      "titleIndividual": "Pré-inscription",
+      "closed": "Les inscriptions ne sont pas ouvertes pour ce tournoi.",
+      "intro": "Votre demande sera validée par l’organisateur, qui vous confirmera votre place par e-mail.",
+      "payment": "Paiement :",
+      "category": "Catégorie",
+      "chooseCategory": "Choisir une catégorie",
+      "fee": "Tarif : {{fee}} (réglé directement à l’organisateur)",
+      "free": "Gratuit",
+      "full": "Catégorie complète : votre demande ira en liste d’attente.",
+      "playerFirstName": "Prénom du joueur",
+      "playerLastName": "Nom du joueur",
+      "clubSearch": "Rechercher le club dans l’annuaire",
+      "teamName": "Nom de l’équipe",
+      "clubPlaceholder": "Nom du club",
+      "clubSearchFailed": "Recherche de clubs indisponible : saisissez le nom à la main.",
+      "clubLinked": "Club lié : {{club}}",
+      "unlink": "Délier",
+      "department": "Département {{code}}",
+      "email": "Email du responsable",
+      "phone": "Téléphone du responsable",
+      "phoneHint": "L’organisateur vous contactera à ce numéro au sujet de l’inscription.",
+      "submit": "Envoyer la pré-inscription",
+      "sent": "Pré-inscription envoyée : l’organisateur va la valider.",
+      "error": "Impossible d’envoyer cette inscription, réessayez.",
+      "errorLoad": "Impossible de charger les catégories de ce tournoi.",
+      "teamCount": "Nombre d'équipes",
+      "teamCountHint": "Équipes inscrites : {{names}}",
+      "limitReached": "Vous avez déjà inscrit {{count}} équipe(s) : c'est le maximum pour ce tournoi."
+    },
+    "home": {
+      "title": "Inscriptions ouvertes",
+      "cta": "Se pré-inscrire",
+      "mySpace": "Mon espace responsable",
+      "unlimited": "Places disponibles",
+      "full": "Complet · liste d’attente",
+      "places": "{{remaining}} place(s) sur {{total}}",
+      "alreadyRegistered": "Déjà inscrit · {{count}} équipe(s)",
+      "another": "Inscrire une autre équipe"
+    }
+  },
+  "myRegistrations": {
+    "title": "Mon espace responsable",
+    "loading": "Chargement…",
+    "empty": "Aucune inscription pour le moment.",
+    "browse": "Voir les tournois ouverts aux inscriptions",
+    "cancel": "Annuler ma demande",
+    "reason": "Motif",
+    "status": {
+      "PENDING": "En attente de validation",
+      "CONFIRMED": "Confirmée",
+      "WAITLIST": "Liste d'attente",
+      "REJECTED": "Refusée",
+      "CANCELLED": "Annulée",
+      "PAID": "Confirmée",
+      "PENDING_PAYMENT": "Paiement en cours"
+    },
+    "errors": {
+      "load": "Impossible de charger vos inscriptions.",
+      "cancel": "Impossible d’annuler cette demande."
+    },
+    "hello": "Bonjour {{name}}.",
+    "lede": "Vos pré-inscriptions et le bilan de vos équipes.",
+    "logout": "Se déconnecter",
+    "statsTitle": "Mes statistiques",
+    "registrationsTitle": "Mes inscriptions",
+    "tiles": {
+      "tournaments": "Tournois",
+      "tournamentsHint": "{{count}} inscription(s) au total",
+      "played": "Matchs joués",
+      "won": "Victoires",
+      "wonHint": "{{drawn}} nul(s) · {{lost}} défaite(s)",
+      "scored": "Buts / points marqués",
+      "scoredHint": "{{conceded}} encaissés",
+      "pending": "En attente",
+      "pendingHint": "{{count}} en liste d'attente"
+    },
+    "outcomesTitle": "Bilan des matchs",
+    "perTeamTitle": "Par équipe",
+    "noTeams": "Vos équipes apparaîtront ici dès qu'une inscription est confirmée.",
+    "table": {
+      "team": "Équipe",
+      "played": "J",
+      "won": "G",
+      "drawn": "N",
+      "lost": "P",
+      "wonLong": "Victoires",
+      "drawnLong": "Nuls",
+      "lostLong": "Défaites"
+    },
+    "myTournaments": "Mes tournois",
+    "organize": "Organiser un tournoi"
   }
 }

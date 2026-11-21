@@ -86,9 +86,9 @@
                   @let tier = qualificationTier(group, row.teamId);
                   <tr
                     [class.standings-page__row--qualified]="
-                      qualificationTierPhases().length < 2 && isQualified(group, row.teamId)
+                      qualificationTierPhases().length < 2 && inQualifyingZone(group, row.position)
                     "
-                    [style.background]="tier?.soft ?? null"
+                    [style.background]="zoneTier(group, row.position)?.soft ?? null"
                   >
                     <td class="standings-page__table-team">
                       {{ row.position }}.

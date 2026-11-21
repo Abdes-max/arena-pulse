@@ -2,13 +2,14 @@ import { Routes } from '@angular/router';
 import { authGuard } from './admin/core/auth.guard';
 import { guestGuard } from './admin/core/guest.guard';
 import { resetThemeGuard } from './admin/core/reset-theme.guard';
-import { playerAuthGuard } from './core/player-auth.guard';
+import { organizationGuard } from './admin/core/organization.guard';
 import { superAdminAuthGuard } from './super-admin/core/super-admin-auth.guard';
 
 export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
+    data: { meta: { title: 'seo.landing.title', description: 'seo.landing.description' } },
     loadComponent: () => import('./pages/landing/landing.page').then((m) => m.LandingPage),
   },
   {
@@ -49,14 +50,17 @@ export const routes: Routes = [
     // Top-level, before the ':slug' catch-all below -- otherwise it would
     // swallow '/contact', '/terms' and '/privacy' as tournament slugs.
     path: 'contact',
+    data: { meta: { title: 'seo.contact.title', description: 'seo.contact.description' } },
     loadComponent: () => import('./pages/contact/contact.page').then((m) => m.ContactPage),
   },
   {
     path: 'terms',
+    data: { meta: { title: 'seo.terms.title', description: 'seo.terms.description' } },
     loadComponent: () => import('./pages/legal/terms.page').then((m) => m.TermsPage),
   },
   {
     path: 'privacy',
+    data: { meta: { title: 'seo.privacy.title', description: 'seo.privacy.description' } },
     loadComponent: () => import('./pages/legal/privacy.page').then((m) => m.PrivacyPage),
   },
   {
@@ -66,24 +70,33 @@ export const routes: Routes = [
   },
   {
     path: 'decouvrir',
+    data: { meta: { title: 'seo.discover.title', description: 'seo.discover.description' } },
     loadComponent: () => import('./pages/discover/discover.page').then((m) => m.DiscoverPage),
   },
+  // One account for organizers and team managers: the manager's space,
+  // signed in with the same /login (no separate manager sign-in any more).
   {
-    path: 'player/login',
-    loadComponent: () =>
-      import('./pages/player-auth/login/player-login.page').then((m) => m.PlayerLoginPage),
-  },
-  {
-    path: 'player/registrations',
-    canActivate: [playerAuthGuard],
+    path: 'espace-responsable',
+    pathMatch: 'full',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/my-registrations/my-registrations.page').then((m) => m.MyRegistrationsPage),
   },
+  // An account without an organization starts organizing here.
   {
-    path: 'player/register',
+    path: 'organiser',
+    canActivate: [authGuard],
     loadComponent: () =>
-      import('./pages/player-auth/register/player-register.page').then((m) => m.PlayerRegisterPage),
+      import('./admin/pages/create-organization/create-organization.page').then(
+        (m) => m.CreateOrganizationPage,
+      ),
   },
+  // Former addresses (links already sent): query params (returnUrl) carry over.
+  { path: 'espace-responsable/connexion', redirectTo: 'login' },
+  { path: 'espace-responsable/creer-un-compte', redirectTo: 'register' },
+  { path: 'player/registrations', redirectTo: 'espace-responsable' },
+  { path: 'player/login', redirectTo: 'login' },
+  { path: 'player/register', redirectTo: 'register' },
   {
     path: 'super-admin/login',
     loadComponent: () =>
@@ -161,7 +174,7 @@ export const routes: Routes = [
   },
   {
     path: 'admin',
-    canActivate: [resetThemeGuard, authGuard],
+    canActivate: [resetThemeGuard, authGuard, organizationGuard],
     loadComponent: () => import('./admin/shell/app-shell').then((m) => m.AppShell),
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'tournaments' },
@@ -232,11 +245,9 @@ export const routes: Routes = [
           import('./admin/pages/print-export/print-export.page').then((m) => m.PrintExportPage),
       },
       {
+        // Now a block of the Équipes tab; old links (e-mails...) still land there.
         path: 'tournaments/:tournamentId/registrations',
-        loadComponent: () =>
-          import('./admin/pages/registrations/registration-list.page').then(
-            (m) => m.RegistrationListPage,
-          ),
+        redirectTo: 'tournaments/:tournamentId/teams',
       },
       {
         path: 'tournaments/:tournamentId/live',
@@ -318,12 +329,12 @@ export const routes: Routes = [
       },
       {
         path: 'register',
-        canActivate: [playerAuthGuard],
+        canActivate: [authGuard],
         loadComponent: () => import('./pages/register/register.page').then((m) => m.RegisterPage),
       },
       {
         path: 'register/success',
-        canActivate: [playerAuthGuard],
+        canActivate: [authGuard],
         loadComponent: () =>
           import('./pages/register-success/register-success.page').then(
             (m) => m.RegisterSuccessPage,
@@ -331,5 +342,8 @@ export const routes: Routes = [
       },
     ],
   },
-  { path: '**', redirectTo: '' },
+  {
+    path: '**',
+    loadComponent: () => import('./pages/not-found/not-found.page').then((m) => m.NotFoundPage),
+  },
 ];

@@ -17,7 +17,8 @@ export interface RegisterPayload {
   password: string;
   firstName: string;
   lastName: string;
-  organizationName: string;
+  /** Optional: without it, a team manager's account (no organization yet). */
+  organizationName?: string;
 }
 
 export interface RegisterResponse {
@@ -75,6 +76,13 @@ export class OrganizerAuthService {
   readonly currentUser = this.currentUserSignal.asReadonly();
   readonly simpleMode = computed(() => this.currentUserSignal()?.adminUiMode !== 'FULL');
   readonly organizations = this.organizationsSignal.asReadonly();
+  /**
+   * One account for organizers and team managers: where it lands by default
+   * -- the organizer area with an organization, the manager's space otherwise.
+   */
+  readonly homeUrl = computed(() =>
+    this.organizationsSignal().length > 0 ? '/organizer/tournaments' : '/espace-responsable',
+  );
 
   getAccessToken(): string | null {
     return this.accessToken();
@@ -218,6 +226,12 @@ export class OrganizerAuthService {
     writeStored(REFRESH_TOKEN_KEY, null);
     writeStored(LAST_EMAIL_KEY, null);
     this.clearSession();
+  }
+
+  /** An account without an organization starts organizing (POST /organizations). */
+  async createOrganization(name: string): Promise<void> {
+    await firstValueFrom(this.http.post(`${environment.apiUrl}/organizations`, { name }));
+    await this.loadProfile();
   }
 
   async logout(): Promise<void> {

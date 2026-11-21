@@ -5,6 +5,7 @@ import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Button, Logo, TextField } from 'design-system';
 import { AuthService } from '../../core/auth.service';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 type PageState = 'form' | 'sent';
 
@@ -20,7 +21,8 @@ export class RegisterPage {
   private readonly authService = inject(AuthService);
 
   protected readonly form = this.formBuilder.nonNullable.group({
-    organizationName: ['', Validators.required],
+    // Optional: only to organize tournaments (a team manager leaves it empty).
+    organizationName: [''],
     firstName: ['', Validators.required],
     lastName: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
@@ -31,6 +33,8 @@ export class RegisterPage {
   protected readonly registeredEmail = signal<string | null>(null);
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage);
   protected readonly resent = signal(false);
 
   protected async submit(): Promise<void> {

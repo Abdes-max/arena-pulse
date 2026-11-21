@@ -9,7 +9,13 @@ function setup(authenticated: boolean) {
   TestBed.configureTestingModule({
     providers: [
       provideRouter([]),
-      { provide: OrganizerAuthService, useValue: { isAuthenticated: signal(authenticated) } },
+      {
+        provide: OrganizerAuthService,
+        useValue: {
+          isAuthenticated: signal(authenticated),
+          homeUrl: signal('/organizer/tournaments'),
+        },
+      },
     ],
   });
 }

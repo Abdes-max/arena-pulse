@@ -67,6 +67,8 @@ model User {
   tournamentAdministratorRoles TournamentAdministrator[]
   validatedMatchScores         MatchScore[]              @relation("MatchScoreValidatedBy")
   recordedMatchScores          MatchScore[]              @relation("MatchScoreRecordedBy")
+  // Pre-registrations sent as a team manager (same account as an organizer).
+  registrations                Registration[]
 }
 
 model Organization {
@@ -255,7 +257,7 @@ enum ParticipantType {
 
 // French football clubs (FFF affiliation number as code), loaded from a file
 // by prisma/import-fff-clubs.ts and kept up to date weekly by
-// prisma/sync-fff-clubs.ts -- the FFF publishes no open API. Searched by
+// prisma/sync-clubs.ts -- the FFF publishes no open API. Searched by
 // ClubDirectoryService for the team form's club autocomplete.
 model FffClub {
   code        String    @id
@@ -264,13 +266,37 @@ model FffClub {
   city        String?
   postalCode  String?
   department  String?
-  // Set by prisma/sync-fff-clubs.ts when the club leaves the source listing
+  // Set by prisma/sync-clubs.ts when the club leaves the source listing
   // (dissolved/merged): hidden from the search, kept for the teams linked to it.
   dissolvedAt DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
   @@index([name])
+}
+
+// Club directory for the other sports with a club search (basketball,
+// handball, rugby, volleyball, tennis) -- SportCorico's listings, used with
+// their agreement, kept in line by prisma/sync-clubs.ts. Keyed by
+// SportCorico's own club slug: the federations publish no open register
+// (no affiliation n° here, unlike FffClub).
+model SportClub {
+  // ClubDirectoryService's directory key: "basketball", "rugby"...
+  sport       String
+  slug        String
+  name        String
+  department  String?
+  // Crest on SportCorico's media storage; null when they only have their
+  // generic placeholder. Served through our own cached crest route.
+  logoSource  String?
+  // Set by prisma/sync-clubs.ts when the club leaves the listing: hidden
+  // from the search, kept for the teams/tournaments linked to it.
+  dissolvedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@id([sport, slug])
+  @@index([sport, name])
 }
 
 model Sport {
@@ -305,6 +331,9 @@ model Tournament {
   // Free text shown with the form: price, how and when to pay (on site, bank
   // transfer...). The organizer collects the money themselves.
   registrationPaymentInfo String?
+  // Teams one team manager (account) may register for this tournament --
+  // set by the organizer; 1 unless raised.
+  maxTeamsPerRegistrant Int @default(1)
   // Shown on the tournament card (e.g. "5 contre 5", "Elite"); free text.
   format              String?
   level               String?
@@ -319,6 +348,10 @@ model Tournament {
   // Public path served by the API (e.g. /uploads/tournament-logos/<file>) --
   // see TournamentsService.uploadLogo. Null until an organizer uploads one.
   logoUrl             String?
+  // Organizing club picked from the club directory (same "fff:<n°>" /
+  // "club:<sport>:<slug>" / "siren:<n°>" link as Team.externalClubId); its
+  // crest is imported as the tournament logo.
+  organizerClubId     String?
   // Wide photo shown behind the public site's header (TournamentShell hero)
   // -- see TournamentsService.uploadHeaderBackground. Same
   // premium-feature gate and storage pattern as logoUrl, own
@@ -425,7 +458,8 @@ model Team {
   // Public path served by the API (e.g. /uploads/team-logos/<file>) -- see
   // TeamsService.uploadLogo. Null until an organizer uploads one.
   logoUrl      String?
-  // Link to a club directory entry ("fff:<affiliation n°>" or "siren:<n°>"),
+  // Link to a club directory entry ("fff:<affiliation n°>",
+  // "club:<sport>:<slug>" or "siren:<n°>"),
   // set when the team was picked from ClubDirectoryService's search.
   externalClubId String?
   position     Int      @default(0)
@@ -841,7 +875,6 @@ model PlayerAccount {
   updatedAt    DateTime @updatedAt
 
   refreshTokens PlayerRefreshToken[]
-  registrations Registration[]
 }
 
 model PlayerRefreshToken {
@@ -889,8 +922,13 @@ model Registration {
   id                      String             @id @default(uuid())
   tournamentId            String
   categoryId              String
-  playerAccountId         String
+  // The TournArena account that sent the request (one account for team
+  // managers and organizers; former PlayerAccounts were merged by email).
+  userId                  String
   teamName                String
+  // Club picked from the club directory on the form (same link as
+  // Team.externalClubId) -- copied to the team on confirmation, crest included.
+  externalClubId          String?
   managerEmail            String
   managerPhone            String?
   status                  RegistrationStatus @default(PENDING_PAYMENT)
@@ -907,13 +945,13 @@ model Registration {
 
   tournament    Tournament           @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   category      Category             @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  playerAccount PlayerAccount        @relation(fields: [playerAccountId], references: [id], onDelete: Cascade)
+  user          User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   team          Team?                @relation(fields: [teamId], references: [id], onDelete: SetNull)
   players       RegistrationPlayer[]
 
   @@index([tournamentId])
   @@index([categoryId])
-  @@index([playerAccountId])
+  @@index([userId])
 }
 
 // The roster submitted at registration time -- copied into real Player rows

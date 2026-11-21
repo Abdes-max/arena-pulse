@@ -15,7 +15,6 @@ import {
   Button,
   LanguageSwitcher,
   Logo,
-  Select,
   ShareButton,
   TextField,
   ThemeModeToggle,
@@ -33,7 +32,6 @@ import {
 } from 'design-tokens';
 import { debounceTime } from 'rxjs';
 import {
-  PublicSport,
   PublicTournamentDirectoryItem,
   PublicTournamentSummary,
   isTournamentCurrentOrUpcoming,
@@ -53,7 +51,6 @@ const PAGE_SIZE = 20;
     LanguageSwitcher,
     Logo,
     RouterLink,
-    Select,
     ShareButton,
     TextField,
     ThemeModeToggle,
@@ -95,19 +92,6 @@ export class TournamentEntryPage {
   protected readonly privacyUrl = `${environment.webUrl}/privacy`;
   protected readonly termsUrl = `${environment.webUrl}/terms`;
   protected readonly appUrl = environment.webUrl;
-  // Governs the hero's own CTA: this screen's H1 promises "Suivre une
-  // compétition", so its primary action should deliver on that (jump to
-  // the published-events list already on this same page) rather than
-  // "Créer un tournoi" -- an organizer action, and one this app can't even
-  // complete itself. That link still lives in the nav next to Connexion,
-  // just no longer competing for the hero's single most prominent button.
-  protected readonly hasTournaments = computed(() => this.tournaments().length > 0);
-  // Whether the hero (title/hint/CTAs/marquee) is shown, or collapsed down
-  // to just a back arrow -- toggled by "Voir les événements" so the
-  // published list gets the whole screen instead of sharing it below the
-  // fold, and the dark hero doesn't stay competing for attention once its
-  // job (getting the visitor to the list) is done.
-  protected readonly showHero = signal(true);
   protected readonly showSettings = signal(false);
   // Lets the whole "Partager l'app" row act as the tap target (matching
   // every other row) instead of just the small ap-share-button icon inside
@@ -116,6 +100,7 @@ export class TournamentEntryPage {
   // triggerShare() -- reuses its timeout/clipboard-fallback/failure-state
   // logic rather than duplicating it.
   private readonly shareButton = viewChild<ShareButton>('shareButton');
+  private readonly content = viewChild<IonContent>('content');
 
   // ap-tournament-marquee's TournamentMarqueeItem needs a resolved (absolute)
   // logoUrl -- it's a dumb presenter, same reason ap-tournament-card gets
@@ -131,22 +116,12 @@ export class TournamentEntryPage {
 
   // --- "Événements publiés" section: server-side directory search (mirrors
   // apps/web's discover.page, same debounce/filters/load-more logic) ---
+  // Kept light on a phone: the name search, À venir / Passés and
+  // "Inscriptions ouvertes" only (no sport/place/date, which apps/web's
+  // Découvrir page still offers).
   protected readonly q = signal('');
-  protected readonly sportId = signal('');
-  protected readonly place = signal('');
-  protected readonly dateFrom = signal('');
   protected readonly timeFilter = signal<TimeFilterValue>('');
-  protected readonly sports = signal<PublicSport[]>([]);
-  protected readonly sportOptions = computed(() => {
-    const lang = this.language();
-    return [
-      {
-        value: '',
-        label: this.transloco.translate('tournamentEntry.published.filters.allSports', {}, lang),
-      },
-      ...this.sports().map((sport) => ({ value: sport.id, label: sport.name })),
-    ];
-  });
+  protected readonly registrationOnly = signal(false);
 
   protected readonly searchItems = signal<PublicTournamentDirectoryItem[]>([]);
   protected readonly searchTotal = signal(0);
@@ -162,15 +137,12 @@ export class TournamentEntryPage {
   private searchPage = 1;
   private readonly searchFilters = computed(() => ({
     q: this.q().trim(),
-    sportId: this.sportId(),
-    location: this.place().trim(),
-    dateFrom: this.dateFrom(),
     time: this.timeFilter(),
+    registrationOnly: this.registrationOnly(),
   }));
 
   constructor() {
     void this.api.listTournaments(50).then((tournaments) => this.tournaments.set(tournaments));
-    void this.api.listSports().then((sports) => this.sports.set(sports));
 
     toObservable(this.searchFilters)
       .pipe(debounceTime(300), takeUntilDestroyed())
@@ -188,10 +160,8 @@ export class TournamentEntryPage {
   private async runSearch(
     filters: {
       q: string;
-      sportId: string;
-      location: string;
-      dateFrom: string;
       time: TimeFilterValue;
+      registrationOnly: boolean;
     },
     append: boolean,
   ): Promise<void> {
@@ -199,10 +169,8 @@ export class TournamentEntryPage {
     try {
       const result = await this.api.searchTournaments({
         q: filters.q || undefined,
-        sportId: filters.sportId || undefined,
-        location: filters.location || undefined,
-        dateFrom: filters.dateFrom || undefined,
         time: filters.time || undefined,
+        registration: filters.registrationOnly ? 'open' : undefined,
         page: this.searchPage,
         pageSize: PAGE_SIZE,
       });
@@ -235,12 +203,55 @@ export class TournamentEntryPage {
     void this.router.navigate(['/', tournament.slug]);
   }
 
-  protected viewEvents(): void {
-    this.showHero.set(false);
+  // The search opened full screen: the hero (a fixed ion-header, so the
+  // list could never scroll it away) folds down to a back bar.
+  protected readonly searchExpanded = signal(false);
+
+  /** "M'inscrire à un tournoi": the search full screen, on upcoming tournaments taking registrations. */
+  protected findRegistrations(): void {
+    this.registrationOnly.set(true);
+    this.timeFilter.set('upcoming');
+    this.expandSearch();
   }
 
-  protected backToHero(): void {
-    this.showHero.set(true);
+  /**
+   * Opens the search full screen -- from the title, a filter or the button
+   * above -- without the keyboard (dismissKeyboard), except when the search
+   * field itself was tapped (`withKeyboard`).
+   */
+  protected expandSearch(withoutKeyboard = true): void {
+    // Folded on pointerdown, before the field takes the focus: iOS then has
+    // no reason to scroll the page up to reveal it under the keyboard (which
+    // left a blank screen once the hero had folded away).
+    if (this.searchExpanded() && !withoutKeyboard) {
+      return;
+    }
+    this.searchExpanded.set(true);
+    if (withoutKeyboard) {
+      this.dismissKeyboard();
+    }
+    void this.content()?.scrollToTop(200);
+  }
+
+  protected collapseSearch(): void {
+    this.dismissKeyboard();
+    this.searchExpanded.set(false);
+  }
+
+  /** Closes the on-screen keyboard: blurs whatever field has the focus. */
+  protected dismissKeyboard(): void {
+    const active = document.activeElement;
+    if (active instanceof HTMLElement && active.matches('input, textarea')) {
+      active.blur();
+    }
+  }
+
+  /** A tap anywhere but on a field closes the keyboard. */
+  protected onContentTap(event: Event): void {
+    const target = event.target as HTMLElement | null;
+    if (!target?.closest('input, textarea, select')) {
+      this.dismissKeyboard();
+    }
   }
 
   protected toggleSettings(): void {

@@ -422,9 +422,15 @@ export interface RegistrationPlayerInput {
 export interface CreateRegistrationPayload {
   /** Team sports only (an individual registration is named after its player). */
   teamName?: string;
+  // Team sports: club picked from the directory (its crest becomes the team logo).
+  externalClubId?: string;
+  // Team sports: several teams at once, numbered "<teamName> 1", "<teamName> 2"...
+  teamCount?: number;
   managerEmail: string;
-  managerPhone?: string;
-  players: RegistrationPlayerInput[];
+  // Required: the organizer calls the manager (or player) back.
+  managerPhone: string;
+  // Individual sports: the single player. Team sports register the team only.
+  players?: RegistrationPlayerInput[];
 }
 
 export type RegistrationStatus =
@@ -447,6 +453,8 @@ export interface PublicRegistrationInfo {
   closesAt: string | null;
   paymentInfo: string | null;
   participantType: ParticipantType;
+  /** Teams one team manager may register (set by the organizer, 1 by default). */
+  maxTeamsPerRegistrant: number;
   categories: {
     id: string;
     name: string;
@@ -464,16 +472,46 @@ export interface RegistrationSettings {
   opensAt: string | null;
   closesAt: string | null;
   paymentInfo: string | null;
+  maxTeamsPerRegistrant: number;
   participantType: ParticipantType;
 }
 
 export interface CreateRegistrationResult {
   registrationId: string;
+  registrationIds?: string[];
   status: RegistrationStatus;
   checkoutUrl: string | null;
 }
 
 /** A player's own registration, as returned by GET /public/registrations/me. */
+/** One team's record (validated scores only), or the sum of them. */
+export interface PlayerTeamRecord {
+  played: number;
+  won: number;
+  drawn: number;
+  lost: number;
+  scored: number;
+  conceded: number;
+}
+
+/** GET /public/registrations/me/stats: the team manager's space. */
+export interface PlayerRegistrationStats {
+  registrations: {
+    total: number;
+    confirmed: number;
+    pending: number;
+    waitlist: number;
+    refused: number;
+  };
+  tournaments: number;
+  totals: PlayerTeamRecord;
+  teams: (PlayerTeamRecord & {
+    tournament: { name: string; slug: string };
+    categoryName: string;
+    teamName: string;
+  })[];
+}
+
 export interface PlayerRegistration {
   id: string;
   teamName: string;

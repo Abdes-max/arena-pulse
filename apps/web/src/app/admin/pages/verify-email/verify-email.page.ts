@@ -32,7 +32,7 @@ export class VerifyEmailPage {
     try {
       await this.authService.verifyEmail(this.token);
       this.state.set('success');
-      await this.router.navigateByUrl('/admin/tournaments');
+      await this.router.navigateByUrl(this.authService.homeUrl());
     } catch (error) {
       if (error instanceof HttpErrorResponse && error.status === 404) {
         this.errorMessage.set('admin.auth.verifyEmail.errorExpired');

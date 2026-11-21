@@ -19,6 +19,7 @@ import { TournamentsService } from '../../core/tournaments.service';
 import { OnboardingChecklist, OnboardingStep } from './onboarding-checklist';
 import { OrganizationDashboard } from './organization-dashboard';
 import { QrPosterDialog } from '../../shared/qr-poster-dialog/qr-poster-dialog';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 const STATUS_TO_BADGE: Record<TournamentStatus, BadgeStatus> = {
   DRAFT: 'draft',
@@ -92,6 +93,8 @@ export class TournamentListPage {
   protected readonly tournaments = signal<Tournament[]>([]);
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage);
 
   // Recomputed on language switch -- [options] is a plain input, not
   // template markup, so there's no `| transloco` pipe to bind it through

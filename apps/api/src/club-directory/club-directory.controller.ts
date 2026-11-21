@@ -22,8 +22,12 @@ export class ClubDirectoryController {
   // club autocomplete. Same limit as the venue address search.
   @Throttle({ default: { limit: 60, ttl: 60_000 } })
   @Get('search')
-  search(@Query('q') q: string | undefined) {
-    return this.clubDirectoryService.search(q ?? '');
+  search(
+    @Query('q') q: string | undefined,
+    // Optional: older app builds only search football clubs.
+    @Query('sport') sport: string | undefined,
+  ) {
+    return this.clubDirectoryService.search(q ?? '', sport ?? 'football');
   }
 
   // Public: an <img> sends no token. Only serves crests of clubs in our
@@ -35,7 +39,28 @@ export class ClubDirectoryController {
     @Param('code') code: string,
     @Res({ passthrough: true }) res: Response,
   ): Promise<StreamableFile> {
-    const crest = await this.clubDirectoryService.crest(code);
+    return this.sendCrest(await this.clubDirectoryService.crest(code), res);
+  }
+
+  // Other sports' crests (SportClub), same caching and headers.
+  @Public()
+  @Throttle({ default: { limit: 300, ttl: 60_000 } })
+  @Get('logos/:sport/:slug')
+  async sportClubLogo(
+    @Param('sport') sport: string,
+    @Param('slug') slug: string,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<StreamableFile> {
+    return this.sendCrest(
+      await this.clubDirectoryService.sportClubCrest(sport, slug),
+      res,
+    );
+  }
+
+  private sendCrest(
+    crest: { data: Buffer; contentType: string } | null,
+    res: Response,
+  ): StreamableFile {
     if (!crest) {
       throw new NotFoundException();
     }

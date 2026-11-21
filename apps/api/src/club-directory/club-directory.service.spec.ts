@@ -1,4 +1,4 @@
-import { BadGatewayException } from '@nestjs/common';
+import { BadGatewayException, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
 import {
@@ -61,6 +61,11 @@ describe('toGouvSuggestions', () => {
 describe('ClubDirectoryService', () => {
   let prisma: {
     fffClub: { count: jest.Mock; findMany: jest.Mock; findUnique: jest.Mock };
+    sportClub: {
+      count: jest.Mock;
+      findMany: jest.Mock;
+      findUnique: jest.Mock;
+    };
   };
   let fetchMock: jest.SpyInstance;
   let service: ClubDirectoryService;
@@ -68,6 +73,11 @@ describe('ClubDirectoryService', () => {
   beforeEach(() => {
     prisma = {
       fffClub: { count: jest.fn(), findMany: jest.fn(), findUnique: jest.fn() },
+      sportClub: {
+        count: jest.fn(),
+        findMany: jest.fn(),
+        findUnique: jest.fn(),
+      },
     };
     fetchMock = jest.spyOn(global, 'fetch');
     service = new ClubDirectoryService(
@@ -146,12 +156,12 @@ describe('ClubDirectoryService', () => {
     );
   });
 
-  it('builds a crest URL only for FFF clubs', () => {
-    expect(service.logoUrlForExternalId('fff:553079')).toBe(
-      'https://cdn-transverse.azureedge.net/phlogos/BC553079.jpg',
-    );
-    expect(service.logoUrlForExternalId('siren:453133209')).toBeNull();
-    expect(service.logoUrlForExternalId('fff:../x')).toBeNull();
+  it('has a crest only for FFF clubs', async () => {
+    await expect(
+      service.crestForExternalId('siren:453133209'),
+    ).resolves.toBeNull();
+    await expect(service.crestForExternalId('fff:../x')).resolves.toBeNull();
+    expect(prisma.fffClub.findUnique).not.toHaveBeenCalled();
   });
 
   it('serves crests only for clubs of the directory, never as an open proxy', async () => {
@@ -163,5 +173,52 @@ describe('ClubDirectoryService', () => {
     expect(prisma.fffClub.findUnique).toHaveBeenCalledWith({
       where: { code: '99999999' },
     });
+  });
+
+  it('searches the other sports in SportClub, crest only when the club has one', async () => {
+    prisma.sportClub.count.mockResolvedValue(900);
+    prisma.sportClub.findMany.mockResolvedValue([
+      {
+        slug: 'allauch-handball',
+        name: 'Allauch Handball',
+        department: '13',
+        logoSource: 'https://s3.pub2.infomaniak.cloud/x/logo.jpg',
+      },
+      { slug: 'hbc-aix', name: 'HBC Aix', department: '13', logoSource: null },
+    ]);
+
+    const results = await service.search('handball', 'handball');
+
+    expect(results.map((r) => [r.externalId, r.logoUrl])).toEqual([
+      [
+        'club:handball:allauch-handball',
+        '/api/v1/club-directory/logos/handball/allauch-handball',
+      ],
+      ['club:handball:hbc-aix', null],
+    ]);
+    expect(prisma.sportClub.count).toHaveBeenCalledWith({
+      where: { sport: 'handball', dissolvedAt: null },
+    });
+    expect(prisma.fffClub.count).not.toHaveBeenCalled();
+  });
+
+  it('rejects a sport without a directory', async () => {
+    await expect(service.search('padel club', 'padel')).rejects.toBeInstanceOf(
+      BadRequestException,
+    );
+  });
+
+  it('only fetches SportClub crests stored on SportCorico media', async () => {
+    prisma.sportClub.findUnique.mockResolvedValue({
+      logoSource: 'https://evil.example/logo.png',
+    });
+
+    await expect(
+      service.crestForExternalId('club:rugby:rc-aix'),
+    ).resolves.toBeNull();
+    await expect(service.sportClubCrest('football', 'x')).resolves.toBeNull();
+    await expect(service.sportClubCrest('rugby', '../etc')).resolves.toBeNull();
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(prisma.sportClub.findUnique).toHaveBeenCalledTimes(1);
   });
 });

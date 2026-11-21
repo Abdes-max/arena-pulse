@@ -8,6 +8,7 @@ import { TranslocoPipe } from '@jsverse/transloco';
 import { Button, Logo, TextField } from 'design-system';
 import { isSafeReturnUrl } from '../../../core/safe-return-url.util';
 import { OrganizerAuthService } from '../../core/auth.service';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 // Same shape as apps/web/src/app/admin/pages/login/login.page.ts (see its
 // comments) -- default landing route differs (this app has no
@@ -56,6 +57,8 @@ export class OrganizerLoginPage {
 
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage);
   protected readonly needsVerification = signal(false);
   protected readonly resent = signal(false);
   // Kept for old links: the app no longer auto-logs out on idle (see SessionTimeoutService).
@@ -76,7 +79,7 @@ export class OrganizerLoginPage {
       const requestedReturnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
       const returnUrl = isSafeReturnUrl(requestedReturnUrl)
         ? requestedReturnUrl
-        : '/organizer/tournaments';
+        : this.auth.homeUrl();
       await this.router.navigateByUrl(returnUrl);
     } catch (error) {
       if (error instanceof HttpErrorResponse && error.status === 403) {

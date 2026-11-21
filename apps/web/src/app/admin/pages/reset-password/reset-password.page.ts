@@ -33,7 +33,9 @@ export class ResetPasswordPage {
 
   protected readonly state = signal<PageState>('form');
   protected readonly submitting = signal(false);
-  protected readonly errorMessage = signal<string | null>(null);
+  // Why the link failed (Transloco key) -- the 'error' state's own content,
+  // shown in its header rather than as a passing snackbar.
+  protected readonly failure = signal<string | null>(null);
   // Only shown once a submit was actually attempted -- matches this
   // codebase's submitAttempted convention (see mobile's register.page.ts)
   // for surfacing the mismatch instead of a disabled button silently
@@ -51,12 +53,12 @@ export class ResetPasswordPage {
     }
     this.mismatch.set(false);
     this.submitting.set(true);
-    this.errorMessage.set(null);
+    this.failure.set(null);
     try {
       await this.authService.resetPassword(this.token, newPassword);
       this.state.set('success');
     } catch (error) {
-      this.errorMessage.set(
+      this.failure.set(
         error instanceof HttpErrorResponse && error.status === 404
           ? 'admin.auth.resetPassword.errorExpired'
           : 'admin.auth.resetPassword.errorGeneric',

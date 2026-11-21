@@ -4,10 +4,6 @@
   @if (loading()) {
     <p>{{ 'admin.standings.loading' | transloco }}</p>
   } @else {
-    @if (errorMessage(); as message) {
-      <p class="standings-page__error" role="alert">{{ message | transloco }}</p>
-    }
-
     @if (categories().length === 0) {
       <p>{{ 'admin.standings.addCategoryFirst' | transloco }}</p>
     } @else {
@@ -112,9 +108,10 @@
                       @let tier = qualificationTier(group, row.teamId);
                       <tr
                         [class.standings-page__row--qualified]="
-                          qualificationTierPhases().length < 2 && isQualified(group, row.teamId)
+                          qualificationTierPhases().length < 2 &&
+                          inQualifyingZone(group, row.position)
                         "
-                        [style.background]="tier?.soft ?? null"
+                        [style.background]="zoneTier(group, row.position)?.soft ?? null"
                       >
                         <td>{{ row.position }}</td>
                         <td class="standings-page__team-cell">
@@ -156,7 +153,17 @@
                 </table>
               </div>
 
-              @if (group.standings.unresolvedTies.length > 0) {
+              @if (
+                group.standings.unresolvedTies.length > 0 &&
+                group.standings.isComplete &&
+                tiesAwaitValidation()
+              ) {
+                <p class="standings-page__ties-pending">
+                  {{ 'admin.standings.tiesAfterValidation' | transloco }}
+                </p>
+              }
+
+              @if (group.standings.unresolvedTies.length > 0 && canBreakTies(group)) {
                 <div class="standings-page__ties">
                   @for (tie of group.standings.unresolvedTies; track tie) {
                     <p class="standings-page__tie">
@@ -186,7 +193,7 @@
             </section>
           }
 
-          @if (crossGroupTies().length > 0) {
+          @if (crossGroupTies().length > 0 && crossGroupTiesOpen()) {
             <section class="standings-page__group">
               <h2>{{ 'admin.standings.crossGroupTiesTitle' | transloco }}</h2>
               @for (rule of crossGroupTies(); track rule.ruleId) {

@@ -20,10 +20,6 @@
     @if (loading()) {
       <p class="standings-page__hint">{{ 'organizer.standings.loading' | transloco }}</p>
     } @else {
-      @if (errorMessage(); as message) {
-        <p class="standings-page__error" role="alert">{{ message | transloco }}</p>
-      }
-
       @if (categories().length === 0) {
         <p class="standings-page__hint">{{ 'organizer.standings.addCategoryFirst' | transloco }}</p>
       } @else {
@@ -91,7 +87,7 @@
                     <tbody>
                       @for (row of group.standings.rows; track row.teamId) {
                         @let tier = qualificationTier(group, row.teamId);
-                        <tr [style.background]="tier?.soft ?? null">
+                        <tr [style.background]="zoneTier(group, row.position)?.soft ?? null">
                           <td>{{ row.position }}</td>
                           <td class="standings-page__team-cell">
                             @if (logoUrl(row.teamLogoUrl); as logo) {
@@ -122,7 +118,17 @@
                   </table>
                 </div>
 
-                @if (group.standings.unresolvedTies.length > 0) {
+                @if (
+                  group.standings.unresolvedTies.length > 0 &&
+                  group.standings.isComplete &&
+                  tiesAwaitValidation()
+                ) {
+                  <p class="standings-page__ties-pending">
+                    {{ 'organizer.standings.tiesAfterValidation' | transloco }}
+                  </p>
+                }
+
+                @if (group.standings.unresolvedTies.length > 0 && canBreakTies(group)) {
                   <div class="standings-page__ties">
                     @for (tie of group.standings.unresolvedTies; track tie) {
                       <p class="standings-page__tie">
@@ -152,7 +158,7 @@
               </section>
             }
 
-            @if (crossGroupTies().length > 0) {
+            @if (crossGroupTies().length > 0 && crossGroupTiesOpen()) {
               <section class="standings-page__group">
                 <h2 class="standings-page__group-title">
                   {{ 'organizer.standings.crossGroupTiesTitle' | transloco }}

@@ -159,9 +159,7 @@ export class TeamsService {
         externalClubId: dto.externalClubId,
       },
     });
-    const logoUrl = dto.externalClubId
-      ? await this.importClubLogo(organizationId, tournamentId, team)
-      : null;
+    const logoUrl = dto.externalClubId ? await this.importClubLogo(team) : null;
     return this.toSummary({
       ...team,
       logoUrl: logoUrl ?? team.logoUrl,
@@ -255,7 +253,7 @@ export class TeamsService {
     });
     const clubLogoUrl =
       dto.externalClubId && dto.externalClubId !== team.externalClubId
-        ? await this.importClubLogo(organizationId, tournamentId, updated)
+        ? await this.importClubLogo(updated)
         : null;
     return this.toSummary({
       ...updated,
@@ -276,7 +274,22 @@ export class TeamsService {
       tournamentId,
     );
     const team = await this.getOrThrow(tournamentId, teamId);
-    await this.prisma.team.delete({ where: { id: teamId } });
+    await this.prisma.$transaction([
+      // A confirmed request whose team the organizer removes no longer holds
+      // a place (nor counts as "already registered" for its manager).
+      this.prisma.registration.updateMany({
+        where: {
+          teamId: { in: [teamId] },
+          status: { in: ['CONFIRMED', 'PAID'] },
+        },
+        data: {
+          status: 'REJECTED',
+          rejectionReason: "Équipe retirée par l'organisateur.",
+          decidedAt: new Date(),
+        },
+      }),
+      this.prisma.team.delete({ where: { id: teamId } }),
+    ]);
     await this.deleteLogoFile(team.logoUrl);
   }
 
@@ -291,11 +304,26 @@ export class TeamsService {
     );
     const teams = await this.prisma.team.findMany({
       where: { tournamentId, id: { in: dto.teamIds } },
-      select: { logoUrl: true },
+      select: { id: true, logoUrl: true },
     });
-    await this.prisma.team.deleteMany({
-      where: { tournamentId, id: { in: dto.teamIds } },
-    });
+    await this.prisma.$transaction([
+      // A confirmed request whose team the organizer removes no longer holds
+      // a place (nor counts as "already registered" for its manager).
+      this.prisma.registration.updateMany({
+        where: {
+          teamId: { in: teams.map((team) => team.id) },
+          status: { in: ['CONFIRMED', 'PAID'] },
+        },
+        data: {
+          status: 'REJECTED',
+          rejectionReason: "Équipe retirée par l'organisateur.",
+          decidedAt: new Date(),
+        },
+      }),
+      this.prisma.team.deleteMany({
+        where: { tournamentId, id: { in: dto.teamIds } },
+      }),
+    ]);
     await Promise.all(teams.map((team) => this.deleteLogoFile(team.logoUrl)));
   }
 
@@ -344,42 +372,40 @@ export class TeamsService {
 
   /**
    * Picking a club from the federation directory also brings its crest as
-   * the team logo -- same premium gate as uploadLogo, but best effort: a
-   * locked tournament or an unreachable crest just keeps the team without
-   * a (new) logo rather than failing the save. The URL comes from our own
-   * template (ClubDirectoryService.logoUrlForExternalId), never the client,
-   * and still goes through the SSRF-guarded fetch.
+   * the team logo -- on every plan, unlike uploadLogo's premium gate: it's
+   * the club's own official crest, not a customization. Best effort: an
+   * unreachable crest just keeps the team without a (new) logo rather than
+   * failing the save. The image comes from ClubDirectoryService (our FFF
+   * directory and CDN template), never from a client-supplied URL.
    */
-  private async importClubLogo(
-    organizationId: string,
-    tournamentId: string,
-    team: Team,
-  ): Promise<string | null> {
-    const crestUrl = team.externalClubId
-      ? this.clubDirectoryService.logoUrlForExternalId(team.externalClubId)
-      : null;
-    if (
-      !crestUrl ||
-      !(await this.tournamentsService.hasPremiumFeatures(
-        organizationId,
-        tournamentId,
-      ))
-    ) {
+  /**
+   * For a team created outside this service (a confirmed pre-registration,
+   * RegistrationsService): imports its linked club's crest as the logo,
+   * same as create() does. Best effort, never throws.
+   */
+  async applyClubCrest(teamId: string): Promise<void> {
+    const team = await this.prisma.team.findUnique({ where: { id: teamId } });
+    if (team) {
+      await this.importClubLogo(team);
+    }
+  }
+
+  private async importClubLogo(team: Team): Promise<string | null> {
+    if (!team.externalClubId) {
       return null;
     }
     try {
-      const response = await this.fetchLogoSafely(crestUrl);
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
+      const crest = await this.clubDirectoryService.crestForExternalId(
+        team.externalClubId,
+      );
+      if (!crest) {
+        return null;
       }
-      const contentType =
-        response.headers.get('content-type')?.split(';')[0]?.trim() ?? '';
-      const buffer = Buffer.from(await response.arrayBuffer());
       const logoUrl = await this.saveLogoBuffer(
         team.id,
-        buffer,
-        contentType,
-        buffer.byteLength,
+        crest.data,
+        crest.contentType,
+        crest.data.byteLength,
       );
       await this.prisma.team.update({
         where: { id: team.id },

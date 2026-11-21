@@ -9,9 +9,6 @@
       formControlName="password"
       autocomplete="current-password"
     />
-    @if (errorMessage(); as message) {
-      <p class="super-admin-login-page__error" role="alert">{{ message }}</p>
-    }
     <ap-button type="submit" [disabled]="submitting()">Se connecter</ap-button>
   </form>
 </main>

@@ -37,6 +37,7 @@ import { TournamentsService } from '../../core/tournaments.service';
 import { FieldSelector } from '../../shared/field-selector';
 import { summarizeSchedule } from '../../shared/schedule-summary';
 import { matchRoundLabel, RoundLabelLang } from 'shared-models';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 // Adding a slot: just a length; it goes right after the field's last slot.
 interface TimeSlotDraft {
@@ -77,6 +78,8 @@ export class SchedulePage {
 
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage);
   protected readonly generating = signal(false);
 
   // Only startDate/endDate (set on Général) are actually used here, as the

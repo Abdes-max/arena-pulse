@@ -39,9 +39,9 @@ export class CreateTeamDto {
   /**
    * Club picked from the federation directory (ClubDirectoryService), e.g.
    * "fff:553079" or "siren:453133209" -- an FFF club's crest is then
-   * imported as the team logo (premium).
+   * imported as the team logo (every plan).
    */
   @IsOptional()
-  @Matches(/^(fff:\d{1,10}|siren:\d{9})$/)
+  @Matches(/^(fff:\d{1,10}|club:[a-z]+:[a-z0-9-]{1,150}|siren:\d{9})$/)
   externalClubId?: string;
 }

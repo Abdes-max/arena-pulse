@@ -13,6 +13,7 @@ import { CategoriesService } from '../tournaments/categories.service';
 import { TournamentsService } from '../tournaments/tournaments.service';
 import { StripeService } from '../payments/stripe.service';
 import { MailService } from '../mail/mail.service';
+import { TeamsService } from '../tournaments/teams.service';
 import { CreateRegistrationDto } from './dto/create-registration.dto';
 import { RegistrationSettingsDto } from './dto/registration-settings.dto';
 import {
@@ -23,15 +24,15 @@ import {
 import { SuperAdminNotificationService } from '../super-admin/notifications/super-admin-notification.service';
 
 export interface CreateRegistrationResult {
+  /** The first one when several teams were registered at once. */
   registrationId: string;
+  registrationIds: string[];
   status: RegistrationStatus;
   /** Always null now: pre-registrations are never paid online. */
   checkoutUrl: string | null;
 }
 
 /** Registrations that hold (or wait for) a place: confirmed ones and the legacy paid ones. */
-const PLACE_HOLDING = [RegistrationStatus.CONFIRMED, RegistrationStatus.PAID];
-
 /**
  * Pre-registrations: a player account sends a request (a team and its roster,
  * or themselves for an individual sport), the organizer confirms it, turns it
@@ -53,6 +54,7 @@ export class RegistrationsService {
     private readonly categoriesService: CategoriesService,
     private readonly stripeService: StripeService,
     private readonly configService: ConfigService,
+    private readonly teamsService: TeamsService,
     @Optional() private readonly mailService?: MailService,
     @Optional()
     private readonly superAdminNotifications?: SuperAdminNotificationService,
@@ -75,6 +77,7 @@ export class RegistrationsService {
       closesAt: tournament.registrationClosesAt,
       paymentInfo: tournament.registrationPaymentInfo,
       participantType: tournament.sport.participantType,
+      maxTeamsPerRegistrant: tournament.maxTeamsPerRegistrant,
       categories: tournament.categories.map((category) => ({
         id: category.id,
         name: category.name,
@@ -92,7 +95,7 @@ export class RegistrationsService {
   async createForPlayer(
     slug: string,
     categoryId: string,
-    playerAccountId: string,
+    userId: string,
     dto: CreateRegistrationDto,
   ): Promise<CreateRegistrationResult> {
     const published = await this.tournamentsService.getPublicBySlug(slug);
@@ -113,48 +116,71 @@ export class RegistrationsService {
     // Individual sport: one player, the "team" is named after them.
     const individual =
       tournament.sport.participantType === ParticipantType.INDIVIDUAL;
-    if (individual && dto.players.length !== 1) {
+    const players = dto.players ?? [];
+    if (individual && players.length !== 1) {
       throw new BadRequestException(
         'Une inscription individuelle concerne un seul joueur.',
       );
     }
     const teamName = individual
-      ? `${dto.players[0].firstName} ${dto.players[0].lastName}`.trim()
+      ? `${players[0].firstName} ${players[0].lastName}`.trim()
       : dto.teamName?.trim();
     if (!teamName) {
       throw new BadRequestException("Le nom de l'équipe est obligatoire.");
     }
-    await this.assertTeamNameAvailable(tournament.id, teamName);
 
-    const taken = (await this.placesTaken(tournament.id)).get(category.id) ?? 0;
-    const full = category.maxTeams !== null && taken >= category.maxTeams;
-    const status = full
-      ? RegistrationStatus.WAITLIST
-      : RegistrationStatus.PENDING;
-
-    const registration = await this.prisma.registration.create({
-      data: {
+    // Several teams of the same club at once, numbered -- within the
+    // organizer's per-manager limit, counting this manager's live requests.
+    const teamCount = individual ? 1 : (dto.teamCount ?? 1);
+    const alreadyRegistered = await this.prisma.registration.count({
+      where: {
         tournamentId: tournament.id,
-        categoryId: category.id,
-        playerAccountId,
-        teamName,
-        managerEmail: dto.managerEmail,
-        managerPhone: dto.managerPhone,
-        amountCents: category.registrationFeeCents ?? 0,
-        currency: category.registrationFeeCurrency ?? 'eur',
-        status,
-        paymentStatus: category.registrationFeeCents
-          ? RegistrationPaymentStatus.UNPAID
-          : RegistrationPaymentStatus.EXEMPT,
-        players: {
-          create: dto.players.map((player) => ({
-            firstName: player.firstName,
-            lastName: player.lastName,
-            jerseyNumber: player.jerseyNumber,
-          })),
+        userId,
+        status: {
+          notIn: [RegistrationStatus.REJECTED, RegistrationStatus.CANCELLED],
         },
       },
     });
+    const max = tournament.maxTeamsPerRegistrant;
+    if (alreadyRegistered + teamCount > max) {
+      throw new ConflictException(
+        alreadyRegistered >= max
+          ? `Ce tournoi limite à ${max} équipe(s) par responsable : vous avez déjà atteint la limite.`
+          : `Ce tournoi limite à ${max} équipe(s) par responsable : vous pouvez encore en inscrire ${max - alreadyRegistered}.`,
+      );
+    }
+    const names =
+      teamCount === 1
+        ? [teamName]
+        : Array.from({ length: teamCount }, (_, i) => `${teamName} ${i + 1}`);
+    for (const name of names) {
+      await this.assertTeamNameAvailable(tournament.id, name);
+    }
+
+    let taken = (await this.placesTaken(tournament.id)).get(category.id) ?? 0;
+    const created: { id: string; status: RegistrationStatus }[] = [];
+    for (const name of names) {
+      const full = category.maxTeams !== null && taken >= category.maxTeams;
+      const status = full
+        ? RegistrationStatus.WAITLIST
+        : RegistrationStatus.PENDING;
+      if (!full) {
+        taken += 1;
+      }
+      const registration = await this.createOne(
+        tournament.id,
+        category,
+        userId,
+        name,
+        status,
+        individual,
+        players,
+        dto,
+      );
+      created.push({ id: registration.id, status });
+    }
+    const status = created[0].status;
+    const teamLabel = names.join(', ');
 
     void this.mail(dto.managerEmail, {
       subject: `Pré-inscription reçue : ${tournament.name}`,
@@ -165,7 +191,14 @@ export class RegistrationsService {
       rows: [
         { label: 'Tournoi', value: tournament.name },
         { label: 'Catégorie', value: category.name },
-        { label: individual ? 'Joueur' : 'Équipe', value: teamName },
+        {
+          label: individual
+            ? 'Joueur'
+            : names.length > 1
+              ? 'Équipes'
+              : 'Équipe',
+          value: teamLabel,
+        },
         ...(tournament.registrationPaymentInfo
           ? [{ label: 'Paiement', value: tournament.registrationPaymentInfo }]
           : []),
@@ -177,24 +210,76 @@ export class RegistrationsService {
       rows: [
         { label: 'Tournoi', value: tournament.name },
         { label: 'Catégorie', value: category.name },
-        { label: individual ? 'Joueur' : 'Équipe', value: teamName },
+        {
+          label: individual
+            ? 'Joueur'
+            : names.length > 1
+              ? 'Équipes'
+              : 'Équipe',
+          value: teamLabel,
+        },
         { label: 'Contact', value: dto.managerEmail },
       ],
       link: {
-        url: `${this.webUrl()}/admin/tournaments/${tournament.id}/registrations`,
+        url: `${this.webUrl()}/admin/tournaments/${tournament.id}/teams#inscriptions`,
         label: 'Voir les inscriptions',
       },
     });
 
-    return { registrationId: registration.id, status, checkoutUrl: null };
+    return {
+      registrationId: created[0].id,
+      registrationIds: created.map((registration) => registration.id),
+      status,
+      checkoutUrl: null,
+    };
+  }
+
+  private createOne(
+    tournamentId: string,
+    category: {
+      id: string;
+      registrationFeeCents: number | null;
+      registrationFeeCurrency: string | null;
+    },
+    userId: string,
+    teamName: string,
+    status: RegistrationStatus,
+    individual: boolean,
+    players: { firstName: string; lastName: string; jerseyNumber?: number }[],
+    dto: CreateRegistrationDto,
+  ) {
+    return this.prisma.registration.create({
+      data: {
+        tournamentId,
+        categoryId: category.id,
+        userId,
+        teamName,
+        externalClubId: individual ? null : (dto.externalClubId ?? null),
+        managerEmail: dto.managerEmail,
+        managerPhone: dto.managerPhone.trim(),
+        amountCents: category.registrationFeeCents ?? 0,
+        currency: category.registrationFeeCurrency ?? 'eur',
+        status,
+        paymentStatus: category.registrationFeeCents
+          ? RegistrationPaymentStatus.UNPAID
+          : RegistrationPaymentStatus.EXEMPT,
+        players: {
+          create: players.map((player) => ({
+            firstName: player.firstName,
+            lastName: player.lastName,
+            jerseyNumber: player.jerseyNumber,
+          })),
+        },
+      },
+    });
   }
 
   /** A player withdraws a request that isn't confirmed yet. */
-  async cancelForPlayer(playerAccountId: string, registrationId: string) {
+  async cancelForPlayer(userId: string, registrationId: string) {
     const registration = await this.prisma.registration.findUnique({
       where: { id: registrationId },
     });
-    if (!registration || registration.playerAccountId !== playerAccountId) {
+    if (!registration || registration.userId !== userId) {
       throw new NotFoundException('Inscription introuvable.');
     }
     const cancellable: RegistrationStatus[] = [
@@ -210,7 +295,7 @@ export class RegistrationsService {
       where: { id: registrationId },
       data: { status: RegistrationStatus.CANCELLED, decidedAt: new Date() },
     });
-    return this.listForPlayer(playerAccountId);
+    return this.listForPlayer(userId);
   }
 
   // ------------------------------------------------------------- organizer
@@ -249,6 +334,7 @@ export class RegistrationsService {
         ...(dto.paymentInfo !== undefined && {
           registrationPaymentInfo: dto.paymentInfo?.trim() || null,
         }),
+        maxTeamsPerRegistrant: dto.maxTeamsPerRegistrant,
       },
       include: { sport: true },
     });
@@ -262,7 +348,7 @@ export class RegistrationsService {
     );
     const registrations = await this.prisma.registration.findMany({
       where: { tournamentId },
-      include: { category: true, playerAccount: true, players: true },
+      include: { category: true, user: true, players: true },
       orderBy: { createdAt: 'desc' },
     });
     return registrations.map((registration) => ({
@@ -282,9 +368,9 @@ export class RegistrationsService {
       decidedAt: registration.decidedAt,
       paidAt: registration.paidAt,
       registrant: {
-        firstName: registration.playerAccount.firstName,
-        lastName: registration.playerAccount.lastName,
-        email: registration.playerAccount.email,
+        firstName: registration.user.firstName,
+        lastName: registration.user.lastName,
+        email: registration.user.email,
       },
       players: registration.players.map((player) => ({
         firstName: player.firstName,
@@ -412,9 +498,9 @@ export class RegistrationsService {
 
   // ---------------------------------------------------------------- player
 
-  async listForPlayer(playerAccountId: string) {
+  async listForPlayer(userId: string) {
     const registrations = await this.prisma.registration.findMany({
-      where: { playerAccountId },
+      where: { userId },
       include: { category: true, tournament: true },
       orderBy: { createdAt: 'desc' },
     });
@@ -439,6 +525,118 @@ export class RegistrationsService {
     }));
   }
 
+  /**
+   * The team manager's space: their requests by status, and how the teams
+   * they registered (once confirmed, so turned into real teams) did --
+   * validated scores only, per team and in total.
+   */
+  async statsForPlayer(userId: string) {
+    const registrations = await this.prisma.registration.findMany({
+      where: { userId },
+      select: {
+        status: true,
+        teamId: true,
+        teamName: true,
+        tournament: { select: { name: true, slug: true } },
+        category: { select: { name: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    const teamIds = registrations
+      .map((registration) => registration.teamId)
+      .filter((teamId): teamId is string => teamId !== null);
+    const matches = teamIds.length
+      ? await this.prisma.match.findMany({
+          where: {
+            OR: [
+              { homeTeamId: { in: teamIds } },
+              { awayTeamId: { in: teamIds } },
+            ],
+            score: { isValidated: true },
+          },
+          select: {
+            homeTeamId: true,
+            awayTeamId: true,
+            score: { select: { homeScore: true, awayScore: true } },
+          },
+        })
+      : [];
+
+    const emptyLine = () => ({
+      played: 0,
+      won: 0,
+      drawn: 0,
+      lost: 0,
+      scored: 0,
+      conceded: 0,
+    });
+    const byTeam = new Map(teamIds.map((teamId) => [teamId, emptyLine()]));
+    for (const match of matches) {
+      if (!match.score) {
+        continue;
+      }
+      for (const side of ['home', 'away'] as const) {
+        const teamId = side === 'home' ? match.homeTeamId : match.awayTeamId;
+        const line = teamId ? byTeam.get(teamId) : undefined;
+        if (!line) {
+          continue;
+        }
+        const own =
+          side === 'home' ? match.score.homeScore : match.score.awayScore;
+        const other =
+          side === 'home' ? match.score.awayScore : match.score.homeScore;
+        line.played += 1;
+        line.scored += own;
+        line.conceded += other;
+        if (own > other) {
+          line.won += 1;
+        } else if (own < other) {
+          line.lost += 1;
+        } else {
+          line.drawn += 1;
+        }
+      }
+    }
+
+    const teams = registrations
+      .filter((registration) => registration.teamId !== null)
+      .map((registration) => ({
+        tournament: registration.tournament,
+        categoryName: registration.category.name,
+        teamName: registration.teamName,
+        ...(byTeam.get(registration.teamId!) ?? emptyLine()),
+      }));
+    const totals = teams.reduce((sum, team) => {
+      for (const key of Object.keys(sum) as (keyof typeof sum)[]) {
+        sum[key] += team[key];
+      }
+      return sum;
+    }, emptyLine());
+    const count = (...statuses: RegistrationStatus[]) =>
+      registrations.filter((registration) =>
+        statuses.includes(registration.status),
+      ).length;
+
+    return {
+      registrations: {
+        total: registrations.length,
+        confirmed: count(RegistrationStatus.CONFIRMED, RegistrationStatus.PAID),
+        pending: count(
+          RegistrationStatus.PENDING,
+          RegistrationStatus.PENDING_PAYMENT,
+        ),
+        waitlist: count(RegistrationStatus.WAITLIST),
+        refused: count(
+          RegistrationStatus.REJECTED,
+          RegistrationStatus.CANCELLED,
+        ),
+      },
+      tournaments: new Set(teams.map((team) => team.tournament.slug)).size,
+      totals,
+      teams,
+    };
+  }
+
   // --------------------------------------------- legacy online payments
 
   /** Called by PaymentsWebhookController after Stripe signature verification. */
@@ -451,7 +649,7 @@ export class RegistrationsService {
 
   /** Former flow: a player back from Stripe checks their session directly. */
   async confirmRegistrationPayment(
-    playerAccountId: string,
+    userId: string,
     stripeCheckoutSessionId: string,
   ): Promise<void> {
     const registration = await this.prisma.registration.findUnique({
@@ -459,7 +657,7 @@ export class RegistrationsService {
     });
     if (
       !registration ||
-      registration.playerAccountId !== playerAccountId ||
+      registration.userId !== userId ||
       registration.status !== RegistrationStatus.PENDING_PAYMENT
     ) {
       return;
@@ -514,12 +712,17 @@ export class RegistrationsService {
   }
 
   /** Places held per category (confirmed requests). */
+  /**
+   * Places taken per category: the teams actually in it -- the organizer's
+   * own additions as well as confirmed requests (each confirmed request has
+   * its team; one the organizer deleted no longer holds a place).
+   */
   private async placesTaken(
     tournamentId: string,
   ): Promise<Map<string, number>> {
-    const rows = await this.prisma.registration.groupBy({
+    const rows = await this.prisma.team.groupBy({
       by: ['categoryId'],
-      where: { tournamentId, status: { in: PLACE_HOLDING } },
+      where: { tournamentId },
       _count: { _all: true },
     });
     return new Map(rows.map((row) => [row.categoryId, row._count._all]));
@@ -530,6 +733,7 @@ export class RegistrationsService {
     registrationOpensAt: Date | null;
     registrationClosesAt: Date | null;
     registrationPaymentInfo: string | null;
+    maxTeamsPerRegistrant: number;
     sport: { participantType: ParticipantType };
   }) {
     return {
@@ -538,6 +742,7 @@ export class RegistrationsService {
       opensAt: tournament.registrationOpensAt,
       closesAt: tournament.registrationClosesAt,
       paymentInfo: tournament.registrationPaymentInfo,
+      maxTeamsPerRegistrant: tournament.maxTeamsPerRegistrant,
       participantType: tournament.sport.participantType,
     };
   }
@@ -604,12 +809,13 @@ export class RegistrationsService {
       },
     });
 
-    await this.prisma.$transaction(async (tx) => {
+    const teamId = await this.prisma.$transaction(async (tx) => {
       const team = await tx.team.create({
         data: {
           tournamentId: registration.tournamentId,
           categoryId: registration.categoryId,
           name: registration.teamName,
+          externalClubId: registration.externalClubId,
           managerEmail: registration.managerEmail,
           managerPhone: registration.managerPhone,
           players: {
@@ -634,7 +840,13 @@ export class RegistrationsService {
           }),
         },
       });
+      return team.id;
     });
+    // The club picked on the form brings its crest, as when the organizer
+    // adds the team from the club search (best effort, never blocks).
+    if (registration.externalClubId) {
+      await this.teamsService.applyClubCrest(teamId);
+    }
 
     if (status === RegistrationStatus.PAID) {
       // Super-admin notification (never throws, see SuperAdminNotificationService).

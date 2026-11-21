@@ -22,6 +22,7 @@ import {
   RoundLabelLang,
   setUnitForSport,
 } from 'shared-models';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 interface QualificationTier {
   label: string;
@@ -66,6 +67,8 @@ export class StandingsPage {
 
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage);
 
   protected readonly categories = signal<Category[]>([]);
   protected readonly selectedCategoryId = signal('');
@@ -76,6 +79,24 @@ export class StandingsPage {
   protected readonly groupStandings = computed(
     () => this.groupStandingsByPhase().get(this.selectedPhaseId()) ?? [],
   );
+  // Ties are only settled once the pool is over -- every match played and,
+  // for a pool feeding a knockout phase, its scores validated in the Scores
+  // tab ("Valider les scores des phases de poules"): until then the order
+  // can still change, so asking who goes ahead would be premature.
+  protected readonly tiesAwaitValidation = computed(() => {
+    const phase = this.phases().find((p) => p.id === this.selectedPhaseId());
+    return !!phase?.feedsKnockout && !phase.scoresValidatedAt;
+  });
+  protected readonly crossGroupTiesOpen = computed(
+    () =>
+      !this.tiesAwaitValidation() &&
+      this.groupStandings().length > 0 &&
+      this.groupStandings().every((group) => group.standings.isComplete),
+  );
+
+  protected canBreakTies(group: { standings: { isComplete: boolean } }): boolean {
+    return group.standings.isComplete && !this.tiesAwaitValidation();
+  }
   // Cross-group (inter-poule) ties -- distinct from a pool's own
   // group.standings.unresolvedTies, since these involve candidates from
   // several pools at once (e.g. "best 3rd place") rather than one pool's
@@ -370,6 +391,30 @@ export class StandingsPage {
     }
     const qualification = group.qualifications.find((qual) =>
       qual.qualifiedTeams.some((team) => team.id === teamId),
+    );
+    if (!qualification) {
+      return null;
+    }
+    const tierColor = this.tierColorByPhaseId().get(qualification.targetPhaseId);
+    return tierColor ? { label: qualification.targetPhaseName, ...tierColor } : null;
+  }
+
+  // Row shading by position: the ranges the qualification rules send
+  // through (e.g. 1st-2nd), known from the start -- unlike the "Qualifié"
+  // badge (isQualified/qualificationTier above), which waits for the pool
+  // scores to be validated: the API names no qualified team before.
+  protected inQualifyingZone(group: GroupStandings, position: number): boolean {
+    return group.qualifications.some(
+      (qual) => position >= qual.fromPosition && position <= qual.toPosition,
+    );
+  }
+
+  protected zoneTier(group: GroupStandings, position: number): QualificationTier | null {
+    if (this.qualificationTierPhases().length < 2) {
+      return null;
+    }
+    const qualification = group.qualifications.find(
+      (qual) => position >= qual.fromPosition && position <= qual.toPosition,
     );
     if (!qualification) {
       return null;

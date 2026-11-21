@@ -19,6 +19,10 @@ import {
   IAP_PRODUCT_IDS,
   RevenueCatService,
 } from '../payments/revenuecat.service';
+import { mkdtempSync, rmSync } from 'fs';
+import { tmpdir } from 'os';
+import { join } from 'path';
+import { ClubDirectoryService } from '../club-directory/club-directory.service';
 import { TournamentsService } from './tournaments.service';
 
 type PrismaMock = {
@@ -242,6 +246,48 @@ describe('TournamentsService', () => {
       expect(calls[0][0].data.headerBackgroundUrl).toBe(
         '/header-backgrounds/bleu.jpg',
       );
+    });
+
+    it("imports the organizing club's crest as the tournament logo, on every plan", async () => {
+      const uploadsDir = mkdtempSync(join(tmpdir(), 'tournament-crest-'));
+      const clubDirectory = {
+        crestForExternalId: jest.fn().mockResolvedValue({
+          data: Buffer.from([
+            0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 1,
+          ]),
+          contentType: 'image/png',
+        }),
+      };
+      const clubService = new TournamentsService(
+        prisma as unknown as PrismaService,
+        stripeService as unknown as StripeService,
+        revenueCatService as unknown as RevenueCatService,
+        createConfigServiceMock({ UPLOADS_DIR: uploadsDir }),
+        organizationsService as unknown as OrganizationsService,
+        mailService as unknown as MailService,
+        undefined,
+        clubDirectory as unknown as ClubDirectoryService,
+      );
+      prisma.sport.findUnique.mockResolvedValue(SPORT);
+      prisma.tournament.create.mockResolvedValue(
+        tournamentFixture({
+          organizerClubId: 'club:handball:allauch-handball',
+        }),
+      );
+      prisma.tournament.update.mockResolvedValue(tournamentFixture());
+
+      const result = await clubService.create('org-1', {
+        name: 'Coupe',
+        sportId: SPORT.id,
+        organizerClubId: 'club:handball:allauch-handball',
+      });
+
+      expect(clubDirectory.crestForExternalId).toHaveBeenCalledWith(
+        'club:handball:allauch-handball',
+      );
+      expect(result.logoUrl).toMatch(/^\/uploads\/tournament-logos\//);
+      expect(organizationsService.hasActiveSubscription).not.toHaveBeenCalled();
+      rmSync(uploadsDir, { recursive: true, force: true });
     });
 
     it('allows the default theme even without a subscription -- a brand-new tournament always has 0 teams', async () => {

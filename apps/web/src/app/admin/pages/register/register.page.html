@@ -26,6 +26,7 @@
           formControlName="organizationName"
           autocomplete="organization"
         />
+        <p class="register-page__hint">{{ 'admin.auth.register.orgNameHint' | transloco }}</p>
         <ap-text-field
           [label]="'admin.auth.register.firstNameLabel' | transloco"
           formControlName="firstName"
@@ -50,15 +51,14 @@
           formControlName="password"
           autocomplete="new-password"
         />
-        @if (errorMessage(); as message) {
-          <p class="register-page__error" role="alert">{{ message | transloco }}</p>
-        }
         <ap-button type="submit" [disabled]="submitting()">{{
           'admin.auth.register.submit' | transloco
         }}</ap-button>
         <p class="register-page__footer">
           {{ 'admin.auth.register.alreadyAccount' | transloco }}
-          <a routerLink="/login">{{ 'admin.auth.register.login' | transloco }}</a>
+          <a routerLink="/login" queryParamsHandling="preserve">{{
+            'admin.auth.register.login' | transloco
+          }}</a>
         </p>
       </form>
     }
@@ -70,15 +70,14 @@
         @if (resent()) {
           <p class="register-page__hint">{{ 'admin.auth.register.resent' | transloco }}</p>
         }
-        @if (errorMessage(); as message) {
-          <p class="register-page__error" role="alert">{{ message | transloco }}</p>
-        }
         <ap-button type="button" [disabled]="submitting()" (click)="resendVerification()">
           {{ 'admin.auth.register.resend' | transloco }}
         </ap-button>
         <p class="register-page__footer">
           {{ 'admin.auth.register.alreadyVerified' | transloco }}
-          <a routerLink="/login">{{ 'admin.auth.register.login' | transloco }}</a>
+          <a routerLink="/login" queryParamsHandling="preserve">{{
+            'admin.auth.register.login' | transloco
+          }}</a>
         </p>
       </div>
     }

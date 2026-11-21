@@ -9,6 +9,7 @@ import {
   CreateRegistrationResult,
   Match,
   PlayerRegistration,
+  PlayerRegistrationStats,
   PublicSport,
   PublicTeam,
   PublicTeamDetail,
@@ -146,6 +147,12 @@ export class PublicApiService {
         `${this.config.apiUrl}/public/registrations/${registrationId}/cancel`,
         {},
       ),
+    );
+  }
+
+  getMyRegistrationStats(): Promise<PlayerRegistrationStats> {
+    return firstValueFrom(
+      this.http.get<PlayerRegistrationStats>(`${this.config.apiUrl}/public/registrations/me/stats`),
     );
   }
 

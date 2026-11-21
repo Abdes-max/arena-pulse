@@ -25,7 +25,8 @@
       "subtitle": "Pools, knockout brackets, schedule, officiating and standings, plus a public site generated automatically for each of your competitions, updated the instant a score is entered.",
       "ctaCreate": "Create my tournament",
       "storeApple": "Download on the App Store",
-      "storeGoogle": "Get it on Google Play"
+      "storeGoogle": "Get it on Google Play",
+      "ctaJoin": "Register for a tournament"
     },
     "marquee": {
       "label": "Happening now on TournArena"
@@ -386,7 +387,10 @@
       "unlimited": "Places available",
       "full": "Full · waiting list",
       "places": "{{remaining}} place(s) out of {{total}}",
-      "payment": "Payment"
+      "payment": "Payment",
+      "mySpace": "My team manager space",
+      "alreadyRegistered": "Already registered · {{count}} team(s)",
+      "another": "Register another team"
     }
   },
   "schedule": {
@@ -476,7 +480,8 @@
         "tournaments": "Tournaments",
         "collaborators": "Collaborators",
         "subscription": "Subscription",
-        "account": "Account"
+        "account": "Account",
+        "managerSpace": "My team manager space"
       },
       "logout": "Log out",
       "menu": "Menu",
@@ -523,7 +528,7 @@
         "resend": "Resend verification email",
         "resent": "Email resent.",
         "noAccount": "Don't have an account yet?",
-        "createOrg": "Create an organization",
+        "createOrg": "Create an account",
         "errorVerify": "Verify your email before signing in.",
         "errorCredentials": "Incorrect email or password.",
         "errorGeneric": "Something went wrong, please try again.",
@@ -534,7 +539,7 @@
       },
       "register": {
         "title": "Sign up",
-        "orgNameLabel": "Organization name",
+        "orgNameLabel": "Organization name (optional)",
         "firstNameLabel": "First name",
         "lastNameLabel": "Last name",
         "emailLabel": "Email",
@@ -550,7 +555,8 @@
         "errorConflict": "An account already exists with this email.",
         "errorGeneric": "Something went wrong, please try again.",
         "lede": "Create your organization and publish your first tournament in minutes.",
-        "sentLede": "One last click in your inbox and you can get started."
+        "sentLede": "One last click in your inbox and you can get started.",
+        "orgNameHint": "Only if you organize tournaments. To register a team, leave it empty."
       },
       "verifyEmail": {
         "loading": "Verifying your email…",
@@ -598,7 +604,8 @@
         "errorTitle": "Invalid link",
         "errorExpired": "This reset link is invalid, expired, or already used.",
         "errorGeneric": "Something went wrong, please try again.",
-        "retry": "Request a new link"
+        "retry": "Request a new link",
+        "lede": "At least 10 characters, entered twice."
       },
       "showPassword": "Show password",
       "hidePassword": "Hide password",
@@ -922,7 +929,18 @@
         "themeLabel": "Public site theme",
         "save": "Save",
         "create": "Create the tournament",
-        "themePremiumHint": "Choosing a theme is reserved for tournaments with more than {{count}} teams, or an active annual subscription."
+        "themePremiumHint": "Choosing a theme is reserved for tournaments with more than {{count}} teams, or an active annual subscription.",
+        "organizerClub": {
+          "toggle": "Organized by a {{sport}} club",
+          "label": "Organizing club",
+          "placeholder": "Club name, e.g. Allauch",
+          "linked": "Organizing club: {{club}}",
+          "linkedUnknown": "An organizing club is linked.",
+          "change": "Change",
+          "hint": "The club's logo becomes the tournament logo.",
+          "searchFailed": "Club search is unavailable right now.",
+          "department": "Department {{code}}"
+        }
       },
       "categories": {
         "title": "Categories",
@@ -1063,7 +1081,12 @@
         "open": "Registrations open",
         "offHint": "Players cannot pre-register yet.",
         "category": "Category",
-        "requests": "See the requests ({{count}} pending)"
+        "requests": "See the requests ({{count}} pending)",
+        "places": "Number of places",
+        "placesFor": "Places · {{name}}",
+        "fee": "Price per team (€)",
+        "feeFor": "Price · {{name}} (€)",
+        "options": "Options (dates, price per category, payment…)"
       }
     },
     "teamList": {
@@ -1128,7 +1151,8 @@
         "addPlayer": "Unable to add this player.",
         "removePlayer": "Unable to remove this player.",
         "logoPremiumLocked": "Reserved for tournaments with more than {{count}} teams, or an active annual subscription.",
-        "chooseCategory": "Choose a category first."
+        "chooseCategory": "Choose a category first.",
+        "noCategory": "Add a category first, in the General tab."
       },
       "logoPremiumHint": "Team logos are reserved for tournaments with more than {{count}} teams, or an active annual subscription.",
       "tierModal": {
@@ -1158,7 +1182,7 @@
         "csv": "CSV file"
       },
       "club": {
-        "toggle": "Search for the club (football)",
+        "toggle": "Search the club directory",
         "placeholder": "Club name or town",
         "searchFailed": "Club search unavailable: type the name yourself.",
         "linked": "Linked club: {{club}}",
@@ -1235,7 +1259,8 @@
         "level": "Level",
         "levelPlaceholder": "e.g. Elite",
         "placesHint": "Places and price are set per category in General › Categories › Options.",
-        "save": "Save"
+        "save": "Save",
+        "maxTeams": "Max teams per manager (club)"
       },
       "filters": {
         "PENDING": "Pending",
@@ -1613,7 +1638,8 @@
         "loadStandings": "Unable to load standings.",
         "saveTieChoice": "Unable to save this choice.",
         "resetTieChoice": "Unable to reset this tie-break."
-      }
+      },
+      "tiesAfterValidation": "Tie to be broken once the pool scores are validated (Scores tab)."
     },
     "subscription": {
       "title": "Annual subscription",
@@ -1785,6 +1811,13 @@
       "print": "Print",
       "loading": "Preparing…",
       "error": "Could not generate the image."
+    },
+    "createOrganization": {
+      "title": "Create your organization",
+      "lede": "Your TournArena account also lets you organize: name your organization (club, association, league…).",
+      "submit": "Create the organization",
+      "back": "Back to my team manager space",
+      "error": "Could not create the organization."
     }
   },
   "wrapped": {
@@ -1862,7 +1895,7 @@
     "full": "Full · waiting list"
   },
   "myRegistrations": {
-    "title": "My registrations",
+    "title": "My team manager space",
     "loading": "Loading…",
     "empty": "No registration yet.",
     "browse": "See tournaments open for registration",
@@ -1880,6 +1913,96 @@
     "errors": {
       "load": "Could not load your registrations.",
       "cancel": "Could not withdraw this request."
+    },
+    "hello": "Hello {{name}}.",
+    "lede": "Your pre-registrations and how your teams did.",
+    "logout": "Sign out",
+    "statsTitle": "My statistics",
+    "registrationsTitle": "My registrations",
+    "tiles": {
+      "tournaments": "Tournaments",
+      "tournamentsHint": "{{count}} registration(s) in total",
+      "played": "Matches played",
+      "won": "Wins",
+      "wonHint": "{{drawn}} draw(s) · {{lost}} loss(es)",
+      "scored": "Goals / points scored",
+      "scoredHint": "{{conceded}} conceded",
+      "pending": "Pending",
+      "pendingHint": "{{count}} on the waiting list"
+    },
+    "outcomesTitle": "Match record",
+    "perTeamTitle": "By team",
+    "noTeams": "Your teams will show here once a registration is confirmed.",
+    "table": {
+      "team": "Team",
+      "played": "P",
+      "won": "W",
+      "drawn": "D",
+      "lost": "L",
+      "wonLong": "Wins",
+      "drawnLong": "Draws",
+      "lostLong": "Losses"
+    },
+    "myTournaments": "My tournaments",
+    "organize": "Organize a tournament"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "body": "This page doesn't exist or has moved.",
+    "home": "Back to home",
+    "discover": "Discover tournaments"
+  },
+  "seo": {
+    "siteDescription": "TournArena: create and run your sports tournaments — teams, schedule, live scores and standings.",
+    "landing": {
+      "title": "Sports tournament management software",
+      "description": "Set up your tournament in minutes: registrations, groups, match schedule, live scores and automatic standings."
+    },
+    "discover": {
+      "title": "Discover tournaments",
+      "description": "Find a tournament near you: football, padel, basketball… dates, venues and registration."
+    },
+    "contact": {
+      "title": "Contact",
+      "description": "A question about TournArena? Write to us, we reply quickly."
+    },
+    "terms": {
+      "title": "Terms of use",
+      "description": "TournArena's terms of use."
+    },
+    "privacy": {
+      "title": "Privacy policy",
+      "description": "How TournArena collects, uses and protects your personal data."
+    },
+    "tournament": {
+      "home": {
+        "title": "{{name}}",
+        "description": "{{name}}, {{sport}} tournament: match schedule, live results and standings."
+      },
+      "teams": {
+        "title": "Teams – {{name}}",
+        "description": "The teams entered in the {{name}} tournament ({{sport}})."
+      },
+      "team": {
+        "title": "{{team}} – {{name}}",
+        "description": "Matches, results and standings of {{team}} at the {{name}} tournament ({{sport}})."
+      },
+      "standings": {
+        "title": "Standings – {{name}}",
+        "description": "Up-to-date standings of the {{name}} tournament ({{sport}})."
+      },
+      "schedule": {
+        "title": "Matches – {{name}}",
+        "description": "Schedule and results of the {{name}} tournament matches ({{sport}})."
+      },
+      "wrapped": {
+        "title": "Recap – {{name}}",
+        "description": "The {{name}} tournament recap ({{sport}}): key figures and highlights."
+      },
+      "register": {
+        "title": "Registration – {{name}}",
+        "description": "Register your team for the {{name}} tournament ({{sport}})."
+      }
     }
   }
 }

@@ -28,6 +28,7 @@ import { MailService } from '../mail/mail.service';
 import { SuperAdminNotificationService } from '../super-admin/notifications/super-admin-notification.service';
 import { OrganizationsService } from '../organizations/organizations.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { ClubDirectoryService } from '../club-directory/club-directory.service';
 import { PublicTimeFilter, publicTimeWhere } from './public-time-filter.util';
 import { StripeService } from '../payments/stripe.service';
 import {
@@ -93,6 +94,8 @@ export class TournamentsService {
     private readonly mailService: MailService,
     @Optional()
     private readonly superAdminNotifications?: SuperAdminNotificationService,
+    @Optional()
+    private readonly clubDirectoryService?: ClubDirectoryService,
   ) {}
 
   async create(organizationId: string, dto: CreateTournamentDto) {
@@ -122,6 +125,7 @@ export class TournamentsService {
         isOnline: dto.isOnline ?? false,
         isListed: dto.isListed ?? true,
         theme: dto.theme,
+        organizerClubId: dto.organizerClubId,
         // Every new tournament starts with the header that matches its theme
         // (presets are free, whatever the plan), whether it comes from the
         // web, the app or the quick event; the organizer can change it later.
@@ -132,7 +136,11 @@ export class TournamentsService {
       include: { sport: true },
     });
     void this.notifyTournamentCreated(tournament);
-    return this.toDetail(tournament);
+    return this.toDetail(
+      dto.organizerClubId
+        ? await this.importOrganizerClubLogo(tournament)
+        : tournament,
+    );
   }
 
   async list(organizationId: string, statusFilter?: string) {
@@ -148,7 +156,14 @@ export class TournamentsService {
             take: 1,
           },
           // Same rule as hasPremiumFeatures, for the whole list in one query.
-          _count: { select: { teams: true } },
+          // pendingRegistrations: requests waiting for the organizer's
+          // decision -- the app's "to validate" badge.
+          _count: {
+            select: {
+              teams: true,
+              registrations: { where: { status: 'PENDING' } },
+            },
+          },
           publicationOrders: {
             where: {
               status: TournamentPublicationOrderStatus.PAID,
@@ -169,6 +184,7 @@ export class TournamentsService {
     return tournaments.map((tournament) => ({
       ...this.toSummary(tournament),
       venueName: tournament.venues[0]?.name ?? null,
+      pendingRegistrations: tournament._count?.registrations ?? 0,
       premiumUnlocked:
         hasActiveSubscription ||
         (tournament._count?.teams ?? 0) > this.freeMaxTeams() ||
@@ -178,7 +194,14 @@ export class TournamentsService {
 
   async getDetail(organizationId: string, tournamentId: string) {
     const tournament = await this.getOrThrow(organizationId, tournamentId);
-    return this.toDetail(tournament);
+    // The organizing club's name, for the form to show which club is linked.
+    const organizerClubName =
+      tournament.organizerClubId && this.clubDirectoryService
+        ? await this.clubDirectoryService.nameForExternalId(
+            tournament.organizerClubId,
+          )
+        : null;
+    return { ...this.toDetail(tournament), organizerClubName };
   }
 
   async update(
@@ -218,13 +241,23 @@ export class TournamentsService {
         ...(dto.level !== undefined && { level: dto.level?.trim() || null }),
         isListed: dto.isListed,
         theme: dto.theme,
+        ...(dto.organizerClubId !== undefined && {
+          organizerClubId: dto.organizerClubId || null,
+        }),
         description: dto.description,
         rules: dto.rules,
         practicalInfo: dto.practicalInfo,
       },
       include: { sport: true },
     });
-    return this.toDetail(updated);
+    // Only when the club changed: re-saving the form must not overwrite a
+    // logo the organizer uploaded since.
+    return this.toDetail(
+      updated.organizerClubId &&
+        updated.organizerClubId !== tournament.organizerClubId
+        ? await this.importOrganizerClubLogo(updated)
+        : updated,
+    );
   }
 
   /** Every TournamentPublicationOrder row ever created for this tournament, most recent first -- usually 0 or 1, but a PENDING_PAYMENT order left behind by an abandoned checkout can coexist with the PAID one that actually unlocked publication. */
@@ -1462,6 +1495,44 @@ export class TournamentsService {
     return this.toDetail(updated);
   }
 
+  /**
+   * The organizing club's crest becomes the tournament logo -- on every
+   * plan (unlike an uploaded logo, see uploadLogo), same as a team's club
+   * crest in TeamsService. Best effort: no crest, no change.
+   */
+  private async importOrganizerClubLogo<T extends Tournament>(
+    tournament: T,
+  ): Promise<T> {
+    if (!tournament.organizerClubId || !this.clubDirectoryService) {
+      return tournament;
+    }
+    try {
+      const crest = await this.clubDirectoryService.crestForExternalId(
+        tournament.organizerClubId,
+      );
+      if (!crest) {
+        return tournament;
+      }
+      const logoUrl = await this.saveLogoBuffer(
+        tournament.id,
+        crest.data,
+        crest.contentType,
+        crest.data.byteLength,
+      );
+      await this.prisma.tournament.update({
+        where: { id: tournament.id },
+        data: { logoUrl },
+      });
+      await this.deleteImageFile('tournament-logos', tournament.logoUrl);
+      return { ...tournament, logoUrl };
+    } catch (error) {
+      this.logger.warn(
+        `Organizer club crest import failed for ${tournament.organizerClubId}: ${(error as Error).message}`,
+      );
+      return tournament;
+    }
+  }
+
   private async saveLogoBuffer(
     tournamentId: string,
     buffer: Buffer,
@@ -2316,6 +2387,7 @@ export class TournamentsService {
       updatedAt: tournament.updatedAt,
       teamsCanReferee: tournament.teamsCanReferee,
       isListed: tournament.isListed,
+      organizerClubId: tournament.organizerClubId,
       format: tournament.format,
       level: tournament.level,
       registrationsOpen: tournament.registrationsOpen,

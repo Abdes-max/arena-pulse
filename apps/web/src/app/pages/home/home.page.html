@@ -4,9 +4,26 @@
       <section class="home-page__registration">
         <div class="home-page__registration-head">
           <h2>{{ 'home.registration.title' | transloco }}</h2>
-          <a class="home-page__registration-cta" [routerLink]="['/', t.slug, 'register']">
-            {{ 'home.registration.cta' | transloco }}
-          </a>
+          <span class="home-page__registration-actions">
+            @if (myTeams() > 0) {
+              <!-- Already registered: the manager's space, and more teams if allowed. -->
+              <span class="home-page__registration-done">{{
+                'home.registration.alreadyRegistered' | transloco: { count: myTeams() }
+              }}</span>
+              @if (canRegisterMore()) {
+                <a class="home-page__registration-space" [routerLink]="['/', t.slug, 'register']">
+                  {{ 'home.registration.another' | transloco }}
+                </a>
+              }
+              <a class="home-page__registration-cta" routerLink="/espace-responsable">
+                {{ 'home.registration.mySpace' | transloco }}
+              </a>
+            } @else {
+              <a class="home-page__registration-cta" [routerLink]="['/', t.slug, 'register']">
+                {{ 'home.registration.cta' | transloco }}
+              </a>
+            }
+          </span>
         </div>
         <ul class="home-page__registration-categories">
           @for (c of r.categories; track c.id) {

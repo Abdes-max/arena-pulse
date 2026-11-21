@@ -39,7 +39,10 @@ describe('CrossGroupQualificationRulesService', () => {
     assertTournamentExists: jest.Mock;
   };
   let phasesService: { assertPhaseExists: jest.Mock };
-  let standingsService: { getStandings: jest.Mock };
+  let standingsService: {
+    getStandings: jest.Mock;
+    qualificationsAreFinal: jest.Mock;
+  };
   let service: CrossGroupQualificationRulesService;
 
   const sourcePhase = {
@@ -70,7 +73,11 @@ describe('CrossGroupQualificationRulesService', () => {
           Promise.resolve(phaseId === 'phase-1' ? sourcePhase : targetPhase),
         ),
     };
-    standingsService = { getStandings: jest.fn() };
+    standingsService = {
+      getStandings: jest.fn(),
+      // Pool scores validated by default (see StandingsService.qualificationsAreFinal).
+      qualificationsAreFinal: jest.fn().mockResolvedValue(true),
+    };
     service = new CrossGroupQualificationRulesService(
       prisma as unknown as PrismaService,
       tournamentsService as unknown as TournamentsService,

@@ -1,5 +1,12 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  output,
+  signal,
+} from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Badge, BadgeStatus, Button, TextField } from 'design-system';
@@ -12,6 +19,7 @@ import {
 } from 'shared-models';
 import { AuthService } from '../../core/auth.service';
 import { RegistrationsService } from '../../core/registrations.service';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 const STATUS_TO_BADGE: Record<RegistrationStatus, BadgeStatus> = {
   PENDING: 'draft',
@@ -30,9 +38,13 @@ type Filter = 'ALL' | 'PENDING' | 'CONFIRMED' | 'WAITLIST' | 'REJECTED';
  * confirms, refuses or puts on the waiting list (the settings are in
  * Général) -- payment is collected by
  * the organizer and ticked here by hand.
+ *
+ * A block of the Équipes tab (TeamListPage), shown only while the
+ * tournament takes registrations: confirming a request creates its team,
+ * so it tells the page to refresh the team list (teamsChanged).
  */
 @Component({
-  selector: 'app-registration-list-page',
+  selector: 'app-registrations-block',
   imports: [Badge, Button, RouterLink, TextField, TranslocoPipe],
   templateUrl: './registration-list.page.html',
   styleUrl: './registration-list.page.scss',
@@ -45,12 +57,17 @@ export class RegistrationListPage {
   private readonly languageService = inject(LanguageService);
   private readonly transloco = inject(TranslocoService);
 
+  /** A confirmed request just became a team. */
+  readonly teamsChanged = output<void>();
+
   protected readonly organization = computed(() => this.authService.organizations()[0] ?? null);
   protected readonly tournamentId = this.route.snapshot.paramMap.get('tournamentId')!;
 
   protected readonly loading = signal(true);
   protected readonly busy = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage);
   protected readonly registrations = signal<OrganizerRegistration[]>([]);
   protected readonly settings = signal<RegistrationSettings | null>(null);
   protected readonly filter = signal<Filter>('PENDING');
@@ -164,6 +181,7 @@ export class RegistrationListPage {
     await this.decide((org) =>
       this.registrationsService.confirm(org, this.tournamentId, registration.id),
     );
+    this.teamsChanged.emit();
   }
 
   protected async waitlist(registration: OrganizerRegistration): Promise<void> {

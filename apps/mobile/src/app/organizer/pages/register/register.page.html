@@ -40,6 +40,9 @@
             autocomplete="organization"
             [errorMessage]="fieldError('organizationName') | transloco"
           />
+          <p class="organizer-register-page__lede">
+            {{ 'organizer.auth.register.orgNameHint' | transloco }}
+          </p>
           <ap-text-field
             [label]="'organizer.auth.register.firstNameLabel' | transloco"
             formControlName="firstName"
@@ -73,9 +76,6 @@
               {{ 'organizer.auth.register.passwordHint' | transloco }}
             </p>
           }
-          @if (errorMessage(); as message) {
-            <p class="organizer-register-page__error" role="alert">{{ message | transloco }}</p>
-          }
         </div>
       </ion-content>
       <ion-footer class="organizer-register-page__footer">
@@ -100,9 +100,6 @@
           <p class="organizer-register-page__hint">
             {{ 'organizer.auth.register.resent' | transloco }}
           </p>
-        }
-        @if (errorMessage(); as message) {
-          <p class="organizer-register-page__error" role="alert">{{ message | transloco }}</p>
         }
       </div>
     </ion-content>

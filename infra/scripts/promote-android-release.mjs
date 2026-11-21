@@ -20,6 +20,9 @@
 //   VERSION_CODE=42                           (optional -- defaults to the
 //                                               most recent release found on
 //                                               SOURCE_TRACK)
+//   DRY_RUN=true                              (optional -- list the tracks
+//                                               and what would be promoted,
+//                                               without changing anything)
 //   ROLLOUT_FRACTION=1.0                      (optional, default: 1.0 --
 //                                               fraction of users to roll
 //                                               out to immediately; e.g. 0.1
@@ -37,7 +40,10 @@ const {
   TARGET_TRACK = 'production',
   VERSION_CODE,
   ROLLOUT_FRACTION = '1.0',
+  DRY_RUN,
 } = process.env;
+// DRY_RUN=true: only list the tracks and what would be promoted, change nothing.
+const dryRun = DRY_RUN === 'true';
 
 if (!GOOGLE_PLAY_SERVICE_ACCOUNT_JSON) {
   console.error('✗ GOOGLE_PLAY_SERVICE_ACCOUNT_JSON is required.');
@@ -123,6 +129,16 @@ async function main() {
   const edit = await api(accessToken, 'POST', `${base}/edits`);
   const editId = edit.id;
 
+  // Every track and its releases: shows the closed testing track's exact
+  // name (e.g. "alpha" or a custom one) before updating it.
+  const { tracks = [] } = await api(accessToken, 'GET', `${base}/edits/${editId}/tracks`);
+  for (const track of tracks) {
+    const summary = (track.releases ?? [])
+      .map((r) => `${(r.versionCodes ?? []).join('+') || '-'} (${r.status})`)
+      .join(', ');
+    console.log(`  track "${track.track}": ${summary || 'no release'}`);
+  }
+
   console.log(`Reading the current "${SOURCE_TRACK}" track...`);
   const sourceTrack = await api(
     accessToken,
@@ -165,6 +181,13 @@ async function main() {
     ...(release.releaseNotes ? { releaseNotes: release.releaseNotes } : {}),
   };
 
+  if (dryRun) {
+    await api(accessToken, 'DELETE', `${base}/edits/${editId}`);
+    console.log('✓ Dry run: nothing changed.');
+    return;
+  }
+  // Only the track's release changes (testers and countries are untouched):
+  // a closed test keeps running -- updating its build never restarts it.
   await api(accessToken, 'PUT', `${base}/edits/${editId}/tracks/${TARGET_TRACK}`, {
     releases: [targetRelease],
   });

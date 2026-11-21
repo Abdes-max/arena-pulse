@@ -3,6 +3,7 @@ import { PublicApiService } from 'api-client';
 import { TournamentEventStream } from 'realtime-client';
 import { PublicTournament } from 'shared-models';
 import { environment } from '../../environments/environment';
+import { RobotsMetaService } from './robots-meta.service';
 
 /**
  * Provided per TournamentShell instance (not root) so each visited tournament
@@ -11,6 +12,7 @@ import { environment } from '../../environments/environment';
 @Injectable()
 export class TournamentContextService implements OnDestroy {
   private readonly api = inject(PublicApiService);
+  private readonly robotsMeta = inject(RobotsMetaService);
   private readonly stream = new TournamentEventStream();
 
   readonly slug = signal('');
@@ -37,10 +39,14 @@ export class TournamentContextService implements OnDestroy {
     try {
       const tournament = await this.api.getTournament(slug);
       this.tournament.set(tournament);
+      this.robotsMeta.setNoIndex(false);
       this.stream.connect(`${environment.apiUrl}/public/tournaments/${slug}/events`);
     } catch {
       this.tournament.set(null);
       this.errorMessage.set('shell.error.notFound');
+      // Unknown or unpublished slug: still a 200 from nginx, so keep it
+      // out of Google's index ("Soft 404").
+      this.robotsMeta.setNoIndex(true);
     } finally {
       this.loading.set(false);
     }
@@ -48,5 +54,6 @@ export class TournamentContextService implements OnDestroy {
 
   ngOnDestroy(): void {
     this.stream.close();
+    this.robotsMeta.setNoIndex(false);
   }
 }

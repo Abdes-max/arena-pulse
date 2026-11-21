@@ -1,47 +1,61 @@
 <main class="register-success-page">
-  @if (loading()) {
-    <p>Chargement…</p>
-  } @else if (registration(); as registration) {
-    @if (registration.status === 'PENDING') {
-      <h1>Pré-inscription envoyée</h1>
-      <p>
-        Votre demande pour <strong>{{ registration.teamName }}</strong> ({{
-          registration.category.name
-        }}) est en attente de validation par l'organisateur. Vous recevrez un e-mail dès qu'elle
-        sera traitée.
-      </p>
-    } @else if (registration.status === 'WAITLIST') {
-      <h1>Sur liste d'attente</h1>
-      <p>
-        La catégorie {{ registration.category.name }} est complète : la demande pour
-        <strong>{{ registration.teamName }}</strong> est en liste d'attente. L'organisateur vous
-        préviendra si une place se libère.
-      </p>
-    } @else if (registration.status === 'CONFIRMED') {
-      <h1>Inscription confirmée</h1>
-      <p>
-        <strong>{{ registration.teamName }}</strong> est inscrit(e) en
-        {{ registration.category.name }}.
-      </p>
-    } @else if (registration.status === 'PAID') {
-      <h1>Inscription confirmée</h1>
-      <p>
-        L'équipe <strong>{{ registration.teamName }}</strong> est inscrite en
-        {{ registration.category.name }}.
-      </p>
-    } @else if (registration.status === 'PENDING_PAYMENT') {
-      <h1>Paiement en cours de confirmation</h1>
-      <p>
-        Votre inscription pour <strong>{{ registration.teamName }}</strong> sera confirmée dès que
-        le paiement sera validé. Vous pouvez recharger cette page dans quelques instants.
-      </p>
+  <section class="register-success-page__block">
+    @if (loading()) {
+      <p class="register-success-page__muted">Chargement…</p>
+    } @else if (registration(); as registration) {
+      @if (registration.status === 'PENDING') {
+        <h2>Pré-inscription envoyée</h2>
+        <p>
+          Votre demande pour <strong>{{ registration.teamName }}</strong> ({{
+            registration.category.name
+          }}) est en attente de validation par l'organisateur. Vous recevrez un e-mail dès qu'elle
+          sera traitée.
+        </p>
+      } @else if (registration.status === 'WAITLIST') {
+        <h2>Sur liste d'attente</h2>
+        <p>
+          La catégorie {{ registration.category.name }} est complète : la demande pour
+          <strong>{{ registration.teamName }}</strong> est en liste d'attente. L'organisateur vous
+          préviendra si une place se libère.
+        </p>
+      } @else if (registration.status === 'CONFIRMED') {
+        <h2>Inscription confirmée</h2>
+        <p>
+          <strong>{{ registration.teamName }}</strong> est inscrit(e) en
+          {{ registration.category.name }}.
+        </p>
+      } @else if (registration.status === 'PAID') {
+        <h2>Inscription confirmée</h2>
+        <p>
+          L'équipe <strong>{{ registration.teamName }}</strong> est inscrite en
+          {{ registration.category.name }}.
+        </p>
+      } @else if (registration.status === 'PENDING_PAYMENT') {
+        <h2>Paiement en cours de confirmation</h2>
+        <p>
+          Votre inscription pour <strong>{{ registration.teamName }}</strong> sera confirmée dès que
+          le paiement sera validé. Vous pouvez recharger cette page dans quelques instants.
+        </p>
+      } @else {
+        <h2>Inscription annulée</h2>
+      }
+      <div class="register-success-page__actions">
+        <a
+          class="register-success-page__btn register-success-page__btn--primary"
+          routerLink="/espace-responsable"
+          >Mon espace responsable</a
+        >
+        <a class="register-success-page__btn" [routerLink]="['/', context.slug()]"
+          >Retour au tournoi</a
+        >
+      </div>
     } @else {
-      <h1>Inscription annulée</h1>
+      <h2>Inscription introuvable</h2>
+      <div class="register-success-page__actions">
+        <a class="register-success-page__btn" [routerLink]="['/', context.slug()]"
+          >Retour au tournoi</a
+        >
+      </div>
     }
-    <a [routerLink]="['/', context.slug()]">Retour au tournoi</a>
-    · <a routerLink="/player/registrations">Mes inscriptions</a>
-  } @else {
-    <h1>Inscription introuvable</h1>
-    <a [routerLink]="['/', context.slug()]">Retour au tournoi</a>
-  }
+  </section>
 </main>

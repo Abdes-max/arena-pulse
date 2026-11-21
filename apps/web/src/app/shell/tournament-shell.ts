@@ -17,7 +17,7 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import {
   ActivatedRoute,
   NavigationEnd,
@@ -26,7 +26,7 @@ import {
   RouterLinkActive,
   RouterOutlet,
 } from '@angular/router';
-import { filter } from 'rxjs';
+import { filter, map } from 'rxjs';
 import { AssetUrlService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { LanguageSwitcher, ShareButton, ThemeModeToggle } from 'design-system';
@@ -39,6 +39,7 @@ import {
   ThemeName,
   ThemeService,
 } from 'design-tokens';
+import { PageMeta, PageMetaService } from '../core/page-meta.service';
 import { TournamentContextService } from '../core/tournament-context.service';
 import { PublicTheme } from 'shared-models';
 
@@ -84,6 +85,17 @@ export class TournamentShell {
   private readonly themeService = inject(ThemeService);
   private readonly languageService = inject(LanguageService);
   private readonly transloco = inject(TranslocoService);
+  private readonly pageMeta = inject(PageMetaService);
+  // A fresh object per NavigationEnd (not the bare URL string), so the meta
+  // effect below re-runs after every navigation -- PageMetaService resets
+  // to the site defaults on each NavigationStart, even back to the same URL.
+  private readonly navigation = toSignal(
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+      map((event) => ({ url: event.urlAfterRedirects })),
+    ),
+    { initialValue: { url: this.router.url } },
+  );
   private readonly destroyRef = inject(DestroyRef);
   private readonly assetUrl = inject(AssetUrlService);
   protected readonly context = inject(TournamentContextService);
@@ -319,6 +331,14 @@ export class TournamentShell {
       }
     });
 
+    effect(() => {
+      const tournament = this.tournament();
+      const meta = tournament && tournamentPageMeta(this.navigation().url, tournament);
+      if (meta) {
+        this.pageMeta.set(meta);
+      }
+    });
+
     this.destroyRef.onDestroy(() => {
       this.themeService.setTheme(document.documentElement, DEFAULT_THEME);
     });
@@ -429,4 +449,35 @@ export class TournamentShell {
       void this.router.navigate(['/', slug, 'standings'], { replaceUrl: true });
     }
   }
+}
+
+/**
+ * <title>/description for each tab of the public tournament site, keyed by
+ * the sub-path after /:slug. null for team/:teamId -- TeamDetailPage sets
+ * its own once the team (and so its name) has loaded.
+ */
+function tournamentPageMeta(
+  url: string,
+  tournament: { name: string; sportName: string },
+): PageMeta | null {
+  const [, page = '', detail] = url.split(/[?#]/)[0].split('/').filter(Boolean);
+  if (page === 'team' && detail) {
+    return null;
+  }
+  const keys: Record<string, string> = {
+    '': 'home',
+    team: 'teams',
+    standings: 'standings',
+    schedule: 'schedule',
+    wrapped: 'wrapped',
+    register: 'register',
+  };
+  const key = keys[page] ?? 'home';
+  const params = { name: tournament.name, sport: tournament.sportName };
+  return {
+    title: `seo.tournament.${key}.title`,
+    titleParams: params,
+    description: `seo.tournament.${key}.description`,
+    descriptionParams: params,
+  };
 }

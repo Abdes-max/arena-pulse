@@ -309,7 +309,28 @@ describe('Standings and qualifications (e2e)', () => {
       toPosition: 2,
       targetPhaseName: 'Champions League',
     });
-    expect(qualifications[0].qualifiedTeams).toEqual([
+    // Nobody is "qualified" while the pool scores aren't validated yet.
+    expect(qualifications[0].qualifiedTeams).toEqual([]);
+
+    // Settle the last match, then validate the pool scores (Scores tab).
+    await auth(
+      request(app.getHttpServer()).post(
+        `${base}/${tournamentId}/matches/${gammaDelta.id}/score/validate`,
+      ),
+    ).expect(201);
+    await auth(
+      request(app.getHttpServer()).post(
+        `${base}/${tournamentId}/phases/${phaseId}/scores/validate`,
+      ),
+    ).expect(201);
+
+    const validatedRes = await auth(
+      request(app.getHttpServer()).get(
+        `${base}/${tournamentId}/groups/${groupId}/qualifications`,
+      ),
+    ).expect(200);
+    const [validated] = validatedRes.body as typeof qualifications;
+    expect(validated.qualifiedTeams).toEqual([
       { id: teamIds['Alpha'], name: 'Alpha', position: 1 },
       { id: teamIds['Beta'], name: 'Beta', position: 2 },
     ]);

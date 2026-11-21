@@ -454,6 +454,32 @@
   justify-content: flex-end;
 }
 
+.tournament-form-page__organizer-club {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+}
+
+.tournament-form-page__club-linked {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--ap-color-muted);
+}
+
+.tournament-form-page__club-unlink {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ap-color-primary);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .tournament-form-page__checkbox-label {
   display: flex;
   flex-direction: row;
@@ -965,4 +991,19 @@
 // Each block (Catégories, Inscriptions, Sites et terrains, Description...) as a card.
 .tournament-form-page .tournament-form-page__section {
   @include section-card.section-card;
+}
+
+// Optional registration settings, folded by default.
+.tournament-form-page__reg-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-3);
+  margin-top: var(--ap-space-2);
+
+  > summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--ap-color-primary);
+    margin-bottom: var(--ap-space-3);
+  }
 }

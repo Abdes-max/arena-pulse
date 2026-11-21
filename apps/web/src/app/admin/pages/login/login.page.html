@@ -33,9 +33,6 @@
     <a class="login-page__forgot" routerLink="/forgot-password">{{
       'admin.auth.login.forgotPassword' | transloco
     }}</a>
-    @if (errorMessage(); as message) {
-      <p class="login-page__error" role="alert">{{ message | transloco }}</p>
-    }
     @if (needsVerification()) {
       @if (resent()) {
         <p class="login-page__hint">{{ 'admin.auth.login.resent' | transloco }}</p>
@@ -50,7 +47,9 @@
     }}</ap-button>
     <p class="login-page__footer">
       {{ 'admin.auth.login.noAccount' | transloco }}
-      <a routerLink="/register">{{ 'admin.auth.login.createOrg' | transloco }}</a>
+      <a routerLink="/register" queryParamsHandling="preserve">{{
+        'admin.auth.login.createOrg' | transloco
+      }}</a>
     </p>
   </form>
 </main>

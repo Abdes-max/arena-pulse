@@ -1,31 +1,31 @@
 {
   "tournamentEntry": {
     "settingsAria": "Einstellungen",
-    "back": "Zurück",
     "shareText": "Entdecken Sie TournArena, die App, um Ihre Wettbewerbe zu verfolgen.",
     "hero": {
-      "title": "Einen Wettbewerb verfolgen",
       "hint": "Gruppen, K.-o.-Tabellen, Spielplan und Tabellen live.",
-      "ctaViewEvents": "Veranstaltungen ansehen",
-      "marqueeLabel": "Gerade jetzt"
+      "marqueeLabel": "Gerade jetzt",
+      "titleMain": "Turniere und Meisterschaften organisieren",
+      "titleEmphasis": "live von allen verfolgt.",
+      "ctaCreate": "Mein Turnier erstellen",
+      "ctaJoin": "Für ein Turnier anmelden"
     },
     "published": {
       "title": "Veröffentlichte Veranstaltungen",
       "searchLabel": "Veranstaltung suchen",
       "searchPlaceholder": "Veranstaltung suchen…",
       "filters": {
-        "sportLabel": "Sportart",
-        "allSports": "Alle Sportarten",
-        "locationLabel": "Ort",
-        "locationPlaceholder": "Stadt, Halle…",
-        "dateFromLabel": "Ab",
         "timeLabel": "Zeitraum",
         "upcoming": "Bevorstehend",
-        "past": "Vergangen"
+        "past": "Vergangen",
+        "registrationOpen": "Anmeldung offen"
       },
       "empty": "Keine Veranstaltung gefunden.",
       "loadMore": "Mehr laden",
-      "loading": "Wird geladen…"
+      "loading": "Wird geladen…",
+      "emptyRegistrationTitle": "Derzeit ist kein Turnier zur Anmeldung geöffnet",
+      "emptyRegistrationText": "Schauen Sie bald wieder vorbei oder sehen Sie alle veröffentlichten Turniere.",
+      "seeAll": "Alle Turniere ansehen"
     },
     "settings": {
       "title": "Einstellungen",
@@ -58,7 +58,7 @@
       "register": {
         "title": "Konto erstellen",
         "lede": "Erstellen Sie Ihr Organisator·innen-Konto, um Ihre Turniere direkt über die App zu verwalten.",
-        "orgNameLabel": "Name der Organisation",
+        "orgNameLabel": "Name der Organisation (optional)",
         "firstNameLabel": "Vorname",
         "lastNameLabel": "Nachname",
         "emailLabel": "E-Mail",
@@ -79,7 +79,8 @@
           "email": "Ungültige E-Mail-Adresse.",
           "passwordMinLength": "Das Passwort muss mindestens 10 Zeichen lang sein."
         },
-        "cancelAria": "Abbrechen"
+        "cancelAria": "Abbrechen",
+        "orgNameHint": "Nur wenn du Turniere veranstaltest. Um ein Team anzumelden, leer lassen."
       },
       "login": {
         "title": "Anmelden",
@@ -157,7 +158,9 @@
           "full": "Vollständig"
         },
         "structureAction": "Struktur",
-        "registrationsAction": "Anmeldungen"
+        "registrationsAction": "Anmeldungen",
+        "openFilter": "Anmeldung offen",
+        "managerSpace": "Mein Teamverantwortlichen-Bereich"
       }
     },
     "account": {
@@ -222,7 +225,17 @@
           "recommended": "Empfohlen"
         },
         "venuePlaceholder": "Stadion, Halle oder Adresse suchen…",
-        "venueSearchFailed": "Adresssuche nicht verfügbar: Der eingegebene Name wird so verwendet."
+        "venueSearchFailed": "Adresssuche nicht verfügbar: Der eingegebene Name wird so verwendet.",
+        "organizerClub": {
+          "toggle": "Organisiert von einem {{sport}}-Verein",
+          "label": "Veranstaltender Verein",
+          "placeholder": "Vereinsname",
+          "linked": "Veranstaltender Verein: {{club}}",
+          "linkedUnknown": "Ein veranstaltender Verein ist verknüpft.",
+          "change": "Ändern",
+          "hint": "Das Vereinslogo wird zum Turnierlogo.",
+          "logoFromClub": "Logo von {{club}}"
+        }
       },
       "teams": {
         "title": "Teilnehmende Teams",
@@ -242,11 +255,20 @@
         "pasteAdd": "Add these teams",
         "errorPaste": "Could not save these names, try again.",
         "club": {
-          "toggle": "Verein suchen (Fußball)",
+          "toggle": "Verein im Verzeichnis suchen",
           "placeholder": "Vereinsname oder Ort",
           "searchFailed": "Vereinssuche nicht verfügbar: Namen bitte selbst eingeben.",
           "department": "Département {{code}}"
-        }
+        },
+        "table": {
+          "logo": "Logo",
+          "name": "Team",
+          "actions": "Aktionen"
+        },
+        "edit": "{{name}} bearbeiten",
+        "save": "Speichern",
+        "cancelEdit": "Bearbeitung abbrechen",
+        "errorRename": "Team konnte nicht umbenannt werden, bitte erneut versuchen."
       },
       "structure": {
         "title": "Wettbewerbsformat",
@@ -430,7 +452,8 @@
         "loadGeneric": "Tabellen konnten nicht geladen werden.",
         "saveTieChoice": "Diese Auswahl konnte nicht gespeichert werden.",
         "resetTieChoice": "Dieser Stichentscheid konnte nicht zurückgesetzt werden."
-      }
+      },
+      "tiesAfterValidation": "Gleichstand wird nach der Bestätigung der Gruppenergebnisse aufgelöst (Tab Ergebnisse)."
     },
     "quickPlateau": {
       "title": "Create an event",
@@ -659,7 +682,7 @@
       "paymentInfo": "Zahlungsmodalitäten",
       "paymentInfoPlaceholder": "z. B. 40 € pro Team, vor Ort",
       "save": "Speichern",
-      "moreOnWeb": "Daten, Plätze pro Kategorie und Turnierkarte: auf der Website.",
+      "moreOnWeb": "Anmeldedaten und Turnierkarte: auf der Website.",
       "filters": {
         "PENDING": "Offen",
         "CONFIRMED": "Bestätigt",
@@ -693,7 +716,14 @@
       "errors": {
         "load": "Die Anmeldungen konnten nicht geladen werden.",
         "save": "Diese Änderung konnte nicht gespeichert werden."
-      }
+      },
+      "maxTeams": "Max. Teams pro Verantwortlichem (Verein)",
+      "places": "Anzahl der Plätze",
+      "placesFor": "Plätze · {{name}}",
+      "placesUnlimited": "Unbegrenzt",
+      "fee": "Preis pro Team (€)",
+      "feeFor": "Preis · {{name}} (€)",
+      "options": "Optionen (Daten, Preis pro Kategorie, Zahlung…)"
     },
     "schedule": {
       "hint": "Halten Sie ein Spiel oder ein Zeitfenster gedrückt und ziehen Sie es: Eine Lücke zeigt, wo es landet und zu welcher Uhrzeit. Die folgenden Zeitfenster verschieben sich; Pausen zwischen Phasen bleiben. Eine Mannschaft kann nicht zwei Spiele gleichzeitig bestreiten.",
@@ -707,6 +737,22 @@
         "GROUP_STAGE": "Gruppen",
         "KNOCKOUT": "K.-o.-Phase"
       }
+    },
+    "pendingRegistrations": {
+      "title": "Zu bestätigende Voranmeldungen",
+      "waitlist": "Warteliste",
+      "confirm": "Bestätigen",
+      "reject": "Ablehnen",
+      "manageAll": "Alle Anmeldungen verwalten",
+      "error": "Diese Entscheidung konnte nicht gespeichert werden.",
+      "badgeAria": "{{count}} Voranmeldung(en) zu bestätigen"
+    },
+    "createOrganization": {
+      "title": "Deine Organisation erstellen",
+      "lede": "Mit deinem TournArena-Konto kannst du auch veranstalten: gib deiner Organisation einen Namen (Verein, Verband, Liga…).",
+      "submit": "Organisation erstellen",
+      "back": "Zurück zu meinem Bereich",
+      "error": "Die Organisation konnte nicht erstellt werden."
     }
   },
   "notifications": {
@@ -752,5 +798,106 @@
       "android": "Für Banner: Einstellungen > Apps > TournArena > Benachrichtigungen, dann „Spielmeldungen“ einschalten.",
       "web": "Benachrichtigungen sind in der mobilen App verfügbar."
     }
+  },
+  "feedback": {
+    "close": "Schließen"
+  },
+  "manager": {
+    "back": "Zurück",
+    "loading": "Wird geladen…",
+    "settingsRow": "Bereich für Teamverantwortliche",
+    "form": {
+      "title": "Team vormelden",
+      "titleIndividual": "Voranmeldung",
+      "closed": "Für dieses Turnier sind keine Anmeldungen offen.",
+      "intro": "Der Veranstalter prüft deine Anfrage und bestätigt deinen Platz per E-Mail.",
+      "payment": "Zahlung:",
+      "category": "Kategorie",
+      "chooseCategory": "Kategorie wählen",
+      "fee": "Gebühr: {{fee}} (direkt an den Veranstalter)",
+      "free": "Kostenlos",
+      "full": "Kategorie voll: deine Anfrage kommt auf die Warteliste.",
+      "playerFirstName": "Vorname des Spielers",
+      "playerLastName": "Nachname des Spielers",
+      "clubSearch": "Verein im Verzeichnis suchen",
+      "teamName": "Teamname",
+      "clubPlaceholder": "Vereinsname",
+      "clubSearchFailed": "Vereinssuche nicht verfügbar: Namen selbst eingeben.",
+      "clubLinked": "Verknüpfter Verein: {{club}}",
+      "unlink": "Lösen",
+      "department": "Département {{code}}",
+      "email": "E-Mail des Verantwortlichen",
+      "phone": "Telefon des Verantwortlichen",
+      "phoneHint": "Der Veranstalter ruft dich unter dieser Nummer zur Anmeldung an.",
+      "submit": "Voranmeldung senden",
+      "sent": "Voranmeldung gesendet: der Veranstalter prüft sie.",
+      "error": "Anmeldung konnte nicht gesendet werden, bitte erneut versuchen.",
+      "errorLoad": "Kategorien des Turniers konnten nicht geladen werden.",
+      "teamCount": "Anzahl der Teams",
+      "teamCountHint": "Angemeldete Teams: {{names}}",
+      "limitReached": "Du hast bereits {{count}} Team(s) angemeldet: das Maximum für dieses Turnier."
+    },
+    "home": {
+      "title": "Anmeldungen offen",
+      "cta": "Vormelden",
+      "mySpace": "Mein Verantwortlichen-Bereich",
+      "unlimited": "Plätze verfügbar",
+      "full": "Voll · Warteliste",
+      "places": "{{remaining}} von {{total}} Plätzen",
+      "alreadyRegistered": "Bereits angemeldet · {{count}} Team(s)",
+      "another": "Weiteres Team anmelden"
+    }
+  },
+  "myRegistrations": {
+    "title": "Mein Teamverantwortlichen-Bereich",
+    "loading": "Wird geladen…",
+    "empty": "Noch keine Anmeldung.",
+    "browse": "Turniere mit offener Anmeldung ansehen",
+    "cancel": "Anfrage zurückziehen",
+    "reason": "Grund",
+    "status": {
+      "PENDING": "Wartet auf Bestätigung",
+      "CONFIRMED": "Bestätigt",
+      "WAITLIST": "Warteliste",
+      "REJECTED": "Abgelehnt",
+      "CANCELLED": "Storniert",
+      "PAID": "Bestätigt",
+      "PENDING_PAYMENT": "Zahlung läuft"
+    },
+    "errors": {
+      "load": "Ihre Anmeldungen konnten nicht geladen werden.",
+      "cancel": "Diese Anfrage konnte nicht zurückgezogen werden."
+    },
+    "hello": "Hallo {{name}}.",
+    "lede": "Deine Voranmeldungen und die Bilanz deiner Teams.",
+    "logout": "Abmelden",
+    "statsTitle": "Meine Statistiken",
+    "registrationsTitle": "Meine Anmeldungen",
+    "tiles": {
+      "tournaments": "Turniere",
+      "tournamentsHint": "{{count}} Anmeldung(en) insgesamt",
+      "played": "Gespielte Spiele",
+      "won": "Siege",
+      "wonHint": "{{drawn}} Unentschieden · {{lost}} Niederlage(n)",
+      "scored": "Erzielte Tore / Punkte",
+      "scoredHint": "{{conceded}} kassiert",
+      "pending": "Ausstehend",
+      "pendingHint": "{{count}} auf der Warteliste"
+    },
+    "outcomesTitle": "Spielbilanz",
+    "perTeamTitle": "Nach Team",
+    "noTeams": "Deine Teams erscheinen hier, sobald eine Anmeldung bestätigt ist.",
+    "table": {
+      "team": "Team",
+      "played": "Sp",
+      "won": "S",
+      "drawn": "U",
+      "lost": "N",
+      "wonLong": "Siege",
+      "drawnLong": "Unentschieden",
+      "lostLong": "Niederlagen"
+    },
+    "myTournaments": "Meine Turniere",
+    "organize": "Ein Turnier veranstalten"
   }
 }

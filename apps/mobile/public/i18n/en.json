@@ -1,31 +1,31 @@
 {
   "tournamentEntry": {
     "settingsAria": "Settings",
-    "back": "Back",
     "shareText": "Discover TournArena, the app to follow your competitions.",
     "hero": {
-      "title": "Follow a competition",
       "hint": "Pools, knockout brackets, schedule and live standings.",
-      "ctaViewEvents": "See events",
-      "marqueeLabel": "Happening now"
+      "marqueeLabel": "Happening now",
+      "titleMain": "Run tournaments and championships",
+      "titleEmphasis": "followed live by everyone.",
+      "ctaCreate": "Create my tournament",
+      "ctaJoin": "Register for a tournament"
     },
     "published": {
       "title": "Published events",
       "searchLabel": "Search an event",
       "searchPlaceholder": "Search an event…",
       "filters": {
-        "sportLabel": "Sport",
-        "allSports": "All sports",
-        "locationLabel": "Location",
-        "locationPlaceholder": "City, venue…",
-        "dateFromLabel": "From",
         "timeLabel": "Period",
         "upcoming": "Upcoming",
-        "past": "Past"
+        "past": "Past",
+        "registrationOpen": "Registration open"
       },
       "empty": "No event found.",
       "loadMore": "Load more",
-      "loading": "Loading…"
+      "loading": "Loading…",
+      "emptyRegistrationTitle": "No tournament is open for registration right now",
+      "emptyRegistrationText": "Come back soon, or browse every published tournament.",
+      "seeAll": "See all tournaments"
     },
     "settings": {
       "title": "Settings",
@@ -58,7 +58,7 @@
       "register": {
         "title": "Create my account",
         "lede": "Create your organizer account to manage your tournaments directly from the app.",
-        "orgNameLabel": "Organization name",
+        "orgNameLabel": "Organization name (optional)",
         "firstNameLabel": "First name",
         "lastNameLabel": "Last name",
         "emailLabel": "Email",
@@ -79,7 +79,8 @@
           "email": "Invalid email address.",
           "passwordMinLength": "Password must be at least 10 characters."
         },
-        "cancelAria": "Cancel"
+        "cancelAria": "Cancel",
+        "orgNameHint": "Only if you organize tournaments. To register a team, leave it empty."
       },
       "login": {
         "title": "Log in",
@@ -157,7 +158,9 @@
           "full": "Full"
         },
         "structureAction": "Structure",
-        "registrationsAction": "Registrations"
+        "registrationsAction": "Registrations",
+        "openFilter": "Registrations open",
+        "managerSpace": "My team manager space"
       }
     },
     "account": {
@@ -222,7 +225,17 @@
           "recommended": "Recommended"
         },
         "venuePlaceholder": "Search a stadium, gym or address…",
-        "venueSearchFailed": "Address search unavailable: the typed name will be used as is."
+        "venueSearchFailed": "Address search unavailable: the typed name will be used as is.",
+        "organizerClub": {
+          "toggle": "Organized by a {{sport}} club",
+          "label": "Organizing club",
+          "placeholder": "Club name",
+          "linked": "Organizing club: {{club}}",
+          "linkedUnknown": "An organizing club is linked.",
+          "change": "Change",
+          "hint": "The club's logo becomes the tournament logo.",
+          "logoFromClub": "{{club}} logo"
+        }
       },
       "teams": {
         "title": "Participating teams",
@@ -242,11 +255,20 @@
         "pasteAdd": "Add these teams",
         "errorPaste": "Could not save these names, try again.",
         "club": {
-          "toggle": "Search for the club (football)",
+          "toggle": "Search the club directory",
           "placeholder": "Club name or town",
           "searchFailed": "Club search unavailable: type the name yourself.",
           "department": "Department {{code}}"
-        }
+        },
+        "table": {
+          "logo": "Logo",
+          "name": "Team",
+          "actions": "Actions"
+        },
+        "edit": "Edit {{name}}",
+        "save": "Save",
+        "cancelEdit": "Cancel editing",
+        "errorRename": "Could not rename this team, please try again."
       },
       "structure": {
         "title": "Competition format",
@@ -430,7 +452,8 @@
         "loadGeneric": "Unable to load standings.",
         "saveTieChoice": "Unable to save this choice.",
         "resetTieChoice": "Unable to reset this tie-break."
-      }
+      },
+      "tiesAfterValidation": "Tie to be broken once the pool scores are validated (Scores tab)."
     },
     "quickPlateau": {
       "title": "Create an event",
@@ -659,7 +682,7 @@
       "paymentInfo": "Payment details",
       "paymentInfoPlaceholder": "e.g. €40 per team, on site",
       "save": "Save",
-      "moreOnWeb": "Dates, places per category and tournament card: on the website.",
+      "moreOnWeb": "Registration dates and tournament map: on the website.",
       "filters": {
         "PENDING": "Pending",
         "CONFIRMED": "Confirmed",
@@ -693,7 +716,14 @@
       "errors": {
         "load": "Could not load the registrations.",
         "save": "Could not save this change."
-      }
+      },
+      "maxTeams": "Max teams per manager (club)",
+      "places": "Number of places",
+      "placesFor": "Places · {{name}}",
+      "placesUnlimited": "Unlimited",
+      "fee": "Price per team (€)",
+      "feeFor": "Price · {{name}} (€)",
+      "options": "Options (dates, price per category, payment…)"
     },
     "schedule": {
       "hint": "Press and hold a match or a slot, then drag it: a space shows where it will land and at what time. The following slots shift; breaks between phases are kept. A team cannot play two matches at the same time.",
@@ -707,6 +737,22 @@
         "GROUP_STAGE": "Pools",
         "KNOCKOUT": "Knockout"
       }
+    },
+    "pendingRegistrations": {
+      "title": "Pre-registrations to review",
+      "waitlist": "Waiting list",
+      "confirm": "Accept",
+      "reject": "Decline",
+      "manageAll": "Manage all registrations",
+      "error": "Could not save this decision.",
+      "badgeAria": "{{count}} pre-registration(s) to review"
+    },
+    "createOrganization": {
+      "title": "Create your organization",
+      "lede": "Your TournArena account also lets you organize: name your organization (club, association, league…).",
+      "submit": "Create the organization",
+      "back": "Back to my team manager space",
+      "error": "Could not create the organization."
     }
   },
   "notifications": {
@@ -752,5 +798,106 @@
       "android": "To see banners: Settings > Apps > TournArena > Notifications, then turn on \"Match alerts\".",
       "web": "Notifications are available in the mobile app."
     }
+  },
+  "feedback": {
+    "close": "Close"
+  },
+  "manager": {
+    "back": "Back",
+    "loading": "Loading…",
+    "settingsRow": "Team manager space",
+    "form": {
+      "title": "Pre-register a team",
+      "titleIndividual": "Pre-registration",
+      "closed": "Registrations are not open for this tournament.",
+      "intro": "The organizer will review your request and confirm your place by e-mail.",
+      "payment": "Payment:",
+      "category": "Category",
+      "chooseCategory": "Choose a category",
+      "fee": "Fee: {{fee}} (paid directly to the organizer)",
+      "free": "Free",
+      "full": "Category full: your request will go on the waiting list.",
+      "playerFirstName": "Player first name",
+      "playerLastName": "Player last name",
+      "clubSearch": "Search the club directory",
+      "teamName": "Team name",
+      "clubPlaceholder": "Club name",
+      "clubSearchFailed": "Club search unavailable: type the name yourself.",
+      "clubLinked": "Linked club: {{club}}",
+      "unlink": "Unlink",
+      "department": "Department {{code}}",
+      "email": "Manager email",
+      "phone": "Manager phone",
+      "phoneHint": "The organizer will call you on this number about the registration.",
+      "submit": "Send the pre-registration",
+      "sent": "Pre-registration sent: the organizer will review it.",
+      "error": "Could not send this registration, try again.",
+      "errorLoad": "Could not load this tournament’s categories.",
+      "teamCount": "Number of teams",
+      "teamCountHint": "Teams registered: {{names}}",
+      "limitReached": "You've already registered {{count}} team(s): the maximum for this tournament."
+    },
+    "home": {
+      "title": "Registrations open",
+      "cta": "Pre-register",
+      "mySpace": "My team manager space",
+      "unlimited": "Places available",
+      "full": "Full · waiting list",
+      "places": "{{remaining}} place(s) out of {{total}}",
+      "alreadyRegistered": "Already registered · {{count}} team(s)",
+      "another": "Register another team"
+    }
+  },
+  "myRegistrations": {
+    "title": "My team manager space",
+    "loading": "Loading…",
+    "empty": "No registration yet.",
+    "browse": "See tournaments open for registration",
+    "cancel": "Withdraw my request",
+    "reason": "Reason",
+    "status": {
+      "PENDING": "Waiting for approval",
+      "CONFIRMED": "Confirmed",
+      "WAITLIST": "Waiting list",
+      "REJECTED": "Refused",
+      "CANCELLED": "Cancelled",
+      "PAID": "Confirmed",
+      "PENDING_PAYMENT": "Payment in progress"
+    },
+    "errors": {
+      "load": "Could not load your registrations.",
+      "cancel": "Could not withdraw this request."
+    },
+    "hello": "Hello {{name}}.",
+    "lede": "Your pre-registrations and how your teams did.",
+    "logout": "Sign out",
+    "statsTitle": "My statistics",
+    "registrationsTitle": "My registrations",
+    "tiles": {
+      "tournaments": "Tournaments",
+      "tournamentsHint": "{{count}} registration(s) in total",
+      "played": "Matches played",
+      "won": "Wins",
+      "wonHint": "{{drawn}} draw(s) · {{lost}} loss(es)",
+      "scored": "Goals / points scored",
+      "scoredHint": "{{conceded}} conceded",
+      "pending": "Pending",
+      "pendingHint": "{{count}} on the waiting list"
+    },
+    "outcomesTitle": "Match record",
+    "perTeamTitle": "By team",
+    "noTeams": "Your teams will show here once a registration is confirmed.",
+    "table": {
+      "team": "Team",
+      "played": "P",
+      "won": "W",
+      "drawn": "D",
+      "lost": "L",
+      "wonLong": "Wins",
+      "drawnLong": "Draws",
+      "lostLong": "Losses"
+    },
+    "myTournaments": "My tournaments",
+    "organize": "Organize a tournament"
   }
 }

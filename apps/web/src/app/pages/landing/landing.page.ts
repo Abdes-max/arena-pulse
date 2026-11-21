@@ -3,8 +3,6 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AssetUrlService, PublicApiService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { PublicTournamentDirectoryItem } from 'shared-models';
-import { registrationCard } from '../../core/registration-card';
 import {
   Button,
   LanguageSwitcher,
@@ -116,11 +114,19 @@ export class LandingPage {
   // "Événements publiés" list (tournament-entry.page.ts's searchItems,
   // which never applies that filter either).
   protected readonly timeFilter = signal<TimeFilterValue>('');
+  // "Inscriptions ouvertes" pill (same as the Découvrir page): narrows the
+  // list to the tournaments taking pre-registrations right now. Their ids
+  // come from the directory search, fetched the first time the pill is on.
+  protected readonly registrationOnly = signal(false);
+  protected readonly openRegistrationIds = signal<Set<string> | null>(null);
 
   protected readonly filteredTournaments = computed(() => {
     const time = this.timeFilter();
+    const openIds = this.registrationOnly() ? this.openRegistrationIds() : null;
     const all = this.tournaments().filter(
-      (t) => !time || isTournamentPastPublic(t) === (time === 'past'),
+      (t) =>
+        (!time || isTournamentPastPublic(t) === (time === 'past')) &&
+        (!this.registrationOnly() || !!openIds?.has(t.id)),
     );
     const q = this.query().trim().toLowerCase();
     if (!q) {
@@ -130,6 +136,10 @@ export class LandingPage {
       (t) => t.name.toLowerCase().includes(q) || t.sportName.toLowerCase().includes(q),
     );
   });
+
+  protected toggleRegistrationOnly(): void {
+    this.registrationOnly.update((on) => !on);
+  }
 
   // ap-tournament-marquee's TournamentMarqueeItem needs a resolved (absolute)
   // logoUrl -- it's a dumb presenter, same reason ap-tournament-card gets
@@ -150,27 +160,11 @@ export class LandingPage {
     this.tournaments().length >= 50 ? '+' : '',
   );
 
-  // Tournaments taking pre-registrations right now (the "Inscriptions ouvertes" section).
-  protected readonly openRegistrations = signal<
-    (PublicTournamentDirectoryItem & { band: { label: string | null; price: string | null } })[]
-  >([]);
-
   constructor() {
     void this.api
-      .searchTournaments({ registration: 'open', page: 1, pageSize: 6 })
-      .then((result) =>
-        this.openRegistrations.set(
-          result.items.map((item) => ({
-            ...item,
-            band: registrationCard(
-              item,
-              (key, params) => this.transloco.translate(key, params),
-              this.transloco.getActiveLang(),
-            ),
-          })),
-        ),
-      )
-      .catch(() => undefined);
+      .searchTournaments({ registration: 'open', page: 1, pageSize: 50 })
+      .then((result) => this.openRegistrationIds.set(new Set(result.items.map((t) => t.id))))
+      .catch(() => this.openRegistrationIds.set(new Set()));
     const tournamentsLoaded = this.api
       .listTournaments(50)
       .then((tournaments) => this.tournaments.set(tournaments));

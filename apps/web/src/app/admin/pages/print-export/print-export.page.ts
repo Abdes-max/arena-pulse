@@ -21,6 +21,7 @@ import { ScheduleService } from '../../core/schedule.service';
 import { StandingsService } from '../../core/standings.service';
 import { THEME_MAP } from '../../core/theme-map';
 import { TournamentsService } from '../../core/tournaments.service';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 interface ScheduleDay {
   label: string;
@@ -93,6 +94,8 @@ export class PrintExportPage {
 
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage);
   protected readonly tournamentName = signal('');
   protected readonly categoryExports = signal<CategoryExport[]>([]);
   protected readonly tournament = signal<TournamentDetail | null>(null);

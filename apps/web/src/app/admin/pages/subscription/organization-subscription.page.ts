@@ -16,6 +16,7 @@ import {
   SubscriptionHistoryEntry,
 } from '../../core/models';
 import { OrganizationsService } from '../../core/organizations.service';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 @Component({
   selector: 'app-organization-subscription-page',
@@ -37,6 +38,8 @@ export class OrganizationSubscriptionPage {
   protected readonly loading = signal(true);
   protected readonly subscribing = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage);
   protected readonly status = signal<OrganizationSubscriptionStatus | null>(null);
 
   protected readonly history = signal<SubscriptionHistoryEntry[]>([]);
@@ -49,6 +52,7 @@ export class OrganizationSubscriptionPage {
   protected readonly promoCode = signal('');
   protected readonly redeemingPromo = signal(false);
   protected readonly promoError = signal<string | null>(null);
+  private readonly promoErrorSnackbar = showErrorsInSnackbar(this.promoError);
 
   constructor() {
     void this.load();

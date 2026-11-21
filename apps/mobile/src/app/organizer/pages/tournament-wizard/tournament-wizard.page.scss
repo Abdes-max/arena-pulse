@@ -140,6 +140,16 @@ ion-title {
   font-size: 0.78rem;
 }
 
+.wizard-page__linkbutton {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ap-color-primary);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .wizard-page__error-detail {
   margin: 0;
   color: var(--ap-color-muted);
@@ -234,10 +244,19 @@ ion-title {
   color: var(--ap-color-muted);
 }
 
-.wizard-page__sportcard-icon svg {
-  width: 26px;
-  height: 26px;
-  display: block;
+// Colorful tile per sport (an emoji on a soft tint), like the website's
+// "Par sport" list.
+.wizard-page__sportcard-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  font-size: 1.45rem;
+  line-height: 1;
+  background: #fff;
+  border-radius: var(--ap-radius-md);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
 }
 
 .wizard-page__sportcard-name {
@@ -278,38 +297,114 @@ ion-title {
   }
 }
 
-.wizard-page__teamlist {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ap-space-2);
-}
-
-.wizard-page__teamrow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.wizard-page__teamtable {
+  width: 100%;
+  border-collapse: collapse;
   background: var(--ap-color-surface);
   border: var(--ap-border-width) solid var(--ap-color-border);
   border-radius: var(--ap-radius-md);
-  padding: var(--ap-space-2) var(--ap-space-3);
+  overflow: hidden;
   font-size: 0.85rem;
-  font-weight: 600;
+
+  th {
+    padding: var(--ap-space-2) var(--ap-space-3);
+    text-align: left;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ap-color-muted);
+    border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+  }
+
+  td {
+    padding: var(--ap-space-2) var(--ap-space-3);
+    vertical-align: middle;
+    border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
 }
 
-.wizard-page__teamrow-remove {
-  width: 22px;
-  height: 22px;
+.wizard-page__teamtable-logo {
+  width: 52px;
+}
+
+.wizard-page__teamtable-name {
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.wizard-page__teamtable-actions {
+  width: 1%;
+  white-space: nowrap;
+  text-align: right;
+}
+
+.wizard-page__teamlogo {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: contain;
+  // Crests are drawn on white: keep them readable in dark mode.
+  background: #fff;
+  color-scheme: light;
+  border: var(--ap-border-width) solid var(--ap-color-border);
+}
+
+.wizard-page__teamlogo--empty {
+  background: var(--ap-color-signal-soft);
+  color: var(--ap-color-fg);
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.wizard-page__teamedit {
+  width: 100%;
+  min-width: 0;
+  padding: var(--ap-space-1) var(--ap-space-2);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-sm);
+  background: var(--ap-color-bg);
+  color: var(--ap-color-fg);
+  font: inherit;
+}
+
+.wizard-page__teamaction {
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   border: none;
   background: transparent;
   color: var(--ap-color-muted);
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   line-height: 1;
 
-  &:hover {
-    color: var(--ap-color-error);
+  &:disabled {
+    opacity: 0.4;
   }
+}
+
+.wizard-page__teamaction--save {
+  color: var(--ap-color-win);
+}
+
+.wizard-page__teamaction--remove:hover {
+  color: var(--ap-color-error);
+}
+
+.wizard-page__sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 // ---- step 3 + 5: format/visibility cards ----
@@ -773,24 +868,6 @@ ion-title {
 }
 
 // Teams as pills.
-.wizard-page__teamlist {
-  flex-direction: row;
-  flex-wrap: wrap;
-}
-
-.wizard-page__teamrow {
-  gap: var(--ap-space-2);
-  padding: var(--ap-space-1) var(--ap-space-1) var(--ap-space-1) var(--ap-space-3);
-  border-radius: 999px;
-  background: var(--ap-color-signal-soft);
-  border-color: transparent;
-}
-
-.wizard-page__teamrow-remove {
-  width: 28px;
-  height: 28px;
-}
-
 // Primary action: full width, the way back as a lighter button.
 .wizard-page__footer {
   padding: var(--ap-space-3) var(--ap-space-4)
@@ -1001,4 +1078,106 @@ ion-title {
     border-color: var(--ap-color-primary);
     color: var(--ap-color-on-primary);
   }
+}
+
+// Logo field: preview of the picked file or the organizing club's crest.
+.wizard-page__logo-preview {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+
+  img {
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+    background: #fff;
+    border: var(--ap-border-width) solid var(--ap-color-border);
+    border-radius: var(--ap-radius-md);
+  }
+
+  small {
+    font-weight: 400;
+    color: var(--ap-color-muted);
+  }
+}
+
+// Rail: pending pre-registrations on "Équipes".
+.wizard-page__rail-badge,
+.wizard-page__pending-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #fff;
+  background: var(--ap-color-error);
+  border-radius: 999px;
+}
+
+.wizard-page__rail-badge {
+  position: absolute;
+  top: -4px;
+  right: 18%;
+}
+
+.wizard-page__rail-step {
+  position: relative;
+}
+
+// Teams step: pending pre-registrations, above the teams.
+.wizard-page__pending {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+  margin-bottom: var(--ap-space-4);
+  padding: var(--ap-space-3);
+  background: var(--ap-color-surface);
+  border: 1.5px solid var(--ap-color-warning);
+  border-radius: var(--ap-radius-lg);
+
+  .wizard-page__section-title {
+    display: flex;
+    align-items: center;
+    gap: var(--ap-space-2);
+    margin: 0;
+  }
+}
+
+.wizard-page__pending-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-1);
+  padding: var(--ap-space-2) 0;
+  border-top: var(--ap-border-width) solid var(--ap-color-border);
+}
+
+.wizard-page__pending-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-2);
+}
+
+.wizard-page__pending-waitlist {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--ap-color-warning);
+}
+
+.wizard-page__pending-contact {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--ap-color-muted);
+
+  a {
+    color: inherit;
+  }
+}
+
+.wizard-page__pending-actions {
+  display: flex;
+  gap: var(--ap-space-2);
 }

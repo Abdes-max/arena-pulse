@@ -1,0 +1,129 @@
+import { Location } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { PublicApiService } from 'api-client';
+import { Button, Logo, StatsDatum, StatsSegments } from 'design-system';
+import { PlayerRegistration, PlayerRegistrationStats } from 'shared-models';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
+import { OrganizerAuthService } from '../../../organizer/core/auth.service';
+
+/**
+ * The team manager's space in the app (same as apps/web's
+ * /espace-responsable): their teams' statistics -- the organizer
+ * dashboard's tiles -- and their pre-registrations, pending ones can be
+ * withdrawn.
+ */
+@Component({
+  selector: 'app-manager-space-page',
+  imports: [
+    Button,
+    IonContent,
+    IonHeader,
+    IonTitle,
+    IonToolbar,
+    Logo,
+    RouterLink,
+    StatsSegments,
+    TranslocoPipe,
+  ],
+  templateUrl: './manager-space.page.html',
+  styleUrls: ['../../../organizer/pages/stats/stats-dashboard.scss', './manager-space.page.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class ManagerSpacePage {
+  private readonly api = inject(PublicApiService);
+  private readonly auth = inject(OrganizerAuthService);
+  private readonly router = inject(Router);
+  private readonly location = inject(Location);
+  private readonly transloco = inject(TranslocoService);
+
+  protected readonly player = this.auth.currentUser;
+  // Same account may also organize: its tournaments, or creating the organization.
+  protected readonly organizes = computed(() => this.auth.organizations().length > 0);
+  protected readonly loading = signal(true);
+  protected readonly busyId = signal<string | null>(null);
+  protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage, { translate: false });
+  protected readonly registrations = signal<PlayerRegistration[]>([]);
+  protected readonly stats = signal<PlayerRegistrationStats | null>(null);
+
+  protected readonly outcomes = computed<StatsDatum[]>(() => {
+    const totals = this.stats()?.totals;
+    if (!totals) {
+      return [];
+    }
+    return [
+      {
+        label: this.transloco.translate('myRegistrations.table.wonLong'),
+        value: totals.won,
+        tone: 'success',
+      },
+      {
+        label: this.transloco.translate('myRegistrations.table.drawnLong'),
+        value: totals.drawn,
+        tone: 'muted',
+      },
+      {
+        label: this.transloco.translate('myRegistrations.table.lostLong'),
+        value: totals.lost,
+        tone: 'error',
+      },
+    ];
+  });
+
+  constructor() {
+    void this.load();
+  }
+
+  private async load(): Promise<void> {
+    try {
+      const [registrations, stats] = await Promise.all([
+        this.api.listMyRegistrations(),
+        this.api.getMyRegistrationStats(),
+      ]);
+      this.registrations.set(registrations);
+      this.stats.set(stats);
+    } catch {
+      this.errorMessage.set(this.transloco.translate('myRegistrations.errors.load'));
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
+  protected cancellable(registration: PlayerRegistration): boolean {
+    return registration.status === 'PENDING' || registration.status === 'WAITLIST';
+  }
+
+  protected async cancel(registration: PlayerRegistration): Promise<void> {
+    this.busyId.set(registration.id);
+    try {
+      this.registrations.set(await this.api.cancelRegistration(registration.id));
+      this.stats.set(await this.api.getMyRegistrationStats());
+    } catch (error) {
+      const message =
+        error instanceof HttpErrorResponse
+          ? (error.error as { message?: unknown } | null)?.message
+          : null;
+      this.errorMessage.set(
+        typeof message === 'string'
+          ? message
+          : this.transloco.translate('myRegistrations.errors.cancel'),
+      );
+    } finally {
+      this.busyId.set(null);
+    }
+  }
+
+  protected async logout(): Promise<void> {
+    await this.auth.logout();
+    await this.router.navigateByUrl('/');
+  }
+
+  protected goBack(): void {
+    this.location.back();
+  }
+}

@@ -4,10 +4,6 @@
   @if (loading()) {
     <p>{{ 'admin.structure.loading' | transloco }}</p>
   } @else {
-    @if (errorMessage(); as message) {
-      <p class="structure-page__error" role="alert">{{ message | transloco }}</p>
-    }
-
     @if (categories().length === 0) {
       <p>{{ 'admin.structure.addCategoryFirst' | transloco }}</p>
     } @else {
@@ -55,9 +51,6 @@
           </p>
           @if (presetSuccessMessage(); as message) {
             <p class="structure-page__success">{{ message }}</p>
-          }
-          @if (presetError(); as message) {
-            <p class="structure-page__error" role="alert">{{ message }}</p>
           }
 
           <h3>{{ 'admin.structure.preset.poolsTitle' | transloco }}</h3>
@@ -730,9 +723,6 @@
                               }
                             }
                           </div>
-                          @if (pairingError(); as message) {
-                            <p class="structure-page__error" role="alert">{{ message }}</p>
-                          }
                         } @else {
                           <ul class="structure-page__card-list">
                             @for (label of qualifierLabelsFor(phase.id); track $index) {

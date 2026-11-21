@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ClubDirectoryModule } from '../club-directory/club-directory.module';
 import { MailModule } from '../mail/mail.module';
 import { OrganizationsModule } from '../organizations/organizations.module';
 import { PaymentsModule } from '../payments/payments.module';
@@ -13,6 +14,7 @@ import { RegistrationsService } from './registrations.service';
 
 @Module({
   imports: [
+    ClubDirectoryModule,
     MailModule,
     OrganizationsModule,
     TournamentsModule,

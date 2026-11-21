@@ -1,14 +1,24 @@
-import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { IonContent } from '@ionic/angular/standalone';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { MatchCard, MatchCardTeam } from 'design-system';
 import { AssetUrlService, PublicApiService } from 'api-client';
-import { Match } from 'shared-models';
+import { Match, PublicRegistrationInfo } from 'shared-models';
+import { OrganizerAuthService } from '../../organizer/core/auth.service';
 import { TournamentContextService } from '../../core/tournament-context.service';
 
 /** Mirrors apps/web's home.page.ts (the "Tournoi" tab's content). */
 @Component({
   selector: 'app-home-page',
-  imports: [IonContent, MatchCard],
+  imports: [IonContent, MatchCard, RouterLink, TranslocoPipe],
   templateUrl: './home.page.html',
   styleUrl: './home.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -20,6 +30,15 @@ export class HomePage {
 
   protected readonly tournament = this.context.tournament;
   protected readonly upcomingMatches = signal<Match[]>([]);
+  // "Inscriptions ouvertes" block (same as apps/web's home page): pre-register
+  // a team, and the manager's space once signed in.
+  protected readonly registration = signal<PublicRegistrationInfo | null>(null);
+  protected readonly player = inject(OrganizerAuthService).currentUser;
+  // Teams the signed-in manager already registered here ("Déjà inscrit").
+  protected readonly myTeams = signal(0);
+  protected readonly canRegisterMore = computed(
+    () => this.myTeams() < (this.registration()?.maxTeamsPerRegistrant ?? 1),
+  );
 
   constructor() {
     void this.load();
@@ -36,6 +55,23 @@ export class HomePage {
     const slug = this.context.slug();
     if (!slug) {
       return;
+    }
+    void this.api
+      .getRegistrationInfo(slug)
+      .then((info) => this.registration.set(info))
+      .catch(() => this.registration.set(null));
+    if (this.player()) {
+      void this.api
+        .listMyRegistrations()
+        .then((mine) =>
+          this.myTeams.set(
+            mine.filter(
+              (r) =>
+                r.tournament.slug === slug && r.status !== 'REJECTED' && r.status !== 'CANCELLED',
+            ).length,
+          ),
+        )
+        .catch(() => this.myTeams.set(0));
     }
     this.upcomingMatches.set(await this.api.listUpcomingMatches(slug, 3));
   }

@@ -17,10 +17,6 @@
 
 <ion-content class="live-page">
   <div class="live-page__scroll">
-    @if (errorMessage(); as message) {
-      <p class="live-page__error" role="alert">{{ message | transloco }}</p>
-    }
-
     @if (loading()) {
       <p class="live-page__hint">{{ 'organizer.live.loading' | transloco }}</p>
     } @else if (rotations().length === 0) {
@@ -233,9 +229,6 @@
                   }
                 </div>
               }
-              @if (apiError(); as message) {
-                <p class="live-page__error" role="alert">{{ message }}</p>
-              }
               <ap-button type="button" [disabled]="saving()" (click)="save(rotation, true)">
                 {{ 'organizer.live.validate' | transloco }}
               </ap-button>
@@ -274,9 +267,6 @@
               >
                 {{ 'organizer.scores.pools.validate' | transloco }}
               </ap-button>
-            }
-            @if (poolError(); as message) {
-              <p class="live-page__error" role="alert">{{ message }}</p>
             }
           </div>
         }

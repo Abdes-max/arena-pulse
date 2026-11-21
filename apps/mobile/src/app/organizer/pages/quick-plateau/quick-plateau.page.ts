@@ -9,6 +9,7 @@ import { AGE_CATEGORIES, PublicSport } from 'shared-models';
 import { OrganizerAuthService } from '../../core/auth.service';
 import { knockoutSizesFor, previewPlateau } from '../../core/plateau-preview';
 import { OrganizerTournamentsService } from '../../core/tournaments.service';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 function toInt(value: string): number {
   const parsed = Number.parseInt(value, 10);
@@ -96,6 +97,8 @@ export class OrganizerQuickPlateauPage {
 
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage);
 
   private readonly sports = signal<PublicSport[]>([]);
   protected readonly sportOptions = computed<SelectOption[]>(() =>

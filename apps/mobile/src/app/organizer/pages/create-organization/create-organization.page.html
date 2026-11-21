@@ -1,0 +1,29 @@
+<ion-header>
+  <ion-toolbar>
+    <a class="create-org__brand" slot="start" routerLink="/" aria-label="TournArena"
+      ><ap-logo [wordmark]="false"
+    /></a>
+    <ion-title>{{ 'organizer.createOrganization.title' | transloco }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<form class="create-org__form" [formGroup]="form" (ngSubmit)="submit()">
+  <ion-content class="create-org">
+    <div class="create-org__fields">
+      <p class="create-org__lede">{{ 'organizer.createOrganization.lede' | transloco }}</p>
+      <ap-text-field
+        [label]="'organizer.auth.register.orgNameLabel' | transloco"
+        formControlName="name"
+        autocomplete="organization"
+      />
+    </div>
+  </ion-content>
+  <ion-footer class="create-org__footer">
+    <ap-button type="submit" [fullWidth]="true" [disabled]="form.invalid || submitting()">
+      {{ 'organizer.createOrganization.submit' | transloco }}
+    </ap-button>
+    <a class="create-org__back" routerLink="/espace-responsable">{{
+      'organizer.createOrganization.back' | transloco
+    }}</a>
+  </ion-footer>
+</form>

@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { AssetUrlService, ClubSearchService, ClubSuggestion } from 'api-client';
+import { AssetUrlService, ClubSearchService, ClubSuggestion, clubDirectorySport } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { AutocompleteField, Button, Select, SelectOption, TextField } from 'design-system';
 import { LanguageService } from 'design-tokens';
@@ -19,11 +19,11 @@ import { OrganizationsService } from '../../core/organizations.service';
 import { RefereesService } from '../../core/referees.service';
 import { TeamsService } from '../../core/teams.service';
 import { TournamentsService } from '../../core/tournaments.service';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
+import { RegistrationListPage } from '../registrations/registration-list.page';
 
 type PublicationTierCode = 'FREE' | 'STANDARD' | 'LARGE';
 
-// Sports whose teams are FFF clubs -- the only ones offered the club search.
-const CLUB_SEARCH_SPORTS = new Set(['Football', 'Futsal']);
 const CLUB_SEARCH_STORAGE_KEY = 'ta.teamClubSearch';
 
 // Mirrors the structured body TournamentsService.assertTeamAdditionAllowed
@@ -49,7 +49,15 @@ function isPublicationTierExceededError(
 
 @Component({
   selector: 'app-team-list-page',
-  imports: [AutocompleteField, Button, NgTemplateOutlet, Select, TextField, TranslocoPipe],
+  imports: [
+    AutocompleteField,
+    Button,
+    NgTemplateOutlet,
+    RegistrationListPage,
+    Select,
+    TextField,
+    TranslocoPipe,
+  ],
   templateUrl: './team-list.page.html',
   styleUrl: './team-list.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -70,6 +78,8 @@ export class TeamListPage {
 
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage);
   protected readonly teams = signal<Team[]>([]);
 
   // "You're on the Découverte plan" upsell dialog (see
@@ -78,6 +88,7 @@ export class TeamListPage {
   // published tournament's paid tier.
   protected readonly tierExceededModal = signal<PublicationTierExceededError | null>(null);
   protected readonly tierUpgradeError = signal<string | null>(null);
+  private readonly tierUpgradeErrorSnackbar = showErrorsInSnackbar(this.tierUpgradeError);
   protected readonly tierUpgrading = signal(false);
 
   // Team logos are a premium touch (see
@@ -124,13 +135,15 @@ export class TeamListPage {
   protected readonly formManagerEmail = signal('');
   protected readonly formManagerPhone = signal('');
 
-  // Club search (football/futsal only): the name field becomes an
-  // autocomplete over the club directory, picking a club links it
-  // (externalClubId) -- an FFF club's crest then becomes the team logo.
-  protected readonly clubSearch = inject(ClubSearchService).autocomplete();
-  protected readonly clubSearchAvailable = computed(() =>
-    CLUB_SEARCH_SPORTS.has(this.tournament()?.sportName ?? ''),
+  // Club search (sports with a club directory, see clubDirectorySport):
+  // the name field becomes an autocomplete over that sport's clubs,
+  // picking one links it (externalClubId) -- its crest then becomes the
+  // team logo.
+  private readonly clubSport = computed(() => clubDirectorySport(this.tournament()?.sportName));
+  protected readonly clubSearch = inject(ClubSearchService).autocomplete(
+    () => this.clubSport() ?? 'football',
   );
+  protected readonly clubSearchAvailable = computed(() => this.clubSport() !== null);
   protected readonly useClubSearch = signal(readClubSearchPreference());
   protected readonly clubSuggestions = computed(() =>
     this.clubSearch.suggestions().map((club) => ({
@@ -196,6 +209,14 @@ export class TeamListPage {
 
   constructor() {
     void this.load();
+  }
+
+  /** A pre-registration was confirmed in the Inscriptions block: its team now exists. */
+  protected async reloadTeams(): Promise<void> {
+    const organizationId = this.organization()?.id;
+    if (organizationId) {
+      this.teams.set(await this.teamsService.listTeams(organizationId, this.tournamentId));
+    }
   }
 
   private async load(): Promise<void> {
@@ -435,6 +456,19 @@ export class TeamListPage {
     }
   }
 
+  /**
+   * A team must belong to a category: with none in the tournament (e.g.
+   * created from the web form, which adds none), say so instead of
+   * silently doing nothing. True when the add can go on.
+   */
+  private assertHasCategory(): boolean {
+    if (this.categories().length > 0) {
+      return true;
+    }
+    this.errorMessage.set('admin.teamList.errors.noCategory');
+    return false;
+  }
+
   private focusNameField(): void {
     setTimeout(() =>
       document.querySelector<HTMLInputElement>('.team-list-page__name-field input')?.focus(),
@@ -453,6 +487,9 @@ export class TeamListPage {
   /** One name per line, through the CSV import (header line, then "name;category"). */
   protected async addPastedList(): Promise<void> {
     const organizationId = this.organization()?.id;
+    if (!this.assertHasCategory()) {
+      return;
+    }
     this.selectDefaultCategory();
     const category = this.categories().find((c) => c.id === this.formCategoryId());
     const names = this.pastedNames();
@@ -529,8 +566,12 @@ export class TeamListPage {
   protected async submitForm(): Promise<void> {
     const organizationId = this.organization()?.id;
     const name = this.formName().trim();
+    if (!organizationId || !name || !this.assertHasCategory()) {
+      return;
+    }
     const categoryId = this.formCategoryId();
-    if (!organizationId || !name || !categoryId) {
+    if (!categoryId) {
+      this.errorMessage.set('admin.teamList.errors.chooseCategory');
       return;
     }
     const managerName = this.formManagerName().trim() || undefined;

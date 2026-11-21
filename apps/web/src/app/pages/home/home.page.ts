@@ -1,11 +1,19 @@
 import { RouterLink } from '@angular/router';
-import { ChangeDetectionStrategy, Component, effect, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  effect,
+  inject,
+  signal,
+  computed,
+} from '@angular/core';
 import { MatchCard, MatchCardTeam } from 'design-system';
 import { AssetUrlService, PublicApiService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { LanguageService } from 'design-tokens';
 import { TournamentContextService } from '../../core/tournament-context.service';
 import { Match, PublicTournament, PublicRegistrationInfo } from 'shared-models';
+import { AuthService } from '../../admin/core/auth.service';
 
 @Component({
   selector: 'app-home-page',
@@ -20,6 +28,7 @@ export class HomePage {
   private readonly assetUrl = inject(AssetUrlService);
   private readonly languageService = inject(LanguageService);
   private readonly transloco = inject(TranslocoService);
+  protected readonly player = inject(AuthService).currentUser;
 
   protected readonly tournament = this.context.tournament;
   // Venue (moved to the shell header) and categories (same) are no longer
@@ -49,10 +58,28 @@ export class HomePage {
     } catch {
       // No registration block then.
     }
+    if (this.player()) {
+      try {
+        const mine = await this.api.listMyRegistrations();
+        this.myTeams.set(
+          mine.filter(
+            (r) =>
+              r.tournament.slug === slug && r.status !== 'REJECTED' && r.status !== 'CANCELLED',
+          ).length,
+        );
+      } catch {
+        this.myTeams.set(0);
+      }
+    }
   }
 
   /** Pre-registrations of this tournament (shown while they're open). */
   protected readonly registration = signal<PublicRegistrationInfo | null>(null);
+  // Teams the signed-in manager already registered here ("Déjà inscrit").
+  protected readonly myTeams = signal(0);
+  protected readonly canRegisterMore = computed(
+    () => this.myTeams() < (this.registration()?.maxTeamsPerRegistrant ?? 1),
+  );
 
   protected formatFee(cents: number | null, currency: string): string | null {
     return cents

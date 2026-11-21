@@ -148,6 +148,28 @@
                 </svg>
               </span>
             </a>
+            <a class="tournament-entry-page__settings-row" routerLink="/espace-responsable">
+              <span class="tournament-entry-page__settings-row-icon">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                  <path
+                    fill="currentColor"
+                    d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3m-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3m0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5m8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5"
+                  />
+                </svg>
+              </span>
+              <span>{{ 'manager.settingsRow' | transloco }}</span>
+              <span class="tournament-entry-page__settings-trailing">
+                <svg
+                  class="tournament-entry-page__settings-trailing-icon"
+                  viewBox="0 0 24 24"
+                  width="16"
+                  height="16"
+                  aria-hidden="true"
+                >
+                  <path fill="currentColor" d="M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+                </svg>
+              </span>
+            </a>
           </div>
         </section>
 
@@ -376,21 +398,39 @@
     </div>
   }
 
-  @if (showHero()) {
+  @if (searchExpanded()) {
+    <!-- Search opened full screen: the hero folds away, back brings it back. -->
+    <div class="tournament-entry-page__hero-back">
+      <button type="button" class="tournament-entry-page__back-btn" (click)="collapseSearch()">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+          <path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+        </svg>
+        {{ 'manager.back' | transloco }}
+      </button>
+    </div>
+  } @else {
     <div class="tournament-entry-page__hero-body">
-      <h1 class="tournament-entry-page__title">{{ 'tournamentEntry.hero.title' | transloco }}</h1>
+      <!-- Same headline and call to action as apps/web's landing page. -->
+      <h1 class="tournament-entry-page__title">
+        {{ 'tournamentEntry.hero.titleMain' | transloco }}
+        <em>{{ 'tournamentEntry.hero.titleEmphasis' | transloco }}</em>
+      </h1>
       <p class="tournament-entry-page__hint">
         {{ 'tournamentEntry.hero.hint' | transloco }}
       </p>
-
-      @if (hasTournaments()) {
-        <div class="tournament-entry-page__hero-ctas">
-          <ap-button type="button" [fullWidth]="true" (click)="viewEvents()">
-            {{ 'tournamentEntry.hero.ctaViewEvents' | transloco }}
-          </ap-button>
-        </div>
-      }
-
+      <div class="tournament-entry-page__hero-ctas">
+        <ap-button type="button" [fullWidth]="true" routerLink="/organizer/register">
+          {{ 'tournamentEntry.hero.ctaCreate' | transloco }}
+        </ap-button>
+        <ap-button
+          type="button"
+          variant="secondary"
+          [fullWidth]="true"
+          (click)="findRegistrations()"
+        >
+          {{ 'tournamentEntry.hero.ctaJoin' | transloco }}
+        </ap-button>
+      </div>
       @if (tournaments().length > 0) {
         <p class="tournament-entry-page__marquee-label">
           <span class="tournament-entry-page__marquee-pulse" aria-hidden="true"></span>
@@ -402,23 +442,24 @@
         />
       }
     </div>
-  } @else {
-    <div class="tournament-entry-page__hero-back">
-      <button type="button" class="tournament-entry-page__back-btn" (click)="backToHero()">
-        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-          <path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
-        </svg>
-        {{ 'tournamentEntry.back' | transloco }}
-      </button>
-    </div>
   }
 </ion-header>
 
-<ion-content class="tournament-entry-page">
+<!-- Tapping outside a field or scrolling closes the keyboard. -->
+<ion-content
+  class="tournament-entry-page"
+  #content
+  [scrollEvents]="true"
+  (ionScrollStart)="dismissKeyboard()"
+  (click)="onContentTap($event)"
+>
   <section class="tournament-entry-page__published">
     <h2 class="tournament-entry-page__published-title">
-      <span class="tournament-entry-page__published-pulse" aria-hidden="true"></span>
-      {{ 'tournamentEntry.published.title' | transloco }}
+      <!-- A button: tapping the title opens the search full screen too. -->
+      <button type="button" class="tournament-entry-page__title-btn" (click)="expandSearch()">
+        <span class="tournament-entry-page__published-pulse" aria-hidden="true"></span>
+        {{ 'tournamentEntry.published.title' | transloco }}
+      </button>
     </h2>
     <div class="tournament-entry-page__published-filters">
       <ap-text-field
@@ -428,42 +469,54 @@
         [placeholder]="'tournamentEntry.published.searchPlaceholder' | transloco"
         [value]="q()"
         (valueChange)="q.set($event)"
+        (pointerdown)="expandSearch(false)"
+        (focusin)="expandSearch(false)"
+        (keyup.enter)="dismissKeyboard()"
       />
-      <ap-select
-        [label]="'tournamentEntry.published.filters.sportLabel' | transloco"
-        [hideLabel]="true"
-        [options]="sportOptions()"
-        [value]="sportId()"
-        (valueChange)="sportId.set($event)"
-      />
-      <ap-text-field
-        type="search"
-        [label]="'tournamentEntry.published.filters.locationLabel' | transloco"
-        [hideLabel]="true"
-        [placeholder]="'tournamentEntry.published.filters.locationPlaceholder' | transloco"
-        [value]="place()"
-        (valueChange)="place.set($event)"
-      />
-      <ap-text-field
-        type="date"
-        [nativePicker]="true"
-        [label]="'tournamentEntry.published.filters.dateFromLabel' | transloco"
-        [value]="dateFrom()"
-        (valueChange)="dateFrom.set($event)"
-      />
-      <ap-time-filter
-        [label]="'tournamentEntry.published.filters.timeLabel' | transloco"
-        [upcomingLabel]="'tournamentEntry.published.filters.upcoming' | transloco"
-        [pastLabel]="'tournamentEntry.published.filters.past' | transloco"
-        [value]="timeFilter()"
-        (valueChange)="timeFilter.set($event)"
-      />
+      <div class="tournament-entry-page__pills">
+        <ap-time-filter
+          [label]="'tournamentEntry.published.filters.timeLabel' | transloco"
+          [upcomingLabel]="'tournamentEntry.published.filters.upcoming' | transloco"
+          [pastLabel]="'tournamentEntry.published.filters.past' | transloco"
+          [value]="timeFilter()"
+          (valueChange)="timeFilter.set($event); expandSearch()"
+        />
+        <!-- Same pill (and colors) as apps/web's Découvrir page. -->
+        <button
+          type="button"
+          class="tournament-entry-page__registration-filter"
+          [attr.aria-pressed]="registrationOnly()"
+          (click)="registrationOnly.set(!registrationOnly()); expandSearch()"
+        >
+          {{ 'tournamentEntry.published.filters.registrationOpen' | transloco }}
+        </button>
+      </div>
     </div>
 
     @if (hasSearched() && !searchLoading() && searchItems().length === 0) {
-      <p class="tournament-entry-page__published-empty">
-        {{ 'tournamentEntry.published.empty' | transloco }}
-      </p>
+      <div class="tournament-entry-page__empty">
+        <span class="tournament-entry-page__empty-icon" aria-hidden="true">🏆</span>
+        <p class="tournament-entry-page__empty-title">
+          {{
+            (registrationOnly()
+              ? 'tournamentEntry.published.emptyRegistrationTitle'
+              : 'tournamentEntry.published.empty'
+            ) | transloco
+          }}
+        </p>
+        @if (registrationOnly()) {
+          <p class="tournament-entry-page__empty-text">
+            {{ 'tournamentEntry.published.emptyRegistrationText' | transloco }}
+          </p>
+          <button
+            type="button"
+            class="tournament-entry-page__empty-btn"
+            (click)="registrationOnly.set(false)"
+          >
+            {{ 'tournamentEntry.published.seeAll' | transloco }}
+          </button>
+        }
+      </div>
     } @else {
       <div class="tournament-entry-page__published-list">
         @for (t of resolvedSearchItems(); track t.id) {
@@ -481,6 +534,11 @@
               [location]="t.location"
               [logoUrl]="t.logoUrl"
               [organizerName]="t.organizerName"
+              [tag]="
+                t.registration
+                  ? ('tournamentEntry.published.filters.registrationOpen' | transloco)
+                  : null
+              "
             />
           </button>
         }

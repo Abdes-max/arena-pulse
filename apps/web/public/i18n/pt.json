@@ -25,7 +25,8 @@
       "subtitle": "Grupos, quadros eliminatórios, calendário, arbitragem e classificações, e um site público gerado automaticamente para cada uma das suas competições, atualizado no instante em que um resultado é registado.",
       "ctaCreate": "Criar o meu torneio",
       "storeApple": "Transferir na App Store",
-      "storeGoogle": "Disponível no Google Play"
+      "storeGoogle": "Disponível no Google Play",
+      "ctaJoin": "Inscrever-me num torneio"
     },
     "marquee": {
       "label": "A acontecer agora na TournArena"
@@ -284,7 +285,10 @@
       "unlimited": "Lugares disponíveis",
       "full": "Completo · lista de espera",
       "places": "{{remaining}} lugar(es) de {{total}}",
-      "payment": "Pagamento"
+      "payment": "Pagamento",
+      "mySpace": "Meu espaço de responsável",
+      "alreadyRegistered": "Já inscrito · {{count}} equipa(s)",
+      "another": "Inscrever outra equipa"
     }
   },
   "schedule": {
@@ -374,7 +378,8 @@
         "tournaments": "Torneios",
         "collaborators": "Colaboradores",
         "subscription": "Assinatura",
-        "account": "Conta"
+        "account": "Conta",
+        "managerSpace": "O meu espaço de responsável"
       },
       "logout": "Terminar sessão",
       "menu": "Menu",
@@ -421,7 +426,7 @@
         "resend": "Reenviar o email de verificação",
         "resent": "Email reenviado.",
         "noAccount": "Ainda não tem conta?",
-        "createOrg": "Criar uma organização",
+        "createOrg": "Criar uma conta",
         "errorVerify": "Verifique o seu email antes de iniciar sessão.",
         "errorCredentials": "Email ou palavra-passe incorretos.",
         "errorGeneric": "Ocorreu um erro, tente novamente.",
@@ -432,7 +437,7 @@
       },
       "register": {
         "title": "Registe-se",
-        "orgNameLabel": "Nome da organização",
+        "orgNameLabel": "Nome da organização (opcional)",
         "firstNameLabel": "Nome próprio",
         "lastNameLabel": "Apelido",
         "emailLabel": "Email",
@@ -448,7 +453,8 @@
         "errorConflict": "Já existe uma conta com este email.",
         "errorGeneric": "Ocorreu um erro, tente novamente.",
         "lede": "Crie a sua organização e publique o seu primeiro torneio em poucos minutos.",
-        "sentLede": "Um último clique no seu e-mail e pode começar."
+        "sentLede": "Um último clique no seu e-mail e pode começar.",
+        "orgNameHint": "Só se organiza torneios. Para inscrever uma equipa, deixe vazio."
       },
       "verifyEmail": {
         "loading": "A verificar o seu email…",
@@ -496,7 +502,8 @@
         "errorTitle": "Link inválido",
         "errorExpired": "Este link de redefinição é inválido, expirou ou já foi utilizado.",
         "errorGeneric": "Ocorreu um erro, tente novamente.",
-        "retry": "Pedir um novo link"
+        "retry": "Pedir um novo link",
+        "lede": "Pelo menos 10 caracteres, digitados duas vezes."
       },
       "showPassword": "Mostrar palavra-passe",
       "hidePassword": "Ocultar palavra-passe",
@@ -820,7 +827,18 @@
         "themeLabel": "Tema do site público",
         "save": "Guardar",
         "create": "Criar o torneio",
-        "themePremiumHint": "A escolha de tema está reservada a torneios com mais de {{count}} equipas ou com uma subscrição anual ativa."
+        "themePremiumHint": "A escolha de tema está reservada a torneios com mais de {{count}} equipas ou com uma subscrição anual ativa.",
+        "organizerClub": {
+          "toggle": "Organizado por um clube de {{sport}}",
+          "label": "Clube organizador",
+          "placeholder": "Nome do clube, ex. Allauch",
+          "linked": "Clube organizador: {{club}}",
+          "linkedUnknown": "Há um clube organizador vinculado.",
+          "change": "Alterar",
+          "hint": "O logo do clube passa a ser o do torneio.",
+          "searchFailed": "A pesquisa de clubes está indisponível no momento.",
+          "department": "Departamento {{code}}"
+        }
       },
       "categories": {
         "title": "Categorias",
@@ -961,7 +979,12 @@
         "open": "Inscrições possíveis",
         "offHint": "Os jogadores ainda não se podem pré-inscrever.",
         "category": "Categoria",
-        "requests": "Ver os pedidos ({{count}} pendentes)"
+        "requests": "Ver os pedidos ({{count}} pendentes)",
+        "places": "Número de vagas",
+        "placesFor": "Vagas · {{name}}",
+        "fee": "Preço por equipa (€)",
+        "feeFor": "Preço · {{name}} (€)",
+        "options": "Opções (datas, preço por categoria, pagamento…)"
       }
     },
     "teamList": {
@@ -1026,7 +1049,8 @@
         "addPlayer": "Não foi possível adicionar este jogador.",
         "removePlayer": "Não foi possível remover este jogador.",
         "logoPremiumLocked": "Reservado a torneios com mais de {{count}} equipas ou com uma subscrição anual ativa.",
-        "chooseCategory": "Escolha primeiro uma categoria."
+        "chooseCategory": "Escolha primeiro uma categoria.",
+        "noCategory": "Adicione primeiro uma categoria na aba Geral."
       },
       "logoPremiumHint": "Os logótipos das equipas estão reservados a torneios com mais de {{count}} equipas ou com uma subscrição anual ativa.",
       "tierModal": {
@@ -1056,7 +1080,7 @@
         "csv": "Ficheiro CSV"
       },
       "club": {
-        "toggle": "Procurar o clube (futebol)",
+        "toggle": "Pesquisar o clube no diretório",
         "placeholder": "Nome do clube ou cidade",
         "searchFailed": "Pesquisa de clubes indisponível: escreva o nome à mão.",
         "linked": "Clube associado: {{club}}",
@@ -1133,7 +1157,8 @@
         "level": "Nível",
         "levelPlaceholder": "ex. Elite",
         "placesHint": "Lugares e preço definem-se por categoria em Geral › Categorias › Opções.",
-        "save": "Guardar"
+        "save": "Guardar",
+        "maxTeams": "Equipas máx. por responsável (clube)"
       },
       "filters": {
         "PENDING": "Pendentes",
@@ -1511,7 +1536,8 @@
         "loadStandings": "Não foi possível carregar as classificações.",
         "saveTieChoice": "Não foi possível guardar esta escolha.",
         "resetTieChoice": "Não foi possível repor este desempate."
-      }
+      },
+      "tiesAfterValidation": "Empate a desfazer após a validação dos resultados dos grupos (aba Resultados)."
     },
     "subscription": {
       "title": "Assinatura anual",
@@ -1683,6 +1709,13 @@
       "print": "Imprimir",
       "loading": "A preparar…",
       "error": "Não foi possível gerar a imagem."
+    },
+    "createOrganization": {
+      "title": "Crie a sua organização",
+      "lede": "A sua conta TournArena também serve para organizar: dê um nome à sua organização (clube, associação, liga…).",
+      "submit": "Criar a organização",
+      "back": "Voltar ao meu espaço de responsável",
+      "error": "Não foi possível criar a organização."
     }
   },
   "wrapped": {
@@ -1760,7 +1793,7 @@
     "full": "Completo · lista de espera"
   },
   "myRegistrations": {
-    "title": "As minhas inscrições",
+    "title": "Meu espaço de responsável",
     "loading": "A carregar…",
     "empty": "Nenhuma inscrição por agora.",
     "browse": "Ver torneios com inscrições abertas",
@@ -1778,6 +1811,96 @@
     "errors": {
       "load": "Não foi possível carregar as suas inscrições.",
       "cancel": "Não foi possível anular este pedido."
+    },
+    "hello": "Olá {{name}}.",
+    "lede": "Suas pré-inscrições e o balanço das suas equipes.",
+    "logout": "Sair",
+    "statsTitle": "Minhas estatísticas",
+    "registrationsTitle": "Minhas inscrições",
+    "tiles": {
+      "tournaments": "Torneios",
+      "tournamentsHint": "{{count}} inscrição(ões) no total",
+      "played": "Jogos disputados",
+      "won": "Vitórias",
+      "wonHint": "{{drawn}} empate(s) · {{lost}} derrota(s)",
+      "scored": "Gols / pontos marcados",
+      "scoredHint": "{{conceded}} sofridos",
+      "pending": "Pendentes",
+      "pendingHint": "{{count}} na lista de espera"
+    },
+    "outcomesTitle": "Balanço dos jogos",
+    "perTeamTitle": "Por equipe",
+    "noTeams": "Suas equipes aparecerão aqui assim que uma inscrição for confirmada.",
+    "table": {
+      "team": "Equipe",
+      "played": "J",
+      "won": "V",
+      "drawn": "E",
+      "lost": "D",
+      "wonLong": "Vitórias",
+      "drawnLong": "Empates",
+      "lostLong": "Derrotas"
+    },
+    "myTournaments": "Os meus torneios",
+    "organize": "Organizar um torneio"
+  },
+  "notFound": {
+    "title": "Página não encontrada",
+    "body": "Esta página não existe ou foi movida.",
+    "home": "Voltar ao início",
+    "discover": "Descobrir torneios"
+  },
+  "seo": {
+    "siteDescription": "TournArena: crie e gerencie seus torneios esportivos — equipes, calendário, resultados ao vivo e classificações.",
+    "landing": {
+      "title": "Software de gestão de torneios esportivos",
+      "description": "Crie seu torneio em minutos: inscrições, grupos, calendário de jogos, resultados ao vivo e classificações automáticas."
+    },
+    "discover": {
+      "title": "Descobrir torneios",
+      "description": "Encontre um torneio perto de você: futebol, padel, basquete… datas, locais e inscrições."
+    },
+    "contact": {
+      "title": "Contato",
+      "description": "Uma dúvida sobre o TournArena? Escreva para nós, respondemos rapidamente."
+    },
+    "terms": {
+      "title": "Termos de uso",
+      "description": "Termos gerais de uso do TournArena."
+    },
+    "privacy": {
+      "title": "Política de privacidade",
+      "description": "Como o TournArena coleta, usa e protege seus dados pessoais."
+    },
+    "tournament": {
+      "home": {
+        "title": "{{name}}",
+        "description": "{{name}}, torneio de {{sport}}: calendário de jogos, resultados ao vivo e classificação."
+      },
+      "teams": {
+        "title": "Equipes – {{name}}",
+        "description": "As equipes inscritas no torneio {{name}} ({{sport}})."
+      },
+      "team": {
+        "title": "{{team}} – {{name}}",
+        "description": "Jogos, resultados e classificação de {{team}} no torneio {{name}} ({{sport}})."
+      },
+      "standings": {
+        "title": "Classificação – {{name}}",
+        "description": "Classificação atualizada do torneio {{name}} ({{sport}})."
+      },
+      "schedule": {
+        "title": "Jogos – {{name}}",
+        "description": "Calendário e resultados dos jogos do torneio {{name}} ({{sport}})."
+      },
+      "wrapped": {
+        "title": "Resumo – {{name}}",
+        "description": "O resumo do torneio {{name}} ({{sport}}): números-chave e destaques."
+      },
+      "register": {
+        "title": "Inscrição – {{name}}",
+        "description": "Inscreva sua equipe no torneio {{name}} ({{sport}})."
+      }
     }
   }
 }

@@ -4,10 +4,6 @@
   @if (loading()) {
     <p>{{ 'admin.teamList.loading' | transloco }}</p>
   } @else {
-    @if (errorMessage(); as message) {
-      <p class="team-list-page__error" role="alert">{{ message | transloco }}</p>
-    }
-
     @if (tierExceededModal(); as tier) {
       <!-- Same backdrop-button-sibling modal pattern as
            tournament-form.page.html's own personalization dialog. -->
@@ -30,9 +26,6 @@
               | transloco: { currentPlan: tierLabel(tier.currentTier) }
           }}
         </p>
-        @if (tierUpgradeError(); as message) {
-          <p class="team-list-page__error" role="alert">{{ message | transloco }}</p>
-        }
         <div class="team-list-page__tier-modal-actions">
           <ap-button type="button" [disabled]="tierUpgrading()" (click)="upgradeToNextTier()">
             {{
@@ -282,7 +275,7 @@
               <td class="team-list-page__cell team-list-page__cell--icon">
                 <label
                   class="team-list-page__icon-button"
-                  [class.team-list-page__icon-button--locked]="!premiumUnlocked()"
+                  [class.team-list-page__icon-button--locked]="!premiumUnlocked() && !team.logoUrl"
                   [attr.title]="
                     premiumUnlocked()
                       ? ((team.logoUrl ? 'admin.teamList.logoChange' : 'admin.teamList.logoAdd')
@@ -442,6 +435,9 @@
         </tbody>
       </table>
     }
+
+    <!-- Pre-registrations (was its own page): only while registrations are open. -->
+    <app-registrations-block (teamsChanged)="reloadTeams()" />
 
     <!-- Referees: same compact list as the teams, under them (was its own tab). -->
     <section class="team-list-page__referees" id="arbitres">

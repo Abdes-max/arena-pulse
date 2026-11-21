@@ -49,6 +49,14 @@ export interface OrganizerTournament {
   isListed: boolean;
   theme: PublicTheme;
   logoUrl: string | null;
+  // Club directory link ("fff:<n°>", "club:<sport>:<slug>"), see ClubSearchService.
+  organizerClubId?: string | null;
+  // Detail endpoint only: the linked club's name.
+  organizerClubName?: string | null;
+  // List endpoint only: pre-registrations waiting for a decision.
+  pendingRegistrations?: number;
+  /** Pre-registrations switched on (the public "Inscriptions ouvertes" tag once published). */
+  registrationsOpen?: boolean;
   headerBackgroundUrl?: string | null;
   startDate?: string | null;
   endDate?: string | null;
@@ -63,6 +71,8 @@ export interface CreateTournamentPayload {
   isOnline?: boolean;
   isListed?: boolean;
   theme?: PublicTheme;
+  // Organizing club (club directory) -- its crest becomes the tournament logo.
+  organizerClubId?: string;
   startDate?: string;
 }
 
@@ -109,6 +119,8 @@ export interface OrganizerTeam {
   id: string;
   name: string;
   categoryId: string;
+  /** API-relative path (resolve with AssetUrlService), null without a logo. */
+  logoUrl: string | null;
 }
 
 export interface OrganizerCategory {

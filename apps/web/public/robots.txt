@@ -1,0 +1,23 @@
+# Public tournament sites, the directory and the marketing pages are open to
+# crawlers; organizer/player/admin areas and one-time token links are not.
+# Exact paths ($) or trailing slashes only: tournament sites live at /<slug>,
+# so a bare prefix like "/player" would also hide a "/players-cup" tournament.
+User-agent: *
+Disallow: /admin$
+Disallow: /admin/
+Disallow: /super-admin$
+Disallow: /super-admin/
+Disallow: /player/
+Disallow: /espace-responsable
+Disallow: /api/
+Disallow: /login$
+Disallow: /register$
+Disallow: /forgot-password$
+Disallow: /reset-password/
+Disallow: /accept-invitation/
+Disallow: /verify-email/
+# Slideshow (same content as the tournament site) and post-payment page.
+Disallow: /*/tv$
+Disallow: /*/register/success
+
+Sitemap: https://tournarena.com/sitemap.xml

@@ -1,13 +1,27 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, signal } from '@angular/core';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { SnackbarService } from '../../core/snackbar.service';
 
-/** Renders SnackbarService's messages, stacked at the bottom of every page. */
+/**
+ * Renders SnackbarService's messages, stacked at the top of every page.
+ *
+ * Top, not bottom: on a phone the bottom of the screen is where the
+ * browser's own toolbar and the keyboard sit -- the admin scrolls inside
+ * its shell, not the document, so Safari's bottom bar never collapses and
+ * a bottom snackbar was only seen after scrolling. Also pinned to the
+ * *visible* part of the page (window.visualViewport), for a zoomed page.
+ */
 @Component({
   selector: 'app-snackbar-host',
   imports: [TranslocoPipe],
   template: `
-    <div class="snackbar-host" aria-live="polite">
+    <div
+      class="snackbar-host"
+      aria-live="polite"
+      [style.--snackbar-top.px]="viewport().top"
+      [style.--snackbar-center.px]="viewport().center"
+      [style.--snackbar-width.px]="viewport().width"
+    >
       @for (message of snackbar.messages(); track message.id) {
         <div
           class="snackbar-host__item"
@@ -30,13 +44,13 @@ import { SnackbarService } from '../../core/snackbar.service';
   styles: `
     .snackbar-host {
       position: fixed;
-      left: 50%;
-      bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+      left: var(--snackbar-center, 50%);
+      top: calc(12px + var(--snackbar-top, 0px) + env(safe-area-inset-top, 0px));
       z-index: 1000;
       display: flex;
       flex-direction: column;
       gap: 8px;
-      width: min(560px, calc(100vw - 32px));
+      width: min(560px, var(--snackbar-width, calc(100vw - 32px)));
       transform: translateX(-50%);
       pointer-events: none;
     }
@@ -80,7 +94,7 @@ import { SnackbarService } from '../../core/snackbar.service';
     @keyframes snackbar-in {
       from {
         opacity: 0;
-        transform: translateY(8px);
+        transform: translateY(-8px);
       }
     }
 
@@ -94,4 +108,32 @@ import { SnackbarService } from '../../core/snackbar.service';
 })
 export class SnackbarHost {
   protected readonly snackbar = inject(SnackbarService);
+  // top: how far the visible area starts below the layout viewport's top;
+  // center/width: the visible area's middle and usable width (null = CSS default).
+  protected readonly viewport = signal<{
+    top: number;
+    center: number | null;
+    width: number | null;
+  }>({ top: 0, center: null, width: null });
+
+  constructor() {
+    const visual = typeof window === 'undefined' ? undefined : window.visualViewport;
+    if (!visual) {
+      return;
+    }
+    const update = () => {
+      this.viewport.set({
+        top: Math.max(0, visual.offsetTop),
+        center: visual.offsetLeft + visual.width / 2,
+        width: visual.width - 32,
+      });
+    };
+    visual.addEventListener('resize', update);
+    visual.addEventListener('scroll', update);
+    update();
+    inject(DestroyRef).onDestroy(() => {
+      visual.removeEventListener('resize', update);
+      visual.removeEventListener('scroll', update);
+    });
+  }
 }

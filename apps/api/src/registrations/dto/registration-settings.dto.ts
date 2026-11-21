@@ -1,6 +1,9 @@
 import {
   IsBoolean,
   IsDateString,
+  IsInt,
+  Max,
+  Min,
   IsOptional,
   IsString,
   MaxLength,
@@ -27,4 +30,11 @@ export class RegistrationSettingsDto {
   @IsString()
   @MaxLength(2000)
   paymentInfo?: string | null;
+
+  /** Teams one team manager may register for this tournament. */
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  @Max(50)
+  maxTeamsPerRegistrant?: number;
 }

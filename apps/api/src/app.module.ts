@@ -24,6 +24,7 @@ import { GeocodingModule } from './geocoding/geocoding.module';
 import { SuperAdminModule } from './super-admin/super-admin.module';
 import { SuperAdminAuthModule } from './super-admin-auth/super-admin-auth.module';
 import { TournamentsModule } from './tournaments/tournaments.module';
+import { SeoModule } from './seo/seo.module';
 
 @Module({
   imports: [
@@ -68,6 +69,7 @@ import { TournamentsModule } from './tournaments/tournaments.module';
     TournamentsModule,
     RegistrationsModule,
     HealthModule,
+    SeoModule,
   ],
   controllers: [AppController],
   providers: [

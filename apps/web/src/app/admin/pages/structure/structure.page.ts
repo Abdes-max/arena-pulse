@@ -29,6 +29,7 @@ import {
 } from '../../core/models';
 import { TeamsService } from '../../core/teams.service';
 import { TournamentsService } from '../../core/tournaments.service';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 /**
  * The barème/qualification rules are stored per-group in the API (each
@@ -69,6 +70,8 @@ export class StructurePage {
 
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage);
 
   protected readonly categories = signal<Category[]>([]);
   protected readonly selectedCategoryId = signal('');
@@ -172,6 +175,9 @@ export class StructurePage {
   protected readonly presetKnockoutHasRankingMatch = signal(false);
   protected readonly presetSubmitting = signal(false);
   protected readonly presetError = signal<string | null>(null);
+  private readonly presetErrorSnackbar = showErrorsInSnackbar(this.presetError, {
+    translate: false,
+  });
   protected readonly presetSuccessMessage = signal<string | null>(null);
 
   // "Qualifier vers plusieurs compétitions" -- off by default, the pool
@@ -412,6 +418,9 @@ export class StructurePage {
   /** Round 1 of each bracket, by bracket id. */
   protected readonly firstRounds = signal<Map<string, BracketFirstRound>>(new Map());
   protected readonly pairingError = signal<string | null>(null);
+  private readonly pairingErrorSnackbar = showErrorsInSnackbar(this.pairingError, {
+    translate: false,
+  });
 
   private async loadFirstRounds(bracketIds: string[]): Promise<void> {
     const organizationId = this.organization()?.id;

@@ -6,6 +6,7 @@ import { IonContent, IonFooter, IonHeader, IonTitle, IonToolbar } from '@ionic/a
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Button, Logo, TextField } from 'design-system';
 import { OrganizerAuthService } from '../../core/auth.service';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 type PageState = 'form' | 'sent';
 
@@ -49,7 +50,8 @@ export class OrganizerRegisterPage {
   private readonly router = inject(Router);
 
   protected readonly form = this.formBuilder.nonNullable.group({
-    organizationName: ['', Validators.required],
+    // Optional: only to organize tournaments (a team manager leaves it empty).
+    organizationName: [''],
     firstName: ['', Validators.required],
     lastName: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
@@ -60,6 +62,8 @@ export class OrganizerRegisterPage {
   protected readonly registeredEmail = signal<string | null>(null);
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage);
   protected readonly resent = signal(false);
   // Flagged on a submit attempt made while the form is still invalid (e.g.
   // tapping "Créer mon compte" without having blurred the last field yet --

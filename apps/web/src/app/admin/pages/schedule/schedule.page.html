@@ -4,10 +4,6 @@
   @if (loading()) {
     <p>{{ 'admin.schedule.loading' | transloco }}</p>
   } @else {
-    @if (errorMessage(); as message) {
-      <p class="schedule-page__error" role="alert">{{ message | transloco }}</p>
-    }
-
     @if (categories().length === 0) {
       <p>{{ 'admin.schedule.addCategoryFirst' | transloco }}</p>
     } @else {

@@ -13,7 +13,12 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import type { CookieOptions, Request, Response } from 'express';
+import {
+  NATIVE_CLIENT_HEADER,
+  NATIVE_CLIENT_VALUE,
+} from '../auth/auth.controller';
 import { Public } from '../auth/decorators/public.decorator';
+import { RefreshDto } from '../auth/dto/refresh.dto';
 import { CurrentPlayer } from './decorators/current-player.decorator';
 import { PlayerLoginDto } from './dto/player-login.dto';
 import { PlayerRegisterDto } from './dto/player-register.dto';
@@ -45,6 +50,7 @@ export class PlayerAuthController {
   @Post('register')
   async register(
     @Body() dto: PlayerRegisterDto,
+    @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
     const result = await this.playerAuthService.register(dto);
@@ -57,6 +63,7 @@ export class PlayerAuthController {
       accessToken: result.accessToken,
       expiresIn: result.expiresIn,
       playerAccount: result.playerAccount,
+      ...this.nativeRefreshBody(req, result.refreshToken),
     };
   }
 
@@ -66,6 +73,7 @@ export class PlayerAuthController {
   @Post('login')
   async login(
     @Body() dto: PlayerLoginDto,
+    @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
     const result = await this.playerAuthService.login(dto);
@@ -78,6 +86,7 @@ export class PlayerAuthController {
       accessToken: result.accessToken,
       expiresIn: result.expiresIn,
       playerAccount: result.playerAccount,
+      ...this.nativeRefreshBody(req, result.refreshToken),
     };
   }
 
@@ -86,10 +95,11 @@ export class PlayerAuthController {
   @HttpCode(HttpStatus.OK)
   @Post('refresh')
   async refresh(
+    @Body() dto: RefreshDto,
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const presented = this.readRefreshCookie(req);
+    const presented = this.readRefreshCookie(req) ?? dto?.refreshToken;
     if (!presented) {
       throw new UnauthorizedException('Session invalide.');
     }
@@ -99,14 +109,22 @@ export class PlayerAuthController {
       result.refreshToken,
       result.refreshTokenExpiresAt,
     );
-    return { accessToken: result.accessToken, expiresIn: result.expiresIn };
+    return {
+      accessToken: result.accessToken,
+      expiresIn: result.expiresIn,
+      ...this.nativeRefreshBody(req, result.refreshToken),
+    };
   }
 
   @Public()
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post('logout')
-  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
-    const presented = this.readRefreshCookie(req);
+  async logout(
+    @Body() dto: RefreshDto,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const presented = this.readRefreshCookie(req) ?? dto?.refreshToken;
     if (presented) {
       await this.playerAuthService.logout(presented);
     }
@@ -120,6 +138,21 @@ export class PlayerAuthController {
   @Get('me')
   me(@CurrentPlayer() player: AuthenticatedPlayer) {
     return this.playerAuthService.getProfile(player.id);
+  }
+
+  /**
+   * Same native mode as the organizer's AuthController: the mobile app sends
+   * x-client: native and keeps the refresh token in its own storage (the
+   * webview's cross-site cookie is not reliable on iOS), so it gets it back
+   * in the body here and presents it in the body to refresh/logout.
+   */
+  private nativeRefreshBody(
+    req: Request,
+    refreshToken: string,
+  ): { refreshToken?: string } {
+    return req.header(NATIVE_CLIENT_HEADER) === NATIVE_CLIENT_VALUE
+      ? { refreshToken }
+      : {};
   }
 
   private readRefreshCookie(req: Request): string | undefined {

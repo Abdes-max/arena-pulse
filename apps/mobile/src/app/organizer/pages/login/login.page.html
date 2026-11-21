@@ -62,9 +62,6 @@
       <a class="organizer-login-page__forgot" routerLink="/organizer/forgot-password">{{
         'organizer.auth.login.forgotPassword' | transloco
       }}</a>
-      @if (errorMessage(); as message) {
-        <p class="organizer-login-page__error" role="alert">{{ message | transloco }}</p>
-      }
       @if (needsVerification()) {
         @if (resent()) {
           <p class="organizer-login-page__hint">{{ 'organizer.auth.login.resent' | transloco }}</p>
@@ -88,7 +85,9 @@
     </ap-button>
     <p class="organizer-login-page__linkrow">
       {{ 'organizer.auth.login.noAccount' | transloco }}
-      <a routerLink="/organizer/register">{{ 'organizer.auth.login.createOrg' | transloco }}</a>
+      <a routerLink="/organizer/register" queryParamsHandling="preserve">{{
+        'organizer.auth.login.createOrg' | transloco
+      }}</a>
     </p>
   </ion-footer>
 </form>

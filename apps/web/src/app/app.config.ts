@@ -16,11 +16,10 @@ import { routes } from './app.routes';
 import { authInterceptor } from './admin/core/auth.interceptor';
 import { AuthService } from './admin/core/auth.service';
 import { AnalyticsService } from './core/analytics.service';
+import { PageMetaService } from './core/page-meta.service';
 import { GlobalErrorHandler } from './core/global-error-handler';
 import { feedbackInterceptor } from './core/feedback.interceptor';
 import { languageInterceptor } from './core/language.interceptor';
-import { playerAuthInterceptor } from './core/player-auth.interceptor';
-import { PlayerAuthService } from './core/player-auth.service';
 import { superAdminAuthInterceptor } from './super-admin/core/super-admin-auth.interceptor';
 import { SuperAdminAuthService } from './super-admin/core/super-admin-auth.service';
 
@@ -40,13 +39,12 @@ export const appConfig: ApplicationConfig = {
     // in-app ones).
     provideRouter(routes, withInMemoryScrolling({ anchorScrolling: 'enabled' })),
     // Each interceptor only ever attaches its own token to its own
-    // URL-scoped requests (see player-scoped-request.ts /
+    // URL-scoped requests (see
     // super-admin-scoped-request.ts) -- a no-op otherwise, so all three are
     // safe to register unconditionally together.
     provideHttpClient(
       withInterceptors([
         authInterceptor,
-        playerAuthInterceptor,
         superAdminAuthInterceptor,
         languageInterceptor,
         feedbackInterceptor,
@@ -82,12 +80,12 @@ export const appConfig: ApplicationConfig = {
     // hard reload. Runs for every visitor, including anonymous public-site
     // traffic (harmless 401, caught silently in AuthService.silentRefresh).
     provideAppInitializer(() => inject(AuthService).silentRefresh()),
-    // Same idea, for a PlayerAccount session (its own httpOnly cookie).
-    provideAppInitializer(() => inject(PlayerAuthService).silentRefresh()),
     // Same idea, for a SuperAdminAccount session (its own httpOnly cookie).
     provideAppInitializer(() => inject(SuperAdminAuthService).silentRefresh()),
     // Google Analytics -- started unconditionally for now; a consent banner
     // will call AnalyticsService.start() itself instead, once accepted.
     provideAppInitializer(() => inject(AnalyticsService).start()),
+    // Per-page <title>, description and canonical (SEO) -- see PageMetaService.
+    provideAppInitializer(() => inject(PageMetaService).start()),
   ],
 };

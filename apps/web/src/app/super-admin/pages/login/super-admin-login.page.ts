@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Button, Logo, TextField } from 'design-system';
 import { SuperAdminAuthService } from '../../core/super-admin-auth.service';
 import { isSafeReturnUrl } from '../../../core/safe-return-url.util';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
 @Component({
   selector: 'app-super-admin-login-page',
@@ -25,6 +26,8 @@ export class SuperAdminLoginPage {
 
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage, { translate: false });
 
   protected async submit(): Promise<void> {
     if (this.form.invalid || this.submitting()) {

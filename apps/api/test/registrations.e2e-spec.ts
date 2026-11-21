@@ -13,11 +13,6 @@ interface OrganizerAuthResponseBody {
   organization?: { id: string };
 }
 
-interface PlayerAuthResponseBody {
-  accessToken: string;
-  playerAccount: { id: string };
-}
-
 interface RegistrationResponseBody {
   registrationId: string;
   status: string;
@@ -78,23 +73,28 @@ async function registerOrganizer(app: INestApplication<App>) {
   return { accessToken, organizationId: organizations[0].id };
 }
 
+/**
+ * A team manager: a TournArena account without an organization (one account
+ * for managers and organizers), verified in DB like registerOrganizer above.
+ */
 async function registerPlayer(
   app: INestApplication<App>,
   email = 'player@example.com',
 ) {
-  const res = await request(app.getHttpServer())
-    .post('/api/v1/player-auth/register')
-    .send({
-      email,
-      password: 'a-very-strong-password',
-      firstName: 'Léa',
-      lastName: 'Martin',
-    })
+  const password = 'a-very-strong-password';
+  await request(app.getHttpServer())
+    .post('/api/v1/auth/register')
+    .send({ email, password, firstName: 'Léa', lastName: 'Martin' })
     .expect(201);
-  const body = res.body as PlayerAuthResponseBody;
+  await app
+    .get(PrismaService)
+    .user.update({ where: { email }, data: { emailVerifiedAt: new Date() } });
+  const loginRes = await request(app.getHttpServer())
+    .post('/api/v1/auth/login')
+    .send({ email, password })
+    .expect(200);
   return {
-    accessToken: body.accessToken,
-    playerAccountId: body.playerAccount.id,
+    accessToken: (loginRes.body as OrganizerAuthResponseBody).accessToken,
   };
 }
 
@@ -256,6 +256,18 @@ describe('Registrations & payments (e2e)', () => {
     });
     expect(rows[0].teamId).toEqual(expect.any(String));
 
+    // The manager's space counts it, with the team's (still empty) record.
+    const stats = await request(app.getHttpServer())
+      .get('/api/v1/public/registrations/me/stats')
+      .set('Authorization', `Bearer ${playerToken}`)
+      .expect(200);
+    expect(stats.body).toMatchObject({
+      registrations: { total: 1, confirmed: 1, pending: 0 },
+      tournaments: 1,
+      totals: { played: 0, won: 0 },
+      teams: [expect.objectContaining({ teamName: roster.teamName })],
+    });
+
     const teamsAfter = await auth(
       request(app.getHttpServer()).get(`${base}/${tournamentId}/teams`),
     ).expect(200);
@@ -274,6 +286,70 @@ describe('Registrations & payments (e2e)', () => {
     expect((paid.body as { paymentStatus: string }[])[0].paymentStatus).toBe(
       'PAID',
     );
+  });
+
+  it('registers a team without its roster, but never without a phone number', async () => {
+    const { slug, categoryId } = await setupPublishedTournament(app, {});
+    const { accessToken: playerToken } = await registerPlayer(app);
+    const team = {
+      teamName: 'Les Faucons',
+      managerEmail: 'coach@example.com',
+    };
+
+    await register(slug, categoryId, playerToken, team).expect(400);
+    await register(slug, categoryId, playerToken, {
+      ...team,
+      managerPhone: '06 12 34 56 78',
+    }).expect(201);
+  });
+
+  it('registers several numbered teams at once, within the per-manager limit', async () => {
+    const { slug, categoryId, auth, base, tournamentId } =
+      await setupPublishedTournament(app, {});
+    const { accessToken: playerToken } = await registerPlayer(app);
+    const club = {
+      teamName: 'ET.S Milloise',
+      // A club picked from the directory travels with the request.
+      externalClubId: 'fff:553079',
+      managerEmail: 'coach@example.com',
+      managerPhone: '06 12 34 56 78',
+    };
+
+    // One team per manager unless the organizer raises it.
+    await register(slug, categoryId, playerToken, {
+      ...club,
+      teamCount: 2,
+    }).expect(409);
+
+    await auth(
+      request(app.getHttpServer()).patch(
+        `${base}/${tournamentId}/registrations/settings`,
+      ),
+    )
+      .send({ maxTeamsPerRegistrant: 3 })
+      .expect(200);
+    const res = await register(slug, categoryId, playerToken, {
+      ...club,
+      teamCount: 2,
+    }).expect(201);
+    expect(
+      (res.body as { registrationIds: string[] }).registrationIds,
+    ).toHaveLength(2);
+
+    const mine = await request(app.getHttpServer())
+      .get('/api/v1/public/registrations/me')
+      .set('Authorization', `Bearer ${playerToken}`)
+      .expect(200);
+    expect(
+      (mine.body as { teamName: string }[]).map((r) => r.teamName).sort(),
+    ).toEqual(['ET.S Milloise 1', 'ET.S Milloise 2']);
+
+    // 2 of 3 used: two more is over the limit.
+    await register(slug, categoryId, playerToken, {
+      ...club,
+      teamName: 'ET.S Milloise B',
+      teamCount: 2,
+    }).expect(409);
   });
 
   it('refuses requests while registrations are closed', async () => {
@@ -332,6 +408,59 @@ describe('Registrations & payments (e2e)', () => {
     ).toBe(0);
   });
 
+  it("counts the category's actual teams as places, and frees a deleted team's", async () => {
+    const { slug, categoryId, auth, base, tournamentId } =
+      await setupPublishedTournament(app, { maxTeams: 2 });
+    const remaining = async () =>
+      (
+        (
+          await request(app.getHttpServer())
+            .get(`/api/v1/public/tournaments/${slug}/registration-info`)
+            .expect(200)
+        ).body as { categories: { remaining: number }[] }
+      ).categories[0].remaining;
+
+    // A team the organizer adds themselves takes a place too.
+    await auth(
+      request(app.getHttpServer()).post(`${base}/${tournamentId}/teams`),
+    )
+      .send({ name: 'Les Hiboux', categoryId })
+      .expect(201);
+    expect(await remaining()).toBe(1);
+
+    const { accessToken } = await registerPlayer(app);
+    const sent = await register(slug, categoryId, accessToken, roster).expect(
+      201,
+    );
+    const registrationId = (sent.body as RegistrationResponseBody)
+      .registrationId;
+    await auth(
+      request(app.getHttpServer()).post(
+        `${base}/${tournamentId}/registrations/${registrationId}/confirm`,
+      ),
+    ).expect(200);
+    expect(await remaining()).toBe(0);
+
+    // The organizer deletes the confirmed team: its place is free again and
+    // the request no longer counts as registered.
+    const { teamId } = await prisma.registration.findUniqueOrThrow({
+      where: { id: registrationId },
+    });
+    await auth(
+      request(app.getHttpServer()).delete(
+        `${base}/${tournamentId}/teams/${teamId}`,
+      ),
+    ).expect(204);
+    expect(await remaining()).toBe(1);
+    expect(
+      (
+        await prisma.registration.findUniqueOrThrow({
+          where: { id: registrationId },
+        })
+      ).status,
+    ).toBe('REJECTED');
+  });
+
   it('registers a single player, named after them, for an individual sport', async () => {
     const { slug, categoryId } = await setupPublishedTournament(
       app,
@@ -344,11 +473,13 @@ describe('Registrations & payments (e2e)', () => {
     // Two players is a team, not an individual registration.
     await register(slug, categoryId, playerToken, {
       managerEmail: 'rafa@example.com',
+      managerPhone: '0611111111',
       players: [player, { firstName: 'Roger', lastName: 'Federer' }],
     }).expect(400);
 
     await register(slug, categoryId, playerToken, {
       managerEmail: 'rafa@example.com',
+      managerPhone: '0611111111',
       players: [player],
     }).expect(201);
     const mine = await request(app.getHttpServer())
@@ -408,7 +539,34 @@ describe('Registrations & payments (e2e)', () => {
       .expect(409);
   });
 
-  it('requires a player access token to submit a registration', async () => {
+  it('lets a team manager account (no organization) start organizing', async () => {
+    const { accessToken } = await registerPlayer(app);
+    const me = () =>
+      request(app.getHttpServer())
+        .get('/api/v1/auth/me')
+        .set('Authorization', `Bearer ${accessToken}`)
+        .expect(200);
+    expect((await me()).body).toMatchObject({ organizations: [] });
+
+    await request(app.getHttpServer())
+      .post('/api/v1/organizations')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({ name: 'Les Faucons Organisation' })
+      .expect(201);
+    expect(
+      ((await me()).body as { organizations: { name: string }[] })
+        .organizations,
+    ).toEqual([expect.objectContaining({ name: 'Les Faucons Organisation' })]);
+
+    // One organization per account, as at sign-up.
+    await request(app.getHttpServer())
+      .post('/api/v1/organizations')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({ name: 'Encore une' })
+      .expect(409);
+  });
+
+  it('requires a signed-in account to submit a registration', async () => {
     const { slug, categoryId } = await setupPublishedTournament(app);
 
     await request(app.getHttpServer())

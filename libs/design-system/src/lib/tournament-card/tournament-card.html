@@ -32,6 +32,10 @@
     </div>
   }
 
+  @if (tag(); as t) {
+    <span class="ap-tournament-card__tag">{{ t }}</span>
+  }
+
   @if (registrationLabel(); as label) {
     <div class="ap-tournament-card__registration">
       <span>{{ label }}</span>

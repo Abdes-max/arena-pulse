@@ -1,4 +1,6 @@
 import { DatePipe, NgTemplateOutlet } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -21,6 +23,7 @@ import {
   AddressSearchService,
   AssetUrlService,
   ClubSearchService,
+  clubDirectorySport,
   ClubSuggestion,
   PublicApiService,
 } from 'api-client';
@@ -39,6 +42,7 @@ import {
 import {
   CompetitionPhase,
   Match,
+  OrganizerRegistration,
   RoundLabelLang,
   matchRoundLabel as boardRoundLabel,
 } from 'shared-models';
@@ -61,10 +65,35 @@ import { OrganizerTeamsService } from '../../core/teams.service';
 import { OrganizerTournamentsService } from '../../core/tournaments.service';
 import { environment } from '../../../../environments/environment';
 import { isIosNative } from '../../../core/native-platform.util';
+import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
-// Sports whose teams are FFF clubs -- the only ones offered the club search.
-const CLUB_SEARCH_SPORTS = new Set(['Football', 'Futsal']);
 const CLUB_SEARCH_STORAGE_KEY = 'ta.teamClubSearch';
+// Infos step's sport tiles.
+const SPORT_EMOJI: Record<string, string> = {
+  Football: '⚽',
+  Futsal: '🥅',
+  Basketball: '🏀',
+  Volleyball: '🏐',
+  Handball: '🤾',
+  Rugby: '🏉',
+  Tennis: '🎾',
+  Padel: '🎾',
+  Badminton: '🏸',
+  Esport: '🎮',
+};
+
+/**
+ * A team of the "Équipes" step. id is null for a create-mode entry not yet
+ * committed to the API (see submitTeams(), still batched at "Suivant"
+ * there) and always set in edit mode, where add/remove act immediately.
+ * logoUrl is the team logo, or before creation the picked club's crest.
+ */
+interface WizardTeam {
+  id: string | null;
+  name: string;
+  externalClubId?: string | null;
+  logoUrl?: string | null;
+}
 
 /** Club search is on unless the organizer turned it off (remembered per device). */
 function readClubSearchPreference(): boolean {
@@ -172,6 +201,7 @@ export class OrganizerTournamentWizardPage {
   private readonly transloco = inject(TranslocoService);
   private readonly navController = inject(NavController);
   private readonly router = inject(Router);
+  private readonly http = inject(HttpClient);
   private readonly route = inject(ActivatedRoute);
 
   protected readonly mode = signal<'create' | 'edit'>('create');
@@ -200,6 +230,10 @@ export class OrganizerTournamentWizardPage {
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
   protected readonly errorDetail = signal<string | null>(null);
+  // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage, {
+    detail: this.errorDetail,
+  });
 
   // ---- Step 1: Infos ----
   protected readonly sports = signal<PublicSport[]>([]);
@@ -225,6 +259,14 @@ export class OrganizerTournamentWizardPage {
     'CRIMSON_CHARGE',
   ];
   protected readonly logoFile = signal<File | null>(null);
+  // What the Logo field shows: the picked file, else the organizing club's
+  // crest (it becomes the tournament logo, see TournamentsService).
+  private readonly logoFileUrl = signal<string | null>(null);
+  protected readonly organizerClubLogo = signal<string | null>(null);
+  protected readonly logoPreview = computed(() => this.logoFileUrl() ?? this.organizerClubLogo());
+  // Pre-registrations waiting for a decision (Équipes step + rail badge).
+  protected readonly pendingRegistrations = signal<OrganizerRegistration[]>([]);
+  protected readonly registrationBusy = signal(false);
 
   // Header background: one of the ready-made presets, or "other" with an
   // uploaded photo (premium, best-effort like the logo). headerBackgroundSaved
@@ -251,19 +293,41 @@ export class OrganizerTournamentWizardPage {
 
   // ---- Step 2: Équipes ----
   protected readonly teamInput = signal('');
-  // id is null for a create-mode entry not yet committed to the API (see
-  // submitTeams(), still batched at "Suivant" there) and always set in edit
-  // mode, where add/remove act immediately -- see addTeam()/removeTeam().
-  protected readonly teams = signal<
-    { id: string | null; name: string; externalClubId?: string | null }[]
-  >([]);
-  // Club search (football/futsal only), same as apps/web's team-list.page:
-  // the name field becomes an autocomplete over the club directory, picking
-  // a club links it (externalClubId) and an FFF club's crest becomes the
-  // team logo. Retyping the name drops the link.
-  protected readonly clubSearch = inject(ClubSearchService).autocomplete();
-  protected readonly clubSearchAvailable = computed(() =>
-    CLUB_SEARCH_SPORTS.has(this.sports().find((s) => s.id === this.sportId())?.name ?? ''),
+  // See WizardTeam -- add/remove: addTeam()/removeTeam().
+  protected readonly teams = signal<WizardTeam[]>([]);
+  // Inline rename in the teams table (one row at a time).
+  protected readonly editingTeamIndex = signal<number | null>(null);
+  protected readonly editTeamName = signal('');
+  // Club search (sports with a club directory, see clubDirectorySport),
+  // same as apps/web's team-list.page: the name field becomes an
+  // autocomplete over that sport's clubs, picking a club links it
+  // (externalClubId) and its crest becomes the team logo. Retyping the name
+  // drops the link.
+  private readonly sportName = computed(
+    () => this.sports().find((s) => s.id === this.sportId())?.name ?? '',
+  );
+  private readonly clubSport = computed(() => clubDirectorySport(this.sportName()));
+  protected readonly clubSearch = inject(ClubSearchService).autocomplete(
+    () => this.clubSport() ?? 'football',
+  );
+  protected readonly clubSearchAvailable = computed(() => this.clubSport() !== null);
+
+  // "Organisé par un club de <sport>" (Infos step): the organizer picks
+  // their club, whose crest becomes the tournament logo (apps/api).
+  protected readonly organizerSportLabel = computed(() => this.sportName().toLowerCase());
+  protected readonly organizerByClub = signal(false);
+  protected readonly organizerClubId = signal('');
+  protected readonly organizerClubLabel = signal('');
+  protected readonly organizerClubQuery = signal('');
+  protected readonly organizerClubSearch = inject(ClubSearchService).autocomplete(
+    () => this.clubSport() ?? 'football',
+  );
+  protected readonly organizerClubSuggestions = computed(() =>
+    this.organizerClubSearch.suggestions().map((club) => ({
+      label: club.name,
+      detail: this.clubLocation(club),
+      imageUrl: this.assetUrl.resolve(club.logoUrl),
+    })),
   );
   protected readonly useClubSearch = signal(readClubSearchPreference());
   protected readonly clubSuggestions = computed(() =>
@@ -274,6 +338,8 @@ export class OrganizerTournamentWizardPage {
     })),
   );
   protected readonly teamClubId = signal('');
+  // Crest of the picked club, shown in the table before the team exists.
+  private readonly teamClubLogo = signal<string | null>(null);
 
   // ---- Step 3: Structure ----
   protected readonly format = signal<WizardStructureFormat>('pools-knockout');
@@ -707,6 +773,13 @@ export class OrganizerTournamentWizardPage {
       this.isOnline.set(tournament.isOnline);
       this.isListed.set(tournament.isListed);
       this.theme.set(tournament.theme);
+      this.organizerClubId.set(tournament.organizerClubId ?? '');
+      this.organizerByClub.set(!!tournament.organizerClubId);
+      this.organizerClubLabel.set(tournament.organizerClubName ?? '');
+      this.organizerClubLogo.set(
+        tournament.organizerClubId ? this.assetUrl.resolve(tournament.logoUrl) : null,
+      );
+      void this.loadPendingRegistrations(organizationId, tournamentId);
       this.currentStatus.set(tournament.status);
       if (tournament.startDate) {
         this.startDate.set(tournament.startDate.slice(0, 10));
@@ -739,7 +812,9 @@ export class OrganizerTournamentWizardPage {
         this.teamsApi.listTeams(organizationId, tournamentId, category.id),
         this.creationApi.listPhases(organizationId, tournamentId, category.id),
       ]);
-      this.teams.set(teams.map((team) => ({ id: team.id, name: team.name })));
+      this.teams.set(
+        teams.map((team) => ({ id: team.id, name: team.name, logoUrl: team.logoUrl })),
+      );
 
       const realPhases = phases.filter((phase) => !phase.isSeedPhase);
       if (realPhases.length === 0) {
@@ -912,6 +987,75 @@ export class OrganizerTournamentWizardPage {
   protected onLogoFileSelected(event: Event): void {
     const file = (event.target as HTMLInputElement).files?.[0] ?? null;
     this.logoFile.set(file);
+    const previous = this.logoFileUrl();
+    if (previous) {
+      URL.revokeObjectURL(previous);
+    }
+    this.logoFileUrl.set(file ? URL.createObjectURL(file) : null);
+  }
+
+  /** Pending (and waiting-list) pre-registrations of this tournament. */
+  private async loadPendingRegistrations(
+    organizationId: string,
+    tournamentId: string,
+  ): Promise<void> {
+    try {
+      const all = await firstValueFrom(
+        this.http.get<OrganizerRegistration[]>(
+          `${environment.apiUrl}/organizations/${organizationId}/tournaments/${tournamentId}/registrations`,
+        ),
+      );
+      this.pendingRegistrations.set(
+        all.filter((r) => r.status === 'PENDING' || r.status === 'WAITLIST'),
+      );
+    } catch {
+      this.pendingRegistrations.set([]);
+    }
+  }
+
+  /** Validating a request creates its team: the list below is reloaded. */
+  protected async decideRegistration(
+    registration: OrganizerRegistration,
+    action: 'confirm' | 'reject',
+  ): Promise<void> {
+    const organizationId = this.organizationId;
+    const tournamentId = this.tournamentId;
+    if (!organizationId || !tournamentId || this.registrationBusy()) {
+      return;
+    }
+    this.registrationBusy.set(true);
+    try {
+      const all = await firstValueFrom(
+        this.http.post<OrganizerRegistration[]>(
+          `${environment.apiUrl}/organizations/${organizationId}/tournaments/${tournamentId}/registrations/${registration.id}/${action}`,
+          {},
+        ),
+      );
+      this.pendingRegistrations.set(
+        all.filter((r) => r.status === 'PENDING' || r.status === 'WAITLIST'),
+      );
+      if (action === 'confirm' && this.categoryId) {
+        const teams = await this.teamsApi.listTeams(organizationId, tournamentId, this.categoryId);
+        this.teams.set(
+          teams.map((team) => ({ id: team.id, name: team.name, logoUrl: team.logoUrl })),
+        );
+      }
+    } catch {
+      this.errorMessage.set('organizer.pendingRegistrations.error');
+    } finally {
+      this.registrationBusy.set(false);
+    }
+  }
+
+  protected openRegistrations(): void {
+    if (this.tournamentId) {
+      void this.router.navigateByUrl(`/organizer/tournaments/${this.tournamentId}/registrations`);
+    }
+  }
+
+  /** Colorful sport tiles (Infos step): one emoji per seeded sport. */
+  protected sportEmoji(name: string): string {
+    return SPORT_EMOJI[name] ?? '🏆';
   }
 
   /** Create mode just queues the name (committed later, see submitTeams()); edit mode creates it right away since there's no later "Suivant" that owns Équipes changes there. */
@@ -929,6 +1073,7 @@ export class OrganizerTournamentWizardPage {
   protected onTeamInput(value: string): void {
     this.teamInput.set(value);
     this.teamClubId.set('');
+    this.teamClubLogo.set(null);
     if (this.useClubSearch() && this.clubSearchAvailable()) {
       this.clubSearch.query(value);
     }
@@ -941,7 +1086,47 @@ export class OrganizerTournamentWizardPage {
     }
     this.teamInput.set(club.name);
     this.teamClubId.set(club.externalId);
+    this.teamClubLogo.set(club.logoUrl);
     this.clubSearch.clear();
+  }
+
+  protected toggleOrganizerByClub(): void {
+    this.organizerByClub.update((value) => !value);
+  }
+
+  protected onOrganizerClubInput(value: string): void {
+    this.organizerClubQuery.set(value);
+    this.organizerClubSearch.query(value);
+  }
+
+  protected onOrganizerClubSelect(index: number): void {
+    const club = this.organizerClubSearch.suggestions()[index];
+    if (!club) {
+      return;
+    }
+    this.organizerClubId.set(club.externalId);
+    this.organizerClubLabel.set(club.name);
+    this.organizerClubLogo.set(this.assetUrl.resolve(club.logoUrl));
+    this.organizerClubQuery.set('');
+    this.organizerClubSearch.clear();
+  }
+
+  protected unlinkOrganizerClub(): void {
+    this.organizerClubId.set('');
+    this.organizerClubLabel.set('');
+    this.organizerClubLogo.set(null);
+  }
+
+  // Only while the box is ticked and the club is of the chosen sport
+  // (the sport may have changed since it was picked).
+  private organizerClubToSave(): string {
+    const id = this.organizerClubId();
+    const sport = this.clubSport();
+    if (!this.organizerByClub() || !id || !sport) {
+      return '';
+    }
+    const idSport = id.startsWith('fff:') ? 'football' : id.split(':')[1];
+    return idSport === sport ? id : '';
   }
 
   private clubLocation(club: ClubSuggestion): string {
@@ -963,10 +1148,9 @@ export class OrganizerTournamentWizardPage {
     }
     const externalClubId = this.teamClubId() || null;
     if (this.mode() === 'create') {
-      this.teams.update((teams) => [...teams, { id: null, name, externalClubId }]);
-      this.teamInput.set('');
-      this.teamClubId.set('');
-      this.clubSearch.clear();
+      const logoUrl = this.teamClubLogo();
+      this.teams.update((teams) => [...teams, { id: null, name, externalClubId, logoUrl }]);
+      this.resetTeamInput();
       return;
     }
     const organizationId = this.organizationId;
@@ -983,10 +1167,11 @@ export class OrganizerTournamentWizardPage {
         categoryId,
         externalClubId: externalClubId ?? undefined,
       });
-      this.teams.update((teams) => [...teams, { id: team.id, name: team.name, externalClubId }]);
-      this.teamInput.set('');
-      this.teamClubId.set('');
-      this.clubSearch.clear();
+      this.teams.update((teams) => [
+        ...teams,
+        { id: team.id, name: team.name, externalClubId, logoUrl: team.logoUrl },
+      ]);
+      this.resetTeamInput();
     } catch {
       this.errorMessage.set('organizer.wizard.teams.errorAdd');
     } finally {
@@ -1057,7 +1242,10 @@ export class OrganizerTournamentWizardPage {
           name,
           categoryId,
         });
-        this.teams.update((teams) => [...teams, { id: team.id, name: team.name }]);
+        this.teams.update((teams) => [
+          ...teams,
+          { id: team.id, name: team.name, logoUrl: team.logoUrl },
+        ]);
       }
       this.pastedNames.set('');
     } catch {
@@ -1065,6 +1253,76 @@ export class OrganizerTournamentWizardPage {
     } finally {
       this.submitting.set(false);
     }
+  }
+
+  private resetTeamInput(): void {
+    this.teamInput.set('');
+    this.teamClubId.set('');
+    this.teamClubLogo.set(null);
+    this.clubSearch.clear();
+  }
+
+  protected startEditTeam(index: number): void {
+    const team = this.teams()[index];
+    if (!team || this.submitting()) {
+      return;
+    }
+    this.editingTeamIndex.set(index);
+    this.editTeamName.set(team.name);
+  }
+
+  protected cancelEditTeam(): void {
+    this.editingTeamIndex.set(null);
+    this.editTeamName.set('');
+  }
+
+  /**
+   * Renames the row being edited -- locally in create mode (the queue is only
+   * sent at "Suivant"), through the API in edit mode. The club link and its
+   * logo stay: "ET.S Milloise U13" is still that club.
+   */
+  protected async saveEditTeam(): Promise<void> {
+    const index = this.editingTeamIndex();
+    const team = index === null ? undefined : this.teams()[index];
+    const name = this.editTeamName().trim();
+    if (index === null || !team || this.submitting()) {
+      return;
+    }
+    if (!name || name === team.name) {
+      this.cancelEditTeam();
+      return;
+    }
+    if (this.mode() === 'edit' && team.id) {
+      const organizationId = this.organizationId;
+      const tournamentId = this.tournamentId;
+      if (!organizationId || !tournamentId) {
+        return;
+      }
+      this.submitting.set(true);
+      this.errorMessage.set(null);
+      try {
+        await this.teamsApi.renameTeam(organizationId, tournamentId, team.id, name);
+      } catch {
+        this.errorMessage.set('organizer.wizard.teams.errorRename');
+        return;
+      } finally {
+        this.submitting.set(false);
+      }
+      // The Calendrier step's cards were preloaded with the old name.
+      const teamId = team.id;
+      const rename = <T extends { id: string; name: string } | null>(t: T): T =>
+        t && t.id === teamId ? { ...t, name } : t;
+      this.matches.update(
+        (matches) =>
+          matches?.map((match) => ({
+            ...match,
+            homeTeam: rename(match.homeTeam),
+            awayTeam: rename(match.awayTeam),
+          })) ?? null,
+      );
+    }
+    this.teams.update((teams) => teams.map((t, i) => (i === index ? { ...t, name } : t)));
+    this.cancelEditTeam();
   }
 
   /** Create mode just drops it from the local queue (never existed server-side yet); edit mode deletes the real team. */
@@ -1091,6 +1349,7 @@ export class OrganizerTournamentWizardPage {
       }
     }
     this.teams.update((teams) => teams.filter((_, i) => i !== index));
+    this.cancelEditTeam();
   }
 
   protected selectFormat(format: WizardStructureFormat): void {
@@ -1196,6 +1455,7 @@ export class OrganizerTournamentWizardPage {
       sportId: this.sportId(),
       isOnline: this.isOnline(),
       startDate: this.startDate(),
+      organizerClubId: this.organizerClubToSave() || undefined,
     });
     this.tournamentId = tournament.id;
     this.scheduleDate.set(this.startDate());
@@ -1239,6 +1499,7 @@ export class OrganizerTournamentWizardPage {
       sportId: this.sportId(),
       isOnline: this.isOnline(),
       startDate,
+      organizerClubId: this.organizerClubToSave(),
       ...(this.loadedEndDate && this.loadedEndDate < startDate ? { endDate: startDate } : {}),
     });
     const venue = this.existingVenue;

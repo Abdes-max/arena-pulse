@@ -330,6 +330,12 @@
   }
 }
 
+.landing-page__cta--ghost {
+  background: transparent;
+  color: var(--ap-color-fg);
+  box-shadow: inset 0 0 0 1px var(--ap-color-border);
+}
+
 .landing-page__cta {
   display: inline-block;
   padding: var(--ap-space-3) var(--ap-space-8);
@@ -415,10 +421,57 @@ ap-tournament-marquee {
   margin: 0 auto var(--ap-space-6);
 }
 
-.landing-page__tournaments-time {
+.landing-page__tournaments-pills {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
+  align-items: center;
+  gap: var(--ap-space-3);
   margin: 0 auto var(--ap-space-6);
+}
+
+// Same empty state as the Découvrir page.
+.landing-page__tournaments-empty-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ap-space-3);
+  max-width: 560px;
+  margin: 0 auto;
+  padding: var(--ap-space-12) var(--ap-space-6);
+  text-align: center;
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) dashed var(--ap-color-border);
+  border-radius: 20px;
+}
+
+.landing-page__tournaments-empty-icon {
+  font-size: 2.5rem;
+}
+
+.landing-page__tournaments-empty-title {
+  margin: 0;
+  font-family: var(--ap-font-heading);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.landing-page__tournaments-empty-text {
+  margin: 0;
+  max-width: 50ch;
+  color: var(--ap-color-muted);
+}
+
+.landing-page__tournaments-empty-btn {
+  margin-top: var(--ap-space-2);
+  padding: var(--ap-space-3) var(--ap-space-4);
+  font: inherit;
+  font-weight: 700;
+  color: var(--ap-color-fg);
+  background: transparent;
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  cursor: pointer;
 }
 
 .landing-page__tournaments-empty {

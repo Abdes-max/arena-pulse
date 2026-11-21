@@ -2,10 +2,6 @@
   <h1>{{ 'admin.live.title' | transloco }}</h1>
   <p class="live-page__intro">{{ 'admin.live.intro' | transloco }}</p>
 
-  @if (errorMessage(); as message) {
-    <p class="live-page__error" role="alert">{{ message | transloco }}</p>
-  }
-
   @if (loading()) {
     <p>{{ 'admin.live.loading' | transloco }}</p>
   } @else if (rotations().length === 0) {
@@ -224,9 +220,6 @@
                   }
                 </div>
               }
-              @if (apiError(); as message) {
-                <p class="live-page__error" role="alert">{{ message }}</p>
-              }
               <div class="live-page__actions">
                 <ap-button type="button" [disabled]="saving()" (click)="save(rotation, true)">
                   {{ 'admin.live.validate' | transloco }}
@@ -262,9 +255,6 @@
               >
                 {{ 'admin.scores.pools.validate' | transloco }}
               </ap-button>
-            }
-            @if (poolError(); as message) {
-              <p class="live-page__error" role="alert">{{ message }}</p>
             }
           </li>
         }
