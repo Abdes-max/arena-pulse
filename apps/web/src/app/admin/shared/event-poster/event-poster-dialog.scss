@@ -153,3 +153,45 @@
   color: var(--ap-color-primary);
   font-weight: 600;
 }
+
+// "Open the registrations" / "add a contact", above the fields.
+.event-poster__prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ap-space-2);
+  padding: var(--ap-space-3);
+  background: var(--ap-color-signal-soft);
+  border-radius: var(--ap-radius-md);
+
+  p {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ap-color-fg);
+  }
+
+  small {
+    font-size: 0.8rem;
+    color: var(--ap-color-muted);
+  }
+}
+
+.event-poster__prompt-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--ap-space-2);
+  width: 100%;
+
+  input {
+    width: 100%;
+    min-width: 0;
+    font: inherit;
+    font-size: 0.9rem;
+    color: var(--ap-color-fg);
+    background: var(--ap-color-surface);
+    border: 1px solid var(--ap-color-border);
+    border-radius: var(--ap-radius-sm);
+    padding: var(--ap-space-1) var(--ap-space-2);
+  }
+}

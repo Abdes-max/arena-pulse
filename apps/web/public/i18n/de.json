@@ -1745,7 +1745,8 @@
         "city": "Stadt",
         "infoTitle": "Bezeichnung",
         "infoDetail": "Detail",
-        "sport": "Sportart"
+        "sport": "Sportart",
+        "contact": "Kontakt"
       },
       "defaults": {
         "plateau": "Spielfest",
@@ -1758,6 +1759,18 @@
         "free": "Kostenlos",
         "field": "1 Platz",
         "format": "Format"
+      },
+      "contactLabel": "Kontakt:",
+      "prompts": {
+        "registrations": "Die Anmeldung ist geschlossen: öffnen Sie sie, um den Anmelde-QR-Code auf das Plakat zu setzen.",
+        "openRegistrations": "Anmeldung öffnen",
+        "publishFirst": "Veröffentlichen Sie zuerst das Turnier, um die Anmeldung zu öffnen.",
+        "contact": "Kein Kontakt für Interessierte: fügen Sie eine Telefonnummer und/oder eine E-Mail hinzu.",
+        "phone": "Telefon",
+        "email": "E-Mail",
+        "saveContact": "Kontakt speichern",
+        "registrationsError": "Die Anmeldung konnte nicht geöffnet werden.",
+        "contactError": "Kontakt nicht gespeichert: prüfen Sie die E-Mail."
       }
     }
   },

@@ -1745,7 +1745,8 @@
         "city": "Città",
         "infoTitle": "Titolo",
         "infoDetail": "Dettaglio",
-        "sport": "Sport"
+        "sport": "Sport",
+        "contact": "Contatto"
       },
       "defaults": {
         "plateau": "Raggruppamento",
@@ -1758,6 +1759,18 @@
         "free": "Gratuito",
         "field": "1 campo",
         "format": "Formato"
+      },
+      "contactLabel": "Contatto:",
+      "prompts": {
+        "registrations": "Le iscrizioni sono chiuse: aprile per mettere il codice QR di iscrizione sulla locandina.",
+        "openRegistrations": "Apri le iscrizioni",
+        "publishFirst": "Pubblica prima il torneo per aprire le iscrizioni.",
+        "contact": "Nessun contatto per gli interessati: aggiungi un telefono e/o un'e-mail.",
+        "phone": "Telefono",
+        "email": "E-mail",
+        "saveContact": "Salva il contatto",
+        "registrationsError": "Impossibile aprire le iscrizioni.",
+        "contactError": "Contatto non salvato: controlla l'e-mail."
       }
     }
   },

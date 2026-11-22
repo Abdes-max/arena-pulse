@@ -32,6 +32,9 @@ export interface EventPosterContent {
   venue: string;
   city: string;
   qrLabel: string;
+  /** Phone and/or e-mail for people interested, under the venue. */
+  contact: string;
+  contactLabel: string;
 }
 
 export interface EventPosterStyle {
@@ -269,32 +272,53 @@ export function drawEventPoster(
     ctx.fillText(end, left + 245, y + 22);
   }
 
-  // Venue at the bottom, a stadium (and the QR code) on its right.
+  // Venue at the bottom, a stadium (and the QR code) on its right; with a
+  // contact, a third line takes the stadium's room.
   const venue = content.venue.trim().toUpperCase();
   const city = content.city.trim().toUpperCase();
-  if (venue || city || style.qr) {
+  const contact = content.contact.trim();
+  if (venue || city || contact || style.qr) {
     const top = H - 162;
     const height = 136;
     panel(ctx, 40, top, W - 80, height, plate, accent);
     const qrSpace = style.qr ? 140 : 0;
-    drawStadiumIcon(ctx, W - 60 - qrSpace - 240, top + 12, 240, height - 24, accent);
+    if (!contact) {
+      drawStadiumIcon(ctx, W - 60 - qrSpace - 240, top + 12, 240, height - 24, accent);
+    }
     drawIcon(ctx, 'pin', 110, top + height / 2, 42, accent, ink, 'bare');
-    const textWidth = W - 80 - 120 - 270 - qrSpace;
+    const textWidth = W - 80 - 120 - (contact ? 30 : 270) - qrSpace;
+    const lines = [venue, city, contact].filter(Boolean).length;
+    const rows = lines === 3 ? [36, 76, 112] : lines === 2 ? [48, 98] : [height / 2];
+    let row = 0;
     ctx.textAlign = 'left';
-    ctx.fillStyle = WHITE;
-    ctx.font = font(
-      800,
-      fit(ctx, venue, textWidth, 54, (s) => font(800, s)),
-    );
-    ctx.fillText(venue, 165, city ? top + 48 : top + height / 2);
+    if (venue) {
+      ctx.fillStyle = WHITE;
+      const max = lines === 3 ? 42 : 54;
+      ctx.font = font(
+        800,
+        fit(ctx, venue, textWidth, max, (s) => font(800, s)),
+      );
+      ctx.fillText(venue, 165, top + rows[row++]);
+    }
     if (city) {
       ctx.fillStyle = accent;
       const spaced = city.split('').join(' ');
+      const max = lines === 3 ? 28 : 38;
       ctx.font = font(
         700,
-        fit(ctx, spaced, textWidth, 38, (s) => font(700, s)),
+        fit(ctx, spaced, textWidth, max, (s) => font(700, s)),
       );
-      ctx.fillText(spaced, 165, top + 98);
+      ctx.fillText(spaced, 165, top + rows[row++]);
+    }
+    if (contact) {
+      const label = `${content.contactLabel.toUpperCase()} `;
+      const size = fit(ctx, label + contact, textWidth, lines === 1 ? 34 : 26, (s) => font(800, s));
+      ctx.font = font(800, size);
+      ctx.fillStyle = accent;
+      ctx.fillText(label, 165, top + rows[row]);
+      const labelWidth = ctx.measureText(label).width;
+      ctx.fillStyle = WHITE;
+      ctx.fillText(contact, 165 + labelWidth, top + rows[row]);
     }
     ctx.textAlign = 'center';
     if (style.qr) {

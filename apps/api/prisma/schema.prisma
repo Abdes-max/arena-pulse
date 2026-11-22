@@ -337,6 +337,9 @@ model Tournament {
   // Shown on the tournament card (e.g. "5 contre 5", "Elite"); free text.
   format              String?
   level               String?
+  // Contact for people interested in the event (poster), optional.
+  contactPhone        String?
+  contactEmail        String?
   // Whether a PUBLISHED tournament appears in the public directory search
   // (GET /public/tournaments, /public/tournaments/search) -- independent
   // from `status`. A private tournament (false) stays reachable by its

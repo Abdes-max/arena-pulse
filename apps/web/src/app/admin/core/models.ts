@@ -169,6 +169,9 @@ export interface TournamentDetail extends Tournament {
   organizerClubId?: string | null;
   format?: string | null;
   level?: string | null;
+  // Contact for people interested in the event (poster).
+  contactPhone?: string | null;
+  contactEmail?: string | null;
   registrationsOpen?: boolean;
   description: string | null;
   rules: string | null;

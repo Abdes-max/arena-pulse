@@ -1745,7 +1745,8 @@
         "city": "Cidade",
         "infoTitle": "Título",
         "infoDetail": "Detalhe",
-        "sport": "Desporto"
+        "sport": "Desporto",
+        "contact": "Contacto"
       },
       "defaults": {
         "plateau": "Encontro",
@@ -1758,6 +1759,18 @@
         "free": "Grátis",
         "field": "1 campo",
         "format": "Formato"
+      },
+      "contactLabel": "Contacto:",
+      "prompts": {
+        "registrations": "As inscrições estão fechadas: abra-as para colocar o código QR de inscrição no cartaz.",
+        "openRegistrations": "Abrir as inscrições",
+        "publishFirst": "Publique primeiro o torneio para abrir as inscrições.",
+        "contact": "Nenhum contacto para os interessados: adicione um telefone e/ou um e-mail.",
+        "phone": "Telefone",
+        "email": "E-mail",
+        "saveContact": "Guardar o contacto",
+        "registrationsError": "Não foi possível abrir as inscrições.",
+        "contactError": "Contacto não guardado: verifique o e-mail."
       }
     }
   },

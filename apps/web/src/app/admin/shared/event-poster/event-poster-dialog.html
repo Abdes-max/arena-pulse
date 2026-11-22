@@ -25,6 +25,52 @@
 
     @if (content(); as c) {
       <form class="event-poster__form" (submit)="$event.preventDefault()">
+        <!-- What would make the poster bring people in, when missing. -->
+        @if (!qrForRegistration()) {
+          <div class="event-poster__prompt">
+            <p>{{ 'admin.eventPoster.prompts.registrations' | transloco }}</p>
+            @if (tournament()?.status === 'PUBLISHED') {
+              <ap-button type="button" size="sm" [disabled]="busy()" (click)="openRegistrations()">
+                {{ 'admin.eventPoster.prompts.openRegistrations' | transloco }}
+              </ap-button>
+            } @else {
+              <small>{{ 'admin.eventPoster.prompts.publishFirst' | transloco }}</small>
+            }
+          </div>
+        }
+        @if (!contactSaved()) {
+          <div class="event-poster__prompt">
+            <p>{{ 'admin.eventPoster.prompts.contact' | transloco }}</p>
+            <div class="event-poster__prompt-fields">
+              <input
+                type="tel"
+                [value]="contactPhone()"
+                [placeholder]="'admin.eventPoster.prompts.phone' | transloco"
+                [attr.aria-label]="'admin.eventPoster.prompts.phone' | transloco"
+                (input)="contactPhone.set($any($event.target).value)"
+              />
+              <input
+                type="email"
+                [value]="contactEmail()"
+                [placeholder]="'admin.eventPoster.prompts.email' | transloco"
+                [attr.aria-label]="'admin.eventPoster.prompts.email' | transloco"
+                (input)="contactEmail.set($any($event.target).value)"
+              />
+            </div>
+            <ap-button
+              type="button"
+              size="sm"
+              variant="secondary"
+              [disabled]="busy() || (!contactPhone().trim() && !contactEmail().trim())"
+              (click)="saveContact()"
+            >
+              {{ 'admin.eventPoster.prompts.saveContact' | transloco }}
+            </ap-button>
+          </div>
+        }
+        @if (promptError(); as error) {
+          <p class="event-poster__error">{{ error | transloco }}</p>
+        }
         <p class="event-poster__hint">{{ 'admin.eventPoster.hint' | transloco }}</p>
         <div class="event-poster__grid">
           @for (field of textFields; track field.key) {

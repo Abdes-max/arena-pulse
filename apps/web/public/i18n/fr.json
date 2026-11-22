@@ -1847,7 +1847,8 @@
         "city": "Ville",
         "infoTitle": "Intitulé",
         "infoDetail": "Détail",
-        "sport": "Sport"
+        "sport": "Sport",
+        "contact": "Contact"
       },
       "defaults": {
         "plateau": "Plateau",
@@ -1860,6 +1861,18 @@
         "free": "Gratuit",
         "field": "1 terrain",
         "format": "Format"
+      },
+      "contactLabel": "Contact :",
+      "prompts": {
+        "registrations": "Les inscriptions sont fermées : ouvrez-les pour mettre le QR code d'inscription sur l'affiche.",
+        "openRegistrations": "Ouvrir les inscriptions",
+        "publishFirst": "Publiez d'abord le tournoi pour ouvrir les inscriptions.",
+        "contact": "Aucun contact pour les intéressés : ajoutez un téléphone et/ou un e-mail.",
+        "phone": "Téléphone",
+        "email": "E-mail",
+        "saveContact": "Enregistrer le contact",
+        "registrationsError": "Impossible d'ouvrir les inscriptions.",
+        "contactError": "Contact non enregistré : vérifiez l'e-mail."
       }
     }
   },

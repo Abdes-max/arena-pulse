@@ -58,6 +58,8 @@ export interface UpdateTournamentPayload {
   name?: string;
   format?: string | null;
   level?: string | null;
+  contactPhone?: string | null;
+  contactEmail?: string | null;
   sportId?: string;
   startDate?: string | null;
   endDate?: string | null;

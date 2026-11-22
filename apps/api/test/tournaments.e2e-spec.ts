@@ -112,6 +112,23 @@ describe('Tournaments (e2e)', () => {
       .send({ name: 'Coupe de printemps (2026)' })
       .expect(200);
 
+    // Contact for the poster: set, then an invalid e-mail refused, then cleared.
+    const contactRes = await auth(
+      request(app.getHttpServer()).patch(`${base}/${tournament.id}`),
+    )
+      .send({ contactPhone: '06 12 34 56 78', contactEmail: 'contact@club.fr' })
+      .expect(200);
+    expect(contactRes.body).toMatchObject({
+      contactPhone: '06 12 34 56 78',
+      contactEmail: 'contact@club.fr',
+    });
+    await auth(request(app.getHttpServer()).patch(`${base}/${tournament.id}`))
+      .send({ contactEmail: 'pas-un-mail' })
+      .expect(400);
+    await auth(request(app.getHttpServer()).patch(`${base}/${tournament.id}`))
+      .send({ contactPhone: null, contactEmail: null })
+      .expect(200);
+
     await makeTournamentPublishable(app, auth, base, tournament.id);
     await auth(
       request(app.getHttpServer()).post(`${base}/${tournament.id}/publish`),

@@ -16,6 +16,7 @@ import { Venue } from 'shared-models';
 import { AuthService } from '../../core/auth.service';
 import { Category, TournamentDetail } from '../../core/models';
 import { THEME_MAP } from '../../core/theme-map';
+import { RegistrationsService } from '../../core/registrations.service';
 import { TournamentsService } from '../../core/tournaments.service';
 import { EventPosterContent, EventPosterStyle, drawEventPoster } from './event-poster-renderer';
 
@@ -63,6 +64,7 @@ export class EventPosterDialog {
   private readonly authService = inject(AuthService);
   private readonly tournamentsService = inject(TournamentsService);
   private readonly publicApi = inject(PublicApiService);
+  private readonly registrationsService = inject(RegistrationsService);
   private readonly assetUrl = inject(AssetUrlService);
   private readonly languageService = inject(LanguageService);
   private readonly transloco = inject(TranslocoService);
@@ -72,6 +74,13 @@ export class EventPosterDialog {
   /** On by default while registrations are open: the code then leads to the sign-up page. */
   protected readonly withQr = signal(false);
   protected readonly qrForRegistration = signal(false);
+  // Offered above the form when missing: opening the registrations (their
+  // QR code then goes on the poster) and a contact for people interested.
+  protected readonly contactSaved = signal(false);
+  protected readonly contactPhone = signal('');
+  protected readonly contactEmail = signal('');
+  protected readonly busy = signal(false);
+  protected readonly promptError = signal<string | null>(null);
   private readonly images = signal<Pick<
     EventPosterStyle,
     'background' | 'backgroundFullBleed' | 'logo'
@@ -91,6 +100,7 @@ export class EventPosterDialog {
     { key: 'end', label: 'admin.eventPoster.fields.end' },
     { key: 'venue', label: 'admin.eventPoster.fields.venue' },
     { key: 'city', label: 'admin.eventPoster.fields.city' },
+    { key: 'contact', label: 'admin.eventPoster.fields.contact' },
   ];
 
   constructor() {
@@ -156,6 +166,65 @@ export class EventPosterDialog {
       }
       return { ...content, [key]: text };
     });
+  }
+
+  /** Opens the registrations from here: the poster gets their QR code. */
+  protected async openRegistrations(): Promise<void> {
+    const tournament = this.tournament();
+    const organizationId = this.authService.organizations()[0]?.id;
+    if (!tournament || !organizationId || this.busy()) {
+      return;
+    }
+    this.busy.set(true);
+    this.promptError.set(null);
+    try {
+      await this.registrationsService.updateSettings(organizationId, tournament.id, {
+        open: true,
+      });
+      this.tournament.set({ ...tournament, registrationsOpen: true });
+      this.qrForRegistration.set(true);
+      this.withQr.set(true);
+      this.content.update(
+        (content) =>
+          content && {
+            ...content,
+            qrLabel: this.transloco.translate('admin.eventPoster.qrRegister'),
+          },
+      );
+    } catch {
+      this.promptError.set('admin.eventPoster.prompts.registrationsError');
+    } finally {
+      this.busy.set(false);
+    }
+  }
+
+  /** Saves the contact on the tournament and puts it on the poster. */
+  protected async saveContact(): Promise<void> {
+    const tournament = this.tournament();
+    const organizationId = this.authService.organizations()[0]?.id;
+    const phone = this.contactPhone().trim();
+    const email = this.contactEmail().trim();
+    if (!tournament || !organizationId || (!phone && !email) || this.busy()) {
+      return;
+    }
+    this.busy.set(true);
+    this.promptError.set(null);
+    try {
+      const updated = await this.tournamentsService.updateTournament(
+        organizationId,
+        tournament.id,
+        { contactPhone: phone || null, contactEmail: email || null },
+      );
+      this.tournament.set(updated);
+      this.contactSaved.set(true);
+      this.content.update(
+        (content) => content && { ...content, contact: contactLine(phone, email) },
+      );
+    } catch {
+      this.promptError.set('admin.eventPoster.prompts.contactError');
+    } finally {
+      this.busy.set(false);
+    }
   }
 
   protected toggleQr(event: Event): void {
@@ -231,6 +300,7 @@ export class EventPosterDialog {
         schedule?.lastMatchEndTime ?? null,
       ),
     );
+    this.contactSaved.set(!!(tournament.contactPhone || tournament.contactEmail));
     this.tournament.set(tournament);
   }
 
@@ -303,6 +373,8 @@ export class EventPosterDialog {
           ? 'qrRegister'
           : 'qrFollow',
       ),
+      contact: contactLine(tournament.contactPhone, tournament.contactEmail),
+      contactLabel: t('contactLabel'),
     };
   }
 
@@ -403,6 +475,11 @@ async function loadPosterBackground(
         image: await loadImage(`${POSTER_BACKGROUNDS}/${DEFAULT_POSTER_BACKGROUND}.jpg`),
         ownSport: false,
       };
+}
+
+// "06 12 34 56 78 · contact@club.fr", either part optional.
+function contactLine(phone?: string | null, email?: string | null): string {
+  return [phone?.trim(), email?.trim()].filter(Boolean).join(' · ');
 }
 
 function loadImage(src: string | null): Promise<HTMLImageElement | null> {

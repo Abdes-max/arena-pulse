@@ -1847,7 +1847,8 @@
         "city": "City",
         "infoTitle": "Label",
         "infoDetail": "Detail",
-        "sport": "Sport"
+        "sport": "Sport",
+        "contact": "Contact"
       },
       "defaults": {
         "plateau": "Festival",
@@ -1860,6 +1861,18 @@
         "free": "Free",
         "field": "1 pitch",
         "format": "Format"
+      },
+      "contactLabel": "Contact:",
+      "prompts": {
+        "registrations": "Registrations are closed: open them to put the registration QR code on the poster.",
+        "openRegistrations": "Open registrations",
+        "publishFirst": "Publish the tournament first to open registrations.",
+        "contact": "No contact for people interested: add a phone and/or an e-mail.",
+        "phone": "Phone",
+        "email": "E-mail",
+        "saveContact": "Save the contact",
+        "registrationsError": "Could not open registrations.",
+        "contactError": "Contact not saved: check the e-mail."
       }
     }
   },

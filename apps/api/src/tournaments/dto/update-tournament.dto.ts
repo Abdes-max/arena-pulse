@@ -1,5 +1,6 @@
 import {
   IsBoolean,
+  IsEmail,
   IsEnum,
   IsISO8601,
   IsOptional,
@@ -50,6 +51,19 @@ export class UpdateTournamentDto {
   @IsString()
   @MaxLength(50)
   level?: string | null;
+
+  /** Contact for people interested in the event (poster); null clears it. */
+  @IsOptional()
+  @ValidateIf((dto: UpdateTournamentDto) => dto.contactPhone !== null)
+  @IsString()
+  @MaxLength(30)
+  contactPhone?: string | null;
+
+  @IsOptional()
+  @ValidateIf((dto: UpdateTournamentDto) => dto.contactEmail !== null)
+  @IsEmail()
+  @MaxLength(200)
+  contactEmail?: string | null;
 
   // Whether a published tournament appears in the public directory search
   // -- see the doc comment on Tournament.isListed in schema.prisma.
