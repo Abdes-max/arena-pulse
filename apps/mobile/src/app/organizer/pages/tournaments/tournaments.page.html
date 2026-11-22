@@ -168,6 +168,17 @@
               · {{ meta }}
             }
           </p>
+          @if (detailChips(t); as chips) {
+            <div class="tcard__chips">
+              @for (chip of chips; track $index) {
+                <span
+                  class="tcard__chip"
+                  [class.tcard__chip--category]="$index < (t.categoryNames?.length ?? 0)"
+                  >{{ chip }}</span
+                >
+              }
+            </div>
+          }
           <div class="tcard__actions">
             <button type="button" class="tcard__action" (click)="openScores($event, t)">
               {{ 'organizer.tournaments.list.scoresAction' | transloco }}

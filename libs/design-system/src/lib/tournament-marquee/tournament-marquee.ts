@@ -12,6 +12,9 @@ export interface TournamentMarqueeItem {
   // Already resolved to an absolute URL by the caller (AssetUrlService) --
   // this component stays a dumb presenter, same as ap-tournament-card.
   logoUrl: string | null;
+  // Shown under the location ("U11 · 8 vs 8"), when known.
+  categoryNames?: string[];
+  format?: string | null;
 }
 
 /**
@@ -52,6 +55,11 @@ export class TournamentMarquee {
 
   protected accentFor(index: number): 'signal' | 'ember' {
     return index % 2 === 0 ? 'signal' : 'ember';
+  }
+
+  /** "U11 · 8 vs 8" -- categories, then the game format. */
+  protected detailsLabel(t: TournamentMarqueeItem): string | null {
+    return [...(t.categoryNames ?? []), t.format].filter(Boolean).join(' · ') || null;
   }
 
   protected locationLabel(t: TournamentMarqueeItem): string | null {

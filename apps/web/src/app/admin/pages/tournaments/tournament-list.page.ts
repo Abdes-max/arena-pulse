@@ -177,6 +177,14 @@ export class TournamentListPage {
    * under each name. Dates are calendar days stored at UTC midnight, so
    * they're formatted in UTC to never shift by a day.
    */
+  /** Categories, then format and level, as small chips under the name. */
+  protected detailChips(tournament: Tournament): string[] | null {
+    const chips = [...(tournament.categoryNames ?? []), tournament.format, tournament.level].filter(
+      (chip): chip is string => !!chip,
+    );
+    return chips.length ? chips : null;
+  }
+
   protected metaLine(tournament: Tournament): string | null {
     const format = (iso: string) =>
       new Date(iso).toLocaleDateString(this.languageService.language(), {

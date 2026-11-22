@@ -64,6 +64,7 @@ export class OrganizerTournamentsService {
       knockoutSize?: number;
       thirdPlaceMatch?: boolean;
       categoryName?: string;
+      format?: string;
       venueName?: string;
       venueAddress?: string;
     },
@@ -141,6 +142,7 @@ export class OrganizerTournamentsService {
       organizerClubId?: string;
       startDate?: string | null;
       endDate?: string | null;
+      format?: string | null;
     },
   ): Promise<OrganizerTournament> {
     return firstValueFrom(

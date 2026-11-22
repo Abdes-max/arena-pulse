@@ -13,5 +13,6 @@ export * from './lib/tournament-timing.util';
 export * from './lib/set-unit.util';
 export * from './lib/header-background-presets';
 export * from './lib/age-categories';
+export * from './lib/game-formats';
 export * from './lib/maps-link.util';
 export * from './lib/dashboard-stats';

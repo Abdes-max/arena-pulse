@@ -78,14 +78,15 @@ export interface PublicTournamentSummary {
   // recorded yet -- the card simply omits the location line in that case.
   location: string | null;
   logoUrl: string | null;
+  /** Card details: game format ("8 vs 8"), level, category names ("U11"). */
+  format?: string | null;
+  level?: string | null;
+  categoryNames?: string[];
 }
 
 /** One row of the public directory search (`GET /public/tournaments/search`) -- unlike PublicTournamentSummary, carries the organizer's name (shown on each result card) since a directory search spans every organization, not just this site's own recent list. */
 export interface PublicTournamentDirectoryItem extends PublicTournamentSummary {
   organizerName: string;
-  /** Card details, e.g. "5 contre 5" and "Elite". */
-  format?: string | null;
-  level?: string | null;
   /** Set while the tournament takes pre-registrations: places held / total (null = unlimited) and the lowest price. */
   registration?: {
     taken: number;

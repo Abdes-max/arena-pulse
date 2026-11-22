@@ -233,6 +233,14 @@ export class OrganizerTournamentsPage {
 
   // "12 oct. 2026 · Stade" under the name -- same as apps/web's
   // tournament-list.page.ts metaLine.
+  /** Categories, then format and level, as small chips under the meta line. */
+  protected detailChips(tournament: OrganizerTournament): string[] | null {
+    const chips = [...(tournament.categoryNames ?? []), tournament.format, tournament.level].filter(
+      (chip): chip is string => !!chip,
+    );
+    return chips.length ? chips : null;
+  }
+
   protected metaLine(tournament: OrganizerTournament): string | null {
     const format = (iso: string) =>
       new Date(iso).toLocaleDateString(this.transloco.getActiveLang(), {

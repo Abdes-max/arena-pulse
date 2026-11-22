@@ -8,6 +8,7 @@ import {
   effect,
   inject,
   signal,
+  untracked,
   viewChild,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -28,12 +29,14 @@ import {
   PublicApiService,
 } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { AutocompleteField, Button, TextField } from 'design-system';
+import { AutocompleteField, Button, Select, SelectOption, TextField } from 'design-system';
 import {
   PublicSport,
   PublicTheme,
   matchRoundLabel,
   RECOMMENDED_HEADER_BACKGROUND,
+  defaultGameFormat,
+  gameFormatsFor,
   headerBackgroundPresetsFor,
   HeaderBackgroundPreset,
   headerBackgroundPresetOf,
@@ -181,6 +184,7 @@ function describeError(error: unknown): string {
     IonHeader,
     IonTitle,
     IonToolbar,
+    Select,
     TextField,
     TranslocoPipe,
   ],
@@ -307,6 +311,16 @@ export class OrganizerTournamentWizardPage {
     () => this.sports().find((s) => s.id === this.sportId())?.name ?? '',
   );
   private readonly clubSport = computed(() => clubDirectorySport(this.sportName()));
+  // Game format, required: the sport's list (plus a format typed freely
+  // before the list existed, when editing such a tournament).
+  protected readonly gameFormat = signal('');
+  protected readonly gameFormatOptions = computed<SelectOption[]>(() => {
+    const formats = [...gameFormatsFor(this.sportName())];
+    if (this.gameFormat() && !formats.includes(this.gameFormat())) {
+      formats.unshift(this.gameFormat());
+    }
+    return formats.map((format) => ({ value: format, label: format }));
+  });
   protected readonly clubSearch = inject(ClubSearchService).autocomplete(
     () => this.clubSport() ?? 'football',
   );
@@ -736,6 +750,18 @@ export class OrganizerTournamentWizardPage {
   });
 
   constructor() {
+    // No format yet, or a new tournament switching sport: the sport's usual one.
+    effect(() => {
+      const sportName = this.sportName();
+      const format = this.gameFormat();
+      if (!sportName) {
+        return;
+      }
+      const editing = untracked(() => this.mode() === 'edit');
+      if (!format || (!editing && !gameFormatsFor(sportName).includes(format))) {
+        this.gameFormat.set(defaultGameFormat(sportName));
+      }
+    });
     // The board follows the calendar: loaded once one exists, refreshed after a regeneration.
     effect(() => {
       if (this.matches()) {
@@ -770,6 +796,7 @@ export class OrganizerTournamentWizardPage {
       const tournament = await this.tournamentsApi.getTournament(organizationId, tournamentId);
       this.name.set(tournament.name);
       this.sportId.set(tournament.sportId);
+      this.gameFormat.set(tournament.format ?? '');
       this.isOnline.set(tournament.isOnline);
       this.isListed.set(tournament.isListed);
       this.theme.set(tournament.theme);
@@ -1363,7 +1390,12 @@ export class OrganizerTournamentWizardPage {
   protected canAdvance(): boolean {
     switch (this.step()) {
       case 1:
-        return this.name().trim().length > 0 && this.sportId() !== '' && this.startDate() !== '';
+        return (
+          this.name().trim().length > 0 &&
+          this.sportId() !== '' &&
+          this.gameFormat() !== '' &&
+          this.startDate() !== ''
+        );
       case 2:
         // The "≥3 teams" nudge only makes sense while building a tournament
         // from scratch -- an existing one may legitimately have any team
@@ -1456,6 +1488,7 @@ export class OrganizerTournamentWizardPage {
       isOnline: this.isOnline(),
       startDate: this.startDate(),
       organizerClubId: this.organizerClubToSave() || undefined,
+      format: this.gameFormat(),
     });
     this.tournamentId = tournament.id;
     this.scheduleDate.set(this.startDate());
@@ -1499,6 +1532,7 @@ export class OrganizerTournamentWizardPage {
       sportId: this.sportId(),
       isOnline: this.isOnline(),
       startDate,
+      format: this.gameFormat(),
       organizerClubId: this.organizerClubToSave(),
       ...(this.loadedEndDate && this.loadedEndDate < startDate ? { endDate: startDate } : {}),
     });

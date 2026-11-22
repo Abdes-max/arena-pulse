@@ -534,6 +534,9 @@
               [location]="t.location"
               [logoUrl]="t.logoUrl"
               [organizerName]="t.organizerName"
+              [categories]="t.categoryNames ?? []"
+              [format]="t.format ?? null"
+              [level]="t.level ?? null"
               [tag]="
                 t.registration
                   ? ('tournamentEntry.published.filters.registrationOpen' | transloco)

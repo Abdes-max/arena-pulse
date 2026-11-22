@@ -21,8 +21,13 @@
     <span class="ap-tournament-card__organizer">{{ organizer }}</span>
   }
 
-  @if (format() || level()) {
+  @if (categories().length || format() || level()) {
     <div class="ap-tournament-card__chips">
+      @for (category of categories(); track category) {
+        <span class="ap-tournament-card__chip ap-tournament-card__chip--category">{{
+          category
+        }}</span>
+      }
       @if (format(); as f) {
         <span class="ap-tournament-card__chip">{{ f }}</span>
       }

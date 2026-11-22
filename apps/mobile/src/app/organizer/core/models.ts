@@ -42,6 +42,8 @@ export interface OrganizerTournament {
   status: TournamentStatus;
   sportId: string;
   sportName: string;
+  /** Game format, e.g. "8 vs 8". */
+  format?: string | null;
   // "SETS" sports (padel, tennis...) record each set; see ScoreFormat in shared-models.
   scoreFormat?: 'GOALS' | 'SETS';
   defaultSetsToWin?: number | null;
@@ -62,6 +64,9 @@ export interface OrganizerTournament {
   endDate?: string | null;
   // First venue of the tournament, added by the list endpoint only.
   venueName?: string | null;
+  // List endpoint only: shown on the cards ("U11", "8 vs 8").
+  categoryNames?: string[];
+  level?: string | null;
   createdAt: string;
 }
 
@@ -74,6 +79,8 @@ export interface CreateTournamentPayload {
   // Organizing club (club directory) -- its crest becomes the tournament logo.
   organizerClubId?: string;
   startDate?: string;
+  /** Game format, e.g. "8 vs 8" (see gameFormatsFor). */
+  format?: string;
 }
 
 // Publishing may require a Stripe payment first once past the free tier

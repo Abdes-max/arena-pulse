@@ -65,6 +65,7 @@ export class QuickPlateauService {
       sportId: dto.sportId,
       startDate: dto.date,
       endDate: dto.date,
+      format: dto.format,
     });
     try {
       // Start with the header that matches the theme rather than none (the

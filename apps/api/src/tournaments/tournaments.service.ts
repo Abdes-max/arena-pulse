@@ -51,6 +51,8 @@ import { generateSlug } from './slug.util';
 type TournamentWithSport = Tournament & { sport: Sport };
 type TournamentWithSportAndVenue = TournamentWithSport & {
   venues: { name: string; address: string | null }[];
+  // Category names, in display order, for the cards (U11, Senior...).
+  categories?: { name: string }[];
 };
 type TournamentWithSportVenueAndOrganization = TournamentWithSportAndVenue & {
   organization: Pick<Organization, 'name'>;
@@ -126,6 +128,7 @@ export class TournamentsService {
         isListed: dto.isListed ?? true,
         theme: dto.theme,
         organizerClubId: dto.organizerClubId,
+        format: dto.format?.trim() || undefined,
         // Every new tournament starts with the header that matches its theme
         // (presets are free, whatever the plan), whether it comes from the
         // web, the app or the quick event; the organizer can change it later.
@@ -155,6 +158,7 @@ export class TournamentsService {
             orderBy: { position: 'asc' },
             take: 1,
           },
+          categories: { select: { name: true }, orderBy: { position: 'asc' } },
           // Same rule as hasPremiumFeatures, for the whole list in one query.
           // pendingRegistrations: requests waiting for the organizer's
           // decision -- the app's "to validate" badge.
@@ -184,6 +188,12 @@ export class TournamentsService {
     return tournaments.map((tournament) => ({
       ...this.toSummary(tournament),
       venueName: tournament.venues[0]?.name ?? null,
+      // Shown on the cards, under the name.
+      format: tournament.format,
+      level: tournament.level,
+      categoryNames: (tournament.categories ?? []).map(
+        (category) => category.name,
+      ),
       pendingRegistrations: tournament._count?.registrations ?? 0,
       premiumUnlocked:
         hasActiveSubscription ||
@@ -1632,6 +1642,7 @@ export class TournamentsService {
         // first by display position is as good a pick as any when a
         // tournament spans several.
         venues: { orderBy: { position: 'asc' }, take: 1 },
+        categories: { select: { name: true }, orderBy: { position: 'asc' } },
       },
       orderBy: { createdAt: 'desc' },
       take: limit,
@@ -1753,6 +1764,7 @@ export class TournamentsService {
           sport: true,
           organization: { select: { name: true } },
           venues: { orderBy: { position: 'asc' }, take: 1 },
+          categories: { select: { name: true }, orderBy: { position: 'asc' } },
         },
         orderBy: { createdAt: 'desc' },
         skip: (page - 1) * pageSize,
@@ -1767,8 +1779,6 @@ export class TournamentsService {
     return {
       items: tournaments.map((tournament) => ({
         ...this.toPublicDirectoryItem(tournament),
-        format: tournament.format,
-        level: tournament.level,
         registration: registration.get(tournament.id) ?? null,
       })),
       total,
@@ -2367,6 +2377,12 @@ export class TournamentsService {
       location: tournament.isOnline
         ? null
         : (venue?.address ?? venue?.name ?? null),
+      // Shown on the cards: game format, level and categories.
+      format: tournament.format,
+      level: tournament.level,
+      categoryNames: (tournament.categories ?? []).map(
+        (category) => category.name,
+      ),
     };
   }
 
