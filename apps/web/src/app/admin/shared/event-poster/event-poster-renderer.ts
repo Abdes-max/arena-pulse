@@ -34,6 +34,8 @@ export interface EventPosterContent {
 
 export interface EventPosterStyle {
   primary: string;
+  /** The theme's signal color: bands, borders, icons, light. */
+  accent: string;
   font: string;
   /** The fixed match-night photo. */
   background: HTMLImageElement | null;
@@ -47,7 +49,6 @@ const W = POSTER_WIDTH;
 const H = POSTER_HEIGHT;
 const WHITE = '#ffffff';
 const PRICE_RED = '#e0161e';
-const POSTER_YELLOW = '#ffd21f';
 const SKEW = -0.14;
 const LOGO_Y = 585;
 // The photo at 0.78x (1024x1536 source): heads under the date, socks above
@@ -67,8 +68,8 @@ export function drawEventPoster(
     throw new Error('no canvas');
   }
   const random = seeded(11);
-  // Yellow on the photo's green night; panels in the theme's darkened primary.
-  const accent = POSTER_YELLOW;
+  // Signal color for the highlights, the darkened primary for the panels.
+  const accent = style.accent;
   const ink = shade(style.primary, -0.8);
   const plate = withAlpha(shade(style.primary, -0.8), 0.88);
   const font = (weight: number, size: number) => `${weight} ${size}px ${style.font}`;
@@ -296,23 +297,17 @@ export function drawEventPoster(
 function drawBackground(ctx: Ctx, style: EventPosterStyle): void {
   ctx.fillStyle = shade(style.primary, -0.85);
   ctx.fillRect(0, 0, W, H);
-  const img = style.background;
+  const img = style.background ? recolored(style.background, style.primary, style.accent) : null;
   if (img) {
     // Backdrop: the photo filling the poster, slightly dimmed...
-    const fill = Math.max(W / img.naturalWidth, H / img.naturalHeight);
+    const fill = Math.max(W / img.width, H / img.height);
     ctx.save();
     ctx.filter = 'brightness(0.92)';
-    ctx.drawImage(
-      img,
-      (W - img.naturalWidth * fill) / 2,
-      0,
-      img.naturalWidth * fill,
-      img.naturalHeight * fill,
-    );
+    ctx.drawImage(img, (W - img.width * fill) / 2, 0, img.width * fill, img.height * fill);
     ctx.restore();
     // Its oversized players would peek out on both sides: shade them, the
     // stands above stay in view.
-    const side = (W - Math.round(img.naturalWidth * PHOTO_SCALE)) / 2 + 40;
+    const side = (W - Math.round(img.width * PHOTO_SCALE)) / 2 + 40;
     const shadow = ctx.createLinearGradient(0, 470, 0, 900);
     shadow.addColorStop(0, 'rgba(0,0,0,0)');
     shadow.addColorStop(0.3, 'rgba(0,0,0,0.82)');
@@ -323,8 +318,8 @@ function drawBackground(ctx: Ctx, style: EventPosterStyle): void {
     ctx.fillRect(W - side, 470, side, 430);
     // ...under the photo itself, zoomed out so the players show down to
     // their socks, its edges fading into the backdrop.
-    const w = Math.round(img.naturalWidth * PHOTO_SCALE);
-    const h = Math.round(img.naturalHeight * PHOTO_SCALE);
+    const w = Math.round(img.width * PHOTO_SCALE);
+    const h = Math.round(img.height * PHOTO_SCALE);
     const photo = document.createElement('canvas');
     photo.width = w;
     photo.height = h;
@@ -861,6 +856,103 @@ function parseColor(color: string): [number, number, number] {
   }
   const rgb = color.match(/\d+(\.\d+)?/g);
   return rgb && rgb.length >= 3 ? [+rgb[0], +rgb[1], +rgb[2]] : [128, 128, 128];
+}
+
+// One recolored copy per theme: the dialog redraws on every keystroke.
+const recolorCache = new Map<string, HTMLCanvasElement | HTMLImageElement>();
+
+/**
+ * The photo in the theme's colors: its greens (jerseys, pitch, flags) take
+ * the primary's hue, its yellows and golds (stripes, flags, lights) the
+ * signal's; skin, crowd and ball keep theirs. A grey primary greys the greens.
+ */
+function recolored(
+  img: HTMLImageElement,
+  primary: string,
+  accent: string,
+): HTMLCanvasElement | HTMLImageElement {
+  const key = `${img.src}|${primary}|${accent}`;
+  const cached = recolorCache.get(key);
+  if (cached) {
+    return cached;
+  }
+  const canvas = document.createElement('canvas');
+  canvas.width = img.naturalWidth;
+  canvas.height = img.naturalHeight;
+  const c = canvas.getContext('2d');
+  if (!c) {
+    return img;
+  }
+  c.drawImage(img, 0, 0);
+  let data: ImageData;
+  try {
+    data = c.getImageData(0, 0, canvas.width, canvas.height);
+  } catch {
+    return img;
+  }
+  const [primaryHue, primarySat] = toHsl(...parseColor(primary));
+  const [accentHue, accentSat] = toHsl(...parseColor(accent));
+  const px = data.data;
+  for (let i = 0; i < px.length; i += 4) {
+    const [h, sat, l] = toHsl(px[i], px[i + 1], px[i + 2]);
+    if (sat < 0.12) {
+      continue;
+    }
+    let hue: number;
+    let satScale: number;
+    if (h >= 70 && h <= 185) {
+      hue = primaryHue;
+      satScale = Math.min(1, primarySat * 1.6);
+    } else if (h >= 38 && h < 70) {
+      hue = accentHue;
+      satScale = Math.min(1, accentSat * 1.2);
+    } else {
+      continue;
+    }
+    const [nr, ng, nb] = fromHsl(hue, sat * satScale, l);
+    px[i] = nr;
+    px[i + 1] = ng;
+    px[i + 2] = nb;
+  }
+  c.putImageData(data, 0, 0);
+  recolorCache.set(key, canvas);
+  return canvas;
+}
+
+function toHsl(r: number, g: number, b: number): [number, number, number] {
+  r /= 255;
+  g /= 255;
+  b /= 255;
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const delta = max - min;
+  const l = (max + min) / 2;
+  if (delta === 0) {
+    return [0, 0, l];
+  }
+  const s = delta / (1 - Math.abs(2 * l - 1));
+  let h = max === r ? ((g - b) / delta) % 6 : max === g ? (b - r) / delta + 2 : (r - g) / delta + 4;
+  h = (h * 60 + 360) % 360;
+  return [h, s, l];
+}
+
+function fromHsl(h: number, s: number, l: number): [number, number, number] {
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+  const m = l - c / 2;
+  const [r, g, b] =
+    h < 60
+      ? [c, x, 0]
+      : h < 120
+        ? [x, c, 0]
+        : h < 180
+          ? [0, c, x]
+          : h < 240
+            ? [0, x, c]
+            : h < 300
+              ? [x, 0, c]
+              : [c, 0, x];
+  return [Math.round((r + m) * 255), Math.round((g + m) * 255), Math.round((b + m) * 255)];
 }
 
 function withAlpha(color: string, alpha: number): string {

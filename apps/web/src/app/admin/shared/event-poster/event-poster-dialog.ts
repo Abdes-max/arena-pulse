@@ -35,13 +35,14 @@ interface FormField {
 
 interface Theme {
   primary: string;
+  accent: string;
   font: string;
 }
 
 /**
  * Promotional poster generator ("Affiche"): a ready-to-post 1080x1350 image
- * on a fixed match-night photo, in the theme's primary color and heading
- * font, with the category, organizer, date, key infos, price and venue.
+ * on a fixed match-night photo recolored to the theme -- primary and signal
+ * colors, heading font -- with the category, organizer, date, key infos, price and venue.
  * Every text starts from the tournament's data and stays editable; drawing
  * is in event-poster-renderer.ts.
  */
@@ -320,6 +321,7 @@ export class EventPosterDialog {
       style.getPropertyValue(name).trim() || fallback;
     const theme = {
       primary: read('--ap-color-primary', '#0f172a'),
+      accent: read('--ap-color-signal', '#facc15'),
       font: read('--ap-font-heading', 'sans-serif'),
     };
     probe.remove();
