@@ -260,7 +260,7 @@ export class EventPosterDialog {
           detail: meeting ? t('defaults.at', { time: this.time(meeting) }) : '',
         },
         {
-          icon: 'ball',
+          icon: 'whistle',
           title: t('defaults.firstMatch'),
           detail: firstMatch ? t('defaults.at', { time: this.time(firstMatch) }) : '',
         },

@@ -9,7 +9,7 @@
 export const POSTER_WIDTH = 1080;
 export const POSTER_HEIGHT = 1350;
 
-export type PosterIcon = 'pin' | 'ball' | 'field' | 'rules';
+export type PosterIcon = 'pin' | 'whistle' | 'field' | 'rules';
 
 export interface PosterInfo {
   icon: PosterIcon;
@@ -573,21 +573,23 @@ function drawIcon(
       ctx.arc(cx, cy - 6 * s, 5 * s, 0, Math.PI * 2);
       ctx.fill();
       break;
-    case 'ball':
-      ctx.fillStyle = WHITE;
+    // Referee's whistle: the kick-off of any sport.
+    case 'whistle': {
       ctx.beginPath();
-      ctx.arc(cx, cy, 25 * s, 0, Math.PI * 2);
+      ctx.arc(cx - 5 * s, cy + 5 * s, 13 * s, 0, Math.PI * 2);
       ctx.fill();
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = '#111111';
+      ctx.fillRect(cx - 5 * s, cy - 8 * s, 24 * s, 11 * s);
+      ctx.fillStyle = 'rgba(0,0,0,0.85)';
+      ctx.beginPath();
+      ctx.arc(cx - 5 * s, cy + 5 * s, 4.5 * s, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.arc(cx - 15 * s, cy - 12 * s, 6 * s, Math.PI * 0.2, Math.PI * 1.6);
       ctx.stroke();
-      ctx.fillStyle = '#111111';
-      polygon(ctx, cx, cy, 8.5 * s, 5);
-      for (let i = 0; i < 5; i++) {
-        const a = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
-        polygon(ctx, cx + Math.cos(a) * 20 * s, cy + Math.sin(a) * 20 * s, 5.5 * s, 5);
-      }
       break;
+    }
+    // A plain playing area (outline and halfway line), for every sport.
     case 'field': {
       const w = 46 * s;
       const h = 30 * s;
@@ -597,11 +599,6 @@ function drawIcon(
       ctx.moveTo(cx, cy - h / 2);
       ctx.lineTo(cx, cy + h / 2);
       ctx.stroke();
-      ctx.beginPath();
-      ctx.arc(cx, cy, 6.5 * s, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.strokeRect(cx - w / 2, cy - 7 * s, 7 * s, 14 * s);
-      ctx.strokeRect(cx + w / 2 - 7 * s, cy - 7 * s, 7 * s, 14 * s);
       break;
     }
     case 'rules': {
@@ -629,7 +626,7 @@ function drawIcon(
   ctx.restore();
 }
 
-// Bowl, tiers, green pitch and four light masts.
+// Bowl, tiers, a plain playing area and two light masts.
 function drawStadiumIcon(ctx: Ctx, x: number, y: number, w: number, h: number, accent: string) {
   ctx.save();
   const cx = x + w / 2;
@@ -670,9 +667,6 @@ function drawStadiumIcon(ctx: Ctx, x: number, y: number, w: number, h: number, a
   ctx.beginPath();
   ctx.moveTo(cx, cy - h * 0.12);
   ctx.lineTo(cx, cy + h * 0.12);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.arc(cx, cy, 6, 0, Math.PI * 2);
   ctx.stroke();
   ctx.strokeStyle = accent;
   ctx.lineWidth = 2;
@@ -809,16 +803,6 @@ function resample(
     c.drawImage(source, 0, 0, width, height);
   }
   return canvas;
-}
-
-function polygon(ctx: Ctx, cx: number, cy: number, r: number, n: number): void {
-  ctx.beginPath();
-  for (let i = 0; i < n; i++) {
-    const a = -Math.PI / 2 + (i * 2 * Math.PI) / n;
-    ctx.lineTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r);
-  }
-  ctx.closePath();
-  ctx.fill();
 }
 
 function skewed(ctx: Ctx, x: number, y: number, draw: () => void): void {
