@@ -21,7 +21,7 @@ import { EventPosterContent, EventPosterStyle, drawEventPoster } from './event-p
 
 // One match-night photo per sport, public/poster-backgrounds/<sport>.jpg
 // (sport name without accents, e.g. "football", "volleyball"); football's
-// stands in for a sport that has none yet.
+// stands in, blurred out of recognition, for a sport that has none yet.
 const POSTER_BACKGROUNDS = '/poster-backgrounds';
 const DEFAULT_POSTER_SPORT = 'football';
 
@@ -72,7 +72,10 @@ export class EventPosterDialog {
   /** On by default while registrations are open: the code then leads to the sign-up page. */
   protected readonly withQr = signal(false);
   protected readonly qrForRegistration = signal(false);
-  private readonly images = signal<Pick<EventPosterStyle, 'background' | 'logo'> | null>(null);
+  private readonly images = signal<Pick<
+    EventPosterStyle,
+    'background' | 'blurBackground' | 'logo'
+  > | null>(null);
   private readonly qrImage = signal<HTMLImageElement | null>(null);
   private theme: Theme | null = null;
   protected readonly image = signal<string | null>(null);
@@ -216,7 +219,7 @@ export class EventPosterDialog {
     const registering = !!tournament.registrationsOpen && tournament.status === 'PUBLISHED';
     this.qrForRegistration.set(registering);
     this.withQr.set(registering);
-    this.images.set({ background, logo });
+    this.images.set({ background: background.image, blurBackground: !background.ownSport, logo });
     this.content.set(this.defaults(tournament, venues, categories, firstMatchTime));
     this.tournament.set(tournament);
   }
@@ -371,16 +374,21 @@ async function loadHeadingFont(stack: string): Promise<void> {
   ]);
 }
 
-async function loadPosterBackground(sportName: string): Promise<HTMLImageElement | null> {
+async function loadPosterBackground(
+  sportName: string,
+): Promise<{ image: HTMLImageElement | null; ownSport: boolean }> {
   const sport = sportName
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-');
-  return (
-    (await loadImage(`${POSTER_BACKGROUNDS}/${sport}.jpg`)) ??
-    loadImage(`${POSTER_BACKGROUNDS}/${DEFAULT_POSTER_SPORT}.jpg`)
-  );
+  const own = await loadImage(`${POSTER_BACKGROUNDS}/${sport}.jpg`);
+  return own
+    ? { image: own, ownSport: true }
+    : {
+        image: await loadImage(`${POSTER_BACKGROUNDS}/${DEFAULT_POSTER_SPORT}.jpg`),
+        ownSport: false,
+      };
 }
 
 function loadImage(src: string | null): Promise<HTMLImageElement | null> {
