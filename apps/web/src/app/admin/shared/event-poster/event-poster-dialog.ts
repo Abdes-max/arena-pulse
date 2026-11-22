@@ -200,16 +200,13 @@ export class EventPosterDialog {
 
   private async load(organizationId: string, tournamentId: string): Promise<void> {
     const tournament = await this.tournamentsService.getTournament(organizationId, tournamentId);
-    const [venues, categories, firstMatchTime] = await Promise.all([
+    const [venues, categories, schedule] = await Promise.all([
       this.tournamentsService.listVenues(organizationId, tournamentId).catch(() => [] as Venue[]),
       this.tournamentsService
         .listCategories(organizationId, tournamentId)
         .catch(() => [] as Category[]),
-      // Only the public side works the first match out (drafts have no public page).
-      this.publicApi
-        .getTournament(tournament.slug)
-        .then((t) => t.firstMatchTime)
-        .catch(() => null),
+      // Only the public side works the schedule's times out (drafts have no public page).
+      this.publicApi.getTournament(tournament.slug).catch(() => null),
     ]);
     this.theme = this.readTheme(tournament);
     await loadHeadingFont(this.theme.font);
@@ -225,7 +222,15 @@ export class EventPosterDialog {
       backgroundFullBleed: !background.ownSport,
       logo,
     });
-    this.content.set(this.defaults(tournament, venues, categories, firstMatchTime));
+    this.content.set(
+      this.defaults(
+        tournament,
+        venues,
+        categories,
+        schedule?.firstMatchTime ?? null,
+        schedule?.lastMatchEndTime ?? null,
+      ),
+    );
     this.tournament.set(tournament);
   }
 
@@ -234,6 +239,7 @@ export class EventPosterDialog {
     venues: Venue[],
     categories: Category[],
     firstMatchTime: string | null,
+    lastMatchEndTime: string | null,
   ): EventPosterContent {
     const t = (key: string, params?: Record<string, unknown>) =>
       this.transloco.translate(`admin.eventPoster.${key}`, params);
@@ -289,7 +295,7 @@ export class EventPosterDialog {
             }).format(fee / 100)
           : t('defaults.free'),
       endLabel: t('endLabel'),
-      end: '',
+      end: lastMatchEndTime ? this.time(new Date(lastMatchEndTime)) : '',
       venue: venue?.name ?? '',
       city: cityOf(venue?.address ?? null),
       qrLabel: t(
