@@ -312,7 +312,7 @@ function drawBackground(ctx: Ctx, style: EventPosterStyle): void {
     // Backdrop: the photo filling the poster, blurred and dimmed...
     const fill = Math.max(W / img.naturalWidth, H / img.naturalHeight);
     ctx.save();
-    ctx.filter = 'blur(10px) brightness(0.85)';
+    ctx.filter = 'blur(3px) brightness(0.92)';
     ctx.drawImage(
       img,
       (W - img.naturalWidth * fill) / 2,
@@ -321,6 +321,17 @@ function drawBackground(ctx: Ctx, style: EventPosterStyle): void {
       img.naturalHeight * fill,
     );
     ctx.restore();
+    // Its oversized players would peek out on both sides: shade them, the
+    // stands above stay in view.
+    const side = (W - Math.round(img.naturalWidth * PHOTO_SCALE)) / 2 + 40;
+    const shadow = ctx.createLinearGradient(0, 470, 0, 900);
+    shadow.addColorStop(0, 'rgba(0,0,0,0)');
+    shadow.addColorStop(0.3, 'rgba(0,0,0,0.82)');
+    shadow.addColorStop(0.75, 'rgba(0,0,0,0.82)');
+    shadow.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = shadow;
+    ctx.fillRect(0, 470, side, 430);
+    ctx.fillRect(W - side, 470, side, 430);
     // ...under the photo itself, zoomed out so the players show down to
     // their socks, its edges fading into the backdrop.
     const w = Math.round(img.naturalWidth * PHOTO_SCALE);
@@ -334,14 +345,14 @@ function drawBackground(ctx: Ctx, style: EventPosterStyle): void {
       p.globalCompositeOperation = 'destination-in';
       const sides = p.createLinearGradient(0, 0, w, 0);
       sides.addColorStop(0, 'rgba(0,0,0,0)');
-      sides.addColorStop(0.24, 'rgba(0,0,0,1)');
-      sides.addColorStop(0.76, 'rgba(0,0,0,1)');
+      sides.addColorStop(0.07, 'rgba(0,0,0,1)');
+      sides.addColorStop(0.93, 'rgba(0,0,0,1)');
       sides.addColorStop(1, 'rgba(0,0,0,0)');
       p.fillStyle = sides;
       p.fillRect(0, 0, w, h);
       const ends = p.createLinearGradient(0, 0, 0, h);
       ends.addColorStop(0, 'rgba(0,0,0,0)');
-      ends.addColorStop(0.2, 'rgba(0,0,0,1)');
+      ends.addColorStop(0.12, 'rgba(0,0,0,1)');
       ends.addColorStop(0.88, 'rgba(0,0,0,1)');
       ends.addColorStop(1, 'rgba(0,0,0,0)');
       p.fillStyle = ends;
