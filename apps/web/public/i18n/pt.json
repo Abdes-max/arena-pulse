@@ -1750,9 +1750,10 @@
         "meeting": "Concentração",
         "firstMatch": "Primeiro jogo",
         "at": "às {{time}}",
-        "fields": "{{count}} campo(s)",
+        "fields": "{{count}} campos",
         "level": "Nível",
-        "free": "Grátis"
+        "free": "Grátis",
+        "field": "1 campo"
       }
     }
   },

@@ -1750,9 +1750,10 @@
         "meeting": "Ritrovo",
         "firstMatch": "Prima partita",
         "at": "alle {{time}}",
-        "fields": "{{count}} campo/i",
+        "fields": "{{count}} campi",
         "level": "Livello",
-        "free": "Gratuito"
+        "free": "Gratuito",
+        "field": "1 campo"
       }
     }
   },

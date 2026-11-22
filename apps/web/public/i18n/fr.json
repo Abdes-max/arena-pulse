@@ -1852,9 +1852,10 @@
         "meeting": "Rendez-vous",
         "firstMatch": "Premier match",
         "at": "à {{time}}",
-        "fields": "{{count}} terrain(s)",
+        "fields": "{{count}} terrains",
         "level": "Niveau",
-        "free": "Gratuit"
+        "free": "Gratuit",
+        "field": "1 terrain"
       }
     }
   },

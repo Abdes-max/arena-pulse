@@ -1750,9 +1750,10 @@
         "meeting": "Treffpunkt",
         "firstMatch": "Erstes Spiel",
         "at": "um {{time}}",
-        "fields": "{{count}} Platz/Plätze",
+        "fields": "{{count}} Plätze",
         "level": "Niveau",
-        "free": "Kostenlos"
+        "free": "Kostenlos",
+        "field": "1 Platz"
       }
     }
   },

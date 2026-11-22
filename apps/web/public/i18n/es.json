@@ -1750,9 +1750,10 @@
         "meeting": "Cita",
         "firstMatch": "Primer partido",
         "at": "a las {{time}}",
-        "fields": "{{count}} campo(s)",
+        "fields": "{{count}} campos",
         "level": "Nivel",
-        "free": "Gratis"
+        "free": "Gratis",
+        "field": "1 campo"
       }
     }
   },

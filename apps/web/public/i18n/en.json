@@ -1852,9 +1852,10 @@
         "meeting": "Meeting time",
         "firstMatch": "First match",
         "at": "at {{time}}",
-        "fields": "{{count}} pitch(es)",
+        "fields": "{{count}} pitches",
         "level": "Level",
-        "free": "Free"
+        "free": "Free",
+        "field": "1 pitch"
       }
     }
   },
