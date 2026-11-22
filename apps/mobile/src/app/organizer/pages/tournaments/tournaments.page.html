@@ -46,32 +46,52 @@
         <span aria-hidden="true">→</span>
       </a>
     }
-    @if (user()) {
-      <div
-        class="organizer-tournaments-page__mode"
-        role="group"
-        [attr.aria-label]="'organizer.tournaments.list.uiMode.label' | transloco"
-      >
-        <button
-          type="button"
-          class="organizer-tournaments-page__mode-option"
-          [class.organizer-tournaments-page__mode-option--active]="simpleMode()"
-          [attr.aria-pressed]="simpleMode()"
-          (click)="setUiMode('SIMPLE')"
+    <div class="organizer-tournaments-page__topbar">
+      @if (user()) {
+        <div
+          class="organizer-tournaments-page__mode"
+          role="group"
+          [attr.aria-label]="'organizer.tournaments.list.uiMode.label' | transloco"
         >
-          {{ 'organizer.tournaments.list.uiMode.simple' | transloco }}
-        </button>
+          <button
+            type="button"
+            class="organizer-tournaments-page__mode-option"
+            [class.organizer-tournaments-page__mode-option--active]="simpleMode()"
+            [attr.aria-pressed]="simpleMode()"
+            (click)="setUiMode('SIMPLE')"
+          >
+            {{ 'organizer.tournaments.list.uiMode.simple' | transloco }}
+          </button>
+          <button
+            type="button"
+            class="organizer-tournaments-page__mode-option"
+            [class.organizer-tournaments-page__mode-option--active]="!simpleMode()"
+            [attr.aria-pressed]="!simpleMode()"
+            (click)="setUiMode('FULL')"
+          >
+            {{ 'organizer.tournaments.list.uiMode.full' | transloco }}
+          </button>
+        </div>
+      }
+      <div class="organizer-tournaments-page__create">
         <button
+          class="organizer-tournaments-page__create-btn"
           type="button"
-          class="organizer-tournaments-page__mode-option"
-          [class.organizer-tournaments-page__mode-option--active]="!simpleMode()"
-          [attr.aria-pressed]="!simpleMode()"
-          (click)="setUiMode('FULL')"
+          routerLink="/organizer/tournaments/new-plateau"
         >
-          {{ 'organizer.tournaments.list.uiMode.full' | transloco }}
+          + {{ 'organizer.tournaments.list.newPlateau' | transloco }}
         </button>
+        @if (!simpleMode()) {
+          <button
+            class="organizer-tournaments-page__create-btn organizer-tournaments-page__create-btn--secondary"
+            type="button"
+            routerLink="/organizer/tournaments/new"
+          >
+            + {{ 'organizer.tournaments.list.newTournament' | transloco }}
+          </button>
+        }
       </div>
-    }
+    </div>
     @if (loading()) {
       <p class="organizer-tournaments-page__hint">
         {{ 'organizer.tournaments.list.loading' | transloco }}
@@ -188,29 +208,13 @@
       }
     }
   </div>
-  <div class="organizer-tournaments-page__fabs">
+  <div class="organizer-tournaments-page__guide">
     @if (organizations()[0]; as org) {
       <app-organizer-setup-guide
         [organizationId]="org.id"
         [tournaments]="tournaments()"
         [refreshKey]="guideRefresh()"
       />
-    }
-    <button
-      class="organizer-tournaments-page__fab"
-      type="button"
-      routerLink="/organizer/tournaments/new-plateau"
-    >
-      + {{ 'organizer.tournaments.list.newPlateau' | transloco }}
-    </button>
-    @if (!simpleMode()) {
-      <button
-        class="organizer-tournaments-page__fab organizer-tournaments-page__fab--secondary"
-        type="button"
-        routerLink="/organizer/tournaments/new"
-      >
-        + {{ 'organizer.tournaments.list.newTournament' | transloco }}
-      </button>
     }
   </div>
 </ion-content>
