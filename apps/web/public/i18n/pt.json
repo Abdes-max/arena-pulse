@@ -684,7 +684,8 @@
         "none": "Nenhuma (só grupos)",
         "thirdPlace": "Jogo do 3.º lugar"
       },
-      "categoryNone": "Não especificada"
+      "categoryNone": "Não especificada",
+      "format": "Formato de jogo"
     },
     "tournamentList": {
       "createPlateau": "Create an event (quick)",
@@ -830,7 +831,8 @@
           "hint": "O logo do clube passa a ser o do torneio.",
           "searchFailed": "A pesquisa de clubes está indisponível no momento.",
           "department": "Departamento {{code}}"
-        }
+        },
+        "formatLabel": "Formato de jogo"
       },
       "categories": {
         "title": "Categorias",
@@ -1753,7 +1755,8 @@
         "fields": "{{count}} campos",
         "level": "Nível",
         "free": "Grátis",
-        "field": "1 campo"
+        "field": "1 campo",
+        "format": "Formato"
       }
     }
   },

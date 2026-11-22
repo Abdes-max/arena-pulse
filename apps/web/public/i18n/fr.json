@@ -786,7 +786,8 @@
         "none": "Aucune (poules uniquement)",
         "thirdPlace": "Match pour la 3e place"
       },
-      "categoryNone": "Non précisée"
+      "categoryNone": "Non précisée",
+      "format": "Format de jeu"
     },
     "tournamentList": {
       "createPlateau": "Créer un événement (rapide)",
@@ -932,7 +933,8 @@
           "hint": "Le logo du club devient celui du tournoi.",
           "searchFailed": "Recherche de clubs indisponible pour le moment.",
           "department": "Département {{code}}"
-        }
+        },
+        "formatLabel": "Format de jeu"
       },
       "categories": {
         "title": "Catégories",
@@ -1855,7 +1857,8 @@
         "fields": "{{count}} terrains",
         "level": "Niveau",
         "free": "Gratuit",
-        "field": "1 terrain"
+        "field": "1 terrain",
+        "format": "Format"
       }
     }
   },

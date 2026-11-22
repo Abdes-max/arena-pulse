@@ -1,11 +1,18 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  linkedSignal,
+  signal,
+} from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { AddressSearchService, PublicApiService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { AutocompleteField, Button, Select, SelectOption, TextField } from 'design-system';
-import { AGE_CATEGORIES, PublicSport } from 'shared-models';
+import { AGE_CATEGORIES, PublicSport, defaultGameFormat, gameFormatsFor } from 'shared-models';
 import { OrganizerAuthService } from '../../core/auth.service';
 import { knockoutSizesFor, previewPlateau } from '../../core/plateau-preview';
 import { OrganizerTournamentsService } from '../../core/tournaments.service';
@@ -104,6 +111,17 @@ export class OrganizerQuickPlateauPage {
   protected readonly sportOptions = computed<SelectOption[]>(() =>
     this.sports().map((sport) => ({ value: sport.id, label: sport.name })),
   );
+  private readonly sportName = computed(
+    () => this.sports().find((sport) => sport.id === this.sportId())?.name ?? '',
+  );
+  // Game format, required: the sport's list, preselected for the category
+  // (e.g. U11 football -> 8 vs 8) until the organizer picks another one.
+  protected readonly formatOptions = computed<SelectOption[]>(() =>
+    gameFormatsFor(this.sportName()).map((format) => ({ value: format, label: format })),
+  );
+  protected readonly format = linkedSignal(() =>
+    defaultGameFormat(this.sportName(), this.categoryName()),
+  );
 
   protected readonly preview = computed(() =>
     previewPlateau({
@@ -133,6 +151,7 @@ export class OrganizerQuickPlateauPage {
     () =>
       this.name().trim().length > 0 &&
       this.sportId() !== '' &&
+      this.format() !== '' &&
       this.date() !== '' &&
       this.startTime() !== '' &&
       this.preview() !== null &&
@@ -214,6 +233,7 @@ export class OrganizerQuickPlateauPage {
         ...(this.venueName().trim() && { venueName: this.venueName().trim() }),
         ...(this.venueAddress() && { venueAddress: this.venueAddress()! }),
         ...(this.categoryName().trim() && { categoryName: this.categoryName().trim() }),
+        format: this.format(),
       });
       await this.router.navigate(['/organizer/tournaments', tournament.id, 'edit'], {
         queryParams: { step: 2 },

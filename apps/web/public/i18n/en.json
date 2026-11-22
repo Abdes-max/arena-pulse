@@ -786,7 +786,8 @@
         "none": "None (pools only)",
         "thirdPlace": "Third-place match"
       },
-      "categoryNone": "Not specified"
+      "categoryNone": "Not specified",
+      "format": "Game format"
     },
     "tournamentList": {
       "createPlateau": "Create an event (quick)",
@@ -932,7 +933,8 @@
           "hint": "The club's logo becomes the tournament logo.",
           "searchFailed": "Club search is unavailable right now.",
           "department": "Department {{code}}"
-        }
+        },
+        "formatLabel": "Game format"
       },
       "categories": {
         "title": "Categories",
@@ -1855,7 +1857,8 @@
         "fields": "{{count}} pitches",
         "level": "Level",
         "free": "Free",
-        "field": "1 pitch"
+        "field": "1 pitch",
+        "format": "Format"
       }
     }
   },

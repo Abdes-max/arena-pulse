@@ -93,11 +93,13 @@ describe('Tournaments (e2e)', () => {
     const base = `/api/v1/organizations/${organizationId}/tournaments`;
 
     const createRes = await auth(request(app.getHttpServer()).post(base))
-      .send({ name: 'Coupe de printemps', sportId })
+      .send({ name: 'Coupe de printemps', sportId, format: '8 vs 8' })
       .expect(201);
     const tournament = createRes.body as TournamentResponseBody;
     expect(tournament.status).toBe('DRAFT');
     expect(tournament.sportName).toBeTruthy();
+    // The game format picked at creation (shown on the cards and the poster).
+    expect(createRes.body).toMatchObject({ format: '8 vs 8' });
 
     const listRes = await auth(request(app.getHttpServer()).get(base)).expect(
       200,

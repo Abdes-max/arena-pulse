@@ -520,14 +520,19 @@
       }
 
       <form class="tournament-form-page__form" [formGroup]="form" (ngSubmit)="submit()">
+        <ap-select
+          [label]="'admin.tournamentForm.form.sportLabel' | transloco"
+          [options]="sportOptions()"
+          formControlName="sportId"
+        />
         <ap-text-field
           [label]="'admin.tournamentForm.form.nameLabel' | transloco"
           formControlName="name"
         />
         <ap-select
-          [label]="'admin.tournamentForm.form.sportLabel' | transloco"
-          [options]="sportOptions()"
-          formControlName="sportId"
+          [label]="'admin.tournamentForm.form.formatLabel' | transloco"
+          [options]="formatOptions()"
+          formControlName="format"
         />
         @if (organizerClubAvailable()) {
           <div class="tournament-form-page__organizer-club">
@@ -803,12 +808,6 @@
                     [label]="'admin.registrationList.settings.closesAt' | transloco"
                     [value]="regClosesAt()"
                     (valueChange)="regClosesAt.set($event)"
-                  />
-                  <ap-text-field
-                    [label]="'admin.registrationList.settings.format' | transloco"
-                    [placeholder]="'admin.registrationList.settings.formatPlaceholder' | transloco"
-                    [value]="regFormat()"
-                    (valueChange)="regFormat.set($event)"
                   />
                   <ap-text-field
                     [label]="'admin.registrationList.settings.level' | transloco"

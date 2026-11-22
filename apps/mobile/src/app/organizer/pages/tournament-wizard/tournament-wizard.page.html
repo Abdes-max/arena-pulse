@@ -82,11 +82,6 @@
           <h3 class="wizard-page__section-title">
             {{ 'organizer.wizard.infos.title' | transloco }}
           </h3>
-          <ap-text-field
-            [label]="'organizer.wizard.infos.nameLabel' | transloco"
-            [value]="name()"
-            (valueChange)="name.set($event)"
-          />
           <span class="wizard-page__switchrow-label">{{
             'organizer.wizard.infos.sportLabel' | transloco
           }}</span>
@@ -115,6 +110,17 @@
               </button>
             }
           </div>
+          <ap-select
+            [label]="'organizer.wizard.infos.formatLabel' | transloco"
+            [options]="gameFormatOptions()"
+            [value]="gameFormat()"
+            (valueChange)="gameFormat.set($event)"
+          />
+          <ap-text-field
+            [label]="'organizer.wizard.infos.nameLabel' | transloco"
+            [value]="name()"
+            (valueChange)="name.set($event)"
+          />
           @if (clubSearchAvailable()) {
             <label class="wizard-page__switchrow">
               <span class="wizard-page__switchrow-label">{{

@@ -267,7 +267,9 @@ export class EventPosterDialog {
           title:
             fieldCount > 0
               ? t(fieldCount > 1 ? 'defaults.fields' : 'defaults.field', { count: fieldCount })
-              : '',
+              : tournament.format
+                ? t('defaults.format')
+                : '',
           detail: tournament.format ?? '',
         },
         {

@@ -684,7 +684,8 @@
         "none": "Keine (nur Gruppen)",
         "thirdPlace": "Spiel um Platz 3"
       },
-      "categoryNone": "Nicht angegeben"
+      "categoryNone": "Nicht angegeben",
+      "format": "Spielformat"
     },
     "tournamentList": {
       "createPlateau": "Create an event (quick)",
@@ -830,7 +831,8 @@
           "hint": "Das Vereinslogo wird zum Turnierlogo.",
           "searchFailed": "Die Vereinssuche ist gerade nicht verfügbar.",
           "department": "Département {{code}}"
-        }
+        },
+        "formatLabel": "Spielformat"
       },
       "categories": {
         "title": "Kategorien",
@@ -1753,7 +1755,8 @@
         "fields": "{{count}} Plätze",
         "level": "Niveau",
         "free": "Kostenlos",
-        "field": "1 Platz"
+        "field": "1 Platz",
+        "format": "Format"
       }
     }
   },

@@ -1,9 +1,16 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  linkedSignal,
+  signal,
+} from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { AddressSearchService } from 'api-client';
-import { AGE_CATEGORIES } from 'shared-models';
+import { AGE_CATEGORIES, defaultGameFormat, gameFormatsFor } from 'shared-models';
 import { AutocompleteField, Button, Select, SelectOption, TextField } from 'design-system';
 import { LanguageService } from 'design-tokens';
 import { AuthService } from '../../core/auth.service';
@@ -106,6 +113,17 @@ export class QuickPlateauPage {
   protected readonly sportOptions = computed<SelectOption[]>(() =>
     this.sports().map((sport) => ({ value: sport.id, label: sport.name })),
   );
+  private readonly sportName = computed(
+    () => this.sports().find((sport) => sport.id === this.sportId())?.name ?? '',
+  );
+  // Game format, required: the sport's list, preselected for the category
+  // (e.g. U11 football -> 8 vs 8) until the organizer picks another one.
+  protected readonly formatOptions = computed<SelectOption[]>(() =>
+    gameFormatsFor(this.sportName()).map((format) => ({ value: format, label: format })),
+  );
+  protected readonly format = linkedSignal(() =>
+    defaultGameFormat(this.sportName(), this.categoryName()),
+  );
 
   protected readonly preview = computed(() =>
     previewPlateau({
@@ -136,6 +154,7 @@ export class QuickPlateauPage {
     () =>
       this.name().trim().length > 0 &&
       this.sportId() !== '' &&
+      this.format() !== '' &&
       this.date() !== '' &&
       this.startTime() !== '' &&
       this.preview() !== null &&
@@ -218,6 +237,7 @@ export class QuickPlateauPage {
         ...(this.venueName().trim() && { venueName: this.venueName().trim() }),
         ...(this.venueAddress() && { venueAddress: this.venueAddress()! }),
         ...(this.categoryName().trim() && { categoryName: this.categoryName().trim() }),
+        format: this.format(),
       });
       await this.router.navigate(['/admin/tournaments', tournament.id, 'review']);
     } catch (error) {
