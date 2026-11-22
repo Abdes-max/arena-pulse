@@ -39,11 +39,6 @@ export interface EventPosterStyle {
   font: string;
   /** The sport's match-night photo. */
   background: HTMLImageElement | null;
-  /**
-   * The photo is another sport's (this one has none yet): blurred out of
-   * recognition, only its colors and lights left.
-   */
-  blurBackground?: boolean;
   logo: HTMLImageElement | null;
   qr: HTMLImageElement | null;
 }
@@ -303,16 +298,7 @@ function drawBackground(ctx: Ctx, style: EventPosterStyle): void {
   ctx.fillStyle = shade(style.primary, -0.85);
   ctx.fillRect(0, 0, W, H);
   const img = style.background ? recolored(style.background, style.primary, style.accent) : null;
-  if (img && style.blurBackground) {
-    const fill = Math.max(W / img.width, H / img.height);
-    ctx.save();
-    ctx.filter = 'blur(48px) brightness(0.8) saturate(1.15)';
-    // Drawn a bit larger: the blur fades the edges toward transparent.
-    const w = img.width * fill * 1.15;
-    const h = img.height * fill * 1.15;
-    ctx.drawImage(img, (W - w) / 2, (H - h) / 2, w, h);
-    ctx.restore();
-  } else if (img) {
+  if (img) {
     // Backdrop: the photo filling the poster, slightly dimmed...
     const fill = Math.max(W / img.width, H / img.height);
     ctx.save();

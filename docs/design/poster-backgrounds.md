@@ -6,7 +6,7 @@ Le générateur d'affiche (`apps/web/src/app/admin/shared/event-poster/`) pose s
 apps/web/public/poster-backgrounds/<sport>.jpg
 ```
 
-`<sport>` est le nom du sport en minuscules et sans accents : `football`, `futsal`, `basketball`, `handball`, `volleyball`, `rugby`, `tennis`, `padel`, `badminton`, `esport`. Tant qu'un fichier manque, l'affiche reprend `football.jpg` très fortement floutée : on n'en garde que les couleurs et les lumières, sans pouvoir deviner qu'il s'agit de football.
+`<sport>` est le nom du sport en minuscules et sans accents : `football`, `futsal`, `basketball`, `handball`, `volleyball`, `rugby`, `tennis`, `padel`, `badminton`, `esport`. Tant qu'un fichier manque, l'affiche reprend `football.jpg`.
 
 ## Contraintes communes (à respecter pour chaque image)
 
