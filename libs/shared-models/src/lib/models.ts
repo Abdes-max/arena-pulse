@@ -467,6 +467,9 @@ export interface PublicRegistrationInfo {
 
 /** Organizer side: GET/PATCH …/registrations/settings */
 export interface RegistrationSettings {
+  /** The public sign-up page is /:slug/register, reachable once published. */
+  slug: string;
+  published: boolean;
   open: boolean;
   openNow: boolean;
   opensAt: string | null;

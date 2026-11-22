@@ -172,3 +172,51 @@
     font: inherit;
   }
 }
+
+.registration-list-page__link {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+  padding: var(--ap-space-3) var(--ap-space-4);
+  background: var(--ap-color-signal-soft);
+  border-radius: var(--ap-radius-md);
+
+  h3 {
+    margin: 0;
+    font-size: 0.95rem;
+  }
+}
+
+.registration-list-page__link-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ap-space-2);
+}
+
+.registration-list-page__link-url {
+  flex: 1 1 220px;
+  min-width: 0;
+  font: inherit;
+  font-size: 0.85rem;
+  color: var(--ap-color-fg);
+  background: var(--ap-color-surface);
+  border: 1px solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  padding: var(--ap-space-2) var(--ap-space-3);
+}
+
+.registration-list-page__qr {
+  font-size: 0.85rem;
+
+  summary {
+    cursor: pointer;
+    color: var(--ap-color-signal-text);
+    font-weight: 600;
+  }
+
+  ap-qr-code {
+    display: block;
+    margin-block: var(--ap-space-2);
+  }
+}

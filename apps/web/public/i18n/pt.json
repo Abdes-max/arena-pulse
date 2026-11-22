@@ -1173,7 +1173,17 @@
       },
       "reason": "Motivo",
       "reasonLabel": "Motivo da recusa (enviado por email, opcional)",
-      "settingsInGeneral": "Definições em Geral"
+      "settingsInGeneral": "Definições em Geral",
+      "link": {
+        "title": "Link de inscrição",
+        "hint": "Divulgue este link (e-mail, redes, cartaz): as equipas inscrevem-se diretamente.",
+        "copy": "Copiar",
+        "copied": "Copiado!",
+        "qr": "Código QR",
+        "download": "Transferir o código QR",
+        "unpublished": "O link de inscrição fica ativo quando o torneio for publicado.",
+        "publish": "Publicar o torneio"
+      }
     },
     "structure": {
       "title": "Estrutura da competição",

@@ -723,7 +723,17 @@
       "placesUnlimited": "Unbegrenzt",
       "fee": "Preis pro Team (€)",
       "feeFor": "Preis · {{name}} (€)",
-      "options": "Optionen (Daten, Preis pro Kategorie, Zahlung…)"
+      "options": "Optionen (Daten, Preis pro Kategorie, Zahlung…)",
+      "link": {
+        "title": "Anmeldelink",
+        "hint": "Teile diesen Link (Nachrichten, soziale Netzwerke, Plakat): Teams melden sich direkt an.",
+        "copy": "Kopieren",
+        "copied": "Kopiert!",
+        "qr": "QR-Code",
+        "unpublished": "Der Anmeldelink ist aktiv, sobald das Turnier veröffentlicht ist.",
+        "publish": "Turnier veröffentlichen",
+        "share": "Teilen"
+      }
     },
     "schedule": {
       "hint": "Halten Sie ein Spiel oder ein Zeitfenster gedrückt und ziehen Sie es: Eine Lücke zeigt, wo es landet und zu welcher Uhrzeit. Die folgenden Zeitfenster verschieben sich; Pausen zwischen Phasen bleiben. Eine Mannschaft kann nicht zwei Spiele gleichzeitig bestreiten.",

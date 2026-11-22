@@ -723,7 +723,17 @@
       "placesUnlimited": "Unlimited",
       "fee": "Price per team (€)",
       "feeFor": "Price · {{name}} (€)",
-      "options": "Options (dates, price per category, payment…)"
+      "options": "Options (dates, price per category, payment…)",
+      "link": {
+        "title": "Registration link",
+        "hint": "Share this link (messages, socials, poster): teams sign up directly.",
+        "copy": "Copy",
+        "copied": "Copied!",
+        "qr": "QR code",
+        "unpublished": "The registration link goes live once the tournament is published.",
+        "publish": "Publish the tournament",
+        "share": "Share"
+      }
     },
     "schedule": {
       "hint": "Press and hold a match or a slot, then drag it: a space shows where it will land and at what time. The following slots shift; breaks between phases are kept. A team cannot play two matches at the same time.",

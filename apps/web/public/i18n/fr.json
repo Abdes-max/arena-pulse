@@ -1275,7 +1275,17 @@
       },
       "reason": "Motif",
       "reasonLabel": "Motif du refus (envoyé par e-mail, optionnel)",
-      "settingsInGeneral": "Réglages dans Général"
+      "settingsInGeneral": "Réglages dans Général",
+      "link": {
+        "title": "Lien d'inscription",
+        "hint": "Diffusez ce lien (mail, réseaux, affiche) : les équipes s'inscrivent directement.",
+        "copy": "Copier",
+        "copied": "Copié !",
+        "qr": "QR code",
+        "download": "Télécharger le QR code",
+        "unpublished": "Le lien d'inscription sera actif une fois le tournoi publié.",
+        "publish": "Publier le tournoi"
+      }
     },
     "structure": {
       "title": "Structure de compétition",

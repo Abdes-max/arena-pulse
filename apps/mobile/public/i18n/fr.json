@@ -723,7 +723,17 @@
       "placesUnlimited": "Illimité",
       "fee": "Tarif par équipe (€)",
       "feeFor": "Tarif · {{name}} (€)",
-      "options": "Options (dates, tarif par catégorie, paiement…)"
+      "options": "Options (dates, tarif par catégorie, paiement…)",
+      "link": {
+        "title": "Lien d'inscription",
+        "hint": "Diffuse ce lien (messages, réseaux, affiche) : les équipes s'inscrivent directement.",
+        "copy": "Copier",
+        "copied": "Copié !",
+        "qr": "QR code",
+        "unpublished": "Le lien d'inscription sera actif une fois le tournoi publié.",
+        "publish": "Publier le tournoi",
+        "share": "Partager"
+      }
     },
     "schedule": {
       "hint": "Restez appuyé sur un match ou un créneau puis glissez-le : un emplacement montre où il va se placer et à quelle heure. Les créneaux suivants sont décalés, les pauses entre phases conservées. Une équipe ne peut pas jouer deux matchs en même temps.",

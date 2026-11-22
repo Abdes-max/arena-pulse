@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { Badge, BadgeStatus, Button, TextField } from 'design-system';
+import { Badge, BadgeStatus, Button, QrCode, ShareButton, TextField } from 'design-system';
 import { LanguageService } from 'design-tokens';
 import {
   OrganizerRegistration,
@@ -45,7 +45,7 @@ type Filter = 'ALL' | 'PENDING' | 'CONFIRMED' | 'WAITLIST' | 'REJECTED';
  */
 @Component({
   selector: 'app-registrations-block',
-  imports: [Badge, Button, RouterLink, TextField, TranslocoPipe],
+  imports: [Badge, Button, QrCode, RouterLink, ShareButton, TextField, TranslocoPipe],
   templateUrl: './registration-list.page.html',
   styleUrl: './registration-list.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -76,6 +76,13 @@ export class RegistrationListPage {
   protected readonly rejectReason = signal('');
 
   protected readonly statusBadge = STATUS_TO_BADGE;
+
+  // The public sign-up page, absolute since it is handed out of the site.
+  protected readonly registrationUrl = computed(() => {
+    const slug = this.settings()?.slug;
+    return slug ? `${window.location.origin}/${slug}/register` : '';
+  });
+  protected readonly linkCopied = signal(false);
 
   protected readonly individual = computed(() => this.settings()?.participantType === 'INDIVIDUAL');
 
@@ -143,6 +150,16 @@ export class RegistrationListPage {
       this.errorMessage.set('admin.registrationList.errors.load');
     } finally {
       this.loading.set(false);
+    }
+  }
+
+  protected async copyLink(): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(this.registrationUrl());
+      this.linkCopied.set(true);
+      setTimeout(() => this.linkCopied.set(false), 2000);
+    } catch {
+      // Clipboard refused (permissions): the field stays selectable by hand.
     }
   }
 

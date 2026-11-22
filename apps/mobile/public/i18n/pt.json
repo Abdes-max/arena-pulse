@@ -723,7 +723,17 @@
       "placesUnlimited": "Ilimitado",
       "fee": "Preço por equipa (€)",
       "feeFor": "Preço · {{name}} (€)",
-      "options": "Opções (datas, preço por categoria, pagamento…)"
+      "options": "Opções (datas, preço por categoria, pagamento…)",
+      "link": {
+        "title": "Link de inscrição",
+        "hint": "Divulga este link (mensagens, redes, cartaz): as equipas inscrevem-se diretamente.",
+        "copy": "Copiar",
+        "copied": "Copiado!",
+        "qr": "Código QR",
+        "unpublished": "O link de inscrição fica ativo quando o torneio for publicado.",
+        "publish": "Publicar o torneio",
+        "share": "Partilhar"
+      }
     },
     "schedule": {
       "hint": "Mantenha premido um jogo ou um horário e arraste-o: um espaço mostra onde vai ficar e a que horas. Os horários seguintes são deslocados; as pausas entre fases mantêm-se. Uma equipa não pode jogar dois jogos ao mesmo tempo.",

@@ -1173,7 +1173,17 @@
       },
       "reason": "Motivo",
       "reasonLabel": "Motivo del rifiuto (inviato via email, facoltativo)",
-      "settingsInGeneral": "Impostazioni in Generale"
+      "settingsInGeneral": "Impostazioni in Generale",
+      "link": {
+        "title": "Link di iscrizione",
+        "hint": "Diffondi questo link (email, social, locandina): le squadre si iscrivono direttamente.",
+        "copy": "Copia",
+        "copied": "Copiato!",
+        "qr": "Codice QR",
+        "download": "Scarica il codice QR",
+        "unpublished": "Il link di iscrizione sarà attivo una volta pubblicato il torneo.",
+        "publish": "Pubblica il torneo"
+      }
     },
     "structure": {
       "title": "Struttura della competizione",

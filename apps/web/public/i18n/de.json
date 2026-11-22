@@ -1173,7 +1173,17 @@
       },
       "reason": "Grund",
       "reasonLabel": "Ablehnungsgrund (per E-Mail, optional)",
-      "settingsInGeneral": "Einstellungen unter Allgemein"
+      "settingsInGeneral": "Einstellungen unter Allgemein",
+      "link": {
+        "title": "Anmeldelink",
+        "hint": "Teilen Sie diesen Link (E-Mail, soziale Netzwerke, Plakat): Teams melden sich direkt an.",
+        "copy": "Kopieren",
+        "copied": "Kopiert!",
+        "qr": "QR-Code",
+        "download": "QR-Code herunterladen",
+        "unpublished": "Der Anmeldelink ist aktiv, sobald das Turnier veröffentlicht ist.",
+        "publish": "Turnier veröffentlichen"
+      }
     },
     "structure": {
       "title": "Wettbewerbsstruktur",
