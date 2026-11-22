@@ -858,13 +858,17 @@ function parseColor(color: string): [number, number, number] {
   return rgb && rgb.length >= 3 ? [+rgb[0], +rgb[1], +rgb[2]] : [128, 128, 128];
 }
 
+// Share of the photo's height above the pitch (stands, banners, players' kit).
+const PITCH_TOP = 0.54;
+
 // One recolored copy per theme: the dialog redraws on every keystroke.
 const recolorCache = new Map<string, HTMLCanvasElement | HTMLImageElement>();
 
 /**
- * The photo in the theme's colors: its greens (jerseys, pitch, flags) take
- * the primary's hue, its yellows and golds (stripes, flags, lights) the
- * signal's; skin, crowd and ball keep theirs. A grey primary greys the greens.
+ * The photo in the theme's colors, kit and flags only: their deep greens
+ * (hue ~150) take the primary's hue, their yellows the signal's. The pitch
+ * (yellow-green, hue ~80), skin (~25), crowd, floodlights and the golden
+ * glow (very light, or down on the pitch) keep their own colors.
  */
 function recolored(
   img: HTMLImageElement,
@@ -893,17 +897,23 @@ function recolored(
   const [primaryHue, primarySat] = toHsl(...parseColor(primary));
   const [accentHue, accentSat] = toHsl(...parseColor(accent));
   const px = data.data;
+  // Where the pitch starts in the source photo: no yellow recoloring below.
+  const pitchTop = canvas.height * PITCH_TOP;
   for (let i = 0; i < px.length; i += 4) {
     const [h, sat, l] = toHsl(px[i], px[i + 1], px[i + 2]);
-    if (sat < 0.12) {
-      continue;
-    }
     let hue: number;
     let satScale: number;
-    if (h >= 70 && h <= 185) {
+    if (h >= 125 && h <= 178 && sat >= 0.35) {
       hue = primaryHue;
       satScale = Math.min(1, primarySat * 1.6);
-    } else if (h >= 38 && h < 70) {
+    } else if (
+      h >= 44 &&
+      h <= 64 &&
+      sat >= 0.45 &&
+      l >= 0.15 &&
+      l <= 0.6 &&
+      i / 4 / canvas.width < pitchTop
+    ) {
       hue = accentHue;
       satScale = Math.min(1, accentSat * 1.2);
     } else {
