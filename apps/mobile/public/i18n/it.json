@@ -235,7 +235,8 @@
           "change": "Cambia",
           "hint": "Il logo del club diventa quello del torneo.",
           "logoFromClub": "Logo di {{club}}"
-        }
+        },
+        "formatLabel": "Formato di gioco"
       },
       "teams": {
         "title": "Squadre partecipanti",
@@ -496,7 +497,8 @@
         "none": "Nessuna (solo gironi)",
         "thirdPlace": "Finale 3º posto"
       },
-      "categoryNone": "Non specificata"
+      "categoryNone": "Non specificata",
+      "format": "Formato di gioco"
     },
     "live": {
       "title": "Risultati",

@@ -90,6 +90,13 @@ export class CreateQuickPlateauDto {
   @MaxLength(100)
   categoryName?: string;
 
+  // Game format, e.g. "8 vs 8" (see CreateTournamentDto.format).
+  @IsOptional()
+  @IsString()
+  @MinLength(1)
+  @MaxLength(50)
+  format?: string;
+
   @IsOptional()
   @IsString()
   @MinLength(1)

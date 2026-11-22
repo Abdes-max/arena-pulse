@@ -1992,6 +1992,8 @@ describe('TournamentsService', () => {
         tournamentFixture({
           id: 't-1',
           venues: [{ name: 'Stade Marius Réquier' }],
+          categories: [{ name: 'U11' }],
+          format: '8 vs 8',
         }),
         tournamentFixture({ id: 't-2', venues: [] }),
       ]);
@@ -2002,6 +2004,9 @@ describe('TournamentsService', () => {
         expect.objectContaining({
           id: 't-1',
           venueName: 'Stade Marius Réquier',
+          // Shown on the cards.
+          categoryNames: ['U11'],
+          format: '8 vs 8',
         }),
         expect.objectContaining({ id: 't-2', venueName: null }),
       ]);

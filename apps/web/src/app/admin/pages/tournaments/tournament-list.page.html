@@ -73,6 +73,19 @@
                       @if (metaLine(tournament); as meta) {
                         <span class="tournament-list-page__meta">{{ meta }}</span>
                       }
+                      @if (detailChips(tournament); as chips) {
+                        <span class="tournament-list-page__chips">
+                          @for (chip of chips; track $index) {
+                            <span
+                              class="tournament-list-page__chip"
+                              [class.tournament-list-page__chip--category]="
+                                $index < (tournament.categoryNames?.length ?? 0)
+                              "
+                              >{{ chip }}</span
+                            >
+                          }
+                        </span>
+                      }
                     </div>
                   </td>
                   <td class="tournament-list-page__cell tournament-list-page__cell--sport">

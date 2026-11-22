@@ -176,6 +176,28 @@ ion-title {
   color: var(--ap-color-muted);
 }
 
+// Categories (highlighted), format and level.
+.tcard__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ap-space-1);
+}
+
+.tcard__chip {
+  padding: 1px var(--ap-space-2);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--ap-color-fg);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: 999px;
+}
+
+.tcard__chip--category {
+  color: var(--ap-color-signal-text);
+  background: var(--ap-color-signal-soft);
+  border-color: transparent;
+}
+
 .tcard__actions {
   display: flex;
   flex-wrap: wrap;

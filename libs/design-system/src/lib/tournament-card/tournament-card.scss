@@ -126,6 +126,13 @@
   border-radius: 999px;
 }
 
+// The category stands out (it is what a team looks for first).
+.ap-tournament-card__chip--category {
+  color: var(--ap-color-signal-text);
+  background: var(--ap-color-signal-soft);
+  border-color: transparent;
+}
+
 // Pre-registrations open: the band the organizer's players look for.
 .ap-tournament-card__registration {
   display: flex;

@@ -229,6 +229,28 @@
   font-size: 0.78rem;
 }
 
+// Categories (highlighted), format and level.
+.tournament-list-page__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ap-space-1);
+}
+
+.tournament-list-page__chip {
+  padding: 0 var(--ap-space-2);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--ap-color-fg);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: 999px;
+}
+
+.tournament-list-page__chip--category {
+  color: var(--ap-color-signal-text);
+  background: var(--ap-color-signal-soft);
+  border-color: transparent;
+}
+
 @media (max-width: 768px) {
   .tournament-list-page__name {
     align-items: flex-end;

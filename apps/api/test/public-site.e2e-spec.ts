@@ -64,7 +64,9 @@ describe('Public tournament site (e2e)', () => {
     const sportRes = await auth(
       request(app.getHttpServer()).get('/api/v1/sports'),
     ).expect(200);
-    const sportId = (sportRes.body as { id: string; scoreFormat: string }[]).find((sport) => sport.scoreFormat === 'GOALS')!.id;
+    const sportId = (
+      sportRes.body as { id: string; scoreFormat: string }[]
+    ).find((sport) => sport.scoreFormat === 'GOALS')!.id;
 
     const tournamentRes = await auth(request(app.getHttpServer()).post(base))
       .send({ name: 'Coupe Publique', sportId })
@@ -286,7 +288,9 @@ describe('Public tournament site (e2e)', () => {
     const sportRes = await auth(
       request(app.getHttpServer()).get('/api/v1/sports'),
     ).expect(200);
-    const sportId = (sportRes.body as { id: string; scoreFormat: string }[]).find((sport) => sport.scoreFormat === 'GOALS')!.id;
+    const sportId = (
+      sportRes.body as { id: string; scoreFormat: string }[]
+    ).find((sport) => sport.scoreFormat === 'GOALS')!.id;
 
     const tournamentRes = await auth(request(app.getHttpServer()).post(base))
       .send({ name: 'Coupe des Prochains Matchs', sportId })
@@ -414,7 +418,9 @@ describe('Public tournament site (e2e)', () => {
     const sportRes = await auth(
       request(app.getHttpServer()).get('/api/v1/sports'),
     ).expect(200);
-    const sportId = (sportRes.body as { id: string; scoreFormat: string }[]).find((sport) => sport.scoreFormat === 'GOALS')!.id;
+    const sportId = (
+      sportRes.body as { id: string; scoreFormat: string }[]
+    ).find((sport) => sport.scoreFormat === 'GOALS')!.id;
 
     const tournamentRes = await auth(request(app.getHttpServer()).post(base))
       .send({ name: 'Coupe Thème', sportId })
@@ -490,7 +496,9 @@ describe('Public tournament site (e2e)', () => {
     const sportRes = await auth(
       request(app.getHttpServer()).get('/api/v1/sports'),
     ).expect(200);
-    const sportId = (sportRes.body as { id: string; scoreFormat: string }[]).find((sport) => sport.scoreFormat === 'GOALS')!.id;
+    const sportId = (
+      sportRes.body as { id: string; scoreFormat: string }[]
+    ).find((sport) => sport.scoreFormat === 'GOALS')!.id;
 
     // A tournament created without isListed defaults to listed (true) --
     // preserves the pre-existing behavior of every already-published
@@ -531,6 +539,10 @@ describe('Public tournament site (e2e)', () => {
     for (const item of directoryItems) {
       expect(item).not.toHaveProperty('isListed');
     }
+    // Cards show the categories (and format/level when set).
+    const listed = directoryItems.find((t) => t.slug === listedSlug)!;
+    expect((listed.categoryNames as string[]).length).toBeGreaterThan(0);
+    expect(listed).toHaveProperty('format');
 
     // Still fully reachable by its own direct link, per ADR 0006.
     await request(app.getHttpServer())

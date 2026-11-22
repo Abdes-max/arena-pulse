@@ -235,7 +235,8 @@
           "change": "Ändern",
           "hint": "Das Vereinslogo wird zum Turnierlogo.",
           "logoFromClub": "Logo von {{club}}"
-        }
+        },
+        "formatLabel": "Spielformat"
       },
       "teams": {
         "title": "Teilnehmende Teams",
@@ -496,7 +497,8 @@
         "none": "Keine (nur Gruppen)",
         "thirdPlace": "Spiel um Platz 3"
       },
-      "categoryNone": "Nicht angegeben"
+      "categoryNone": "Nicht angegeben",
+      "format": "Spielformat"
     },
     "live": {
       "title": "Ergebnisse",

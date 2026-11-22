@@ -1,5 +1,7 @@
 import {
   AGE_CATEGORIES,
+  defaultGameFormat,
+  gameFormatsFor,
   RECOMMENDED_HEADER_BACKGROUND,
   HeaderBackgroundPreset,
   headerBackgroundPresetOf,
@@ -15,6 +17,7 @@ import {
   effect,
   inject,
   signal,
+  untracked,
 } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -157,6 +160,16 @@ export class TournamentFormPage {
     clubDirectorySport(this.selectedSportName()),
   );
   protected readonly organizerClubAvailable = computed(() => this.organizerClubSport() !== null);
+  private readonly formatValue = signal('');
+  // The sport's formats, plus a format typed freely before the list existed.
+  protected readonly formatOptions = computed<SelectOption[]>(() => {
+    const formats = [...gameFormatsFor(this.selectedSportName())];
+    const current = this.formatValue();
+    if (current && !formats.includes(current)) {
+      formats.unshift(current);
+    }
+    return formats.map((format) => ({ value: format, label: format }));
+  });
   protected readonly organizerByClub = signal(false);
   protected readonly organizerClubId = signal('');
   protected readonly organizerClubLabel = signal('');
@@ -468,6 +481,8 @@ export class TournamentFormPage {
   protected readonly form = this.formBuilder.nonNullable.group({
     name: ['', Validators.required],
     sportId: ['', Validators.required],
+    // Game format, e.g. "8 vs 8" -- required, picked from the sport's list.
+    format: ['', Validators.required],
     // <input type="date"> value format (YYYY-MM-DD) -- converted to/from
     // the API's ISO datetime strings in loadTournament()/submit() below.
     startDate: [''],
@@ -532,6 +547,22 @@ export class TournamentFormPage {
     this.form.controls.sportId.valueChanges
       .pipe(takeUntilDestroyed())
       .subscribe((sportId) => this.selectedSportId.set(sportId));
+    this.form.controls.format.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe((format) => this.formatValue.set(format));
+    // No format yet (new tournament, or one created before the list), or a
+    // new tournament switching sport: the sport's usual format.
+    effect(() => {
+      const sportName = this.selectedSportName();
+      const format = this.formatValue();
+      if (!sportName) {
+        return;
+      }
+      const editing = untracked(() => this.isEditMode());
+      if (!format || (!editing && !gameFormatsFor(sportName).includes(format))) {
+        this.form.controls.format.setValue(defaultGameFormat(sportName));
+      }
+    });
     effect(() => {
       this.tournamentId();
       void this.load();
@@ -626,6 +657,7 @@ export class TournamentFormPage {
     this.form.patchValue({
       name: tournament.name,
       sportId: tournament.sportId,
+      format: tournament.format ?? '',
       // Slice to the date-only part an <input type="date"> expects -- the
       // API always returns a full ISO datetime string (e.g.
       // "2026-06-11T00:00:00.000Z"), which always starts with YYYY-MM-DD.
@@ -650,7 +682,6 @@ export class TournamentFormPage {
       ),
     );
     this.venues.set(await this.tournamentsService.listVenues(organizationId, tournamentId));
-    this.regFormat.set(tournament.format ?? '');
     this.regLevel.set(tournament.level ?? '');
     void this.loadPublicationOrders();
     void this.loadRegistrations();
@@ -684,7 +715,7 @@ export class TournamentFormPage {
     this.submitting.set(true);
     this.errorMessage.set(null);
     try {
-      const { name, sportId, startDate, endDate, isOnline, isListed, theme } =
+      const { name, sportId, format, startDate, endDate, isOnline, isListed, theme } =
         this.form.getRawValue();
       const tournamentId = this.tournamentId();
       if (this.isEditMode() && tournamentId) {
@@ -694,6 +725,7 @@ export class TournamentFormPage {
           {
             name,
             sportId,
+            format,
             // null (not undefined) clears the date server-side -- an empty
             // field means "no date", not "leave the existing one alone".
             startDate: startDate || null,
@@ -709,6 +741,7 @@ export class TournamentFormPage {
         const created = await this.tournamentsService.createTournament(organizationId, {
           name,
           sportId,
+          format,
           startDate: startDate || undefined,
           endDate: endDate || undefined,
           isOnline,
@@ -1167,7 +1200,6 @@ export class TournamentFormPage {
   protected readonly regPaymentInfo = signal('');
   // Teams one team manager may register (1 unless raised).
   protected readonly regMaxTeams = signal('1');
-  protected readonly regFormat = signal('');
   protected readonly regLevel = signal('');
   protected readonly regPendingCount = signal(0);
   protected readonly regBusy = signal(false);
@@ -1250,7 +1282,6 @@ export class TournamentFormPage {
         }),
       );
       await this.tournamentsService.updateTournament(organizationId, tournamentId, {
-        format: this.regFormat().trim() || null,
         level: this.regLevel().trim() || null,
       });
       // Only the categories whose fee or places actually changed.

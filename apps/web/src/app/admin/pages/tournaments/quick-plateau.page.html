@@ -8,24 +8,32 @@
   <form class="quick-plateau-page__form" (submit)="submit(); $event.preventDefault()">
     <fieldset class="quick-plateau-page__group">
       <legend>{{ 'admin.quickPlateau.sections.event' | transloco }}</legend>
-      <ap-text-field
-        [label]="'admin.quickPlateau.name' | transloco"
-        [placeholder]="'admin.quickPlateau.namePlaceholder' | transloco"
-        [value]="name()"
-        (valueChange)="name.set($event)"
-      />
-      <ap-select
-        [label]="'admin.quickPlateau.category' | transloco"
-        [options]="categoryOptions()"
-        [value]="categoryName()"
-        (valueChange)="categoryName.set($event)"
-      />
       <ap-select
         [label]="'admin.quickPlateau.sport' | transloco"
         [options]="sportOptions()"
         [value]="sportId()"
         (valueChange)="sportId.set($event)"
       />
+      <ap-text-field
+        [label]="'admin.quickPlateau.name' | transloco"
+        [placeholder]="'admin.quickPlateau.namePlaceholder' | transloco"
+        [value]="name()"
+        (valueChange)="name.set($event)"
+      />
+      <div class="quick-plateau-page__row">
+        <ap-select
+          [label]="'admin.quickPlateau.category' | transloco"
+          [options]="categoryOptions()"
+          [value]="categoryName()"
+          (valueChange)="categoryName.set($event)"
+        />
+        <ap-select
+          [label]="'admin.quickPlateau.format' | transloco"
+          [options]="formatOptions()"
+          [value]="format()"
+          (valueChange)="format.set($event)"
+        />
+      </div>
       <div class="quick-plateau-page__row">
         <ap-text-field
           [label]="'admin.quickPlateau.date' | transloco"
