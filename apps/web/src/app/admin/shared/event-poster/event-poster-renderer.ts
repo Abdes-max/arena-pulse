@@ -50,6 +50,10 @@ const PRICE_RED = '#e0161e';
 const POSTER_YELLOW = '#ffd21f';
 const SKEW = -0.14;
 const LOGO_Y = 585;
+// The photo at 0.78x (1024x1536 source): heads under the date, socks above
+// "Informations générales".
+const PHOTO_SCALE = 0.78;
+const PHOTO_TOP = 62;
 
 export function drawEventPoster(
   canvas: HTMLCanvasElement,
@@ -132,11 +136,12 @@ export function drawEventPoster(
 
   // Club logo, cut out of its white square when it has one.
   if (style.logo) {
-    const logo = cutOut(style.logo);
-    const box = 360;
-    const scale = Math.min(box / logo.width, box / logo.height);
-    const w = logo.width * scale;
-    const h = logo.height * scale;
+    const cut = cutOut(style.logo);
+    const box = 300;
+    const scale = Math.min(box / cut.width, box / cut.height);
+    const w = Math.round(cut.width * scale);
+    const h = Math.round(cut.height * scale);
+    const logo = enlarge(cut, w, h);
     withShadow(ctx, withAlpha(accent, 0.9), 60, () =>
       ctx.drawImage(logo, W / 2 - w / 2, LOGO_Y - h / 2, w, h),
     );
@@ -304,11 +309,45 @@ function drawBackground(ctx: Ctx, style: EventPosterStyle): void {
   ctx.fillRect(0, 0, W, H);
   const img = style.background;
   if (img) {
-    const scale = Math.max(W / img.naturalWidth, H / img.naturalHeight);
-    const w = img.naturalWidth * scale;
-    const h = img.naturalHeight * scale;
-    // Players' heads under the date, the logo between them at chest height.
-    ctx.drawImage(img, (W - w) / 2, Math.min(0, (H - h) * 0.15), w, h);
+    // Backdrop: the photo filling the poster, blurred and dimmed...
+    const fill = Math.max(W / img.naturalWidth, H / img.naturalHeight);
+    ctx.save();
+    ctx.filter = 'blur(10px) brightness(0.85)';
+    ctx.drawImage(
+      img,
+      (W - img.naturalWidth * fill) / 2,
+      0,
+      img.naturalWidth * fill,
+      img.naturalHeight * fill,
+    );
+    ctx.restore();
+    // ...under the photo itself, zoomed out so the players show down to
+    // their socks, its edges fading into the backdrop.
+    const w = Math.round(img.naturalWidth * PHOTO_SCALE);
+    const h = Math.round(img.naturalHeight * PHOTO_SCALE);
+    const photo = document.createElement('canvas');
+    photo.width = w;
+    photo.height = h;
+    const p = photo.getContext('2d');
+    if (p) {
+      p.drawImage(img, 0, 0, w, h);
+      p.globalCompositeOperation = 'destination-in';
+      const sides = p.createLinearGradient(0, 0, w, 0);
+      sides.addColorStop(0, 'rgba(0,0,0,0)');
+      sides.addColorStop(0.24, 'rgba(0,0,0,1)');
+      sides.addColorStop(0.76, 'rgba(0,0,0,1)');
+      sides.addColorStop(1, 'rgba(0,0,0,0)');
+      p.fillStyle = sides;
+      p.fillRect(0, 0, w, h);
+      const ends = p.createLinearGradient(0, 0, 0, h);
+      ends.addColorStop(0, 'rgba(0,0,0,0)');
+      ends.addColorStop(0.2, 'rgba(0,0,0,1)');
+      ends.addColorStop(0.88, 'rgba(0,0,0,1)');
+      ends.addColorStop(1, 'rgba(0,0,0,0)');
+      p.fillStyle = ends;
+      p.fillRect(0, 0, w, h);
+      ctx.drawImage(photo, (W - w) / 2, PHOTO_TOP);
+    }
   }
   const top = ctx.createLinearGradient(0, 0, 0, 430);
   top.addColorStop(0, 'rgba(0,0,0,0.55)');
@@ -682,6 +721,68 @@ function cutOut(img: HTMLImageElement): HTMLCanvasElement | HTMLImageElement {
     }
   }
   c.putImageData(data, 0, 0);
+  return canvas;
+}
+
+/**
+ * Enlarges a small logo by successive doublings (smoother than one big
+ * stretch), then sharpens it a little to make up for the softness.
+ */
+function enlarge(
+  source: HTMLCanvasElement | HTMLImageElement,
+  width: number,
+  height: number,
+): HTMLCanvasElement | HTMLImageElement {
+  let current: HTMLCanvasElement | HTMLImageElement = source;
+  let w = source.width;
+  let h = source.height;
+  while (w * 2 < width && h * 2 < height) {
+    w *= 2;
+    h *= 2;
+    current = resample(current, w, h);
+  }
+  const result = resample(current, width, height);
+  const c = result.getContext('2d');
+  if (!c) {
+    return source;
+  }
+  let data: ImageData;
+  try {
+    data = c.getImageData(0, 0, width, height);
+  } catch {
+    return result;
+  }
+  const src = new Uint8ClampedArray(data.data);
+  const px = data.data;
+  const amount = 0.55;
+  for (let y = 1; y < height - 1; y++) {
+    for (let x = 1; x < width - 1; x++) {
+      const i = (y * width + x) * 4;
+      for (let k = 0; k < 3; k++) {
+        const around =
+          src[i - 4 + k] + src[i + 4 + k] + src[i - width * 4 + k] + src[i + width * 4 + k];
+        px[i + k] = src[i + k] + amount * (4 * src[i + k] - around);
+      }
+    }
+  }
+  c.putImageData(data, 0, 0);
+  return result;
+}
+
+function resample(
+  source: HTMLCanvasElement | HTMLImageElement,
+  width: number,
+  height: number,
+): HTMLCanvasElement {
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const c = canvas.getContext('2d');
+  if (c) {
+    c.imageSmoothingEnabled = true;
+    c.imageSmoothingQuality = 'high';
+    c.drawImage(source, 0, 0, width, height);
+  }
   return canvas;
 }
 
