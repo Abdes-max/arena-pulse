@@ -1,0 +1,100 @@
+<button
+  type="button"
+  class="event-poster__backdrop"
+  (click)="closed.emit()"
+  [attr.aria-label]="'admin.submenu.close' | transloco"
+></button>
+<div
+  class="event-poster"
+  role="dialog"
+  aria-modal="true"
+  [attr.aria-label]="'admin.eventPoster.title' | transloco"
+>
+  <h2 class="event-poster__title">{{ 'admin.eventPoster.title' | transloco }}</h2>
+
+  <div class="event-poster__body">
+    <div class="event-poster__preview">
+      @if (image(); as src) {
+        <img [src]="src" [alt]="'admin.eventPoster.title' | transloco" />
+      } @else if (failed()) {
+        <p class="event-poster__error">{{ 'admin.qrPoster.error' | transloco }}</p>
+      } @else {
+        <p class="event-poster__hint">{{ 'admin.qrPoster.loading' | transloco }}</p>
+      }
+    </div>
+
+    @if (content(); as c) {
+      <form class="event-poster__form" (submit)="$event.preventDefault()">
+        <p class="event-poster__hint">{{ 'admin.eventPoster.hint' | transloco }}</p>
+        <div class="event-poster__grid">
+          @for (field of textFields; track field.key) {
+            <label class="event-poster__field">
+              {{ field.label | transloco }}
+              <input type="text" [value]="value(field.key)" (input)="update(field.key, $event)" />
+            </label>
+          }
+        </div>
+
+        <fieldset class="event-poster__infos">
+          <legend>{{ c.infosHeading }}</legend>
+          @for (info of c.infos; track $index) {
+            <div class="event-poster__info">
+              <input
+                type="text"
+                [value]="info.title"
+                [attr.aria-label]="'admin.eventPoster.fields.infoTitle' | transloco"
+                (input)="update($index + '.title', $event)"
+              />
+              <input
+                type="text"
+                [value]="info.detail"
+                [attr.aria-label]="'admin.eventPoster.fields.infoDetail' | transloco"
+                (input)="update($index + '.detail', $event)"
+              />
+            </div>
+          }
+        </fieldset>
+
+        <div class="event-poster__photo">
+          <label class="event-poster__photo-pick">
+            {{
+              (hasPhoto() ? 'admin.eventPoster.photoChange' : 'admin.eventPoster.photoAdd')
+                | transloco
+            }}
+            <input type="file" accept="image/*" (change)="pickPhoto($event)" />
+          </label>
+          @if (hasPhoto()) {
+            <ap-button type="button" size="sm" variant="ghost" (click)="removePhoto()">
+              {{ 'admin.eventPoster.photoRemove' | transloco }}
+            </ap-button>
+          }
+          <small>{{ 'admin.eventPoster.photoHint' | transloco }}</small>
+        </div>
+
+        <label class="event-poster__option">
+          <input type="checkbox" [checked]="withQr()" (change)="toggleQr($event)" />
+          {{
+            (qrForRegistration()
+              ? 'admin.eventPoster.qrRegisterOption'
+              : 'admin.eventPoster.qrFollowOption'
+            ) | transloco
+          }}
+        </label>
+      </form>
+    }
+  </div>
+
+  <div class="event-poster__actions">
+    @if (image(); as src) {
+      <a class="event-poster__download" [href]="src" [download]="fileName()">
+        {{ 'admin.eventPoster.download' | transloco }}
+      </a>
+    }
+    <ap-button type="button" variant="secondary" size="sm" [disabled]="!image()" (click)="print()">
+      {{ 'admin.qrPoster.print' | transloco }}
+    </ap-button>
+    <ap-button type="button" variant="ghost" size="sm" (click)="closed.emit()">
+      {{ 'admin.submenu.close' | transloco }}
+    </ap-button>
+  </div>
+</div>

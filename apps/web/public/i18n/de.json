@@ -415,7 +415,8 @@
       "premiumLocked": "Nur für Turniere mit mehr als {{count}} Teams oder mit aktivem Jahresabonnement.",
       "stats": "Statistiken",
       "slideshow": "Diashow (TV-Bildschirm)",
-      "registrations": "Anmeldungen"
+      "registrations": "Anmeldungen",
+      "eventPoster": "Plakat"
     },
     "auth": {
       "login": {
@@ -1179,8 +1180,7 @@
         "hint": "Teilen Sie diesen Link (E-Mail, soziale Netzwerke, Plakat): Teams melden sich direkt an.",
         "copy": "Kopieren",
         "copied": "Kopiert!",
-        "qr": "QR-Code",
-        "download": "QR-Code herunterladen",
+        "qr": "Anmelde-QR-Code zum Ausdrucken",
         "unpublished": "Der Anmeldelink ist aktiv, sobald das Turnier veröffentlicht ist.",
         "publish": "Turnier veröffentlichen"
       }
@@ -1709,7 +1709,11 @@
       "addPoster": "Turnierplakat unten hinzufügen",
       "print": "Drucken",
       "loading": "Wird vorbereitet…",
-      "error": "Das Bild konnte nicht erstellt werden."
+      "error": "Das Bild konnte nicht erstellt werden.",
+      "scanRegister": "Scannen Sie, um Ihr Team anzumelden",
+      "registrationHeading": "Anmeldung offen",
+      "category": "Kategorie: {{names}}",
+      "categories": "Kategorien: {{names}}"
     },
     "createOrganization": {
       "title": "Deine Organisation erstellen",
@@ -1717,6 +1721,43 @@
       "submit": "Organisation erstellen",
       "back": "Zurück zu meinem Bereich",
       "error": "Die Organisation konnte nicht erstellt werden."
+    },
+    "eventPoster": {
+      "title": "Veranstaltungsplakat",
+      "hint": "Alle Texte sind bearbeitbar; Farben, Schrift und Hintergrund stammen aus dem Turnierthema.",
+      "download": "Plakat herunterladen",
+      "infosHeading": "Allgemeine Infos",
+      "endLabel": "Voraussichtliches Ende",
+      "qrRegister": "Anmelden",
+      "qrFollow": "Live verfolgen",
+      "qrRegisterOption": "Anmelde-QR-Code hinzufügen",
+      "qrFollowOption": "QR-Code des Turniers hinzufügen",
+      "fields": {
+        "title": "Titel",
+        "category": "Kategorie",
+        "organizer": "Veranstalter",
+        "date": "Datum",
+        "price": "Preis",
+        "end": "Voraussichtliches Ende",
+        "venue": "Ort",
+        "city": "Stadt",
+        "infoTitle": "Bezeichnung",
+        "infoDetail": "Detail"
+      },
+      "defaults": {
+        "plateau": "Spielfest",
+        "tournament": "Turnier",
+        "meeting": "Treffpunkt",
+        "firstMatch": "Erstes Spiel",
+        "at": "um {{time}}",
+        "fields": "{{count}} Platz/Plätze",
+        "level": "Niveau",
+        "free": "Kostenlos"
+      },
+      "photoAdd": "Hintergrundfoto hinzufügen",
+      "photoChange": "Foto ändern",
+      "photoRemove": "Foto entfernen",
+      "photoHint": "Ihre Spieler, Ihr Stadion… Sonst wird ein Stadion in den Themenfarben gezeichnet."
     }
   },
   "wrapped": {

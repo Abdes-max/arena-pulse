@@ -415,7 +415,8 @@
       "premiumLocked": "Riservato ai tornei con più di {{count}} squadre o con un abbonamento annuale attivo.",
       "stats": "Statistiche",
       "slideshow": "Presentazione (schermo TV)",
-      "registrations": "Iscrizioni"
+      "registrations": "Iscrizioni",
+      "eventPoster": "Locandina"
     },
     "auth": {
       "login": {
@@ -1179,8 +1180,7 @@
         "hint": "Diffondi questo link (email, social, locandina): le squadre si iscrivono direttamente.",
         "copy": "Copia",
         "copied": "Copiato!",
-        "qr": "Codice QR",
-        "download": "Scarica il codice QR",
+        "qr": "Codice QR di iscrizione da stampare",
         "unpublished": "Il link di iscrizione sarà attivo una volta pubblicato il torneo.",
         "publish": "Pubblica il torneo"
       }
@@ -1709,7 +1709,11 @@
       "addPoster": "Aggiungi la locandina del torneo in basso",
       "print": "Stampa",
       "loading": "Preparazione…",
-      "error": "Impossibile generare l'immagine."
+      "error": "Impossibile generare l'immagine.",
+      "scanRegister": "Scansiona per iscrivere la tua squadra",
+      "registrationHeading": "Iscrizioni aperte",
+      "category": "Categoria: {{names}}",
+      "categories": "Categorie: {{names}}"
     },
     "createOrganization": {
       "title": "Crea la tua organizzazione",
@@ -1717,6 +1721,43 @@
       "submit": "Crea l'organizzazione",
       "back": "Torna al mio spazio responsabile",
       "error": "Impossibile creare l'organizzazione."
+    },
+    "eventPoster": {
+      "title": "Locandina dell'evento",
+      "hint": "Tutti i testi sono modificabili; colori, carattere e sfondo vengono dal tema del torneo.",
+      "download": "Scarica la locandina",
+      "infosHeading": "Informazioni generali",
+      "endLabel": "Fine prevista",
+      "qrRegister": "Iscriviti",
+      "qrFollow": "Segui in diretta",
+      "qrRegisterOption": "Aggiungi il codice QR di iscrizione",
+      "qrFollowOption": "Aggiungi il codice QR del torneo",
+      "fields": {
+        "title": "Titolo",
+        "category": "Categoria",
+        "organizer": "Organizzatore",
+        "date": "Data",
+        "price": "Prezzo",
+        "end": "Fine prevista",
+        "venue": "Luogo",
+        "city": "Città",
+        "infoTitle": "Titolo",
+        "infoDetail": "Dettaglio"
+      },
+      "defaults": {
+        "plateau": "Raggruppamento",
+        "tournament": "Torneo",
+        "meeting": "Ritrovo",
+        "firstMatch": "Prima partita",
+        "at": "alle {{time}}",
+        "fields": "{{count}} campo/i",
+        "level": "Livello",
+        "free": "Gratuito"
+      },
+      "photoAdd": "Aggiungi una foto di sfondo",
+      "photoChange": "Cambia la foto",
+      "photoRemove": "Rimuovi la foto",
+      "photoHint": "I tuoi giocatori, il tuo stadio… Altrimenti viene disegnato uno stadio nei colori del tema."
     }
   },
   "wrapped": {

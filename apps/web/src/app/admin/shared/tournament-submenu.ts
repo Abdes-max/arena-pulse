@@ -15,6 +15,7 @@ import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/ro
 import { filter } from 'rxjs';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Button } from 'design-system';
+import { EventPosterDialog } from './event-poster/event-poster-dialog';
 import { QrPosterDialog } from './qr-poster-dialog/qr-poster-dialog';
 import { AuthService } from '../core/auth.service';
 import { TournamentsService } from '../core/tournaments.service';
@@ -36,7 +37,7 @@ import { TournamentsService } from '../core/tournaments.service';
  */
 @Component({
   selector: 'app-tournament-submenu',
-  imports: [RouterLink, RouterLinkActive, Button, TranslocoPipe, QrPosterDialog],
+  imports: [RouterLink, RouterLinkActive, Button, TranslocoPipe, QrPosterDialog, EventPosterDialog],
   templateUrl: './tournament-submenu.html',
   styleUrl: './tournament-submenu.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -93,6 +94,13 @@ export class TournamentSubmenu {
 
   protected closeShareMenu(): void {
     this.shareMenuOpen.set(false);
+  }
+
+  protected readonly posterDialogOpen = signal(false);
+
+  protected openPosterDialogFromMenu(): void {
+    this.closeShareMenu();
+    this.posterDialogOpen.set(true);
   }
 
   protected openQrDialogFromMenu(): void {

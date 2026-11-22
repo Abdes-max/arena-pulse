@@ -1,0 +1,894 @@
+// Canvas drawing of the promotional poster (EventPosterDialog) -- no Angular
+// here, the dialog hands in the texts already worded and the images already
+// loaded. Laid out on a 1080x1350 portrait (the 4:5 format social networks
+// show uncropped), "match night" look: packed stands under floodlights, a
+// burst of light behind the club logo, brush-stroke headings and worn
+// lettering -- in the theme's colors (primary for the night, signal for
+// every highlight) and its heading font. An organizer's own photo, when
+// given, replaces the drawn stadium.
+
+export const POSTER_WIDTH = 1080;
+export const POSTER_HEIGHT = 1350;
+
+export type PosterIcon = 'pin' | 'ball' | 'field' | 'rules';
+
+export interface PosterInfo {
+  icon: PosterIcon;
+  title: string;
+  detail: string;
+}
+
+export interface EventPosterContent {
+  title: string;
+  category: string;
+  organizer: string;
+  date: string;
+  infosHeading: string;
+  infos: PosterInfo[];
+  price: string;
+  endLabel: string;
+  end: string;
+  venue: string;
+  city: string;
+  qrLabel: string;
+}
+
+export interface EventPosterStyle {
+  primary: string;
+  accent: string;
+  onAccent: string;
+  font: string;
+  /** The theme's header picture, tinting the night sky. */
+  background: HTMLImageElement | null;
+  /** The organizer's own photo, instead of the drawn stadium. */
+  photo: HTMLImageElement | null;
+  logo: HTMLImageElement | null;
+  qr: HTMLImageElement | null;
+}
+
+type Ctx = CanvasRenderingContext2D;
+
+const W = POSTER_WIDTH;
+const H = POSTER_HEIGHT;
+const WHITE = '#ffffff';
+const PRICE_RED = '#e0161e';
+const SKEW = -0.14;
+const LOGO_Y = 585;
+
+export function drawEventPoster(
+  canvas: HTMLCanvasElement,
+  content: EventPosterContent,
+  style: EventPosterStyle,
+): void {
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) {
+    throw new Error('no canvas');
+  }
+  const random = seeded(11);
+  const font = (weight: number, size: number) => `${weight} ${size}px ${style.font}`;
+  ctx.textBaseline = 'middle';
+  ctx.textAlign = 'center';
+
+  if (style.photo) {
+    drawPhoto(ctx, style);
+  } else {
+    drawStadium(ctx, style, content.organizer, random);
+  }
+  drawFloodlights(ctx, style.accent);
+  drawBurst(ctx, style.accent, random);
+
+  // Title: huge worn letters, "PLATEAU" white and the category in the accent.
+  const title = content.title.trim().toUpperCase();
+  const category = content.category.trim().toUpperCase();
+  const gap = title && category ? ' ' : '';
+  const titleSize = fit(ctx, `${title}${gap}${category}`, 1000, 160, (s) => font(900, s));
+  stamp(ctx, W / 2, 125, 1080, 220, (layer) => {
+    layer.font = font(900, titleSize);
+    const titleWidth = layer.measureText(title + gap).width;
+    const total = titleWidth + layer.measureText(category).width;
+    layer.textAlign = 'left';
+    layer.transform(1, 0, SKEW, 1, 0, 0);
+    layer.fillStyle = WHITE;
+    layer.fillText(title + gap, -total / 2, 0);
+    layer.fillStyle = style.accent;
+    layer.fillText(category, -total / 2 + titleWidth, 0);
+  });
+
+  // Organizer on a brush stroke.
+  if (content.organizer.trim()) {
+    const organizer = content.organizer.trim().toUpperCase();
+    const size = fit(ctx, organizer, 720, 84, (s) => font(900, s));
+    ctx.font = font(900, size);
+    brush(
+      ctx,
+      W / 2,
+      262,
+      Math.min(ctx.measureText(organizer).width + 170, 1000),
+      104,
+      style.accent,
+      random,
+    );
+    skewed(ctx, W / 2, 265, () => {
+      ctx.fillStyle = style.onAccent;
+      ctx.font = font(900, size);
+      ctx.fillText(organizer, 0, 0);
+    });
+  }
+
+  // Date on a dark plate, between two accent dashes.
+  if (content.date.trim()) {
+    const date = content.date.trim().toUpperCase();
+    const size = fit(ctx, date, 660, 66, (s) => font(900, s));
+    ctx.font = font(900, size);
+    const width = ctx.measureText(date).width + 190;
+    skewed(ctx, W / 2, 365, () => {
+      ctx.fillStyle = 'rgba(4,8,6,0.82)';
+      ctx.fillRect(-width / 2, -44, width, 88);
+      ctx.fillStyle = style.accent;
+      ctx.fillRect(-width / 2 + 28, -3, 44, 7);
+      ctx.fillRect(width / 2 - 72, -3, 44, 7);
+      ctx.fillStyle = WHITE;
+      ctx.font = font(900, size);
+      ctx.fillText(date, 0, 2);
+    });
+  }
+
+  // Club logo, cut out of its white square when it has one.
+  if (style.logo) {
+    const logo = cutOut(style.logo);
+    const box = 360;
+    const scale = Math.min(box / logo.width, box / logo.height);
+    const w = logo.width * scale;
+    const h = logo.height * scale;
+    withShadow(ctx, withAlpha(style.accent, 0.9), 60, () =>
+      ctx.drawImage(logo, W / 2 - w / 2, LOGO_Y - h / 2, w, h),
+    );
+  }
+
+  // "Informations générales" and its card.
+  let y = 795;
+  const infos = content.infos.filter((info) => info.title.trim() || info.detail.trim());
+  if (infos.length > 0) {
+    const heading = content.infosHeading.toUpperCase();
+    ctx.font = font(900, 50);
+    brush(
+      ctx,
+      W / 2,
+      y,
+      Math.min(ctx.measureText(heading).width + 150, 1000),
+      80,
+      style.accent,
+      random,
+    );
+    skewed(ctx, W / 2, y + 3, () => {
+      ctx.fillStyle = style.onAccent;
+      ctx.font = font(900, 50);
+      ctx.fillText(heading, 0, 0);
+    });
+    y += 46;
+    const columns = infos.length === 1 ? 1 : 2;
+    const rows = Math.ceil(infos.length / columns);
+    const rowHeight = 96;
+    const cardHeight = rows * rowHeight + 20;
+    panel(ctx, 50, y, W - 100, cardHeight, style.accent);
+    const columnWidth = (W - 100) / columns;
+    if (columns === 2) {
+      ctx.fillStyle = withAlpha(WHITE, 0.45);
+      ctx.fillRect(W / 2 - 1.5, y + 20, 3, cardHeight - 40);
+    }
+    // Column by column, like the reference: left column first, top to bottom.
+    infos.forEach((info, index) => {
+      const column = Math.floor(index / rows);
+      const row = index % rows;
+      const left = 50 + column * columnWidth;
+      const middle = y + 10 + row * rowHeight + rowHeight / 2;
+      if (row > 0) {
+        ctx.fillStyle = withAlpha(WHITE, 0.4);
+        ctx.fillRect(left + 150, middle - rowHeight / 2, columnWidth - 190, 2);
+      }
+      drawIcon(ctx, info.icon, left + 90, middle, 40, style.accent, style.onAccent);
+      const textLeft = left + 152;
+      const textWidth = columnWidth - 152 - 30;
+      ctx.textAlign = 'left';
+      ctx.fillStyle = WHITE;
+      const titleText = info.title.toUpperCase();
+      ctx.font = font(
+        800,
+        fit(ctx, titleText, textWidth, 34, (s) => font(800, s)),
+      );
+      ctx.fillText(titleText, textLeft, middle - 20);
+      ctx.fillStyle = style.accent;
+      const detail = info.detail.toUpperCase();
+      ctx.font = font(
+        900,
+        fit(ctx, detail, textWidth, 38, (s) => font(900, s)),
+      );
+      ctx.fillText(detail, textLeft, middle + 22);
+      ctx.textAlign = 'center';
+    });
+    y += cardHeight;
+  }
+
+  // Price on a red stroke, and the expected end.
+  y += 74;
+  const price = content.price.trim().toUpperCase();
+  const end = content.end.trim().toUpperCase();
+  const priceCenter = end ? 305 : W / 2;
+  if (price) {
+    const size = fit(ctx, price, 340, 80, (s) => font(900, s));
+    ctx.font = font(900, size);
+    const width = ctx.measureText(price).width + 110;
+    brush(ctx, priceCenter, y, width, 108, PRICE_RED, random);
+    skewed(ctx, priceCenter, y + 3, () => {
+      ctx.font = font(900, size);
+      withShadow(ctx, 'rgba(0,0,0,0.5)', 8, () => {
+        ctx.fillStyle = WHITE;
+        ctx.fillText(price, 0, 0);
+      });
+    });
+    // Accent strokes radiating on both sides.
+    ctx.fillStyle = style.accent;
+    for (const side of [-1, 1]) {
+      for (const angle of [-0.45, 0, 0.45]) {
+        ctx.save();
+        ctx.translate(priceCenter + side * (width / 2 + 40), y);
+        ctx.rotate(side * angle);
+        ctx.fillRect(-20, -4, 40, 8);
+        ctx.restore();
+      }
+    }
+  }
+  if (end) {
+    const left = 600;
+    skewed(ctx, left + 200, y, () => {
+      ctx.fillStyle = 'rgba(4,8,6,0.85)';
+      ctx.fillRect(-200, -54, 400, 108);
+      ctx.strokeStyle = style.accent;
+      ctx.lineWidth = 4;
+      ctx.strokeRect(-200, -54, 400, 108);
+    });
+    drawIcon(ctx, 'clock', left + 70, y, 36, style.accent, style.onAccent, 'ring');
+    ctx.textAlign = 'center';
+    ctx.fillStyle = WHITE;
+    const label = content.endLabel.toUpperCase();
+    ctx.font = font(
+      800,
+      fit(ctx, label, 250, 34, (s) => font(800, s)),
+    );
+    ctx.fillText(label, left + 245, y - 22);
+    ctx.fillStyle = style.accent;
+    ctx.font = font(
+      900,
+      fit(ctx, end, 250, 56, (s) => font(900, s)),
+    );
+    ctx.fillText(end, left + 245, y + 22);
+  }
+
+  // Venue at the bottom, a stadium (and the QR code) on its right.
+  const venue = content.venue.trim().toUpperCase();
+  const city = content.city.trim().toUpperCase();
+  if (venue || city || style.qr) {
+    const top = H - 162;
+    const height = 136;
+    panel(ctx, 40, top, W - 80, height, style.accent);
+    const qrSpace = style.qr ? 140 : 0;
+    drawStadiumIcon(ctx, W - 60 - qrSpace - 240, top + 12, 240, height - 24, style.accent);
+    drawIcon(ctx, 'pin', 110, top + height / 2, 42, style.accent, style.onAccent, 'bare');
+    const textWidth = W - 80 - 120 - 270 - qrSpace;
+    ctx.textAlign = 'left';
+    ctx.fillStyle = WHITE;
+    ctx.font = font(
+      800,
+      fit(ctx, venue, textWidth, 54, (s) => font(800, s)),
+    );
+    ctx.fillText(venue, 165, city ? top + 48 : top + height / 2);
+    if (city) {
+      ctx.fillStyle = style.accent;
+      const spaced = city.split('').join(' ');
+      ctx.font = font(
+        700,
+        fit(ctx, spaced, textWidth, 38, (s) => font(700, s)),
+      );
+      ctx.fillText(spaced, 165, top + 98);
+    }
+    ctx.textAlign = 'center';
+    if (style.qr) {
+      const size = 92;
+      const x = W - 60 - size - 6;
+      ctx.fillStyle = WHITE;
+      roundRect(ctx, x - 8, top + 8, size + 16, size + 16, 8);
+      ctx.fill();
+      ctx.drawImage(style.qr, x, top + 16, size, size);
+      ctx.fillStyle = style.accent;
+      ctx.font = font(900, 17);
+      ctx.fillText(content.qrLabel.toUpperCase(), x + size / 2, top + height - 10);
+    }
+  }
+}
+
+// --------------------------------------------------------------- background
+
+function drawPhoto(ctx: Ctx, style: EventPosterStyle): void {
+  cover(ctx, style.photo!);
+  const scrim = ctx.createLinearGradient(0, 0, 0, H);
+  scrim.addColorStop(0, 'rgba(0,0,0,0.55)');
+  scrim.addColorStop(0.45, 'rgba(0,0,0,0.2)');
+  scrim.addColorStop(1, 'rgba(0,0,0,0.75)');
+  ctx.fillStyle = scrim;
+  ctx.fillRect(0, 0, W, H);
+}
+
+// Night sky, two packed stands converging on the pitch, club banners.
+function drawStadium(ctx: Ctx, style: EventPosterStyle, organizer: string, random: () => number) {
+  const font = style.font;
+  const night = ctx.createLinearGradient(0, 0, 0, H);
+  night.addColorStop(0, shade(style.primary, -0.88));
+  night.addColorStop(0.5, shade(style.primary, -0.75));
+  night.addColorStop(1, shade(style.primary, -0.9));
+  ctx.fillStyle = night;
+  ctx.fillRect(0, 0, W, H);
+  if (style.background) {
+    ctx.save();
+    ctx.globalAlpha = 0.35;
+    cover(ctx, style.background);
+    ctx.restore();
+  }
+
+  // The crowd: rows of heads and shoulders, tighter toward the far end.
+  const palette = [
+    '#141414',
+    '#1f1c19',
+    '#2a2622',
+    '#3b322b',
+    '#33302d',
+    '#4a4440',
+    '#5a4a3e',
+    shade(style.primary, -0.45),
+    shade(style.primary, -0.3),
+    shade(style.primary, -0.15),
+    shade(style.accent, -0.35),
+    '#8d8d8d',
+  ];
+  for (const side of [-1, 1]) {
+    for (let row = 0; row < 46; row++) {
+      const t = row / 45;
+      const rowY = 250 + row * 14 + t * t * 120;
+      const spacing = 7 + t * 9;
+      const reach = 380 + t * 120;
+      for (let x = 0; x < reach; x += spacing * (0.7 + random() * 0.6)) {
+        const px = side < 0 ? x : W - x;
+        const py = rowY - (reach - x) * 0.35 + random() * 6;
+        if (py < 180) {
+          continue;
+        }
+        const r = 2 + t * 4.5;
+        ctx.fillStyle = palette[Math.floor(random() * palette.length)];
+        ctx.globalAlpha = 0.3 + t * 0.45;
+        ctx.fillRect(px - r, py, r * 2, r * 1.6);
+        ctx.beginPath();
+        ctx.arc(px, py - r * 0.4, r * 0.75, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+  }
+  ctx.globalAlpha = 1;
+
+  // Banners along the stands.
+  const name = organizer.trim().toUpperCase();
+  if (name) {
+    for (const [x, y, angle] of [
+      [130, 470, 0.2],
+      [W - 130, 640, -0.16],
+    ] as const) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(angle);
+      ctx.fillStyle = shade(style.primary, -0.25);
+      ctx.fillRect(-150, -32, 300, 64);
+      ctx.fillStyle = style.accent;
+      ctx.fillRect(-150, 26, 300, 6);
+      ctx.fillStyle = withAlpha(WHITE, 0.9);
+      ctx.font = `800 ${Math.min(36, 3600 / Math.max(name.length * 9, 1))}px ${font}`;
+      ctx.fillText(name, 0, 0, 270);
+      ctx.restore();
+    }
+  }
+
+  // Darken the middle so the burst and texts own it, and the pitch below.
+  const middle = ctx.createRadialGradient(W / 2, 560, 60, W / 2, 560, 520);
+  middle.addColorStop(0, 'rgba(0,0,0,0.75)');
+  middle.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = middle;
+  ctx.fillRect(0, 0, W, H);
+  const pitch = ctx.createLinearGradient(0, 760, 0, H);
+  pitch.addColorStop(0, withAlpha(shade(style.primary, -0.45), 0));
+  pitch.addColorStop(0.25, shade(style.primary, -0.6));
+  pitch.addColorStop(1, shade(style.primary, -0.85));
+  ctx.fillStyle = pitch;
+  ctx.fillRect(0, 760, W, H - 760);
+  const vignette = ctx.createRadialGradient(W / 2, H / 2, 400, W / 2, H / 2, 900);
+  vignette.addColorStop(0, 'rgba(0,0,0,0)');
+  vignette.addColorStop(1, 'rgba(0,0,0,0.6)');
+  ctx.fillStyle = vignette;
+  ctx.fillRect(0, 0, W, H);
+}
+
+// Light rigs in the top corners and lower sides, glaring.
+function drawFloodlights(ctx: Ctx, accent: string): void {
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+  for (const side of [-1, 1]) {
+    for (const [baseY, cols, rows, scale] of [
+      [210, 6, 3, 1],
+      [1030, 4, 2, 0.8],
+    ] as const) {
+      const baseX = side < 0 ? 40 : W - 40;
+      const glare = ctx.createRadialGradient(baseX, baseY, 10, baseX, baseY, 420 * scale);
+      glare.addColorStop(0, withAlpha(accent, 0.55));
+      glare.addColorStop(0.3, withAlpha(accent, 0.18));
+      glare.addColorStop(1, withAlpha(accent, 0));
+      ctx.fillStyle = glare;
+      ctx.fillRect(0, 0, W, H);
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const x = baseX - side * (c * 30 + r * 10) * scale;
+          const y = baseY + (r * 26 - c * 13) * scale;
+          const bulb = ctx.createRadialGradient(x, y, 0, x, y, 22 * scale);
+          bulb.addColorStop(0, 'rgba(255,255,255,1)');
+          bulb.addColorStop(0.3, 'rgba(255,250,225,0.8)');
+          bulb.addColorStop(1, 'rgba(255,240,180,0)');
+          ctx.fillStyle = bulb;
+          ctx.fillRect(x - 24 * scale, y - 24 * scale, 48 * scale, 48 * scale);
+        }
+      }
+    }
+  }
+  ctx.restore();
+}
+
+// Sun-burst of rays and a cloud of golden sparks behind the logo.
+function drawBurst(ctx: Ctx, accent: string, random: () => number): void {
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+  const rays = 64;
+  for (let i = 0; i < rays; i++) {
+    const angle = (i / rays) * Math.PI * 2 + random() * 0.05;
+    const length = 260 + random() * 260;
+    const spread = 0.012 + random() * 0.03;
+    const gradient = ctx.createRadialGradient(W / 2, LOGO_Y, 40, W / 2, LOGO_Y, length);
+    gradient.addColorStop(0, withAlpha(accent, 0.7));
+    gradient.addColorStop(1, withAlpha(accent, 0));
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.moveTo(W / 2, LOGO_Y);
+    ctx.lineTo(
+      W / 2 + Math.cos(angle - spread) * length,
+      LOGO_Y + Math.sin(angle - spread) * length,
+    );
+    ctx.lineTo(
+      W / 2 + Math.cos(angle + spread) * length,
+      LOGO_Y + Math.sin(angle + spread) * length,
+    );
+    ctx.closePath();
+    ctx.fill();
+  }
+  const core = ctx.createRadialGradient(W / 2, LOGO_Y, 0, W / 2, LOGO_Y, 300);
+  core.addColorStop(0, withAlpha(accent, 0.85));
+  core.addColorStop(0.4, withAlpha(accent, 0.3));
+  core.addColorStop(1, withAlpha(accent, 0));
+  ctx.fillStyle = core;
+  ctx.fillRect(0, 0, W, H);
+
+  // Sparks: dense around the logo, a dust of them over the whole poster.
+  for (let i = 0; i < 900; i++) {
+    const near = i < 600;
+    const angle = random() * Math.PI * 2;
+    const distance = near ? Math.pow(random(), 0.7) * 420 : random() * 900;
+    const x = near ? W / 2 + Math.cos(angle) * distance * 1.3 : random() * W;
+    const y = near ? LOGO_Y + Math.sin(angle) * distance * 0.75 : 150 + random() * (H - 150);
+    ctx.globalAlpha = 0.25 + random() * 0.75;
+    ctx.fillStyle = random() < 0.25 ? '#ffffff' : accent;
+    ctx.beginPath();
+    ctx.arc(x, y, 0.8 + random() * (near ? 2.6 : 1.8), 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+// --------------------------------------------------------------- pieces
+
+// A painted stroke with frayed ends, behind a heading.
+function brush(
+  ctx: Ctx,
+  cx: number,
+  cy: number,
+  width: number,
+  height: number,
+  color: string,
+  random: () => number,
+): void {
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.transform(1, -0.02, SKEW, 1, 0, 0);
+  withShadow(ctx, 'rgba(0,0,0,0.55)', 18, () => {
+    ctx.fillStyle = color;
+    ctx.fillRect(-width / 2 + 20, -height / 2, width - 40, height);
+  });
+  ctx.fillStyle = color;
+  // Bristle streaks sticking out of both ends, uneven top and bottom edges.
+  for (let i = 0; i < 26; i++) {
+    const y = -height / 2 + (i / 25) * height;
+    const thickness = 2 + random() * (height / 9);
+    const left = 20 + random() * 70;
+    const right = 20 + random() * 70;
+    ctx.globalAlpha = 0.65 + random() * 0.35;
+    ctx.fillRect(-width / 2 + 20 - left, y, left + 10, thickness);
+    ctx.fillRect(width / 2 - 30, y, right + 10, thickness);
+  }
+  ctx.globalAlpha = 1;
+  for (let x = -width / 2 + 20; x < width / 2 - 20; x += 14) {
+    ctx.fillRect(x, -height / 2 - random() * 7, 14, 7);
+    ctx.fillRect(x, height / 2 - 1, 14, random() * 7);
+  }
+  ctx.restore();
+}
+
+// Dark card with an accent outline.
+function panel(ctx: Ctx, x: number, y: number, w: number, h: number, accent: string): void {
+  ctx.save();
+  ctx.fillStyle = 'rgba(3,7,5,0.82)';
+  roundRect(ctx, x, y, w, h, 24);
+  ctx.fill();
+  ctx.strokeStyle = accent;
+  ctx.lineWidth = 3.5;
+  ctx.stroke();
+  ctx.restore();
+}
+
+/** Text drawn on its own layer, then worn by specks rubbed out of it. */
+function stamp(
+  ctx: Ctx,
+  cx: number,
+  cy: number,
+  width: number,
+  height: number,
+  draw: (layer: Ctx) => void,
+): void {
+  const layer = document.createElement('canvas');
+  layer.width = width;
+  layer.height = height;
+  const l = layer.getContext('2d');
+  if (!l) {
+    return;
+  }
+  l.textBaseline = 'middle';
+  l.translate(width / 2, height / 2);
+  draw(l);
+  l.setTransform(1, 0, 0, 1, 0, 0);
+  l.globalCompositeOperation = 'destination-out';
+  const random = seeded(5);
+  for (let i = 0; i < 1600; i++) {
+    l.globalAlpha = 0.4 + random() * 0.6;
+    l.beginPath();
+    const r = random() < 0.92 ? 0.6 + random() * 1.6 : 2 + random() * 3.5;
+    l.arc(random() * width, random() * height, r, 0, Math.PI * 2);
+    l.fill();
+  }
+  withShadow(ctx, 'rgba(0,0,0,0.75)', 22, () =>
+    ctx.drawImage(layer, cx - width / 2, cy - height / 2),
+  );
+}
+
+function drawIcon(
+  ctx: Ctx,
+  icon: PosterIcon | 'clock',
+  cx: number,
+  cy: number,
+  r: number,
+  accent: string,
+  ink: string,
+  mode: 'disc' | 'ring' | 'bare' = 'disc',
+): void {
+  ctx.save();
+  if (mode === 'disc') {
+    ctx.fillStyle = accent;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = withAlpha(WHITE, 0.25);
+    ctx.lineWidth = 3;
+    ctx.stroke();
+  }
+  const color = mode === 'disc' ? ink : accent;
+  ctx.fillStyle = color;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 4;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  const s = (r / 40) * (mode === 'bare' ? 1.5 : 1);
+  switch (icon) {
+    case 'pin':
+      ctx.beginPath();
+      ctx.arc(cx, cy - 6 * s, 15 * s, Math.PI * 0.85, Math.PI * 2.15);
+      ctx.lineTo(cx, cy + 22 * s);
+      ctx.closePath();
+      ctx.lineWidth = 5 * s;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(cx, cy - 6 * s, 5 * s, 0, Math.PI * 2);
+      ctx.fill();
+      break;
+    case 'ball':
+      ctx.fillStyle = WHITE;
+      ctx.beginPath();
+      ctx.arc(cx, cy, 25 * s, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#111111';
+      ctx.stroke();
+      ctx.fillStyle = '#111111';
+      polygon(ctx, cx, cy, 8.5 * s, 5);
+      for (let i = 0; i < 5; i++) {
+        const a = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
+        polygon(ctx, cx + Math.cos(a) * 20 * s, cy + Math.sin(a) * 20 * s, 5.5 * s, 5);
+      }
+      break;
+    case 'field': {
+      const w = 46 * s;
+      const h = 30 * s;
+      ctx.lineWidth = 3.5;
+      ctx.strokeRect(cx - w / 2, cy - h / 2, w, h);
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - h / 2);
+      ctx.lineTo(cx, cy + h / 2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(cx, cy, 6.5 * s, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.strokeRect(cx - w / 2, cy - 7 * s, 7 * s, 14 * s);
+      ctx.strokeRect(cx + w / 2 - 7 * s, cy - 7 * s, 7 * s, 14 * s);
+      break;
+    }
+    case 'rules': {
+      const w = 30 * s;
+      const h = 38 * s;
+      ctx.lineWidth = 3.5;
+      ctx.strokeRect(cx - w / 2, cy - h / 2, w, h);
+      for (let i = 0; i < 4; i++) {
+        ctx.fillRect(cx - w / 2 + 6 * s, cy - h / 2 + (8 + i * 7.5) * s, w - 12 * s, 3 * s);
+      }
+      break;
+    }
+    case 'clock':
+      ctx.lineWidth = 4.5;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r - 4, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - r * 0.55);
+      ctx.lineTo(cx, cy);
+      ctx.lineTo(cx + r * 0.4, cy + r * 0.25);
+      ctx.stroke();
+      break;
+  }
+  ctx.restore();
+}
+
+// Bowl, tiers, green pitch and four light masts.
+function drawStadiumIcon(ctx: Ctx, x: number, y: number, w: number, h: number, accent: string) {
+  ctx.save();
+  const cx = x + w / 2;
+  const cy = y + h * 0.62;
+  // Masts.
+  for (const mx of [x + 14, x + w - 14]) {
+    ctx.fillStyle = '#d9dde3';
+    ctx.fillRect(mx - 2, y + 14, 4, h * 0.55);
+    ctx.fillStyle = WHITE;
+    ctx.fillRect(mx - 14, y + 4, 28, 14);
+    ctx.fillStyle = '#9aa3ad';
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 2; j++) {
+        ctx.fillRect(mx - 11 + i * 8, y + 6 + j * 6, 6, 4);
+      }
+    }
+  }
+  // Bowl.
+  ctx.fillStyle = '#eef1f4';
+  ctx.beginPath();
+  ctx.ellipse(cx, cy, w * 0.4, h * 0.36, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = '#9aa3ad';
+  ctx.lineWidth = 1.5;
+  for (let i = 1; i <= 3; i++) {
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, w * 0.4 - i * 7, h * 0.36 - i * 4, 0, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  // Pitch.
+  ctx.fillStyle = '#2f9e44';
+  ctx.beginPath();
+  ctx.ellipse(cx, cy, w * 0.27, h * 0.2, 0, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.strokeStyle = withAlpha(WHITE, 0.85);
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(cx - w * 0.2, cy - h * 0.12, w * 0.4, h * 0.24);
+  ctx.beginPath();
+  ctx.moveTo(cx, cy - h * 0.12);
+  ctx.lineTo(cx, cy + h * 0.12);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.strokeStyle = accent;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.ellipse(cx, cy, w * 0.4, h * 0.36, 0, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.restore();
+}
+
+// --------------------------------------------------------------- helpers
+
+/**
+ * The logo with the white backdrop around it made transparent (flood fill
+ * from the edges, so white inside the crest stays). Unreadable pixels (a
+ * cross-origin image) leave it as is.
+ */
+function cutOut(img: HTMLImageElement): HTMLCanvasElement | HTMLImageElement {
+  const w = img.naturalWidth;
+  const h = img.naturalHeight;
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  const c = canvas.getContext('2d');
+  if (!c || !w || !h) {
+    return img;
+  }
+  c.drawImage(img, 0, 0);
+  let data: ImageData;
+  try {
+    data = c.getImageData(0, 0, w, h);
+  } catch {
+    return img;
+  }
+  const px = data.data;
+  const light = (i: number) =>
+    px[i * 4 + 3] > 0 && Math.min(px[i * 4], px[i * 4 + 1], px[i * 4 + 2]) > 228;
+  const seen = new Uint8Array(w * h);
+  const stack: number[] = [];
+  for (let x = 0; x < w; x++) {
+    stack.push(x, (h - 1) * w + x);
+  }
+  for (let y = 0; y < h; y++) {
+    stack.push(y * w, y * w + w - 1);
+  }
+  let cleared = 0;
+  while (stack.length) {
+    const i = stack.pop()!;
+    if (seen[i] || !light(i)) {
+      continue;
+    }
+    seen[i] = 1;
+    px[i * 4 + 3] = 0;
+    cleared++;
+    const x = i % w;
+    if (x > 0) stack.push(i - 1);
+    if (x < w - 1) stack.push(i + 1);
+    if (i >= w) stack.push(i - w);
+    if (i < w * (h - 1)) stack.push(i + w);
+  }
+  if (cleared === 0) {
+    return img;
+  }
+  // Soften the cut: half-transparent near-white pixels touching it.
+  for (let i = 0; i < w * h; i++) {
+    if (seen[i]) continue;
+    const x = i % w;
+    const touches =
+      (x > 0 && seen[i - 1]) || (x < w - 1 && seen[i + 1]) || seen[i - w] || seen[i + w];
+    if (touches && Math.min(px[i * 4], px[i * 4 + 1], px[i * 4 + 2]) > 180) {
+      px[i * 4 + 3] = 110;
+    }
+  }
+  c.putImageData(data, 0, 0);
+  return canvas;
+}
+
+function cover(ctx: Ctx, img: HTMLImageElement): void {
+  const scale = Math.max(W / img.naturalWidth, H / img.naturalHeight);
+  const w = img.naturalWidth * scale;
+  const h = img.naturalHeight * scale;
+  ctx.drawImage(img, (W - w) / 2, (H - h) / 2, w, h);
+}
+
+function polygon(ctx: Ctx, cx: number, cy: number, r: number, n: number): void {
+  ctx.beginPath();
+  for (let i = 0; i < n; i++) {
+    const a = -Math.PI / 2 + (i * 2 * Math.PI) / n;
+    ctx.lineTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r);
+  }
+  ctx.closePath();
+  ctx.fill();
+}
+
+function skewed(ctx: Ctx, x: number, y: number, draw: () => void): void {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.transform(1, 0, SKEW, 1, 0, 0);
+  draw();
+  ctx.restore();
+}
+
+function withShadow(ctx: Ctx, color: string, blur: number, draw: () => void): void {
+  ctx.save();
+  ctx.shadowColor = color;
+  ctx.shadowBlur = blur;
+  ctx.shadowOffsetY = blur / 5;
+  draw();
+  ctx.restore();
+}
+
+/** Largest size (down to 18px) at which `text` fits in `maxWidth`. */
+function fit(
+  ctx: Ctx,
+  text: string,
+  maxWidth: number,
+  start: number,
+  font: (size: number) => string,
+): number {
+  let size = start;
+  while (size > 18) {
+    ctx.font = font(size);
+    if (ctx.measureText(text).width <= maxWidth) {
+      break;
+    }
+    size -= 2;
+  }
+  return size;
+}
+
+function roundRect(ctx: Ctx, x: number, y: number, w: number, h: number, r: number): void {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+// Fixed pattern, so the same texts always give the same poster.
+function seeded(seed: number): () => number {
+  let state = seed;
+  return () => {
+    state = (state * 16807) % 2147483647;
+    return state / 2147483647;
+  };
+}
+
+function parseColor(color: string): [number, number, number] {
+  const hex = color.trim().replace('#', '');
+  if (/^[0-9a-f]{6}$/i.test(hex)) {
+    return [0, 2, 4].map((i) => parseInt(hex.slice(i, i + 2), 16)) as [number, number, number];
+  }
+  if (/^[0-9a-f]{3}$/i.test(hex)) {
+    return [0, 1, 2].map((i) => parseInt(hex[i] + hex[i], 16)) as [number, number, number];
+  }
+  const rgb = color.match(/\d+(\.\d+)?/g);
+  return rgb && rgb.length >= 3 ? [+rgb[0], +rgb[1], +rgb[2]] : [128, 128, 128];
+}
+
+function withAlpha(color: string, alpha: number): string {
+  const [r, g, b] = parseColor(color);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+/** Darkens (amount < 0) or lightens a color. */
+function shade(color: string, amount: number): string {
+  const [r, g, b] = parseColor(color).map((c) =>
+    Math.round(amount < 0 ? c * (1 + amount) : c + (255 - c) * amount),
+  );
+  return `rgb(${r},${g},${b})`;
+}

@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { Badge, BadgeStatus, Button, QrCode, ShareButton, TextField } from 'design-system';
+import { Badge, BadgeStatus, Button, ShareButton, TextField } from 'design-system';
 import { LanguageService } from 'design-tokens';
 import {
   OrganizerRegistration,
@@ -20,6 +20,7 @@ import {
 import { AuthService } from '../../core/auth.service';
 import { RegistrationsService } from '../../core/registrations.service';
 import { showErrorsInSnackbar } from '../../../core/error-snackbar';
+import { QrPosterDialog } from '../../shared/qr-poster-dialog/qr-poster-dialog';
 
 const STATUS_TO_BADGE: Record<RegistrationStatus, BadgeStatus> = {
   PENDING: 'draft',
@@ -45,7 +46,7 @@ type Filter = 'ALL' | 'PENDING' | 'CONFIRMED' | 'WAITLIST' | 'REJECTED';
  */
 @Component({
   selector: 'app-registrations-block',
-  imports: [Badge, Button, QrCode, RouterLink, ShareButton, TextField, TranslocoPipe],
+  imports: [Badge, Button, QrPosterDialog, RouterLink, ShareButton, TextField, TranslocoPipe],
   templateUrl: './registration-list.page.html',
   styleUrl: './registration-list.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -83,6 +84,7 @@ export class RegistrationListPage {
     return slug ? `${window.location.origin}/${slug}/register` : '';
   });
   protected readonly linkCopied = signal(false);
+  protected readonly qrOpen = signal(false);
 
   protected readonly individual = computed(() => this.settings()?.participantType === 'INDIVIDUAL');
 
