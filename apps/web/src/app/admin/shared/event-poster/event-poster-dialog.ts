@@ -204,10 +204,7 @@ export class EventPosterDialog {
         .catch(() => null),
     ]);
     this.theme = this.readTheme(tournament);
-    await Promise.all([
-      document.fonts.load(`900 60px ${this.theme.font}`).catch(() => undefined),
-      document.fonts.load(`700 30px ${this.theme.font}`).catch(() => undefined),
-    ]);
+    await loadHeadingFont(this.theme.font);
     const [background, logo] = await Promise.all([
       loadImage(POSTER_BACKGROUND),
       loadImage(this.assetUrl.resolve(tournament.logoUrl)),
@@ -328,6 +325,42 @@ export class EventPosterDialog {
     probe.remove();
     return theme;
   }
+}
+
+/**
+ * The heading font of the theme, fetched from Google Fonts when the page
+ * hasn't: the admin only loads some theme fonts (index.html), and a canvas
+ * silently falls back to another font.
+ */
+async function loadHeadingFont(stack: string): Promise<void> {
+  const family = stack.split(',')[0].trim().replace(/['"]/g, '');
+  const id = `poster-font-${family.replace(/\s+/g, '-').toLowerCase()}`;
+  if (family && !document.getElementById(id)) {
+    const name = encodeURIComponent(family).replace(/%20/g, '+');
+    const added = (href: string) =>
+      new Promise<boolean>((resolve) => {
+        const link = document.createElement('link');
+        link.id = id;
+        link.rel = 'stylesheet';
+        link.href = href;
+        link.onload = () => resolve(true);
+        link.onerror = () => {
+          link.remove();
+          resolve(false);
+        };
+        document.head.appendChild(link);
+      });
+    // Google Fonts refuses a weight list the family lacks: drop the heaviest until it fits.
+    for (const weights of [':wght@700;800;900', ':wght@700;800', ':wght@700', '']) {
+      if (await added(`https://fonts.googleapis.com/css2?family=${name}${weights}&display=swap`)) {
+        break;
+      }
+    }
+  }
+  await Promise.all([
+    document.fonts.load(`900 60px ${stack}`).catch(() => undefined),
+    document.fonts.load(`400 60px ${stack}`).catch(() => undefined),
+  ]);
 }
 
 function loadImage(src: string | null): Promise<HTMLImageElement | null> {
