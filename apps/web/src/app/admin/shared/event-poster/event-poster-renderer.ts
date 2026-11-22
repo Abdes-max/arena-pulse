@@ -298,10 +298,10 @@ function drawBackground(ctx: Ctx, style: EventPosterStyle): void {
   ctx.fillRect(0, 0, W, H);
   const img = style.background;
   if (img) {
-    // Backdrop: the photo filling the poster, blurred and dimmed...
+    // Backdrop: the photo filling the poster, slightly dimmed...
     const fill = Math.max(W / img.naturalWidth, H / img.naturalHeight);
     ctx.save();
-    ctx.filter = 'blur(3px) brightness(0.92)';
+    ctx.filter = 'brightness(0.92)';
     ctx.drawImage(
       img,
       (W - img.naturalWidth * fill) / 2,
