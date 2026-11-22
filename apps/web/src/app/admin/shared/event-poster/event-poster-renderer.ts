@@ -220,17 +220,6 @@ export function drawEventPoster(
         ctx.fillText(price, 0, 0);
       });
     });
-    // Accent strokes radiating on both sides.
-    ctx.fillStyle = accent;
-    for (const side of [-1, 1]) {
-      for (const angle of [-0.45, 0, 0.45]) {
-        ctx.save();
-        ctx.translate(priceCenter + side * (width / 2 + 40), y);
-        ctx.rotate(side * angle);
-        ctx.fillRect(-20, -4, 40, 8);
-        ctx.restore();
-      }
-    }
   }
   if (end) {
     const left = 600;
