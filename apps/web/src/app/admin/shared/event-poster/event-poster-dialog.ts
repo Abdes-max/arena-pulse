@@ -19,8 +19,11 @@ import { THEME_MAP } from '../../core/theme-map';
 import { TournamentsService } from '../../core/tournaments.service';
 import { EventPosterContent, EventPosterStyle, drawEventPoster } from './event-poster-renderer';
 
-// The same match-night photo behind every poster.
-const POSTER_BACKGROUND = '/poster-backgrounds/match-night.jpg';
+// One match-night photo per sport, public/poster-backgrounds/<sport>.jpg
+// (sport name without accents, e.g. "football", "volleyball"); football's
+// stands in for a sport that has none yet.
+const POSTER_BACKGROUNDS = '/poster-backgrounds';
+const DEFAULT_POSTER_SPORT = 'football';
 
 // Meeting time suggested before the first match.
 const MEETING_LEAD_MINUTES = 45;
@@ -41,7 +44,7 @@ interface Theme {
 
 /**
  * Promotional poster generator ("Affiche"): a ready-to-post 1080x1350 image
- * on a fixed match-night photo recolored to the theme -- primary and signal
+ * on its sport's match-night photo recolored to the theme -- primary and signal
  * colors, heading font -- with the category, organizer, date, key infos, price and venue.
  * Every text starts from the tournament's data and stays editable; drawing
  * is in event-poster-renderer.ts.
@@ -207,7 +210,7 @@ export class EventPosterDialog {
     this.theme = this.readTheme(tournament);
     await loadHeadingFont(this.theme.font);
     const [background, logo] = await Promise.all([
-      loadImage(POSTER_BACKGROUND),
+      loadPosterBackground(tournament.sportName),
       loadImage(this.assetUrl.resolve(tournament.logoUrl)),
     ]);
     const registering = !!tournament.registrationsOpen && tournament.status === 'PUBLISHED';
@@ -366,6 +369,18 @@ async function loadHeadingFont(stack: string): Promise<void> {
     document.fonts.load(`900 60px ${stack}`).catch(() => undefined),
     document.fonts.load(`400 60px ${stack}`).catch(() => undefined),
   ]);
+}
+
+async function loadPosterBackground(sportName: string): Promise<HTMLImageElement | null> {
+  const sport = sportName
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-');
+  return (
+    (await loadImage(`${POSTER_BACKGROUNDS}/${sport}.jpg`)) ??
+    loadImage(`${POSTER_BACKGROUNDS}/${DEFAULT_POSTER_SPORT}.jpg`)
+  );
 }
 
 function loadImage(src: string | null): Promise<HTMLImageElement | null> {

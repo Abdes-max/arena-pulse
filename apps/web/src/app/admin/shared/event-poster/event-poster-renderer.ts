@@ -1,7 +1,7 @@
 // Canvas drawing of the promotional poster (EventPosterDialog) -- no Angular
 // here, the dialog hands in the texts already worded and the images already
 // loaded. Laid out on a 1080x1350 portrait (the 4:5 format social networks
-// show uncropped) over a fixed match-night photo (public/poster-backgrounds):
+// show uncropped) over its sport's match-night photo (public/poster-backgrounds):
 // a burst of light behind the club logo, brush-stroke headings and worn
 // lettering in yellow, the panels in the theme's primary color, the texts
 // in its heading font.
@@ -37,7 +37,7 @@ export interface EventPosterStyle {
   /** The theme's signal color: bands, borders, icons, light. */
   accent: string;
   font: string;
-  /** The fixed match-night photo. */
+  /** The sport's match-night photo. */
   background: HTMLImageElement | null;
   logo: HTMLImageElement | null;
   qr: HTMLImageElement | null;
