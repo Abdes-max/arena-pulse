@@ -205,18 +205,3 @@
   border-radius: var(--ap-radius-md);
   padding: var(--ap-space-2) var(--ap-space-3);
 }
-
-.registration-list-page__qr {
-  font-size: 0.85rem;
-
-  summary {
-    cursor: pointer;
-    color: var(--ap-color-signal-text);
-    font-weight: 600;
-  }
-
-  ap-qr-code {
-    display: block;
-    margin-block: var(--ap-space-2);
-  }
-}

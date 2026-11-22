@@ -26,6 +26,8 @@ export interface CreateTournamentPayload {
   theme?: PublicTheme;
   // Organizing club (club directory) -- its crest becomes the tournament logo.
   organizerClubId?: string;
+  /** Game format, e.g. "8 vs 8" (see gameFormatsFor). */
+  format?: string;
 }
 
 export interface CreateQuickPlateauPayload {
@@ -47,6 +49,7 @@ export interface CreateQuickPlateauPayload {
   knockoutSize?: number;
   thirdPlaceMatch?: boolean;
   categoryName?: string;
+  format?: string;
   venueName?: string;
   venueAddress?: string;
 }
@@ -55,6 +58,8 @@ export interface UpdateTournamentPayload {
   name?: string;
   format?: string | null;
   level?: string | null;
+  contactPhone?: string | null;
+  contactEmail?: string | null;
   sportId?: string;
   startDate?: string | null;
   endDate?: string | null;

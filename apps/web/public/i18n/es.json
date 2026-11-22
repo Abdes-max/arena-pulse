@@ -415,7 +415,8 @@
       "premiumLocked": "Reservado a torneos con más de {{count}} equipos o con una suscripción anual activa.",
       "stats": "Estadísticas",
       "slideshow": "Presentación (pantalla TV)",
-      "registrations": "Inscripciones"
+      "registrations": "Inscripciones",
+      "eventPoster": "Cartel"
     },
     "auth": {
       "login": {
@@ -683,7 +684,8 @@
         "none": "Ninguna (solo grupos)",
         "thirdPlace": "Partido por el 3.er puesto"
       },
-      "categoryNone": "Sin especificar"
+      "categoryNone": "Sin especificar",
+      "format": "Formato de juego"
     },
     "tournamentList": {
       "createPlateau": "Create an event (quick)",
@@ -829,7 +831,8 @@
           "hint": "El logo del club pasa a ser el del torneo.",
           "searchFailed": "La búsqueda de clubes no está disponible por ahora.",
           "department": "Departamento {{code}}"
-        }
+        },
+        "formatLabel": "Formato de juego"
       },
       "categories": {
         "title": "Categorías",
@@ -1179,8 +1182,7 @@
         "hint": "Difunde este enlace (correo, redes, cartel): los equipos se inscriben directamente.",
         "copy": "Copiar",
         "copied": "¡Copiado!",
-        "qr": "Código QR",
-        "download": "Descargar el código QR",
+        "qr": "Código QR de inscripción para imprimir",
         "unpublished": "El enlace de inscripción estará activo cuando el torneo esté publicado.",
         "publish": "Publicar el torneo"
       }
@@ -1709,7 +1711,11 @@
       "addPoster": "Añadir el cartel del torneo abajo",
       "print": "Imprimir",
       "loading": "Preparando…",
-      "error": "No se pudo generar la imagen."
+      "error": "No se pudo generar la imagen.",
+      "scanRegister": "Escanea para inscribir a tu equipo",
+      "registrationHeading": "Inscripciones abiertas",
+      "category": "Categoría: {{names}}",
+      "categories": "Categorías: {{names}}"
     },
     "createOrganization": {
       "title": "Crea tu organización",
@@ -1717,6 +1723,55 @@
       "submit": "Crear la organización",
       "back": "Volver a mi espacio de responsable",
       "error": "No se pudo crear la organización."
+    },
+    "eventPoster": {
+      "title": "Cartel del evento",
+      "hint": "Todos los textos se pueden editar; los colores, la fuente y el fondo vienen del tema del torneo.",
+      "download": "Descargar el cartel",
+      "infosHeading": "Información general",
+      "endLabel": "Fin previsto",
+      "qrRegister": "Inscríbete",
+      "qrFollow": "Sigue en directo",
+      "qrRegisterOption": "Añadir el código QR de inscripción",
+      "qrFollowOption": "Añadir el código QR del torneo",
+      "fields": {
+        "title": "Título",
+        "category": "Categoría",
+        "organizer": "Organizador",
+        "date": "Fecha",
+        "price": "Precio",
+        "end": "Fin previsto",
+        "venue": "Lugar",
+        "city": "Ciudad",
+        "infoTitle": "Título",
+        "infoDetail": "Detalle",
+        "sport": "Deporte",
+        "contact": "Contacto"
+      },
+      "defaults": {
+        "plateau": "Encuentro",
+        "tournament": "Torneo",
+        "meeting": "Cita",
+        "firstMatch": "Primer partido",
+        "at": "a las {{time}}",
+        "fields": "{{count}} campos",
+        "level": "Nivel",
+        "free": "Gratis",
+        "field": "1 campo",
+        "format": "Formato"
+      },
+      "contactLabel": "Contacto:",
+      "prompts": {
+        "registrations": "Las inscripciones están cerradas: ábrelas para poner el código QR de inscripción en el cartel.",
+        "openRegistrations": "Abrir las inscripciones",
+        "publishFirst": "Publica primero el torneo para abrir las inscripciones.",
+        "contact": "Ningún contacto para los interesados: añade un teléfono y/o un e-mail.",
+        "phone": "Teléfono",
+        "email": "E-mail",
+        "saveContact": "Guardar el contacto",
+        "registrationsError": "No se pudieron abrir las inscripciones.",
+        "contactError": "Contacto no guardado: revisa el e-mail."
+      }
     }
   },
   "wrapped": {

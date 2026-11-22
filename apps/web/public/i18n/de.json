@@ -415,7 +415,8 @@
       "premiumLocked": "Nur für Turniere mit mehr als {{count}} Teams oder mit aktivem Jahresabonnement.",
       "stats": "Statistiken",
       "slideshow": "Diashow (TV-Bildschirm)",
-      "registrations": "Anmeldungen"
+      "registrations": "Anmeldungen",
+      "eventPoster": "Plakat"
     },
     "auth": {
       "login": {
@@ -683,7 +684,8 @@
         "none": "Keine (nur Gruppen)",
         "thirdPlace": "Spiel um Platz 3"
       },
-      "categoryNone": "Nicht angegeben"
+      "categoryNone": "Nicht angegeben",
+      "format": "Spielformat"
     },
     "tournamentList": {
       "createPlateau": "Create an event (quick)",
@@ -829,7 +831,8 @@
           "hint": "Das Vereinslogo wird zum Turnierlogo.",
           "searchFailed": "Die Vereinssuche ist gerade nicht verfügbar.",
           "department": "Département {{code}}"
-        }
+        },
+        "formatLabel": "Spielformat"
       },
       "categories": {
         "title": "Kategorien",
@@ -1179,8 +1182,7 @@
         "hint": "Teilen Sie diesen Link (E-Mail, soziale Netzwerke, Plakat): Teams melden sich direkt an.",
         "copy": "Kopieren",
         "copied": "Kopiert!",
-        "qr": "QR-Code",
-        "download": "QR-Code herunterladen",
+        "qr": "Anmelde-QR-Code zum Ausdrucken",
         "unpublished": "Der Anmeldelink ist aktiv, sobald das Turnier veröffentlicht ist.",
         "publish": "Turnier veröffentlichen"
       }
@@ -1709,7 +1711,11 @@
       "addPoster": "Turnierplakat unten hinzufügen",
       "print": "Drucken",
       "loading": "Wird vorbereitet…",
-      "error": "Das Bild konnte nicht erstellt werden."
+      "error": "Das Bild konnte nicht erstellt werden.",
+      "scanRegister": "Scannen Sie, um Ihr Team anzumelden",
+      "registrationHeading": "Anmeldung offen",
+      "category": "Kategorie: {{names}}",
+      "categories": "Kategorien: {{names}}"
     },
     "createOrganization": {
       "title": "Deine Organisation erstellen",
@@ -1717,6 +1723,55 @@
       "submit": "Organisation erstellen",
       "back": "Zurück zu meinem Bereich",
       "error": "Die Organisation konnte nicht erstellt werden."
+    },
+    "eventPoster": {
+      "title": "Veranstaltungsplakat",
+      "hint": "Alle Texte sind bearbeitbar; Farben, Schrift und Hintergrund stammen aus dem Turnierthema.",
+      "download": "Plakat herunterladen",
+      "infosHeading": "Allgemeine Infos",
+      "endLabel": "Voraussichtliches Ende",
+      "qrRegister": "Anmelden",
+      "qrFollow": "Live verfolgen",
+      "qrRegisterOption": "Anmelde-QR-Code hinzufügen",
+      "qrFollowOption": "QR-Code des Turniers hinzufügen",
+      "fields": {
+        "title": "Titel",
+        "category": "Kategorie",
+        "organizer": "Veranstalter",
+        "date": "Datum",
+        "price": "Preis",
+        "end": "Voraussichtliches Ende",
+        "venue": "Ort",
+        "city": "Stadt",
+        "infoTitle": "Bezeichnung",
+        "infoDetail": "Detail",
+        "sport": "Sportart",
+        "contact": "Kontakt"
+      },
+      "defaults": {
+        "plateau": "Spielfest",
+        "tournament": "Turnier",
+        "meeting": "Treffpunkt",
+        "firstMatch": "Erstes Spiel",
+        "at": "um {{time}}",
+        "fields": "{{count}} Plätze",
+        "level": "Niveau",
+        "free": "Kostenlos",
+        "field": "1 Platz",
+        "format": "Format"
+      },
+      "contactLabel": "Kontakt:",
+      "prompts": {
+        "registrations": "Die Anmeldung ist geschlossen: öffnen Sie sie, um den Anmelde-QR-Code auf das Plakat zu setzen.",
+        "openRegistrations": "Anmeldung öffnen",
+        "publishFirst": "Veröffentlichen Sie zuerst das Turnier, um die Anmeldung zu öffnen.",
+        "contact": "Kein Kontakt für Interessierte: fügen Sie eine Telefonnummer und/oder eine E-Mail hinzu.",
+        "phone": "Telefon",
+        "email": "E-Mail",
+        "saveContact": "Kontakt speichern",
+        "registrationsError": "Die Anmeldung konnte nicht geöffnet werden.",
+        "contactError": "Kontakt nicht gespeichert: prüfen Sie die E-Mail."
+      }
     }
   },
   "wrapped": {

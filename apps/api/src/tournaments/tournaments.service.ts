@@ -126,6 +126,7 @@ export class TournamentsService {
         isListed: dto.isListed ?? true,
         theme: dto.theme,
         organizerClubId: dto.organizerClubId,
+        format: dto.format?.trim() || undefined,
         // Every new tournament starts with the header that matches its theme
         // (presets are free, whatever the plan), whether it comes from the
         // web, the app or the quick event; the organizer can change it later.
@@ -239,6 +240,12 @@ export class TournamentsService {
         teamsCanReferee: dto.teamsCanReferee,
         ...(dto.format !== undefined && { format: dto.format?.trim() || null }),
         ...(dto.level !== undefined && { level: dto.level?.trim() || null }),
+        ...(dto.contactPhone !== undefined && {
+          contactPhone: dto.contactPhone?.trim() || null,
+        }),
+        ...(dto.contactEmail !== undefined && {
+          contactEmail: dto.contactEmail?.trim() || null,
+        }),
         isListed: dto.isListed,
         theme: dto.theme,
         ...(dto.organizerClubId !== undefined && {
@@ -2390,6 +2397,8 @@ export class TournamentsService {
       organizerClubId: tournament.organizerClubId,
       format: tournament.format,
       level: tournament.level,
+      contactPhone: tournament.contactPhone,
+      contactEmail: tournament.contactEmail,
       registrationsOpen: tournament.registrationsOpen,
       description: tournament.description,
       rules: tournament.rules,

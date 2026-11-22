@@ -75,31 +75,38 @@ export class PublicService {
 
   async getTournament(slug: string) {
     const tournament = await this.resolveTournament(slug);
-    const [venues, sponsors, wrappedUnlocked, firstMatchTime, isFinished] =
-      await Promise.all([
-        this.venuesService.list(
-          tournament.organizationId,
-          tournament.tournamentId,
-        ),
-        this.sponsorsService.list(
-          tournament.organizationId,
-          tournament.tournamentId,
-        ),
-        // Drives whether TournamentShell shows the "Récap" tab at all — the
-        // dedicated GET .../wrapped endpoint enforces the same check
-        // independently, this just avoids an extra round-trip just to find
-        // out the tab shouldn't be there.
-        this.tournamentsService.hasPremiumFeatures(
-          tournament.organizationId,
-          tournament.tournamentId,
-        ),
-        // Général's startDate carries no real time-of-day (always stored at
-        // UTC midnight) -- this is the actual kickoff time TournamentShell's
-        // own formattedDates() appends next to it, when there's a real
-        // schedule to read one from.
-        this.earliestMatchStartTime(tournament.tournamentId),
-        this.allMatchesPlayed(tournament.tournamentId),
-      ]);
+    const [
+      venues,
+      sponsors,
+      wrappedUnlocked,
+      firstMatchTime,
+      lastMatchEndTime,
+      isFinished,
+    ] = await Promise.all([
+      this.venuesService.list(
+        tournament.organizationId,
+        tournament.tournamentId,
+      ),
+      this.sponsorsService.list(
+        tournament.organizationId,
+        tournament.tournamentId,
+      ),
+      // Drives whether TournamentShell shows the "Récap" tab at all — the
+      // dedicated GET .../wrapped endpoint enforces the same check
+      // independently, this just avoids an extra round-trip just to find
+      // out the tab shouldn't be there.
+      this.tournamentsService.hasPremiumFeatures(
+        tournament.organizationId,
+        tournament.tournamentId,
+      ),
+      // Général's startDate carries no real time-of-day (always stored at
+      // UTC midnight) -- this is the actual kickoff time TournamentShell's
+      // own formattedDates() appends next to it, when there's a real
+      // schedule to read one from.
+      this.earliestMatchStartTime(tournament.tournamentId),
+      this.latestMatchEndTime(tournament.tournamentId),
+      this.allMatchesPlayed(tournament.tournamentId),
+    ]);
     return {
       id: tournament.id,
       name: tournament.name,
@@ -111,6 +118,7 @@ export class PublicService {
       startDate: tournament.startDate,
       endDate: tournament.endDate,
       firstMatchTime,
+      lastMatchEndTime,
       isOnline: tournament.isOnline,
       theme: tournament.theme,
       logoUrl: tournament.logoUrl,
@@ -137,6 +145,15 @@ export class PublicService {
       _min: { startTime: true },
     });
     return result._min.startTime;
+  }
+
+  /** When the last scheduled match ends (the poster's "Fin prévue"). */
+  private async latestMatchEndTime(tournamentId: string): Promise<Date | null> {
+    const result = await this.prisma.timeSlot.aggregate({
+      where: { field: { venue: { tournamentId } }, match: { isNot: null } },
+      _max: { endTime: true },
+    });
+    return result._max.endTime;
   }
 
   /**

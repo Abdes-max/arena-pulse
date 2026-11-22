@@ -27,6 +27,7 @@ interface ThemeColors {
   band: string;
   title: string;
   accent: string;
+  onAccent: string;
   font: string;
 }
 
@@ -48,6 +49,8 @@ export class QrPosterDialog {
   readonly tournamentId = input.required<string>();
   /** Absolute public URL the code points to. */
   readonly url = input.required<string>();
+  /** The code leads to the sign-up page: says so, above and under it. */
+  readonly registration = input(false);
   readonly closed = output<void>();
 
   private readonly authService = inject(AuthService);
@@ -58,6 +61,7 @@ export class QrPosterDialog {
 
   protected readonly tournament = signal<TournamentDetail | null>(null);
   private readonly venues = signal<Venue[]>([]);
+  private readonly categories = signal<string[]>([]);
   protected readonly withPoster = signal(false);
   protected readonly image = signal<string | null>(null);
   protected readonly failed = signal(false);
@@ -72,9 +76,14 @@ export class QrPosterDialog {
       void Promise.all([
         this.tournamentsService.getTournament(organizationId, tournamentId),
         this.tournamentsService.listVenues(organizationId, tournamentId).catch(() => [] as Venue[]),
+        this.tournamentsService
+          .listCategories(organizationId, tournamentId)
+          .then((categories) => categories.map((c) => c.name))
+          .catch(() => [] as string[]),
       ])
-        .then(([tournament, venues]) => {
+        .then(([tournament, venues, categories]) => {
           this.venues.set(venues);
+          this.categories.set(categories);
           this.tournament.set(tournament);
         })
         .catch(() => this.failed.set(true));
@@ -84,10 +93,11 @@ export class QrPosterDialog {
       const tournament = this.tournament();
       const withPoster = this.withPoster();
       const url = this.url();
+      const registration = this.registration();
       if (!tournament) {
         return;
       }
-      void this.compose(tournament, url, withPoster)
+      void this.compose(tournament, url, withPoster, registration)
         .then((dataUrl) => this.image.set(dataUrl))
         .catch(() => this.failed.set(true));
     });
@@ -98,7 +108,8 @@ export class QrPosterDialog {
   }
 
   protected fileName(): string {
-    return `${this.tournament()?.slug ?? 'tournoi'}-qrcode.png`;
+    const suffix = this.registration() ? 'inscription' : 'qrcode';
+    return `${this.tournament()?.slug ?? 'tournoi'}-${suffix}.png`;
   }
 
   // Prints just the image, from a throwaway iframe.
@@ -146,6 +157,7 @@ export class QrPosterDialog {
       band: read('--ap-color-primary', '#0f172a'),
       title: read('--ap-color-on-primary', '#ffffff'),
       accent: read('--ap-color-signal', '#facc15'),
+      onAccent: read('--ap-color-on-signal', '#111111'),
       font: read('--ap-font-heading', 'sans-serif'),
     };
     probe.remove();
@@ -186,6 +198,7 @@ export class QrPosterDialog {
     tournament: TournamentDetail,
     url: string,
     withPoster: boolean,
+    registration: boolean,
   ): Promise<string> {
     const colors = this.themeColors(tournament);
     const [qr, logo, poster] = await Promise.all([
@@ -214,13 +227,23 @@ export class QrPosterDialog {
         : venue.name
       : null;
     const dateLine = this.dateLine(tournament);
+    const categories = this.categories();
+    const categoryLine = categories.length
+      ? this.transloco.translate(
+          categories.length > 1 ? 'admin.qrPoster.categories' : 'admin.qrPoster.category',
+          {
+            names: categories.join(' · '),
+          },
+        )
+      : null;
     const organizer = this.authService.organizations()[0]?.name ?? null;
 
     const posterHeight = poster
       ? Math.round((POSTER_WIDTH * poster.naturalHeight) / poster.naturalWidth)
       : 0;
-    let height = BAND_HEIGHT + 50 + QR_SIZE + 30 + 44;
-    height += (venueLine ? 40 : 0) + (dateLine ? 40 : 0) + 40;
+    const headingHeight = registration ? 110 : 0;
+    let height = BAND_HEIGHT + headingHeight + 50 + QR_SIZE + 30 + 44;
+    height += (categoryLine ? 52 : 0) + (venueLine ? 40 : 0) + (dateLine ? 40 : 0) + 40;
     if (poster) {
       height += posterHeight + 40;
     }
@@ -275,16 +298,39 @@ export class QrPosterDialog {
       ctx.fillText(title, textCenter, BAND_HEIGHT / 2);
     }
 
-    // QR code and the lines under it.
+    // Sign-up code: an "Inscriptions ouvertes" pill above it.
     let y = BAND_HEIGHT + 50;
+    if (registration) {
+      const heading = this.transloco.translate('admin.qrPoster.registrationHeading').toUpperCase();
+      ctx.font = `800 46px ${headingFont}`;
+      const pillWidth = ctx.measureText(heading).width + 80;
+      ctx.fillStyle = colors.accent;
+      this.roundRect(ctx, (WIDTH - pillWidth) / 2, y, pillWidth, 76, 38);
+      ctx.fill();
+      ctx.fillStyle = colors.onAccent;
+      ctx.fillText(heading, WIDTH / 2, y + 40);
+      y += headingHeight;
+    }
     if (qr) {
       ctx.drawImage(qr, (WIDTH - QR_SIZE) / 2, y, QR_SIZE, QR_SIZE);
     }
     y += QR_SIZE + 30;
     ctx.fillStyle = '#111827';
     ctx.font = `600 32px ${headingFont}`;
-    ctx.fillText(this.transloco.translate('admin.qrPoster.scan'), WIDTH / 2, y);
+    ctx.fillText(
+      this.transloco.translate(
+        registration ? 'admin.qrPoster.scanRegister' : 'admin.qrPoster.scan',
+      ),
+      WIDTH / 2,
+      y,
+    );
     y += 44;
+    if (categoryLine) {
+      ctx.fillStyle = colors.band;
+      ctx.font = `800 34px ${headingFont}`;
+      ctx.fillText(this.ellipsize(ctx, categoryLine, WIDTH - 120), WIDTH / 2, y + 6);
+      y += 52;
+    }
     ctx.fillStyle = '#4b5563';
     ctx.font = `500 28px ${headingFont}`;
     if (venueLine) {

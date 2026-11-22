@@ -119,6 +119,15 @@ describe('QuickPlateauService', () => {
     expect(brackets.generateAllMatches).not.toHaveBeenCalled();
   });
 
+  it('keeps the game format picked in the form', async () => {
+    await service.create('org-1', { ...baseDto, format: '8 vs 8' });
+
+    expect(tournaments.create).toHaveBeenCalledWith(
+      'org-1',
+      expect.objectContaining({ format: '8 vs 8' }),
+    );
+  });
+
   it('starts with the header preset that matches the theme', async () => {
     await service.create('org-1', baseDto);
 

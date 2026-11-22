@@ -44,15 +44,17 @@
             </ap-button>
             <ap-share-button [title]="s.slug" [url]="registrationUrl()" />
           </div>
-          <details class="registration-list-page__qr">
-            <summary>{{ 'admin.registrationList.link.qr' | transloco }}</summary>
-            <ap-qr-code #qr [value]="registrationUrl()" [size]="160" />
-            @if (qr.dataUrl(); as png) {
-              <a [href]="png" [download]="s.slug + '-inscription.png'">{{
-                'admin.registrationList.link.download' | transloco
-              }}</a>
-            }
-          </details>
+          <ap-button type="button" size="sm" variant="secondary" (click)="qrOpen.set(true)">
+            {{ 'admin.registrationList.link.qr' | transloco }}
+          </ap-button>
+          @if (qrOpen()) {
+            <app-qr-poster-dialog
+              [tournamentId]="tournamentId"
+              [url]="registrationUrl()"
+              [registration]="true"
+              (closed)="qrOpen.set(false)"
+            />
+          }
         } @else {
           <p class="registration-list-page__hint">
             {{ 'admin.registrationList.link.unpublished' | transloco }}

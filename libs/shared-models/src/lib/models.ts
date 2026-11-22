@@ -129,6 +129,8 @@ export interface PublicTournament {
   // midnight by the Général form), so TournamentShell's own formattedDates()
   // appends this one next to the start date when it's known.
   firstMatchTime: string | null;
+  // When the last scheduled match ends (the poster's "Fin prévue").
+  lastMatchEndTime: string | null;
   isOnline: boolean;
   theme: PublicTheme;
   logoUrl: string | null;

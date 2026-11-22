@@ -415,7 +415,8 @@
       "premiumLocked": "Riservato ai tornei con più di {{count}} squadre o con un abbonamento annuale attivo.",
       "stats": "Statistiche",
       "slideshow": "Presentazione (schermo TV)",
-      "registrations": "Iscrizioni"
+      "registrations": "Iscrizioni",
+      "eventPoster": "Locandina"
     },
     "auth": {
       "login": {
@@ -683,7 +684,8 @@
         "none": "Nessuna (solo gironi)",
         "thirdPlace": "Finale 3º posto"
       },
-      "categoryNone": "Non specificata"
+      "categoryNone": "Non specificata",
+      "format": "Formato di gioco"
     },
     "tournamentList": {
       "createPlateau": "Create an event (quick)",
@@ -829,7 +831,8 @@
           "hint": "Il logo del club diventa quello del torneo.",
           "searchFailed": "La ricerca dei club non è disponibile al momento.",
           "department": "Dipartimento {{code}}"
-        }
+        },
+        "formatLabel": "Formato di gioco"
       },
       "categories": {
         "title": "Categorie",
@@ -1179,8 +1182,7 @@
         "hint": "Diffondi questo link (email, social, locandina): le squadre si iscrivono direttamente.",
         "copy": "Copia",
         "copied": "Copiato!",
-        "qr": "Codice QR",
-        "download": "Scarica il codice QR",
+        "qr": "Codice QR di iscrizione da stampare",
         "unpublished": "Il link di iscrizione sarà attivo una volta pubblicato il torneo.",
         "publish": "Pubblica il torneo"
       }
@@ -1709,7 +1711,11 @@
       "addPoster": "Aggiungi la locandina del torneo in basso",
       "print": "Stampa",
       "loading": "Preparazione…",
-      "error": "Impossibile generare l'immagine."
+      "error": "Impossibile generare l'immagine.",
+      "scanRegister": "Scansiona per iscrivere la tua squadra",
+      "registrationHeading": "Iscrizioni aperte",
+      "category": "Categoria: {{names}}",
+      "categories": "Categorie: {{names}}"
     },
     "createOrganization": {
       "title": "Crea la tua organizzazione",
@@ -1717,6 +1723,55 @@
       "submit": "Crea l'organizzazione",
       "back": "Torna al mio spazio responsabile",
       "error": "Impossibile creare l'organizzazione."
+    },
+    "eventPoster": {
+      "title": "Locandina dell'evento",
+      "hint": "Tutti i testi sono modificabili; colori, carattere e sfondo vengono dal tema del torneo.",
+      "download": "Scarica la locandina",
+      "infosHeading": "Informazioni generali",
+      "endLabel": "Fine prevista",
+      "qrRegister": "Iscriviti",
+      "qrFollow": "Segui in diretta",
+      "qrRegisterOption": "Aggiungi il codice QR di iscrizione",
+      "qrFollowOption": "Aggiungi il codice QR del torneo",
+      "fields": {
+        "title": "Titolo",
+        "category": "Categoria",
+        "organizer": "Organizzatore",
+        "date": "Data",
+        "price": "Prezzo",
+        "end": "Fine prevista",
+        "venue": "Luogo",
+        "city": "Città",
+        "infoTitle": "Titolo",
+        "infoDetail": "Dettaglio",
+        "sport": "Sport",
+        "contact": "Contatto"
+      },
+      "defaults": {
+        "plateau": "Raggruppamento",
+        "tournament": "Torneo",
+        "meeting": "Ritrovo",
+        "firstMatch": "Prima partita",
+        "at": "alle {{time}}",
+        "fields": "{{count}} campi",
+        "level": "Livello",
+        "free": "Gratuito",
+        "field": "1 campo",
+        "format": "Formato"
+      },
+      "contactLabel": "Contatto:",
+      "prompts": {
+        "registrations": "Le iscrizioni sono chiuse: aprile per mettere il codice QR di iscrizione sulla locandina.",
+        "openRegistrations": "Apri le iscrizioni",
+        "publishFirst": "Pubblica prima il torneo per aprire le iscrizioni.",
+        "contact": "Nessun contatto per gli interessati: aggiungi un telefono e/o un'e-mail.",
+        "phone": "Telefono",
+        "email": "E-mail",
+        "saveContact": "Salva il contatto",
+        "registrationsError": "Impossibile aprire le iscrizioni.",
+        "contactError": "Contatto non salvato: controlla l'e-mail."
+      }
     }
   },
   "wrapped": {

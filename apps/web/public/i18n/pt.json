@@ -415,7 +415,8 @@
       "premiumLocked": "Reservado a torneios com mais de {{count}} equipas ou com uma subscrição anual ativa.",
       "stats": "Estatísticas",
       "slideshow": "Apresentação (ecrã TV)",
-      "registrations": "Inscrições"
+      "registrations": "Inscrições",
+      "eventPoster": "Cartaz"
     },
     "auth": {
       "login": {
@@ -683,7 +684,8 @@
         "none": "Nenhuma (só grupos)",
         "thirdPlace": "Jogo do 3.º lugar"
       },
-      "categoryNone": "Não especificada"
+      "categoryNone": "Não especificada",
+      "format": "Formato de jogo"
     },
     "tournamentList": {
       "createPlateau": "Create an event (quick)",
@@ -829,7 +831,8 @@
           "hint": "O logo do clube passa a ser o do torneio.",
           "searchFailed": "A pesquisa de clubes está indisponível no momento.",
           "department": "Departamento {{code}}"
-        }
+        },
+        "formatLabel": "Formato de jogo"
       },
       "categories": {
         "title": "Categorias",
@@ -1179,8 +1182,7 @@
         "hint": "Divulgue este link (e-mail, redes, cartaz): as equipas inscrevem-se diretamente.",
         "copy": "Copiar",
         "copied": "Copiado!",
-        "qr": "Código QR",
-        "download": "Transferir o código QR",
+        "qr": "Código QR de inscrição para imprimir",
         "unpublished": "O link de inscrição fica ativo quando o torneio for publicado.",
         "publish": "Publicar o torneio"
       }
@@ -1709,7 +1711,11 @@
       "addPoster": "Adicionar o cartaz do torneio em baixo",
       "print": "Imprimir",
       "loading": "A preparar…",
-      "error": "Não foi possível gerar a imagem."
+      "error": "Não foi possível gerar a imagem.",
+      "scanRegister": "Digitalize para inscrever a sua equipa",
+      "registrationHeading": "Inscrições abertas",
+      "category": "Categoria: {{names}}",
+      "categories": "Categorias: {{names}}"
     },
     "createOrganization": {
       "title": "Crie a sua organização",
@@ -1717,6 +1723,55 @@
       "submit": "Criar a organização",
       "back": "Voltar ao meu espaço de responsável",
       "error": "Não foi possível criar a organização."
+    },
+    "eventPoster": {
+      "title": "Cartaz do evento",
+      "hint": "Todos os textos são editáveis; as cores, a fonte e o fundo vêm do tema do torneio.",
+      "download": "Transferir o cartaz",
+      "infosHeading": "Informações gerais",
+      "endLabel": "Fim previsto",
+      "qrRegister": "Inscreva-se",
+      "qrFollow": "Siga em direto",
+      "qrRegisterOption": "Adicionar o código QR de inscrição",
+      "qrFollowOption": "Adicionar o código QR do torneio",
+      "fields": {
+        "title": "Título",
+        "category": "Categoria",
+        "organizer": "Organizador",
+        "date": "Data",
+        "price": "Preço",
+        "end": "Fim previsto",
+        "venue": "Local",
+        "city": "Cidade",
+        "infoTitle": "Título",
+        "infoDetail": "Detalhe",
+        "sport": "Desporto",
+        "contact": "Contacto"
+      },
+      "defaults": {
+        "plateau": "Encontro",
+        "tournament": "Torneio",
+        "meeting": "Concentração",
+        "firstMatch": "Primeiro jogo",
+        "at": "às {{time}}",
+        "fields": "{{count}} campos",
+        "level": "Nível",
+        "free": "Grátis",
+        "field": "1 campo",
+        "format": "Formato"
+      },
+      "contactLabel": "Contacto:",
+      "prompts": {
+        "registrations": "As inscrições estão fechadas: abra-as para colocar o código QR de inscrição no cartaz.",
+        "openRegistrations": "Abrir as inscrições",
+        "publishFirst": "Publique primeiro o torneio para abrir as inscrições.",
+        "contact": "Nenhum contacto para os interessados: adicione um telefone e/ou um e-mail.",
+        "phone": "Telefone",
+        "email": "E-mail",
+        "saveContact": "Guardar o contacto",
+        "registrationsError": "Não foi possível abrir as inscrições.",
+        "contactError": "Contacto não guardado: verifique o e-mail."
+      }
     }
   },
   "wrapped": {

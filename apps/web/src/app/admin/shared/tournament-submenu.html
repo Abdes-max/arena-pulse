@@ -264,10 +264,41 @@
             <span class="tournament-submenu__share-menu-item-lock" aria-hidden="true">🔒</span>
           }
         </a>
+        <!-- Promotional poster, from the admin data too (drafts included). -->
+        <button
+          type="button"
+          class="tournament-submenu__share-menu-item"
+          role="menuitem"
+          (click)="openPosterDialogFromMenu()"
+        >
+          <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <rect
+              x="3"
+              y="1.75"
+              width="10"
+              height="12.5"
+              rx="1"
+              stroke="currentColor"
+              stroke-width="1.3"
+            />
+            <path
+              d="M5.25 4.5H10.75M5.25 6.5H9"
+              stroke="currentColor"
+              stroke-width="1.3"
+              stroke-linecap="round"
+            />
+            <circle cx="8" cy="10.25" r="1.75" stroke="currentColor" stroke-width="1.2" />
+          </svg>
+          {{ 'admin.submenu.eventPoster' | transloco }}
+        </button>
       </div>
     }
   </div>
 </div>
+
+@if (posterDialogOpen()) {
+  <app-event-poster-dialog [tournamentId]="tournamentId()" (closed)="posterDialogOpen.set(false)" />
+}
 
 @if (qrDialogOpen() && publicAbsoluteUrl(); as url) {
   <app-qr-poster-dialog [tournamentId]="tournamentId()" [url]="url" (closed)="closeQrDialog()" />

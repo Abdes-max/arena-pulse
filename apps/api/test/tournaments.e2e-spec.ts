@@ -93,11 +93,13 @@ describe('Tournaments (e2e)', () => {
     const base = `/api/v1/organizations/${organizationId}/tournaments`;
 
     const createRes = await auth(request(app.getHttpServer()).post(base))
-      .send({ name: 'Coupe de printemps', sportId })
+      .send({ name: 'Coupe de printemps', sportId, format: '8 vs 8' })
       .expect(201);
     const tournament = createRes.body as TournamentResponseBody;
     expect(tournament.status).toBe('DRAFT');
     expect(tournament.sportName).toBeTruthy();
+    // The game format picked at creation (shown on the cards and the poster).
+    expect(createRes.body).toMatchObject({ format: '8 vs 8' });
 
     const listRes = await auth(request(app.getHttpServer()).get(base)).expect(
       200,
@@ -108,6 +110,23 @@ describe('Tournaments (e2e)', () => {
 
     await auth(request(app.getHttpServer()).patch(`${base}/${tournament.id}`))
       .send({ name: 'Coupe de printemps (2026)' })
+      .expect(200);
+
+    // Contact for the poster: set, then an invalid e-mail refused, then cleared.
+    const contactRes = await auth(
+      request(app.getHttpServer()).patch(`${base}/${tournament.id}`),
+    )
+      .send({ contactPhone: '06 12 34 56 78', contactEmail: 'contact@club.fr' })
+      .expect(200);
+    expect(contactRes.body).toMatchObject({
+      contactPhone: '06 12 34 56 78',
+      contactEmail: 'contact@club.fr',
+    });
+    await auth(request(app.getHttpServer()).patch(`${base}/${tournament.id}`))
+      .send({ contactEmail: 'pas-un-mail' })
+      .expect(400);
+    await auth(request(app.getHttpServer()).patch(`${base}/${tournament.id}`))
+      .send({ contactPhone: null, contactEmail: null })
       .expect(200);
 
     await makeTournamentPublishable(app, auth, base, tournament.id);

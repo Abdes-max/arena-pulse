@@ -64,7 +64,9 @@ describe('Public tournament site (e2e)', () => {
     const sportRes = await auth(
       request(app.getHttpServer()).get('/api/v1/sports'),
     ).expect(200);
-    const sportId = (sportRes.body as { id: string; scoreFormat: string }[]).find((sport) => sport.scoreFormat === 'GOALS')!.id;
+    const sportId = (
+      sportRes.body as { id: string; scoreFormat: string }[]
+    ).find((sport) => sport.scoreFormat === 'GOALS')!.id;
 
     const tournamentRes = await auth(request(app.getHttpServer()).post(base))
       .send({ name: 'Coupe Publique', sportId })
@@ -286,7 +288,9 @@ describe('Public tournament site (e2e)', () => {
     const sportRes = await auth(
       request(app.getHttpServer()).get('/api/v1/sports'),
     ).expect(200);
-    const sportId = (sportRes.body as { id: string; scoreFormat: string }[]).find((sport) => sport.scoreFormat === 'GOALS')!.id;
+    const sportId = (
+      sportRes.body as { id: string; scoreFormat: string }[]
+    ).find((sport) => sport.scoreFormat === 'GOALS')!.id;
 
     const tournamentRes = await auth(request(app.getHttpServer()).post(base))
       .send({ name: 'Coupe des Prochains Matchs', sportId })
@@ -375,6 +379,16 @@ describe('Public tournament site (e2e)', () => {
     expect(
       new Date(matches[0].timeSlot!.startTime).getTime(),
     ).toBeLessThanOrEqual(new Date(matches[1].timeSlot!.startTime).getTime());
+
+    // First kickoff and end of the last match, for the poster.
+    const detail = (
+      await request(app.getHttpServer())
+        .get(`/api/v1/public/tournaments/${slug}`)
+        .expect(200)
+    ).body as { firstMatchTime: string; lastMatchEndTime: string };
+    expect(new Date(detail.lastMatchEndTime).getTime()).toBeGreaterThan(
+      new Date(detail.firstMatchTime).getTime(),
+    );
   });
 
   it("exposes the organizer's chosen public theme, defaulting to INK_SIGNAL", async () => {
@@ -414,7 +428,9 @@ describe('Public tournament site (e2e)', () => {
     const sportRes = await auth(
       request(app.getHttpServer()).get('/api/v1/sports'),
     ).expect(200);
-    const sportId = (sportRes.body as { id: string; scoreFormat: string }[]).find((sport) => sport.scoreFormat === 'GOALS')!.id;
+    const sportId = (
+      sportRes.body as { id: string; scoreFormat: string }[]
+    ).find((sport) => sport.scoreFormat === 'GOALS')!.id;
 
     const tournamentRes = await auth(request(app.getHttpServer()).post(base))
       .send({ name: 'Coupe Thème', sportId })
@@ -490,7 +506,9 @@ describe('Public tournament site (e2e)', () => {
     const sportRes = await auth(
       request(app.getHttpServer()).get('/api/v1/sports'),
     ).expect(200);
-    const sportId = (sportRes.body as { id: string; scoreFormat: string }[]).find((sport) => sport.scoreFormat === 'GOALS')!.id;
+    const sportId = (
+      sportRes.body as { id: string; scoreFormat: string }[]
+    ).find((sport) => sport.scoreFormat === 'GOALS')!.id;
 
     // A tournament created without isListed defaults to listed (true) --
     // preserves the pre-existing behavior of every already-published

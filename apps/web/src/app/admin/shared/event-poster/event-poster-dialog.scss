@@ -1,0 +1,197 @@
+// Same modal frame as QrPosterDialog, wider: the preview and its form side by side.
+.event-poster__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  padding: 0;
+  border: none;
+  background: rgb(0 0 0 / 50%);
+  cursor: pointer;
+}
+
+.event-poster {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 101;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-4);
+  width: calc(100% - var(--ap-space-8));
+  max-width: 980px;
+  max-height: calc(100dvh - var(--ap-space-8));
+  padding: var(--ap-space-6);
+  overflow-y: auto;
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-lg);
+}
+
+.event-poster__title {
+  margin: 0;
+  font-family: var(--ap-font-heading);
+  font-size: 1.1rem;
+  color: var(--ap-color-fg);
+}
+
+.event-poster__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--ap-space-6);
+  align-items: start;
+
+  @media (max-width: 760px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.event-poster__preview {
+  display: flex;
+  justify-content: center;
+
+  img {
+    display: block;
+    max-width: 100%;
+    max-height: 70dvh;
+    border-radius: var(--ap-radius-md);
+  }
+}
+
+.event-poster__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-3);
+}
+
+.event-poster__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--ap-space-2) var(--ap-space-3);
+}
+
+.event-poster__field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-1);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--ap-color-muted);
+}
+
+.event-poster input[type='text'] {
+  width: 100%;
+  min-width: 0;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--ap-color-fg);
+  background: var(--ap-color-bg);
+  border: 1px solid var(--ap-color-border);
+  border-radius: var(--ap-radius-sm);
+  padding: var(--ap-space-1) var(--ap-space-2);
+}
+
+.event-poster__infos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+  margin: 0;
+  padding: var(--ap-space-2) var(--ap-space-3) var(--ap-space-3);
+  border: 1px solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+
+  legend {
+    padding-inline: var(--ap-space-1);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--ap-color-muted);
+  }
+}
+
+.event-poster__info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--ap-space-2);
+}
+
+.event-poster__hint,
+.event-poster__error {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--ap-color-muted);
+}
+
+.event-poster__error {
+  color: var(--ap-color-error);
+}
+
+.event-poster__option {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  font-size: 0.9rem;
+  cursor: pointer;
+
+  input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--ap-color-primary);
+  }
+}
+
+.event-poster__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ap-space-3);
+}
+
+.event-poster__download {
+  color: var(--ap-color-primary);
+  font-weight: 600;
+}
+
+// "Open the registrations" / "add a contact", above the fields.
+.event-poster__prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ap-space-2);
+  padding: var(--ap-space-3);
+  background: var(--ap-color-signal-soft);
+  border-radius: var(--ap-radius-md);
+
+  p {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--ap-color-fg);
+  }
+
+  small {
+    font-size: 0.8rem;
+    color: var(--ap-color-muted);
+  }
+}
+
+.event-poster__prompt-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--ap-space-2);
+  width: 100%;
+
+  input {
+    width: 100%;
+    min-width: 0;
+    font: inherit;
+    font-size: 0.9rem;
+    color: var(--ap-color-fg);
+    background: var(--ap-color-surface);
+    border: 1px solid var(--ap-color-border);
+    border-radius: var(--ap-radius-sm);
+    padding: var(--ap-space-1) var(--ap-space-2);
+  }
+}

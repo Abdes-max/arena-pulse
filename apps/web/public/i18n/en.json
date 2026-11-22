@@ -517,7 +517,8 @@
       "premiumLocked": "Reserved for tournaments with more than {{count}} teams, or an active annual subscription.",
       "stats": "Statistics",
       "slideshow": "Slideshow (TV screen)",
-      "registrations": "Registrations"
+      "registrations": "Registrations",
+      "eventPoster": "Poster"
     },
     "auth": {
       "login": {
@@ -785,7 +786,8 @@
         "none": "None (pools only)",
         "thirdPlace": "Third-place match"
       },
-      "categoryNone": "Not specified"
+      "categoryNone": "Not specified",
+      "format": "Game format"
     },
     "tournamentList": {
       "createPlateau": "Create an event (quick)",
@@ -931,7 +933,8 @@
           "hint": "The club's logo becomes the tournament logo.",
           "searchFailed": "Club search is unavailable right now.",
           "department": "Department {{code}}"
-        }
+        },
+        "formatLabel": "Game format"
       },
       "categories": {
         "title": "Categories",
@@ -1281,8 +1284,7 @@
         "hint": "Share this link (email, socials, poster): teams sign up directly.",
         "copy": "Copy",
         "copied": "Copied!",
-        "qr": "QR code",
-        "download": "Download the QR code",
+        "qr": "Printable registration QR code",
         "unpublished": "The registration link goes live once the tournament is published.",
         "publish": "Publish the tournament"
       }
@@ -1811,7 +1813,11 @@
       "addPoster": "Add the tournament's poster at the bottom",
       "print": "Print",
       "loading": "Preparing…",
-      "error": "Could not generate the image."
+      "error": "Could not generate the image.",
+      "scanRegister": "Scan to register your team",
+      "registrationHeading": "Registrations open",
+      "category": "Category: {{names}}",
+      "categories": "Categories: {{names}}"
     },
     "createOrganization": {
       "title": "Create your organization",
@@ -1819,6 +1825,55 @@
       "submit": "Create the organization",
       "back": "Back to my team manager space",
       "error": "Could not create the organization."
+    },
+    "eventPoster": {
+      "title": "Event poster",
+      "hint": "Every text can be edited; colors, font and background come from the tournament's theme.",
+      "download": "Download the poster",
+      "infosHeading": "General information",
+      "endLabel": "Expected end",
+      "qrRegister": "Sign up",
+      "qrFollow": "Follow live",
+      "qrRegisterOption": "Add the registration QR code",
+      "qrFollowOption": "Add the tournament's QR code",
+      "fields": {
+        "title": "Title",
+        "category": "Category",
+        "organizer": "Organizer",
+        "date": "Date",
+        "price": "Price",
+        "end": "Expected end",
+        "venue": "Venue",
+        "city": "City",
+        "infoTitle": "Label",
+        "infoDetail": "Detail",
+        "sport": "Sport",
+        "contact": "Contact"
+      },
+      "defaults": {
+        "plateau": "Festival",
+        "tournament": "Tournament",
+        "meeting": "Meeting time",
+        "firstMatch": "First match",
+        "at": "at {{time}}",
+        "fields": "{{count}} pitches",
+        "level": "Level",
+        "free": "Free",
+        "field": "1 pitch",
+        "format": "Format"
+      },
+      "contactLabel": "Contact:",
+      "prompts": {
+        "registrations": "Registrations are closed: open them to put the registration QR code on the poster.",
+        "openRegistrations": "Open registrations",
+        "publishFirst": "Publish the tournament first to open registrations.",
+        "contact": "No contact for people interested: add a phone and/or an e-mail.",
+        "phone": "Phone",
+        "email": "E-mail",
+        "saveContact": "Save the contact",
+        "registrationsError": "Could not open registrations.",
+        "contactError": "Contact not saved: check the e-mail."
+      }
     }
   },
   "wrapped": {
