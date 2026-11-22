@@ -19,6 +19,9 @@ import { THEME_MAP } from '../../core/theme-map';
 import { TournamentsService } from '../../core/tournaments.service';
 import { EventPosterContent, EventPosterStyle, drawEventPoster } from './event-poster-renderer';
 
+// The same match-night photo behind every poster.
+const POSTER_BACKGROUND = '/poster-backgrounds/match-night.jpg';
+
 // Meeting time suggested before the first match.
 const MEETING_LEAD_MINUTES = 45;
 
@@ -32,15 +35,13 @@ interface FormField {
 
 interface Theme {
   primary: string;
-  accent: string;
-  onAccent: string;
   font: string;
 }
 
 /**
  * Promotional poster generator ("Affiche"): a ready-to-post 1080x1350 image
- * in the tournament's theme -- its header picture, signal color and heading
- * font -- with the category, organizer, date, key infos, price and venue.
+ * on a fixed match-night photo, in the theme's primary color and heading
+ * font, with the category, organizer, date, key infos, price and venue.
  * Every text starts from the tournament's data and stays editable; drawing
  * is in event-poster-renderer.ts.
  */
@@ -208,7 +209,7 @@ export class EventPosterDialog {
       document.fonts.load(`700 30px ${this.theme.font}`).catch(() => undefined),
     ]);
     const [background, logo] = await Promise.all([
-      loadImage(this.assetUrl.resolve(tournament.headerBackgroundUrl)),
+      loadImage(POSTER_BACKGROUND),
       loadImage(this.assetUrl.resolve(tournament.logoUrl)),
     ]);
     const registering = !!tournament.registrationsOpen && tournament.status === 'PUBLISHED';
@@ -322,8 +323,6 @@ export class EventPosterDialog {
       style.getPropertyValue(name).trim() || fallback;
     const theme = {
       primary: read('--ap-color-primary', '#0f172a'),
-      accent: read('--ap-color-signal', '#facc15'),
-      onAccent: read('--ap-color-on-signal', '#111111'),
       font: read('--ap-font-heading', 'sans-serif'),
     };
     probe.remove();

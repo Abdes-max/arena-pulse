@@ -1,11 +1,10 @@
 // Canvas drawing of the promotional poster (EventPosterDialog) -- no Angular
 // here, the dialog hands in the texts already worded and the images already
 // loaded. Laid out on a 1080x1350 portrait (the 4:5 format social networks
-// show uncropped), "match night" look: packed stands under floodlights, a
-// burst of light behind the club logo, brush-stroke headings and worn
-// lettering -- in the theme's colors (primary for the night, signal for
-// every highlight) and its heading font. The stadium is always the same;
-// only the theme recolors it.
+// show uncropped) over a fixed match-night photo (public/poster-backgrounds):
+// a burst of light behind the club logo, brush-stroke headings and worn
+// lettering in yellow, the panels in the theme's primary color, the texts
+// in its heading font.
 
 export const POSTER_WIDTH = 1080;
 export const POSTER_HEIGHT = 1350;
@@ -35,10 +34,8 @@ export interface EventPosterContent {
 
 export interface EventPosterStyle {
   primary: string;
-  accent: string;
-  onAccent: string;
   font: string;
-  /** The theme's header picture, tinting the night sky. */
+  /** The fixed match-night photo. */
   background: HTMLImageElement | null;
   logo: HTMLImageElement | null;
   qr: HTMLImageElement | null;
@@ -50,6 +47,7 @@ const W = POSTER_WIDTH;
 const H = POSTER_HEIGHT;
 const WHITE = '#ffffff';
 const PRICE_RED = '#e0161e';
+const POSTER_YELLOW = '#ffd21f';
 const SKEW = -0.14;
 const LOGO_Y = 585;
 
@@ -65,13 +63,16 @@ export function drawEventPoster(
     throw new Error('no canvas');
   }
   const random = seeded(11);
+  // Yellow on the photo's green night; panels in the theme's darkened primary.
+  const accent = POSTER_YELLOW;
+  const ink = shade(style.primary, -0.8);
+  const plate = withAlpha(shade(style.primary, -0.8), 0.88);
   const font = (weight: number, size: number) => `${weight} ${size}px ${style.font}`;
   ctx.textBaseline = 'middle';
   ctx.textAlign = 'center';
 
-  drawStadium(ctx, style, content.organizer, random);
-  drawFloodlights(ctx, style.accent);
-  drawBurst(ctx, style.accent, random);
+  drawBackground(ctx, style);
+  drawBurst(ctx, accent, random);
 
   // Title: huge worn letters, "PLATEAU" white and the category in the accent.
   const title = content.title.trim().toUpperCase();
@@ -86,7 +87,7 @@ export function drawEventPoster(
     layer.transform(1, 0, SKEW, 1, 0, 0);
     layer.fillStyle = WHITE;
     layer.fillText(title + gap, -total / 2, 0);
-    layer.fillStyle = style.accent;
+    layer.fillStyle = accent;
     layer.fillText(category, -total / 2 + titleWidth, 0);
   });
 
@@ -101,11 +102,11 @@ export function drawEventPoster(
       262,
       Math.min(ctx.measureText(organizer).width + 170, 1000),
       104,
-      style.accent,
+      accent,
       random,
     );
     skewed(ctx, W / 2, 265, () => {
-      ctx.fillStyle = style.onAccent;
+      ctx.fillStyle = ink;
       ctx.font = font(900, size);
       ctx.fillText(organizer, 0, 0);
     });
@@ -118,9 +119,9 @@ export function drawEventPoster(
     ctx.font = font(900, size);
     const width = ctx.measureText(date).width + 190;
     skewed(ctx, W / 2, 365, () => {
-      ctx.fillStyle = 'rgba(4,8,6,0.82)';
+      ctx.fillStyle = plate;
       ctx.fillRect(-width / 2, -44, width, 88);
-      ctx.fillStyle = style.accent;
+      ctx.fillStyle = accent;
       ctx.fillRect(-width / 2 + 28, -3, 44, 7);
       ctx.fillRect(width / 2 - 72, -3, 44, 7);
       ctx.fillStyle = WHITE;
@@ -136,7 +137,7 @@ export function drawEventPoster(
     const scale = Math.min(box / logo.width, box / logo.height);
     const w = logo.width * scale;
     const h = logo.height * scale;
-    withShadow(ctx, withAlpha(style.accent, 0.9), 60, () =>
+    withShadow(ctx, withAlpha(accent, 0.9), 60, () =>
       ctx.drawImage(logo, W / 2 - w / 2, LOGO_Y - h / 2, w, h),
     );
   }
@@ -147,17 +148,9 @@ export function drawEventPoster(
   if (infos.length > 0) {
     const heading = content.infosHeading.toUpperCase();
     ctx.font = font(900, 50);
-    brush(
-      ctx,
-      W / 2,
-      y,
-      Math.min(ctx.measureText(heading).width + 150, 1000),
-      80,
-      style.accent,
-      random,
-    );
+    brush(ctx, W / 2, y, Math.min(ctx.measureText(heading).width + 150, 1000), 80, accent, random);
     skewed(ctx, W / 2, y + 3, () => {
-      ctx.fillStyle = style.onAccent;
+      ctx.fillStyle = ink;
       ctx.font = font(900, 50);
       ctx.fillText(heading, 0, 0);
     });
@@ -166,7 +159,7 @@ export function drawEventPoster(
     const rows = Math.ceil(infos.length / columns);
     const rowHeight = 96;
     const cardHeight = rows * rowHeight + 20;
-    panel(ctx, 50, y, W - 100, cardHeight, style.accent);
+    panel(ctx, 50, y, W - 100, cardHeight, plate, accent);
     const columnWidth = (W - 100) / columns;
     if (columns === 2) {
       ctx.fillStyle = withAlpha(WHITE, 0.45);
@@ -182,7 +175,7 @@ export function drawEventPoster(
         ctx.fillStyle = withAlpha(WHITE, 0.4);
         ctx.fillRect(left + 150, middle - rowHeight / 2, columnWidth - 190, 2);
       }
-      drawIcon(ctx, info.icon, left + 90, middle, 40, style.accent, style.onAccent);
+      drawIcon(ctx, info.icon, left + 90, middle, 40, accent, ink, 'ring');
       const textLeft = left + 152;
       const textWidth = columnWidth - 152 - 30;
       ctx.textAlign = 'left';
@@ -193,7 +186,7 @@ export function drawEventPoster(
         fit(ctx, titleText, textWidth, 34, (s) => font(800, s)),
       );
       ctx.fillText(titleText, textLeft, middle - 20);
-      ctx.fillStyle = style.accent;
+      ctx.fillStyle = accent;
       const detail = info.detail.toUpperCase();
       ctx.font = font(
         900,
@@ -209,9 +202,9 @@ export function drawEventPoster(
   y += 74;
   const price = content.price.trim().toUpperCase();
   const end = content.end.trim().toUpperCase();
-  const priceCenter = end ? 305 : W / 2;
+  const priceCenter = end ? 285 : W / 2;
   if (price) {
-    const size = fit(ctx, price, 340, 80, (s) => font(900, s));
+    const size = fit(ctx, price, end ? 300 : 420, 80, (s) => font(900, s));
     ctx.font = font(900, size);
     const width = ctx.measureText(price).width + 110;
     brush(ctx, priceCenter, y, width, 108, PRICE_RED, random);
@@ -223,7 +216,7 @@ export function drawEventPoster(
       });
     });
     // Accent strokes radiating on both sides.
-    ctx.fillStyle = style.accent;
+    ctx.fillStyle = accent;
     for (const side of [-1, 1]) {
       for (const angle of [-0.45, 0, 0.45]) {
         ctx.save();
@@ -237,13 +230,13 @@ export function drawEventPoster(
   if (end) {
     const left = 600;
     skewed(ctx, left + 200, y, () => {
-      ctx.fillStyle = 'rgba(4,8,6,0.85)';
+      ctx.fillStyle = plate;
       ctx.fillRect(-200, -54, 400, 108);
-      ctx.strokeStyle = style.accent;
+      ctx.strokeStyle = accent;
       ctx.lineWidth = 4;
       ctx.strokeRect(-200, -54, 400, 108);
     });
-    drawIcon(ctx, 'clock', left + 70, y, 36, style.accent, style.onAccent, 'ring');
+    drawIcon(ctx, 'clock', left + 70, y, 36, accent, ink, 'ring');
     ctx.textAlign = 'center';
     ctx.fillStyle = WHITE;
     const label = content.endLabel.toUpperCase();
@@ -252,7 +245,7 @@ export function drawEventPoster(
       fit(ctx, label, 250, 34, (s) => font(800, s)),
     );
     ctx.fillText(label, left + 245, y - 22);
-    ctx.fillStyle = style.accent;
+    ctx.fillStyle = accent;
     ctx.font = font(
       900,
       fit(ctx, end, 250, 56, (s) => font(900, s)),
@@ -266,10 +259,10 @@ export function drawEventPoster(
   if (venue || city || style.qr) {
     const top = H - 162;
     const height = 136;
-    panel(ctx, 40, top, W - 80, height, style.accent);
+    panel(ctx, 40, top, W - 80, height, plate, accent);
     const qrSpace = style.qr ? 140 : 0;
-    drawStadiumIcon(ctx, W - 60 - qrSpace - 240, top + 12, 240, height - 24, style.accent);
-    drawIcon(ctx, 'pin', 110, top + height / 2, 42, style.accent, style.onAccent, 'bare');
+    drawStadiumIcon(ctx, W - 60 - qrSpace - 240, top + 12, 240, height - 24, accent);
+    drawIcon(ctx, 'pin', 110, top + height / 2, 42, accent, ink, 'bare');
     const textWidth = W - 80 - 120 - 270 - qrSpace;
     ctx.textAlign = 'left';
     ctx.fillStyle = WHITE;
@@ -279,7 +272,7 @@ export function drawEventPoster(
     );
     ctx.fillText(venue, 165, city ? top + 48 : top + height / 2);
     if (city) {
-      ctx.fillStyle = style.accent;
+      ctx.fillStyle = accent;
       const spaced = city.split('').join(' ');
       ctx.font = font(
         700,
@@ -295,7 +288,7 @@ export function drawEventPoster(
       roundRect(ctx, x - 8, top + 8, size + 16, size + 16, 8);
       ctx.fill();
       ctx.drawImage(style.qr, x, top + 16, size, size);
-      ctx.fillStyle = style.accent;
+      ctx.fillStyle = accent;
       ctx.font = font(900, 17);
       ctx.fillText(content.qrLabel.toUpperCase(), x + size / 2, top + height - 10);
     }
@@ -304,132 +297,29 @@ export function drawEventPoster(
 
 // --------------------------------------------------------------- background
 
-// Night sky, two packed stands converging on the pitch, club banners.
-function drawStadium(ctx: Ctx, style: EventPosterStyle, organizer: string, random: () => number) {
-  const font = style.font;
-  const night = ctx.createLinearGradient(0, 0, 0, H);
-  night.addColorStop(0, shade(style.primary, -0.88));
-  night.addColorStop(0.5, shade(style.primary, -0.75));
-  night.addColorStop(1, shade(style.primary, -0.9));
-  ctx.fillStyle = night;
+// The photo, its players framing the logo; darker at the top and bottom
+// for the texts laid there.
+function drawBackground(ctx: Ctx, style: EventPosterStyle): void {
+  ctx.fillStyle = shade(style.primary, -0.85);
   ctx.fillRect(0, 0, W, H);
-  if (style.background) {
-    ctx.save();
-    ctx.globalAlpha = 0.35;
-    cover(ctx, style.background);
-    ctx.restore();
+  const img = style.background;
+  if (img) {
+    const scale = Math.max(W / img.naturalWidth, H / img.naturalHeight);
+    const w = img.naturalWidth * scale;
+    const h = img.naturalHeight * scale;
+    // Players' heads under the date, the logo between them at chest height.
+    ctx.drawImage(img, (W - w) / 2, Math.min(0, (H - h) * 0.15), w, h);
   }
-
-  // The crowd: rows of heads and shoulders, tighter toward the far end.
-  const palette = [
-    '#141414',
-    '#1f1c19',
-    '#2a2622',
-    '#3b322b',
-    '#33302d',
-    '#4a4440',
-    '#5a4a3e',
-    shade(style.primary, -0.45),
-    shade(style.primary, -0.3),
-    shade(style.primary, -0.15),
-    shade(style.accent, -0.35),
-    '#8d8d8d',
-  ];
-  for (const side of [-1, 1]) {
-    for (let row = 0; row < 46; row++) {
-      const t = row / 45;
-      const rowY = 250 + row * 14 + t * t * 120;
-      const spacing = 7 + t * 9;
-      const reach = 380 + t * 120;
-      for (let x = 0; x < reach; x += spacing * (0.7 + random() * 0.6)) {
-        const px = side < 0 ? x : W - x;
-        const py = rowY - (reach - x) * 0.35 + random() * 6;
-        if (py < 180) {
-          continue;
-        }
-        const r = 2 + t * 4.5;
-        ctx.fillStyle = palette[Math.floor(random() * palette.length)];
-        ctx.globalAlpha = 0.3 + t * 0.45;
-        ctx.fillRect(px - r, py, r * 2, r * 1.6);
-        ctx.beginPath();
-        ctx.arc(px, py - r * 0.4, r * 0.75, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-  }
-  ctx.globalAlpha = 1;
-
-  // Banners along the stands.
-  const name = organizer.trim().toUpperCase();
-  if (name) {
-    for (const [x, y, angle] of [
-      [130, 470, 0.2],
-      [W - 130, 640, -0.16],
-    ] as const) {
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.rotate(angle);
-      ctx.fillStyle = shade(style.primary, -0.25);
-      ctx.fillRect(-150, -32, 300, 64);
-      ctx.fillStyle = style.accent;
-      ctx.fillRect(-150, 26, 300, 6);
-      ctx.fillStyle = withAlpha(WHITE, 0.9);
-      ctx.font = `800 ${Math.min(36, 3600 / Math.max(name.length * 9, 1))}px ${font}`;
-      ctx.fillText(name, 0, 0, 270);
-      ctx.restore();
-    }
-  }
-
-  // Darken the middle so the burst and texts own it, and the pitch below.
-  const middle = ctx.createRadialGradient(W / 2, 560, 60, W / 2, 560, 520);
-  middle.addColorStop(0, 'rgba(0,0,0,0.75)');
-  middle.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.fillStyle = middle;
-  ctx.fillRect(0, 0, W, H);
-  const pitch = ctx.createLinearGradient(0, 760, 0, H);
-  pitch.addColorStop(0, withAlpha(shade(style.primary, -0.45), 0));
-  pitch.addColorStop(0.25, shade(style.primary, -0.6));
-  pitch.addColorStop(1, shade(style.primary, -0.85));
-  ctx.fillStyle = pitch;
+  const top = ctx.createLinearGradient(0, 0, 0, 430);
+  top.addColorStop(0, 'rgba(0,0,0,0.55)');
+  top.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = top;
+  ctx.fillRect(0, 0, W, 430);
+  const bottom = ctx.createLinearGradient(0, 760, 0, H);
+  bottom.addColorStop(0, 'rgba(0,0,0,0)');
+  bottom.addColorStop(1, 'rgba(0,0,0,0.6)');
+  ctx.fillStyle = bottom;
   ctx.fillRect(0, 760, W, H - 760);
-  const vignette = ctx.createRadialGradient(W / 2, H / 2, 400, W / 2, H / 2, 900);
-  vignette.addColorStop(0, 'rgba(0,0,0,0)');
-  vignette.addColorStop(1, 'rgba(0,0,0,0.6)');
-  ctx.fillStyle = vignette;
-  ctx.fillRect(0, 0, W, H);
-}
-
-// Light rigs in the top corners and lower sides, glaring.
-function drawFloodlights(ctx: Ctx, accent: string): void {
-  ctx.save();
-  ctx.globalCompositeOperation = 'lighter';
-  for (const side of [-1, 1]) {
-    for (const [baseY, cols, rows, scale] of [
-      [210, 6, 3, 1],
-      [1030, 4, 2, 0.8],
-    ] as const) {
-      const baseX = side < 0 ? 40 : W - 40;
-      const glare = ctx.createRadialGradient(baseX, baseY, 10, baseX, baseY, 420 * scale);
-      glare.addColorStop(0, withAlpha(accent, 0.55));
-      glare.addColorStop(0.3, withAlpha(accent, 0.18));
-      glare.addColorStop(1, withAlpha(accent, 0));
-      ctx.fillStyle = glare;
-      ctx.fillRect(0, 0, W, H);
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          const x = baseX - side * (c * 30 + r * 10) * scale;
-          const y = baseY + (r * 26 - c * 13) * scale;
-          const bulb = ctx.createRadialGradient(x, y, 0, x, y, 22 * scale);
-          bulb.addColorStop(0, 'rgba(255,255,255,1)');
-          bulb.addColorStop(0.3, 'rgba(255,250,225,0.8)');
-          bulb.addColorStop(1, 'rgba(255,240,180,0)');
-          ctx.fillStyle = bulb;
-          ctx.fillRect(x - 24 * scale, y - 24 * scale, 48 * scale, 48 * scale);
-        }
-      }
-    }
-  }
-  ctx.restore();
 }
 
 // Sun-burst of rays and a cloud of golden sparks behind the logo.
@@ -439,10 +329,11 @@ function drawBurst(ctx: Ctx, accent: string, random: () => number): void {
   const rays = 64;
   for (let i = 0; i < rays; i++) {
     const angle = (i / rays) * Math.PI * 2 + random() * 0.05;
-    const length = 260 + random() * 260;
+    // Short sideways, so the rays stay between the two players.
+    const length = (200 + random() * 140) * (0.75 + 0.35 * Math.abs(Math.sin(angle)));
     const spread = 0.012 + random() * 0.03;
     const gradient = ctx.createRadialGradient(W / 2, LOGO_Y, 40, W / 2, LOGO_Y, length);
-    gradient.addColorStop(0, withAlpha(accent, 0.7));
+    gradient.addColorStop(0, withAlpha(accent, 0.5));
     gradient.addColorStop(1, withAlpha(accent, 0));
     ctx.fillStyle = gradient;
     ctx.beginPath();
@@ -459,7 +350,7 @@ function drawBurst(ctx: Ctx, accent: string, random: () => number): void {
     ctx.fill();
   }
   const core = ctx.createRadialGradient(W / 2, LOGO_Y, 0, W / 2, LOGO_Y, 300);
-  core.addColorStop(0, withAlpha(accent, 0.85));
+  core.addColorStop(0, withAlpha(accent, 0.7));
   core.addColorStop(0.4, withAlpha(accent, 0.3));
   core.addColorStop(1, withAlpha(accent, 0));
   ctx.fillStyle = core;
@@ -520,9 +411,17 @@ function brush(
 }
 
 // Dark card with an accent outline.
-function panel(ctx: Ctx, x: number, y: number, w: number, h: number, accent: string): void {
+function panel(
+  ctx: Ctx,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  fill: string,
+  accent: string,
+): void {
   ctx.save();
-  ctx.fillStyle = 'rgba(3,7,5,0.82)';
+  ctx.fillStyle = fill;
   roundRect(ctx, x, y, w, h, 24);
   ctx.fill();
   ctx.strokeStyle = accent;
@@ -583,6 +482,12 @@ function drawIcon(
     ctx.fill();
     ctx.strokeStyle = withAlpha(WHITE, 0.25);
     ctx.lineWidth = 3;
+    ctx.stroke();
+  } else if (mode === 'ring') {
+    ctx.strokeStyle = accent;
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
     ctx.stroke();
   }
   const color = mode === 'disc' ? ink : accent;
@@ -778,13 +683,6 @@ function cutOut(img: HTMLImageElement): HTMLCanvasElement | HTMLImageElement {
   }
   c.putImageData(data, 0, 0);
   return canvas;
-}
-
-function cover(ctx: Ctx, img: HTMLImageElement): void {
-  const scale = Math.max(W / img.naturalWidth, H / img.naturalHeight);
-  const w = img.naturalWidth * scale;
-  const h = img.naturalHeight * scale;
-  ctx.drawImage(img, (W - w) / 2, (H - h) / 2, w, h);
 }
 
 function polygon(ctx: Ctx, cx: number, cy: number, r: number, n: number): void {
