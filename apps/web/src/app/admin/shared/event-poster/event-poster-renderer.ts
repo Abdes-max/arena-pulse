@@ -18,6 +18,8 @@ export interface PosterInfo {
 }
 
 export interface EventPosterContent {
+  /** The sport, at the very top ("FOOTBALL"). */
+  sport: string;
   title: string;
   category: string;
   organizer: string;
@@ -84,12 +86,26 @@ export function drawEventPoster(
   drawBackground(ctx, style);
   drawBurst(ctx, accent, random);
 
+  // Sport, at the very top between two accent dashes.
+  const sport = content.sport.trim().toUpperCase();
+  if (sport) {
+    ctx.font = font(800, 34);
+    ctx.letterSpacing = '8px';
+    const width = ctx.measureText(sport).width - 8;
+    ctx.fillStyle = WHITE;
+    withShadow(ctx, 'rgba(0,0,0,0.7)', 10, () => ctx.fillText(sport, W / 2 + 4, 42));
+    ctx.letterSpacing = '0px';
+    ctx.fillStyle = accent;
+    ctx.fillRect(W / 2 - width / 2 - 70, 39, 50, 6);
+    ctx.fillRect(W / 2 + width / 2 + 20, 39, 50, 6);
+  }
+
   // Title: huge worn letters, "PLATEAU" white and the category in the accent.
   const title = content.title.trim().toUpperCase();
   const category = content.category.trim().toUpperCase();
   const gap = title && category ? ' ' : '';
   const titleSize = fit(ctx, `${title}${gap}${category}`, 1000, 160, (s) => font(900, s));
-  stamp(ctx, W / 2, 125, 1080, 220, (layer) => {
+  stamp(ctx, W / 2, 138, 1080, 220, (layer) => {
     layer.font = font(900, titleSize);
     const titleWidth = layer.measureText(title + gap).width;
     const total = titleWidth + layer.measureText(category).width;

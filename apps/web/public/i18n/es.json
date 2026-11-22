@@ -1744,7 +1744,8 @@
         "venue": "Lugar",
         "city": "Ciudad",
         "infoTitle": "Título",
-        "infoDetail": "Detalle"
+        "infoDetail": "Detalle",
+        "sport": "Deporte"
       },
       "defaults": {
         "plateau": "Encuentro",

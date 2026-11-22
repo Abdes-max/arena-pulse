@@ -82,6 +82,7 @@ export class EventPosterDialog {
   protected readonly failed = signal(false);
 
   protected readonly textFields: FormField[] = [
+    { key: 'sport', label: 'admin.eventPoster.fields.sport' },
     { key: 'title', label: 'admin.eventPoster.fields.title' },
     { key: 'category', label: 'admin.eventPoster.fields.category' },
     { key: 'organizer', label: 'admin.eventPoster.fields.organizer' },
@@ -246,6 +247,7 @@ export class EventPosterDialog {
     const fee = fees.length > 0 ? Math.min(...fees) : 0;
     const currency = categories.find((c) => c.registrationFeeCurrency)?.registrationFeeCurrency;
     return {
+      sport: tournament.sportName,
       title: t(/^plateau/i.test(tournament.name) ? 'defaults.plateau' : 'defaults.tournament'),
       category: categories.map((c) => c.name).join(' / '),
       organizer: this.authService.organizations()[0]?.name ?? '',

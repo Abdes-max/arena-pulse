@@ -1846,7 +1846,8 @@
         "venue": "Venue",
         "city": "City",
         "infoTitle": "Label",
-        "infoDetail": "Detail"
+        "infoDetail": "Detail",
+        "sport": "Sport"
       },
       "defaults": {
         "plateau": "Festival",

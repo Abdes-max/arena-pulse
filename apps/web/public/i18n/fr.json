@@ -1846,7 +1846,8 @@
         "venue": "Lieu",
         "city": "Ville",
         "infoTitle": "Intitulé",
-        "infoDetail": "Détail"
+        "infoDetail": "Détail",
+        "sport": "Sport"
       },
       "defaults": {
         "plateau": "Plateau",
