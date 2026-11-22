@@ -20,6 +20,7 @@ import {
   ParticipantType,
   RegistrationPaymentStatus,
   RegistrationStatus,
+  TournamentStatus,
 } from '../../generated/prisma/client';
 import { SuperAdminNotificationService } from '../super-admin/notifications/super-admin-notification.service';
 
@@ -729,6 +730,8 @@ export class RegistrationsService {
   }
 
   private toSettings(tournament: {
+    slug: string;
+    status: TournamentStatus;
     registrationsOpen: boolean;
     registrationOpensAt: Date | null;
     registrationClosesAt: Date | null;
@@ -737,6 +740,9 @@ export class RegistrationsService {
     sport: { participantType: ParticipantType };
   }) {
     return {
+      // The public sign-up page (/:slug/register) only answers once published.
+      slug: tournament.slug,
+      published: tournament.status === TournamentStatus.PUBLISHED,
       open: tournament.registrationsOpen,
       openNow: this.isOpen(tournament),
       opensAt: tournament.registrationOpensAt,

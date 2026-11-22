@@ -103,6 +103,48 @@
           </ap-button>
           <p class="reg-page__hint">{{ 'organizer.registrations.moreOnWeb' | transloco }}</p>
         </section>
+
+        <!-- The link to hand out (messages, socials, poster) so teams sign up. -->
+        @if (s.open) {
+          <section class="reg-page__link">
+            <h2>{{ 'organizer.registrations.link.title' | transloco }}</h2>
+            @if (s.published) {
+              <p class="reg-page__hint">{{ 'organizer.registrations.link.hint' | transloco }}</p>
+              <p class="reg-page__link-url">{{ registrationUrl() }}</p>
+              <div class="reg-page__link-actions">
+                <ap-button type="button" size="sm" (click)="shareButton.triggerShare()">
+                  {{ 'organizer.registrations.link.share' | transloco }}
+                </ap-button>
+                <ap-button type="button" size="sm" variant="secondary" (click)="copyLink()">
+                  {{
+                    (linkCopied()
+                      ? 'organizer.registrations.link.copied'
+                      : 'organizer.registrations.link.copy'
+                    ) | transloco
+                  }}
+                </ap-button>
+              </div>
+              <!-- Not shown: drives the native share sheet (clipboard fallback). -->
+              <ap-share-button
+                #shareButton
+                class="reg-page__share"
+                [title]="s.slug"
+                [url]="registrationUrl()"
+              />
+              <details class="reg-page__qr">
+                <summary>{{ 'organizer.registrations.link.qr' | transloco }}</summary>
+                <ap-qr-code [value]="registrationUrl()" [size]="180" />
+              </details>
+            } @else {
+              <p class="reg-page__hint">
+                {{ 'organizer.registrations.link.unpublished' | transloco }}
+              </p>
+              <ap-button type="button" size="sm" variant="secondary" (click)="goToPublish()">
+                {{ 'organizer.registrations.link.publish' | transloco }}
+              </ap-button>
+            }
+          </section>
+        }
       }
 
       <div class="reg-page__filters" role="tablist">

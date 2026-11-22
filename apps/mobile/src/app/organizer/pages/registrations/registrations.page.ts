@@ -3,7 +3,8 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { TranslocoPipe } from '@jsverse/transloco';
-import { Button, TextField } from 'design-system';
+import { Clipboard } from '@capacitor/clipboard';
+import { Button, QrCode, ShareButton, TextField } from 'design-system';
 import { firstValueFrom } from 'rxjs';
 import type {
   OrganizerRegistration,
@@ -32,7 +33,17 @@ interface RegistrationCategory {
  */
 @Component({
   selector: 'app-organizer-registrations-page',
-  imports: [Button, IonContent, IonHeader, IonTitle, IonToolbar, TextField, TranslocoPipe],
+  imports: [
+    Button,
+    IonContent,
+    IonHeader,
+    IonTitle,
+    IonToolbar,
+    QrCode,
+    ShareButton,
+    TextField,
+    TranslocoPipe,
+  ],
   templateUrl: './registrations.page.html',
   styleUrl: './registrations.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -61,6 +72,13 @@ export class OrganizerRegistrationsPage {
   protected readonly filters: Filter[] = ['PENDING', 'CONFIRMED', 'WAITLIST', 'REJECTED', 'ALL'];
   protected readonly rejectingId = signal<string | null>(null);
   protected readonly rejectReason = signal('');
+
+  // The public sign-up page on the website (also opens in the app).
+  protected readonly registrationUrl = computed(() => {
+    const slug = this.settings()?.slug;
+    return slug ? `${environment.webUrl}/${slug}/register` : '';
+  });
+  protected readonly linkCopied = signal(false);
 
   protected readonly counts = computed(() => {
     const counts: Record<Filter, number> = {
@@ -91,6 +109,22 @@ export class OrganizerRegistrationsPage {
 
   protected async goBack(): Promise<void> {
     await this.router.navigateByUrl('/organizer/tournaments');
+  }
+
+  protected async goToPublish(): Promise<void> {
+    await this.router.navigate(['/organizer/tournaments', this.tournamentId, 'edit'], {
+      queryParams: { step: 5 },
+    });
+  }
+
+  protected async copyLink(): Promise<void> {
+    try {
+      await Clipboard.write({ string: this.registrationUrl() });
+      this.linkCopied.set(true);
+      setTimeout(() => this.linkCopied.set(false), 2000);
+    } catch {
+      // Clipboard refused: the link stays on screen, selectable by hand.
+    }
   }
 
   private base(): string | null {

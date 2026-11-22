@@ -1173,7 +1173,17 @@
       },
       "reason": "Motivo",
       "reasonLabel": "Motivo del rechazo (enviado por correo, opcional)",
-      "settingsInGeneral": "Ajustes en General"
+      "settingsInGeneral": "Ajustes en General",
+      "link": {
+        "title": "Enlace de inscripción",
+        "hint": "Difunde este enlace (correo, redes, cartel): los equipos se inscriben directamente.",
+        "copy": "Copiar",
+        "copied": "¡Copiado!",
+        "qr": "Código QR",
+        "download": "Descargar el código QR",
+        "unpublished": "El enlace de inscripción estará activo cuando el torneo esté publicado.",
+        "publish": "Publicar el torneo"
+      }
     },
     "structure": {
       "title": "Estructura de la competición",

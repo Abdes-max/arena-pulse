@@ -1275,7 +1275,17 @@
       },
       "reason": "Reason",
       "reasonLabel": "Reason for refusal (emailed, optional)",
-      "settingsInGeneral": "Settings in General"
+      "settingsInGeneral": "Settings in General",
+      "link": {
+        "title": "Registration link",
+        "hint": "Share this link (email, socials, poster): teams sign up directly.",
+        "copy": "Copy",
+        "copied": "Copied!",
+        "qr": "QR code",
+        "download": "Download the QR code",
+        "unpublished": "The registration link goes live once the tournament is published.",
+        "publish": "Publish the tournament"
+      }
     },
     "structure": {
       "title": "Competition structure",

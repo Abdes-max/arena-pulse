@@ -182,3 +182,52 @@
     margin-bottom: var(--ap-space-3);
   }
 }
+
+.reg-page__link {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+  padding: var(--ap-space-4);
+  background: var(--ap-color-signal-soft);
+  border-radius: var(--ap-radius-md);
+
+  h2 {
+    margin: 0;
+    font-size: 1rem;
+  }
+}
+
+.reg-page__link-url {
+  margin: 0;
+  padding: var(--ap-space-2) var(--ap-space-3);
+  font-size: 0.85rem;
+  word-break: break-all;
+  user-select: all;
+  background: var(--ap-color-surface);
+  border: 1px solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+}
+
+.reg-page__link-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ap-space-2);
+}
+
+.reg-page__share {
+  display: none;
+}
+
+.reg-page__qr {
+  font-size: 0.85rem;
+
+  summary {
+    color: var(--ap-color-signal-text);
+    font-weight: 600;
+  }
+
+  ap-qr-code {
+    display: block;
+    margin-top: var(--ap-space-2);
+  }
+}

@@ -321,13 +321,15 @@ describe('Registrations & payments (e2e)', () => {
       teamCount: 2,
     }).expect(409);
 
-    await auth(
+    const settings = await auth(
       request(app.getHttpServer()).patch(
         `${base}/${tournamentId}/registrations/settings`,
       ),
     )
       .send({ maxTeamsPerRegistrant: 3 })
       .expect(200);
+    // What the organizer needs to hand out the sign-up link.
+    expect(settings.body).toMatchObject({ slug, published: true });
     const res = await register(slug, categoryId, playerToken, {
       ...club,
       teamCount: 2,
