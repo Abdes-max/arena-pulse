@@ -143,7 +143,7 @@ export function drawEventPoster(
     const w = Math.round(cut.width * scale);
     const h = Math.round(cut.height * scale);
     const logo = enlarge(cut, w, h);
-    withShadow(ctx, withAlpha(accent, 0.9), 60, () =>
+    withShadow(ctx, withAlpha(accent, 0.6), 36, () =>
       ctx.drawImage(logo, W / 2 - w / 2, LOGO_Y - h / 2, w, h),
     );
   }
@@ -360,14 +360,14 @@ function drawBackground(ctx: Ctx, style: EventPosterStyle): void {
 function drawBurst(ctx: Ctx, accent: string, random: () => number): void {
   ctx.save();
   ctx.globalCompositeOperation = 'lighter';
-  const rays = 64;
+  const rays = 40;
   for (let i = 0; i < rays; i++) {
     const angle = (i / rays) * Math.PI * 2 + random() * 0.05;
     // Short sideways, so the rays stay between the two players.
     const length = (200 + random() * 140) * (0.75 + 0.35 * Math.abs(Math.sin(angle)));
     const spread = 0.012 + random() * 0.03;
     const gradient = ctx.createRadialGradient(W / 2, LOGO_Y, 40, W / 2, LOGO_Y, length);
-    gradient.addColorStop(0, withAlpha(accent, 0.5));
+    gradient.addColorStop(0, withAlpha(accent, 0.22));
     gradient.addColorStop(1, withAlpha(accent, 0));
     ctx.fillStyle = gradient;
     ctx.beginPath();
@@ -384,15 +384,15 @@ function drawBurst(ctx: Ctx, accent: string, random: () => number): void {
     ctx.fill();
   }
   const core = ctx.createRadialGradient(W / 2, LOGO_Y, 0, W / 2, LOGO_Y, 300);
-  core.addColorStop(0, withAlpha(accent, 0.7));
-  core.addColorStop(0.4, withAlpha(accent, 0.3));
+  core.addColorStop(0, withAlpha(accent, 0.4));
+  core.addColorStop(0.4, withAlpha(accent, 0.12));
   core.addColorStop(1, withAlpha(accent, 0));
   ctx.fillStyle = core;
   ctx.fillRect(0, 0, W, H);
 
   // Sparks: dense around the logo, a dust of them over the whole poster.
   for (let i = 0; i < 900; i++) {
-    const near = i < 600;
+    const near = i < 320;
     const angle = random() * Math.PI * 2;
     const distance = near ? Math.pow(random(), 0.7) * 420 : random() * 900;
     const x = near ? W / 2 + Math.cos(angle) * distance * 1.3 : random() * W;
