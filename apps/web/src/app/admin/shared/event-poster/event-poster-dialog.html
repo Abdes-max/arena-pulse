@@ -55,22 +55,6 @@
           }
         </fieldset>
 
-        <div class="event-poster__photo">
-          <label class="event-poster__photo-pick">
-            {{
-              (hasPhoto() ? 'admin.eventPoster.photoChange' : 'admin.eventPoster.photoAdd')
-                | transloco
-            }}
-            <input type="file" accept="image/*" (change)="pickPhoto($event)" />
-          </label>
-          @if (hasPhoto()) {
-            <ap-button type="button" size="sm" variant="ghost" (click)="removePhoto()">
-              {{ 'admin.eventPoster.photoRemove' | transloco }}
-            </ap-button>
-          }
-          <small>{{ 'admin.eventPoster.photoHint' | transloco }}</small>
-        </div>
-
         <label class="event-poster__option">
           <input type="checkbox" [checked]="withQr()" (change)="toggleQr($event)" />
           {{

@@ -1753,11 +1753,7 @@
         "fields": "{{count}} Platz/Plätze",
         "level": "Niveau",
         "free": "Kostenlos"
-      },
-      "photoAdd": "Hintergrundfoto hinzufügen",
-      "photoChange": "Foto ändern",
-      "photoRemove": "Foto entfernen",
-      "photoHint": "Ihre Spieler, Ihr Stadion… Sonst wird ein Stadion in den Themenfarben gezeichnet."
+      }
     }
   },
   "wrapped": {

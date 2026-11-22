@@ -1753,11 +1753,7 @@
         "fields": "{{count}} campo(s)",
         "level": "Nivel",
         "free": "Gratis"
-      },
-      "photoAdd": "Añadir una foto de fondo",
-      "photoChange": "Cambiar la foto",
-      "photoRemove": "Quitar la foto",
-      "photoHint": "Tus jugadores, tu estadio… Si no, se dibuja un estadio con los colores del tema."
+      }
     }
   },
   "wrapped": {

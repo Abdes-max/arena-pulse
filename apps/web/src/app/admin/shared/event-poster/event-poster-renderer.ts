@@ -4,8 +4,8 @@
 // show uncropped), "match night" look: packed stands under floodlights, a
 // burst of light behind the club logo, brush-stroke headings and worn
 // lettering -- in the theme's colors (primary for the night, signal for
-// every highlight) and its heading font. An organizer's own photo, when
-// given, replaces the drawn stadium.
+// every highlight) and its heading font. The stadium is always the same;
+// only the theme recolors it.
 
 export const POSTER_WIDTH = 1080;
 export const POSTER_HEIGHT = 1350;
@@ -40,8 +40,6 @@ export interface EventPosterStyle {
   font: string;
   /** The theme's header picture, tinting the night sky. */
   background: HTMLImageElement | null;
-  /** The organizer's own photo, instead of the drawn stadium. */
-  photo: HTMLImageElement | null;
   logo: HTMLImageElement | null;
   qr: HTMLImageElement | null;
 }
@@ -71,11 +69,7 @@ export function drawEventPoster(
   ctx.textBaseline = 'middle';
   ctx.textAlign = 'center';
 
-  if (style.photo) {
-    drawPhoto(ctx, style);
-  } else {
-    drawStadium(ctx, style, content.organizer, random);
-  }
+  drawStadium(ctx, style, content.organizer, random);
   drawFloodlights(ctx, style.accent);
   drawBurst(ctx, style.accent, random);
 
@@ -309,16 +303,6 @@ export function drawEventPoster(
 }
 
 // --------------------------------------------------------------- background
-
-function drawPhoto(ctx: Ctx, style: EventPosterStyle): void {
-  cover(ctx, style.photo!);
-  const scrim = ctx.createLinearGradient(0, 0, 0, H);
-  scrim.addColorStop(0, 'rgba(0,0,0,0.55)');
-  scrim.addColorStop(0.45, 'rgba(0,0,0,0.2)');
-  scrim.addColorStop(1, 'rgba(0,0,0,0.75)');
-  ctx.fillStyle = scrim;
-  ctx.fillRect(0, 0, W, H);
-}
 
 // Night sky, two packed stands converging on the pitch, club banners.
 function drawStadium(ctx: Ctx, style: EventPosterStyle, organizer: string, random: () => number) {

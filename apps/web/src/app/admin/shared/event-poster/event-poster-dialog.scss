@@ -153,30 +153,3 @@
   color: var(--ap-color-primary);
   font-weight: 600;
 }
-
-.event-poster__photo {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--ap-space-2);
-
-  small {
-    flex-basis: 100%;
-    font-size: 0.78rem;
-    color: var(--ap-color-muted);
-  }
-}
-
-.event-poster__photo-pick {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--ap-color-primary);
-  border: 1px dashed var(--ap-color-primary);
-  border-radius: var(--ap-radius-md);
-  padding: var(--ap-space-1) var(--ap-space-3);
-  cursor: pointer;
-
-  input {
-    display: none;
-  }
-}

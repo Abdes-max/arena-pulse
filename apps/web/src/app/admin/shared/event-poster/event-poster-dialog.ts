@@ -68,9 +68,6 @@ export class EventPosterDialog {
   protected readonly withQr = signal(false);
   protected readonly qrForRegistration = signal(false);
   private readonly images = signal<Pick<EventPosterStyle, 'background' | 'logo'> | null>(null);
-  /** The organizer's own photo (players, their ground...), only in this browser. */
-  private readonly photo = signal<HTMLImageElement | null>(null);
-  protected readonly hasPhoto = signal(false);
   private readonly qrImage = signal<HTMLImageElement | null>(null);
   private theme: Theme | null = null;
   protected readonly image = signal<string | null>(null);
@@ -113,13 +110,12 @@ export class EventPosterDialog {
       const content = this.content();
       const images = this.images();
       const qr = this.qrImage();
-      const photo = this.photo();
       if (!content || !images || !this.theme) {
         return;
       }
       try {
         const canvas = document.createElement('canvas');
-        drawEventPoster(canvas, content, { ...this.theme, ...images, photo, qr });
+        drawEventPoster(canvas, content, { ...this.theme, ...images, qr });
         this.image.set(canvas.toDataURL('image/png'));
       } catch {
         this.failed.set(true);
@@ -151,24 +147,6 @@ export class EventPosterDialog {
       }
       return { ...content, [key]: text };
     });
-  }
-
-  protected async pickPhoto(event: Event): Promise<void> {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    input.value = '';
-    if (!file) {
-      return;
-    }
-    const url = URL.createObjectURL(file);
-    const img = await loadImage(url);
-    this.photo.set(img);
-    this.hasPhoto.set(!!img);
-  }
-
-  protected removePhoto(): void {
-    this.photo.set(null);
-    this.hasPhoto.set(false);
   }
 
   protected toggleQr(event: Event): void {

@@ -1855,11 +1855,7 @@
         "fields": "{{count}} pitch(es)",
         "level": "Level",
         "free": "Free"
-      },
-      "photoAdd": "Add a background photo",
-      "photoChange": "Change the photo",
-      "photoRemove": "Remove the photo",
-      "photoHint": "Your players, your ground… Otherwise a stadium is drawn in the theme colors."
+      }
     }
   },
   "wrapped": {

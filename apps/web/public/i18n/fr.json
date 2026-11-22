@@ -1855,11 +1855,7 @@
         "fields": "{{count}} terrain(s)",
         "level": "Niveau",
         "free": "Gratuit"
-      },
-      "photoAdd": "Ajouter une photo de fond",
-      "photoChange": "Changer la photo",
-      "photoRemove": "Retirer la photo",
-      "photoHint": "Vos joueurs, votre stade… Sinon, un stade est dessiné aux couleurs du thème."
+      }
     }
   },
   "wrapped": {
