@@ -39,6 +39,11 @@ export interface EventPosterStyle {
   font: string;
   /** The sport's match-night photo. */
   background: HTMLImageElement | null;
+  /**
+   * An empty stadium (the default for a sport without its photo): shown
+   * whole, edge to edge, no players to frame around the logo.
+   */
+  backgroundFullBleed?: boolean;
   logo: HTMLImageElement | null;
   qr: HTMLImageElement | null;
 }
@@ -298,7 +303,16 @@ function drawBackground(ctx: Ctx, style: EventPosterStyle): void {
   ctx.fillStyle = shade(style.primary, -0.85);
   ctx.fillRect(0, 0, W, H);
   const img = style.background ? recolored(style.background, style.primary, style.accent) : null;
-  if (img) {
+  if (img && style.backgroundFullBleed) {
+    const fill = Math.max(W / img.width, H / img.height);
+    ctx.drawImage(
+      img,
+      (W - img.width * fill) / 2,
+      (H - img.height * fill) / 2,
+      img.width * fill,
+      img.height * fill,
+    );
+  } else if (img) {
     // Backdrop: the photo filling the poster, slightly dimmed...
     const fill = Math.max(W / img.width, H / img.height);
     ctx.save();
