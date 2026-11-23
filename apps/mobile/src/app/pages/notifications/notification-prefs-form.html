@@ -1,64 +1,69 @@
-<div class="prefs-form">
-  <ion-toggle
-    class="prefs-form__toggle prefs-form__toggle--master"
-    [checked]="prefs().enabled"
-    (ionChange)="toggle('enabled', $event)"
-    >{{ 'notifications.form.enabled' | transloco }}</ion-toggle
-  >
+<!-- Rendered once the translations are loaded: ion-toggle decides whether it
+     has a label from its text when it first renders, and hides it for good
+     if the text is still empty. -->
+<ng-container *transloco="let t">
+  <div class="prefs-form">
+    <ion-toggle
+      class="prefs-form__toggle prefs-form__toggle--master"
+      [checked]="prefs().enabled"
+      (ionChange)="toggle('enabled', $event)"
+      >{{ 'notifications.form.enabled' | transloco }}</ion-toggle
+    >
 
-  <div class="prefs-form__group" [class.prefs-form__group--off]="!prefs().enabled">
-    <ion-toggle
-      class="prefs-form__toggle"
-      [checked]="prefs().reminder"
-      [disabled]="!prefs().enabled"
-      (ionChange)="toggle('reminder', $event)"
-      >{{ 'notifications.form.reminder' | transloco }}</ion-toggle
-    >
-    <ion-select
-      class="prefs-form__select"
-      interface="popover"
-      [label]="'notifications.form.reminderMinutes' | transloco"
-      [value]="prefs().reminderMinutes"
-      [disabled]="!prefs().enabled || !prefs().reminder"
-      (ionChange)="setMinutes($event)"
-    >
-      @for (minutes of minutesOptions; track minutes) {
-        <ion-select-option [value]="minutes">{{
-          'notifications.form.minutes' | transloco: { count: minutes }
-        }}</ion-select-option>
-      }
-    </ion-select>
-    <p class="prefs-form__hint">{{ 'notifications.form.reminderHint' | transloco }}</p>
+    <div class="prefs-form__group" [class.prefs-form__group--off]="!prefs().enabled">
+      <ion-toggle
+        class="prefs-form__toggle"
+        [checked]="prefs().reminder"
+        [disabled]="!prefs().enabled"
+        (ionChange)="toggle('reminder', $event)"
+        >{{ 'notifications.form.reminder' | transloco }}</ion-toggle
+      >
+      <ion-select
+        class="prefs-form__select"
+        interface="popover"
+        [label]="'notifications.form.reminderMinutes' | transloco"
+        [value]="prefs().reminderMinutes"
+        [disabled]="!prefs().enabled || !prefs().reminder"
+        (ionChange)="setMinutes($event)"
+      >
+        @for (minutes of minutesOptions; track minutes) {
+          <ion-select-option [value]="minutes">{{
+            'notifications.form.minutes' | transloco: { count: minutes }
+          }}</ion-select-option>
+        }
+      </ion-select>
+      <p class="prefs-form__hint">{{ 'notifications.form.reminderHint' | transloco }}</p>
 
-    <ion-toggle
-      class="prefs-form__toggle"
-      [checked]="prefs().started"
-      [disabled]="!prefs().enabled"
-      (ionChange)="toggle('started', $event)"
-      >{{ 'notifications.form.started' | transloco }}</ion-toggle
-    >
-    <ion-toggle
-      class="prefs-form__toggle"
-      [checked]="prefs().score"
-      [disabled]="!prefs().enabled"
-      (ionChange)="toggle('score', $event)"
-      >{{ 'notifications.form.score' | transloco }}</ion-toggle
-    >
-    <ion-toggle
-      class="prefs-form__toggle"
-      [checked]="prefs().result"
-      [disabled]="!prefs().enabled"
-      (ionChange)="toggle('result', $event)"
-      >{{ 'notifications.form.result' | transloco }}</ion-toggle
-    >
-    <p class="prefs-form__hint">{{ 'notifications.form.liveHint' | transloco }}</p>
+      <ion-toggle
+        class="prefs-form__toggle"
+        [checked]="prefs().started"
+        [disabled]="!prefs().enabled"
+        (ionChange)="toggle('started', $event)"
+        >{{ 'notifications.form.started' | transloco }}</ion-toggle
+      >
+      <ion-toggle
+        class="prefs-form__toggle"
+        [checked]="prefs().score"
+        [disabled]="!prefs().enabled"
+        (ionChange)="toggle('score', $event)"
+        >{{ 'notifications.form.score' | transloco }}</ion-toggle
+      >
+      <ion-toggle
+        class="prefs-form__toggle"
+        [checked]="prefs().result"
+        [disabled]="!prefs().enabled"
+        (ionChange)="toggle('result', $event)"
+        >{{ 'notifications.form.result' | transloco }}</ion-toggle
+      >
+      <p class="prefs-form__hint">{{ 'notifications.form.liveHint' | transloco }}</p>
 
-    <ion-toggle
-      class="prefs-form__toggle"
-      [checked]="prefs().sound"
-      [disabled]="!prefs().enabled"
-      (ionChange)="toggle('sound', $event)"
-      >{{ 'notifications.form.sound' | transloco }}</ion-toggle
-    >
+      <ion-toggle
+        class="prefs-form__toggle"
+        [checked]="prefs().sound"
+        [disabled]="!prefs().enabled"
+        (ionChange)="toggle('sound', $event)"
+        >{{ 'notifications.form.sound' | transloco }}</ion-toggle
+      >
+    </div>
   </div>
-</div>
+</ng-container>

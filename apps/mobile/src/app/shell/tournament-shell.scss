@@ -22,9 +22,23 @@ ion-toolbar {
   --padding-end: var(--ap-space-4);
 }
 
+// The night band: dark whatever the page mode (data-mode="dark" in the
+// template), with a soft glow in the theme's primary color as its only touch
+// -- same as apps/web's .tournament-shell__hero.
 .tournament-shell__hero {
   padding: var(--ap-space-2) var(--ap-space-4) var(--ap-space-4);
-  background-color: var(--ap-color-surface);
+  background-color: var(--ap-color-bg);
+  background-image:
+    radial-gradient(
+      22rem 12rem at 100% 0%,
+      color-mix(in srgb, var(--ap-color-primary) 38%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      16rem 10rem at 0% 100%,
+      color-mix(in srgb, var(--ap-color-signal) 16%, transparent),
+      transparent 70%
+    );
   color: var(--ap-color-fg);
   transition:
     background-color var(--ap-motion-fast) var(--ap-easing-standard),

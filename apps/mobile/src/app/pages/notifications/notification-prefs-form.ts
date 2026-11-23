@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { IonSelect, IonSelectOption, IonToggle } from '@ionic/angular/standalone';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoDirective, TranslocoPipe } from '@jsverse/transloco';
 import {
   NotificationPrefs,
   REMINDER_MINUTES_OPTIONS,
@@ -14,7 +14,7 @@ import {
  */
 @Component({
   selector: 'app-notification-prefs-form',
-  imports: [IonSelect, IonSelectOption, IonToggle, TranslocoPipe],
+  imports: [IonSelect, IonSelectOption, IonToggle, TranslocoDirective, TranslocoPipe],
   templateUrl: './notification-prefs-form.html',
   styleUrl: './notification-prefs-form.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -7,6 +7,7 @@ import {
   signal,
 } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { AddressSearchService, PublicApiService } from 'api-client';
@@ -75,11 +76,19 @@ export class OrganizerQuickPlateauPage {
   // Phase finale: '' = none, else the bracket size (2 = final, 4 = semis...)
   // -- same choices as apps/web's quick-plateau.page.ts.
   protected readonly knockoutSize = signal('');
+  // Emits once the translations are loaded (and on language change): the
+  // option labels below are read with translate(), which is not reactive,
+  // so they showed raw keys when computed before the file arrived.
+  private readonly translations = toSignal(this.transloco.selectTranslation());
+
   // Predefined list (U5..U20, Senior, Vétéran) -- same as apps/web's; '' = not specified.
-  protected readonly categoryOptions = computed<SelectOption[]>(() => [
-    { value: '', label: this.transloco.translate('organizer.quickPlateau.categoryNone') },
-    ...AGE_CATEGORIES.map((category) => ({ value: category, label: category })),
-  ]);
+  protected readonly categoryOptions = computed<SelectOption[]>(() => {
+    this.translations();
+    return [
+      { value: '', label: this.transloco.translate('organizer.quickPlateau.categoryNone') },
+      ...AGE_CATEGORIES.map((category) => ({ value: category, label: category })),
+    ];
+  });
   protected readonly thirdPlaceMatch = signal(false);
   protected readonly venueName = signal('');
   private readonly venueAddress = signal<string | null>(null);
@@ -91,6 +100,7 @@ export class OrganizerQuickPlateauPage {
     knockoutSizesFor(toInt(this.teamCount()), toInt(this.poolCount())),
   );
   protected readonly knockoutOptions = computed<SelectOption[]>(() => {
+    this.translations();
     const t = (key: string) => this.transloco.translate('organizer.quickPlateau.knockout.' + key);
     return [
       { value: '', label: t('none') },
