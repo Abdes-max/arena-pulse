@@ -5,10 +5,12 @@
     "hero": {
       "hint": "Gruppen, K.-o.-Tabellen, Spielplan und Tabellen live.",
       "marqueeLabel": "Gerade jetzt",
-      "titleMain": "Turniere und Meisterschaften organisieren",
-      "titleEmphasis": "live von allen verfolgt.",
+      "titleMain": "Ihre Turniere,",
+      "titleEmphasis": "live erlebt.",
       "ctaCreate": "Mein Turnier erstellen",
-      "ctaJoin": "Für ein Turnier anmelden"
+      "ctaJoin": "Für ein Turnier anmelden",
+      "live": "Live",
+      "liveContext": "U11-Spielfest · Platz 2"
     },
     "published": {
       "title": "Veröffentlichte Veranstaltungen",

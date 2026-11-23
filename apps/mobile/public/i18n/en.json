@@ -5,10 +5,12 @@
     "hero": {
       "hint": "Pools, knockout brackets, schedule and live standings.",
       "marqueeLabel": "Happening now",
-      "titleMain": "Run tournaments and championships",
-      "titleEmphasis": "followed live by everyone.",
+      "titleMain": "Your tournaments,",
+      "titleEmphasis": "followed live.",
       "ctaCreate": "Create my tournament",
-      "ctaJoin": "Register for a tournament"
+      "ctaJoin": "Register for a tournament",
+      "live": "Live",
+      "liveContext": "U11 festival · Pitch 2"
     },
     "published": {
       "title": "Published events",

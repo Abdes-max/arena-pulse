@@ -19,6 +19,16 @@ body {
   margin: 0;
 }
 
+// « Nuit de match » headings: the theme's display face, heavy and tight.
+h1,
+h2,
+h3 {
+  font-family: var(--ap-font-heading);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
 // Global, not scoped to any one page's own stylesheet, since every print
 // flow in the admin (subscription/publication receipts, print-export.page)
 // lives inside AppShell's <main class="app-shell__content"> -- the header

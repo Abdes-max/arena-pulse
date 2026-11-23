@@ -5,10 +5,12 @@
     "hero": {
       "hint": "Poules, tableaux à élimination, calendrier et classements en direct.",
       "marqueeLabel": "En ce moment",
-      "titleMain": "Organisez tournois et championnats",
-      "titleEmphasis": "suivis en direct par tout le monde.",
+      "titleMain": "Vos tournois,",
+      "titleEmphasis": "vécus en direct.",
       "ctaCreate": "Créer mon tournoi",
-      "ctaJoin": "M'inscrire à un tournoi"
+      "ctaJoin": "M'inscrire à un tournoi",
+      "live": "En direct",
+      "liveContext": "Plateau U11 · Terrain 2"
     },
     "published": {
       "title": "Événements publiés",

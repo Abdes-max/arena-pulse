@@ -418,6 +418,31 @@
       <p class="tournament-entry-page__hint">
         {{ 'tournamentEntry.hero.hint' | transloco }}
       </p>
+      <!-- What a tournament looks like on match day: sample teams, decorative. -->
+      <div class="tournament-entry-page__live" aria-hidden="true">
+        <div class="tournament-entry-page__live-head">
+          <span class="tournament-entry-page__live-pill">{{
+            'tournamentEntry.hero.live' | transloco
+          }}</span>
+          <span>{{ 'tournamentEntry.hero.liveContext' | transloco }}</span>
+        </div>
+        <div class="tournament-entry-page__live-score">
+          <span class="tournament-entry-page__live-team">
+            <span class="tournament-entry-page__live-crest">AE</span>
+            Aigles FC
+          </span>
+          <span class="tournament-entry-page__live-result">
+            <strong>2<small>–</small>1</strong>
+            <span>34&#x2032;</span>
+          </span>
+          <span class="tournament-entry-page__live-team">
+            <span class="tournament-entry-page__live-crest tournament-entry-page__live-crest--b"
+              >OL</span
+            >
+            AS Olympe
+          </span>
+        </div>
+      </div>
       <div class="tournament-entry-page__hero-ctas">
         <ap-button type="button" [fullWidth]="true" routerLink="/organizer/register">
           {{ 'tournamentEntry.hero.ctaCreate' | transloco }}

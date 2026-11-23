@@ -36,11 +36,9 @@
 // sits directly above a single boxed paragraph rather than owning a whole
 // section's worth of content.
 .home-page__overview-description-title {
-  margin: 0 0 var(--ap-space-2);
-  font-size: 1rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--ap-color-muted);
+  margin: 0 0 var(--ap-space-3);
+  font-size: 1.6rem;
+  color: var(--ap-color-fg);
 }
 
 .home-page__overview-card {
@@ -82,10 +80,8 @@
   margin-bottom: var(--ap-space-8);
 
   h2 {
-    font-size: 1rem;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--ap-color-muted);
+    font-size: 1.6rem;
+    color: var(--ap-color-fg);
   }
 }
 
@@ -207,4 +203,122 @@
 .home-page__registration-payment {
   margin: 0;
   font-size: 0.9rem;
+}
+
+// Recent results beside the pool table -- the page's "match day" view.
+.home-page__live-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: var(--ap-space-6);
+  margin-bottom: var(--ap-space-8);
+
+  .home-page__section {
+    margin: 0;
+  }
+
+  ul,
+  ol {
+    margin: 0;
+    padding: var(--ap-space-2) var(--ap-space-4);
+    list-style: none;
+    background: var(--ap-color-surface);
+    border: var(--ap-border-width) solid var(--ap-color-border);
+    border-radius: var(--ap-radius-lg);
+    box-shadow: var(--ap-shadow-sm);
+  }
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: var(--ap-space-3);
+    padding: var(--ap-space-3) 0;
+    border-top: var(--ap-border-width) solid var(--ap-color-border);
+
+    &:first-child {
+      border-top: none;
+    }
+  }
+}
+
+@media (max-width: 720px) {
+  .home-page__live-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.home-page__result-team {
+  flex: 1;
+  min-width: 0;
+  font-weight: 700;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home-page__result-team--away {
+  text-align: left;
+}
+
+.home-page__result-score {
+  padding: 4px 12px;
+  border-radius: 10px;
+  background: var(--ap-color-signal-soft);
+  font-family: var(--ap-font-heading);
+  font-size: 1.15rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+
+  small {
+    margin: 0 4px;
+    color: var(--ap-color-muted);
+  }
+}
+
+.home-page__table-pos {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  color: var(--ap-color-muted);
+  font-weight: 800;
+  font-size: 0.85rem;
+}
+
+// Top two: in a qualifying position.
+.home-page__table-top .home-page__table-pos {
+  color: var(--ap-color-win);
+  background: color-mix(in srgb, var(--ap-color-win) 15%, transparent);
+}
+
+.home-page__table-team {
+  flex: 1;
+  min-width: 0;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home-page__table-played {
+  color: var(--ap-color-muted);
+  font-size: 0.85rem;
+}
+
+.home-page__table b {
+  width: 28px;
+  text-align: right;
+  font-family: var(--ap-font-heading);
+  font-size: 1.1rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.home-page__table-link {
+  display: inline-block;
+  margin-top: var(--ap-space-3);
+  color: var(--ap-color-signal-text);
+  font-weight: 700;
+  text-decoration: none;
 }

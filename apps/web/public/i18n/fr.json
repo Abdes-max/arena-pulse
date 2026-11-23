@@ -379,7 +379,9 @@
       "categories": "Catégories",
       "rules": "Règlement",
       "practicalInfo": "Infos pratiques",
-      "sponsors": "Sponsors"
+      "sponsors": "Sponsors",
+      "recentResults": "Derniers résultats",
+      "fullStandings": "Voir le classement complet →"
     },
     "competition": {
       "thirdPlace": "Pour la 3e place",

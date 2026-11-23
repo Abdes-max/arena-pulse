@@ -7,7 +7,7 @@
   align-items: center;
   justify-content: center;
   font-family: var(--ap-font-body);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.9rem;
   text-transform: var(--ap-title-case, none);
   text-decoration: none;
@@ -20,7 +20,13 @@
   transition:
     background-color var(--ap-motion-fast) var(--ap-easing-standard),
     border-color var(--ap-motion-fast) var(--ap-easing-standard),
-    opacity var(--ap-motion-fast) var(--ap-easing-standard);
+    opacity var(--ap-motion-fast) var(--ap-easing-standard),
+    transform var(--ap-motion-fast) var(--ap-easing-standard),
+    box-shadow var(--ap-motion-fast) var(--ap-easing-standard);
+
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
 
   &:focus-visible {
     outline: var(--ap-border-width-strong) solid var(--ap-color-focus);
@@ -45,9 +51,13 @@
 :host([data-variant='primary']) .ap-button {
   background: var(--ap-color-primary);
   color: var(--ap-color-on-primary);
+  box-shadow:
+    0 10px 24px -12px var(--ap-color-primary),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
 
   &:hover:not(:disabled) {
     filter: brightness(1.08);
+    transform: translateY(-1px);
   }
 }
 

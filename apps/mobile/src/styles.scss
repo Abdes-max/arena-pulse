@@ -39,6 +39,16 @@ body {
   margin: 0;
 }
 
+// « Nuit de match » headings: the theme's display face, heavy and tight.
+h1,
+h2,
+h3 {
+  font-family: var(--ap-font-heading);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
 // Every ion-segment in the app (category/phase/tab filters). Ionic's default
 // unselected --color is `rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.6)` --
 // we never bridge --ion-text-color-rgb (only --ion-text-color), so it always

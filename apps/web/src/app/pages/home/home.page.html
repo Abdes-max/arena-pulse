@@ -113,6 +113,47 @@
     </section>
   }
 
+  @if (recentResults().length > 0 || standings()) {
+    <div class="home-page__live-grid">
+      @if (recentResults().length > 0) {
+        <section class="home-page__section home-page__results">
+          <h2>{{ 'home.sections.recentResults' | transloco }}</h2>
+          <ul>
+            @for (match of recentResults(); track match.id) {
+              <li>
+                <span class="home-page__result-team">{{ match.homeTeam?.name }}</span>
+                <strong class="home-page__result-score">
+                  {{ match.score?.homeScore }}<small>–</small>{{ match.score?.awayScore }}
+                </strong>
+                <span class="home-page__result-team home-page__result-team--away">{{
+                  match.awayTeam?.name
+                }}</span>
+              </li>
+            }
+          </ul>
+        </section>
+      }
+      @if (standings(); as table) {
+        <section class="home-page__section home-page__table">
+          <h2>{{ table.group }}</h2>
+          <ol>
+            @for (row of table.rows; track row.teamId) {
+              <li [class.home-page__table-top]="row.position <= 2">
+                <span class="home-page__table-pos">{{ row.position }}</span>
+                <span class="home-page__table-team">{{ row.teamName }}</span>
+                <span class="home-page__table-played">{{ row.played }}</span>
+                <b>{{ row.points }}</b>
+              </li>
+            }
+          </ol>
+          <a class="home-page__table-link" [routerLink]="['/', t.slug, 'standings']">{{
+            'home.sections.fullStandings' | transloco
+          }}</a>
+        </section>
+      }
+    </div>
+  }
+
   @if (t.rules) {
     <section class="home-page__section">
       <h2>{{ 'home.sections.rules' | transloco }}</h2>

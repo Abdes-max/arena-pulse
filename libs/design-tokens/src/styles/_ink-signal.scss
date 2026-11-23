@@ -4,9 +4,10 @@
 [data-theme='ink-signal'] {
   --ap-font-heading: 'Bricolage Grotesque', -apple-system, 'Segoe UI', sans-serif;
   --ap-font-body: 'Hanken Grotesk', -apple-system, 'Segoe UI', sans-serif;
-  --ap-radius-sm: 6px;
-  --ap-radius-md: 8px;
-  --ap-radius-lg: 10px;
+  // « Nuit de match »: soft, tile-like corners.
+  --ap-radius-sm: 10px;
+  --ap-radius-md: 14px;
+  --ap-radius-lg: 20px;
   --ap-tracking-tight: -0.01em;
   --ap-title-case: none;
 
@@ -55,8 +56,8 @@
   --ap-color-ember-soft: #fdf1de;
 
   &[data-mode='dark'] {
-    --ap-color-bg: #0b1220;
-    --ap-color-surface: #141b2e;
+    --ap-color-bg: #070b14;
+    --ap-color-surface: #111a2e;
     --ap-color-fg: #e7ecf5;
     --ap-color-muted: #94a3b8;
     --ap-color-border: #1f2a44;

@@ -5,10 +5,12 @@
     "hero": {
       "hint": "Grupos, cuadros de eliminación, calendario y clasificaciones en directo.",
       "marqueeLabel": "Ahora mismo",
-      "titleMain": "Organiza torneos y campeonatos",
-      "titleEmphasis": "seguidos en directo por todos.",
+      "titleMain": "Tus torneos,",
+      "titleEmphasis": "vividos en directo.",
       "ctaCreate": "Crear mi torneo",
-      "ctaJoin": "Inscribirme en un torneo"
+      "ctaJoin": "Inscribirme en un torneo",
+      "live": "En directo",
+      "liveContext": "Encuentro U11 · Campo 2"
     },
     "published": {
       "title": "Eventos publicados",

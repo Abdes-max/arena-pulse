@@ -5,10 +5,12 @@
     "hero": {
       "hint": "Gironi, tabelloni a eliminazione, calendario e classifiche in diretta.",
       "marqueeLabel": "In questo momento",
-      "titleMain": "Organizza tornei e campionati",
-      "titleEmphasis": "seguiti in diretta da tutti.",
+      "titleMain": "I tuoi tornei,",
+      "titleEmphasis": "vissuti in diretta.",
       "ctaCreate": "Crea il mio torneo",
-      "ctaJoin": "Iscrivermi a un torneo"
+      "ctaJoin": "Iscrivermi a un torneo",
+      "live": "In diretta",
+      "liveContext": "Raggruppamento U11 · Campo 2"
     },
     "published": {
       "title": "Eventi pubblicati",
