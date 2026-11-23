@@ -79,10 +79,14 @@ ion-title {
   text-align: left;
   color: inherit;
   cursor: pointer;
-  background: var(--ap-color-surface);
-  // Same teal outline as the public tournament cards.
-  border: var(--ap-border-width) solid var(--ap-color-signal);
-  border-radius: var(--ap-radius-lg);
+  // A tile lit from above, like the public tournament cards.
+  background: linear-gradient(
+    180deg,
+    var(--ap-color-surface),
+    color-mix(in srgb, var(--ap-color-surface) 75%, var(--ap-color-bg))
+  );
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: 20px;
   box-shadow: var(--ap-shadow-sm);
   padding: var(--ap-space-4);
   display: flex;
@@ -335,4 +339,181 @@ app-organizer-dashboard {
   font-weight: 700;
   font-size: 0.9rem;
   text-decoration: none;
+}
+
+// ================= Match-day night band (top of the list) =================
+.home-hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-4);
+  margin: calc(-1 * var(--ap-space-4)) calc(-1 * var(--ap-space-4)) var(--ap-space-1);
+  padding: var(--ap-space-6) var(--ap-space-4);
+  overflow: hidden;
+  color: var(--ap-color-fg);
+  background:
+    radial-gradient(22rem 16rem at 100% 0%, rgb(14 165 201 / 40%), transparent 70%),
+    radial-gradient(18rem 14rem at 0% 100%, rgb(245 185 66 / 14%), transparent 70%),
+    var(--ap-color-bg);
+  border-radius: 0 0 28px 28px;
+}
+
+.home-hero__hello {
+  span {
+    color: var(--ap-color-muted);
+    font-size: 0.85rem;
+    text-transform: capitalize;
+  }
+
+  h1 {
+    margin: 2px 0 0;
+    font-family: var(--ap-font-heading);
+    font-size: 1.85rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+}
+
+.home-hero__featured {
+  padding: var(--ap-space-4);
+  border-radius: 24px;
+  background: linear-gradient(140deg, #0e3b57, var(--ap-color-surface) 65%);
+  border: var(--ap-border-width) solid rgb(255 255 255 / 12%);
+  cursor: pointer;
+
+  h2 {
+    margin: var(--ap-space-2) 0 0;
+    font-family: var(--ap-font-heading);
+    font-size: 1.3rem;
+    font-weight: 800;
+    line-height: 1.15;
+  }
+}
+
+.home-hero__featured-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-2);
+}
+
+.home-hero__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgb(56 189 248 / 14%);
+  color: var(--ap-color-signal);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+// Plays today: the pulsing red "live" dot.
+.home-hero__pill--live {
+  background: rgb(255 77 94 / 15%);
+  color: #ff8a95;
+
+  &::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #ff4d5e;
+    animation: home-hero-live 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes home-hero-live {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(255 77 94 / 55%);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgb(255 77 94 / 0%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-hero__pill--live::before {
+    animation: none;
+  }
+}
+
+.home-hero__sport {
+  color: var(--ap-color-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.home-hero__venue {
+  margin: 4px 0 0;
+  color: var(--ap-color-muted);
+  font-size: 0.85rem;
+}
+
+.home-hero__kpis {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--ap-space-2);
+  margin-top: var(--ap-space-4);
+
+  div {
+    padding: var(--ap-space-2) var(--ap-space-3);
+    border-radius: 14px;
+    background: rgb(7 11 20 / 45%);
+  }
+
+  b {
+    display: block;
+    font-family: var(--ap-font-heading);
+    font-size: 1.3rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+
+  small {
+    color: var(--ap-color-muted);
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+}
+
+.home-hero__kpi-gold {
+  color: #f5b942;
+}
+
+.home-hero__quick {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--ap-space-2);
+
+  button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--ap-color-muted);
+    font: inherit;
+    font-size: 0.7rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  i {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+    font-style: normal;
+    font-size: 1.4rem;
+    background: rgb(255 255 255 / 5%);
+    border: var(--ap-border-width) solid rgb(255 255 255 / 9%);
+  }
 }

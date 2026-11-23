@@ -103,6 +103,46 @@ export class OrganizerTournamentsPage {
   /** Bumped on every successful load so the setup guide re-reads its progress. */
   protected readonly guideRefresh = signal(0);
 
+  /**
+   * "À la une": the tournament the organizer most likely opens the app for --
+   * the next one not yet over (published first), else the latest created.
+   */
+  protected readonly featured = computed<OrganizerTournament | null>(() => {
+    const active = this.tournaments().filter(
+      (t) => t.status !== 'ARCHIVED' && !isTournamentPast(t),
+    );
+    const byDate = (a: OrganizerTournament, b: OrganizerTournament) =>
+      (a.startDate ?? '9999').localeCompare(b.startDate ?? '9999');
+    const published = active.filter((t) => t.status === 'PUBLISHED').sort(byDate);
+    return published[0] ?? active.sort(byDate)[0] ?? this.tournaments()[0] ?? null;
+  });
+
+  /** Today's date, as the greeting's small line ("samedi 14 novembre"). */
+  protected readonly today = new Date().toLocaleDateString(undefined, {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+  });
+
+  /** The featured tournament plays today. */
+  protected playsToday(tournament: OrganizerTournament): boolean {
+    const day = new Date().toISOString().slice(0, 10);
+    const start = tournament.startDate?.slice(0, 10);
+    const end = (tournament.endDate ?? tournament.startDate)?.slice(0, 10);
+    return !!start && !!end && start <= day && day <= end;
+  }
+
+  /** "14 nov." -- the featured card's date tile. */
+  protected shortDate(tournament: OrganizerTournament): string {
+    return tournament.startDate
+      ? new Date(tournament.startDate).toLocaleDateString(undefined, {
+          day: 'numeric',
+          month: 'short',
+          timeZone: 'UTC',
+        })
+      : '–';
+  }
+
   // Same account as a team manager: a way to its space when it has requests.
   protected readonly hasRegistrations = signal(false);
 

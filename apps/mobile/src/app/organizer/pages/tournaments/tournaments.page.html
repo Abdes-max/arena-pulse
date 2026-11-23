@@ -39,6 +39,68 @@
     <ion-refresher-content />
   </ion-refresher>
   <div class="organizer-tournaments-page__list">
+    <!-- Match-day night band: greeting, the tournament of the moment and
+         its shortcuts, always on the dark brand palette. -->
+    @if (!loading() && featured(); as f) {
+      <section class="home-hero" data-theme="ink-signal" data-mode="dark">
+        <div class="home-hero__hello">
+          <span>{{ today }}</span>
+          <h1>
+            {{ 'organizer.home.greeting' | transloco: { name: user()?.firstName ?? '' } }}
+          </h1>
+        </div>
+        <div
+          class="home-hero__featured"
+          role="button"
+          tabindex="0"
+          (click)="openTournament(f)"
+          (keydown.enter)="openTournament(f)"
+          (keydown.space)="openTournament(f)"
+        >
+          <div class="home-hero__featured-top">
+            <span class="home-hero__pill" [class.home-hero__pill--live]="playsToday(f)">
+              {{ (playsToday(f) ? 'organizer.home.today' : 'organizer.home.upcoming') | transloco }}
+            </span>
+            <span class="home-hero__sport">{{ f.sportName }}</span>
+          </div>
+          <h2>{{ f.name }}</h2>
+          @if (f.venueName) {
+            <p class="home-hero__venue">{{ f.venueName }}</p>
+          }
+          <div class="home-hero__kpis">
+            <div>
+              <b>{{ shortDate(f) }}</b>
+              <small>{{ 'organizer.home.kpi.date' | transloco }}</small>
+            </div>
+            <div>
+              <b>{{ f.categoryNames?.length || '–' }}</b>
+              <small>{{ 'organizer.home.kpi.categories' | transloco }}</small>
+            </div>
+            <div>
+              <b class="home-hero__kpi-gold">{{ f.pendingRegistrations ?? 0 }}</b>
+              <small>{{ 'organizer.home.kpi.pending' | transloco }}</small>
+            </div>
+          </div>
+        </div>
+        <div class="home-hero__quick">
+          <button type="button" (click)="openScores($event, f)">
+            <i aria-hidden="true">⚡</i>{{ 'organizer.tournaments.list.scoresAction' | transloco }}
+          </button>
+          <button type="button" (click)="openStructure($event, f)">
+            <i aria-hidden="true">🗂</i
+            >{{ 'organizer.tournaments.list.structureAction' | transloco }}
+          </button>
+          <button type="button" (click)="openStandings($event, f)">
+            <i aria-hidden="true">🏆</i
+            >{{ 'organizer.tournaments.list.standingsAction' | transloco }}
+          </button>
+          <button type="button" (click)="openRegistrations($event, f)">
+            <i aria-hidden="true">📝</i
+            >{{ 'organizer.tournaments.list.registrationsAction' | transloco }}
+          </button>
+        </div>
+      </section>
+    }
     <!-- Same account as a team manager: its space, when it has requests. -->
     @if (hasRegistrations()) {
       <a class="organizer-tournaments-page__switch" routerLink="/espace-responsable">

@@ -765,6 +765,16 @@
       "submit": "Organisation erstellen",
       "back": "Zurück zu meinem Bereich",
       "error": "Die Organisation konnte nicht erstellt werden."
+    },
+    "home": {
+      "greeting": "Hallo {{name}} 👋",
+      "today": "Heute",
+      "upcoming": "Demnächst",
+      "kpi": {
+        "date": "Datum",
+        "categories": "Kategorien",
+        "pending": "zu prüfen"
+      }
     }
   },
   "notifications": {

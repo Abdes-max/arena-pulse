@@ -765,6 +765,16 @@
       "submit": "Créer l'organisation",
       "back": "Retour à mon espace responsable",
       "error": "Impossible de créer l'organisation."
+    },
+    "home": {
+      "greeting": "Bonjour {{name}} 👋",
+      "today": "Aujourd'hui",
+      "upcoming": "À venir",
+      "kpi": {
+        "date": "date",
+        "categories": "catégories",
+        "pending": "à valider"
+      }
     }
   },
   "notifications": {

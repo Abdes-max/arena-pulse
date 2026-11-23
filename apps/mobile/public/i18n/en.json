@@ -765,6 +765,16 @@
       "submit": "Create the organization",
       "back": "Back to my team manager space",
       "error": "Could not create the organization."
+    },
+    "home": {
+      "greeting": "Hello {{name}} 👋",
+      "today": "Today",
+      "upcoming": "Upcoming",
+      "kpi": {
+        "date": "date",
+        "categories": "categories",
+        "pending": "to review"
+      }
     }
   },
   "notifications": {

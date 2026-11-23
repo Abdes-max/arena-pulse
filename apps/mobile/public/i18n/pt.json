@@ -765,6 +765,16 @@
       "submit": "Criar a organização",
       "back": "Voltar ao meu espaço de responsável",
       "error": "Não foi possível criar a organização."
+    },
+    "home": {
+      "greeting": "Olá {{name}} 👋",
+      "today": "Hoje",
+      "upcoming": "Em breve",
+      "kpi": {
+        "date": "data",
+        "categories": "categorias",
+        "pending": "por validar"
+      }
     }
   },
   "notifications": {
