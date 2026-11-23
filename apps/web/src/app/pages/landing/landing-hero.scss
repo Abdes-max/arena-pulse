@@ -1,0 +1,62 @@
+// Landing hero layout: copy beside the match-day stage, scoreboard-lit
+// buttons (split from landing.page.scss to keep each stylesheet in budget).
+
+// Copy on the left, the match-day stage on the right; stacked and
+// centered on narrow screens.
+.landing-page__hero-inner {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--ap-space-12);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--ap-space-16) var(--ap-space-6) 0;
+}
+
+.landing-page__hero-copy {
+  min-width: 0;
+}
+
+@media (max-width: 960px) {
+  .landing-page__hero-inner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--ap-space-8);
+    padding-top: var(--ap-space-8);
+    text-align: center;
+  }
+}
+@media (max-width: 960px) {
+  .landing-page__hero-ctas,
+  .landing-page__hero-stores {
+    justify-content: center;
+  }
+}
+
+// Lit like a scoreboard: a bright gradient and a cyan glow underneath.
+.landing-page__cta {
+  display: inline-block;
+  padding: var(--ap-space-4) var(--ap-space-6);
+  border-radius: 14px;
+  background: linear-gradient(135deg, #5fd0ff, var(--ap-color-signal));
+  color: #04121d;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow:
+    0 12px 30px -10px rgb(56 189 248 / 80%),
+    inset 0 1px 0 rgb(255 255 255 / 35%);
+  transition:
+    transform var(--ap-motion-fast) var(--ap-easing-standard),
+    filter var(--ap-motion-fast) var(--ap-easing-standard);
+
+  &:hover {
+    filter: brightness(1.06);
+    transform: translateY(-1px);
+  }
+}
+
+.landing-page__cta--ghost {
+  background: rgb(255 255 255 / 3%);
+  color: var(--ap-color-fg);
+  box-shadow: inset 0 0 0 1px var(--ap-color-border);
+}

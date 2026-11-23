@@ -20,8 +20,8 @@
       "count": "{{count}} veröffentlichte Sportveranstaltungen"
     },
     "hero": {
-      "titleMain": "Turniere und Meisterschaften organisieren",
-      "titleEmphasis": "live von allen verfolgt.",
+      "titleMain": "Ihre Turniere,",
+      "titleEmphasis": "live erlebt.",
       "subtitle": "Gruppen, K.-o.-Tabellen, Spielplan, Schiedsrichterwesen und Tabellen, plus eine öffentliche Website, automatisch für jeden Ihrer Wettbewerbe erstellt und in dem Moment aktualisiert, in dem ein Ergebnis eingetragen wird.",
       "ctaCreate": "Mein Turnier erstellen",
       "storeApple": "Im App Store laden",
@@ -180,6 +180,16 @@
       "point3": "Angezeigter Preis, Zahlung vor Ort oder per Überweisung, „bezahlt“ mit einem Klick",
       "browse": "Offene Anmeldungen ansehen",
       "organize": "Turnier organisieren"
+    },
+    "stage": {
+      "live": "Live",
+      "liveContext": "U11-Spielfest · Platz 2",
+      "pool": "Gruppe A",
+      "updated": "Gerade eben",
+      "goal": "Tor! Aigles FC 2–1",
+      "goalFollowers": "48 Eltern verfolgen es",
+      "registrations": "Anmeldungen U13",
+      "registrationsLeft": "Noch 4 Plätze · Schluss am Samstag"
     }
   },
   "legal": {

@@ -15,12 +15,13 @@
 
   h1 {
     position: relative;
-    margin: var(--ap-space-3) 0 0;
+    margin: var(--ap-space-4) 0 0;
     font-family: var(--ap-font-heading);
-    font-size: clamp(2.1rem, 5vw, 3.25rem);
-    font-weight: 700;
-    letter-spacing: var(--ap-tracking-tight);
-    line-height: 1.1;
+    font-size: clamp(2.5rem, 6vw, 5.25rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 0.98;
+    text-wrap: balance;
   }
 
   // The gradient is the hero's one aesthetic risk (frontend-design skill:
@@ -29,7 +30,7 @@
   // carry the product's actual promise ("suivi en direct").
   h1 em {
     font-style: normal;
-    background: linear-gradient(100deg, var(--ap-color-signal), var(--ap-color-ember));
+    background: linear-gradient(100deg, var(--ap-color-signal) 10%, #7dd3c0 45%, #f5b942 90%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -38,16 +39,18 @@
 
 // Ambient glow behind the headline -- cyan (signal) and ember, echoing the
 // h1 gradient without repeating it as a literal shape.
+// Floodlights on a night pitch: a cyan glow top-left, a warm one on the
+// right, over a faint grid that fades out toward the edges.
 .landing-page__hero::before {
   content: '';
   position: absolute;
-  inset: -30% -10% auto -10%;
-  height: 60%;
+  inset: 0;
   background:
-    radial-gradient(closest-side, var(--ap-color-signal-soft), transparent),
-    radial-gradient(closest-side at 80% 20%, var(--ap-color-ember-soft), transparent 70%);
-  filter: blur(10px);
-  opacity: 0.6;
+    radial-gradient(40rem 30rem at 0% 0%, rgb(14 165 201 / 45%), transparent 70%),
+    radial-gradient(34rem 26rem at 100% 25%, rgb(245 185 66 / 18%), transparent 70%),
+    linear-gradient(rgb(255 255 255 / 3.5%) 1px, transparent 1px) 0 0 / 56px 56px,
+    linear-gradient(90deg, rgb(255 255 255 / 3.5%) 1px, transparent 1px) 0 0 / 56px 56px;
+  mask-image: radial-gradient(ellipse at 50% 20%, #000 35%, transparent 80%);
   pointer-events: none;
 }
 
@@ -56,15 +59,20 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: var(--ap-space-6) var(--ap-space-6) 0;
 }
 
+// The section links sit in one pill, like a segmented control.
 .landing-page__nav-links {
   display: flex;
   align-items: center;
-  gap: var(--ap-space-6);
+  gap: var(--ap-space-1);
+  padding: var(--ap-space-1);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 4%);
+  border: var(--ap-border-width) solid var(--ap-color-border);
 }
 
 .landing-page__nav-link {
@@ -72,6 +80,8 @@
   align-items: center;
   gap: var(--ap-space-1);
   color: var(--ap-color-fg);
+  padding: var(--ap-space-2) var(--ap-space-4);
+  border-radius: 999px;
   font-weight: 600;
   font-size: 0.9rem;
   text-decoration: none;
@@ -94,7 +104,8 @@
   }
 
   &:hover {
-    color: var(--ap-color-signal);
+    color: var(--ap-color-fg);
+    background: rgb(255 255 255 / 8%);
   }
 }
 
@@ -115,7 +126,7 @@
 // so the button reads identically to the link it replaces.
 .landing-page__nav-login {
   padding: var(--ap-space-2) var(--ap-space-4);
-  border-radius: var(--ap-radius-md);
+  border-radius: 12px;
   border: var(--ap-border-width) solid var(--ap-color-border);
   background: transparent;
   color: var(--ap-color-fg);
@@ -225,42 +236,6 @@
   }
 }
 
-.landing-page__hero-figure {
-  position: absolute;
-  top: 14%;
-  width: 130px;
-  height: auto;
-  color: var(--ap-color-signal);
-  opacity: 0.16;
-  pointer-events: none;
-}
-
-.landing-page__hero-figure--left {
-  left: 4%;
-  transform: scaleX(-1);
-}
-
-.landing-page__hero-figure--right {
-  right: 4%;
-  color: var(--ap-color-ember);
-}
-
-// Full-width figures fight the headline/subtitle for room below ~960px --
-// hidden rather than shrunk, the ambient touch isn't worth the collision.
-@media (max-width: 960px) {
-  .landing-page__hero-figure {
-    display: none;
-  }
-}
-
-.landing-page__hero-inner {
-  position: relative;
-  max-width: 720px;
-  margin: 0 auto;
-  padding: var(--ap-space-16) var(--ap-space-6) 0;
-  text-align: center;
-}
-
 .landing-page__eyebrow {
   display: inline-flex;
   align-items: center;
@@ -282,25 +257,32 @@
 }
 
 .landing-page__subtitle {
-  margin: var(--ap-space-4) auto 0;
+  margin: var(--ap-space-6) 0 0;
   max-width: 52ch;
   color: var(--ap-color-muted);
-  font-size: 1.05rem;
+  font-size: 1.15rem;
+  line-height: 1.55;
+}
+
+@media (max-width: 960px) {
+  .landing-page__subtitle {
+    margin-inline: auto;
+  }
 }
 
 .landing-page__hero-ctas {
   position: relative;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   gap: var(--ap-space-3);
-  margin-top: var(--ap-space-6);
+  margin-top: var(--ap-space-8);
   flex-wrap: wrap;
 }
 
 .landing-page__hero-stores {
   position: relative;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   gap: var(--ap-space-3);
   margin-top: var(--ap-space-4);
@@ -330,30 +312,9 @@
   }
 }
 
-.landing-page__cta--ghost {
-  background: transparent;
-  color: var(--ap-color-fg);
-  box-shadow: inset 0 0 0 1px var(--ap-color-border);
-}
-
-.landing-page__cta {
-  display: inline-block;
-  padding: var(--ap-space-3) var(--ap-space-8);
-  border-radius: var(--ap-radius-md);
-  background: var(--ap-color-signal);
-  color: var(--ap-color-on-signal);
-  font-weight: 700;
-  text-decoration: none;
-  transition: filter var(--ap-motion-fast) var(--ap-easing-standard);
-
-  &:hover {
-    filter: brightness(1.08);
-  }
-}
-
 .landing-page__marquee {
   position: relative;
-  max-width: 800px;
+  max-width: 1200px;
   margin: var(--ap-space-12) auto 0;
 }
 
@@ -403,14 +364,16 @@ ap-tournament-marquee {
 // light/dark toggle as usual (plain --ap-color-* tokens, no override). =================
 
 .landing-page__tournaments {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: var(--ap-space-16) var(--ap-space-6);
 
   h2 {
-    margin: 0 0 var(--ap-space-4);
+    margin: 0 0 var(--ap-space-6);
     font-family: var(--ap-font-heading);
-    font-size: 1.5rem;
+    font-size: clamp(2rem, 4vw, 3.25rem);
+    font-weight: 800;
+    letter-spacing: -0.025em;
     text-align: center;
   }
 }
@@ -496,15 +459,18 @@ ap-tournament-marquee {
 .landing-page__features,
 .landing-page__sports,
 .landing-page__pricing {
-  max-width: 1000px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 0 var(--ap-space-8) var(--ap-space-16);
+  padding: var(--ap-space-12) var(--ap-space-8) var(--ap-space-16);
   text-align: center;
 
   h2 {
     font-family: var(--ap-font-heading);
-    font-size: 1.6rem;
-    letter-spacing: var(--ap-tracking-tight);
+    font-size: clamp(2rem, 4vw, 3.25rem);
+    font-weight: 800;
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
   }
 }
 
@@ -516,27 +482,21 @@ ap-tournament-marquee {
   color: var(--ap-color-muted);
 }
 
-// 2 per row on a 5-column track (3+2 split) rather than an even grid -- one
-// card reads as the "lead" of its row, the other as its companion. The
-// pattern alternates which side leads every row (4n+1/4n take the wide
-// column, 4n+2/4n+3 the narrow one), so it doesn't read as one column
-// permanently more important than the other across the whole section.
+// Bento: a wide lead tile beside a narrow one, then a row of three.
 .landing-page__feature-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: var(--ap-space-4);
   margin-top: var(--ap-space-8);
   text-align: left;
 }
 
-.landing-page__feature:nth-child(4n + 1),
-.landing-page__feature:nth-child(4n) {
-  grid-column: span 3;
+.landing-page__feature {
+  grid-column: span 2;
 }
 
-.landing-page__feature:nth-child(4n + 2),
-.landing-page__feature:nth-child(4n + 3) {
-  grid-column: span 2;
+.landing-page__feature:nth-child(1) {
+  grid-column: span 4;
 }
 
 @media (max-width: 720px) {
@@ -554,9 +514,13 @@ ap-tournament-marquee {
   flex-direction: column;
   gap: var(--ap-space-3);
   padding: var(--ap-space-6);
-  background: var(--ap-color-surface);
+  background: linear-gradient(
+    180deg,
+    var(--ap-color-surface),
+    color-mix(in srgb, var(--ap-color-surface) 70%, var(--ap-color-bg))
+  );
   border: var(--ap-border-width) solid var(--ap-color-border);
-  border-radius: var(--ap-radius-lg);
+  border-radius: 24px;
   transition: border-color var(--ap-motion-fast) var(--ap-easing-standard);
 
   // No lift/shadow on hover: this <article> isn't itself clickable (only
@@ -580,7 +544,9 @@ ap-tournament-marquee {
   h3 {
     margin: 0;
     font-family: var(--ap-font-heading);
-    font-size: 1.05rem;
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
   }
 
   p {
@@ -598,7 +564,7 @@ ap-tournament-marquee {
   padding: var(--ap-space-4);
   background: var(--ap-color-bg);
   border: var(--ap-border-width) solid var(--ap-color-border);
-  border-radius: var(--ap-radius-md);
+  border-radius: 16px;
 }
 
 .landing-page__feature-mock-row {

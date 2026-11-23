@@ -6,10 +6,15 @@
 
 .ap-tournament-card {
   position: relative;
-  background: var(--ap-color-surface);
-  // Teal outline at rest (web and app lists alike); hover only lifts it.
-  border: var(--ap-border-width) solid var(--ap-color-signal);
-  border-radius: var(--ap-radius-lg);
+  // A tile lit from above: surface fading into the page, a quiet border at
+  // rest that turns signal-colored (with a glow) on hover.
+  background: linear-gradient(
+    180deg,
+    var(--ap-color-surface),
+    color-mix(in srgb, var(--ap-color-surface) 75%, var(--ap-color-bg))
+  );
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: 20px;
   box-shadow: var(--ap-shadow-sm);
   padding: var(--ap-space-4);
   display: flex;
@@ -30,7 +35,9 @@
 :host(:hover) .ap-tournament-card,
 :host(:focus-within) .ap-tournament-card {
   border-color: var(--ap-color-signal);
-  box-shadow: var(--ap-shadow-md);
+  box-shadow:
+    var(--ap-shadow-md),
+    0 0 0 4px color-mix(in srgb, var(--ap-color-signal) 15%, transparent);
 }
 
 :host(:hover),
@@ -89,8 +96,8 @@
 .ap-tournament-card__name {
   margin: 0;
   font-family: var(--ap-font-heading);
-  font-size: 1.05rem;
-  font-weight: 700;
+  font-size: 1.15rem;
+  font-weight: 800;
   color: var(--ap-color-fg);
   overflow: hidden;
   text-overflow: ellipsis;

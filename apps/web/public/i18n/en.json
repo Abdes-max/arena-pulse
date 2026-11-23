@@ -20,8 +20,8 @@
       "count": "{{count}} published sporting events"
     },
     "hero": {
-      "titleMain": "Run tournaments and championships",
-      "titleEmphasis": "followed live by everyone.",
+      "titleMain": "Your tournaments,",
+      "titleEmphasis": "followed live.",
       "subtitle": "Pools, knockout brackets, schedule, officiating and standings, plus a public site generated automatically for each of your competitions, updated the instant a score is entered.",
       "ctaCreate": "Create my tournament",
       "storeApple": "Download on the App Store",
@@ -180,6 +180,16 @@
       "point3": "Displayed price, payment on site or by transfer, “paid” tracking in one click",
       "browse": "See open registrations",
       "organize": "Organize a tournament"
+    },
+    "stage": {
+      "live": "Live",
+      "liveContext": "U11 festival · Pitch 2",
+      "pool": "Group A",
+      "updated": "Just now",
+      "goal": "Goal! Aigles FC 2–1",
+      "goalFollowers": "Followed by 48 parents",
+      "registrations": "U13 registrations",
+      "registrationsLeft": "4 spots left · closes Saturday"
     }
   },
   "legal": {

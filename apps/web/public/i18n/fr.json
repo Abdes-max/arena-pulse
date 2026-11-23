@@ -20,8 +20,8 @@
       "count": "{{count}} événements sportifs publiés"
     },
     "hero": {
-      "titleMain": "Organisez tournois et championnats",
-      "titleEmphasis": "suivis en direct par tout le monde.",
+      "titleMain": "Vos tournois,",
+      "titleEmphasis": "vécus en direct.",
       "subtitle": "Poules, tableaux à élimination, calendrier, arbitrage et classements, et un site public généré automatiquement pour chacune de vos compétitions, mis à jour à la seconde où un score est saisi.",
       "ctaCreate": "Créer mon tournoi",
       "storeApple": "Télécharger sur l'App Store",
@@ -180,6 +180,16 @@
       "point3": "Tarif affiché, paiement sur place ou par virement, suivi « payé » en un clic",
       "browse": "Voir les inscriptions ouvertes",
       "organize": "Organiser un tournoi"
+    },
+    "stage": {
+      "live": "En direct",
+      "liveContext": "Plateau U11 · Terrain 2",
+      "pool": "Poule A",
+      "updated": "À l'instant",
+      "goal": "But ! Aigles FC 2–1",
+      "goalFollowers": "Suivi par 48 parents",
+      "registrations": "Inscriptions U13",
+      "registrationsLeft": "4 places restantes · clôture samedi"
     }
   },
   "legal": {

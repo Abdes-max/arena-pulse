@@ -20,8 +20,8 @@
       "count": "{{count}} eventos desportivos publicados"
     },
     "hero": {
-      "titleMain": "Organize torneios e campeonatos",
-      "titleEmphasis": "seguidos ao vivo por todos.",
+      "titleMain": "Os seus torneios,",
+      "titleEmphasis": "vividos em direto.",
       "subtitle": "Grupos, quadros eliminatórios, calendário, arbitragem e classificações, e um site público gerado automaticamente para cada uma das suas competições, atualizado no instante em que um resultado é registado.",
       "ctaCreate": "Criar o meu torneio",
       "storeApple": "Transferir na App Store",
@@ -180,6 +180,16 @@
       "point3": "Preço visível, pagamento no local ou por transferência, «pago» num clique",
       "browse": "Ver inscrições abertas",
       "organize": "Organizar um torneio"
+    },
+    "stage": {
+      "live": "Em direto",
+      "liveContext": "Encontro U11 · Campo 2",
+      "pool": "Grupo A",
+      "updated": "Agora mesmo",
+      "goal": "Golo! Aigles FC 2–1",
+      "goalFollowers": "Seguido por 48 pais",
+      "registrations": "Inscrições U13",
+      "registrationsLeft": "Restam 4 vagas · fecha sábado"
     }
   },
   "legal": {
