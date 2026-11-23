@@ -19,6 +19,12 @@ body {
   margin: 0;
 }
 
+// Plain links (no class of their own) in the brand color, never the
+// browser's default blue -- unreadable on the night background.
+a:not([class]) {
+  color: var(--ap-color-signal-text);
+}
+
 // « Nuit de match » headings: the theme's display face, heavy and tight.
 h1,
 h2,

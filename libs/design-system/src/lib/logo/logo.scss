@@ -36,19 +36,24 @@
   fill: #0ea5c9;
 }
 
-// Same mark, inverted for placement on a dark surface.
-:host([data-variant='on-dark']) .ap-logo__frame {
+// Same mark, inverted for placement on a dark surface -- explicitly, or
+// whenever the page is in dark mode (« Nuit de match » default).
+:host([data-variant='on-dark']) .ap-logo__frame,
+:host-context([data-mode='dark']) .ap-logo__frame {
   fill: none;
   stroke: rgba(231, 236, 245, 0.28);
   stroke-width: 2;
 }
 
-:host([data-variant='on-dark']) .ap-logo__chevron {
+:host([data-variant='on-dark']) .ap-logo__chevron,
+:host-context([data-mode='dark']) .ap-logo__chevron {
   stroke: #e7ecf5;
 }
 
 :host([data-variant='on-dark']) .ap-logo__glow,
-:host([data-variant='on-dark']) .ap-logo__dot {
+:host([data-variant='on-dark']) .ap-logo__dot,
+:host-context([data-mode='dark']) .ap-logo__glow,
+:host-context([data-mode='dark']) .ap-logo__dot {
   fill: #38bdf8;
 }
 
@@ -72,11 +77,13 @@
   color: #0a738d;
 }
 
-:host([data-variant='on-dark']) .ap-logo__wordmark-a {
+:host([data-variant='on-dark']) .ap-logo__wordmark-a,
+:host-context([data-mode='dark']) .ap-logo__wordmark-a {
   color: #e7ecf5;
 }
 
-:host([data-variant='on-dark']) .ap-logo__wordmark-b {
+:host([data-variant='on-dark']) .ap-logo__wordmark-b,
+:host-context([data-mode='dark']) .ap-logo__wordmark-b {
   color: #38bdf8;
 }
 
