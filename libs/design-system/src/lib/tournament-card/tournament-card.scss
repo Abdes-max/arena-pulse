@@ -99,9 +99,12 @@
   font-size: 1.15rem;
   font-weight: 800;
   color: var(--ap-color-fg);
+  line-height: 1.2;
+  // Two lines before truncating: tournament names are often long.
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .ap-tournament-card__dates {
