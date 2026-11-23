@@ -1,5 +1,12 @@
 import { Injectable, signal } from '@angular/core';
-import { DEFAULT_MODE, DEFAULT_THEME, ThemeMode, ThemeName } from './theme.types';
+import {
+  DEFAULT_MODE,
+  DEFAULT_THEME,
+  MODE_STORAGE_KEY,
+  ThemeMode,
+  ThemeName,
+  preferredMode,
+} from './theme.types';
 
 /**
  * Applies a ThemeName/ThemeMode pair to a DOM element via `data-theme` /
@@ -16,7 +23,7 @@ import { DEFAULT_MODE, DEFAULT_THEME, ThemeMode, ThemeName } from './theme.types
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
   private readonly _theme = signal<ThemeName>(DEFAULT_THEME);
-  private readonly _mode = signal<ThemeMode>(DEFAULT_MODE);
+  private readonly _mode = signal<ThemeMode>(preferredMode());
   // The organizer's own choice of theme for /admin itself (distinct from a
   // tournament's public theme). Defaults to the product identity; once set,
   // resetThemeGuard restores this on every /admin entry instead of hardcoding
@@ -44,9 +51,17 @@ export class ThemeService {
     this._theme.set(theme);
   }
 
-  setMode(element: HTMLElement, mode: ThemeMode): void {
+  /** remember: the visitor picked it (toggle) -- kept for their next visits. */
+  setMode(element: HTMLElement, mode: ThemeMode, remember = false): void {
     element.setAttribute('data-mode', mode);
     this._mode.set(mode);
+    if (remember) {
+      try {
+        localStorage.setItem(MODE_STORAGE_KEY, mode);
+      } catch {
+        // Storage unavailable: the choice holds for this visit only.
+      }
+    }
   }
 
   /** Sets the organizer's own /admin theme choice and applies it immediately. */

@@ -21,7 +21,7 @@ import {
   RouterLinkActive,
   RouterOutlet,
 } from '@angular/router';
-import { DEFAULT_THEME, ThemeMode, ThemeName, ThemeService } from 'design-tokens';
+import { DEFAULT_THEME, ThemeMode, ThemeName, ThemeService, preferredMode } from 'design-tokens';
 import {
   ActionSheetController,
   IonButton,
@@ -241,13 +241,12 @@ export class TournamentShell {
       }
       this.themeService.setTheme(document.documentElement, THEME_MAP[tournament.theme]);
       if (!this.modeManuallySet()) {
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        this.themeService.setMode(document.documentElement, prefersDark ? 'dark' : 'light');
+        this.themeService.setMode(document.documentElement, preferredMode());
       }
     });
 
     this.destroyRef.onDestroy(() => {
-      this.themeService.apply(document.documentElement, DEFAULT_THEME, 'light');
+      this.themeService.apply(document.documentElement, DEFAULT_THEME, preferredMode());
     });
 
     // Re-sampled whenever the header photo itself changes (a fresh tournament
@@ -286,7 +285,7 @@ export class TournamentShell {
 
   protected onModeChange(next: ThemeMode): void {
     this.modeManuallySet.set(true);
-    this.themeService.setMode(document.documentElement, next);
+    this.themeService.setMode(document.documentElement, next, true);
   }
 
   /**

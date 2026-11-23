@@ -49,10 +49,11 @@
 }
 
 :host([data-variant='primary']) .ap-button {
-  background: var(--ap-color-primary);
-  color: var(--ap-color-on-primary);
+  // A theme can light its main action differently (see _ink-signal.scss).
+  background: var(--ap-button-primary-bg, var(--ap-color-primary));
+  color: var(--ap-button-primary-fg, var(--ap-color-on-primary));
   box-shadow:
-    0 10px 24px -12px var(--ap-color-primary),
+    0 10px 24px -12px var(--ap-button-primary-glow, var(--ap-color-primary)),
     inset 0 1px 0 rgba(255, 255, 255, 0.18);
 
   &:hover:not(:disabled) {

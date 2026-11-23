@@ -9,6 +9,10 @@
   --ap-radius-md: 14px;
   --ap-radius-lg: 20px;
   --ap-tracking-tight: -0.01em;
+  // Main action lit like a scoreboard, in both modes.
+  --ap-button-primary-bg: linear-gradient(135deg, #5fd0ff, #0ea5c9);
+  --ap-button-primary-fg: #04121d;
+  --ap-button-primary-glow: rgb(56 189 248 / 80%);
   --ap-title-case: none;
 
   --ap-color-bg: #f8fafc;
