@@ -1,9 +1,14 @@
 @if (loading()) {
   <p class="tournament-shell__status">{{ 'shell.loading' | transloco }}</p>
 } @else if (errorMessage(); as message) {
-  <p class="tournament-shell__status tournament-shell__status--error" role="alert">
-    {{ message | transloco }}
-  </p>
+  <section class="tournament-shell__missing" role="alert">
+    <span class="tournament-shell__missing-mark" aria-hidden="true">?</span>
+    <h1>{{ 'shell.error.title' | transloco }}</h1>
+    <p>{{ message | transloco }}</p>
+    <a class="tournament-shell__missing-cta" routerLink="/decouvrir">{{
+      'shell.error.cta' | transloco
+    }}</a>
+  </section>
 } @else if (tournament(); as t) {
   <a class="skip-link" href="#main-content" (click)="focusMainContent($event)">{{
     'shell.skipLink' | transloco

@@ -247,7 +247,9 @@
   "shell": {
     "loading": "Wird geladen…",
     "error": {
-      "notFound": "Dieses Turnier existiert nicht oder ist nicht veröffentlicht."
+      "notFound": "Dieses Turnier existiert nicht oder ist nicht veröffentlicht.",
+      "title": "Turnier nicht gefunden",
+      "cta": "Turniere entdecken"
     },
     "skipLink": "Zum Hauptinhalt springen",
     "backAria": "Ein anderes Turnier suchen",

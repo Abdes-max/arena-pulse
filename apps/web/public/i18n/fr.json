@@ -349,7 +349,9 @@
   "shell": {
     "loading": "Chargement…",
     "error": {
-      "notFound": "Ce tournoi n'existe pas ou n'est pas publié."
+      "notFound": "Ce tournoi n'existe pas ou n'est pas publié.",
+      "title": "Tournoi introuvable",
+      "cta": "Découvrir les tournois"
     },
     "skipLink": "Aller au contenu principal",
     "backAria": "Rechercher un autre tournoi",

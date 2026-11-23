@@ -22,10 +22,7 @@
     </ap-button>
   </div>
   <p class="team-detail-page__meta">
-    {{ t.categoryName }}
-    @if (t.groupName) {
-      , {{ t.groupName }}
-    }
+    {{ t.groupName ? t.categoryName + ' · ' + t.groupName : t.categoryName }}
   </p>
 
   @if (groupStandings()?.rows?.length) {

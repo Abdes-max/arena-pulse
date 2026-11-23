@@ -247,7 +247,9 @@
   "shell": {
     "loading": "Caricamento…",
     "error": {
-      "notFound": "Questo torneo non esiste o non è pubblicato."
+      "notFound": "Questo torneo non esiste o non è pubblicato.",
+      "title": "Torneo non trovato",
+      "cta": "Scopri i tornei"
     },
     "skipLink": "Vai al contenuto principale",
     "backAria": "Cerca un altro torneo",

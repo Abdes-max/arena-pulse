@@ -349,7 +349,9 @@
   "shell": {
     "loading": "Loading…",
     "error": {
-      "notFound": "This tournament doesn't exist or isn't published."
+      "notFound": "This tournament doesn't exist or isn't published.",
+      "title": "Tournament not found",
+      "cta": "Browse tournaments"
     },
     "skipLink": "Skip to main content",
     "backAria": "Search for another tournament",

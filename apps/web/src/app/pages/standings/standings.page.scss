@@ -184,12 +184,13 @@
   display: inline-flex;
   align-items: center;
   font-family: var(--ap-font-body);
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: var(--ap-space-1) var(--ap-space-2);
-  border-radius: var(--ap-radius-sm);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  padding: 2px var(--ap-space-2);
+  border-radius: 999px;
   border: var(--ap-border-width) solid;
 }
 
