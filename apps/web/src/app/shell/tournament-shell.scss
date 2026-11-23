@@ -49,34 +49,71 @@
 }
 
 .tournament-shell__hero-inner {
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: var(--ap-space-4) var(--ap-space-6) 0;
 
   h1 {
-    margin: var(--ap-space-1) 0 0;
+    margin: 0;
     font-family: var(--ap-font-heading);
-    font-size: clamp(1.75rem, 4vw, 2.5rem);
-    letter-spacing: var(--ap-tracking-tight);
+    font-size: clamp(1.75rem, 4.5vw, 3rem);
+    font-weight: 800;
+    line-height: 1.02;
+    letter-spacing: -0.02em;
     text-transform: var(--ap-title-case);
+    text-wrap: balance;
   }
 }
 
 .tournament-shell__title-row {
   display: flex;
   align-items: center;
-  gap: var(--ap-space-3);
+  gap: var(--ap-space-4);
   // Breathing room from the back-button/sport row above -- previously 0,
   // so the two rows sat flush against each other ("collé").
   margin-top: var(--ap-space-4);
 }
 
+// The club crest on a white tile, like a badge pinned to the cover.
 .tournament-shell__logo {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--ap-radius-md);
-  object-fit: cover;
+  width: 76px;
+  height: 76px;
+  padding: 6px;
+  border-radius: 20px;
+  background: #fff;
+  object-fit: contain;
   flex: none;
+  box-shadow: 0 14px 30px -12px rgb(0 0 0 / 55%);
+}
+
+.tournament-shell__title-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+  min-width: 0;
+}
+
+.tournament-shell__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ap-space-2);
+}
+
+.tournament-shell__chip {
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  background: color-mix(in srgb, var(--ap-color-surface) 60%, transparent);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+@media (max-width: 720px) {
+  .tournament-shell__logo {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+  }
 }
 
 // Sport name and the mode toggle share one row instead of the toggle
@@ -227,12 +264,13 @@
   font-weight: 600;
 }
 
+// Tabs in one segmented pill; the current one turns solid.
 .tournament-shell__nav {
   display: flex;
-  gap: var(--ap-space-2);
-  max-width: 1100px;
+  gap: var(--ap-space-1);
+  max-width: 1200px;
   margin: var(--ap-space-6) auto 0;
-  padding: 0 var(--ap-space-6);
+  padding: 0 var(--ap-space-6) var(--ap-space-4);
   overflow-x: auto;
   scrollbar-width: none;
 
@@ -244,8 +282,10 @@
     position: relative;
     display: inline-block;
     flex: none;
-    padding: var(--ap-space-2) var(--ap-space-3);
-    border-radius: var(--ap-radius-md);
+    padding: var(--ap-space-2) var(--ap-space-4);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--ap-color-surface) 55%, transparent);
+    border: var(--ap-border-width) solid var(--ap-color-border);
     color: var(--ap-color-muted);
     text-decoration: none;
     font-weight: 600;
@@ -257,34 +297,18 @@
     &:hover {
       color: var(--ap-color-fg);
     }
-
-    &::after {
-      content: '';
-      position: absolute;
-      left: var(--ap-space-3);
-      right: var(--ap-space-3);
-      bottom: 0;
-      height: 2px;
-      background: var(--ap-color-primary);
-      transform: scaleX(0);
-      transition: transform var(--ap-motion-fast) var(--ap-easing-standard);
-    }
   }
 }
 
-// A background pill, not just a thin underline, so the current tab reads
-// unambiguously as "you are here" rather than needing a close look.
-.tournament-shell__nav-link--active {
-  color: var(--ap-color-fg);
-  background: var(--ap-color-signal-soft);
-
-  &::after {
-    transform: scaleX(1);
-  }
+// Solid pill, so the current tab reads unambiguously as "you are here".
+.tournament-shell__nav .tournament-shell__nav-link--active {
+  color: var(--ap-color-bg);
+  background: var(--ap-color-fg);
+  border-color: var(--ap-color-fg);
 }
 
 .tournament-shell__content {
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: var(--ap-space-6);
 }

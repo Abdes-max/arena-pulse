@@ -86,7 +86,19 @@
         @if (logoUrl(t.logoUrl); as logo) {
           <img class="tournament-shell__logo" [src]="logo" alt="" />
         }
-        <h1>{{ t.name }}</h1>
+        <div class="tournament-shell__title-text">
+          <h1>{{ t.name }}</h1>
+          @if (t.format || t.level) {
+            <div class="tournament-shell__chips">
+              @if (t.format; as format) {
+                <span class="tournament-shell__chip">{{ format }}</span>
+              }
+              @if (t.level; as level) {
+                <span class="tournament-shell__chip">{{ level }}</span>
+              }
+            </div>
+          }
+        </div>
       </div>
       @if (t.venues.length > 0) {
         <p class="tournament-shell__meta">
