@@ -8,11 +8,24 @@
   color: var(--ap-color-error);
 }
 
+// The night band: dark whatever the page mode (data-mode="dark" in the
+// template), with a soft glow in the theme's primary color as its only touch.
 .tournament-shell__hero {
   position: sticky;
   top: 0;
   z-index: var(--ap-z-sticky);
-  background-color: var(--ap-color-surface);
+  background-color: var(--ap-color-bg);
+  background-image:
+    radial-gradient(
+      36rem 18rem at 85% 0%,
+      color-mix(in srgb, var(--ap-color-primary) 38%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      26rem 16rem at 0% 100%,
+      color-mix(in srgb, var(--ap-color-signal) 16%, transparent),
+      transparent 70%
+    );
   // `html { color: var(--ap-color-fg) }` (styles.scss) resolves and
   // inherits its computed value just once -- redeclaring --ap-color-fg
   // deeper in the tree (the [data-theme][data-mode] override below) changes
@@ -38,14 +51,6 @@
   background-position: center;
   background-size: cover;
   border-bottom-color: rgba(255, 255, 255, 0.12);
-}
-
-// heroLight() === true (tournament-shell.ts) -- the scrim itself switches
-// from black to white at the same time (headerBackgroundImage()), so this
-// only needs to follow suit for the one piece of chrome that isn't part of
-// that scrim.
-.tournament-shell__hero--light-banner {
-  border-bottom-color: rgba(0, 0, 0, 0.12);
 }
 
 .tournament-shell__hero-inner {

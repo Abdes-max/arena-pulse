@@ -1,7 +1,10 @@
-// Ink & Signal -- identité produit TournArena (admin + marketing) et thème
-// de tournoi disponible pour le site public. Voir docs/design/visual-language.md.
+// Ink & Signal -- identité produit TournArena (admin + marketing) et base
+// « Nuit de match » de TOUS les thèmes : polices, coins, fonds et surfaces
+// sont communs ([data-theme] quel qu'il soit). Les autres thèmes de tournoi
+// (_pulse-ember.scss, ...) ne changent ensuite que leurs couleurs d'accent,
+// pour une personnalisation légère. Voir docs/design/visual-language.md.
 
-[data-theme='ink-signal'] {
+[data-theme] {
   --ap-font-heading: 'Bricolage Grotesque', -apple-system, 'Segoe UI', sans-serif;
   --ap-font-body: 'Hanken Grotesk', -apple-system, 'Segoe UI', sans-serif;
   // « Nuit de match »: soft, tile-like corners.

@@ -2,44 +2,24 @@
   display: block;
 }
 
-// Underline style, matching the phase-switcher tab bar already shipped on
-// the public standings page (previously hand-rolled per page) -- one shared
-// component now backs every value-driven tab row instead of each page
-// reinventing its own markup/CSS for the same pattern.
+// Segmented pills (« Nuit de match »): one shared component backs every
+// value-driven tab row; the current tab is a solid pill.
 .ap-tabs {
   display: flex;
-  gap: var(--ap-space-2);
+  gap: var(--ap-space-1);
   overflow-x: auto;
-  border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+  padding: var(--ap-space-1);
+  width: fit-content;
+  max-width: 100%;
+  border-radius: 16px;
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 
   &::-webkit-scrollbar {
     display: none;
   }
-
-  // Edge fade so a tab row with more content than fits horizontally (the
-  // common case on a phone) has *some* visual signal it's scrollable --
-  // previously nothing but a hidden native scrollbar hinted at that
-  // (docs/design/responsive-guidelines.md: "scroll horizontal explicite
-  // avec indice visuel"). Static, not scroll-position-aware (would need JS
-  // to fade out once fully scrolled) -- a constant hint is still a large
-  // improvement over none, and consistent with the "no unnecessary
-  // machinery" approach used elsewhere in this codebase.
-  mask-image: linear-gradient(
-    to right,
-    transparent 0,
-    black var(--ap-space-4),
-    black calc(100% - var(--ap-space-4)),
-    transparent 100%
-  );
-  -webkit-mask-image: linear-gradient(
-    to right,
-    transparent 0,
-    black var(--ap-space-4),
-    black calc(100% - var(--ap-space-4)),
-    transparent 100%
-  );
 }
 
 .ap-tabs__tab {
@@ -51,16 +31,16 @@
   font-weight: 600;
   font-size: 0.9rem;
   white-space: nowrap;
-  min-height: var(--ap-touch-target-min);
+  min-height: 40px;
   padding: var(--ap-space-2) var(--ap-space-4);
   border: none;
-  border-bottom: 2px solid transparent;
+  border-radius: 12px;
   background: none;
   color: var(--ap-color-muted);
   cursor: pointer;
   transition:
     color var(--ap-motion-fast) var(--ap-easing-standard),
-    border-color var(--ap-motion-fast) var(--ap-easing-standard);
+    background-color var(--ap-motion-fast) var(--ap-easing-standard);
 
   &:hover {
     color: var(--ap-color-fg);
@@ -73,6 +53,10 @@
 }
 
 .ap-tabs__tab--active {
-  color: var(--ap-color-fg);
-  border-bottom-color: var(--ap-color-primary);
+  color: var(--ap-color-bg);
+  background: var(--ap-color-fg);
+
+  &:hover {
+    color: var(--ap-color-bg);
+  }
 }
