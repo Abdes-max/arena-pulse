@@ -10,7 +10,8 @@
       "ctaCreate": "Mein Turnier erstellen",
       "ctaJoin": "Für ein Turnier anmelden",
       "live": "Live",
-      "liveContext": "U11-Spielfest · Platz 2"
+      "liveContext": "U11-Spielfest · Platz 2",
+      "eyebrow": "{{count}} veröffentlichte Sportveranstaltungen"
     },
     "published": {
       "title": "Veröffentlichte Veranstaltungen",
@@ -53,6 +54,12 @@
         "terms": "Nutzungsbedingungen"
       },
       "copyright": "© 2026 TournArena. Alle Rechte vorbehalten."
+    },
+    "stats": {
+      "events": "veröffentlichte Veranstaltungen",
+      "sports": "Sportarten",
+      "languages": "Sprachen",
+      "freeTeams": "kostenlose Teams pro Turnier"
     }
   },
   "organizer": {
@@ -162,7 +169,12 @@
         "structureAction": "Struktur",
         "registrationsAction": "Anmeldungen",
         "openFilter": "Anmeldung offen",
-        "managerSpace": "Mein Teamverantwortlichen-Bereich"
+        "managerSpace": "Mein Teamverantwortlichen-Bereich",
+        "menu": {
+          "profile": "Mein Profil",
+          "darkMode": "Dunkler Modus",
+          "lightMode": "Heller Modus"
+        }
       }
     },
     "account": {

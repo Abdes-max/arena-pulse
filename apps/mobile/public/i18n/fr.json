@@ -10,7 +10,8 @@
       "ctaCreate": "Créer mon tournoi",
       "ctaJoin": "M'inscrire à un tournoi",
       "live": "En direct",
-      "liveContext": "Plateau U11 · Terrain 2"
+      "liveContext": "Plateau U11 · Terrain 2",
+      "eyebrow": "{{count}} événements sportifs publiés"
     },
     "published": {
       "title": "Événements publiés",
@@ -53,6 +54,12 @@
         "terms": "Conditions d'utilisation"
       },
       "copyright": "© 2026 TournArena. Tous droits réservés."
+    },
+    "stats": {
+      "events": "événements publiés",
+      "sports": "sports couverts",
+      "languages": "langues",
+      "freeTeams": "équipes gratuites par tournoi"
     }
   },
   "organizer": {
@@ -162,7 +169,12 @@
         "structureAction": "Structure",
         "registrationsAction": "Inscriptions",
         "openFilter": "Inscriptions ouvertes",
-        "managerSpace": "Mon espace responsable"
+        "managerSpace": "Mon espace responsable",
+        "menu": {
+          "profile": "Mon profil",
+          "darkMode": "Mode sombre",
+          "lightMode": "Mode clair"
+        }
       }
     },
     "account": {

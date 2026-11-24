@@ -17,21 +17,10 @@ ion-title {
   margin-inline-end: var(--ap-space-2);
 }
 
-.organizer-tournaments-page__account {
-  width: 32px;
-  height: 32px;
-  border: none;
-  background: transparent;
-  color: var(--ap-color-fg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-
 .organizer-tournaments-page__avatar {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
+  margin-right: var(--ap-space-2);
   border-radius: 50%;
   border: none;
   background: var(--ap-color-signal-soft);
@@ -516,4 +505,68 @@ app-organizer-dashboard {
     background: rgb(255 255 255 / 5%);
     border: var(--ap-border-width) solid rgb(255 255 255 / 9%);
   }
+}
+
+// Account menu, dropped under the avatar.
+.organizer-tournaments-page__menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  border: none;
+  background: transparent;
+}
+
+.organizer-tournaments-page__menu {
+  position: absolute;
+  top: calc(100% - 4px);
+  right: var(--ap-space-3);
+  z-index: 11;
+  display: flex;
+  flex-direction: column;
+  min-width: 230px;
+  padding: var(--ap-space-2);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: 16px;
+  background: var(--ap-color-surface);
+  box-shadow: var(--ap-shadow-lg);
+}
+
+.organizer-tournaments-page__menu-head {
+  display: flex;
+  flex-direction: column;
+  margin: 0 0 var(--ap-space-1);
+  padding: var(--ap-space-2) var(--ap-space-3) var(--ap-space-3);
+  border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+  font-size: 0.8rem;
+  color: var(--ap-color-muted);
+
+  strong {
+    color: var(--ap-color-fg);
+    font-size: 0.95rem;
+  }
+}
+
+.organizer-tournaments-page__menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-3);
+  min-height: 44px;
+  padding: 0 var(--ap-space-3);
+  border: none;
+  border-radius: 10px;
+  background: none;
+  color: var(--ap-color-fg);
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:active {
+    background: color-mix(in srgb, var(--ap-color-fg) 8%, transparent);
+  }
+}
+
+.organizer-tournaments-page__menu-item--danger {
+  color: var(--ap-color-error);
 }

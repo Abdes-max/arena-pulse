@@ -10,7 +10,8 @@
       "ctaCreate": "Create my tournament",
       "ctaJoin": "Register for a tournament",
       "live": "Live",
-      "liveContext": "U11 festival · Pitch 2"
+      "liveContext": "U11 festival · Pitch 2",
+      "eyebrow": "{{count}} published sporting events"
     },
     "published": {
       "title": "Published events",
@@ -53,6 +54,12 @@
         "terms": "Terms of use"
       },
       "copyright": "© 2026 TournArena. All rights reserved."
+    },
+    "stats": {
+      "events": "published events",
+      "sports": "sports covered",
+      "languages": "languages",
+      "freeTeams": "free teams per tournament"
     }
   },
   "organizer": {
@@ -162,7 +169,12 @@
         "structureAction": "Structure",
         "registrationsAction": "Registrations",
         "openFilter": "Registrations open",
-        "managerSpace": "My team manager space"
+        "managerSpace": "My team manager space",
+        "menu": {
+          "profile": "My profile",
+          "darkMode": "Dark mode",
+          "lightMode": "Light mode"
+        }
       }
     },
     "account": {

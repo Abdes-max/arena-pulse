@@ -12,6 +12,7 @@ import {
 import { AssetUrlService, PublicApiService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Badge, Logo, Select, SelectOption } from 'design-system';
+import { ThemeService } from 'design-tokens';
 import { isTournamentPast } from 'shared-models';
 import { OrganizerAuthService } from '../../core/auth.service';
 import { AdminUiMode, OrganizerTournament } from '../../core/models';
@@ -69,6 +70,10 @@ export class OrganizerTournamentsPage {
   private readonly auth = inject(OrganizerAuthService);
   private readonly tournamentsApi = inject(OrganizerTournamentsService);
   private readonly router = inject(Router);
+  private readonly themeService = inject(ThemeService);
+  protected readonly mode = this.themeService.mode;
+  // Account menu under the avatar (header).
+  protected readonly menuOpen = signal(false);
   private readonly assetUrl = inject(AssetUrlService);
   private readonly publicApi = inject(PublicApiService);
   private readonly transloco = inject(TranslocoService);
@@ -314,7 +319,13 @@ export class OrganizerTournamentsPage {
     }
   }
 
+  protected toggleMode(): void {
+    const next = this.mode() === 'dark' ? 'light' : 'dark';
+    this.themeService.setMode(document.documentElement, next, true);
+  }
+
   protected async logout(): Promise<void> {
+    this.menuOpen.set(false);
     await this.auth.logout();
     await this.router.navigateByUrl('/organizer/login');
   }

@@ -10,7 +10,8 @@
       "ctaCreate": "Crea il mio torneo",
       "ctaJoin": "Iscrivermi a un torneo",
       "live": "In diretta",
-      "liveContext": "Raggruppamento U11 · Campo 2"
+      "liveContext": "Raggruppamento U11 · Campo 2",
+      "eyebrow": "{{count}} eventi sportivi pubblicati"
     },
     "published": {
       "title": "Eventi pubblicati",
@@ -53,6 +54,12 @@
         "terms": "Condizioni d'uso"
       },
       "copyright": "© 2026 TournArena. Tutti i diritti riservati."
+    },
+    "stats": {
+      "events": "eventi pubblicati",
+      "sports": "sport coperti",
+      "languages": "lingue",
+      "freeTeams": "squadre gratuite per torneo"
     }
   },
   "organizer": {
@@ -162,7 +169,12 @@
         "structureAction": "Struttura",
         "registrationsAction": "Iscrizioni",
         "openFilter": "Iscrizioni aperte",
-        "managerSpace": "Il mio spazio responsabile"
+        "managerSpace": "Il mio spazio responsabile",
+        "menu": {
+          "profile": "Il mio profilo",
+          "darkMode": "Modalità scura",
+          "lightMode": "Modalità chiara"
+        }
       }
     },
     "account": {

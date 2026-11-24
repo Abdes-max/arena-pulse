@@ -56,12 +56,51 @@ h3 {
 // --color/--color-checked directly sidesteps that broken rgb-var lookup.
 ion-segment-button {
   --color: var(--ap-color-muted);
-  --color-checked: var(--ap-color-fg);
+  --color-checked: var(--ap-color-bg);
+}
+
+// Segmented pills (« Nuit de match »), same look as web's ap-tabs: a
+// surface tray, the current tab a solid pill -- no md underline. Every
+// segment here is `scrollable`, so Ionic itself centers the tapped tab.
+ion-segment {
+  width: fit-content;
+  max-width: calc(100% - 2 * var(--ap-space-4));
+  padding: 4px;
+  gap: 4px;
+  border-radius: 16px;
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  // Still scrolls by swipe/drag, without a scrollbar under the pills.
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+ion-segment-button {
+  --background-checked: var(--ap-color-fg);
+  --background-hover: transparent;
+  --indicator-color: transparent;
+  --indicator-height: 0;
+  --border-radius: 12px;
+  --padding-start: var(--ap-space-4);
+  --padding-end: var(--ap-space-4);
+  min-height: 36px;
+  min-width: auto;
+  border-radius: 12px;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 600;
+
+  &::part(indicator) {
+    display: none;
+  }
 }
 
 // Ionic's default segment-button label size reads a bit large as a row of
 // filter tabs; ion-label is light-DOM content projected into
 // ion-segment-button, so font-size set here cascades into it normally.
 ion-segment-button ion-label {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
 }

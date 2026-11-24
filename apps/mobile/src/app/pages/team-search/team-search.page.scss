@@ -11,8 +11,9 @@
   padding: 16px;
 }
 
+// Spacing outside the pill row (see ion-segment in styles.scss).
 .team-search-page__filters {
-  padding: var(--ap-space-2) var(--ap-space-4);
+  margin: var(--ap-space-3) var(--ap-space-4) var(--ap-space-2);
 }
 
 // ap-text-field, the shared design-system search box -- same component and

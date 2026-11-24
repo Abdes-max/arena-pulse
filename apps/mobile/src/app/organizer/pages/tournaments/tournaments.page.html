@@ -5,32 +5,68 @@
     /></a>
     <ion-title>{{ 'organizer.tournaments.list.title' | transloco }}</ion-title>
     @if (user(); as u) {
-      <button
-        class="organizer-tournaments-page__account"
-        type="button"
-        slot="end"
-        [attr.aria-label]="'organizer.tournaments.list.accountAction' | transloco"
-        routerLink="/organizer/account"
-      >
-        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-          <path
-            fill="currentColor"
-            d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-4.42 0-8 2.24-8 5v1a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1c0-2.76-3.58-5-8-5Z"
-          />
-        </svg>
-      </button>
+      <!-- The avatar opens the account menu: profile, light/dark, sign out. -->
       <button
         class="organizer-tournaments-page__avatar"
         type="button"
         slot="end"
-        [attr.aria-label]="'organizer.tournaments.list.logout' | transloco"
-        [attr.title]="u.firstName + ' ' + u.lastName"
-        (click)="logout()"
+        aria-haspopup="menu"
+        [attr.aria-expanded]="menuOpen()"
+        [attr.aria-label]="'organizer.tournaments.list.accountAction' | transloco"
+        (click)="menuOpen.set(!menuOpen())"
       >
         {{ u.firstName.charAt(0) }}{{ u.lastName.charAt(0) }}
       </button>
     }
   </ion-toolbar>
+  @if (menuOpen() && user(); as u) {
+    <!-- Tap outside closes the menu (a button, out of the tab order). -->
+    <button
+      type="button"
+      class="organizer-tournaments-page__menu-backdrop"
+      tabindex="-1"
+      aria-hidden="true"
+      (click)="menuOpen.set(false)"
+    ></button>
+    <div class="organizer-tournaments-page__menu" role="menu">
+      <p class="organizer-tournaments-page__menu-head">
+        <strong>{{ u.firstName }} {{ u.lastName }}</strong>
+        <span>{{ u.email }}</span>
+      </p>
+      <a
+        role="menuitem"
+        class="organizer-tournaments-page__menu-item"
+        routerLink="/organizer/account"
+        (click)="menuOpen.set(false)"
+      >
+        <span aria-hidden="true">👤</span>
+        {{ 'organizer.tournaments.list.menu.profile' | transloco }}
+      </a>
+      <button
+        role="menuitem"
+        type="button"
+        class="organizer-tournaments-page__menu-item"
+        (click)="toggleMode()"
+      >
+        <span aria-hidden="true">{{ mode() === 'dark' ? '☀️' : '🌙' }}</span>
+        {{
+          (mode() === 'dark'
+            ? 'organizer.tournaments.list.menu.lightMode'
+            : 'organizer.tournaments.list.menu.darkMode'
+          ) | transloco
+        }}
+      </button>
+      <button
+        role="menuitem"
+        type="button"
+        class="organizer-tournaments-page__menu-item organizer-tournaments-page__menu-item--danger"
+        (click)="logout()"
+      >
+        <span aria-hidden="true">⎋</span>
+        {{ 'organizer.tournaments.list.logout' | transloco }}
+      </button>
+    </div>
+  }
 </ion-header>
 
 <ion-content class="organizer-tournaments-page">

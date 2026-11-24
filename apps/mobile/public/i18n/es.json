@@ -10,7 +10,8 @@
       "ctaCreate": "Crear mi torneo",
       "ctaJoin": "Inscribirme en un torneo",
       "live": "En directo",
-      "liveContext": "Encuentro U11 · Campo 2"
+      "liveContext": "Encuentro U11 · Campo 2",
+      "eyebrow": "{{count}} eventos deportivos publicados"
     },
     "published": {
       "title": "Eventos publicados",
@@ -53,6 +54,12 @@
         "terms": "Condiciones de uso"
       },
       "copyright": "© 2026 TournArena. Todos los derechos reservados."
+    },
+    "stats": {
+      "events": "eventos publicados",
+      "sports": "deportes cubiertos",
+      "languages": "idiomas",
+      "freeTeams": "equipos gratis por torneo"
     }
   },
   "organizer": {
@@ -162,7 +169,12 @@
         "structureAction": "Estructura",
         "registrationsAction": "Inscripciones",
         "openFilter": "Inscripciones abiertas",
-        "managerSpace": "Mi espacio de responsable"
+        "managerSpace": "Mi espacio de responsable",
+        "menu": {
+          "profile": "Mi perfil",
+          "darkMode": "Modo oscuro",
+          "lightMode": "Modo claro"
+        }
       }
     },
     "account": {

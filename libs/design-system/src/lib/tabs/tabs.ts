@@ -25,9 +25,26 @@ export class Tabs {
   readonly value = input<string>('');
   readonly valueChange = output<string>();
 
-  protected select(value: string): void {
+  protected select(value: string, event?: Event): void {
+    if (event) {
+      center(event.currentTarget as HTMLElement);
+    }
     if (value !== this.value()) {
       this.valueChange.emit(value);
     }
   }
+}
+
+// Scrolls the tapped tab to the middle of the row, like the tournament's main
+// tabs (apps/web TournamentShell.center) -- a no-op when every tab fits.
+function center(tab: HTMLElement): void {
+  const row = tab.parentElement;
+  if (!row || row.scrollWidth <= row.clientWidth) {
+    return;
+  }
+  const offset =
+    tab.getBoundingClientRect().left -
+    row.getBoundingClientRect().left -
+    (row.clientWidth - tab.offsetWidth) / 2;
+  row.scrollTo({ left: row.scrollLeft + offset, behavior: 'smooth' });
 }

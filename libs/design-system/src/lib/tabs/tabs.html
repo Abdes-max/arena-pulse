@@ -6,7 +6,7 @@
       class="ap-tabs__tab"
       [class.ap-tabs__tab--active]="option.value === value()"
       [attr.aria-selected]="option.value === value()"
-      (click)="select(option.value)"
+      (click)="select(option.value, $event)"
     >
       {{ option.label }}
     </button>

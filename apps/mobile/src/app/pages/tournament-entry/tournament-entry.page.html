@@ -410,6 +410,13 @@
     </div>
   } @else {
     <div class="tournament-entry-page__hero-body">
+      @if (tournaments().length > 0) {
+        <!-- Same eyebrow as apps/web's landing page; opens the event list. -->
+        <button type="button" class="tournament-entry-page__eyebrow" (click)="expandSearch()">
+          <span class="tournament-entry-page__eyebrow-dot" aria-hidden="true"></span>
+          {{ 'tournamentEntry.hero.eyebrow' | transloco: { count: tournaments().length } }}
+        </button>
+      }
       <!-- Same headline and call to action as apps/web's landing page. -->
       <h1 class="tournament-entry-page__title">
         {{ 'tournamentEntry.hero.titleMain' | transloco }}
@@ -478,6 +485,35 @@
   (ionScrollStart)="dismissKeyboard()"
   (click)="onContentTap($event)"
 >
+  <!-- Same figures as apps/web's landing page, each one a way in: the event
+       list, the language picker (settings), creating a tournament. -->
+  <ul class="tournament-entry-page__stats">
+    <li>
+      <button type="button" (click)="expandSearch()">
+        <strong>{{ tournaments().length }}</strong>
+        <span>{{ 'tournamentEntry.stats.events' | transloco }}</span>
+      </button>
+    </li>
+    <li>
+      <button type="button" (click)="expandSearch()">
+        <strong class="tournament-entry-page__stats-warm">{{ sportCount() }}</strong>
+        <span>{{ 'tournamentEntry.stats.sports' | transloco }}</span>
+      </button>
+    </li>
+    <li>
+      <button type="button" (click)="toggleSettings()">
+        <strong>{{ languages.length }}</strong>
+        <span>{{ 'tournamentEntry.stats.languages' | transloco }}</span>
+      </button>
+    </li>
+    <li>
+      <a routerLink="/organizer/register">
+        <strong class="tournament-entry-page__stats-warm">8</strong>
+        <span>{{ 'tournamentEntry.stats.freeTeams' | transloco }}</span>
+      </a>
+    </li>
+  </ul>
+
   <section class="tournament-entry-page__published">
     <h2 class="tournament-entry-page__published-title">
       <!-- A button: tapping the title opens the search full screen too. -->
