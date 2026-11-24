@@ -171,9 +171,7 @@
         "openFilter": "Anmeldung offen",
         "managerSpace": "Mein Teamverantwortlichen-Bereich",
         "menu": {
-          "profile": "Mein Profil",
-          "darkMode": "Dunkler Modus",
-          "lightMode": "Heller Modus"
+          "profile": "Mein Profil"
         }
       }
     },

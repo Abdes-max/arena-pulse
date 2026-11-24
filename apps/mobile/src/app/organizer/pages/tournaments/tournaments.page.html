@@ -5,18 +5,21 @@
     /></a>
     <ion-title>{{ 'organizer.tournaments.list.title' | transloco }}</ion-title>
     @if (user(); as u) {
-      <!-- The avatar opens the account menu: profile, light/dark, sign out. -->
-      <button
-        class="organizer-tournaments-page__avatar"
-        type="button"
-        slot="end"
-        aria-haspopup="menu"
-        [attr.aria-expanded]="menuOpen()"
-        [attr.aria-label]="'organizer.tournaments.list.accountAction' | transloco"
-        (click)="menuOpen.set(!menuOpen())"
-      >
-        {{ u.firstName.charAt(0) }}{{ u.lastName.charAt(0) }}
-      </button>
+      <!-- Light/dark switch (same as the entry page), then the avatar, which
+           opens the account menu: profile, sign out. -->
+      <div class="organizer-tournaments-page__actions" slot="end">
+        <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
+        <button
+          class="organizer-tournaments-page__avatar"
+          type="button"
+          aria-haspopup="menu"
+          [attr.aria-expanded]="menuOpen()"
+          [attr.aria-label]="'organizer.tournaments.list.accountAction' | transloco"
+          (click)="menuOpen.set(!menuOpen())"
+        >
+          {{ u.firstName.charAt(0) }}{{ u.lastName.charAt(0) }}
+        </button>
+      </div>
     }
   </ion-toolbar>
   @if (menuOpen() && user(); as u) {
@@ -42,20 +45,6 @@
         <span aria-hidden="true">👤</span>
         {{ 'organizer.tournaments.list.menu.profile' | transloco }}
       </a>
-      <button
-        role="menuitem"
-        type="button"
-        class="organizer-tournaments-page__menu-item"
-        (click)="toggleMode()"
-      >
-        <span aria-hidden="true">{{ mode() === 'dark' ? '☀️' : '🌙' }}</span>
-        {{
-          (mode() === 'dark'
-            ? 'organizer.tournaments.list.menu.lightMode'
-            : 'organizer.tournaments.list.menu.darkMode'
-          ) | transloco
-        }}
-      </button>
       <button
         role="menuitem"
         type="button"

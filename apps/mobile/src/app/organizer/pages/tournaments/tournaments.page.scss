@@ -17,10 +17,16 @@ ion-title {
   margin-inline-end: var(--ap-space-2);
 }
 
+.organizer-tournaments-page__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-3);
+  margin-right: var(--ap-space-2);
+}
+
 .organizer-tournaments-page__avatar {
   width: 34px;
   height: 34px;
-  margin-right: var(--ap-space-2);
   border-radius: 50%;
   border: none;
   background: var(--ap-color-signal-soft);

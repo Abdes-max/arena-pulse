@@ -11,8 +11,8 @@ import {
 } from '@ionic/angular/standalone';
 import { AssetUrlService, PublicApiService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { Badge, Logo, Select, SelectOption } from 'design-system';
-import { ThemeService } from 'design-tokens';
+import { Badge, Logo, Select, SelectOption, ThemeModeToggle } from 'design-system';
+import { ThemeMode, ThemeService } from 'design-tokens';
 import { isTournamentPast } from 'shared-models';
 import { OrganizerAuthService } from '../../core/auth.service';
 import { AdminUiMode, OrganizerTournament } from '../../core/models';
@@ -60,6 +60,7 @@ const TIME_FILTERS: TimeFilter[] = ['ALL', 'UPCOMING', 'PAST'];
     OrganizerSetupGuide,
     RouterLink,
     Select,
+    ThemeModeToggle,
     TranslocoPipe,
   ],
   templateUrl: './tournaments.page.html',
@@ -352,8 +353,7 @@ export class OrganizerTournamentsPage {
     }
   }
 
-  protected toggleMode(): void {
-    const next = this.mode() === 'dark' ? 'light' : 'dark';
+  protected onModeChange(next: ThemeMode): void {
     this.themeService.setMode(document.documentElement, next, true);
   }
 

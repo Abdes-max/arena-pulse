@@ -171,9 +171,7 @@
         "openFilter": "Registrations open",
         "managerSpace": "My team manager space",
         "menu": {
-          "profile": "My profile",
-          "darkMode": "Dark mode",
-          "lightMode": "Light mode"
+          "profile": "My profile"
         }
       }
     },

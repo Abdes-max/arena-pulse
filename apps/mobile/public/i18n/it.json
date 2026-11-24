@@ -171,9 +171,7 @@
         "openFilter": "Iscrizioni aperte",
         "managerSpace": "Il mio spazio responsabile",
         "menu": {
-          "profile": "Il mio profilo",
-          "darkMode": "Modalità scura",
-          "lightMode": "Modalità chiara"
+          "profile": "Il mio profilo"
         }
       }
     },

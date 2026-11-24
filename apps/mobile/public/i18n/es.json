@@ -171,9 +171,7 @@
         "openFilter": "Inscripciones abiertas",
         "managerSpace": "Mi espacio de responsable",
         "menu": {
-          "profile": "Mi perfil",
-          "darkMode": "Modo oscuro",
-          "lightMode": "Modo claro"
+          "profile": "Mi perfil"
         }
       }
     },
