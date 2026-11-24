@@ -12,7 +12,8 @@
     },
     "launchPromo": {
       "badge": "Launch offer",
-      "text": "First 3 tournaments free and 50% off the annual subscription for the first 50, with code",
+      "title": "3 free tournaments, 50% off the annual plan",
+      "detail": "For the first 50 sign-ups, with code",
       "cta": "Claim it"
     },
     "eyebrow": {

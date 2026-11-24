@@ -12,7 +12,8 @@
     },
     "launchPromo": {
       "badge": "Oferta de lançamento",
-      "text": "3 primeiros torneios grátis e -50% na assinatura anual para os 50 primeiros, com o código",
+      "title": "3 torneios grátis, −50% no plano anual",
+      "detail": "Para os 50 primeiros, com o código",
       "cta": "Aproveitar"
     },
     "eyebrow": {

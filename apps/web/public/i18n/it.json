@@ -12,7 +12,8 @@
     },
     "launchPromo": {
       "badge": "Offerta di lancio",
-      "text": "Primi 3 tornei gratis e -50% sull’abbonamento annuale per i primi 50, con il codice",
+      "title": "3 tornei gratis, −50% sull’annuale",
+      "detail": "Per i primi 50 iscritti, con il codice",
       "cta": "Approfittane"
     },
     "eyebrow": {

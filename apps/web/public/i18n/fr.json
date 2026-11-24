@@ -12,7 +12,8 @@
     },
     "launchPromo": {
       "badge": "Offre de lancement",
-      "text": "3 premiers tournois offerts et -50 % sur l’abonnement annuel pour les 50 premiers, avec le code",
+      "title": "3 tournois offerts, −50 % sur l’annuel",
+      "detail": "Pour les 50 premiers inscrits, avec le code",
       "cta": "J’en profite"
     },
     "eyebrow": {

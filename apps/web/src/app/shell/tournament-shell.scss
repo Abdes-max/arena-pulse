@@ -351,7 +351,10 @@
 }
 
 // Solid pill, so the current tab reads unambiguously as "you are here".
-.tournament-shell__nav .tournament-shell__nav-link--active {
+// a.… so it also beats the hover color of .tournament-shell__nav a:hover
+// (white text on the white pill otherwise).
+.tournament-shell__nav a.tournament-shell__nav-link--active,
+.tournament-shell__nav a.tournament-shell__nav-link--active:hover {
   color: var(--ap-color-bg);
   background: var(--ap-color-fg);
   border-color: var(--ap-color-fg);

@@ -1,72 +1,93 @@
-// Launch offer pill at the top of the hero (always dark, Ink & Signal) --
-// ember-tinted so it reads as an event, distinct from the signal-cyan CTA.
+// Launch offer card at the top of the hero (always dark, Ink & Signal):
+// gift tile, short headline, the code on a second line, an arrow. Ember-tinted
+// so it reads as an event, distinct from the signal-cyan CTA.
 .landing-page__launch-promo {
-  display: inline-flex;
-  flex-wrap: wrap;
+  display: inline-grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: center;
-  gap: var(--ap-space-2) var(--ap-space-3);
-  max-width: 100%;
+  gap: var(--ap-space-3);
+  max-width: min(100%, 30rem);
   margin: 0 auto var(--ap-space-6);
-  padding: var(--ap-space-2) var(--ap-space-4) var(--ap-space-2) var(--ap-space-2);
-  border: var(--ap-border-width) solid var(--ap-color-ember);
-  border-radius: 999px;
+  padding: var(--ap-space-2) var(--ap-space-3) var(--ap-space-2) var(--ap-space-2);
+  border: var(--ap-border-width) solid color-mix(in srgb, var(--ap-color-ember) 45%, transparent);
+  border-radius: 18px;
   background:
-    linear-gradient(100deg, var(--ap-color-ember-soft), transparent 60%), var(--ap-color-surface);
+    linear-gradient(100deg, var(--ap-color-ember-soft), transparent 70%), var(--ap-color-surface);
   color: var(--ap-color-fg);
-  font-size: 0.85rem;
+  text-align: left;
   text-decoration: none;
-  box-shadow: 0 0 0 0 var(--ap-color-ember-soft);
-  animation: landing-page-promo-glow 2.6s ease-in-out infinite;
-  transition: transform var(--ap-motion-fast) var(--ap-easing-standard);
+  transition:
+    transform var(--ap-motion-fast) var(--ap-easing-standard),
+    border-color var(--ap-motion-fast) var(--ap-easing-standard);
 
   &:hover {
     transform: translateY(-2px);
+    border-color: var(--ap-color-ember);
   }
+}
+
+.landing-page__launch-promo-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--ap-color-ember-soft);
+  font-size: 1.35rem;
+}
+
+.landing-page__launch-promo-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.landing-page__launch-promo-badge {
+  color: var(--ap-color-ember);
+  font-size: 0.66rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.landing-page__launch-promo-title {
+  font-family: var(--ap-font-heading);
+  font-size: 0.98rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.landing-page__launch-promo-detail {
+  color: var(--ap-color-muted);
+  font-size: 0.78rem;
 
   strong {
-    font-family: var(--ap-font-heading);
-    letter-spacing: 0.06em;
+    margin-left: 2px;
     color: var(--ap-color-ember);
-    margin-left: var(--ap-space-1);
-    padding: 1px var(--ap-space-2);
-    border: 1px dashed var(--ap-color-ember);
-    border-radius: var(--ap-radius-md);
+    font-weight: 800;
+    letter-spacing: 0.04em;
     white-space: nowrap;
   }
 }
 
-.landing-page__launch-promo-badge {
-  padding: 2px var(--ap-space-3);
-  border-radius: 999px;
+.landing-page__launch-promo-cta {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
   background: var(--ap-color-ember);
   color: var(--ap-color-bg);
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  font-weight: 800;
 }
 
-.landing-page__launch-promo-cta {
-  font-weight: 700;
-  color: var(--ap-color-signal);
-}
-
-@keyframes landing-page-promo-glow {
-  50% {
-    box-shadow: 0 0 0 6px transparent;
-  }
-}
-
-@media (max-width: 560px) {
-  .landing-page__launch-promo {
-    border-radius: var(--ap-radius-lg);
-    padding: var(--ap-space-3);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .landing-page__launch-promo {
-    animation: none;
-  }
+.landing-page__sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
 }

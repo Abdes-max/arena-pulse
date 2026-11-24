@@ -121,16 +121,23 @@
       <!-- Launch offer -- the code itself is redeemed from the admin's
          Abonnement page (OrganizationsService.redeemLaunchPromo on the API). -->
       <a class="landing-page__launch-promo" routerLink="/register">
-        <span class="landing-page__launch-promo-badge">{{
-          'landing.launchPromo.badge' | transloco
-        }}</span>
-        <span class="landing-page__launch-promo-text">
-          {{ 'landing.launchPromo.text' | transloco }}
-          <strong>TOURNARENA2026</strong>
+        <span class="landing-page__launch-promo-icon" aria-hidden="true">🎁</span>
+        <span class="landing-page__launch-promo-body">
+          <span class="landing-page__launch-promo-badge">{{
+            'landing.launchPromo.badge' | transloco
+          }}</span>
+          <span class="landing-page__launch-promo-title">{{
+            'landing.launchPromo.title' | transloco
+          }}</span>
+          <span class="landing-page__launch-promo-detail">
+            {{ 'landing.launchPromo.detail' | transloco }}
+            <strong>TOURNARENA2026</strong>
+          </span>
         </span>
-        <span class="landing-page__launch-promo-cta"
-          >{{ 'landing.launchPromo.cta' | transloco }} →</span
-        >
+        <span class="landing-page__launch-promo-cta">
+          <span class="landing-page__sr-only">{{ 'landing.launchPromo.cta' | transloco }}</span>
+          <span aria-hidden="true">→</span>
+        </span>
       </a>
       <p class="landing-page__eyebrow">
         <span class="landing-page__eyebrow-dot" aria-hidden="true"></span>

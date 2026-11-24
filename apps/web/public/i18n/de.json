@@ -12,7 +12,8 @@
     },
     "launchPromo": {
       "badge": "Launch-Angebot",
-      "text": "Die ersten 3 Turniere gratis und -50 % auf das Jahresabo für die ersten 50, mit dem Code",
+      "title": "3 Turniere gratis, −50 % aufs Jahresabo",
+      "detail": "Für die ersten 50, mit dem Code",
       "cta": "Jetzt sichern"
     },
     "eyebrow": {
