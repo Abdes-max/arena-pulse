@@ -788,7 +788,11 @@
         "date": "date",
         "categories": "catégories",
         "pending": "à valider"
-      }
+      },
+      "previous": "Tournoi précédent",
+      "next": "Tournoi suivant",
+      "upcomingTitle": "Vos tournois à venir",
+      "allTitle": "Vos tournois"
     }
   },
   "notifications": {

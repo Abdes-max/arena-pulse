@@ -788,7 +788,11 @@
         "date": "fecha",
         "categories": "categorías",
         "pending": "por validar"
-      }
+      },
+      "previous": "Torneo anterior",
+      "next": "Torneo siguiente",
+      "upcomingTitle": "Tus próximos torneos",
+      "allTitle": "Tus torneos"
     }
   },
   "notifications": {

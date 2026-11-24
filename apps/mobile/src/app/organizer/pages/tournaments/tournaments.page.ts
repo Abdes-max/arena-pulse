@@ -109,18 +109,51 @@ export class OrganizerTournamentsPage {
   protected readonly guideRefresh = signal(0);
 
   /**
-   * "À la une": the tournament the organizer most likely opens the app for --
-   * the next one not yet over (published first), else the latest created.
+   * "À la une": the tournaments not yet over (published first, then by date)
+   * -- the first is the one the organizer most likely opens the app for, the
+   * arrows go through the rest. None left: every tournament, most recent
+   * first, under a plain "Vos tournois" title (featuredUpcoming).
    */
-  protected readonly featured = computed<OrganizerTournament | null>(() => {
-    const active = this.tournaments().filter(
-      (t) => t.status !== 'ARCHIVED' && !isTournamentPast(t),
-    );
+  protected readonly featuredUpcoming = computed(() =>
+    this.tournaments().some((t) => t.status !== 'ARCHIVED' && !isTournamentPast(t)),
+  );
+  protected readonly featuredList = computed<OrganizerTournament[]>(() => {
     const byDate = (a: OrganizerTournament, b: OrganizerTournament) =>
       (a.startDate ?? '9999').localeCompare(b.startDate ?? '9999');
-    const published = active.filter((t) => t.status === 'PUBLISHED').sort(byDate);
-    return published[0] ?? active.sort(byDate)[0] ?? this.tournaments()[0] ?? null;
+    if (!this.featuredUpcoming()) {
+      return [...this.tournaments()].sort((a, b) => byDate(b, a));
+    }
+    const rank = (t: OrganizerTournament) => (t.status === 'PUBLISHED' ? 0 : 1);
+    return this.tournaments()
+      .filter((t) => t.status !== 'ARCHIVED' && !isTournamentPast(t))
+      .sort((a, b) => rank(a) - rank(b) || byDate(a, b));
   });
+  protected readonly featuredIndex = signal(0);
+  protected readonly featured = computed<OrganizerTournament | null>(() => {
+    const list = this.featuredList();
+    return list[Math.min(this.featuredIndex(), list.length - 1)] ?? null;
+  });
+
+  /** Previous (-1) / next (+1) featured tournament, wrapping around. */
+  protected stepFeatured(delta: number): void {
+    const count = this.featuredList().length;
+    if (count > 1) {
+      this.featuredIndex.update((i) => (Math.min(i, count - 1) + delta + count) % count);
+    }
+  }
+
+  // Swipe left/right on the featured card, same as the arrows.
+  private swipeStartX: number | null = null;
+  protected onFeaturedTouchStart(event: TouchEvent): void {
+    this.swipeStartX = event.touches[0]?.clientX ?? null;
+  }
+  protected onFeaturedTouchEnd(event: TouchEvent): void {
+    const endX = event.changedTouches[0]?.clientX;
+    if (this.swipeStartX !== null && endX !== undefined && Math.abs(endX - this.swipeStartX) > 48) {
+      this.stepFeatured(endX < this.swipeStartX ? 1 : -1);
+    }
+    this.swipeStartX = null;
+  }
 
   /** Today's date, as the greeting's small line ("samedi 14 novembre"). */
   protected readonly today = new Date().toLocaleDateString(undefined, {

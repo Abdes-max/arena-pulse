@@ -85,6 +85,12 @@
             {{ 'organizer.home.greeting' | transloco: { name: user()?.firstName ?? '' } }}
           </h1>
         </div>
+        <h2 class="home-hero__section-title">
+          {{
+            (featuredUpcoming() ? 'organizer.home.upcomingTitle' : 'organizer.home.allTitle')
+              | transloco
+          }}
+        </h2>
         <div
           class="home-hero__featured"
           role="button"
@@ -92,6 +98,8 @@
           (click)="openTournament(f)"
           (keydown.enter)="openTournament(f)"
           (keydown.space)="openTournament(f)"
+          (touchstart)="onFeaturedTouchStart($event)"
+          (touchend)="onFeaturedTouchEnd($event)"
         >
           <div class="home-hero__featured-top">
             <span class="home-hero__pill" [class.home-hero__pill--live]="playsToday(f)">
@@ -118,12 +126,39 @@
             </div>
           </div>
         </div>
+        <!-- Several tournaments: arrows (or a swipe) go through them. -->
+        @if (featuredList().length > 1) {
+          <div class="home-hero__pager">
+            <button
+              type="button"
+              [attr.aria-label]="'organizer.home.previous' | transloco"
+              (click)="stepFeatured(-1)"
+            >
+              ‹
+            </button>
+            <span class="home-hero__dots" aria-hidden="true">
+              @for (t of featuredList(); track t.id) {
+                <i [class.home-hero__dot--on]="t.id === f.id"></i>
+              }
+            </span>
+            <span class="home-hero__count"
+              >{{ featuredList().indexOf(f) + 1 }} / {{ featuredList().length }}</span
+            >
+            <button
+              type="button"
+              [attr.aria-label]="'organizer.home.next' | transloco"
+              (click)="stepFeatured(1)"
+            >
+              ›
+            </button>
+          </div>
+        }
         <div class="home-hero__quick">
           <button type="button" (click)="openScores($event, f)">
             <i aria-hidden="true">⚡</i>{{ 'organizer.tournaments.list.scoresAction' | transloco }}
           </button>
           <button type="button" (click)="openStructure($event, f)">
-            <i aria-hidden="true">🗂</i
+            <i aria-hidden="true">🧩</i
             >{{ 'organizer.tournaments.list.structureAction' | transloco }}
           </button>
           <button type="button" (click)="openStandings($event, f)">

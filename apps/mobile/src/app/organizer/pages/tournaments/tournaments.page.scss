@@ -474,6 +474,64 @@ app-organizer-dashboard {
   color: #f5b942;
 }
 
+// Arrows + dots under the featured card (several tournaments).
+.home-hero__section-title {
+  margin: var(--ap-space-5) 0 var(--ap-space-2);
+  color: var(--ap-color-muted);
+  font-family: var(--ap-font-body);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.home-hero__pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ap-space-3);
+  margin-top: var(--ap-space-3);
+
+  button {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: var(--ap-border-width) solid var(--ap-color-border);
+    border-radius: 50%;
+    background: var(--ap-color-surface);
+    color: var(--ap-color-fg);
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+}
+
+.home-hero__dots {
+  display: flex;
+  gap: 6px;
+
+  i {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--ap-color-border);
+    transition: width var(--ap-motion-fast) var(--ap-easing-standard);
+  }
+
+  .home-hero__dot--on {
+    width: 18px;
+    background: var(--ap-color-signal);
+  }
+}
+
+.home-hero__count {
+  min-width: 3ch;
+  color: var(--ap-color-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
 .home-hero__quick {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
