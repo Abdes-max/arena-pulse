@@ -151,7 +151,7 @@ ion-toolbar {
 // A floating frosted pill above the page, clear of the home indicator.
 ion-tab-bar {
   --background: color-mix(in srgb, var(--ap-color-surface) 82%, transparent);
-  margin: 0 var(--ap-space-4) calc(var(--ap-space-3) + env(safe-area-inset-bottom, 0px));
+  margin: 0 var(--ap-space-4) calc(var(--ap-space-3) + var(--ap-safe-bottom));
   padding: var(--ap-space-1);
   height: 60px;
   border: var(--ap-border-width) solid var(--ap-color-border);

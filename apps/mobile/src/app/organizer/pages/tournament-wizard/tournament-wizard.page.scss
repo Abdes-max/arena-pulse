@@ -574,7 +574,8 @@ ion-title {
   --background: var(--ap-color-bg);
   display: flex;
   gap: var(--ap-space-2);
-  padding: var(--ap-space-3) var(--ap-space-4) var(--ap-space-6);
+  // Above the phone's own navigation bar (see --ap-safe-bottom).
+  padding: var(--ap-space-3) var(--ap-space-4) calc(var(--ap-space-6) + var(--ap-safe-bottom));
   border-top: var(--ap-border-width) solid var(--ap-color-border);
   background: var(--ap-color-bg);
 }
@@ -870,8 +871,7 @@ ion-title {
 // Teams as pills.
 // Primary action: full width, the way back as a lighter button.
 .wizard-page__footer {
-  padding: var(--ap-space-3) var(--ap-space-4)
-    calc(var(--ap-space-4) + env(safe-area-inset-bottom, 0px));
+  padding: var(--ap-space-3) var(--ap-space-4) calc(var(--ap-space-4) + var(--ap-safe-bottom));
   box-shadow: 0 -6px 20px rgba(15, 23, 42, 0.06);
   border-top: none;
 

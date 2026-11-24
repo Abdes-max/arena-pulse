@@ -179,7 +179,7 @@ export class TournamentListPage {
    */
   /** Categories, then format and level, as small chips under the name. */
   protected detailChips(tournament: Tournament): string[] | null {
-    const chips = [...(tournament.categoryNames ?? []), tournament.format, tournament.level].filter(
+    const chips = [...(tournament.categoryNames ?? []), tournament.format].filter(
       (chip): chip is string => !!chip,
     );
     return chips.length ? chips : null;

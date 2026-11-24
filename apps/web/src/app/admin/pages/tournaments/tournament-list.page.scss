@@ -151,62 +151,85 @@
     }
   }
 
+  // Each tournament as a card: logo, sport and status on top, the name and
+  // its details beside the logo, then the actions on one line.
   .tournament-list-page__row {
-    display: block;
-    margin-bottom: var(--ap-space-4);
-    padding: var(--ap-space-3);
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      'logo sport status'
+      'logo name name'
+      'actions actions actions';
+    column-gap: var(--ap-space-3);
+    row-gap: 2px;
+    align-items: center;
+    margin-bottom: var(--ap-space-3);
+    padding: var(--ap-space-4);
     border: var(--ap-border-width) solid var(--ap-color-border);
-    border-radius: var(--ap-radius-md);
+    border-radius: 18px;
+    background: var(--ap-color-surface);
+    box-shadow: var(--ap-shadow-sm);
   }
 
-  .tournament-list-page__cell {
-    display: flex;
+  // Beats the desktop `.tournament-list-page__table td` padding/border.
+  .tournament-list-page__table .tournament-list-page__cell {
+    display: block;
+    padding: 0;
+    border: none;
+  }
+
+  .tournament-list-page__logo-cell {
+    grid-area: logo;
+    align-self: start;
+
+    .tournament-list-page__logo,
+    .tournament-list-page__logo-placeholder {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+    }
+
+    .tournament-list-page__logo {
+      padding: 3px;
+      object-fit: contain;
+      background: #fff;
+    }
+  }
+
+  .tournament-list-page__cell--sport {
+    grid-area: sport;
+    color: var(--ap-color-signal-text);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .tournament-list-page__cell--status {
+    grid-area: status;
+    justify-self: end;
+  }
+
+  .tournament-list-page__cell--name {
+    grid-area: name;
+    font-weight: 700;
+    font-size: 1.02rem;
+  }
+
+  .tournament-list-page__table .tournament-list-page__actions-cell {
+    grid-area: actions;
+    margin-top: var(--ap-space-3);
+    padding-top: var(--ap-space-3);
+    border-top: var(--ap-border-width) solid var(--ap-color-border);
+  }
+
+  // The actions side by side on one line (no stacked full-width buttons).
+  .tournament-list-page__actions {
+    flex-direction: row;
+    flex-wrap: nowrap;
     align-items: center;
     justify-content: space-between;
-    gap: var(--ap-space-3);
-    padding: var(--ap-space-2) 0;
-    border-bottom: var(--ap-border-width) solid var(--ap-color-border);
-  }
-
-  // Thumbnail-only column, no meaningful label to show next to it, and the
-  // card already leads with the tournament's name -- dropped on mobile
-  // rather than given its own awkward unlabeled row.
-  .tournament-list-page__logo-cell {
-    display: none;
-  }
-
-  .tournament-list-page__cell--name::before,
-  .tournament-list-page__cell--sport::before,
-  .tournament-list-page__cell--status::before {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--ap-color-muted);
-  }
-
-  .tournament-list-page__cell--name::before {
-    content: 'Nom';
-  }
-
-  .tournament-list-page__cell--sport::before {
-    content: 'Sport';
-  }
-
-  .tournament-list-page__cell--status::before {
-    content: 'Statut';
-  }
-
-  .tournament-list-page__actions-cell {
-    border-bottom: none;
-  }
-
-  .tournament-list-page__actions {
-    flex-direction: column;
-    align-items: stretch;
-    gap: var(--ap-space-2);
-
-    ap-button {
-      display: block;
-    }
+    gap: var(--ap-space-1);
   }
 }
 
@@ -249,13 +272,6 @@
   color: var(--ap-color-signal-text);
   background: var(--ap-color-signal-soft);
   border-color: transparent;
-}
-
-@media (max-width: 768px) {
-  .tournament-list-page__name {
-    align-items: flex-end;
-    text-align: right;
-  }
 }
 
 // Overview and the list itself, each as its own card.

@@ -146,32 +146,23 @@
   border-color: transparent;
 }
 
-// Pre-registrations open: the band the organizer's players look for.
-.ap-tournament-card__registration {
+// Chips and the tag on one line, pinned to the bottom of the card.
+.ap-tournament-card__foot {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: flex-end;
   gap: var(--ap-space-2);
-  margin-top: var(--ap-space-1);
-  padding: var(--ap-space-2) var(--ap-space-3);
-  font-size: 0.85rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  color: var(--ap-color-on-primary);
-  background: var(--ap-color-primary);
-  border-radius: var(--ap-radius-md);
+  margin-top: auto;
 
-  strong {
-    font-size: 1rem;
-    text-transform: none;
+  .ap-tournament-card__chips {
+    flex: 1;
+    min-width: 0;
   }
 }
 
-// Tag (e.g. « Inscriptions ouvertes »): its own last row, at the right.
+// Tag (e.g. « Inscriptions ouvertes »): at the right end of that line.
 .ap-tournament-card__tag {
-  align-self: flex-end;
-  margin-top: auto;
+  flex: none;
+  margin-left: auto;
   display: inline-flex;
   white-space: nowrap;
   align-items: center;

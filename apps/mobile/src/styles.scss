@@ -5,6 +5,11 @@
 // neon-court | fresh-pitch | crimson-charge) -- see libs/design-tokens
 // ThemeService. The value below is only a development-time default.
 :root {
+  // Height of the phone's own bottom bar (Android gesture / button bar, iOS
+  // home indicator). env() alone reads 0 in some Android WebViews with
+  // Capacitor 8's edge-to-edge layout; Capacitor then exposes the same inset
+  // as --safe-area-inset-bottom, so take whichever is larger.
+  --ap-safe-bottom: max(env(safe-area-inset-bottom, 0px), var(--safe-area-inset-bottom, 0px));
   color-scheme: light dark;
 
   // Bridges design-tokens' theme-scoped --ap-* custom properties into
