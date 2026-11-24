@@ -9,6 +9,9 @@
   --ap-space-2: 8px;
   --ap-space-3: 12px;
   --ap-space-4: 16px;
+  // Used across the apps but long missing, which silently dropped those
+  // paddings/gaps -- kept on the 4px scale.
+  --ap-space-5: 20px;
   --ap-space-6: 24px;
   --ap-space-8: 32px;
   --ap-space-12: 48px;
@@ -23,9 +26,9 @@
   --ap-border-width-strong: 2px;
 
   // Shadows -- sobre, une seule échelle (mission §11 : éviter les ombres lourdes)
-  --ap-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.08);
-  --ap-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
-  --ap-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.16);
+  --ap-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06), 0 4px 14px -6px rgba(15, 23, 42, 0.12);
+  --ap-shadow-md: 0 2px 4px rgba(0, 0, 0, 0.06), 0 14px 30px -12px rgba(15, 23, 42, 0.28);
+  --ap-shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.06), 0 30px 60px -20px rgba(15, 23, 42, 0.4);
 
   // Opacity
   --ap-opacity-disabled: 0.4;

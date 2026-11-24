@@ -12,7 +12,8 @@
     },
     "launchPromo": {
       "badge": "Offerta di lancio",
-      "text": "Primi 3 tornei gratis e -50% sull’abbonamento annuale per i primi 50, con il codice",
+      "title": "3 tornei gratis, −50% sull’annuale",
+      "detail": "Per i primi 50 iscritti, con il codice",
       "cta": "Approfittane"
     },
     "eyebrow": {
@@ -20,8 +21,8 @@
       "count": "{{count}} eventi sportivi pubblicati"
     },
     "hero": {
-      "titleMain": "Organizza tornei e campionati",
-      "titleEmphasis": "seguiti in diretta da tutti.",
+      "titleMain": "I tuoi tornei,",
+      "titleEmphasis": "vissuti in diretta.",
       "subtitle": "Gironi, tabelloni a eliminazione, calendario, arbitraggio e classifiche, e un sito pubblico generato automaticamente per ogni tua competizione, aggiornato nell'istante in cui viene inserito un risultato.",
       "ctaCreate": "Crea il mio torneo",
       "storeApple": "Scarica su App Store",
@@ -180,6 +181,16 @@
       "point3": "Prezzo visibile, pagamento sul posto o con bonifico, «pagato» con un clic",
       "browse": "Vedi le iscrizioni aperte",
       "organize": "Organizza un torneo"
+    },
+    "stage": {
+      "live": "In diretta",
+      "liveContext": "Raggruppamento U11 · Campo 2",
+      "pool": "Girone A",
+      "updated": "Proprio ora",
+      "goal": "Gol! Aigles FC 2–1",
+      "goalFollowers": "Seguito da 48 genitori",
+      "registrations": "Iscrizioni U13",
+      "registrationsLeft": "4 posti rimasti · chiusura sabato"
     }
   },
   "legal": {
@@ -237,7 +248,9 @@
   "shell": {
     "loading": "Caricamento…",
     "error": {
-      "notFound": "Questo torneo non esiste o non è pubblicato."
+      "notFound": "Questo torneo non esiste o non è pubblicato.",
+      "title": "Torneo non trovato",
+      "cta": "Scopri i tornei"
     },
     "skipLink": "Vai al contenuto principale",
     "backAria": "Cerca un altro torneo",
@@ -267,7 +280,9 @@
       "categories": "Categorie",
       "rules": "Regolamento",
       "practicalInfo": "Informazioni pratiche",
-      "sponsors": "Sponsor"
+      "sponsors": "Sponsor",
+      "recentResults": "Ultimi risultati",
+      "fullStandings": "Vedi la classifica completa →"
     },
     "competition": {
       "thirdPlace": "Per il 3° posto",
@@ -288,7 +303,10 @@
       "payment": "Pagamento",
       "mySpace": "Il mio spazio responsabile",
       "alreadyRegistered": "Già iscritto · {{count}} squadra/e",
-      "another": "Iscrivi un'altra squadra"
+      "another": "Iscrivi un'altra squadra",
+      "barLabel": "Iscrizioni {{name}}",
+      "left": "{{remaining}} posto/i rimasto/i",
+      "closes": "chiusura il {{date}}"
     }
   },
   "schedule": {

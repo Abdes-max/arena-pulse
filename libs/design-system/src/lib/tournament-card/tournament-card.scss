@@ -6,10 +6,15 @@
 
 .ap-tournament-card {
   position: relative;
-  background: var(--ap-color-surface);
-  // Teal outline at rest (web and app lists alike); hover only lifts it.
-  border: var(--ap-border-width) solid var(--ap-color-signal);
-  border-radius: var(--ap-radius-lg);
+  // A tile lit from above: surface fading into the page, a quiet border at
+  // rest that turns signal-colored (with a glow) on hover.
+  background: linear-gradient(
+    180deg,
+    var(--ap-color-surface),
+    color-mix(in srgb, var(--ap-color-surface) 75%, var(--ap-color-bg))
+  );
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: 20px;
   box-shadow: var(--ap-shadow-sm);
   padding: var(--ap-space-4);
   display: flex;
@@ -30,7 +35,9 @@
 :host(:hover) .ap-tournament-card,
 :host(:focus-within) .ap-tournament-card {
   border-color: var(--ap-color-signal);
-  box-shadow: var(--ap-shadow-md);
+  box-shadow:
+    var(--ap-shadow-md),
+    0 0 0 4px color-mix(in srgb, var(--ap-color-signal) 15%, transparent);
 }
 
 :host(:hover),
@@ -89,12 +96,15 @@
 .ap-tournament-card__name {
   margin: 0;
   font-family: var(--ap-font-heading);
-  font-size: 1.05rem;
-  font-weight: 700;
+  font-size: 1.15rem;
+  font-weight: 800;
   color: var(--ap-color-fg);
+  line-height: 1.2;
+  // Two lines before truncating: tournament names are often long.
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .ap-tournament-card__dates {
@@ -122,6 +132,9 @@
   padding: 2px var(--ap-space-2);
   font-size: 0.78rem;
   font-weight: 600;
+  // Readable in both modes (it was inheriting a dark tone on the dark card).
+  color: var(--ap-color-fg);
+  background: color-mix(in srgb, var(--ap-color-fg) 7%, transparent);
   border: var(--ap-border-width) solid var(--ap-color-border);
   border-radius: 999px;
 }
@@ -133,36 +146,25 @@
   border-color: transparent;
 }
 
-// Pre-registrations open: the band the organizer's players look for.
-.ap-tournament-card__registration {
+// Chips and the tag on one line, pinned to the bottom of the card.
+.ap-tournament-card__foot {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: flex-end;
   gap: var(--ap-space-2);
-  margin-top: var(--ap-space-1);
-  padding: var(--ap-space-2) var(--ap-space-3);
-  font-size: 0.85rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  color: var(--ap-color-on-primary);
-  background: var(--ap-color-primary);
-  border-radius: var(--ap-radius-md);
+  margin-top: auto;
 
-  strong {
-    font-size: 1rem;
-    text-transform: none;
+  .ap-tournament-card__chips {
+    flex: 1;
+    min-width: 0;
   }
 }
 
-// Corner tag: pinned to the bottom-right corner, out of the flow, so a
-// tagged card keeps exactly the size of the others (it sits on the last
-// line's right, usually the dates). Dark, like the registration band.
+// Tag (e.g. « Inscriptions ouvertes »): at the right end of that line.
 .ap-tournament-card__tag {
-  position: absolute;
-  right: var(--ap-space-4);
-  bottom: var(--ap-space-4);
+  flex: none;
+  margin-left: auto;
   display: inline-flex;
+  white-space: nowrap;
   align-items: center;
   gap: var(--ap-space-1);
   padding: 2px var(--ap-space-2);

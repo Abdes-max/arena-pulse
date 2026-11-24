@@ -444,9 +444,12 @@
   gap: var(--ap-space-2);
   min-height: 44px;
   padding: 0 var(--ap-space-2) 0 var(--ap-space-4);
-  // Same as .schedule-page__match-card-header (Calendrier).
-  color: var(--ap-color-on-primary);
-  background: var(--ap-color-primary);
+  // Same as .schedule-page__match-card-header (Calendrier): a quiet band
+  // tinted with the accent, not a solid block of color.
+  color: var(--ap-color-fg);
+  font-weight: 700;
+  background: color-mix(in srgb, var(--ap-color-primary) 16%, var(--ap-color-surface));
+  border-bottom: var(--ap-border-width) solid var(--ap-color-border);
 }
 
 .structure-page__card-tag {

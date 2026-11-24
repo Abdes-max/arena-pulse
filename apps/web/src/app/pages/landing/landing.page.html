@@ -116,98 +116,72 @@
     </div>
   }
 
-  <!--
-    Ambient figures, not photography -- see the frontend-design skill note
-    in the commit: keeps the pictogram/line-art register already used for
-    icons elsewhere (venue pin on this page's own tournaments section,
-    tournament-shell's back arrow) rather than introducing photography that
-    would clash with it. Decorative only (aria-hidden), low opacity so they
-    never compete with the headline.
-  -->
-  <svg
-    class="landing-page__hero-figure landing-page__hero-figure--left"
-    viewBox="0 0 24 28"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="1.6"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-  >
-    <circle cx="12" cy="4.2" r="2.1" />
-    <path d="M12 6.3 L10.5 14 L6 22 M10.5 14 L16.5 17 L19.5 15" />
-    <path d="M12 9 L8 11.5 M12 9 L16 7.8" />
-  </svg>
-  <svg
-    class="landing-page__hero-figure landing-page__hero-figure--right"
-    viewBox="0 0 24 28"
-    fill="none"
-    stroke="currentColor"
-    stroke-width="1.6"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    aria-hidden="true"
-  >
-    <circle cx="12" cy="5" r="2.1" />
-    <path d="M12 7.1 L11 15 L8 19 L7 23.5 M11 15 L14.5 20 L16.5 24.5" />
-    <path d="M12 9 L8.5 4 M12 9 L15.5 3.2" />
-    <circle cx="15.5" cy="2" r="1.5" />
-  </svg>
-
   <div class="landing-page__hero-inner">
-    <!-- Launch offer -- the code itself is redeemed from the admin's
+    <div class="landing-page__hero-copy">
+      <!-- Launch offer -- the code itself is redeemed from the admin's
          Abonnement page (OrganizationsService.redeemLaunchPromo on the API). -->
-    <a class="landing-page__launch-promo" routerLink="/register">
-      <span class="landing-page__launch-promo-badge">{{
-        'landing.launchPromo.badge' | transloco
-      }}</span>
-      <span class="landing-page__launch-promo-text">
-        {{ 'landing.launchPromo.text' | transloco }}
-        <strong>TOURNARENA2026</strong>
-      </span>
-      <span class="landing-page__launch-promo-cta"
-        >{{ 'landing.launchPromo.cta' | transloco }} →</span
-      >
-    </a>
-    <p class="landing-page__eyebrow">
-      <span class="landing-page__eyebrow-dot" aria-hidden="true"></span>
-      @if (tournaments().length > 0) {
-        {{ 'landing.eyebrow.count' | transloco: { count: tournaments().length } }}
-      } @else {
-        {{ 'landing.eyebrow.brand' | transloco }}
-      }
-    </p>
-    <h1>
-      {{ 'landing.hero.titleMain' | transloco }}
-      <em>{{ 'landing.hero.titleEmphasis' | transloco }}</em>
-    </h1>
-    <p class="landing-page__subtitle">
-      {{ 'landing.hero.subtitle' | transloco }}
-    </p>
-    <div class="landing-page__hero-ctas">
-      <a class="landing-page__cta" routerLink="/register">{{
-        'landing.hero.ctaCreate' | transloco
-      }}</a>
-      <!-- Découvrir, filtered on tournaments taking registrations, upcoming. -->
-      <a
-        class="landing-page__cta landing-page__cta--ghost"
-        routerLink="/decouvrir"
-        [queryParams]="{ inscriptions: 1, periode: 'a-venir' }"
-        >{{ 'landing.hero.ctaJoin' | transloco }}</a
-      >
-    </div>
+      <a class="landing-page__launch-promo" routerLink="/register">
+        <span class="landing-page__launch-promo-icon" aria-hidden="true">🎁</span>
+        <span class="landing-page__launch-promo-body">
+          <span class="landing-page__launch-promo-badge">{{
+            'landing.launchPromo.badge' | transloco
+          }}</span>
+          <span class="landing-page__launch-promo-title">{{
+            'landing.launchPromo.title' | transloco
+          }}</span>
+          <span class="landing-page__launch-promo-detail">
+            {{ 'landing.launchPromo.detail' | transloco }}
+            <strong>TOURNARENA2026</strong>
+          </span>
+        </span>
+        <span class="landing-page__launch-promo-cta">
+          <span class="landing-page__sr-only">{{ 'landing.launchPromo.cta' | transloco }}</span>
+          <span aria-hidden="true">→</span>
+        </span>
+      </a>
+      <p class="landing-page__eyebrow">
+        <span class="landing-page__eyebrow-dot" aria-hidden="true"></span>
+        @if (tournaments().length > 0) {
+          {{ 'landing.eyebrow.count' | transloco: { count: tournaments().length } }}
+        } @else {
+          {{ 'landing.eyebrow.brand' | transloco }}
+        }
+      </p>
+      <h1>
+        {{ 'landing.hero.titleMain' | transloco }}
+        <em>{{ 'landing.hero.titleEmphasis' | transloco }}</em>
+      </h1>
+      <p class="landing-page__subtitle">
+        {{ 'landing.hero.subtitle' | transloco }}
+      </p>
+      <div class="landing-page__hero-ctas">
+        <a class="landing-page__cta" routerLink="/register">{{
+          'landing.hero.ctaCreate' | transloco
+        }}</a>
+        <!-- Découvrir, filtered on tournaments taking registrations, upcoming. -->
+        <a
+          class="landing-page__cta landing-page__cta--ghost"
+          routerLink="/decouvrir"
+          [queryParams]="{ inscriptions: 1, periode: 'a-venir' }"
+          >{{ 'landing.hero.ctaJoin' | transloco }}</a
+        >
+      </div>
 
-    <!-- The hero is permanently dark (data-mode="dark" above, regardless of
+      <!-- The hero is permanently dark (data-mode="dark" above, regardless of
          the page's own light/dark toggle) -- true is hardcoded here, not
          mode()-driven, for that reason (see appleBadgeSrc's own comment). -->
-    <div class="landing-page__hero-stores">
-      <a [href]="appStoreUrl" target="_blank" rel="noopener"
-        ><img [src]="appleBadgeSrc(true)" [attr.alt]="'landing.hero.storeApple' | transloco"
-      /></a>
-      <a href="#" (click)="openGoogleComingSoon($event)"
-        ><img [src]="googleBadgeSrc(true)" [attr.alt]="'landing.hero.storeGoogle' | transloco"
-      /></a>
+      <div class="landing-page__hero-stores">
+        <a [href]="appStoreUrl" target="_blank" rel="noopener"
+          ><img [src]="appleBadgeSrc(true)" [attr.alt]="'landing.hero.storeApple' | transloco"
+        /></a>
+        <a href="#" (click)="openGoogleComingSoon($event)"
+          ><img [src]="googleBadgeSrc(true)" [attr.alt]="'landing.hero.storeGoogle' | transloco"
+        /></a>
+      </div>
     </div>
+
+    <!-- What a tournament looks like on match day (sample teams, decorative). -->
+    <app-landing-stage aria-hidden="true" />
   </div>
 
   @if (tournaments().length > 0) {
@@ -347,7 +321,6 @@
               [logoUrl]="logoUrl(t.logoUrl)"
               [categories]="t.categoryNames ?? []"
               [format]="t.format ?? null"
-              [level]="t.level ?? null"
               [tag]="
                 openRegistrationIds()?.has(t.id)
                   ? ('discover.filters.registrationOpen' | transloco)

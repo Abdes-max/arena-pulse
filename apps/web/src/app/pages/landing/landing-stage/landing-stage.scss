@@ -1,0 +1,367 @@
+// Match-day stage (landing hero, right column): frosted cards floating over
+// the pitch glow. Sample content, see landing-stage.html.
+:host {
+  --live: #ff4d5e;
+  display: block;
+  position: relative;
+  min-height: 580px;
+  text-align: left;
+}
+
+.stage__card {
+  box-sizing: border-box;
+  position: absolute;
+  padding: 20px;
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--ap-color-surface) 72%, transparent);
+  border: var(--ap-border-width) solid rgb(255 255 255 / 14%);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 30px 60px -20px rgb(0 0 0 / 60%);
+  color: var(--ap-color-fg);
+}
+
+.stage__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-3);
+  font-size: 0.8rem;
+  color: var(--ap-color-muted);
+
+  strong {
+    font-family: var(--ap-font-heading);
+    font-size: 1.05rem;
+    color: var(--ap-color-fg);
+  }
+
+  b {
+    color: #f5b942;
+  }
+}
+
+// "EN DIRECT": a red dot that keeps pulsing.
+.stage__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: rgb(255 77 94 / 14%);
+  color: #ff8a95;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+
+  &::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--live);
+    animation: stage-live 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes stage-live {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(255 77 94 / 55%);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgb(255 77 94 / 0%);
+  }
+}
+
+.stage__chip {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgb(56 189 248 / 12%);
+  color: var(--ap-color-signal);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.stage__live {
+  top: 0;
+  left: 0;
+  width: min(440px, 100%);
+  z-index: 2;
+}
+
+.stage__score {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--ap-space-4);
+}
+
+.stage__team {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ap-space-2);
+  width: 110px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.stage__crest {
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  font-family: var(--ap-font-heading);
+  font-weight: 800;
+  font-size: 1.05rem;
+  color: #fff;
+  background: linear-gradient(135deg, #16a34a, #facc15);
+
+  &[data-crest='2'] {
+    background: linear-gradient(135deg, #2563eb, #60a5fa);
+  }
+}
+
+.stage__result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  strong {
+    font-family: var(--ap-font-heading);
+    font-size: 4rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  small {
+    margin: 0 0.15em;
+    color: var(--ap-color-muted);
+    font-size: 0.6em;
+  }
+
+  span {
+    margin-top: var(--ap-space-1);
+    color: var(--ap-color-signal);
+    font-weight: 700;
+    font-size: 0.85rem;
+  }
+}
+
+.stage__events {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ap-space-2);
+  margin-top: var(--ap-space-4);
+
+  span {
+    padding: 5px 10px;
+    border-radius: 10px;
+    background: rgb(255 255 255 / 5%);
+    color: var(--ap-color-muted);
+    font-size: 0.75rem;
+  }
+}
+
+.stage__table {
+  top: 230px;
+  right: 0;
+  width: 300px;
+  z-index: 3;
+
+  ol {
+    margin: var(--ap-space-2) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 0;
+    border-top: var(--ap-border-width) solid rgb(255 255 255 / 8%);
+    font-size: 0.85rem;
+    font-weight: 600;
+
+    span {
+      width: 20px;
+      color: var(--ap-color-muted);
+      font-weight: 700;
+    }
+
+    i {
+      width: 16px;
+      height: 16px;
+      border-radius: 5px;
+      background: #334155;
+    }
+
+    i:first-of-type {
+      margin-left: auto;
+    }
+
+    i.w {
+      background: #22c55e;
+    }
+
+    i.d {
+      background: #f5b942;
+    }
+
+    b {
+      width: 26px;
+      text-align: right;
+      font-family: var(--ap-font-heading);
+      font-size: 1rem;
+    }
+  }
+
+  li:first-child span {
+    color: #22c55e;
+  }
+}
+
+.stage__goal {
+  top: 320px;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-3);
+  width: 210px;
+  padding: 12px 14px;
+  z-index: 4;
+
+  strong {
+    display: block;
+    font-size: 0.9rem;
+  }
+
+  small {
+    color: var(--ap-color-muted);
+    font-size: 0.8rem;
+  }
+}
+
+.stage__goal-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f5b942, #f97316);
+  font-size: 1.2rem;
+}
+
+.stage__reg {
+  top: 480px;
+  left: 30px;
+  width: 290px;
+  padding: 16px 18px;
+  z-index: 4;
+
+  small {
+    color: var(--ap-color-muted);
+    font-size: 0.8rem;
+  }
+}
+
+.stage__bar {
+  display: block;
+  height: 10px;
+  margin: var(--ap-space-3) 0 var(--ap-space-2);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 8%);
+  overflow: hidden;
+
+  i {
+    display: block;
+    width: 75%;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--ap-color-signal), #f5b942);
+  }
+}
+
+// Gentle float, each card on its own rhythm.
+@media (prefers-reduced-motion: no-preference) {
+  .stage__card {
+    animation: stage-float 7s ease-in-out infinite;
+  }
+
+  .stage__table {
+    animation-delay: -2s;
+  }
+
+  .stage__goal {
+    animation-delay: -4s;
+  }
+
+  .stage__reg {
+    animation-delay: -5.5s;
+  }
+}
+
+@keyframes stage-float {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -8px;
+  }
+}
+
+// Phones: only the live score, in the flow.
+@media (max-width: 960px) {
+  :host {
+    min-height: 0;
+    max-width: 440px;
+    margin: 0 auto;
+  }
+
+  .stage__card {
+    position: relative;
+    inset: auto;
+  }
+
+  .stage__table,
+  .stage__goal,
+  .stage__reg {
+    display: none;
+  }
+}
+
+// Phone: a compact card, it sits under the headline.
+@media (max-width: 600px) {
+  .stage__card {
+    padding: var(--ap-space-3) var(--ap-space-4);
+  }
+
+  .stage__score {
+    margin-top: var(--ap-space-2);
+  }
+
+  .stage__result strong {
+    font-size: 2.3rem;
+  }
+
+  .stage__team {
+    width: 76px;
+    font-size: 0.75rem;
+  }
+
+  .stage__crest {
+    width: 36px;
+    height: 36px;
+    font-size: 0.8rem;
+  }
+}

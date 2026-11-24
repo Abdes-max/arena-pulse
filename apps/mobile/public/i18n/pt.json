@@ -5,10 +5,13 @@
     "hero": {
       "hint": "Grupos, quadros eliminatórios, calendário e classificações ao vivo.",
       "marqueeLabel": "A acontecer agora",
-      "titleMain": "Organize torneios e campeonatos",
-      "titleEmphasis": "seguidos ao vivo por todos.",
+      "titleMain": "Os seus torneios,",
+      "titleEmphasis": "vividos em direto.",
       "ctaCreate": "Criar o meu torneio",
-      "ctaJoin": "Inscrever-me num torneio"
+      "ctaJoin": "Inscrever-me num torneio",
+      "live": "Em direto",
+      "liveContext": "Encontro U11 · Campo 2",
+      "eyebrow": "{{count}} eventos desportivos publicados"
     },
     "published": {
       "title": "Eventos publicados",
@@ -38,8 +41,6 @@
       },
       "general": {
         "sectionTitle": "Geral",
-        "rate": "Avaliar a app",
-        "rateBadge": "Brevemente",
         "share": "Partilhar a app",
         "contact": "Contacte-nos",
         "pricing": "Preços",
@@ -51,6 +52,12 @@
         "terms": "Termos de utilização"
       },
       "copyright": "© 2026 TournArena. Todos os direitos reservados."
+    },
+    "stats": {
+      "events": "eventos publicados",
+      "sports": "desportos abrangidos",
+      "languages": "idiomas",
+      "freeTeams": "equipas grátis por torneio"
     }
   },
   "organizer": {
@@ -160,7 +167,10 @@
         "structureAction": "Estrutura",
         "registrationsAction": "Inscrições",
         "openFilter": "Inscrições abertas",
-        "managerSpace": "O meu espaço de responsável"
+        "managerSpace": "O meu espaço de responsável",
+        "menu": {
+          "profile": "O meu perfil"
+        }
       }
     },
     "account": {
@@ -765,6 +775,20 @@
       "submit": "Criar a organização",
       "back": "Voltar ao meu espaço de responsável",
       "error": "Não foi possível criar a organização."
+    },
+    "home": {
+      "greeting": "Olá {{name}} 👋",
+      "today": "Hoje",
+      "upcoming": "Em breve",
+      "kpi": {
+        "date": "data",
+        "categories": "categorias",
+        "pending": "por validar"
+      },
+      "previous": "Torneio anterior",
+      "next": "Torneio seguinte",
+      "upcomingTitle": "Os seus próximos torneios",
+      "allTitle": "Os seus torneios"
     }
   },
   "notifications": {
@@ -857,7 +881,10 @@
       "full": "Completo · lista de espera",
       "places": "{{remaining}} vaga(s) de {{total}}",
       "alreadyRegistered": "Já inscrito · {{count}} equipa(s)",
-      "another": "Inscrever outra equipa"
+      "another": "Inscrever outra equipa",
+      "barLabel": "Inscrições {{name}}",
+      "left": "{{remaining}} vaga(s) restante(s)",
+      "closes": "fecha a {{date}}"
     }
   },
   "myRegistrations": {

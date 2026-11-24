@@ -28,6 +28,7 @@ import {
   isTournamentPastPublic,
 } from 'shared-models';
 import { AuthService } from '../../admin/core/auth.service';
+import { LandingStage } from './landing-stage/landing-stage';
 import { APP_STORE_URL } from '../../core/app-store';
 import { CountUp, Reveal } from './landing-motion';
 
@@ -61,6 +62,7 @@ const DEFAULT_SPORT_DESCRIPTION_KEY = 'landing.sports.description.default';
     TimeFilter,
     RouterLink,
     Button,
+    LandingStage,
     LanguageSwitcher,
     Logo,
     ThemeModeToggle,
@@ -72,7 +74,12 @@ const DEFAULT_SPORT_DESCRIPTION_KEY = 'landing.sports.description.default';
     CountUp,
   ],
   templateUrl: './landing.page.html',
-  styleUrls: ['./landing.page.scss', './landing-motion.scss', './landing-promo.scss'],
+  styleUrls: [
+    './landing.page.scss',
+    './landing-hero.scss',
+    './landing-motion.scss',
+    './landing-promo.scss',
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LandingPage {
@@ -246,7 +253,7 @@ export class LandingPage {
   }
 
   protected onModeChange(next: ThemeMode): void {
-    this.themeService.setMode(document.documentElement, next);
+    this.themeService.setMode(document.documentElement, next, true);
   }
 
   protected onLanguageChange(code: string): void {

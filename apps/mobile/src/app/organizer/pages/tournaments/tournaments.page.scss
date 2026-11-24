@@ -17,21 +17,16 @@ ion-title {
   margin-inline-end: var(--ap-space-2);
 }
 
-.organizer-tournaments-page__account {
-  width: 32px;
-  height: 32px;
-  border: none;
-  background: transparent;
-  color: var(--ap-color-fg);
+.organizer-tournaments-page__actions {
   display: flex;
   align-items: center;
-  justify-content: center;
-  cursor: pointer;
+  gap: var(--ap-space-3);
+  margin-right: var(--ap-space-2);
 }
 
 .organizer-tournaments-page__avatar {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   border: none;
   background: var(--ap-color-signal-soft);
@@ -79,10 +74,14 @@ ion-title {
   text-align: left;
   color: inherit;
   cursor: pointer;
-  background: var(--ap-color-surface);
-  // Same teal outline as the public tournament cards.
-  border: var(--ap-border-width) solid var(--ap-color-signal);
-  border-radius: var(--ap-radius-lg);
+  // A tile lit from above, like the public tournament cards.
+  background: linear-gradient(
+    180deg,
+    var(--ap-color-surface),
+    color-mix(in srgb, var(--ap-color-surface) 75%, var(--ap-color-bg))
+  );
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: 20px;
   box-shadow: var(--ap-shadow-sm);
   padding: var(--ap-space-4);
   display: flex;
@@ -335,4 +334,303 @@ app-organizer-dashboard {
   font-weight: 700;
   font-size: 0.9rem;
   text-decoration: none;
+}
+
+// ================= Match-day night band (top of the list) =================
+.home-hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-4);
+  margin: calc(-1 * var(--ap-space-4)) calc(-1 * var(--ap-space-4)) var(--ap-space-1);
+  padding: var(--ap-space-6) var(--ap-space-4);
+  overflow: hidden;
+  color: var(--ap-color-fg);
+  background:
+    radial-gradient(22rem 16rem at 100% 0%, rgb(14 165 201 / 40%), transparent 70%),
+    radial-gradient(18rem 14rem at 0% 100%, rgb(245 185 66 / 14%), transparent 70%),
+    var(--ap-color-bg);
+  border-radius: 0 0 28px 28px;
+}
+
+.home-hero__hello {
+  span {
+    color: var(--ap-color-muted);
+    font-size: 0.85rem;
+    text-transform: capitalize;
+  }
+
+  h1 {
+    margin: 2px 0 0;
+    font-family: var(--ap-font-heading);
+    font-size: 1.85rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+}
+
+.home-hero__featured {
+  padding: var(--ap-space-4);
+  border-radius: 24px;
+  background: linear-gradient(140deg, #0e3b57, var(--ap-color-surface) 65%);
+  border: var(--ap-border-width) solid rgb(255 255 255 / 12%);
+  cursor: pointer;
+
+  h2 {
+    margin: var(--ap-space-2) 0 0;
+    font-family: var(--ap-font-heading);
+    font-size: 1.3rem;
+    font-weight: 800;
+    line-height: 1.15;
+  }
+}
+
+.home-hero__featured-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-2);
+}
+
+.home-hero__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgb(56 189 248 / 14%);
+  color: var(--ap-color-signal);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+// Plays today: the pulsing red "live" dot.
+.home-hero__pill--live {
+  background: rgb(255 77 94 / 15%);
+  color: #ff8a95;
+
+  &::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #ff4d5e;
+    animation: home-hero-live 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes home-hero-live {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(255 77 94 / 55%);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgb(255 77 94 / 0%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-hero__pill--live::before {
+    animation: none;
+  }
+}
+
+.home-hero__sport {
+  color: var(--ap-color-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.home-hero__venue {
+  margin: 4px 0 0;
+  color: var(--ap-color-muted);
+  font-size: 0.85rem;
+}
+
+.home-hero__kpis {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--ap-space-2);
+  margin-top: var(--ap-space-4);
+
+  div {
+    padding: var(--ap-space-2) var(--ap-space-3);
+    border-radius: 14px;
+    background: rgb(7 11 20 / 45%);
+  }
+
+  b {
+    display: block;
+    font-family: var(--ap-font-heading);
+    font-size: 1.3rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+  }
+
+  small {
+    color: var(--ap-color-muted);
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+}
+
+.home-hero__kpi-gold {
+  color: #f5b942;
+}
+
+// Arrows + dots under the featured card (several tournaments).
+.home-hero__section-title {
+  margin: var(--ap-space-4) 0 var(--ap-space-2);
+  color: var(--ap-color-muted);
+  font-family: var(--ap-font-body);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.home-hero__pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ap-space-3);
+  margin-top: var(--ap-space-3);
+
+  button {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: var(--ap-border-width) solid var(--ap-color-border);
+    border-radius: 50%;
+    background: var(--ap-color-surface);
+    color: var(--ap-color-fg);
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+}
+
+.home-hero__dots {
+  display: flex;
+  gap: 6px;
+
+  i {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--ap-color-border);
+    transition: width var(--ap-motion-fast) var(--ap-easing-standard);
+  }
+
+  .home-hero__dot--on {
+    width: 18px;
+    background: var(--ap-color-signal);
+  }
+}
+
+.home-hero__count {
+  min-width: 3ch;
+  color: var(--ap-color-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.home-hero__quick {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--ap-space-2);
+
+  button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--ap-color-muted);
+    font: inherit;
+    font-size: 0.7rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  i {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 18px;
+    font-style: normal;
+    font-size: 1.4rem;
+    background: rgb(255 255 255 / 5%);
+    border: var(--ap-border-width) solid rgb(255 255 255 / 9%);
+  }
+}
+
+// Account menu, dropped under the avatar.
+.organizer-tournaments-page__menu-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  border: none;
+  background: transparent;
+}
+
+.organizer-tournaments-page__menu {
+  position: absolute;
+  top: calc(100% - 4px);
+  right: var(--ap-space-3);
+  z-index: 11;
+  display: flex;
+  flex-direction: column;
+  min-width: 230px;
+  padding: var(--ap-space-2);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: 16px;
+  background: var(--ap-color-surface);
+  box-shadow: var(--ap-shadow-lg);
+}
+
+.organizer-tournaments-page__menu-head {
+  display: flex;
+  flex-direction: column;
+  margin: 0 0 var(--ap-space-1);
+  padding: var(--ap-space-2) var(--ap-space-3) var(--ap-space-3);
+  border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+  font-size: 0.8rem;
+  color: var(--ap-color-muted);
+
+  strong {
+    color: var(--ap-color-fg);
+    font-size: 0.95rem;
+  }
+}
+
+.organizer-tournaments-page__menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-3);
+  min-height: 44px;
+  padding: 0 var(--ap-space-3);
+  border: none;
+  border-radius: 10px;
+  background: none;
+  color: var(--ap-color-fg);
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:active {
+    background: color-mix(in srgb, var(--ap-color-fg) 8%, transparent);
+  }
+}
+
+.organizer-tournaments-page__menu-item--danger {
+  color: var(--ap-color-error);
 }

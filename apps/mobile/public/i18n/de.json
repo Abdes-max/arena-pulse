@@ -5,10 +5,13 @@
     "hero": {
       "hint": "Gruppen, K.-o.-Tabellen, Spielplan und Tabellen live.",
       "marqueeLabel": "Gerade jetzt",
-      "titleMain": "Turniere und Meisterschaften organisieren",
-      "titleEmphasis": "live von allen verfolgt.",
+      "titleMain": "Ihre Turniere,",
+      "titleEmphasis": "live erlebt.",
       "ctaCreate": "Mein Turnier erstellen",
-      "ctaJoin": "Für ein Turnier anmelden"
+      "ctaJoin": "Für ein Turnier anmelden",
+      "live": "Live",
+      "liveContext": "U11-Spielfest · Platz 2",
+      "eyebrow": "{{count}} veröffentlichte Sportveranstaltungen"
     },
     "published": {
       "title": "Veröffentlichte Veranstaltungen",
@@ -38,8 +41,6 @@
       },
       "general": {
         "sectionTitle": "Allgemein",
-        "rate": "App bewerten",
-        "rateBadge": "Demnächst",
         "share": "App teilen",
         "contact": "Kontaktieren Sie uns",
         "pricing": "Preise",
@@ -51,6 +52,12 @@
         "terms": "Nutzungsbedingungen"
       },
       "copyright": "© 2026 TournArena. Alle Rechte vorbehalten."
+    },
+    "stats": {
+      "events": "veröffentlichte Veranstaltungen",
+      "sports": "Sportarten",
+      "languages": "Sprachen",
+      "freeTeams": "kostenlose Teams pro Turnier"
     }
   },
   "organizer": {
@@ -160,7 +167,10 @@
         "structureAction": "Struktur",
         "registrationsAction": "Anmeldungen",
         "openFilter": "Anmeldung offen",
-        "managerSpace": "Mein Teamverantwortlichen-Bereich"
+        "managerSpace": "Mein Teamverantwortlichen-Bereich",
+        "menu": {
+          "profile": "Mein Profil"
+        }
       }
     },
     "account": {
@@ -765,6 +775,20 @@
       "submit": "Organisation erstellen",
       "back": "Zurück zu meinem Bereich",
       "error": "Die Organisation konnte nicht erstellt werden."
+    },
+    "home": {
+      "greeting": "Hallo {{name}} 👋",
+      "today": "Heute",
+      "upcoming": "Demnächst",
+      "kpi": {
+        "date": "Datum",
+        "categories": "Kategorien",
+        "pending": "zu prüfen"
+      },
+      "previous": "Vorheriges Turnier",
+      "next": "Nächstes Turnier",
+      "upcomingTitle": "Ihre kommenden Turniere",
+      "allTitle": "Ihre Turniere"
     }
   },
   "notifications": {
@@ -857,7 +881,10 @@
       "full": "Voll · Warteliste",
       "places": "{{remaining}} von {{total}} Plätzen",
       "alreadyRegistered": "Bereits angemeldet · {{count}} Team(s)",
-      "another": "Weiteres Team anmelden"
+      "another": "Weiteres Team anmelden",
+      "barLabel": "Anmeldungen {{name}}",
+      "left": "{{remaining}} Platz/Plätze frei",
+      "closes": "Schluss am {{date}}"
     }
   },
   "myRegistrations": {

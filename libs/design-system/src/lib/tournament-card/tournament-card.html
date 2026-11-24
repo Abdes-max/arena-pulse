@@ -21,31 +21,28 @@
     <span class="ap-tournament-card__organizer">{{ organizer }}</span>
   }
 
-  @if (categories().length || format() || level()) {
-    <div class="ap-tournament-card__chips">
-      @for (category of categories(); track category) {
-        <span class="ap-tournament-card__chip ap-tournament-card__chip--category">{{
-          category
-        }}</span>
-      }
-      @if (format(); as f) {
-        <span class="ap-tournament-card__chip">{{ f }}</span>
-      }
-      @if (level(); as l) {
-        <span class="ap-tournament-card__chip">{{ l }}</span>
-      }
-    </div>
-  }
-
-  @if (tag(); as t) {
-    <span class="ap-tournament-card__tag">{{ t }}</span>
-  }
-
-  @if (registrationLabel(); as label) {
-    <div class="ap-tournament-card__registration">
-      <span>{{ label }}</span>
-      @if (priceLabel(); as price) {
-        <strong>{{ price }}</strong>
+  <!-- Chips on the left (wrapping if needed), the tag -- or the
+       registration label, with its price -- always at the right end of the
+       same line: the same place on every card. -->
+  @if (categories().length || format() || tag() || registrationLabel()) {
+    <div class="ap-tournament-card__foot">
+      <div class="ap-tournament-card__chips">
+        @for (category of categories(); track category) {
+          <span class="ap-tournament-card__chip ap-tournament-card__chip--category">{{
+            category
+          }}</span>
+        }
+        @if (format(); as f) {
+          <span class="ap-tournament-card__chip">{{ f }}</span>
+        }
+      </div>
+      @if (tag() ?? registrationLabel(); as t) {
+        <span class="ap-tournament-card__tag"
+          >{{ t }}
+          @if (!tag() && priceLabel(); as price) {
+            · <strong>{{ price }}</strong>
+          }
+        </span>
       }
     </div>
   }

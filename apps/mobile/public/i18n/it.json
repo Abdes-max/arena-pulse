@@ -5,10 +5,13 @@
     "hero": {
       "hint": "Gironi, tabelloni a eliminazione, calendario e classifiche in diretta.",
       "marqueeLabel": "In questo momento",
-      "titleMain": "Organizza tornei e campionati",
-      "titleEmphasis": "seguiti in diretta da tutti.",
+      "titleMain": "I tuoi tornei,",
+      "titleEmphasis": "vissuti in diretta.",
       "ctaCreate": "Crea il mio torneo",
-      "ctaJoin": "Iscrivermi a un torneo"
+      "ctaJoin": "Iscrivermi a un torneo",
+      "live": "In diretta",
+      "liveContext": "Raggruppamento U11 · Campo 2",
+      "eyebrow": "{{count}} eventi sportivi pubblicati"
     },
     "published": {
       "title": "Eventi pubblicati",
@@ -38,8 +41,6 @@
       },
       "general": {
         "sectionTitle": "Generale",
-        "rate": "Valuta l'app",
-        "rateBadge": "Prossimamente",
         "share": "Condividi l'app",
         "contact": "Contattaci",
         "pricing": "Prezzi",
@@ -51,6 +52,12 @@
         "terms": "Condizioni d'uso"
       },
       "copyright": "© 2026 TournArena. Tutti i diritti riservati."
+    },
+    "stats": {
+      "events": "eventi pubblicati",
+      "sports": "sport coperti",
+      "languages": "lingue",
+      "freeTeams": "squadre gratuite per torneo"
     }
   },
   "organizer": {
@@ -160,7 +167,10 @@
         "structureAction": "Struttura",
         "registrationsAction": "Iscrizioni",
         "openFilter": "Iscrizioni aperte",
-        "managerSpace": "Il mio spazio responsabile"
+        "managerSpace": "Il mio spazio responsabile",
+        "menu": {
+          "profile": "Il mio profilo"
+        }
       }
     },
     "account": {
@@ -765,6 +775,20 @@
       "submit": "Crea l'organizzazione",
       "back": "Torna al mio spazio responsabile",
       "error": "Impossibile creare l'organizzazione."
+    },
+    "home": {
+      "greeting": "Ciao {{name}} 👋",
+      "today": "Oggi",
+      "upcoming": "In arrivo",
+      "kpi": {
+        "date": "data",
+        "categories": "categorie",
+        "pending": "da validare"
+      },
+      "previous": "Torneo precedente",
+      "next": "Torneo successivo",
+      "upcomingTitle": "I tuoi prossimi tornei",
+      "allTitle": "I tuoi tornei"
     }
   },
   "notifications": {
@@ -857,7 +881,10 @@
       "full": "Completo · lista d’attesa",
       "places": "{{remaining}} posto/i su {{total}}",
       "alreadyRegistered": "Già iscritto · {{count}} squadra/e",
-      "another": "Iscrivi un'altra squadra"
+      "another": "Iscrivi un'altra squadra",
+      "barLabel": "Iscrizioni {{name}}",
+      "left": "{{remaining}} posto/i rimasto/i",
+      "closes": "chiusura il {{date}}"
     }
   },
   "myRegistrations": {

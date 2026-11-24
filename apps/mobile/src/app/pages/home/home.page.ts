@@ -8,8 +8,8 @@ import {
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IonContent } from '@ionic/angular/standalone';
-import { TranslocoPipe } from '@jsverse/transloco';
-import { MatchCard, MatchCardTeam } from 'design-system';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { FillBar, MatchCard, MatchCardTeam } from 'design-system';
 import { AssetUrlService, PublicApiService } from 'api-client';
 import { Match, PublicRegistrationInfo } from 'shared-models';
 import { OrganizerAuthService } from '../../organizer/core/auth.service';
@@ -18,7 +18,7 @@ import { TournamentContextService } from '../../core/tournament-context.service'
 /** Mirrors apps/web's home.page.ts (the "Tournoi" tab's content). */
 @Component({
   selector: 'app-home-page',
-  imports: [IonContent, MatchCard, RouterLink, TranslocoPipe],
+  imports: [FillBar, IonContent, MatchCard, RouterLink, TranslocoPipe],
   templateUrl: './home.page.html',
   styleUrl: './home.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -27,12 +27,35 @@ export class HomePage {
   private readonly api = inject(PublicApiService);
   protected readonly context = inject(TournamentContextService);
   private readonly assetUrl = inject(AssetUrlService);
+  private readonly transloco = inject(TranslocoService);
 
   protected readonly tournament = this.context.tournament;
   protected readonly upcomingMatches = signal<Match[]>([]);
   // "Inscriptions ouvertes" block (same as apps/web's home page): pre-register
   // a team, and the manager's space once signed in.
   protected readonly registration = signal<PublicRegistrationInfo | null>(null);
+
+  // Under a category's fill bar: "4 place(s) restante(s) · clôture le
+  // samedi 12 décembre".
+  protected fillNote(
+    category: PublicRegistrationInfo['categories'][number],
+    closesAt: string | null,
+  ): string {
+    const t = (key: string, params?: Record<string, unknown>) =>
+      this.transloco.translate('manager.home.' + key, params);
+    const parts = [
+      category.remaining === 0 ? t('full') : t('left', { remaining: category.remaining }),
+    ];
+    if (closesAt) {
+      const date = new Date(closesAt).toLocaleDateString(this.transloco.getActiveLang(), {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+      });
+      parts.push(t('closes', { date }));
+    }
+    return parts.join(' · ');
+  }
   protected readonly player = inject(OrganizerAuthService).currentUser;
   // Teams the signed-in manager already registered here ("Déjà inscrit").
   protected readonly myTeams = signal(0);

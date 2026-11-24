@@ -24,10 +24,12 @@
     </ion-toolbar>
     <div
       class="tournament-shell__hero"
-      [class.tournament-shell__hero--has-background]="!!t.headerBackgroundUrl"
-      [style.background-image]="headerBackgroundImage(t.headerBackgroundUrl, heroLight())"
-      [attr.data-theme]="t.headerBackgroundUrl ? heroTheme(t.theme) : null"
-      [attr.data-mode]="t.headerBackgroundUrl ? (heroLight() ? 'light' : 'dark') : null"
+      [class.tournament-shell__hero--has-background]="
+        !!headerBackgroundImage(t.headerBackgroundUrl)
+      "
+      [style.background-image]="headerBackgroundImage(t.headerBackgroundUrl)"
+      [attr.data-theme]="heroTheme(t.theme)"
+      data-mode="dark"
     >
       <div class="tournament-shell__title-row">
         @if (logoUrl(t.logoUrl); as logo) {

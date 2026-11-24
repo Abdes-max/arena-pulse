@@ -5,32 +5,57 @@
     /></a>
     <ion-title>{{ 'organizer.tournaments.list.title' | transloco }}</ion-title>
     @if (user(); as u) {
-      <button
-        class="organizer-tournaments-page__account"
-        type="button"
-        slot="end"
-        [attr.aria-label]="'organizer.tournaments.list.accountAction' | transloco"
-        routerLink="/organizer/account"
-      >
-        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-          <path
-            fill="currentColor"
-            d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-4.42 0-8 2.24-8 5v1a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-1c0-2.76-3.58-5-8-5Z"
-          />
-        </svg>
-      </button>
-      <button
-        class="organizer-tournaments-page__avatar"
-        type="button"
-        slot="end"
-        [attr.aria-label]="'organizer.tournaments.list.logout' | transloco"
-        [attr.title]="u.firstName + ' ' + u.lastName"
-        (click)="logout()"
-      >
-        {{ u.firstName.charAt(0) }}{{ u.lastName.charAt(0) }}
-      </button>
+      <!-- Light/dark switch (same as the entry page), then the avatar, which
+           opens the account menu: profile, sign out. -->
+      <div class="organizer-tournaments-page__actions" slot="end">
+        <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
+        <button
+          class="organizer-tournaments-page__avatar"
+          type="button"
+          aria-haspopup="menu"
+          [attr.aria-expanded]="menuOpen()"
+          [attr.aria-label]="'organizer.tournaments.list.accountAction' | transloco"
+          (click)="menuOpen.set(!menuOpen())"
+        >
+          {{ u.firstName.charAt(0) }}{{ u.lastName.charAt(0) }}
+        </button>
+      </div>
     }
   </ion-toolbar>
+  @if (menuOpen() && user(); as u) {
+    <!-- Tap outside closes the menu (a button, out of the tab order). -->
+    <button
+      type="button"
+      class="organizer-tournaments-page__menu-backdrop"
+      tabindex="-1"
+      aria-hidden="true"
+      (click)="menuOpen.set(false)"
+    ></button>
+    <div class="organizer-tournaments-page__menu" role="menu">
+      <p class="organizer-tournaments-page__menu-head">
+        <strong>{{ u.firstName }} {{ u.lastName }}</strong>
+        <span>{{ u.email }}</span>
+      </p>
+      <a
+        role="menuitem"
+        class="organizer-tournaments-page__menu-item"
+        routerLink="/organizer/account"
+        (click)="menuOpen.set(false)"
+      >
+        <span aria-hidden="true">👤</span>
+        {{ 'organizer.tournaments.list.menu.profile' | transloco }}
+      </a>
+      <button
+        role="menuitem"
+        type="button"
+        class="organizer-tournaments-page__menu-item organizer-tournaments-page__menu-item--danger"
+        (click)="logout()"
+      >
+        <span aria-hidden="true">⎋</span>
+        {{ 'organizer.tournaments.list.logout' | transloco }}
+      </button>
+    </div>
+  }
 </ion-header>
 
 <ion-content class="organizer-tournaments-page">
@@ -39,6 +64,103 @@
     <ion-refresher-content />
   </ion-refresher>
   <div class="organizer-tournaments-page__list">
+    <!-- Match-day night band: greeting, the tournament of the moment and
+         its shortcuts, always on the dark brand palette. -->
+    @if (!loading() && featured(); as f) {
+      <section class="home-hero" data-theme="ink-signal" data-mode="dark">
+        <div class="home-hero__hello">
+          <span>{{ today }}</span>
+          <h1>
+            {{ 'organizer.home.greeting' | transloco: { name: user()?.firstName ?? '' } }}
+          </h1>
+        </div>
+        <h2 class="home-hero__section-title">
+          {{
+            (featuredUpcoming() ? 'organizer.home.upcomingTitle' : 'organizer.home.allTitle')
+              | transloco
+          }}
+        </h2>
+        <div
+          class="home-hero__featured"
+          role="button"
+          tabindex="0"
+          (click)="openTournament(f)"
+          (keydown.enter)="openTournament(f)"
+          (keydown.space)="openTournament(f)"
+          (touchstart)="onFeaturedTouchStart($event)"
+          (touchend)="onFeaturedTouchEnd($event)"
+        >
+          <div class="home-hero__featured-top">
+            <span class="home-hero__pill" [class.home-hero__pill--live]="playsToday(f)">
+              {{ (playsToday(f) ? 'organizer.home.today' : 'organizer.home.upcoming') | transloco }}
+            </span>
+            <span class="home-hero__sport">{{ f.sportName }}</span>
+          </div>
+          <h2>{{ f.name }}</h2>
+          @if (f.venueName) {
+            <p class="home-hero__venue">{{ f.venueName }}</p>
+          }
+          <div class="home-hero__kpis">
+            <div>
+              <b>{{ shortDate(f) }}</b>
+              <small>{{ 'organizer.home.kpi.date' | transloco }}</small>
+            </div>
+            <div>
+              <b>{{ f.categoryNames?.length || '–' }}</b>
+              <small>{{ 'organizer.home.kpi.categories' | transloco }}</small>
+            </div>
+            <div>
+              <b class="home-hero__kpi-gold">{{ f.pendingRegistrations ?? 0 }}</b>
+              <small>{{ 'organizer.home.kpi.pending' | transloco }}</small>
+            </div>
+          </div>
+        </div>
+        <!-- Several tournaments: arrows (or a swipe) go through them. -->
+        @if (featuredList().length > 1) {
+          <div class="home-hero__pager">
+            <button
+              type="button"
+              [attr.aria-label]="'organizer.home.previous' | transloco"
+              (click)="stepFeatured(-1)"
+            >
+              ‹
+            </button>
+            <span class="home-hero__dots" aria-hidden="true">
+              @for (t of featuredList(); track t.id) {
+                <i [class.home-hero__dot--on]="t.id === f.id"></i>
+              }
+            </span>
+            <span class="home-hero__count"
+              >{{ featuredList().indexOf(f) + 1 }} / {{ featuredList().length }}</span
+            >
+            <button
+              type="button"
+              [attr.aria-label]="'organizer.home.next' | transloco"
+              (click)="stepFeatured(1)"
+            >
+              ›
+            </button>
+          </div>
+        }
+        <div class="home-hero__quick">
+          <button type="button" (click)="openScores($event, f)">
+            <i aria-hidden="true">⚡</i>{{ 'organizer.tournaments.list.scoresAction' | transloco }}
+          </button>
+          <button type="button" (click)="openStructure($event, f)">
+            <i aria-hidden="true">🧩</i
+            >{{ 'organizer.tournaments.list.structureAction' | transloco }}
+          </button>
+          <button type="button" (click)="openStandings($event, f)">
+            <i aria-hidden="true">🏆</i
+            >{{ 'organizer.tournaments.list.standingsAction' | transloco }}
+          </button>
+          <button type="button" (click)="openRegistrations($event, f)">
+            <i aria-hidden="true">📝</i
+            >{{ 'organizer.tournaments.list.registrationsAction' | transloco }}
+          </button>
+        </div>
+      </section>
+    }
     <!-- Same account as a team manager: its space, when it has requests. -->
     @if (hasRegistrations()) {
       <a class="organizer-tournaments-page__switch" routerLink="/espace-responsable">

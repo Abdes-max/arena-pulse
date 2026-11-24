@@ -5,6 +5,11 @@
 // neon-court | fresh-pitch | crimson-charge) -- see libs/design-tokens
 // ThemeService. The value below is only a development-time default.
 :root {
+  // Height of the phone's own bottom bar (Android gesture / button bar, iOS
+  // home indicator). env() alone reads 0 in some Android WebViews with
+  // Capacitor 8's edge-to-edge layout; Capacitor then exposes the same inset
+  // as --safe-area-inset-bottom, so take whichever is larger.
+  --ap-safe-bottom: max(env(safe-area-inset-bottom, 0px), var(--safe-area-inset-bottom, 0px));
   color-scheme: light dark;
 
   // Bridges design-tokens' theme-scoped --ap-* custom properties into
@@ -39,6 +44,16 @@ body {
   margin: 0;
 }
 
+// « Nuit de match » headings: the theme's display face, heavy and tight.
+h1,
+h2,
+h3 {
+  font-family: var(--ap-font-heading);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
 // Every ion-segment in the app (category/phase/tab filters). Ionic's default
 // unselected --color is `rgba(var(--ion-text-color-rgb, 0, 0, 0), 0.6)` --
 // we never bridge --ion-text-color-rgb (only --ion-text-color), so it always
@@ -46,12 +61,51 @@ body {
 // --color/--color-checked directly sidesteps that broken rgb-var lookup.
 ion-segment-button {
   --color: var(--ap-color-muted);
-  --color-checked: var(--ap-color-fg);
+  --color-checked: var(--ap-color-bg);
+}
+
+// Segmented pills (« Nuit de match »), same look as web's ap-tabs: a
+// surface tray, the current tab a solid pill -- no md underline. Every
+// segment here is `scrollable`, so Ionic itself centers the tapped tab.
+ion-segment {
+  width: fit-content;
+  max-width: calc(100% - 2 * var(--ap-space-4));
+  padding: 4px;
+  gap: 4px;
+  border-radius: 16px;
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  // Still scrolls by swipe/drag, without a scrollbar under the pills.
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+ion-segment-button {
+  --background-checked: var(--ap-color-fg);
+  --background-hover: transparent;
+  --indicator-color: transparent;
+  --indicator-height: 0;
+  --border-radius: 12px;
+  --padding-start: var(--ap-space-4);
+  --padding-end: var(--ap-space-4);
+  min-height: 36px;
+  min-width: auto;
+  border-radius: 12px;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 600;
+
+  &::part(indicator) {
+    display: none;
+  }
 }
 
 // Ionic's default segment-button label size reads a bit large as a row of
 // filter tabs; ion-label is light-DOM content projected into
 // ion-segment-button, so font-size set here cascades into it normally.
 ion-segment-button ion-label {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
 }

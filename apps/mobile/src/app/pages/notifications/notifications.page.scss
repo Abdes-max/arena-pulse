@@ -121,3 +121,14 @@ ion-title {
   font-size: 0.78rem;
   color: var(--ap-color-muted);
 }
+
+// A quiet secondary pill, like ap-button's secondary variant -- not
+// Ionic's default uppercase outline.
+.notifications-page__test {
+  --background: var(--ap-color-border);
+  --color: var(--ap-color-fg);
+  --box-shadow: none;
+  text-transform: none;
+  font-weight: 700;
+  letter-spacing: 0;
+}

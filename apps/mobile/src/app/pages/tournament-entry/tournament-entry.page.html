@@ -200,32 +200,6 @@
                 </svg>
               </span>
             </a>
-            <!-- Pas de lien réel : TournArena n'est pas encore listée sur
-                 l'App Store (TestFlight uniquement), donc pas de page
-                 d'évaluation vers laquelle renvoyer -- une ligne cliquable
-                 qui ne mène nulle part est pire que pas de lien du tout,
-                 d'où le badge "Bientôt disponible" à la place de l'icône de
-                 lien externe, et pas de tap possible (même logique que
-                 l'état ap-share-button--failed : visible plutôt que
-                 silencieux). -->
-            <div
-              class="tournament-entry-page__settings-row tournament-entry-page__settings-row--disabled"
-            >
-              <span class="tournament-entry-page__settings-row-icon">
-                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-                  <path
-                    fill="currentColor"
-                    d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
-                  />
-                </svg>
-              </span>
-              <span>{{ 'tournamentEntry.settings.general.rate' | transloco }}</span>
-              <span class="tournament-entry-page__settings-trailing">
-                <span class="tournament-entry-page__settings-badge">{{
-                  'tournamentEntry.settings.general.rateBadge' | transloco
-                }}</span>
-              </span>
-            </div>
             <!-- L'icône et l'étiquette ne sont que la partie visible du
                  ap-share-button niché en fin de ligne (voir plus bas) --
                  pointer-events: none dessus, avec (click) porté par la ligne
@@ -410,6 +384,13 @@
     </div>
   } @else {
     <div class="tournament-entry-page__hero-body">
+      @if (tournaments().length > 0) {
+        <!-- Same eyebrow as apps/web's landing page; opens the event list. -->
+        <button type="button" class="tournament-entry-page__eyebrow" (click)="expandSearch()">
+          <span class="tournament-entry-page__eyebrow-dot" aria-hidden="true"></span>
+          {{ 'tournamentEntry.hero.eyebrow' | transloco: { count: tournaments().length } }}
+        </button>
+      }
       <!-- Same headline and call to action as apps/web's landing page. -->
       <h1 class="tournament-entry-page__title">
         {{ 'tournamentEntry.hero.titleMain' | transloco }}
@@ -418,6 +399,31 @@
       <p class="tournament-entry-page__hint">
         {{ 'tournamentEntry.hero.hint' | transloco }}
       </p>
+      <!-- What a tournament looks like on match day: sample teams, decorative. -->
+      <div class="tournament-entry-page__live" aria-hidden="true">
+        <div class="tournament-entry-page__live-head">
+          <span class="tournament-entry-page__live-pill">{{
+            'tournamentEntry.hero.live' | transloco
+          }}</span>
+          <span>{{ 'tournamentEntry.hero.liveContext' | transloco }}</span>
+        </div>
+        <div class="tournament-entry-page__live-score">
+          <span class="tournament-entry-page__live-team">
+            <span class="tournament-entry-page__live-crest">AE</span>
+            Aigles FC
+          </span>
+          <span class="tournament-entry-page__live-result">
+            <strong>2<small>–</small>1</strong>
+            <span>34&#x2032;</span>
+          </span>
+          <span class="tournament-entry-page__live-team">
+            <span class="tournament-entry-page__live-crest tournament-entry-page__live-crest--b"
+              >OL</span
+            >
+            AS Olympe
+          </span>
+        </div>
+      </div>
       <div class="tournament-entry-page__hero-ctas">
         <ap-button type="button" [fullWidth]="true" routerLink="/organizer/register">
           {{ 'tournamentEntry.hero.ctaCreate' | transloco }}
@@ -453,6 +459,35 @@
   (ionScrollStart)="dismissKeyboard()"
   (click)="onContentTap($event)"
 >
+  <!-- Same figures as apps/web's landing page, each one a way in: the event
+       list, the language picker (settings), creating a tournament. -->
+  <ul class="tournament-entry-page__stats">
+    <li>
+      <button type="button" (click)="expandSearch()">
+        <strong>{{ tournaments().length }}</strong>
+        <span>{{ 'tournamentEntry.stats.events' | transloco }}</span>
+      </button>
+    </li>
+    <li>
+      <button type="button" (click)="expandSearch()">
+        <strong class="tournament-entry-page__stats-warm">{{ sportCount() }}</strong>
+        <span>{{ 'tournamentEntry.stats.sports' | transloco }}</span>
+      </button>
+    </li>
+    <li>
+      <button type="button" (click)="toggleSettings()">
+        <strong>{{ languages.length }}</strong>
+        <span>{{ 'tournamentEntry.stats.languages' | transloco }}</span>
+      </button>
+    </li>
+    <li>
+      <a routerLink="/organizer/register">
+        <strong class="tournament-entry-page__stats-warm">8</strong>
+        <span>{{ 'tournamentEntry.stats.freeTeams' | transloco }}</span>
+      </a>
+    </li>
+  </ul>
+
   <section class="tournament-entry-page__published">
     <h2 class="tournament-entry-page__published-title">
       <!-- A button: tapping the title opens the search full screen too. -->
@@ -536,7 +571,6 @@
               [organizerName]="t.organizerName"
               [categories]="t.categoryNames ?? []"
               [format]="t.format ?? null"
-              [level]="t.level ?? null"
               [tag]="
                 t.registration
                   ? ('tournamentEntry.published.filters.registrationOpen' | transloco)

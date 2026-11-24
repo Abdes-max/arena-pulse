@@ -28,4 +28,18 @@ export const THEMES: readonly ThemeDescriptor[] = [
 ];
 
 export const DEFAULT_THEME: ThemeName = 'ink-signal';
-export const DEFAULT_MODE: ThemeMode = 'light';
+// « Nuit de match »: the apps open dark; light stays one toggle away.
+export const DEFAULT_MODE: ThemeMode = 'dark';
+
+/** Where the visitor's own light/dark choice is kept (index.html reads it too). */
+export const MODE_STORAGE_KEY = 'tournarena.mode';
+
+/** The visitor's own light/dark choice, else the default. */
+export function preferredMode(): ThemeMode {
+  try {
+    const stored = localStorage.getItem(MODE_STORAGE_KEY);
+    return stored === 'light' || stored === 'dark' ? stored : DEFAULT_MODE;
+  } catch {
+    return DEFAULT_MODE;
+  }
+}

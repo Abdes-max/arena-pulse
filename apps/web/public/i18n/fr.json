@@ -12,7 +12,8 @@
     },
     "launchPromo": {
       "badge": "Offre de lancement",
-      "text": "3 premiers tournois offerts et -50 % sur l’abonnement annuel pour les 50 premiers, avec le code",
+      "title": "3 tournois offerts, −50 % sur l’annuel",
+      "detail": "Pour les 50 premiers inscrits, avec le code",
       "cta": "J’en profite"
     },
     "eyebrow": {
@@ -20,8 +21,8 @@
       "count": "{{count}} événements sportifs publiés"
     },
     "hero": {
-      "titleMain": "Organisez tournois et championnats",
-      "titleEmphasis": "suivis en direct par tout le monde.",
+      "titleMain": "Vos tournois,",
+      "titleEmphasis": "vécus en direct.",
       "subtitle": "Poules, tableaux à élimination, calendrier, arbitrage et classements, et un site public généré automatiquement pour chacune de vos compétitions, mis à jour à la seconde où un score est saisi.",
       "ctaCreate": "Créer mon tournoi",
       "storeApple": "Télécharger sur l'App Store",
@@ -180,6 +181,16 @@
       "point3": "Tarif affiché, paiement sur place ou par virement, suivi « payé » en un clic",
       "browse": "Voir les inscriptions ouvertes",
       "organize": "Organiser un tournoi"
+    },
+    "stage": {
+      "live": "En direct",
+      "liveContext": "Plateau U11 · Terrain 2",
+      "pool": "Poule A",
+      "updated": "À l'instant",
+      "goal": "But ! Aigles FC 2–1",
+      "goalFollowers": "Suivi par 48 parents",
+      "registrations": "Inscriptions U13",
+      "registrationsLeft": "4 places restantes · clôture samedi"
     }
   },
   "legal": {
@@ -339,7 +350,9 @@
   "shell": {
     "loading": "Chargement…",
     "error": {
-      "notFound": "Ce tournoi n'existe pas ou n'est pas publié."
+      "notFound": "Ce tournoi n'existe pas ou n'est pas publié.",
+      "title": "Tournoi introuvable",
+      "cta": "Découvrir les tournois"
     },
     "skipLink": "Aller au contenu principal",
     "backAria": "Rechercher un autre tournoi",
@@ -369,7 +382,9 @@
       "categories": "Catégories",
       "rules": "Règlement",
       "practicalInfo": "Infos pratiques",
-      "sponsors": "Sponsors"
+      "sponsors": "Sponsors",
+      "recentResults": "Derniers résultats",
+      "fullStandings": "Voir le classement complet →"
     },
     "competition": {
       "thirdPlace": "Pour la 3e place",
@@ -390,7 +405,10 @@
       "payment": "Paiement",
       "mySpace": "Mon espace responsable",
       "alreadyRegistered": "Déjà inscrit · {{count}} équipe(s)",
-      "another": "Inscrire une autre équipe"
+      "another": "Inscrire une autre équipe",
+      "barLabel": "Inscriptions {{name}}",
+      "left": "{{remaining}} place(s) restante(s)",
+      "closes": "clôture le {{date}}"
     }
   },
   "schedule": {

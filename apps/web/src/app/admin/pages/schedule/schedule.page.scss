@@ -230,8 +230,8 @@
   justify-content: space-between;
   gap: var(--ap-space-2);
   padding: var(--ap-space-1) var(--ap-space-2);
-  background: var(--ap-color-primary);
-  color: var(--ap-color-on-primary);
+  background: color-mix(in srgb, var(--ap-color-primary) 16%, var(--ap-color-surface));
+  color: var(--ap-color-fg);
   font-size: 0.7rem;
   font-weight: 700;
 }

@@ -13,10 +13,13 @@
 }
 
 .team-detail-page__logo {
-  width: 44px;
-  height: 44px;
-  border-radius: var(--ap-radius-md);
-  object-fit: cover;
+  width: 56px;
+  height: 56px;
+  padding: 4px;
+  border-radius: 50%;
+  object-fit: contain;
+  background: #fff;
+  color-scheme: light;
   flex: none;
 }
 
@@ -96,6 +99,10 @@
 .team-detail-page__table-scroll {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  padding: var(--ap-space-2) var(--ap-space-3);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-lg);
 }
 
 .team-detail-page__table {
@@ -107,9 +114,13 @@
 
   th,
   td {
-    padding: var(--ap-space-2);
+    padding: var(--ap-space-3) var(--ap-space-2);
     text-align: center;
     border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+  }
+
+  tr:last-child td {
+    border-bottom: none;
   }
 
   th {
@@ -142,8 +153,10 @@
   }
 }
 
+// This team: a lighter row and an accent bar, the only highlight.
 .team-detail-page__row--self {
   font-weight: 700;
+  background: color-mix(in srgb, var(--ap-color-fg) 6%, transparent);
 
   td:first-child {
     box-shadow: inset 3px 0 0 var(--ap-color-signal);
@@ -157,8 +170,11 @@
 }
 
 .team-detail-page__team-logo {
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
+  padding: 2px;
+  border-radius: 50%;
+  background: #fff;
   object-fit: contain;
   // Keeps pre-colored logos on a white background from being inverted by
   // the page-wide color-scheme in dark mode.
@@ -169,21 +185,17 @@
   font-weight: 700;
 }
 
-// Same as standings.page.scss's qualified row / tier badge.
-.team-detail-page__row--qualified {
-  background: var(--ap-color-signal-soft);
-}
-
 .team-detail-page__tier-badge {
   display: inline-flex;
   align-items: center;
   font-family: var(--ap-font-body);
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: var(--ap-space-1) var(--ap-space-2);
-  border-radius: var(--ap-radius-sm);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  padding: 2px var(--ap-space-2);
+  border-radius: 999px;
   border: var(--ap-border-width) solid;
 }
 

@@ -5,10 +5,13 @@
     "hero": {
       "hint": "Poules, tableaux à élimination, calendrier et classements en direct.",
       "marqueeLabel": "En ce moment",
-      "titleMain": "Organisez tournois et championnats",
-      "titleEmphasis": "suivis en direct par tout le monde.",
+      "titleMain": "Vos tournois,",
+      "titleEmphasis": "vécus en direct.",
       "ctaCreate": "Créer mon tournoi",
-      "ctaJoin": "M'inscrire à un tournoi"
+      "ctaJoin": "M'inscrire à un tournoi",
+      "live": "En direct",
+      "liveContext": "Plateau U11 · Terrain 2",
+      "eyebrow": "{{count}} événements sportifs publiés"
     },
     "published": {
       "title": "Événements publiés",
@@ -38,8 +41,6 @@
       },
       "general": {
         "sectionTitle": "Général",
-        "rate": "Évaluer l'app",
-        "rateBadge": "Bientôt disponible",
         "share": "Partager l'app",
         "contact": "Nous contacter",
         "pricing": "Tarifs",
@@ -51,6 +52,12 @@
         "terms": "Conditions d'utilisation"
       },
       "copyright": "© 2026 TournArena. Tous droits réservés."
+    },
+    "stats": {
+      "events": "événements publiés",
+      "sports": "sports couverts",
+      "languages": "langues",
+      "freeTeams": "équipes gratuites par tournoi"
     }
   },
   "organizer": {
@@ -160,7 +167,10 @@
         "structureAction": "Structure",
         "registrationsAction": "Inscriptions",
         "openFilter": "Inscriptions ouvertes",
-        "managerSpace": "Mon espace responsable"
+        "managerSpace": "Mon espace responsable",
+        "menu": {
+          "profile": "Mon profil"
+        }
       }
     },
     "account": {
@@ -765,6 +775,20 @@
       "submit": "Créer l'organisation",
       "back": "Retour à mon espace responsable",
       "error": "Impossible de créer l'organisation."
+    },
+    "home": {
+      "greeting": "Bonjour {{name}} 👋",
+      "today": "Aujourd'hui",
+      "upcoming": "À venir",
+      "kpi": {
+        "date": "date",
+        "categories": "catégories",
+        "pending": "à valider"
+      },
+      "previous": "Tournoi précédent",
+      "next": "Tournoi suivant",
+      "upcomingTitle": "Vos tournois à venir",
+      "allTitle": "Vos tournois"
     }
   },
   "notifications": {
@@ -857,7 +881,10 @@
       "full": "Complet · liste d’attente",
       "places": "{{remaining}} place(s) sur {{total}}",
       "alreadyRegistered": "Déjà inscrit · {{count}} équipe(s)",
-      "another": "Inscrire une autre équipe"
+      "another": "Inscrire une autre équipe",
+      "barLabel": "Inscriptions {{name}}",
+      "left": "{{remaining}} place(s) restante(s)",
+      "closes": "clôture le {{date}}"
     }
   },
   "myRegistrations": {

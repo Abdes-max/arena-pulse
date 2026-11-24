@@ -173,7 +173,7 @@ export class AppShell {
   }
 
   protected onModeChange(next: ThemeMode): void {
-    this.themeService.setMode(document.documentElement, next);
+    this.themeService.setMode(document.documentElement, next, true);
   }
 
   protected onLanguageChange(code: string): void {

@@ -1,9 +1,14 @@
 @if (loading()) {
   <p class="tournament-shell__status">{{ 'shell.loading' | transloco }}</p>
 } @else if (errorMessage(); as message) {
-  <p class="tournament-shell__status tournament-shell__status--error" role="alert">
-    {{ message | transloco }}
-  </p>
+  <section class="tournament-shell__missing" role="alert">
+    <span class="tournament-shell__missing-mark" aria-hidden="true">?</span>
+    <h1>{{ 'shell.error.title' | transloco }}</h1>
+    <p>{{ message | transloco }}</p>
+    <a class="tournament-shell__missing-cta" routerLink="/decouvrir">{{
+      'shell.error.cta' | transloco
+    }}</a>
+  </section>
 } @else if (tournament(); as t) {
   <a class="skip-link" href="#main-content" (click)="focusMainContent($event)">{{
     'shell.skipLink' | transloco
@@ -11,11 +16,10 @@
 
   <header
     class="tournament-shell__hero"
-    [class.tournament-shell__hero--has-background]="!!t.headerBackgroundUrl"
-    [class.tournament-shell__hero--light-banner]="!!t.headerBackgroundUrl && heroLight() === true"
-    [style.background-image]="headerBackgroundImage(t.headerBackgroundUrl, heroLight())"
-    [attr.data-theme]="t.headerBackgroundUrl ? heroTheme(t.theme) : null"
-    [attr.data-mode]="t.headerBackgroundUrl ? (heroLight() ? 'light' : 'dark') : null"
+    [class.tournament-shell__hero--has-background]="!!headerBackgroundImage(t.headerBackgroundUrl)"
+    [style.background-image]="headerBackgroundImage(t.headerBackgroundUrl)"
+    [attr.data-theme]="heroTheme(t.theme)"
+    data-mode="dark"
   >
     <div class="tournament-shell__hero-inner">
       <div class="tournament-shell__sport-row">
@@ -86,7 +90,19 @@
         @if (logoUrl(t.logoUrl); as logo) {
           <img class="tournament-shell__logo" [src]="logo" alt="" />
         }
-        <h1>{{ t.name }}</h1>
+        <div class="tournament-shell__title-text">
+          <h1>{{ t.name }}</h1>
+          @if (t.format || t.level) {
+            <div class="tournament-shell__chips">
+              @if (t.format; as format) {
+                <span class="tournament-shell__chip">{{ format }}</span>
+              }
+              @if (t.level; as level) {
+                <span class="tournament-shell__chip">{{ level }}</span>
+              }
+            </div>
+          }
+        </div>
       </div>
       @if (t.venues.length > 0) {
         <p class="tournament-shell__meta">

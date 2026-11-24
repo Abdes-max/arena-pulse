@@ -21,7 +21,7 @@ import {
   RouterLinkActive,
   RouterOutlet,
 } from '@angular/router';
-import { DEFAULT_THEME, ThemeMode, ThemeName, ThemeService } from 'design-tokens';
+import { DEFAULT_THEME, ThemeMode, ThemeName, ThemeService, preferredMode } from 'design-tokens';
 import {
   ActionSheetController,
   IonButton,
@@ -126,26 +126,20 @@ export class TournamentShell {
     return tournament ? `Suivez ${tournament.name} sur TournArena` : '';
   });
 
-  // Whether the uploaded header photo reads as visually light overall --
-  // null until computeHeroLuminance (below) resolves, or if it fails. null
-  // is treated as "dark" everywhere this is read -- same reasoning as
-  // apps/web's own TournamentShell (white text over a darkened photo is the
-  // one failure mode that was already safe before this existed).
-  protected readonly heroLight = signal<boolean | null>(null);
-
-  // A translucent scrim under the photo, not the bare image -- same
-  // treatment as apps/web's own TournamentShell.headerBackgroundImage.
-  protected headerBackgroundImage(
-    url: string | null | undefined,
-    light: boolean | null,
-  ): string | null {
-    const resolved = this.assetUrl.resolve(url ?? null);
+  // The hero is always the night band, lit by the theme's own color (see
+  // .tournament-shell__hero) -- same as apps/web's TournamentShell. The
+  // organizer's own photo shows through it under a dark scrim; the stock
+  // colored backgrounds (header-backgrounds/) are left out -- the theme's
+  // touch stays light.
+  protected headerBackgroundImage(url: string | null | undefined): string | null {
+    if (!url || url.startsWith('/header-backgrounds/')) {
+      return null;
+    }
+    const resolved = this.assetUrl.resolve(url);
     if (!resolved) {
       return null;
     }
-    const scrim = light
-      ? 'linear-gradient(180deg, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.15))'
-      : 'linear-gradient(180deg, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.15))';
+    const scrim = 'linear-gradient(180deg, rgba(7, 11, 20, 0.72), rgba(7, 11, 20, 0.9))';
     return `${scrim}, url(${JSON.stringify(resolved)})`;
   }
 
@@ -155,45 +149,6 @@ export class TournamentShell {
   // apps/web's own TournamentShell.heroTheme.
   protected heroTheme(theme: PublicTheme): ThemeName {
     return THEME_MAP[theme];
-  }
-
-  /**
-   * Downsamples the header photo to a tiny canvas and averages its perceived
-   * luminance (ITU-R BT.601 weights) to decide whether heroLight should be
-   * true -- same approach as apps/web's own TournamentShell. Best-effort:
-   * any failure just leaves heroLight at its current value instead of
-   * throwing, see heroLight's own comment.
-   */
-  private async computeHeroLuminance(url: string): Promise<void> {
-    try {
-      const image = await new Promise<HTMLImageElement>((resolvePromise, reject) => {
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.onload = () => resolvePromise(img);
-        img.onerror = () => reject(new Error('Failed to load header image'));
-        img.src = url;
-      });
-
-      const size = 24;
-      const canvas = document.createElement('canvas');
-      canvas.width = size;
-      canvas.height = size;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        return;
-      }
-      ctx.drawImage(image, 0, 0, size, size);
-      const { data } = ctx.getImageData(0, 0, size, size);
-
-      let total = 0;
-      for (let i = 0; i < data.length; i += 4) {
-        total += 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
-      }
-      const averageLuminance = total / (data.length / 4);
-      this.heroLight.set(averageLuminance > 150);
-    } catch {
-      // Left as-is -- see heroLight's own comment.
-    }
   }
 
   protected readonly formattedDates = computed(() => {
@@ -241,24 +196,12 @@ export class TournamentShell {
       }
       this.themeService.setTheme(document.documentElement, THEME_MAP[tournament.theme]);
       if (!this.modeManuallySet()) {
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        this.themeService.setMode(document.documentElement, prefersDark ? 'dark' : 'light');
+        this.themeService.setMode(document.documentElement, preferredMode());
       }
     });
 
     this.destroyRef.onDestroy(() => {
-      this.themeService.apply(document.documentElement, DEFAULT_THEME, 'light');
-    });
-
-    // Re-sampled whenever the header photo itself changes (a fresh tournament
-    // load, or the organizer swapping it) -- reset to null first rather than
-    // leaving the previous photo's result showing while the new one loads.
-    effect(() => {
-      const url = this.tournament()?.headerBackgroundUrl;
-      this.heroLight.set(null);
-      if (url) {
-        void this.computeHeroLuminance(this.assetUrl.resolve(url) ?? url);
-      }
+      this.themeService.apply(document.documentElement, DEFAULT_THEME, preferredMode());
     });
 
     // Re-checks favorited teams' matches for this tournament whenever the
@@ -286,7 +229,7 @@ export class TournamentShell {
 
   protected onModeChange(next: ThemeMode): void {
     this.modeManuallySet.set(true);
-    this.themeService.setMode(document.documentElement, next);
+    this.themeService.setMode(document.documentElement, next, true);
   }
 
   /**

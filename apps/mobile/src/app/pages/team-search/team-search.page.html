@@ -47,12 +47,9 @@
                 <img class="team-search-page__team-logo" [src]="logo" alt="" />
               }
               <span class="team-search-page__team-name">{{ team.name }}</span>
-              <span class="team-search-page__team-meta">
-                {{ team.categoryName }}
-                @if (team.groupName) {
-                  , {{ team.groupName }}
-                }
-              </span>
+              <span class="team-search-page__team-meta">{{
+                team.groupName ? team.categoryName + ' · ' + team.groupName : team.categoryName
+              }}</span>
             </button>
             <ion-button
               fill="clear"

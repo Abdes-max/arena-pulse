@@ -7,17 +7,17 @@ import {
   signal,
   computed,
 } from '@angular/core';
-import { MatchCard, MatchCardTeam } from 'design-system';
+import { FillBar, MatchCard, MatchCardTeam } from 'design-system';
 import { AssetUrlService, PublicApiService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { LanguageService } from 'design-tokens';
 import { TournamentContextService } from '../../core/tournament-context.service';
-import { Match, PublicTournament, PublicRegistrationInfo } from 'shared-models';
+import { Match, PublicTournament, PublicRegistrationInfo, StandingRow } from 'shared-models';
 import { AuthService } from '../../admin/core/auth.service';
 
 @Component({
   selector: 'app-home-page',
-  imports: [MatchCard, RouterLink, TranslocoPipe],
+  imports: [FillBar, MatchCard, RouterLink, TranslocoPipe],
   templateUrl: './home.page.html',
   styleUrl: './home.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -35,6 +35,10 @@ export class HomePage {
   // this page's own concern -- both now live on TournamentContextService,
   // shared across every tab.
   protected readonly upcomingMatches = signal<Match[]>([]);
+  /** The last scored matches, newest first (first category's pool phase). */
+  protected readonly recentResults = signal<Match[]>([]);
+  /** That pool's table, shown beside the results. */
+  protected readonly standings = signal<{ group: string; rows: StandingRow[] } | null>(null);
 
   constructor() {
     void this.load();
@@ -47,12 +51,44 @@ export class HomePage {
     });
   }
 
+  /** Recent results and the first pool's table -- best effort, both optional. */
+  private async loadResults(slug: string): Promise<void> {
+    try {
+      const [category] = await this.api.listCategories(slug);
+      if (!category) {
+        return;
+      }
+      const phases = await this.api.listPhases(slug, category.id);
+      const pool = phases.find((p) => p.type === 'GROUP_STAGE' && !p.isSeedPhase);
+      if (!pool) {
+        return;
+      }
+      const matches = await this.api.listPhaseMatches(slug, pool.id);
+      this.recentResults.set(
+        matches
+          .filter((m) => m.score && m.homeTeam && m.awayTeam)
+          .sort((a, b) => (b.timeSlot?.startTime ?? '').localeCompare(a.timeSlot?.startTime ?? ''))
+          .slice(0, 4),
+      );
+      const group = pool.groups[0];
+      if (group) {
+        const table = await this.api.getStandings(slug, group.id);
+        if (table.rows.some((row) => row.played > 0)) {
+          this.standings.set({ group: group.name, rows: table.rows.slice(0, 6) });
+        }
+      }
+    } catch {
+      // Nothing more to show then.
+    }
+  }
+
   private async load(): Promise<void> {
     const slug = this.context.slug();
     if (!slug) {
       return;
     }
     this.upcomingMatches.set(await this.api.listUpcomingMatches(slug, 3));
+    void this.loadResults(slug);
     try {
       this.registration.set(await this.api.getRegistrationInfo(slug));
     } catch {
@@ -80,6 +116,32 @@ export class HomePage {
   protected readonly canRegisterMore = computed(
     () => this.myTeams() < (this.registration()?.maxTeamsPerRegistrant ?? 1),
   );
+
+  // Under a category's fill bar: "4 place(s) restante(s) · clôture le
+  // samedi 12 décembre · 15,00 €".
+  protected fillNote(
+    category: PublicRegistrationInfo['categories'][number],
+    closesAt: string | null,
+  ): string {
+    const t = (key: string, params?: Record<string, unknown>) =>
+      this.transloco.translate('home.registration.' + key, params);
+    const parts = [
+      category.remaining === 0 ? t('full') : t('left', { remaining: category.remaining }),
+    ];
+    if (closesAt) {
+      const date = new Date(closesAt).toLocaleDateString(this.transloco.getActiveLang(), {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+      });
+      parts.push(t('closes', { date }));
+    }
+    const feeLabel = this.formatFee(category.feeCents, category.currency);
+    if (feeLabel) {
+      parts.push(feeLabel);
+    }
+    return parts.join(' · ');
+  }
 
   protected formatFee(cents: number | null, currency: string): string | null {
     return cents

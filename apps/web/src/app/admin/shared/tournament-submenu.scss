@@ -94,8 +94,8 @@
     position: relative;
     display: inline-block;
     flex: none;
-    padding: var(--ap-space-2) var(--ap-space-3);
-    border-radius: var(--ap-radius-md);
+    padding: var(--ap-space-2) var(--ap-space-4);
+    border-radius: 12px;
     color: var(--ap-color-muted);
     text-decoration: none;
     font-weight: 600;
@@ -107,27 +107,16 @@
     &:hover {
       color: var(--ap-color-fg);
     }
-
-    &::after {
-      content: '';
-      position: absolute;
-      left: var(--ap-space-3);
-      right: var(--ap-space-3);
-      bottom: 0;
-      height: 2px;
-      background: var(--ap-color-primary);
-      transform: scaleX(0);
-      transition: transform var(--ap-motion-fast) var(--ap-easing-standard);
-    }
   }
 }
 
-.tournament-submenu__link--active {
-  color: var(--ap-color-fg);
-  background: var(--ap-color-signal-soft);
+// Solid pill, as on the public tournament pages (beats .tournament-submenu a).
+.tournament-submenu a.tournament-submenu__link--active {
+  color: var(--ap-color-bg);
+  background: var(--ap-color-fg);
 
-  &::after {
-    transform: scaleX(1);
+  &:hover {
+    color: var(--ap-color-bg);
   }
 }
 

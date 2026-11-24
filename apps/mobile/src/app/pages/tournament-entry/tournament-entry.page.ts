@@ -81,6 +81,8 @@ export class TournamentEntryPage {
   protected readonly mode = this.themeService.mode;
   protected readonly language = this.languageService.language;
   protected readonly languages = SUPPORTED_LANGUAGES;
+  // For the « sports couverts » figure (same as apps/web's landing stats).
+  protected readonly sportCount = signal(0);
 
   // Connexion/Créer un tournoi now navigate natively (feat/193, see
   // organizerAuthGuard's routes) instead of handing off to the web app --
@@ -143,6 +145,10 @@ export class TournamentEntryPage {
 
   constructor() {
     void this.api.listTournaments(50).then((tournaments) => this.tournaments.set(tournaments));
+    void this.api
+      .listSports()
+      .then((sports) => this.sportCount.set(sports.length))
+      .catch(() => undefined);
 
     toObservable(this.searchFilters)
       .pipe(debounceTime(300), takeUntilDestroyed())
@@ -187,7 +193,7 @@ export class TournamentEntryPage {
   }
 
   protected onModeChange(next: ThemeMode): void {
-    this.themeService.setMode(document.documentElement, next);
+    this.themeService.setMode(document.documentElement, next, true);
   }
 
   protected onLanguageChange(code: string): void {

@@ -1,74 +1,28 @@
-// Pulse Ember -- thème de tournoi sélectionnable par l'organisateur
-// (site public + diaporama uniquement). Voir docs/design/visual-language.md.
+// Pulse Ember -- thème de tournoi sélectionnable par l'organisateur (site
+// public + diaporama). Personnalisation légère : seules les couleurs
+// d'accent changent ; polices, coins, fonds et surfaces viennent de la base
+// « Nuit de match » (_ink-signal.scss, appliquée à tout [data-theme]).
 
 [data-theme='pulse-ember'] {
-  --ap-font-heading: 'Barlow Condensed', -apple-system, 'Segoe UI', sans-serif;
-  --ap-font-body: 'Barlow', -apple-system, 'Segoe UI', sans-serif;
-  --ap-radius-sm: 10px;
-  --ap-radius-md: 14px;
-  --ap-radius-lg: 20px;
-  --ap-tracking-tight: 0.01em;
-  --ap-title-case: uppercase;
-
-  --ap-color-bg: #fffbf7;
-  --ap-color-surface: #ffffff;
-  --ap-color-fg: #3a2a20;
-  --ap-color-muted: #8a7367;
-  --ap-color-border: #f0ddd3;
-
   --ap-color-primary: #e4572e;
   --ap-color-on-primary: #ffffff;
   --ap-color-signal: #f5b700;
   --ap-color-signal-soft: #fff2cf;
-  // Darkened signal for use *as text/border* (docs/design/accessibility-guidelines.md:
-  // WCAG AA) -- the raw amber only reaches 1.75:1 against this theme's
-  // background, the worst of the 3 themes and well under the 4.5:1 (text) /
-  // 3:1 (UI) minimums. --ap-color-signal itself is unchanged for fills.
+  // Darkened signal for use as text (WCAG AA on the light background).
   --ap-color-signal-text: #896600;
-  // Text color for content placed *on* a --ap-color-signal fill (e.g. the
-  // "live" badge) -- white (on-primary) only reaches 1.80:1 there, the
-  // worst of the 3 themes.
   --ap-color-on-signal: #3a2a20;
 
-  // win/loss/draw/error darkened: all 4 fail WCAG AA's 4.5:1 as small bold
-  // text against this theme's background in their original values (3.31,
-  // 4.31, 4.34, 4.34) -- the badge and form-error-message components'
-  // actual usage. draw and error share a value in this theme, kept in sync.
-  --ap-color-win: #257e49;
-  --ap-color-loss: #7c685d;
-  --ap-color-draw: #c13c29;
-
-  --ap-color-success: #2e9e5b;
-  --ap-color-info: #2563eb;
-  // Same darkening as --ap-color-signal-text (shares its base color in
-  // this theme, and the same "postponed"/"unpublished" badge-text failure).
-  --ap-color-warning: #896600;
-  --ap-color-error: #c13c29;
-  --ap-color-on-error: #ffffff;
+  // The main action takes the theme's own color.
+  --ap-button-primary-bg: var(--ap-color-primary);
+  --ap-button-primary-fg: var(--ap-color-on-primary);
+  --ap-button-primary-glow: var(--ap-color-primary);
 
   &[data-mode='dark'] {
-    --ap-color-bg: #1c1410;
-    --ap-color-surface: #261d17;
-    --ap-color-fg: #f3e7de;
-    --ap-color-muted: #c9b8ad;
-    --ap-color-border: #3a2a20;
-
     --ap-color-primary: #f2703f;
     --ap-color-on-primary: #1a0e08;
     --ap-color-signal: #f5c445;
     --ap-color-signal-soft: #3a2f12;
-    // Signal already passes both thresholds against this theme's dark
-    // background (11.12:1) -- no darkening needed here, unlike light mode.
     --ap-color-signal-text: var(--ap-color-signal);
     --ap-color-on-signal: var(--ap-color-bg);
-
-    --ap-color-win: #4ade80;
-    --ap-color-loss: #c9b8ad;
-    --ap-color-draw: #ff8a65;
-
-    --ap-color-success: #4ade80;
-    --ap-color-info: #60a5fa;
-    --ap-color-warning: #f5c445;
-    --ap-color-error: #ff8a65;
   }
 }

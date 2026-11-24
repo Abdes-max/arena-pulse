@@ -11,10 +11,10 @@
 }
 
 .standings-page__group {
-  margin-top: var(--ap-space-6);
+  margin-top: var(--ap-space-8);
 
   h2 {
-    font-size: 1.1rem;
+    font-size: 1.5rem;
   }
 }
 
@@ -28,29 +28,44 @@
 // meaningfully reflow to a narrow screen (docs/design/responsive-guidelines.md:
 // "no unintentional horizontal scroll" -- this one is intentional and
 // contained, rather than the whole page overflowing sideways).
+// The table sits in a card, like every block of « Nuit de match ».
 .standings-page__table-scroll {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  margin-top: var(--ap-space-3);
+  padding: var(--ap-space-2) var(--ap-space-3);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-lg);
+  box-shadow: var(--ap-shadow-sm);
 }
 
 .standings-page__table {
   width: 100%;
   min-width: 540px;
   border-collapse: collapse;
-  font-size: 0.85rem;
-  margin-top: var(--ap-space-2);
+  font-size: 0.92rem;
+  font-variant-numeric: tabular-nums;
 
   th,
   td {
-    padding: var(--ap-space-1) var(--ap-space-2);
+    padding: var(--ap-space-3) var(--ap-space-2);
     text-align: center;
     border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  td:nth-child(2) {
+    font-weight: 700;
   }
 
   th {
     position: sticky;
     top: 0;
-    background: var(--ap-color-bg);
+    background: var(--ap-color-surface);
     color: var(--ap-color-muted);
     font-size: 0.75rem;
     text-transform: uppercase;
@@ -146,8 +161,10 @@
   }
 }
 
-.standings-page__row--qualified {
-  background: var(--ap-color-signal-soft);
+// Qualified: a green rank tile rather than a tinted row.
+.standings-page__row--qualified td:first-child {
+  color: var(--ap-color-win);
+  font-weight: 800;
 }
 
 .standings-page__final-table {
@@ -167,12 +184,13 @@
   display: inline-flex;
   align-items: center;
   font-family: var(--ap-font-body);
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: var(--ap-space-1) var(--ap-space-2);
-  border-radius: var(--ap-radius-sm);
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  padding: 2px var(--ap-space-2);
+  border-radius: 999px;
   border: var(--ap-border-width) solid;
 }
 
@@ -465,8 +483,8 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  gap: var(--ap-space-2);
-  margin: var(--ap-space-4) 0 var(--ap-space-8);
+  gap: var(--ap-space-3);
+  margin: var(--ap-space-8) 0 var(--ap-space-12);
 }
 
 // Fluid width (flex + max-width) rather than a fixed 160px per step -- three
@@ -480,11 +498,15 @@
   gap: var(--ap-space-1);
   flex: 1 1 0;
   min-width: 0;
-  max-width: 160px;
-  padding: var(--ap-space-4) var(--ap-space-2);
-  background: var(--ap-color-surface);
+  max-width: 200px;
+  padding: var(--ap-space-6) var(--ap-space-3);
+  background: linear-gradient(
+    180deg,
+    var(--ap-color-surface),
+    color-mix(in srgb, var(--ap-color-surface) 60%, var(--ap-color-bg))
+  );
   border: var(--ap-border-width) solid var(--ap-color-border);
-  border-radius: var(--ap-radius-lg) var(--ap-radius-lg) 0 0;
+  border-radius: 24px 24px 0 0;
   text-align: center;
 }
 
@@ -498,16 +520,20 @@
 
 .standings-page__podium-rank {
   font-family: var(--ap-font-heading);
-  font-size: 1.75rem;
+  font-size: 2.25rem;
+  line-height: 1;
   font-weight: 800;
   color: var(--ap-color-signal-text);
 }
 
 .standings-page__podium-logo {
-  width: 28px;
-  height: 28px;
-  border-radius: var(--ap-radius-sm);
-  object-fit: cover;
+  width: 56px;
+  height: 56px;
+  margin: var(--ap-space-2) 0;
+  border-radius: 50%;
+  object-fit: contain;
+  background: #fff;
+  padding: 4px;
 }
 
 .standings-page__podium-name {
@@ -519,13 +545,21 @@
   color: var(--ap-color-muted);
 }
 
+// The winner: taller, golden, with a halo.
 .standings-page__podium-step--1 {
   order: 2;
-  padding-top: var(--ap-space-8);
-  border-color: var(--ap-color-signal-text);
+  padding-top: var(--ap-space-12);
+  border-color: color-mix(in srgb, #f5b942 70%, transparent);
+  box-shadow: 0 -10px 40px -18px #f5b942;
 
   .standings-page__podium-rank {
-    font-size: 2.25rem;
+    font-size: 3rem;
+    color: #f5b942;
+  }
+
+  .standings-page__podium-logo {
+    width: 72px;
+    height: 72px;
   }
 }
 

@@ -5,10 +5,13 @@
     "hero": {
       "hint": "Pools, knockout brackets, schedule and live standings.",
       "marqueeLabel": "Happening now",
-      "titleMain": "Run tournaments and championships",
-      "titleEmphasis": "followed live by everyone.",
+      "titleMain": "Your tournaments,",
+      "titleEmphasis": "followed live.",
       "ctaCreate": "Create my tournament",
-      "ctaJoin": "Register for a tournament"
+      "ctaJoin": "Register for a tournament",
+      "live": "Live",
+      "liveContext": "U11 festival · Pitch 2",
+      "eyebrow": "{{count}} published sporting events"
     },
     "published": {
       "title": "Published events",
@@ -38,8 +41,6 @@
       },
       "general": {
         "sectionTitle": "General",
-        "rate": "Rate the app",
-        "rateBadge": "Coming soon",
         "share": "Share the app",
         "contact": "Contact us",
         "pricing": "Pricing",
@@ -51,6 +52,12 @@
         "terms": "Terms of use"
       },
       "copyright": "© 2026 TournArena. All rights reserved."
+    },
+    "stats": {
+      "events": "published events",
+      "sports": "sports covered",
+      "languages": "languages",
+      "freeTeams": "free teams per tournament"
     }
   },
   "organizer": {
@@ -160,7 +167,10 @@
         "structureAction": "Structure",
         "registrationsAction": "Registrations",
         "openFilter": "Registrations open",
-        "managerSpace": "My team manager space"
+        "managerSpace": "My team manager space",
+        "menu": {
+          "profile": "My profile"
+        }
       }
     },
     "account": {
@@ -765,6 +775,20 @@
       "submit": "Create the organization",
       "back": "Back to my team manager space",
       "error": "Could not create the organization."
+    },
+    "home": {
+      "greeting": "Hello {{name}} 👋",
+      "today": "Today",
+      "upcoming": "Upcoming",
+      "kpi": {
+        "date": "date",
+        "categories": "categories",
+        "pending": "to review"
+      },
+      "previous": "Previous tournament",
+      "next": "Next tournament",
+      "upcomingTitle": "Your upcoming tournaments",
+      "allTitle": "Your tournaments"
     }
   },
   "notifications": {
@@ -857,7 +881,10 @@
       "full": "Full · waiting list",
       "places": "{{remaining}} place(s) out of {{total}}",
       "alreadyRegistered": "Already registered · {{count}} team(s)",
-      "another": "Register another team"
+      "another": "Register another team",
+      "barLabel": "{{name}} registrations",
+      "left": "{{remaining}} place(s) left",
+      "closes": "closes {{date}}"
     }
   },
   "myRegistrations": {

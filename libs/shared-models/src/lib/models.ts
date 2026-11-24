@@ -129,6 +129,9 @@ export interface PublicTournament {
   // startDate itself carries no real time-of-day (always set at UTC
   // midnight by the Général form), so TournamentShell's own formattedDates()
   // appends this one next to the start date when it's known.
+  /** Game format ("8 vs 8") and level, shown as chips in the header. */
+  format?: string | null;
+  level?: string | null;
   firstMatchTime: string | null;
   isOnline: boolean;
   theme: PublicTheme;

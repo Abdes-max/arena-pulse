@@ -11,9 +11,19 @@ describe('ThemeService', () => {
     element = document.createElement('div');
   });
 
-  it('defaults to ink-signal / light', () => {
+  it('defaults to ink-signal / dark', () => {
     expect(service.theme()).toBe('ink-signal');
-    expect(service.mode()).toBe('light');
+    expect(service.mode()).toBe('dark');
+  });
+
+  it('remembers a mode the visitor picked, not one set automatically', () => {
+    localStorage.removeItem('tournarena.mode');
+    service.setMode(element, 'light');
+    expect(localStorage.getItem('tournarena.mode')).toBeNull();
+
+    service.setMode(element, 'light', true);
+    expect(localStorage.getItem('tournarena.mode')).toBe('light');
+    localStorage.removeItem('tournarena.mode');
   });
 
   it('applies theme and mode as data attributes on the given element', () => {

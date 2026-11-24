@@ -1,13 +1,21 @@
-// Ink & Signal -- identité produit TournArena (admin + marketing) et thème
-// de tournoi disponible pour le site public. Voir docs/design/visual-language.md.
+// Ink & Signal -- identité produit TournArena (admin + marketing) et base
+// « Nuit de match » de TOUS les thèmes : polices, coins, fonds et surfaces
+// sont communs ([data-theme] quel qu'il soit). Les autres thèmes de tournoi
+// (_pulse-ember.scss, ...) ne changent ensuite que leurs couleurs d'accent,
+// pour une personnalisation légère. Voir docs/design/visual-language.md.
 
-[data-theme='ink-signal'] {
+[data-theme] {
   --ap-font-heading: 'Bricolage Grotesque', -apple-system, 'Segoe UI', sans-serif;
   --ap-font-body: 'Hanken Grotesk', -apple-system, 'Segoe UI', sans-serif;
-  --ap-radius-sm: 6px;
-  --ap-radius-md: 8px;
-  --ap-radius-lg: 10px;
+  // « Nuit de match »: soft, tile-like corners.
+  --ap-radius-sm: 10px;
+  --ap-radius-md: 14px;
+  --ap-radius-lg: 20px;
   --ap-tracking-tight: -0.01em;
+  // Main action lit like a scoreboard, in both modes.
+  --ap-button-primary-bg: linear-gradient(135deg, #5fd0ff, #0ea5c9);
+  --ap-button-primary-fg: #04121d;
+  --ap-button-primary-glow: rgb(56 189 248 / 80%);
   --ap-title-case: none;
 
   --ap-color-bg: #f8fafc;
@@ -55,8 +63,8 @@
   --ap-color-ember-soft: #fdf1de;
 
   &[data-mode='dark'] {
-    --ap-color-bg: #0b1220;
-    --ap-color-surface: #141b2e;
+    --ap-color-bg: #070b14;
+    --ap-color-surface: #111a2e;
     --ap-color-fg: #e7ecf5;
     --ap-color-muted: #94a3b8;
     --ap-color-border: #1f2a44;

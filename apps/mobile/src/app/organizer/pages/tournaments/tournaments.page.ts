@@ -11,7 +11,8 @@ import {
 } from '@ionic/angular/standalone';
 import { AssetUrlService, PublicApiService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { Badge, Logo, Select, SelectOption } from 'design-system';
+import { Badge, Logo, Select, SelectOption, ThemeModeToggle } from 'design-system';
+import { ThemeMode, ThemeService } from 'design-tokens';
 import { isTournamentPast } from 'shared-models';
 import { OrganizerAuthService } from '../../core/auth.service';
 import { AdminUiMode, OrganizerTournament } from '../../core/models';
@@ -59,6 +60,7 @@ const TIME_FILTERS: TimeFilter[] = ['ALL', 'UPCOMING', 'PAST'];
     OrganizerSetupGuide,
     RouterLink,
     Select,
+    ThemeModeToggle,
     TranslocoPipe,
   ],
   templateUrl: './tournaments.page.html',
@@ -69,6 +71,10 @@ export class OrganizerTournamentsPage {
   private readonly auth = inject(OrganizerAuthService);
   private readonly tournamentsApi = inject(OrganizerTournamentsService);
   private readonly router = inject(Router);
+  private readonly themeService = inject(ThemeService);
+  protected readonly mode = this.themeService.mode;
+  // Account menu under the avatar (header).
+  protected readonly menuOpen = signal(false);
   private readonly assetUrl = inject(AssetUrlService);
   private readonly publicApi = inject(PublicApiService);
   private readonly transloco = inject(TranslocoService);
@@ -102,6 +108,79 @@ export class OrganizerTournamentsPage {
 
   /** Bumped on every successful load so the setup guide re-reads its progress. */
   protected readonly guideRefresh = signal(0);
+
+  /**
+   * "À la une": the tournaments not yet over (published first, then by date)
+   * -- the first is the one the organizer most likely opens the app for, the
+   * arrows go through the rest. None left: every tournament, most recent
+   * first, under a plain "Vos tournois" title (featuredUpcoming).
+   */
+  protected readonly featuredUpcoming = computed(() =>
+    this.tournaments().some((t) => t.status !== 'ARCHIVED' && !isTournamentPast(t)),
+  );
+  protected readonly featuredList = computed<OrganizerTournament[]>(() => {
+    const byDate = (a: OrganizerTournament, b: OrganizerTournament) =>
+      (a.startDate ?? '9999').localeCompare(b.startDate ?? '9999');
+    if (!this.featuredUpcoming()) {
+      return [...this.tournaments()].sort((a, b) => byDate(b, a));
+    }
+    const rank = (t: OrganizerTournament) => (t.status === 'PUBLISHED' ? 0 : 1);
+    return this.tournaments()
+      .filter((t) => t.status !== 'ARCHIVED' && !isTournamentPast(t))
+      .sort((a, b) => rank(a) - rank(b) || byDate(a, b));
+  });
+  protected readonly featuredIndex = signal(0);
+  protected readonly featured = computed<OrganizerTournament | null>(() => {
+    const list = this.featuredList();
+    return list[Math.min(this.featuredIndex(), list.length - 1)] ?? null;
+  });
+
+  /** Previous (-1) / next (+1) featured tournament, wrapping around. */
+  protected stepFeatured(delta: number): void {
+    const count = this.featuredList().length;
+    if (count > 1) {
+      this.featuredIndex.update((i) => (Math.min(i, count - 1) + delta + count) % count);
+    }
+  }
+
+  // Swipe left/right on the featured card, same as the arrows.
+  private swipeStartX: number | null = null;
+  protected onFeaturedTouchStart(event: TouchEvent): void {
+    this.swipeStartX = event.touches[0]?.clientX ?? null;
+  }
+  protected onFeaturedTouchEnd(event: TouchEvent): void {
+    const endX = event.changedTouches[0]?.clientX;
+    if (this.swipeStartX !== null && endX !== undefined && Math.abs(endX - this.swipeStartX) > 48) {
+      this.stepFeatured(endX < this.swipeStartX ? 1 : -1);
+    }
+    this.swipeStartX = null;
+  }
+
+  /** Today's date, as the greeting's small line ("samedi 14 novembre"). */
+  protected readonly today = new Date().toLocaleDateString(undefined, {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+  });
+
+  /** The featured tournament plays today. */
+  protected playsToday(tournament: OrganizerTournament): boolean {
+    const day = new Date().toISOString().slice(0, 10);
+    const start = tournament.startDate?.slice(0, 10);
+    const end = (tournament.endDate ?? tournament.startDate)?.slice(0, 10);
+    return !!start && !!end && start <= day && day <= end;
+  }
+
+  /** "14 nov." -- the featured card's date tile. */
+  protected shortDate(tournament: OrganizerTournament): string {
+    return tournament.startDate
+      ? new Date(tournament.startDate).toLocaleDateString(undefined, {
+          day: 'numeric',
+          month: 'short',
+          timeZone: 'UTC',
+        })
+      : '–';
+  }
 
   // Same account as a team manager: a way to its space when it has requests.
   protected readonly hasRegistrations = signal(false);
@@ -274,7 +353,12 @@ export class OrganizerTournamentsPage {
     }
   }
 
+  protected onModeChange(next: ThemeMode): void {
+    this.themeService.setMode(document.documentElement, next, true);
+  }
+
   protected async logout(): Promise<void> {
+    this.menuOpen.set(false);
     await this.auth.logout();
     await this.router.navigateByUrl('/organizer/login');
   }

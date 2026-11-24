@@ -12,7 +12,8 @@
     },
     "launchPromo": {
       "badge": "Launch offer",
-      "text": "First 3 tournaments free and 50% off the annual subscription for the first 50, with code",
+      "title": "3 free tournaments, 50% off the annual plan",
+      "detail": "For the first 50 sign-ups, with code",
       "cta": "Claim it"
     },
     "eyebrow": {
@@ -20,8 +21,8 @@
       "count": "{{count}} published sporting events"
     },
     "hero": {
-      "titleMain": "Run tournaments and championships",
-      "titleEmphasis": "followed live by everyone.",
+      "titleMain": "Your tournaments,",
+      "titleEmphasis": "followed live.",
       "subtitle": "Pools, knockout brackets, schedule, officiating and standings, plus a public site generated automatically for each of your competitions, updated the instant a score is entered.",
       "ctaCreate": "Create my tournament",
       "storeApple": "Download on the App Store",
@@ -180,6 +181,16 @@
       "point3": "Displayed price, payment on site or by transfer, “paid” tracking in one click",
       "browse": "See open registrations",
       "organize": "Organize a tournament"
+    },
+    "stage": {
+      "live": "Live",
+      "liveContext": "U11 festival · Pitch 2",
+      "pool": "Group A",
+      "updated": "Just now",
+      "goal": "Goal! Aigles FC 2–1",
+      "goalFollowers": "Followed by 48 parents",
+      "registrations": "U13 registrations",
+      "registrationsLeft": "4 spots left · closes Saturday"
     }
   },
   "legal": {
@@ -339,7 +350,9 @@
   "shell": {
     "loading": "Loading…",
     "error": {
-      "notFound": "This tournament doesn't exist or isn't published."
+      "notFound": "This tournament doesn't exist or isn't published.",
+      "title": "Tournament not found",
+      "cta": "Browse tournaments"
     },
     "skipLink": "Skip to main content",
     "backAria": "Search for another tournament",
@@ -369,7 +382,9 @@
       "categories": "Categories",
       "rules": "Rules",
       "practicalInfo": "Practical info",
-      "sponsors": "Sponsors"
+      "sponsors": "Sponsors",
+      "recentResults": "Latest results",
+      "fullStandings": "See full standings →"
     },
     "competition": {
       "thirdPlace": "For 3rd place",
@@ -390,7 +405,10 @@
       "payment": "Payment",
       "mySpace": "My team manager space",
       "alreadyRegistered": "Already registered · {{count}} team(s)",
-      "another": "Register another team"
+      "another": "Register another team",
+      "barLabel": "{{name}} registrations",
+      "left": "{{remaining}} place(s) left",
+      "closes": "closes {{date}}"
     }
   },
   "schedule": {

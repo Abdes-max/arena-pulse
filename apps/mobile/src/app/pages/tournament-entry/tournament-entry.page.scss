@@ -222,7 +222,7 @@
 // icon badges, just kept to our one brand accent rather than a different
 // color per row.
 //
-// Compound selector, same reason as .settings-trailing/.settings-badge
+// Compound selector, same reason as .settings-trailing
 // below: bare `.settings-row-icon` (specificity 0,1,0) was silently losing
 // its own `flex: 0 0 auto; width: 2rem` to `.settings-row span`'s
 // `flex: 1 1 auto` (0,1,1) -- the icon span IS a span, so it inherited
@@ -270,45 +270,6 @@
   min-width: 7rem;
 }
 
-// "Évaluer l'app" -- no real destination yet (see the template's comment),
-// so the row itself isn't a link/button at all (no cursor:pointer, no hover
-// color-shift others get) and the trailing chevron is replaced by an
-// explicit badge, rather than a tap that silently does nothing.
-.tournament-entry-page__settings-row--disabled {
-  color: var(--ap-color-muted);
-
-  // Muted, not the vivid signal every other row's icon badge gets --
-  // matches the row's own "not actually available yet" state instead of
-  // implying it's just as actionable as the rest.
-  .tournament-entry-page__settings-row-icon {
-    background: var(--ap-color-border);
-    color: var(--ap-color-muted);
-  }
-
-  // Overrides the base row's soft-tint hover/active too, not just its
-  // color -- this row isn't actionable (see the template's comment), so it
-  // shouldn't pick up the same touch feedback as a real link/button.
-  &:hover,
-  &:active {
-    background: none;
-    color: var(--ap-color-muted);
-  }
-}
-
-// Nested under .settings-row to out-specificity that rule's own `span`
-// descendant selector (flex: 1 1 auto; font-size: 0.92rem), rather than
-// reaching for !important.
-.tournament-entry-page__settings-row .tournament-entry-page__settings-badge {
-  flex: 0 0 auto;
-  padding: var(--ap-space-1) var(--ap-space-2);
-  border-radius: 999px;
-  background: var(--ap-color-border);
-  color: var(--ap-color-muted);
-  font-size: 0.68rem;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
 // The whole row is the tap target (click) proxied to ap-share-button's own
 // triggerShare(), not just its icon -- pointer-events: none keeps the
 // button's own native click from *also* firing independently when tapped
@@ -333,16 +294,17 @@
 
 // Narrower than web's equivalent glow -- at web's proportions this read as
 // one dominant blob rather than an ambient wash on a narrow phone screen.
+// Floodlights on a night pitch: a cyan glow, a warm one, a faint grid.
 .tournament-entry-page__hero::before {
   content: '';
   position: absolute;
-  inset: -25% 0 auto 0;
-  height: 38%;
+  inset: 0;
   background:
-    radial-gradient(closest-side, var(--ap-color-signal-soft), transparent),
-    radial-gradient(closest-side at 85% 30%, var(--ap-color-ember-soft), transparent 70%);
-  filter: blur(10px);
-  opacity: 0.35;
+    radial-gradient(22rem 18rem at 0% 0%, rgb(14 165 201 / 42%), transparent 70%),
+    radial-gradient(18rem 14rem at 100% 40%, rgb(245 185 66 / 16%), transparent 70%),
+    linear-gradient(rgb(255 255 255 / 3.5%) 1px, transparent 1px) 0 0 / 44px 44px,
+    linear-gradient(90deg, rgb(255 255 255 / 3.5%) 1px, transparent 1px) 0 0 / 44px 44px;
+  mask-image: radial-gradient(ellipse at 30% 20%, #000 35%, transparent 85%);
   pointer-events: none;
 }
 
@@ -350,17 +312,17 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 0 var(--ap-space-6) var(--ap-space-8);
+  align-items: stretch;
+  text-align: left;
+  padding: var(--ap-space-2) var(--ap-space-6) var(--ap-space-8);
 }
 
 .tournament-entry-page__title {
   font-family: var(--ap-font-heading);
-  font-size: 1.55rem;
-  line-height: 1.15;
-  font-weight: 700;
-  letter-spacing: var(--ap-tracking-tight);
+  font-size: 2.35rem;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: -0.03em;
   text-transform: var(--ap-title-case);
   color: var(--ap-color-fg);
   margin: 0;
@@ -368,8 +330,124 @@
 
 .tournament-entry-page__hint {
   color: var(--ap-color-muted);
-  font-size: 0.9rem;
-  margin: var(--ap-space-2) 0 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin: var(--ap-space-3) 0 0;
+}
+
+// Live score card: frosted, with the pulsing red "live" dot.
+.tournament-entry-page__live {
+  margin-top: var(--ap-space-4);
+  padding: var(--ap-space-3);
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--ap-color-surface) 72%, transparent);
+  border: var(--ap-border-width) solid rgb(255 255 255 / 12%);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 24px 48px -20px rgb(0 0 0 / 60%);
+}
+
+.tournament-entry-page__live-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  color: var(--ap-color-muted);
+}
+
+.tournament-entry-page__live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgb(255 77 94 / 15%);
+  color: #ff8a95;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+
+  &::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #ff4d5e;
+    animation: tournament-entry-page-live 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes tournament-entry-page-live {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(255 77 94 / 55%);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgb(255 77 94 / 0%);
+  }
+}
+
+.tournament-entry-page__live-score {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--ap-space-2);
+}
+
+.tournament-entry-page__live-team {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 76px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--ap-color-fg);
+}
+
+.tournament-entry-page__live-crest {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  font-family: var(--ap-font-heading);
+  font-weight: 800;
+  color: #fff;
+  background: linear-gradient(135deg, #16a34a, #facc15);
+}
+
+.tournament-entry-page__live-crest--b {
+  background: linear-gradient(135deg, #2563eb, #60a5fa);
+}
+
+.tournament-entry-page__live-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--ap-color-fg);
+
+  strong {
+    font-family: var(--ap-font-heading);
+    font-size: 2.1rem;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    white-space: nowrap;
+  }
+
+  small {
+    margin: 0 0.12em;
+    color: var(--ap-color-muted);
+    font-size: 0.6em;
+  }
+
+  span {
+    margin-top: 2px;
+    color: var(--ap-color-signal);
+    font-size: 0.8rem;
+    font-weight: 700;
+  }
 }
 
 // Stacked, each ap-button given [fullWidth]="true" in the template -- same
@@ -440,7 +518,9 @@ ap-tournament-marquee {
   align-items: center;
   gap: var(--ap-space-2);
   font-family: var(--ap-font-heading);
-  font-size: 1rem;
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
   color: var(--ap-color-fg);
   margin: 0 0 var(--ap-space-3);
 }
@@ -588,7 +668,7 @@ ap-tournament-marquee {
 // Same accent as apps/web's landing headline: signal cyan into ember.
 .tournament-entry-page__title em {
   font-style: normal;
-  background: linear-gradient(100deg, var(--ap-color-signal), var(--ap-color-ember));
+  background: linear-gradient(100deg, var(--ap-color-signal) 10%, #7dd3c0 45%, #f5b942 90%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -617,4 +697,98 @@ ap-tournament-marquee {
 
 .tournament-entry-page__published-title {
   cursor: pointer;
+}
+
+// The title is a button (opens the search): it reads as the title, not a button.
+.tournament-entry-page__title-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+// Eyebrow over the headline (same as apps/web's landing page) -- a button:
+// it opens the event list.
+.tournament-entry-page__eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ap-space-2);
+  margin: 0 0 var(--ap-space-2);
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--ap-color-signal-text);
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.tournament-entry-page__eyebrow-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ap-color-signal);
+  box-shadow: 0 0 10px var(--ap-color-signal);
+}
+
+// Key figures, 2 x 2 -- each cell is a link (see the template).
+.tournament-entry-page__stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--ap-border-width);
+  margin: var(--ap-space-4);
+  padding: 0;
+  overflow: hidden;
+  list-style: none;
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: 20px;
+  background: var(--ap-color-border);
+
+  li {
+    display: flex;
+  }
+
+  button,
+  a {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: var(--ap-space-4) var(--ap-space-2);
+    border: none;
+    background: var(--ap-color-surface);
+    color: var(--ap-color-muted);
+    font: inherit;
+    font-size: 0.8rem;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:active {
+      background: color-mix(in srgb, var(--ap-color-fg) 6%, var(--ap-color-surface));
+    }
+  }
+
+  strong {
+    font-family: var(--ap-font-heading);
+    font-size: 1.9rem;
+    font-weight: 800;
+    line-height: 1.1;
+    color: var(--ap-color-signal-text);
+  }
+}
+
+.tournament-entry-page__stats strong.tournament-entry-page__stats-warm {
+  color: var(--ap-color-ember);
 }

@@ -178,7 +178,8 @@
   flex-direction: column;
   gap: var(--ap-space-2);
   padding: var(--ap-space-3) var(--ap-space-4);
-  background: var(--ap-color-signal-soft);
+  background: var(--ap-color-bg);
+  border: var(--ap-border-width) solid color-mix(in srgb, var(--ap-color-signal) 45%, transparent);
   border-radius: var(--ap-radius-md);
 
   h3 {

@@ -83,9 +83,17 @@
   gap: var(--ap-space-3);
   margin: var(--ap-space-4);
   padding: var(--ap-space-4);
-  color: var(--ap-color-on-primary);
-  background: var(--ap-color-primary);
-  border-radius: var(--ap-radius-lg);
+  // A night card tinted by the theme, not a solid block of its color.
+  color: var(--ap-color-fg);
+  background:
+    radial-gradient(
+      24rem 10rem at 100% 0%,
+      color-mix(in srgb, var(--ap-color-primary) 26%, transparent),
+      transparent 70%
+    ),
+    var(--ap-color-surface);
+  border: var(--ap-border-width) solid color-mix(in srgb, var(--ap-color-primary) 45%, transparent);
+  border-radius: 20px;
 
   h3 {
     margin: 0;
@@ -125,13 +133,18 @@
 .home-page__registration-cta {
   padding: var(--ap-space-2) var(--ap-space-4);
   font-weight: 700;
-  color: var(--ap-color-primary);
+  color: var(--ap-button-primary-fg, var(--ap-color-on-primary));
   text-decoration: none;
-  background: #fff;
+  background: var(--ap-button-primary-bg, var(--ap-color-primary));
   border-radius: var(--ap-radius-md);
 }
 
 .home-page__registration-space {
   font-weight: 600;
   color: inherit;
+}
+
+// A category with a set number of places: its fill bar, full width.
+.home-page__registration-categories .home-page__registration-fill {
+  display: block;
 }

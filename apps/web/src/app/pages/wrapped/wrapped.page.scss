@@ -6,11 +6,20 @@
 }
 
 // --- Hero -------------------------------------------------------------
+// A night card lit by the theme's color, the figure itself in the accent --
+// not a solid block of primary.
 .wrapped-page__hero {
-  background: var(--ap-color-primary);
-  color: var(--ap-color-on-primary);
-  border-radius: var(--ap-radius-lg);
-  padding: var(--ap-space-8) var(--ap-space-6);
+  background:
+    radial-gradient(
+      28rem 14rem at 50% 0%,
+      color-mix(in srgb, var(--ap-color-primary) 34%, transparent),
+      transparent 70%
+    ),
+    var(--ap-color-surface);
+  color: var(--ap-color-fg);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: 24px;
+  padding: var(--ap-space-12) var(--ap-space-6);
   text-align: center;
   margin-bottom: var(--ap-space-8);
 }
@@ -18,16 +27,20 @@
 .wrapped-page__eyebrow {
   margin: 0 0 var(--ap-space-2);
   font-size: 0.75rem;
+  font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  opacity: 0.85;
+  color: var(--ap-color-muted);
 }
 
 .wrapped-page__figure {
   margin: 0;
   font-family: var(--ap-font-heading);
-  font-size: clamp(2.6rem, 8vw, 4.5rem);
+  font-size: clamp(3.5rem, 12vw, 6.5rem);
+  font-weight: 800;
   line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--ap-color-signal-text);
 }
 
 .wrapped-page__figure-label {
@@ -36,7 +49,9 @@
   font-family: var(--ap-font-body);
   font-size: 1rem;
   font-weight: 400;
+  letter-spacing: 0;
   text-transform: none;
+  color: var(--ap-color-muted);
 }
 
 // --- Sections -----------------------------------------------------------

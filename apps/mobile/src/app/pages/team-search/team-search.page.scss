@@ -11,8 +11,9 @@
   padding: 16px;
 }
 
+// Spacing outside the pill row (see ion-segment in styles.scss).
 .team-search-page__filters {
-  padding: var(--ap-space-2) var(--ap-space-4);
+  margin: var(--ap-space-3) var(--ap-space-4) var(--ap-space-2);
 }
 
 // ap-text-field, the shared design-system search box -- same component and
@@ -68,9 +69,12 @@
 // stopPropagation() plus a plain non-interactive row specifically to avoid
 // that; a sibling button/ion-button pair avoids the problem structurally).
 .team-search-page__team-link {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ap-space-1);
+  // Logo on the left, name over category/group beside it.
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: var(--ap-space-3);
+  row-gap: 2px;
   flex: 1;
   min-width: 0;
   background: none;
@@ -88,13 +92,17 @@
 }
 
 .team-search-page__team-logo {
-  width: 28px;
-  height: 28px;
-  border-radius: var(--ap-radius-sm);
-  object-fit: cover;
+  grid-row: span 2;
+  width: 44px;
+  height: 44px;
+  padding: 3px;
+  border-radius: 50%;
+  object-fit: contain;
+  background: #fff;
 }
 
 .team-search-page__team-name {
+  grid-column: 2;
   font-weight: 700;
   color: var(--ap-color-fg);
   overflow: hidden;
@@ -103,6 +111,7 @@
 }
 
 .team-search-page__team-meta {
+  grid-column: 2;
   font-size: 0.8rem;
   color: var(--ap-color-muted);
 }

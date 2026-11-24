@@ -4,15 +4,73 @@
   color: var(--ap-color-muted);
 }
 
-.tournament-shell__status--error {
-  color: var(--ap-color-error);
+// Unknown or unpublished tournament: an empty state with a way out, not a
+// bare line of red text.
+.tournament-shell__missing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--ap-space-3);
+  max-width: 32rem;
+  margin: 0 auto;
+  padding: var(--ap-space-12) var(--ap-space-4);
+  text-align: center;
+
+  h1 {
+    margin: 0;
+    font-size: clamp(1.75rem, 6vw, 2.5rem);
+  }
+
+  p {
+    margin: 0;
+    color: var(--ap-color-muted);
+  }
 }
 
+.tournament-shell__missing-mark {
+  display: grid;
+  place-items: center;
+  width: 88px;
+  height: 88px;
+  margin-bottom: var(--ap-space-2);
+  border-radius: 28px;
+  font-family: var(--ap-font-heading);
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--ap-color-signal-text);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  box-shadow: 0 0 60px -20px var(--ap-color-signal);
+}
+
+.tournament-shell__missing-cta {
+  margin-top: var(--ap-space-4);
+  padding: var(--ap-space-3) var(--ap-space-6);
+  border-radius: var(--ap-radius-md);
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--ap-button-primary-fg, var(--ap-color-on-primary));
+  background: var(--ap-button-primary-bg, var(--ap-color-primary));
+}
+
+// The night band: dark whatever the page mode (data-mode="dark" in the
+// template), with a soft glow in the theme's primary color as its only touch.
 .tournament-shell__hero {
   position: sticky;
   top: 0;
   z-index: var(--ap-z-sticky);
-  background-color: var(--ap-color-surface);
+  background-color: var(--ap-color-bg);
+  background-image:
+    radial-gradient(
+      36rem 18rem at 85% 0%,
+      color-mix(in srgb, var(--ap-color-primary) 38%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      26rem 16rem at 0% 100%,
+      color-mix(in srgb, var(--ap-color-signal) 16%, transparent),
+      transparent 70%
+    );
   // `html { color: var(--ap-color-fg) }` (styles.scss) resolves and
   // inherits its computed value just once -- redeclaring --ap-color-fg
   // deeper in the tree (the [data-theme][data-mode] override below) changes
@@ -40,43 +98,72 @@
   border-bottom-color: rgba(255, 255, 255, 0.12);
 }
 
-// heroLight() === true (tournament-shell.ts) -- the scrim itself switches
-// from black to white at the same time (headerBackgroundImage()), so this
-// only needs to follow suit for the one piece of chrome that isn't part of
-// that scrim.
-.tournament-shell__hero--light-banner {
-  border-bottom-color: rgba(0, 0, 0, 0.12);
-}
-
 .tournament-shell__hero-inner {
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: var(--ap-space-4) var(--ap-space-6) 0;
 
   h1 {
-    margin: var(--ap-space-1) 0 0;
+    margin: 0;
     font-family: var(--ap-font-heading);
-    font-size: clamp(1.75rem, 4vw, 2.5rem);
-    letter-spacing: var(--ap-tracking-tight);
+    font-size: clamp(1.75rem, 4.5vw, 3rem);
+    font-weight: 800;
+    line-height: 1.02;
+    letter-spacing: -0.02em;
     text-transform: var(--ap-title-case);
+    text-wrap: balance;
   }
 }
 
 .tournament-shell__title-row {
   display: flex;
   align-items: center;
-  gap: var(--ap-space-3);
+  gap: var(--ap-space-4);
   // Breathing room from the back-button/sport row above -- previously 0,
   // so the two rows sat flush against each other ("collé").
   margin-top: var(--ap-space-4);
 }
 
+// The club crest on a white tile, like a badge pinned to the cover.
 .tournament-shell__logo {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--ap-radius-md);
-  object-fit: cover;
+  width: 76px;
+  height: 76px;
+  padding: 6px;
+  border-radius: 20px;
+  background: #fff;
+  object-fit: contain;
   flex: none;
+  box-shadow: 0 14px 30px -12px rgb(0 0 0 / 55%);
+}
+
+.tournament-shell__title-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+  min-width: 0;
+}
+
+.tournament-shell__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ap-space-2);
+}
+
+.tournament-shell__chip {
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  background: color-mix(in srgb, var(--ap-color-surface) 60%, transparent);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+@media (max-width: 720px) {
+  .tournament-shell__logo {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+  }
 }
 
 // Sport name and the mode toggle share one row instead of the toggle
@@ -227,12 +314,13 @@
   font-weight: 600;
 }
 
+// Tabs in one segmented pill; the current one turns solid.
 .tournament-shell__nav {
   display: flex;
-  gap: var(--ap-space-2);
-  max-width: 1100px;
+  gap: var(--ap-space-1);
+  max-width: 1200px;
   margin: var(--ap-space-6) auto 0;
-  padding: 0 var(--ap-space-6);
+  padding: 0 var(--ap-space-6) var(--ap-space-4);
   overflow-x: auto;
   scrollbar-width: none;
 
@@ -244,8 +332,10 @@
     position: relative;
     display: inline-block;
     flex: none;
-    padding: var(--ap-space-2) var(--ap-space-3);
-    border-radius: var(--ap-radius-md);
+    padding: var(--ap-space-2) var(--ap-space-4);
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--ap-color-surface) 55%, transparent);
+    border: var(--ap-border-width) solid var(--ap-color-border);
     color: var(--ap-color-muted);
     text-decoration: none;
     font-weight: 600;
@@ -257,34 +347,21 @@
     &:hover {
       color: var(--ap-color-fg);
     }
-
-    &::after {
-      content: '';
-      position: absolute;
-      left: var(--ap-space-3);
-      right: var(--ap-space-3);
-      bottom: 0;
-      height: 2px;
-      background: var(--ap-color-primary);
-      transform: scaleX(0);
-      transition: transform var(--ap-motion-fast) var(--ap-easing-standard);
-    }
   }
 }
 
-// A background pill, not just a thin underline, so the current tab reads
-// unambiguously as "you are here" rather than needing a close look.
-.tournament-shell__nav-link--active {
-  color: var(--ap-color-fg);
-  background: var(--ap-color-signal-soft);
-
-  &::after {
-    transform: scaleX(1);
-  }
+// Solid pill, so the current tab reads unambiguously as "you are here".
+// a.… so it also beats the hover color of .tournament-shell__nav a:hover
+// (white text on the white pill otherwise).
+.tournament-shell__nav a.tournament-shell__nav-link--active,
+.tournament-shell__nav a.tournament-shell__nav-link--active:hover {
+  color: var(--ap-color-bg);
+  background: var(--ap-color-fg);
+  border-color: var(--ap-color-fg);
 }
 
 .tournament-shell__content {
-  max-width: 1100px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: var(--ap-space-6);
 }

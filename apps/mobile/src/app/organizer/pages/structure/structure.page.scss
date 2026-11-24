@@ -171,8 +171,11 @@
   gap: var(--ap-space-2);
   min-height: 44px;
   padding: 0 var(--ap-space-2) 0 var(--ap-space-4);
-  color: var(--ap-color-on-primary);
-  background: var(--ap-color-primary);
+  // A quiet band tinted with the accent (same as apps/web), not a solid block.
+  color: var(--ap-color-fg);
+  font-weight: 700;
+  background: color-mix(in srgb, var(--ap-color-primary) 16%, var(--ap-color-surface));
+  border-bottom: var(--ap-border-width) solid var(--ap-color-border);
 }
 
 .structure-page__card-tag {

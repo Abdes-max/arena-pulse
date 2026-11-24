@@ -151,76 +151,20 @@ export class TournamentShell {
     return THEME_MAP[theme];
   }
 
-  // Whether the uploaded header photo reads as visually light overall --
-  // null until computeHeroLuminance (below) resolves, or if it fails (e.g.
-  // a CORS-tainted canvas in a deployment where /uploads doesn't send
-  // Access-Control-Allow-Origin). null is treated as "dark" everywhere this
-  // is read: that's the one failure mode that was already safe before this
-  // existed (white text over a darkened photo), so a failed read degrades
-  // to the previous fixed behaviour rather than to something untested.
-  protected readonly heroLight = signal<boolean | null>(null);
-
-  // A translucent scrim under the photo, not the bare image -- the hero
-  // text's own color (see [attr.data-mode] in the template) is chosen to
-  // match it: light text over the dark scrim variant, dark text over the
-  // light one. Strongest right where the title sits (upper half of the
-  // hero), fading to highly transparent toward the bottom -- the organizer's
-  // photo should actually read as a photo there, not be buried under the
-  // scrim, and the nav tabs lower down get their own contrast from the
-  // active tab's pill background (.tournament-shell__nav-link--active)
-  // rather than needing the scrim to carry it.
-  protected headerBackgroundImage(
-    url: string | null | undefined,
-    light: boolean | null,
-  ): string | null {
-    const resolved = this.assetUrl.resolve(url ?? null);
+  // The hero is always the night band, lit by the theme's own color (see
+  // .tournament-shell__hero). The organizer's own photo shows through it
+  // under a dark scrim; the stock colored backgrounds (header-backgrounds/)
+  // are left out -- the theme's touch stays light.
+  protected headerBackgroundImage(url: string | null | undefined): string | null {
+    if (!url || url.startsWith('/header-backgrounds/')) {
+      return null;
+    }
+    const resolved = this.assetUrl.resolve(url);
     if (!resolved) {
       return null;
     }
-    const scrim = light
-      ? 'linear-gradient(180deg, rgba(255, 255, 255, 0.65), rgba(255, 255, 255, 0.15))'
-      : 'linear-gradient(180deg, rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.15))';
+    const scrim = 'linear-gradient(180deg, rgba(7, 11, 20, 0.72), rgba(7, 11, 20, 0.9))';
     return `${scrim}, url(${JSON.stringify(resolved)})`;
-  }
-
-  /**
-   * Downsamples the header photo to a tiny canvas and averages its perceived
-   * luminance (ITU-R BT.601 weights) to decide whether heroLight should be
-   * true. Best-effort: any failure (load error, or getImageData throwing on
-   * a cross-origin image the response didn't CORS-allow) just leaves
-   * heroLight at its current value instead of throwing -- see heroLight's
-   * own comment on why null already degrades safely.
-   */
-  private async computeHeroLuminance(url: string): Promise<void> {
-    try {
-      const image = await new Promise<HTMLImageElement>((resolvePromise, reject) => {
-        const img = new Image();
-        img.crossOrigin = 'anonymous';
-        img.onload = () => resolvePromise(img);
-        img.onerror = () => reject(new Error('Failed to load header image'));
-        img.src = url;
-      });
-
-      const size = 24;
-      const canvas = document.createElement('canvas');
-      canvas.width = size;
-      canvas.height = size;
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        return;
-      }
-      ctx.drawImage(image, 0, 0, size, size);
-      const { data } = ctx.getImageData(0, 0, size, size);
-
-      let total = 0;
-      for (let i = 0; i < data.length; i += 4) {
-        total += 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
-      }
-      const averageLuminance = total / (data.length / 4);
-      this.heroLight.set(averageLuminance > 150);
-    } catch {
-      // Left as-is -- see heroLight's own comment.
-    }
   }
 
   // The header is common to every tab (Tournoi/Équipes/Classement/Calendrier)
@@ -243,7 +187,7 @@ export class TournamentShell {
   });
 
   protected onModeChange(next: ThemeMode): void {
-    this.themeService.setMode(document.documentElement, next);
+    this.themeService.setMode(document.documentElement, next, true);
   }
 
   protected onLanguageChange(code: string): void {
@@ -318,17 +262,6 @@ export class TournamentShell {
         return;
       }
       this.themeService.setTheme(document.documentElement, THEME_MAP[tournament.theme]);
-    });
-
-    // Re-sampled whenever the header photo itself changes (a fresh tournament
-    // load, or the organizer swapping it) -- reset to null first rather than
-    // leaving the previous photo's result showing while the new one loads.
-    effect(() => {
-      const url = this.tournament()?.headerBackgroundUrl;
-      this.heroLight.set(null);
-      if (url) {
-        void this.computeHeroLuminance(this.assetUrl.resolve(url) ?? url);
-      }
     });
 
     effect(() => {
