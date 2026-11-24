@@ -32,7 +32,6 @@ export class TournamentCard {
   readonly format = input<string | null>(null);
   /** Category names ("U11", "Senior"), shown first among the chips. */
   readonly categories = input<readonly string[]>([]);
-  readonly level = input<string | null>(null);
   /** Pre-registration band, e.g. "Inscriptions ouvertes (10/12)"; null hides it. */
   readonly registrationLabel = input<string | null>(null);
   /** e.g. "40 €". */

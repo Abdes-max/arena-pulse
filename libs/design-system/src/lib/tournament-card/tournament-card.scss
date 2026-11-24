@@ -132,6 +132,9 @@
   padding: 2px var(--ap-space-2);
   font-size: 0.78rem;
   font-weight: 600;
+  // Readable in both modes (it was inheriting a dark tone on the dark card).
+  color: var(--ap-color-fg);
+  background: color-mix(in srgb, var(--ap-color-fg) 7%, transparent);
   border: var(--ap-border-width) solid var(--ap-color-border);
   border-radius: 999px;
 }
@@ -165,19 +168,10 @@
   }
 }
 
-// Chips and the tag share the last row; the tag wraps under the chips
-// rather than covering them on a narrow card.
-.ap-tournament-card__foot {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--ap-space-2);
-}
-
-// Tag (e.g. « Inscriptions ouvertes »). Dark, like the registration band.
+// Tag (e.g. « Inscriptions ouvertes »): its own last row, at the right.
 .ap-tournament-card__tag {
-  margin-left: auto;
+  align-self: flex-end;
+  margin-top: auto;
   display: inline-flex;
   white-space: nowrap;
   align-items: center;
