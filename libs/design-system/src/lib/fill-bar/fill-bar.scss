@@ -1,0 +1,96 @@
+:host {
+  display: block;
+}
+
+.ap-fill-bar {
+  padding: var(--ap-space-4);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: 16px;
+  // A shade deeper than a card, so it also reads inside one.
+  background: color-mix(in srgb, var(--ap-color-bg) 55%, var(--ap-color-surface));
+}
+
+.ap-fill-bar__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--ap-space-3);
+  margin-bottom: var(--ap-space-3);
+
+  strong {
+    font-family: var(--ap-font-heading);
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--ap-color-fg);
+  }
+}
+
+.ap-fill-bar__count {
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: #f5b942;
+}
+
+.ap-fill-bar__track {
+  position: relative;
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ap-color-fg) 10%, transparent);
+}
+
+// Cyan to gold, filling up from the left on display, then a light sweeping
+// along it (only while places remain).
+.ap-fill-bar__fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  overflow: hidden;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #38bdf8, #5fd0ff 35%, #f5b942);
+  box-shadow: 0 0 12px rgb(56 189 248 / 45%);
+  transform-origin: left center;
+  animation: ap-fill-bar-grow 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      100deg,
+      transparent 20%,
+      rgb(255 255 255 / 55%) 50%,
+      transparent 80%
+    );
+    transform: translateX(-100%);
+    animation: ap-fill-bar-sweep 2.4s 1.2s ease-in-out infinite;
+  }
+}
+
+.ap-fill-bar--full .ap-fill-bar__fill::after {
+  animation: none;
+}
+
+.ap-fill-bar__note {
+  margin: var(--ap-space-3) 0 0;
+  font-size: 0.85rem;
+  color: var(--ap-color-muted);
+}
+
+@keyframes ap-fill-bar-grow {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes ap-fill-bar-sweep {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ap-fill-bar__fill,
+  .ap-fill-bar__fill::after {
+    animation: none;
+  }
+}

@@ -1,0 +1,19 @@
+<div class="ap-fill-bar" [class.ap-fill-bar--full]="full()">
+  <div class="ap-fill-bar__head">
+    <strong>{{ label() }}</strong>
+    <span class="ap-fill-bar__count">{{ filled() }}/{{ total() }}</span>
+  </div>
+  <div
+    class="ap-fill-bar__track"
+    role="progressbar"
+    [attr.aria-label]="label()"
+    [attr.aria-valuenow]="filled()"
+    aria-valuemin="0"
+    [attr.aria-valuemax]="total()"
+  >
+    <span class="ap-fill-bar__fill" [style.width.%]="percent()"></span>
+  </div>
+  @if (note()) {
+    <p class="ap-fill-bar__note">{{ note() }}</p>
+  }
+</div>

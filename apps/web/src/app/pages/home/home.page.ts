@@ -7,7 +7,7 @@ import {
   signal,
   computed,
 } from '@angular/core';
-import { MatchCard, MatchCardTeam } from 'design-system';
+import { FillBar, MatchCard, MatchCardTeam } from 'design-system';
 import { AssetUrlService, PublicApiService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { LanguageService } from 'design-tokens';
@@ -17,7 +17,7 @@ import { AuthService } from '../../admin/core/auth.service';
 
 @Component({
   selector: 'app-home-page',
-  imports: [MatchCard, RouterLink, TranslocoPipe],
+  imports: [FillBar, MatchCard, RouterLink, TranslocoPipe],
   templateUrl: './home.page.html',
   styleUrl: './home.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -116,6 +116,32 @@ export class HomePage {
   protected readonly canRegisterMore = computed(
     () => this.myTeams() < (this.registration()?.maxTeamsPerRegistrant ?? 1),
   );
+
+  // Under a category's fill bar: "4 place(s) restante(s) · clôture le
+  // samedi 12 décembre · 15,00 €".
+  protected fillNote(
+    category: PublicRegistrationInfo['categories'][number],
+    closesAt: string | null,
+  ): string {
+    const t = (key: string, params?: Record<string, unknown>) =>
+      this.transloco.translate('home.registration.' + key, params);
+    const parts = [
+      category.remaining === 0 ? t('full') : t('left', { remaining: category.remaining }),
+    ];
+    if (closesAt) {
+      const date = new Date(closesAt).toLocaleDateString(this.transloco.getActiveLang(), {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+      });
+      parts.push(t('closes', { date }));
+    }
+    const feeLabel = this.formatFee(category.feeCents, category.currency);
+    if (feeLabel) {
+      parts.push(feeLabel);
+    }
+    return parts.join(' · ');
+  }
 
   protected formatFee(cents: number | null, currency: string): string | null {
     return cents

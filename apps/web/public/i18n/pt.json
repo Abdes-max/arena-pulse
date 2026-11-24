@@ -303,7 +303,10 @@
       "payment": "Pagamento",
       "mySpace": "Meu espaço de responsável",
       "alreadyRegistered": "Já inscrito · {{count}} equipa(s)",
-      "another": "Inscrever outra equipa"
+      "another": "Inscrever outra equipa",
+      "barLabel": "Inscrições {{name}}",
+      "left": "{{remaining}} vaga(s) restante(s)",
+      "closes": "fecha a {{date}}"
     }
   },
   "schedule": {

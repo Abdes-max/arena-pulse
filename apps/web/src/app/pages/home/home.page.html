@@ -27,24 +27,35 @@
         </div>
         <ul class="home-page__registration-categories">
           @for (c of r.categories; track c.id) {
-            <li>
-              <strong>{{ c.name }}</strong>
-              <span>
-                @if (c.remaining === null) {
-                  {{ 'home.registration.unlimited' | transloco }}
-                } @else if (c.remaining === 0) {
-                  {{ 'home.registration.full' | transloco }}
-                } @else {
-                  {{
-                    'home.registration.places'
-                      | transloco: { remaining: c.remaining, total: c.maxTeams }
-                  }}
-                }
-                @if (formatFee(c.feeCents, c.currency); as fee) {
-                  · {{ fee }}
-                }
-              </span>
-            </li>
+            @if (c.maxTeams && c.remaining !== null) {
+              <li class="home-page__registration-fill">
+                <ap-fill-bar
+                  [label]="'home.registration.barLabel' | transloco: { name: c.name }"
+                  [filled]="c.maxTeams - c.remaining"
+                  [total]="c.maxTeams"
+                  [note]="fillNote(c, r.closesAt)"
+                />
+              </li>
+            } @else {
+              <li>
+                <strong>{{ c.name }}</strong>
+                <span>
+                  @if (c.remaining === null) {
+                    {{ 'home.registration.unlimited' | transloco }}
+                  } @else if (c.remaining === 0) {
+                    {{ 'home.registration.full' | transloco }}
+                  } @else {
+                    {{
+                      'home.registration.places'
+                        | transloco: { remaining: c.remaining, total: c.maxTeams }
+                    }}
+                  }
+                  @if (formatFee(c.feeCents, c.currency); as fee) {
+                    · {{ fee }}
+                  }
+                </span>
+              </li>
+            }
           }
         </ul>
         @if (r.paymentInfo) {

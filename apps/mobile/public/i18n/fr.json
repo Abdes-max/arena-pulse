@@ -883,7 +883,10 @@
       "full": "Complet · liste d’attente",
       "places": "{{remaining}} place(s) sur {{total}}",
       "alreadyRegistered": "Déjà inscrit · {{count}} équipe(s)",
-      "another": "Inscrire une autre équipe"
+      "another": "Inscrire une autre équipe",
+      "barLabel": "Inscriptions {{name}}",
+      "left": "{{remaining}} place(s) restante(s)",
+      "closes": "clôture le {{date}}"
     }
   },
   "myRegistrations": {

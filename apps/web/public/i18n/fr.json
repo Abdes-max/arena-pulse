@@ -405,7 +405,10 @@
       "payment": "Paiement",
       "mySpace": "Mon espace responsable",
       "alreadyRegistered": "Déjà inscrit · {{count}} équipe(s)",
-      "another": "Inscrire une autre équipe"
+      "another": "Inscrire une autre équipe",
+      "barLabel": "Inscriptions {{name}}",
+      "left": "{{remaining}} place(s) restante(s)",
+      "closes": "clôture le {{date}}"
     }
   },
   "schedule": {

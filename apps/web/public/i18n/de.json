@@ -303,7 +303,10 @@
       "payment": "Zahlung",
       "mySpace": "Mein Verantwortlichen-Bereich",
       "alreadyRegistered": "Bereits angemeldet · {{count}} Team(s)",
-      "another": "Weiteres Team anmelden"
+      "another": "Weiteres Team anmelden",
+      "barLabel": "Anmeldungen {{name}}",
+      "left": "{{remaining}} Platz/Plätze frei",
+      "closes": "Schluss am {{date}}"
     }
   },
   "schedule": {

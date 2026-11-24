@@ -405,7 +405,10 @@
       "payment": "Payment",
       "mySpace": "My team manager space",
       "alreadyRegistered": "Already registered · {{count}} team(s)",
-      "another": "Register another team"
+      "another": "Register another team",
+      "barLabel": "{{name}} registrations",
+      "left": "{{remaining}} place(s) left",
+      "closes": "closes {{date}}"
     }
   },
   "schedule": {
