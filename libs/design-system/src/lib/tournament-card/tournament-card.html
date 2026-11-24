@@ -21,24 +21,27 @@
     <span class="ap-tournament-card__organizer">{{ organizer }}</span>
   }
 
-  @if (categories().length || format() || level()) {
-    <div class="ap-tournament-card__chips">
-      @for (category of categories(); track category) {
-        <span class="ap-tournament-card__chip ap-tournament-card__chip--category">{{
-          category
-        }}</span>
-      }
-      @if (format(); as f) {
-        <span class="ap-tournament-card__chip">{{ f }}</span>
-      }
-      @if (level(); as l) {
-        <span class="ap-tournament-card__chip">{{ l }}</span>
+  <!-- Chips, then the tag on the right -- it wraps under them when the
+       card is too narrow instead of covering them. -->
+  @if (categories().length || format() || level() || tag()) {
+    <div class="ap-tournament-card__foot">
+      <div class="ap-tournament-card__chips">
+        @for (category of categories(); track category) {
+          <span class="ap-tournament-card__chip ap-tournament-card__chip--category">{{
+            category
+          }}</span>
+        }
+        @if (format(); as f) {
+          <span class="ap-tournament-card__chip">{{ f }}</span>
+        }
+        @if (level(); as l) {
+          <span class="ap-tournament-card__chip">{{ l }}</span>
+        }
+      </div>
+      @if (tag(); as t) {
+        <span class="ap-tournament-card__tag">{{ t }}</span>
       }
     </div>
-  }
-
-  @if (tag(); as t) {
-    <span class="ap-tournament-card__tag">{{ t }}</span>
   }
 
   @if (registrationLabel(); as label) {

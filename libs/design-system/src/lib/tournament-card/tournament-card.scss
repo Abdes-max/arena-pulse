@@ -165,14 +165,21 @@
   }
 }
 
-// Corner tag: pinned to the bottom-right corner, out of the flow, so a
-// tagged card keeps exactly the size of the others (it sits on the last
-// line's right, usually the dates). Dark, like the registration band.
+// Chips and the tag share the last row; the tag wraps under the chips
+// rather than covering them on a narrow card.
+.ap-tournament-card__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-2);
+}
+
+// Tag (e.g. « Inscriptions ouvertes »). Dark, like the registration band.
 .ap-tournament-card__tag {
-  position: absolute;
-  right: var(--ap-space-4);
-  bottom: var(--ap-space-4);
+  margin-left: auto;
   display: inline-flex;
+  white-space: nowrap;
   align-items: center;
   gap: var(--ap-space-1);
   padding: 2px var(--ap-space-2);

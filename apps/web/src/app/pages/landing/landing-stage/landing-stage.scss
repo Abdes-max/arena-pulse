@@ -340,17 +340,28 @@
   }
 }
 
-@media (max-width: 420px) {
+// Phone: a compact card, it sits under the headline.
+@media (max-width: 600px) {
+  .stage__card {
+    padding: var(--ap-space-3) var(--ap-space-4);
+  }
+
+  .stage__score {
+    margin-top: var(--ap-space-2);
+  }
+
   .stage__result strong {
-    font-size: 3rem;
+    font-size: 2.3rem;
   }
 
   .stage__team {
-    width: 84px;
+    width: 76px;
+    font-size: 0.75rem;
   }
 
   .stage__crest {
-    width: 48px;
-    height: 48px;
+    width: 36px;
+    height: 36px;
+    font-size: 0.8rem;
   }
 }

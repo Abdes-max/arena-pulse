@@ -222,7 +222,7 @@
 // icon badges, just kept to our one brand accent rather than a different
 // color per row.
 //
-// Compound selector, same reason as .settings-trailing/.settings-badge
+// Compound selector, same reason as .settings-trailing
 // below: bare `.settings-row-icon` (specificity 0,1,0) was silently losing
 // its own `flex: 0 0 auto; width: 2rem` to `.settings-row span`'s
 // `flex: 1 1 auto` (0,1,1) -- the icon span IS a span, so it inherited
@@ -268,45 +268,6 @@
   // breathing room without over-squeezing the longer row labels
   // ("Politique de confidentialité") for width they don't actually need.
   min-width: 7rem;
-}
-
-// "Évaluer l'app" -- no real destination yet (see the template's comment),
-// so the row itself isn't a link/button at all (no cursor:pointer, no hover
-// color-shift others get) and the trailing chevron is replaced by an
-// explicit badge, rather than a tap that silently does nothing.
-.tournament-entry-page__settings-row--disabled {
-  color: var(--ap-color-muted);
-
-  // Muted, not the vivid signal every other row's icon badge gets --
-  // matches the row's own "not actually available yet" state instead of
-  // implying it's just as actionable as the rest.
-  .tournament-entry-page__settings-row-icon {
-    background: var(--ap-color-border);
-    color: var(--ap-color-muted);
-  }
-
-  // Overrides the base row's soft-tint hover/active too, not just its
-  // color -- this row isn't actionable (see the template's comment), so it
-  // shouldn't pick up the same touch feedback as a real link/button.
-  &:hover,
-  &:active {
-    background: none;
-    color: var(--ap-color-muted);
-  }
-}
-
-// Nested under .settings-row to out-specificity that rule's own `span`
-// descendant selector (flex: 1 1 auto; font-size: 0.92rem), rather than
-// reaching for !important.
-.tournament-entry-page__settings-row .tournament-entry-page__settings-badge {
-  flex: 0 0 auto;
-  padding: var(--ap-space-1) var(--ap-space-2);
-  border-radius: 999px;
-  background: var(--ap-color-border);
-  color: var(--ap-color-muted);
-  font-size: 0.68rem;
-  font-weight: 600;
-  white-space: nowrap;
 }
 
 // The whole row is the tap target (click) proxied to ap-share-button's own
@@ -376,8 +337,8 @@
 
 // Live score card: frosted, with the pulsing red "live" dot.
 .tournament-entry-page__live {
-  margin-top: var(--ap-space-6);
-  padding: var(--ap-space-4);
+  margin-top: var(--ap-space-4);
+  padding: var(--ap-space-3);
   border-radius: 22px;
   background: color-mix(in srgb, var(--ap-color-surface) 72%, transparent);
   border: var(--ap-border-width) solid rgb(255 255 255 / 12%);
@@ -389,7 +350,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--ap-color-muted);
 }
 
@@ -430,7 +391,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: var(--ap-space-3);
+  margin-top: var(--ap-space-2);
 }
 
 .tournament-entry-page__live-team {
@@ -438,8 +399,8 @@
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  width: 84px;
-  font-size: 0.78rem;
+  width: 76px;
+  font-size: 0.72rem;
   font-weight: 700;
   color: var(--ap-color-fg);
 }
@@ -447,8 +408,8 @@
 .tournament-entry-page__live-crest {
   display: grid;
   place-items: center;
-  width: 46px;
-  height: 46px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   font-family: var(--ap-font-heading);
   font-weight: 800;
@@ -468,7 +429,7 @@
 
   strong {
     font-family: var(--ap-font-heading);
-    font-size: 2.9rem;
+    font-size: 2.1rem;
     font-weight: 800;
     line-height: 1;
     letter-spacing: -0.03em;

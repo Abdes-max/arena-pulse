@@ -200,32 +200,6 @@
                 </svg>
               </span>
             </a>
-            <!-- Pas de lien réel : TournArena n'est pas encore listée sur
-                 l'App Store (TestFlight uniquement), donc pas de page
-                 d'évaluation vers laquelle renvoyer -- une ligne cliquable
-                 qui ne mène nulle part est pire que pas de lien du tout,
-                 d'où le badge "Bientôt disponible" à la place de l'icône de
-                 lien externe, et pas de tap possible (même logique que
-                 l'état ap-share-button--failed : visible plutôt que
-                 silencieux). -->
-            <div
-              class="tournament-entry-page__settings-row tournament-entry-page__settings-row--disabled"
-            >
-              <span class="tournament-entry-page__settings-row-icon">
-                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-                  <path
-                    fill="currentColor"
-                    d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"
-                  />
-                </svg>
-              </span>
-              <span>{{ 'tournamentEntry.settings.general.rate' | transloco }}</span>
-              <span class="tournament-entry-page__settings-trailing">
-                <span class="tournament-entry-page__settings-badge">{{
-                  'tournamentEntry.settings.general.rateBadge' | transloco
-                }}</span>
-              </span>
-            </div>
             <!-- L'icône et l'étiquette ne sont que la partie visible du
                  ap-share-button niché en fin de ligne (voir plus bas) --
                  pointer-events: none dessus, avec (click) porté par la ligne
