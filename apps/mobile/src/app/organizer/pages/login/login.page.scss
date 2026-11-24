@@ -98,7 +98,9 @@ ion-title {
   --background: var(--ap-color-bg);
   display: flex;
   flex-direction: column;
-  gap: var(--ap-space-2);
+  // Clear of the primary button's glow, so the link below reads on
+  // the plain background.
+  gap: var(--ap-space-4);
   padding: var(--ap-space-3) var(--ap-space-4) var(--ap-space-6);
   border-top: var(--ap-border-width) solid var(--ap-color-border);
   background: var(--ap-color-bg);

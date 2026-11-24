@@ -9,6 +9,9 @@
   --ap-space-2: 8px;
   --ap-space-3: 12px;
   --ap-space-4: 16px;
+  // Used across the apps but long missing, which silently dropped those
+  // paddings/gaps -- kept on the 4px scale.
+  --ap-space-5: 20px;
   --ap-space-6: 24px;
   --ap-space-8: 32px;
   --ap-space-12: 48px;
