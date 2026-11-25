@@ -102,11 +102,26 @@
   animation: landing-page-rise 760ms 300ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
 
   li {
+    display: flex;
+  }
+
+  // Each figure is a link (or the language button).
+  a,
+  button {
+    flex: 1;
     display: grid;
     gap: var(--ap-space-1);
     padding: var(--ap-space-4) var(--ap-space-6);
+    border: none;
     background: var(--ap-color-surface);
+    font: inherit;
     text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover {
+      background: color-mix(in srgb, var(--ap-color-signal) 8%, var(--ap-color-surface));
+    }
   }
 
   strong {

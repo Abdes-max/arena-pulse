@@ -239,6 +239,24 @@ export class TournamentEntryPage {
     void this.content()?.scrollToTop(200);
   }
 
+  // Swipe up on the hero: fold it away into the event search.
+  private heroTouchStartY: number | null = null;
+  protected onHeroTouchStart(event: TouchEvent): void {
+    this.heroTouchStartY = event.touches[0]?.clientY ?? null;
+  }
+  protected onHeroTouchEnd(event: TouchEvent): void {
+    const endY = event.changedTouches[0]?.clientY;
+    if (this.heroTouchStartY !== null && endY !== undefined && this.heroTouchStartY - endY > 40) {
+      this.expandSearch();
+    }
+    this.heroTouchStartY = null;
+  }
+  protected onHeroWheel(event: WheelEvent): void {
+    if (event.deltaY > 20 && !this.searchExpanded()) {
+      this.expandSearch();
+    }
+  }
+
   protected collapseSearch(): void {
     this.dismissKeyboard();
     this.searchExpanded.set(false);
