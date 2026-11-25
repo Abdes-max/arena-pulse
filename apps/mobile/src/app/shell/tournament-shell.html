@@ -101,12 +101,16 @@
     <router-outlet />
   </ion-content>
 
-  <ion-tab-bar>
-    <ion-tab-button routerLink="home" routerLinkActive="tab-selected"> Tournoi </ion-tab-button>
-    <ion-tab-button routerLink="team" routerLinkActive="tab-selected"> Équipes </ion-tab-button>
-    <ion-tab-button routerLink="standings" routerLinkActive="tab-selected">
-      Classements
-    </ion-tab-button>
-    <ion-tab-button routerLink="schedule" routerLinkActive="tab-selected"> Matchs </ion-tab-button>
-  </ion-tab-bar>
+  @if (!onRegistration()) {
+    <ion-tab-bar>
+      <ion-tab-button routerLink="home" routerLinkActive="tab-selected"> Tournoi </ion-tab-button>
+      <ion-tab-button routerLink="team" routerLinkActive="tab-selected"> Équipes </ion-tab-button>
+      <ion-tab-button routerLink="standings" routerLinkActive="tab-selected">
+        Classements
+      </ion-tab-button>
+      <ion-tab-button routerLink="schedule" routerLinkActive="tab-selected">
+        Matchs
+      </ion-tab-button>
+    </ion-tab-bar>
+  }
 }

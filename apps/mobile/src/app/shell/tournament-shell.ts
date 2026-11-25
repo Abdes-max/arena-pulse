@@ -13,14 +13,16 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import {
   ActivatedRoute,
+  NavigationEnd,
   Router,
   RouterLink,
   RouterLinkActive,
   RouterOutlet,
 } from '@angular/router';
+import { filter, map } from 'rxjs';
 import { DEFAULT_THEME, ThemeMode, ThemeName, ThemeService, preferredMode } from 'design-tokens';
 import {
   ActionSheetController,
@@ -89,6 +91,17 @@ const THEME_MAP: Record<PublicTheme, ThemeName> = {
 export class TournamentShell {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  // The registration form stands on its own: no tab bar under it.
+  private readonly url = toSignal(
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+      map((event) => event.urlAfterRedirects),
+    ),
+    { initialValue: this.router.url },
+  );
+  protected readonly onRegistration = computed(() =>
+    /\/register(\/|$)/.test(this.url().split(/[?#]/)[0]),
+  );
   private readonly actionSheet = inject(ActionSheetController);
   private readonly themeService = inject(ThemeService);
   private readonly destroyRef = inject(DestroyRef);
