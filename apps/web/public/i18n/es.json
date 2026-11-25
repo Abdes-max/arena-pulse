@@ -456,8 +456,9 @@
       "register": {
         "title": "Regístrate",
         "orgNameLabel": "Nombre de la organización (opcional)",
-        "firstNameLabel": "Nombre",
-        "lastNameLabel": "Apellido",
+        "fullNameLabel": "Nombre y apellido",
+        "fullNamePlaceholder": "p. ej. Camille Martin",
+        "fullNameError": "Indica tu nombre y tu apellido.",
         "emailLabel": "Email",
         "passwordLabel": "Contraseña",
         "submit": "Crear mi organización",

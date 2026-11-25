@@ -558,8 +558,9 @@
       "register": {
         "title": "Sign up",
         "orgNameLabel": "Organization name (optional)",
-        "firstNameLabel": "First name",
-        "lastNameLabel": "Last name",
+        "fullNameLabel": "First and last name",
+        "fullNamePlaceholder": "e.g. Camille Martin",
+        "fullNameError": "Enter your first and last name.",
         "emailLabel": "Email",
         "passwordLabel": "Password",
         "submit": "Create my organization",

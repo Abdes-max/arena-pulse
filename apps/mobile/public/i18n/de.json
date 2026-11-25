@@ -64,8 +64,8 @@
         "title": "Konto erstellen",
         "lede": "Erstellen Sie Ihr Organisator·innen-Konto, um Ihre Turniere direkt über die App zu verwalten.",
         "orgNameLabel": "Name der Organisation (optional)",
-        "firstNameLabel": "Vorname",
-        "lastNameLabel": "Nachname",
+        "fullNameLabel": "Vor- und Nachname",
+        "fullNamePlaceholder": "z. B. Camille Martin",
         "emailLabel": "E-Mail",
         "passwordLabel": "Passwort",
         "submit": "Konto erstellen",
@@ -82,7 +82,8 @@
         "errors": {
           "required": "Dieses Feld ist erforderlich.",
           "email": "Ungültige E-Mail-Adresse.",
-          "passwordMinLength": "Das Passwort muss mindestens 10 Zeichen lang sein."
+          "passwordMinLength": "Das Passwort muss mindestens 10 Zeichen lang sein.",
+          "fullName": "Bitte Vor- und Nachnamen angeben."
         },
         "cancelAria": "Abbrechen",
         "orgNameHint": "Nur wenn du Turniere veranstaltest. Um ein Team anzumelden, leer lassen."
@@ -848,7 +849,6 @@
       "payment": "Zahlung:",
       "category": "Kategorie",
       "chooseCategory": "Kategorie wählen",
-      "fee": "Gebühr: {{fee}} (direkt an den Veranstalter)",
       "free": "Kostenlos",
       "full": "Kategorie voll: Warteliste.",
       "playerFirstName": "Vorname des Spielers",
@@ -862,7 +862,7 @@
       "department": "Département {{code}}",
       "email": "E-Mail des Verantwortlichen",
       "phone": "Telefon des Verantwortlichen",
-      "phoneHint": "Der Veranstalter ruft dich unter dieser Nummer zur Anmeldung an.",
+      "phoneHint": "Der Veranstalter kontaktiert Sie unter dieser Nummer.",
       "submit": "Voranmeldung senden",
       "sent": "Voranmeldung gesendet: der Veranstalter prüft sie.",
       "error": "Anmeldung konnte nicht gesendet werden, bitte erneut versuchen.",

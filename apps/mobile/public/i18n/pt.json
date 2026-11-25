@@ -64,8 +64,8 @@
         "title": "Criar a minha conta",
         "lede": "Crie a sua conta de organizador·a para gerir os seus torneios diretamente a partir da app.",
         "orgNameLabel": "Nome da organização (opcional)",
-        "firstNameLabel": "Nome próprio",
-        "lastNameLabel": "Apelido",
+        "fullNameLabel": "Nome e apelido",
+        "fullNamePlaceholder": "ex. Camille Martin",
         "emailLabel": "Email",
         "passwordLabel": "Palavra-passe",
         "submit": "Criar a minha conta",
@@ -82,7 +82,8 @@
         "errors": {
           "required": "Este campo é obrigatório.",
           "email": "Endereço de email inválido.",
-          "passwordMinLength": "A palavra-passe deve ter pelo menos 10 caracteres."
+          "passwordMinLength": "A palavra-passe deve ter pelo menos 10 caracteres.",
+          "fullName": "Indique o seu nome e apelido."
         },
         "cancelAria": "Cancelar",
         "orgNameHint": "Só se organiza torneios. Para inscrever uma equipa, deixe vazio."
@@ -848,7 +849,6 @@
       "payment": "Pagamento:",
       "category": "Categoria",
       "chooseCategory": "Escolher uma categoria",
-      "fee": "Taxa: {{fee}} (paga diretamente ao organizador)",
       "free": "Grátis",
       "full": "Categoria completa: lista de espera.",
       "playerFirstName": "Nome do jogador",
@@ -862,7 +862,7 @@
       "department": "Departamento {{code}}",
       "email": "Email do responsável",
       "phone": "Telefone do responsável",
-      "phoneHint": "O organizador vai ligar para este número sobre a inscrição.",
+      "phoneHint": "O organizador vai contactá-lo neste número.",
       "submit": "Enviar a pré-inscrição",
       "sent": "Pré-inscrição enviada: o organizador vai validá-la.",
       "error": "Não foi possível enviar a inscrição, tente novamente.",

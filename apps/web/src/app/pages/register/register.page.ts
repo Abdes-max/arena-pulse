@@ -100,10 +100,6 @@ export class RegisterPage {
   protected readonly selectedCategory = computed(
     () => this.categories().find((category) => category.id === this.selectedCategoryId()) ?? null,
   );
-  protected readonly selectedCategoryFee = computed(() => {
-    const category = this.selectedCategory();
-    return category ? formatFee(category) : '';
-  });
 
   // A team registers itself (name + the manager's contact): the roster is
   // the organizer's business once the team is confirmed. The phone is

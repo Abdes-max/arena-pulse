@@ -1,10 +1,17 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { IonContent, IonFooter, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Button, Logo, TextField } from 'design-system';
+import { isCompleteFullName, splitFullName } from 'shared-models';
 import { OrganizerAuthService } from '../../core/auth.service';
 import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 
@@ -25,6 +32,11 @@ type PageState = 'form' | 'sent';
 // primary CTA pinned in a footer. See login.page.scss's comment on
 // `display: contents` for why the <form> wraps both ion-content and
 // ion-footer.
+// Needs a first and a last name (two words at least).
+function completeFullName(control: AbstractControl<string>): ValidationErrors | null {
+  return !control.value || isCompleteFullName(control.value) ? null : { fullName: true };
+}
+
 @Component({
   selector: 'app-organizer-register-page',
   imports: [
@@ -52,8 +64,8 @@ export class OrganizerRegisterPage {
   protected readonly form = this.formBuilder.nonNullable.group({
     // Optional: only to organize tournaments (a team manager leaves it empty).
     organizationName: [''],
-    firstName: ['', Validators.required],
-    lastName: ['', Validators.required],
+    // One « Prénom et nom » field, split for the API on submit (splitFullName).
+    fullName: ['', [Validators.required, completeFullName]],
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(10)]],
   });
@@ -77,7 +89,7 @@ export class OrganizerRegisterPage {
   protected readonly submitAttempted = signal(false);
 
   protected fieldError(
-    name: 'organizationName' | 'firstName' | 'lastName' | 'email' | 'password',
+    name: 'organizationName' | 'fullName' | 'email' | 'password',
   ): string | null {
     const control = this.form.controls[name];
     if (!(control.touched || this.submitAttempted()) || control.valid) {
@@ -85,6 +97,9 @@ export class OrganizerRegisterPage {
     }
     if (control.hasError('required')) {
       return 'organizer.auth.register.errors.required';
+    }
+    if (control.hasError('fullName')) {
+      return 'organizer.auth.register.errors.fullName';
     }
     if (control.hasError('email')) {
       return 'organizer.auth.register.errors.email';
@@ -109,7 +124,8 @@ export class OrganizerRegisterPage {
     this.submitting.set(true);
     this.errorMessage.set(null);
     try {
-      const response = await this.auth.register(this.form.getRawValue());
+      const { fullName, ...rest } = this.form.getRawValue();
+      const response = await this.auth.register({ ...rest, ...splitFullName(fullName) });
       this.registeredEmail.set(response.email);
       this.state.set('sent');
     } catch (error) {

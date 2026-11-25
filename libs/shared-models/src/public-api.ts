@@ -17,3 +17,4 @@ export * from './lib/game-formats';
 export * from './lib/maps-link.util';
 export * from './lib/dashboard-stats';
 export * from './lib/manager-phone-memory';
+export * from './lib/full-name';
