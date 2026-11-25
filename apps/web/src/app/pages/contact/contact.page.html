@@ -1,14 +1,24 @@
-<main class="contact-page">
-  <button type="button" class="contact-page__back" (click)="goBack()">← Retour</button>
+<!-- Same look as the login / sign-up pages (auth-shell). Back goes to the
+     vitrine (works even when the page was opened on its own). -->
+<main class="contact-page auth-shell">
+  <header class="auth-shell__hero" data-theme="ink-signal" data-mode="dark">
+    <div class="auth-shell__topbar">
+      <a class="auth-shell__back" routerLink="/">← Retour</a>
+    </div>
+    <div class="auth-shell__hero-inner">
+      <a class="auth-shell__home" routerLink="/" aria-label="TournArena">
+        <ap-logo variant="on-dark" />
+      </a>
+      <h1>Nous contacter</h1>
+      <p class="auth-shell__lede">
+        Une question, un problème, une suggestion&nbsp;? Écrivez-nous, nous répondons
+        personnellement à chaque message.
+      </p>
+    </div>
+  </header>
   @switch (state()) {
     @case ('form') {
-      <form class="contact-page__card" [formGroup]="form" (ngSubmit)="submit()">
-        <ap-logo class="contact-page__brand" />
-        <h1>Nous contacter</h1>
-        <p class="contact-page__lead">
-          Une question, un problème, une suggestion&nbsp;? Écrivez-nous, nous répondons
-          personnellement à chaque message.
-        </p>
+      <form class="contact-page__card auth-shell__card" [formGroup]="form" (ngSubmit)="submit()">
         <div class="contact-page__field">
           <label for="contact-name">Nom</label>
           <input id="contact-name" type="text" formControlName="name" autocomplete="name" />
@@ -32,8 +42,7 @@
       </form>
     }
     @case ('sent') {
-      <div class="contact-page__card">
-        <ap-logo class="contact-page__brand" />
+      <div class="contact-page__card auth-shell__card">
         <h1>Message envoyé</h1>
         <p>Merci, votre message a bien été transmis. Nous vous répondrons rapidement.</p>
         <a class="contact-page__home-link" routerLink="/">Retour à l'accueil</a>
