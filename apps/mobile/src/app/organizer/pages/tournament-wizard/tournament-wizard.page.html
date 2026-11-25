@@ -1,28 +1,38 @@
-<ion-header>
+<!-- Night header bar, the same on every screen (ap-night-header, styles.scss). -->
+<ion-header class="ap-night-header" data-theme="ink-signal" data-mode="dark">
   <ion-toolbar>
-    <button
-      type="button"
-      class="wizard-page__cancel"
-      slot="start"
-      (click)="prevStep()"
-      [attr.aria-label]="'organizer.wizard.cancelAria' | transloco"
-    >
-      @if (step() === 1) {
-        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-          <path
-            fill="currentColor"
-            d="M18.3 5.71 12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.3 19.7 2.89 18.3 9.17 12 2.89 5.71 4.3 4.29l6.3 6.3 6.29-6.3z"
-          />
-        </svg>
-      } @else {
+    <!-- Same placement as every screen: back on the left (previous step),
+         the cross on the right (leave the wizard). -->
+    @if (step() !== 1 && step() !== 'done') {
+      <button
+        type="button"
+        class="wizard-page__cancel"
+        slot="start"
+        (click)="prevStep()"
+        [attr.aria-label]="'organizer.auth.login.backAria' | transloco"
+      >
         <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
           <path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
         </svg>
-      }
-    </button>
+      </button>
+    }
     <ion-title>{{
       (mode() === 'edit' ? 'organizer.wizard.titleEdit' : 'organizer.wizard.title') | transloco
     }}</ion-title>
+    <button
+      type="button"
+      class="wizard-page__cancel"
+      slot="end"
+      (click)="backToList()"
+      [attr.aria-label]="'organizer.wizard.cancelAria' | transloco"
+    >
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+        <path
+          fill="currentColor"
+          d="M18.3 5.71 12 12l6.3 6.29-1.41 1.42L10.59 13.4 4.3 19.7 2.89 18.3 9.17 12 2.89 5.71 4.3 4.29l6.3 6.3 6.29-6.3z"
+        />
+      </svg>
+    </button>
   </ion-toolbar>
 
   @if (step() !== 'done' && !initializing()) {
