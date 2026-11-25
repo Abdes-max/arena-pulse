@@ -43,6 +43,14 @@ on:
         options:
           - MANUAL
           - AFTER_APPROVAL
+      withdraw_pending:
+        description: >-
+          If the version is still waiting for Apple review, withdraw it first
+          (to change its build or screenshots), then resubmit. Never touches a
+          version already in review.
+        required: false
+        default: false
+        type: boolean
       update_screenshots:
         description: >-
           Replace the version's iPhone 6.5" and iPad 13" screenshots with the
@@ -73,5 +81,6 @@ jobs:
           BUILD_NUMBER: ${{ inputs.build_number }}
           RELEASE_NOTES: ${{ inputs.release_notes }}
           RELEASE_TYPE: ${{ inputs.release_type }}
+          WITHDRAW_PENDING: ${{ inputs.withdraw_pending }}
           SCREENSHOTS_DIR: ${{ inputs.update_screenshots && 'apps/mobile/store-assets/app-store' || '' }}
         run: node infra/scripts/submit-ios-app-store.mjs

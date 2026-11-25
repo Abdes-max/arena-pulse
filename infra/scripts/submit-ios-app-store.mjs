@@ -56,6 +56,9 @@ const {
   RELEASE_NOTES,
   RELEASE_TYPE = 'MANUAL',
   SCREENSHOTS_DIR,
+  // 'true': a version still WAITING_FOR_REVIEW is first withdrawn from
+  // review (never one already IN_REVIEW), so it can be changed and resubmitted.
+  WITHDRAW_PENDING,
 } = process.env;
 
 for (const [name, value] of Object.entries({
@@ -95,6 +98,50 @@ function buildJwt(privateKeyPem) {
   signer.end();
   const signature = base64url(signer.sign({ key: privateKeyPem, dsaEncoding: 'ieee-p1363' }));
   return `${header}.${claims}.${signature}`;
+}
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
+ * Cancels the app's review submission still waiting for review, then waits
+ * until the version is editable again (DEVELOPER_REJECTED) and that
+ * submission is closed -- the rest of the script then treats it like any
+ * editable version.
+ */
+async function withdrawFromReview(jwt, appId, version) {
+  console.log(`  → version is waiting for review: withdrawing it first...`);
+  const submissions = await api(
+    jwt,
+    'GET',
+    `/apps/${appId}/reviewSubmissions?filter[platform]=IOS&fields[reviewSubmissions]=state`,
+  );
+  const waiting = (submissions.data ?? []).filter(
+    (s) => s.attributes.state === 'WAITING_FOR_REVIEW',
+  );
+  for (const submission of waiting) {
+    await api(jwt, 'PATCH', `/reviewSubmissions/${submission.id}`, {
+      data: { type: 'reviewSubmissions', id: submission.id, attributes: { canceled: true } },
+    });
+    console.log(`  → review submission ${submission.id} canceled.`);
+  }
+  for (let attempt = 0; attempt < 30; attempt += 1) {
+    await sleep(10_000);
+    const refreshed = await api(jwt, 'GET', `/appStoreVersions/${version.id}`);
+    const open = await api(
+      jwt,
+      'GET',
+      `/apps/${appId}/reviewSubmissions?filter[platform]=IOS&fields[reviewSubmissions]=state`,
+    );
+    const pending = (open.data ?? []).some((s) =>
+      ['WAITING_FOR_REVIEW', 'CANCELING'].includes(s.attributes.state),
+    );
+    const state = refreshed.data.attributes.appStoreState;
+    console.log(`  … version state "${state}"${pending ? ', submission still closing' : ''}`);
+    if (state !== 'WAITING_FOR_REVIEW' && !pending) {
+      return refreshed.data;
+    }
+  }
+  throw new Error('Timed out waiting for the withdrawn version to become editable again.');
 }
 
 async function api(jwt, method, path, body) {
@@ -153,6 +200,14 @@ async function main() {
     `/apps/${appId}/appStoreVersions?filter[versionString]=${encodeURIComponent(VERSION_STRING)}&filter[platform]=IOS`,
   );
   let version = versions.data?.[0];
+
+  if (
+    version &&
+    WITHDRAW_PENDING === 'true' &&
+    version.attributes.appStoreState === 'WAITING_FOR_REVIEW'
+  ) {
+    version = await withdrawFromReview(jwt, appId, version);
+  }
 
   if (version) {
     const state = version.attributes.appStoreState;
