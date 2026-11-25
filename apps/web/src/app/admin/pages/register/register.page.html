@@ -28,14 +28,12 @@
         />
         <p class="register-page__hint">{{ 'admin.auth.register.orgNameHint' | transloco }}</p>
         <ap-text-field
-          [label]="'admin.auth.register.firstNameLabel' | transloco"
-          formControlName="firstName"
-          autocomplete="given-name"
-        />
-        <ap-text-field
-          [label]="'admin.auth.register.lastNameLabel' | transloco"
-          formControlName="lastName"
-          autocomplete="family-name"
+          [label]="'admin.auth.register.fullNameLabel' | transloco"
+          formControlName="fullName"
+          autocomplete="name"
+          [placeholder]="'admin.auth.register.fullNamePlaceholder' | transloco"
+          [errorMessage]="fullNameError() | transloco"
+          (focusout)="fullNameTouched.set(true)"
         />
         <ap-text-field
           [label]="'admin.auth.register.emailLabel' | transloco"

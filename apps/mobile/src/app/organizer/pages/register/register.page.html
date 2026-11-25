@@ -45,16 +45,11 @@
             {{ 'organizer.auth.register.orgNameHint' | transloco }}
           </p>
           <ap-text-field
-            [label]="'organizer.auth.register.firstNameLabel' | transloco"
-            formControlName="firstName"
-            autocomplete="given-name"
-            [errorMessage]="fieldError('firstName') | transloco"
-          />
-          <ap-text-field
-            [label]="'organizer.auth.register.lastNameLabel' | transloco"
-            formControlName="lastName"
-            autocomplete="family-name"
-            [errorMessage]="fieldError('lastName') | transloco"
+            [label]="'organizer.auth.register.fullNameLabel' | transloco"
+            formControlName="fullName"
+            autocomplete="name"
+            [placeholder]="'organizer.auth.register.fullNamePlaceholder' | transloco"
+            [errorMessage]="fieldError('fullName') | transloco"
           />
           <ap-text-field
             [label]="'organizer.auth.register.emailLabel' | transloco"

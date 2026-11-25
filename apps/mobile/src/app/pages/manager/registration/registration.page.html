@@ -31,10 +31,7 @@
           (valueChange)="selectedCategoryId.set($event)"
         />
 
-        @if (selectedCategory(); as category) {
-          <p class="registration-page__note">
-            {{ 'manager.form.fee' | transloco: { fee: feeLabel(category) } }}
-          </p>
+        @if (selectedCategory()) {
           @if (remaining() === 0) {
             <p class="registration-page__warning">{{ 'manager.form.full' | transloco }}</p>
           }

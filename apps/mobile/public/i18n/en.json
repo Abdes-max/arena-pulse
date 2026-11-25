@@ -64,8 +64,8 @@
         "title": "Create my account",
         "lede": "Create your organizer account to manage your tournaments directly from the app.",
         "orgNameLabel": "Organization name (optional)",
-        "firstNameLabel": "First name",
-        "lastNameLabel": "Last name",
+        "fullNameLabel": "First and last name",
+        "fullNamePlaceholder": "e.g. Camille Martin",
         "emailLabel": "Email",
         "passwordLabel": "Password",
         "submit": "Create my account",
@@ -82,7 +82,8 @@
         "errors": {
           "required": "This field is required.",
           "email": "Invalid email address.",
-          "passwordMinLength": "Password must be at least 10 characters."
+          "passwordMinLength": "Password must be at least 10 characters.",
+          "fullName": "Enter your first and last name."
         },
         "cancelAria": "Cancel",
         "orgNameHint": "Only if you organize tournaments. To register a team, leave it empty."
@@ -848,7 +849,6 @@
       "payment": "Payment:",
       "category": "Category",
       "chooseCategory": "Choose a category",
-      "fee": "Fee: {{fee}} (paid directly to the organizer)",
       "free": "Free",
       "full": "Category full: waiting list.",
       "playerFirstName": "Player first name",
@@ -862,7 +862,7 @@
       "department": "Department {{code}}",
       "email": "Manager email",
       "phone": "Manager phone",
-      "phoneHint": "The organizer will call you on this number about the registration.",
+      "phoneHint": "The organizer will contact you on this number.",
       "submit": "Send the pre-registration",
       "sent": "Pre-registration sent: the organizer will review it.",
       "error": "Could not send this registration, try again.",

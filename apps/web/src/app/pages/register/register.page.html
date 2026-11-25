@@ -30,11 +30,7 @@
             (valueChange)="onCategoryChange($event)"
           />
 
-          @if (selectedCategory(); as category) {
-            <p class="register-page__note">
-              Tarif : <strong>{{ selectedCategoryFee() }}</strong> (réglé directement à
-              l'organisateur)
-            </p>
+          @if (selectedCategory()) {
             @if (remaining() === 0) {
               <p class="register-page__warning">Catégorie complète : liste d'attente.</p>
             }
@@ -112,9 +108,7 @@
               formControlName="managerPhone"
               autocomplete="tel"
             />
-            <p class="register-page__hint">
-              L'organisateur vous contactera à ce numéro au sujet de l'inscription.
-            </p>
+            <p class="register-page__hint">L'organisateur vous contactera à ce numéro.</p>
 
             <ap-button type="submit" [disabled]="form.invalid || submitting()">
               Envoyer la pré-inscription
