@@ -19,6 +19,7 @@ import {
   NotificationPrefs,
   NotificationSettingsService,
 } from '../../core/notification-settings.service';
+import { Logo } from 'design-system';
 import { NotificationPrefsForm } from './notification-prefs-form';
 
 /**
@@ -30,6 +31,7 @@ import { NotificationPrefsForm } from './notification-prefs-form';
 @Component({
   selector: 'app-notifications-page',
   imports: [
+    Logo,
     IonButton,
     IonContent,
     IonHeader,

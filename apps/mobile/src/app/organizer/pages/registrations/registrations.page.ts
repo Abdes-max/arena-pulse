@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Clipboard } from '@capacitor/clipboard';
-import { Button, QrCode, ShareButton, TextField } from 'design-system';
+import { Button, Logo, QrCode, ShareButton, TextField } from 'design-system';
 import { firstValueFrom } from 'rxjs';
 import type {
   OrganizerRegistration,
@@ -34,6 +34,7 @@ interface RegistrationCategory {
 @Component({
   selector: 'app-organizer-registrations-page',
   imports: [
+    Logo,
     Button,
     IonContent,
     IonHeader,

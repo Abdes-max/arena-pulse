@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { Router } from '@angular/router';
 import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { Button, TypeToConfirm } from 'design-system';
+import { Button, Logo, TypeToConfirm } from 'design-system';
 import { OrganizerAuthService } from '../../core/auth.service';
 
 /**
@@ -17,7 +17,16 @@ import { OrganizerAuthService } from '../../core/auth.service';
  */
 @Component({
   selector: 'app-organizer-account-page',
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent, Button, TypeToConfirm, TranslocoPipe],
+  imports: [
+    Logo,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+    Button,
+    TypeToConfirm,
+    TranslocoPipe,
+  ],
   templateUrl: './account.page.html',
   styleUrl: './account.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -3,7 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { Button, SetDraft, SetsInput } from 'design-system';
+import { Button, Logo, SetDraft, SetsInput } from 'design-system';
 import { LanguageService } from 'design-tokens';
 import { CompetitionPhase, Match } from 'shared-models';
 import { OrganizerAuthService } from '../../core/auth.service';
@@ -37,7 +37,7 @@ interface PoolErrorBody {
  */
 @Component({
   selector: 'app-organizer-live-page',
-  imports: [Button, IonContent, IonHeader, IonTitle, IonToolbar, SetsInput, TranslocoPipe],
+  imports: [Logo, Button, IonContent, IonHeader, IonTitle, IonToolbar, SetsInput, TranslocoPipe],
   templateUrl: './live.page.html',
   styleUrl: './live.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

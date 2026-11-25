@@ -147,7 +147,14 @@ ion-segment-button ion-label {
     --min-height: 60px;
   }
 
+  .ap-night-header__logo {
+    margin: 0 var(--ap-space-2) 0 var(--ap-space-1);
+  }
+
+  // Always on the left, after the back button and the logo.
   ion-title {
+    text-align: start;
+    padding-inline: var(--ap-space-2);
     font-family: var(--ap-font-heading);
     font-size: 1.15rem;
     font-weight: 800;

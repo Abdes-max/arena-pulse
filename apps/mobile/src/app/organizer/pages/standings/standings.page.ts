@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { AssetUrlService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { Badge, BracketMatch, Button, Select, SelectOption } from 'design-system';
+import { Badge, BracketMatch, Button, Logo, Select, SelectOption } from 'design-system';
 import { LanguageService } from 'design-tokens';
 import type {
   BracketView,
@@ -42,6 +42,7 @@ interface GroupStandings {
 @Component({
   selector: 'app-organizer-standings-page',
   imports: [
+    Logo,
     Badge,
     BracketMatch,
     Button,
