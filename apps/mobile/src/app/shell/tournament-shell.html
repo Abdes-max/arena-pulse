@@ -7,7 +7,8 @@
     <p role="alert">{{ message }}</p>
   </ion-content>
 } @else if (tournament(); as t) {
-  <ion-header>
+  <!-- Same night header bar as every other app screen (ap-night-header). -->
+  <ion-header class="ap-night-header" data-theme="ink-signal" data-mode="dark">
     <ion-toolbar>
       <div class="tournament-shell__start" slot="start">
         <a class="tournament-shell__back" routerLink="/" aria-label="Rechercher un autre tournoi">
@@ -15,6 +16,7 @@
             <path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
           </svg>
         </a>
+        <ap-logo class="ap-night-header__logo" [wordmark]="false" />
         <p class="tournament-shell__sport">{{ t.sportName }}</p>
       </div>
       <ion-buttons slot="end">
