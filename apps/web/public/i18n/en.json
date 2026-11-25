@@ -1949,7 +1949,7 @@
       "scored": "Goals / points scored",
       "scoredHint": "{{conceded}} conceded",
       "pending": "Pending",
-      "pendingHint": "{{count}} on the waiting list"
+      "pendingHint": "including {{count}} on the waiting list"
     },
     "outcomesTitle": "Match record",
     "perTeamTitle": "By team",

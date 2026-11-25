@@ -1847,7 +1847,7 @@
       "scored": "Gols / pontos marcados",
       "scoredHint": "{{conceded}} sofridos",
       "pending": "Pendentes",
-      "pendingHint": "{{count}} na lista de espera"
+      "pendingHint": "das quais {{count}} na lista de espera"
     },
     "outcomesTitle": "Balanço dos jogos",
     "perTeamTitle": "Por equipe",

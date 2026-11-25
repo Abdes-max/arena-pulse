@@ -1949,7 +1949,7 @@
       "scored": "Buts / points marqués",
       "scoredHint": "{{conceded}} encaissés",
       "pending": "En attente",
-      "pendingHint": "{{count}} en liste d'attente"
+      "pendingHint": "dont {{count}} en liste d'attente"
     },
     "outcomesTitle": "Bilan des matchs",
     "perTeamTitle": "Par équipe",
