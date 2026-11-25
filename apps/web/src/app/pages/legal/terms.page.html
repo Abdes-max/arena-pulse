@@ -1,19 +1,25 @@
-<main class="legal-page">
-  <div class="legal-page__header">
-    <button type="button" class="legal-page__back" (click)="goBack()">
-      {{ 'legal.back' | transloco }}
-    </button>
-    <ap-language-switcher
-      [language]="language()"
-      [languages]="languages"
-      (languageChange)="onLanguageChange($event)"
-    />
-  </div>
-  <ap-logo class="legal-page__brand" />
-  <div class="legal-page__content">
-    <h1>{{ 'legal.terms.title' | transloco }}</h1>
-    <p class="legal-page__updated">{{ 'legal.terms.updated' | transloco }}</p>
-
+<!-- Same look as the login / sign-up pages (auth-shell): night hero, then the
+     text in a card. Back goes to the vitrine (works even when the page was
+     opened on its own, e.g. in a new tab from the app). -->
+<main class="legal-page auth-shell">
+  <header class="auth-shell__hero" data-theme="ink-signal" data-mode="dark">
+    <div class="auth-shell__topbar">
+      <a class="auth-shell__back" routerLink="/">{{ 'legal.back' | transloco }}</a>
+      <ap-language-switcher
+        [language]="language()"
+        [languages]="languages"
+        (languageChange)="onLanguageChange($event)"
+      />
+    </div>
+    <div class="auth-shell__hero-inner">
+      <a class="auth-shell__home" routerLink="/" aria-label="TournArena">
+        <ap-logo variant="on-dark" />
+      </a>
+      <h1>{{ 'legal.terms.title' | transloco }}</h1>
+      <p class="auth-shell__lede">{{ 'legal.terms.updated' | transloco }}</p>
+    </div>
+  </header>
+  <div class="legal-page__content auth-shell__card auth-shell__card--wide">
     @if (!bodyAvailable()) {
       <p class="legal-page__pending-banner">{{ 'legal.translationPending' | transloco }}</p>
     }

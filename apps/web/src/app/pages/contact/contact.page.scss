@@ -1,42 +1,10 @@
-:host {
-  display: block;
-  min-height: 100dvh;
-  background: var(--ap-color-bg);
-  color: var(--ap-color-fg);
-}
-
-.contact-page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: var(--ap-space-6);
-}
-
-.contact-page__back {
-  align-self: flex-start;
-  margin-bottom: var(--ap-space-6);
-  padding: var(--ap-space-2) var(--ap-space-3);
-  border: var(--ap-border-width) solid var(--ap-color-border);
-  border-radius: var(--ap-radius-md);
-  background: transparent;
-  color: var(--ap-color-fg);
-  font: inherit;
-  font-weight: 600;
-  cursor: pointer;
-  transition: border-color var(--ap-motion-fast) var(--ap-easing-standard);
-
-  &:hover {
-    border-color: var(--ap-color-signal);
-  }
-}
+@use '../../admin/pages/auth-shell';
 
 .contact-page__card {
   display: flex;
   flex-direction: column;
   gap: var(--ap-space-4);
-  width: 100%;
   max-width: 480px;
-  margin: 0 auto;
 
   h1 {
     font-family: var(--ap-font-heading);
@@ -44,17 +12,6 @@
     margin: 0;
     text-align: center;
   }
-}
-
-.contact-page__brand {
-  align-self: center;
-  margin-bottom: var(--ap-space-2);
-}
-
-.contact-page__lead {
-  margin: 0;
-  color: var(--ap-color-muted);
-  text-align: center;
 }
 
 // Hand-rolled to match ap-text-field's visuals (libs/design-system/text-field)

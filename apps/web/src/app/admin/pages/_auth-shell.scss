@@ -40,6 +40,33 @@
   pointer-events: none;
 }
 
+// Back to the vitrine (and, on the legal pages, the language picker) above
+// the logo -- contact, terms, privacy.
+.auth-shell__topbar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ap-space-3);
+  max-width: 760px;
+  margin: calc(-1 * var(--ap-space-4)) auto var(--ap-space-4);
+  text-align: start;
+}
+
+.auth-shell__back {
+  padding: var(--ap-space-2) var(--ap-space-3);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  color: var(--ap-color-fg);
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color var(--ap-motion-fast) var(--ap-easing-standard);
+
+  &:hover {
+    border-color: var(--ap-color-signal);
+  }
+}
+
 .auth-shell__hero-inner {
   position: relative;
   max-width: 560px;
@@ -66,6 +93,12 @@
   border: var(--ap-border-width) solid var(--ap-color-border);
   border-radius: 20px;
   box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+}
+
+// Long text (terms, privacy): a wider card.
+.auth-shell__card--wide {
+  max-width: 760px;
+  padding: var(--ap-space-8);
 }
 
 @media (max-width: 480px) {

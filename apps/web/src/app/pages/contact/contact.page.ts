@@ -1,5 +1,4 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Location } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -18,7 +17,6 @@ type PageState = 'form' | 'sent';
 export class ContactPage {
   private readonly formBuilder = inject(FormBuilder);
   private readonly api = inject(PublicApiService);
-  private readonly location = inject(Location);
 
   protected readonly form = this.formBuilder.nonNullable.group({
     name: ['', Validators.required],
@@ -30,10 +28,6 @@ export class ContactPage {
   protected readonly state = signal<PageState>('form');
   protected readonly submitting = signal(false);
   protected readonly errorMessage = signal<string | null>(null);
-
-  protected goBack(): void {
-    this.location.back();
-  }
 
   protected async submit(): Promise<void> {
     if (this.form.invalid || this.submitting()) {

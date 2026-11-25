@@ -1,54 +1,7 @@
 // Shared by terms.page and privacy.page -- same layout (back link, brand,
 // long-form text), just different content, so one stylesheet for both
 // instead of duplicating it.
-:host {
-  display: block;
-  min-height: 100dvh;
-  background: var(--ap-color-bg);
-  color: var(--ap-color-fg);
-}
-
-.legal-page {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: var(--ap-space-6) var(--ap-space-6) var(--ap-space-16);
-}
-
-.legal-page__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--ap-space-3);
-  margin-bottom: var(--ap-space-6);
-}
-
-.legal-page__back {
-  display: inline-block;
-  padding: var(--ap-space-2) var(--ap-space-3);
-  border: var(--ap-border-width) solid var(--ap-color-border);
-  border-radius: var(--ap-radius-md);
-  background: transparent;
-  color: var(--ap-color-fg);
-  font: inherit;
-  font-weight: 600;
-  cursor: pointer;
-  transition: border-color var(--ap-motion-fast) var(--ap-easing-standard);
-
-  &:hover {
-    border-color: var(--ap-color-signal);
-  }
-}
-
-.legal-page__brand {
-  display: block;
-  margin-bottom: var(--ap-space-6);
-}
-
-.legal-page__updated {
-  color: var(--ap-color-muted);
-  font-size: 0.9rem;
-  margin: calc(-1 * var(--ap-space-2)) 0 var(--ap-space-8);
-}
+@use '../../admin/pages/auth-shell';
 
 // Shown only when the active language has no real translation of the body
 // yet (see terms.page.ts/privacy.page.ts's bodyAvailable) -- the body text
@@ -66,16 +19,14 @@
 }
 
 .legal-page__content {
-  h1 {
-    font-family: var(--ap-font-heading);
-    font-size: 1.9rem;
-    margin: 0 0 var(--ap-space-2);
-  }
-
   h2 {
     font-family: var(--ap-font-heading);
     font-size: 1.15rem;
     margin: var(--ap-space-8) 0 var(--ap-space-3);
+
+    &:first-child {
+      margin-top: 0;
+    }
   }
 
   p,

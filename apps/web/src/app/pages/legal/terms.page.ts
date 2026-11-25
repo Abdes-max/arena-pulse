@@ -1,4 +1,3 @@
-import { Location } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TranslocoPipe } from '@jsverse/transloco';
@@ -22,7 +21,6 @@ const BODY_TRANSLATED_LANGUAGES: readonly LanguageCode[] = ['fr', 'en'];
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TermsPage {
-  private readonly location = inject(Location);
   private readonly languageService = inject(LanguageService);
 
   protected readonly language = this.languageService.language;
@@ -30,10 +28,6 @@ export class TermsPage {
   protected readonly bodyAvailable = computed(() =>
     BODY_TRANSLATED_LANGUAGES.includes(this.language() as LanguageCode),
   );
-
-  protected goBack(): void {
-    this.location.back();
-  }
 
   protected onLanguageChange(code: string): void {
     this.languageService.setLanguage(code as LanguageCode);
