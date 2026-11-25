@@ -109,3 +109,55 @@ ion-segment-button {
 ion-segment-button ion-label {
   font-size: 0.85rem;
 }
+
+// « Nuit de match » header bar, the same on every app screen (organizer,
+// account, notifications...): the entry page's night band -- dark whatever
+// the mode (data-mode="dark" on the ion-header), a cyan floodlight and a
+// faint grid. Back sits on the left, a cancelling cross on the right.
+.ap-night-header {
+  position: relative;
+  background: var(--ap-color-bg);
+  color: var(--ap-color-fg);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(18rem 10rem at 0% 0%, rgb(14 165 201 / 38%), transparent 70%),
+      linear-gradient(rgb(255 255 255 / 3.5%) 1px, transparent 1px) 0 0 / 44px 44px,
+      linear-gradient(90deg, rgb(255 255 255 / 3.5%) 1px, transparent 1px) 0 0 / 44px 44px;
+    pointer-events: none;
+  }
+
+  // No md drop shadow under the band.
+  &::after {
+    display: none;
+  }
+
+  // Content above the floodlight layer.
+  > * {
+    position: relative;
+  }
+
+  ion-toolbar {
+    --background: transparent;
+    --color: var(--ap-color-fg);
+    --border-width: 0;
+    --min-height: 60px;
+  }
+
+  .ap-night-header__logo {
+    margin: 0 var(--ap-space-2) 0 var(--ap-space-1);
+  }
+
+  // Always on the left, after the back button and the logo.
+  ion-title {
+    text-align: start;
+    padding-inline: var(--ap-space-2);
+    font-family: var(--ap-font-heading);
+    font-size: 1.15rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+}

@@ -52,7 +52,11 @@
       data-theme="ink-signal"
       [attr.data-mode]="mode()"
     >
-      <div class="tournament-entry-page__settings-header">
+      <div
+        class="tournament-entry-page__settings-header ap-night-header"
+        data-theme="ink-signal"
+        data-mode="dark"
+      >
         <button
           type="button"
           class="tournament-entry-page__settings-close"
@@ -63,6 +67,7 @@
             <path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
           </svg>
         </button>
+        <ap-logo class="ap-night-header__logo" [wordmark]="false" />
         <h2 class="tournament-entry-page__settings-title">
           {{ 'tournamentEntry.settings.title' | transloco }}
         </h2>

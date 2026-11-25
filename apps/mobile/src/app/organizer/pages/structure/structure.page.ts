@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { Button, Select, SelectOption, TextField } from 'design-system';
+import { Button, Logo, Select, SelectOption, TextField } from 'design-system';
 import type { CompetitionPhase } from 'shared-models';
 import { environment } from '../../../../environments/environment';
 import { OrganizerAuthService } from '../../core/auth.service';
@@ -37,6 +37,7 @@ interface QualificationRuleGroup {
 @Component({
   selector: 'app-organizer-structure-page',
   imports: [
+    Logo,
     Button,
     IonContent,
     IonHeader,

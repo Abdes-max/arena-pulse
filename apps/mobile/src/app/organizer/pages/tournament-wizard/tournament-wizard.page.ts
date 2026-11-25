@@ -29,7 +29,7 @@ import {
   PublicApiService,
 } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { AutocompleteField, Button, Select, SelectOption, TextField } from 'design-system';
+import { AutocompleteField, Button, Logo, Select, SelectOption, TextField } from 'design-system';
 import {
   PublicSport,
   PublicTheme,
@@ -175,6 +175,7 @@ function describeError(error: unknown): string {
 @Component({
   selector: 'app-organizer-tournament-wizard-page',
   imports: [
+    Logo,
     AutocompleteField,
     Button,
     DatePipe,

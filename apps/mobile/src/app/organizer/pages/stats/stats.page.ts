@@ -7,7 +7,7 @@ import { LanguageService } from 'design-tokens';
 import type { StatsMatchHighlight, TournamentDashboardStats } from 'shared-models';
 import { OrganizerAuthService } from '../../core/auth.service';
 import { OrganizerStatsService } from '../../core/stats.service';
-import { StatsBars, StatsColumns, StatsDatum, StatsRing, StatsSegments } from 'design-system';
+import { Logo, StatsBars, StatsColumns, StatsDatum, StatsRing, StatsSegments } from 'design-system';
 
 // Native port of apps/web/src/app/admin/pages/stats/tournament-stats.page.ts
 // -- same endpoint and shared chart primitives (design-system), laid out
@@ -15,6 +15,7 @@ import { StatsBars, StatsColumns, StatsDatum, StatsRing, StatsSegments } from 'd
 @Component({
   selector: 'app-organizer-stats-page',
   imports: [
+    Logo,
     DecimalPipe,
     IonContent,
     IonHeader,

@@ -73,11 +73,12 @@
 
 .tournament-entry-page__settings-header {
   position: relative;
+  // Back, logo, then the title on the left -- like every other header.
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: var(--ap-space-2);
   flex: 0 0 auto;
-  padding: var(--ap-space-4);
+  padding: var(--ap-space-4) var(--ap-space-4) var(--ap-space-4) var(--ap-space-2);
   // .settings-overlay is a plain fixed div, not an ion-header/ion-toolbar --
   // unlike the hero above it (which gets iOS's notch/status-bar safe area
   // for free through Ionic's own CSS, see the template's comment on why
@@ -91,8 +92,6 @@
 }
 
 .tournament-entry-page__settings-close {
-  position: absolute;
-  left: var(--ap-space-2);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -110,8 +109,8 @@
 
 .tournament-entry-page__settings-title {
   font-family: var(--ap-font-heading);
-  font-size: 1.05rem;
-  font-weight: 700;
+  font-size: 1.15rem;
+  font-weight: 800;
   margin: 0;
 }
 

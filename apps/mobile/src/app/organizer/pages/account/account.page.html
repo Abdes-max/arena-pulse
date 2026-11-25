@@ -1,4 +1,5 @@
-<ion-header>
+<!-- Night header bar, the same on every screen (ap-night-header, styles.scss). -->
+<ion-header class="ap-night-header" data-theme="ink-signal" data-mode="dark">
   <ion-toolbar>
     <button
       type="button"
@@ -11,6 +12,7 @@
         <path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
       </svg>
     </button>
+    <ap-logo class="ap-night-header__logo" slot="start" [wordmark]="false" />
     <ion-title>{{ 'organizer.account.title' | transloco }}</ion-title>
   </ion-toolbar>
 </ion-header>

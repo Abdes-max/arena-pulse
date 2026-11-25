@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
 import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { AddressSearchService, PublicApiService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { AutocompleteField, Button, Select, SelectOption, TextField } from 'design-system';
+import { AutocompleteField, Button, Logo, Select, SelectOption, TextField } from 'design-system';
 import { AGE_CATEGORIES, PublicSport, defaultGameFormat, gameFormatsFor } from 'shared-models';
 import { OrganizerAuthService } from '../../core/auth.service';
 import { knockoutSizesFor, previewPlateau } from '../../core/plateau-preview';
@@ -40,6 +40,7 @@ function todayIsoDate(): string {
 @Component({
   selector: 'app-organizer-quick-plateau-page',
   imports: [
+    Logo,
     AutocompleteField,
     Button,
     IonContent,
