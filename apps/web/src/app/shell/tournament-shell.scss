@@ -350,6 +350,11 @@
   }
 }
 
+// Registration form: no tabs (kept in the DOM, the tab-centering reads it).
+.tournament-shell__nav--hidden {
+  display: none;
+}
+
 // Solid pill, so the current tab reads unambiguously as "you are here".
 // a.… so it also beats the hover color of .tournament-shell__nav a:hover
 // (white text on the white pill otherwise).

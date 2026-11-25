@@ -1,5 +1,13 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+  untracked,
+} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { IonContent } from '@ionic/angular/standalone';
@@ -12,7 +20,12 @@ import {
 } from 'api-client';
 import { AutocompleteField, Button, Select, SelectOption, TextField } from 'design-system';
 import { LanguageService } from 'design-tokens';
-import { Category, PublicRegistrationInfo } from 'shared-models';
+import {
+  Category,
+  PublicRegistrationInfo,
+  recallManagerPhone,
+  rememberManagerPhone,
+} from 'shared-models';
 import { showErrorsInSnackbar } from '../../../core/error-snackbar';
 import { OrganizerAuthService } from '../../../organizer/core/auth.service';
 import { SnackbarService } from '../../../core/snackbar.service';
@@ -136,6 +149,18 @@ export class RegistrationPage {
 
   constructor() {
     void this.load();
+    // The manager's phone saved on this device (by category, see
+    // recallManagerPhone), as long as it hasn't been typed in by hand.
+    effect(() => {
+      const categoryName = this.selectedCategory()?.name;
+      untracked(() => {
+        const phone = this.form.controls.managerPhone;
+        const saved = recallManagerPhone(categoryName);
+        if (!phone.dirty && saved) {
+          phone.setValue(saved);
+        }
+      });
+    });
   }
 
   protected feeLabel(category: Category): string {
@@ -233,6 +258,8 @@ export class RegistrationPage {
           ? [{ firstName: playerFirstName, lastName: playerLastName }]
           : undefined,
       });
+      // Sent: pre-fill this phone next time.
+      rememberManagerPhone(this.selectedCategory()?.name, managerPhone);
       this.snackbar.success(this.transloco.translate('manager.form.sent'));
       await this.router.navigateByUrl('/espace-responsable');
     } catch (error) {

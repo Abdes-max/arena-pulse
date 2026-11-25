@@ -159,7 +159,11 @@
       }
     </div>
 
-    <nav class="tournament-shell__nav" #nav>
+    <nav
+      class="tournament-shell__nav"
+      [class.tournament-shell__nav--hidden]="onRegistration()"
+      #nav
+    >
       <a
         routerLink="."
         [routerLinkActiveOptions]="{ exact: true }"

@@ -9,10 +9,7 @@
         @if (!i.open) {
           <p class="register-page__muted">Les inscriptions ne sont pas ouvertes pour ce tournoi.</p>
         } @else {
-          <p class="register-page__intro">
-            Votre demande sera validée par l'organisateur, qui vous confirmera votre place par
-            e-mail.
-          </p>
+          <p class="register-page__intro">Votre demande sera validée par l'organisateur.</p>
           @if (i.paymentInfo) {
             <p class="register-page__note"><strong>Paiement :</strong> {{ i.paymentInfo }}</p>
           }
@@ -39,9 +36,7 @@
               l'organisateur)
             </p>
             @if (remaining() === 0) {
-              <p class="register-page__warning">
-                Catégorie complète : votre demande ira en liste d'attente.
-              </p>
+              <p class="register-page__warning">Catégorie complète : liste d'attente.</p>
             }
 
             @if (individual()) {

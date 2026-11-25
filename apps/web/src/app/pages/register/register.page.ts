@@ -1,5 +1,13 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  signal,
+  untracked,
+} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import {
@@ -9,7 +17,12 @@ import {
   clubDirectorySport,
 } from 'api-client';
 import { AutocompleteField, Button, Select, SelectOption, TextField } from 'design-system';
-import { Category, PublicRegistrationInfo } from 'shared-models';
+import {
+  Category,
+  PublicRegistrationInfo,
+  recallManagerPhone,
+  rememberManagerPhone,
+} from 'shared-models';
 import { AuthService } from '../../admin/core/auth.service';
 import { TournamentContextService } from '../../core/tournament-context.service';
 import { showErrorsInSnackbar } from '../../core/error-snackbar';
@@ -136,6 +149,18 @@ export class RegisterPage {
 
   constructor() {
     void this.load();
+    // The manager's phone saved on this device (by category, see
+    // recallManagerPhone), as long as it hasn't been typed in by hand.
+    effect(() => {
+      const categoryName = this.selectedCategory()?.name;
+      untracked(() => {
+        const phone = this.form.controls.managerPhone;
+        const saved = recallManagerPhone(categoryName);
+        if (!phone.dirty && saved) {
+          phone.setValue(saved);
+        }
+      });
+    });
   }
 
   protected toggleClubSearch(event: Event): void {
@@ -229,6 +254,8 @@ export class RegisterPage {
           ? [{ firstName: playerFirstName, lastName: playerLastName }]
           : undefined,
       });
+      // Sent: pre-fill this phone next time (also before a payment redirect).
+      rememberManagerPhone(this.selectedCategory()?.name, managerPhone);
       if (result.checkoutUrl) {
         window.location.href = result.checkoutUrl;
         return;

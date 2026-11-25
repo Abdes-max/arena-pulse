@@ -96,6 +96,10 @@ export class TournamentShell {
     ),
     { initialValue: { url: this.router.url } },
   );
+  // The registration form stands on its own: no tabs above it.
+  protected readonly onRegistration = computed(() =>
+    /\/register(\/|$)/.test(this.navigation().url.split(/[?#]/)[0]),
+  );
   private readonly destroyRef = inject(DestroyRef);
   private readonly assetUrl = inject(AssetUrlService);
   protected readonly context = inject(TournamentContextService);
