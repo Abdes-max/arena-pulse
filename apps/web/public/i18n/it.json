@@ -1847,7 +1847,7 @@
       "scored": "Gol / punti segnati",
       "scoredHint": "{{conceded}} subiti",
       "pending": "In attesa",
-      "pendingHint": "{{count}} in lista d'attesa"
+      "pendingHint": "di cui {{count}} in lista d'attesa"
     },
     "outcomesTitle": "Bilancio delle partite",
     "perTeamTitle": "Per squadra",

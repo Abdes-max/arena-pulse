@@ -72,7 +72,10 @@
               <span class="stats-dashboard__tile-label">{{
                 'myRegistrations.tiles.pending' | transloco
               }}</span>
-              <span class="stats-dashboard__tile-value">{{ s.registrations.pending }}</span>
+              <!-- Awaiting the organizer or on the waiting list: both still pending. -->
+              <span class="stats-dashboard__tile-value">{{
+                s.registrations.pending + s.registrations.waitlist
+              }}</span>
               <span class="stats-dashboard__tile-hint">{{
                 'myRegistrations.tiles.pendingHint' | transloco: { count: s.registrations.waitlist }
               }}</span>

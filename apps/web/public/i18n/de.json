@@ -1847,7 +1847,7 @@
       "scored": "Erzielte Tore / Punkte",
       "scoredHint": "{{conceded}} kassiert",
       "pending": "Ausstehend",
-      "pendingHint": "{{count}} auf der Warteliste"
+      "pendingHint": "davon {{count}} auf der Warteliste"
     },
     "outcomesTitle": "Spielbilanz",
     "perTeamTitle": "Nach Team",
