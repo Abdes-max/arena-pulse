@@ -1,0 +1,34 @@
+# Manual: replaces the Google Play listing's phone screenshots with the ones
+# committed in apps/mobile/store-assets/play/screenshots (see
+# infra/scripts/build-store-screenshots.mjs). Listing images only -- no
+# track or release is touched, so a running closed test keeps its 14 days.
+#
+# Same secret as deploy-android.yml: GOOGLE_PLAY_SERVICE_ACCOUNT_JSON.
+name: Upload Google Play screenshots
+
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: List the listing languages and the files, change nothing.
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  upload:
+    name: Replace phone screenshots
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - name: Upload the screenshots
+        env:
+          GOOGLE_PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          PACKAGE_NAME: com.arenapulse.mobile
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: node infra/scripts/upload-play-screenshots.mjs

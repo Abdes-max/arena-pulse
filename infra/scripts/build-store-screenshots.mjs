@@ -49,14 +49,22 @@ const DEVICES = {
     frameWidth: 760,
     radius: 36,
   },
+  // Google Play phone screenshots: the iPhone captures, recomposed at 1080x2400.
+  play: {
+    rawFrom: 'iphone',
+    canvas: { width: 360, height: 800, deviceScaleFactor: 3 }, // 1080x2400
+    outDir: join(REPO_ROOT, 'apps', 'mobile', 'store-assets', 'play', 'screenshots'),
+    frameWidth: 282,
+    radius: 40,
+  },
 };
 
 const SCREENS = [
   {
-    name: '1-tournoi',
-    path: `/${SLUG}`,
-    title: 'Votre tournoi en direct',
-    subtitle: 'Lieu, date et matchs réunis au même endroit',
+    name: '1-accueil',
+    path: '/',
+    title: 'Vos tournois, vécus en direct',
+    subtitle: 'Scores, poules et classements à la seconde',
   },
   {
     name: '2-matchs',
@@ -155,7 +163,8 @@ async function captureRaw(browser, device) {
     deviceScaleFactor: device.capture.deviceScaleFactor,
     isMobile: device === DEVICES.iphone,
     hasTouch: true,
-    colorScheme: 'light',
+    // The app's own default (« Nuit de match »): dark.
+    colorScheme: 'dark',
     locale: 'fr-FR',
     proxy: proxyOption(),
   });
@@ -171,7 +180,7 @@ async function captureRaw(browser, device) {
       await page.waitForLoadState('networkidle').catch(() => undefined);
     }
     await page.waitForTimeout(1500);
-    const file = join(RAW, `${device === DEVICES.iphone ? 'iphone' : 'ipad'}-${screen.name}.png`);
+    const file = join(RAW, `${device !== DEVICES.ipad ? 'iphone' : 'ipad'}-${screen.name}.png`);
     await page.screenshot({ path: file });
     files[screen.name] = file;
     console.log(`captured ${file}`);
@@ -191,27 +200,28 @@ function composeHtml(screen, device, imageDataUrl) {
     font-family: 'Inter', system-ui, sans-serif;
     color: #fff;
     overflow: hidden;
+    /* « Nuit de match »: night navy lit by the brand's cyan and gold. */
     background:
-      radial-gradient(120% 60% at 85% 0%, rgba(255, 214, 102, 0.28), transparent 60%),
-      radial-gradient(90% 50% at 0% 100%, rgba(52, 211, 153, 0.35), transparent 60%),
-      linear-gradient(160deg, #052e1f 0%, #0b5a37 55%, #14804a 100%);
+      radial-gradient(110% 55% at 85% 0%, rgba(56, 189, 248, 0.34), transparent 60%),
+      radial-gradient(90% 50% at 0% 100%, rgba(245, 185, 66, 0.22), transparent 60%),
+      linear-gradient(170deg, #0b1326 0%, #070b14 60%, #04070d 100%);
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: ${device === DEVICES.iphone ? 64 : 90}px;
+    padding-top: ${device !== DEVICES.ipad ? 64 : 90}px;
   }
   .brand {
-    font-size: ${device === DEVICES.iphone ? 13 : 18}px;
+    font-size: ${device !== DEVICES.ipad ? 13 : 18}px;
     font-weight: 800;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: #a7f3d0;
+    color: #5fd0ff;
   }
   h1 {
     margin-top: 12px;
     max-width: 90%;
     text-align: center;
-    font-size: ${device === DEVICES.iphone ? 34 : 54}px;
+    font-size: ${device !== DEVICES.ipad ? 34 : 54}px;
     line-height: 1.08;
     font-weight: 800;
     letter-spacing: -0.02em;
@@ -219,14 +229,14 @@ function composeHtml(screen, device, imageDataUrl) {
   p {
     margin-top: 12px;
     text-align: center;
-    font-size: ${device === DEVICES.iphone ? 17 : 26}px;
+    font-size: ${device !== DEVICES.ipad ? 17 : 26}px;
     font-weight: 500;
     color: rgba(255, 255, 255, 0.82);
   }
   .frame {
-    margin-top: ${device === DEVICES.iphone ? 36 : 56}px;
+    margin-top: ${device !== DEVICES.ipad ? 36 : 56}px;
     width: ${device.frameWidth}px;
-    padding: ${device === DEVICES.iphone ? 10 : 14}px;
+    padding: ${device !== DEVICES.ipad ? 10 : 14}px;
     border-radius: ${device.radius + 10}px;
     background: #0b0f14;
     box-shadow: 0 40px 80px rgba(0, 0, 0, 0.45), 0 0 0 2px rgba(255, 255, 255, 0.08);
@@ -267,9 +277,10 @@ async function compose(browser, device, rawFiles) {
 mkdirSync(RAW, { recursive: true });
 const browser = await chromium.launch();
 try {
-  for (const device of Object.values(DEVICES)) {
-    const raw = await captureRaw(browser, device);
-    await compose(browser, device, raw);
+  const raws = {};
+  for (const [key, device] of Object.entries(DEVICES)) {
+    raws[key] = device.rawFrom ? raws[device.rawFrom] : await captureRaw(browser, device);
+    await compose(browser, device, raws[key]);
   }
 } finally {
   await browser.close();
