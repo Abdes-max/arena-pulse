@@ -243,6 +243,16 @@ export class LandingPage {
     return `badge-google-play-${this.language()}-${color}.svg`;
   }
 
+  // « 6 langues »: back to the top and open the header's language picker.
+  protected openLanguages(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    // After this click has finished bubbling -- the picker closes on any
+    // click outside it, this one included.
+    setTimeout(() =>
+      document.querySelector<HTMLButtonElement>('.ap-language-switcher__trigger')?.click(),
+    );
+  }
+
   protected openGoogleComingSoon(event: Event): void {
     event.preventDefault();
     this.googleComingSoonOpen.set(true);

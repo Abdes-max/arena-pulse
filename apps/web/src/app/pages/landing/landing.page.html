@@ -201,25 +201,35 @@
 <!-- Proof strip straddling the hero's bottom edge -- counts up once on
      screen (appCountUp). Live numbers only where they're real data
      (published tournaments, sports); the other two are product facts. -->
+<!-- Each figure is a way in (same as the app): the events, the sports, the
+     language picker, the pricing. -->
 <ul class="landing-page__stats">
   <li>
-    <strong
-      [appCountUp]="tournaments().length"
-      [appCountUpSuffix]="tournamentCountSuffix()"
-    ></strong>
-    <span>{{ 'landing.stats.events' | transloco }}</span>
+    <a routerLink="/decouvrir">
+      <strong
+        [appCountUp]="tournaments().length"
+        [appCountUpSuffix]="tournamentCountSuffix()"
+      ></strong>
+      <span>{{ 'landing.stats.events' | transloco }}</span>
+    </a>
   </li>
   <li>
-    <strong [appCountUp]="sports().length"></strong>
-    <span>{{ 'landing.stats.sports' | transloco }}</span>
+    <a href="#sports">
+      <strong [appCountUp]="sports().length"></strong>
+      <span>{{ 'landing.stats.sports' | transloco }}</span>
+    </a>
   </li>
   <li>
-    <strong [appCountUp]="languages.length"></strong>
-    <span>{{ 'landing.stats.languages' | transloco }}</span>
+    <button type="button" (click)="openLanguages()">
+      <strong [appCountUp]="languages.length"></strong>
+      <span>{{ 'landing.stats.languages' | transloco }}</span>
+    </button>
   </li>
   <li>
-    <strong [appCountUp]="8"></strong>
-    <span>{{ 'landing.stats.freeTeams' | transloco }}</span>
+    <a href="#tarifs">
+      <strong [appCountUp]="8"></strong>
+      <span>{{ 'landing.stats.freeTeams' | transloco }}</span>
+    </a>
   </li>
 </ul>
 
