@@ -39,9 +39,12 @@
 
 // The page title's line, under the top bar -- laid out like the tournament
 // name above its tabs (tournament-submenu.scss's __identity), so every admin
-// page shows the same single band: back, title, then the cancel cross.
+// page shows the same single band: back, the centered title, then the
+// cancel cross.
 .app-shell__title-row {
-  display: flex;
+  display: grid;
+  // Both sides at least the phone back arrow's width: the title stays centered.
+  grid-template-columns: minmax(44px, 1fr) minmax(0, auto) minmax(44px, 1fr);
   align-items: center;
   gap: var(--ap-space-3);
   max-width: 1000px;
@@ -50,7 +53,9 @@
 }
 
 .app-shell__title {
+  grid-column: 2;
   margin: 0;
+  text-align: center;
   min-width: 0;
   font-family: var(--ap-font-heading);
   font-size: clamp(1.5rem, 3.5vw, 2.1rem);
@@ -61,7 +66,9 @@
 
 // Same pill as tournament-submenu's __back.
 .app-shell__title-back {
-  flex: none;
+  white-space: nowrap;
+  grid-column: 1;
+  justify-self: start;
   padding: var(--ap-space-1) var(--ap-space-3);
   border: var(--ap-border-width) solid var(--ap-color-border);
   border-radius: var(--ap-radius-md);
@@ -75,13 +82,13 @@
 }
 
 .app-shell__title-cancel {
+  grid-column: 3;
+  justify-self: end;
   display: inline-flex;
-  flex: none;
   align-items: center;
   justify-content: center;
   width: 36px;
   height: 36px;
-  margin-left: auto;
   border: var(--ap-border-width) solid var(--ap-color-border);
   border-radius: var(--ap-radius-pill);
   color: var(--ap-color-fg);

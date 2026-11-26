@@ -209,7 +209,7 @@
       <div class="app-shell__title-row">
         @if (h.back) {
           <a class="app-shell__title-back" [routerLink]="h.back"
-            >← {{ 'admin.shell.back' | transloco }}</a
+            >← <span class="ap-back-label">{{ 'admin.shell.back' | transloco }}</span></a
           >
         }
         <h1 class="app-shell__title">{{ h.title | transloco }}</h1>

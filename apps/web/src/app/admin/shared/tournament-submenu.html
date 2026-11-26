@@ -2,13 +2,15 @@
   <div class="tournament-submenu__identity">
     @if (back(); as backLink) {
       <a class="tournament-submenu__back" [routerLink]="backLink"
-        >← {{ 'admin.shell.back' | transloco }}</a
+        >← <span class="ap-back-label">{{ 'admin.shell.back' | transloco }}</span></a
       >
     }
-    @if (logoUrl(); as logo) {
-      <img class="tournament-submenu__logo" [src]="logo" alt="" />
-    }
-    <span class="tournament-submenu__name">{{ tournamentName }}</span>
+    <div class="tournament-submenu__title">
+      @if (logoUrl(); as logo) {
+        <img class="tournament-submenu__logo" [src]="logo" alt="" />
+      }
+      <span class="tournament-submenu__name">{{ tournamentName }}</span>
+    </div>
   </div>
 }
 <div class="tournament-submenu-row">
