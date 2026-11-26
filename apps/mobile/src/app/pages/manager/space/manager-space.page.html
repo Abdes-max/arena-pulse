@@ -90,33 +90,37 @@
             <h3 class="manager-space__subheading">
               {{ 'myRegistrations.perTeamTitle' | transloco }}
             </h3>
-            <table class="manager-space__table">
-              <thead>
-                <tr>
-                  <th scope="col">{{ 'myRegistrations.table.team' | transloco }}</th>
-                  <th scope="col">{{ 'myRegistrations.table.played' | transloco }}</th>
-                  <th scope="col">{{ 'myRegistrations.table.won' | transloco }}</th>
-                  <th scope="col">{{ 'myRegistrations.table.drawn' | transloco }}</th>
-                  <th scope="col">{{ 'myRegistrations.table.lost' | transloco }}</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (team of s.teams; track $index) {
+            <div class="ap-table-card">
+              <table class="manager-space__table">
+                <thead>
                   <tr>
-                    <td>
-                      <strong>{{ team.teamName }}</strong>
-                      <small>
-                        <a [routerLink]="['/', team.tournament.slug]">{{ team.tournament.name }}</a>
-                      </small>
-                    </td>
-                    <td>{{ team.played }}</td>
-                    <td>{{ team.won }}</td>
-                    <td>{{ team.drawn }}</td>
-                    <td>{{ team.lost }}</td>
+                    <th scope="col">{{ 'myRegistrations.table.team' | transloco }}</th>
+                    <th scope="col">{{ 'myRegistrations.table.played' | transloco }}</th>
+                    <th scope="col">{{ 'myRegistrations.table.won' | transloco }}</th>
+                    <th scope="col">{{ 'myRegistrations.table.drawn' | transloco }}</th>
+                    <th scope="col">{{ 'myRegistrations.table.lost' | transloco }}</th>
                   </tr>
-                }
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  @for (team of s.teams; track $index) {
+                    <tr>
+                      <td>
+                        <strong>{{ team.teamName }}</strong>
+                        <small>
+                          <a [routerLink]="['/', team.tournament.slug]">{{
+                            team.tournament.name
+                          }}</a>
+                        </small>
+                      </td>
+                      <td>{{ team.played }}</td>
+                      <td>{{ team.won }}</td>
+                      <td>{{ team.drawn }}</td>
+                      <td>{{ team.lost }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
           } @else {
             <p class="manager-space__muted">{{ 'myRegistrations.noTeams' | transloco }}</p>
           }

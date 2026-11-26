@@ -71,50 +71,53 @@
         @for (group of groupStandings(); track group.groupId) {
           <section class="standings-page__group">
             <h2 class="standings-page__group-title">{{ group.groupName }}</h2>
-            <table class="standings-page__table">
-              <thead>
-                <tr>
-                  <th class="standings-page__table-team">Équipe</th>
-                  <th class="standings-page__table-qualified"></th>
-                  <th>J</th>
-                  <th>Pts</th>
-                  <th>+/-</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (row of group.standings.rows; track row.teamId) {
-                  @let tier = qualificationTier(group, row.teamId);
-                  <tr
-                    [class.standings-page__row--qualified]="
-                      qualificationTierPhases().length < 2 && inQualifyingZone(group, row.position)
-                    "
-                    [style.background]="zoneTier(group, row.position)?.soft ?? null"
-                  >
-                    <td class="standings-page__table-team">
-                      {{ row.position }}.
-                      @if (logoUrl(row.teamLogoUrl); as logo) {
-                        <img class="standings-page__team-logo" [src]="logo" alt="" />
-                      }
-                      {{ row.teamName }}
-                    </td>
-                    <td class="standings-page__table-qualified">
-                      @if (qualificationTierPhases().length < 2) {
-                        @if (isQualified(group, row.teamId)) {
-                          <ap-badge status="qualified" />
-                        }
-                      } @else if (tier) {
-                        <span class="standings-page__tier-badge" [style.color]="tier.color">{{
-                          tier.label
-                        }}</span>
-                      }
-                    </td>
-                    <td>{{ row.played }}</td>
-                    <td class="standings-page__points">{{ row.points }}</td>
-                    <td>{{ row.goalDifference }}</td>
+            <div class="ap-table-card">
+              <table class="standings-page__table">
+                <thead>
+                  <tr>
+                    <th class="standings-page__table-team">Équipe</th>
+                    <th class="standings-page__table-qualified"></th>
+                    <th>J</th>
+                    <th>Pts</th>
+                    <th>+/-</th>
                   </tr>
-                }
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  @for (row of group.standings.rows; track row.teamId) {
+                    @let tier = qualificationTier(group, row.teamId);
+                    <tr
+                      [class.standings-page__row--qualified]="
+                        qualificationTierPhases().length < 2 &&
+                        inQualifyingZone(group, row.position)
+                      "
+                      [style.background]="zoneTier(group, row.position)?.soft ?? null"
+                    >
+                      <td class="standings-page__table-team">
+                        {{ row.position }}.
+                        @if (logoUrl(row.teamLogoUrl); as logo) {
+                          <img class="standings-page__team-logo" [src]="logo" alt="" />
+                        }
+                        {{ row.teamName }}
+                      </td>
+                      <td class="standings-page__table-qualified">
+                        @if (qualificationTierPhases().length < 2) {
+                          @if (isQualified(group, row.teamId)) {
+                            <ap-badge status="qualified" />
+                          }
+                        } @else if (tier) {
+                          <span class="standings-page__tier-badge" [style.color]="tier.color">{{
+                            tier.label
+                          }}</span>
+                        }
+                      </td>
+                      <td>{{ row.played }}</td>
+                      <td class="standings-page__points">{{ row.points }}</td>
+                      <td>{{ row.goalDifference }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
           </section>
         }
       }

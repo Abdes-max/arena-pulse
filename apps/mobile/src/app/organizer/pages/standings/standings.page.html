@@ -71,7 +71,7 @@
                   }
                 </h2>
 
-                <div class="standings-page__table-scroll">
+                <div class="standings-page__table-scroll ap-table-card">
                   <table class="standings-page__table">
                     <thead>
                       <tr>
@@ -210,7 +210,7 @@
                 {{ 'organizer.standings.bracketNotGenerated' | transloco }}
               </p>
             } @else {
-              <div class="standings-page__table-scroll">
+              <div class="standings-page__table-scroll ap-table-card">
                 <div class="standings-page__bracket">
                   @for (round of bracket.rounds; track round.round) {
                     <div class="standings-page__bracket-round">
@@ -280,7 +280,7 @@
             }
 
             @if (finalRankingRest().length > 0) {
-              <div class="standings-page__table-scroll">
+              <div class="standings-page__table-scroll ap-table-card">
                 <table class="standings-page__table">
                   <thead>
                     <tr>
