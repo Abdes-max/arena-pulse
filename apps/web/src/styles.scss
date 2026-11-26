@@ -162,3 +162,17 @@ textarea {
     justify-content: safe center;
   }
 }
+
+// « ← Retour » left of a centered page title (admin shell, tournament
+// submenu, manager space): just the arrow on a phone, so the title keeps
+// the room and stays centered.
+@media (max-width: 480px) {
+  .ap-back-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}

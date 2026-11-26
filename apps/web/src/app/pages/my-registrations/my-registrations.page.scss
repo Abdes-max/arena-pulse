@@ -61,6 +61,41 @@
   gap: var(--ap-space-3);
 }
 
+// Simple / complet, as in the admin shell (app-shell.scss's __ui-mode).
+.mr-header__ui-mode {
+  display: inline-flex;
+  padding: 2px;
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-pill);
+}
+
+.mr-header__ui-mode-option {
+  padding: var(--ap-space-1) var(--ap-space-3);
+  border: none;
+  border-radius: var(--ap-radius-pill);
+  background: transparent;
+  color: var(--ap-color-muted);
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--ap-color-focus);
+    outline-offset: 2px;
+  }
+}
+
+.mr-header__ui-mode-option--active {
+  background: var(--ap-color-primary);
+  color: var(--ap-color-on-primary);
+}
+
+.mr-header__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-3);
+}
+
 .mr-header__logout {
   padding: var(--ap-space-2) var(--ap-space-3);
   border: none;
@@ -100,7 +135,9 @@
 
 // Back on the title's left (app-shell.scss's __title-row).
 .mr-header__title-row {
-  display: flex;
+  display: grid;
+  // Both sides at least the phone back arrow's width: the title stays centered.
+  grid-template-columns: minmax(44px, 1fr) minmax(0, auto) minmax(44px, 1fr);
   align-items: center;
   gap: var(--ap-space-3);
   max-width: 1000px;
@@ -109,7 +146,9 @@
 }
 
 .mr-header__back {
-  flex: none;
+  white-space: nowrap;
+  grid-column: 1;
+  justify-self: start;
   padding: var(--ap-space-1) var(--ap-space-3);
   border: var(--ap-border-width) solid var(--ap-color-border);
   border-radius: var(--ap-radius-md);
@@ -123,7 +162,9 @@
 }
 
 .mr-header__title {
+  grid-column: 2;
   margin: 0;
+  text-align: center;
   min-width: 0;
   font-family: var(--ap-font-heading);
   font-size: clamp(1.5rem, 3.5vw, 2.1rem);
@@ -134,7 +175,7 @@
 
 @media (max-width: 720px) {
   .mr-header__nav,
-  .mr-header__end > .mr-header__logout {
+  .mr-header__end > .mr-header__controls {
     display: none;
   }
 

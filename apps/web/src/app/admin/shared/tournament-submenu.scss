@@ -20,8 +20,11 @@
 
 // Same max-width/margin/padding as .tournament-submenu-row above, so the
 // logo+name line lines up with the tabs directly below it.
+// Back on the left, logo + name centered (app-shell.scss's __title-row).
 .tournament-submenu__identity {
-  display: flex;
+  display: grid;
+  // Both sides at least the phone back arrow's width: the title stays centered.
+  grid-template-columns: minmax(44px, 1fr) minmax(0, auto) minmax(44px, 1fr);
   align-items: center;
   gap: var(--ap-space-3);
   max-width: 1000px;
@@ -33,7 +36,9 @@
 
 // Same pill as the other admin pages' back (app-shell.scss's __title-back).
 .tournament-submenu__back {
-  flex: none;
+  white-space: nowrap;
+  grid-column: 1;
+  justify-self: start;
   padding: var(--ap-space-1) var(--ap-space-3);
   border: var(--ap-border-width) solid var(--ap-color-border);
   border-radius: var(--ap-radius-md);
@@ -45,6 +50,15 @@
   &:hover {
     border-color: var(--ap-color-signal);
   }
+}
+
+.tournament-submenu__title {
+  grid-column: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ap-space-3);
+  min-width: 0;
 }
 
 // Same size as the public site's own tournament-shell logo (feat/180,

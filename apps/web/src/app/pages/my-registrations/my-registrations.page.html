@@ -26,9 +26,39 @@
         </nav>
       </div>
       <div class="mr-header__end">
-        <button type="button" class="mr-header__logout" (click)="logout()">
-          {{ 'myRegistrations.logout' | transloco }}
-        </button>
+        <div class="mr-header__controls">
+          <!-- Same account as an organizer: its admin's display mode. -->
+          @if (organizes()) {
+            <div
+              class="mr-header__ui-mode"
+              role="group"
+              [attr.aria-label]="'admin.shell.uiMode.label' | transloco"
+            >
+              <button
+                type="button"
+                class="mr-header__ui-mode-option"
+                [class.mr-header__ui-mode-option--active]="simpleMode()"
+                [attr.aria-pressed]="simpleMode()"
+                (click)="setUiMode('SIMPLE')"
+              >
+                {{ 'admin.shell.uiMode.simple' | transloco }}
+              </button>
+              <button
+                type="button"
+                class="mr-header__ui-mode-option"
+                [class.mr-header__ui-mode-option--active]="!simpleMode()"
+                [attr.aria-pressed]="!simpleMode()"
+                (click)="setUiMode('FULL')"
+              >
+                {{ 'admin.shell.uiMode.full' | transloco }}
+              </button>
+            </div>
+          }
+          <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
+          <button type="button" class="mr-header__logout" (click)="logout()">
+            {{ 'myRegistrations.logout' | transloco }}
+          </button>
+        </div>
         <ap-language-switcher
           [language]="language()"
           [languages]="languages"
@@ -64,14 +94,44 @@
         <a class="mr-header__link--active" routerLink="/espace-responsable">{{
           'admin.shell.nav.managerSpace' | transloco
         }}</a>
-        <button type="button" class="mr-header__logout" (click)="logout()">
-          {{ 'myRegistrations.logout' | transloco }}
-        </button>
+        <div class="mr-header__controls">
+          <!-- Same account as an organizer: its admin's display mode. -->
+          @if (organizes()) {
+            <div
+              class="mr-header__ui-mode"
+              role="group"
+              [attr.aria-label]="'admin.shell.uiMode.label' | transloco"
+            >
+              <button
+                type="button"
+                class="mr-header__ui-mode-option"
+                [class.mr-header__ui-mode-option--active]="simpleMode()"
+                [attr.aria-pressed]="simpleMode()"
+                (click)="setUiMode('SIMPLE')"
+              >
+                {{ 'admin.shell.uiMode.simple' | transloco }}
+              </button>
+              <button
+                type="button"
+                class="mr-header__ui-mode-option"
+                [class.mr-header__ui-mode-option--active]="!simpleMode()"
+                [attr.aria-pressed]="!simpleMode()"
+                (click)="setUiMode('FULL')"
+              >
+                {{ 'admin.shell.uiMode.full' | transloco }}
+              </button>
+            </div>
+          }
+          <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
+          <button type="button" class="mr-header__logout" (click)="logout()">
+            {{ 'myRegistrations.logout' | transloco }}
+          </button>
+        </div>
       </div>
     }
     <div class="mr-header__title-row">
       <a class="mr-header__back" [routerLink]="organizes() ? '/admin/tournaments' : '/'"
-        >← {{ 'myRegistrations.back' | transloco }}</a
+        >← <span class="ap-back-label">{{ 'myRegistrations.back' | transloco }}</span></a
       >
       <h1 class="mr-header__title">{{ 'myRegistrations.title' | transloco }}</h1>
     </div>
