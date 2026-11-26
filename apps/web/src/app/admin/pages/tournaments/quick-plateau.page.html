@@ -1,10 +1,4 @@
 <main class="quick-plateau-page">
-  <a class="quick-plateau-page__back" routerLink="/admin/tournaments">
-    ‹ {{ 'admin.quickPlateau.back' | transloco }}
-  </a>
-  <h1>{{ 'admin.quickPlateau.title' | transloco }}</h1>
-  <p class="quick-plateau-page__intro">{{ 'admin.quickPlateau.intro' | transloco }}</p>
-
   <form class="quick-plateau-page__form" (submit)="submit(); $event.preventDefault()">
     <fieldset class="quick-plateau-page__group">
       <legend>{{ 'admin.quickPlateau.sections.event' | transloco }}</legend>

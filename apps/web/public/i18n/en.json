@@ -513,7 +513,10 @@
         "label": "Display mode",
         "simple": "Simple",
         "full": "Full"
-      }
+      },
+      "back": "Back",
+      "cancel": "Cancel",
+      "backToTournaments": "Back to tournaments"
     },
     "submenu": {
       "live": "Match day",
@@ -1909,7 +1912,8 @@
     "deleted": "Deleted",
     "error": "Something went wrong, please try again.",
     "offline": "Cannot connect: check your network.",
-    "close": "Close"
+    "close": "Close",
+    "scrollTop": "Back to top"
   },
   "registrationCard": {
     "open": "Registration open ({{taken}}/{{total}})",
@@ -1966,7 +1970,8 @@
       "lostLong": "Losses"
     },
     "myTournaments": "My tournaments",
-    "organize": "Organize a tournament"
+    "organize": "Organize a tournament",
+    "back": "Back"
   },
   "notFound": {
     "title": "Page not found",

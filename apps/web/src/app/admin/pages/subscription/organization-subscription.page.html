@@ -1,10 +1,5 @@
 <main class="subscription-page">
   <div class="subscription-page__no-print">
-    <h1>{{ 'admin.subscription.title' | transloco }}</h1>
-    <p class="subscription-page__intro">
-      {{ 'admin.subscription.intro' | transloco }}
-    </p>
-
     @if (loading()) {
       <p>{{ 'admin.subscription.loading' | transloco }}</p>
     } @else {

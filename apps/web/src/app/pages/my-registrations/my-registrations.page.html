@@ -1,5 +1,10 @@
 <main class="my-registrations-page auth-shell">
   <header class="auth-shell__hero" data-theme="ink-signal" data-mode="dark">
+    <div class="auth-shell__topbar">
+      <a class="auth-shell__back" [routerLink]="organizes() ? '/admin/tournaments' : '/'"
+        >← {{ 'myRegistrations.back' | transloco }}</a
+      >
+    </div>
     <div class="auth-shell__hero-inner">
       <a class="auth-shell__home" routerLink="/" aria-label="TournArena">
         <ap-logo variant="on-dark" />

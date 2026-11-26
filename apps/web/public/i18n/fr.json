@@ -513,7 +513,10 @@
         "label": "Mode d'affichage",
         "simple": "Simple",
         "full": "Complet"
-      }
+      },
+      "back": "Retour",
+      "cancel": "Annuler",
+      "backToTournaments": "Retour aux tournois"
     },
     "submenu": {
       "live": "Jour J",
@@ -1909,7 +1912,8 @@
     "deleted": "Supprimé",
     "error": "Une erreur est survenue, réessayez.",
     "offline": "Connexion impossible : vérifiez votre réseau.",
-    "close": "Fermer"
+    "close": "Fermer",
+    "scrollTop": "Remonter en haut"
   },
   "registrationCard": {
     "open": "Inscriptions ouvertes ({{taken}}/{{total}})",
@@ -1966,7 +1970,8 @@
       "lostLong": "Défaites"
     },
     "myTournaments": "Mes tournois",
-    "organize": "Organiser un tournoi"
+    "organize": "Organiser un tournoi",
+    "back": "Retour"
   },
   "notFound": {
     "title": "Page introuvable",

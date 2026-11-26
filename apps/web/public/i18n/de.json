@@ -411,7 +411,10 @@
         "label": "Anzeigemodus",
         "simple": "Einfach",
         "full": "Vollständig"
-      }
+      },
+      "back": "Zurück",
+      "cancel": "Abbrechen",
+      "backToTournaments": "Zurück zu den Turnieren"
     },
     "submenu": {
       "live": "Match day",
@@ -1807,7 +1810,8 @@
     "deleted": "Gelöscht",
     "error": "Ein Fehler ist aufgetreten, bitte erneut versuchen.",
     "offline": "Keine Verbindung: Netzwerk prüfen.",
-    "close": "Schließen"
+    "close": "Schließen",
+    "scrollTop": "Nach oben"
   },
   "registrationCard": {
     "open": "Anmeldung offen ({{taken}}/{{total}})",
@@ -1864,7 +1868,8 @@
       "lostLong": "Niederlagen"
     },
     "myTournaments": "Meine Turniere",
-    "organize": "Ein Turnier veranstalten"
+    "organize": "Ein Turnier veranstalten",
+    "back": "Zurück"
   },
   "notFound": {
     "title": "Seite nicht gefunden",

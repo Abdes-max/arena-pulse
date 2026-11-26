@@ -4,17 +4,147 @@
   flex-direction: column;
 }
 
-// Same theme/dark-mode-aware surface as the public site's own masthead
-// (apps/web/src/app/shell/tournament-shell.scss) -- follows the current
-// tournament's theme and the organizer's light/dark mode choice, instead of
-// staying a fixed white that looked out of place once the rest of the admin
-// app started following dark mode too.
+// The public site's night band (shell/tournament-shell.scss's
+// .tournament-shell__hero): dark whatever the page mode (data-mode="dark" in
+// the template), lit by the theme's color -- the tournament's on its pages,
+// the vitrine's blue elsewhere.
 .app-shell__header {
   position: sticky;
   top: 0;
   z-index: var(--ap-z-sticky);
-  background: var(--ap-color-surface);
+  background-color: var(--ap-color-bg);
+  background-image:
+    radial-gradient(
+      36rem 18rem at 85% 0%,
+      color-mix(in srgb, var(--ap-color-primary) 38%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      26rem 16rem at 0% 100%,
+      color-mix(in srgb, var(--ap-color-signal) 16%, transparent),
+      transparent 70%
+    );
+  // Re-asserted so the text picks up the forced-dark tokens (see
+  // tournament-shell.scss).
+  color: var(--ap-color-fg);
   border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+}
+
+// Outside a tournament: the vitrine's cyan and gold floodlights.
+.app-shell__header--vitrine {
+  background-image:
+    radial-gradient(40rem 20rem at 0% 0%, rgb(14 165 201 / 40%), transparent 70%),
+    radial-gradient(34rem 18rem at 100% 0%, rgb(245 185 66 / 14%), transparent 70%);
+}
+
+// Flows straight into the page title's band below.
+.app-shell__header--with-hero {
+  border-bottom-color: transparent;
+}
+
+.app-shell__back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-right: calc(-1 * var(--ap-space-3));
+  border-radius: var(--ap-radius-pill);
+  color: var(--ap-color-fg);
+
+  &:hover {
+    background: color-mix(in srgb, var(--ap-color-fg) 10%, transparent);
+  }
+}
+
+// Title band of the pages outside a tournament, as on the login pages
+// (_auth-shell.scss): the vitrine's floodlights over a faint grid.
+.app-shell__hero {
+  position: relative;
+  overflow: hidden;
+  padding: var(--ap-space-6) var(--ap-space-6) var(--ap-space-8);
+  background: var(--ap-color-bg);
+  color: var(--ap-color-fg);
+  text-align: center;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(40rem 30rem at 0% 0%, rgb(14 165 201 / 45%), transparent 70%),
+      radial-gradient(34rem 26rem at 100% 25%, rgb(245 185 66 / 18%), transparent 70%),
+      linear-gradient(rgb(255 255 255 / 3.5%) 1px, transparent 1px) 0 0 / 56px 56px,
+      linear-gradient(90deg, rgb(255 255 255 / 3.5%) 1px, transparent 1px) 0 0 / 56px 56px;
+    mask-image: radial-gradient(ellipse at 50% 20%, #000 35%, transparent 80%);
+    pointer-events: none;
+  }
+
+  h1 {
+    margin: var(--ap-space-2) 0 0;
+    font-family: var(--ap-font-heading);
+    font-size: clamp(1.7rem, 4vw, 2.3rem);
+    font-weight: 700;
+    letter-spacing: var(--ap-tracking-tight);
+    line-height: 1.1;
+  }
+}
+
+.app-shell__hero-inner {
+  position: relative;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+// Back on the left, the cancel cross on the right.
+.app-shell__hero-bar {
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+}
+
+.app-shell__hero-back {
+  padding: var(--ap-space-2) var(--ap-space-3);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  color: var(--ap-color-fg);
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover {
+    border-color: var(--ap-color-signal);
+  }
+}
+
+.app-shell__hero-cancel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-left: auto;
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-pill);
+  color: var(--ap-color-fg);
+
+  &:hover {
+    border-color: var(--ap-color-signal);
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+  }
+}
+
+.app-shell__hero-lede {
+  margin: var(--ap-space-3) auto 0;
+  max-width: 52ch;
+  color: var(--ap-color-muted);
 }
 
 .app-shell__topbar {
