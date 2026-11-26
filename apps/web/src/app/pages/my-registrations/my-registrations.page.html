@@ -1,34 +1,88 @@
-<main class="my-registrations-page auth-shell">
-  <header class="auth-shell__hero" data-theme="ink-signal" data-mode="dark">
-    <div class="auth-shell__topbar">
-      <a class="auth-shell__back" [routerLink]="organizes() ? '/admin/tournaments' : '/'"
-        >← {{ 'myRegistrations.back' | transloco }}</a
-      >
-    </div>
-    <div class="auth-shell__hero-inner">
-      <a class="auth-shell__home" routerLink="/" aria-label="TournArena">
-        <ap-logo variant="on-dark" />
-      </a>
-      <h1>{{ 'myRegistrations.title' | transloco }}</h1>
-      <p class="auth-shell__lede">
-        @if (player(); as p) {
-          {{ 'myRegistrations.hello' | transloco: { name: p.firstName } }}
-        }
-        {{ 'myRegistrations.lede' | transloco }}
-      </p>
-      <div class="my-registrations-page__hero-actions">
-        <!-- Same account as an organizer: its tournaments, when it has an organization. -->
-        @if (organizes()) {
-          <a class="my-registrations-page__logout" routerLink="/admin/tournaments">{{
-            'myRegistrations.myTournaments' | transloco
+<main class="my-registrations-page">
+  <!-- Same single night band as the admin pages (admin/shell/app-shell):
+       logo, menu and language on top, then back and the title. -->
+  <header class="mr-header" data-theme="ink-signal" data-mode="dark">
+    <div class="mr-header__topbar">
+      <div class="mr-header__left">
+        <a
+          class="mr-header__brand"
+          routerLink="/"
+          [attr.aria-label]="'admin.auth.home' | transloco"
+        >
+          <ap-logo variant="on-dark" />
+        </a>
+        <nav class="mr-header__nav">
+          <!-- Same account as an organizer: the admin's menu. -->
+          @if (organizes()) {
+            <a routerLink="/admin/tournaments">{{ 'admin.shell.nav.tournaments' | transloco }}</a>
+            <a routerLink="/admin/organization/subscription">{{
+              'admin.shell.nav.subscription' | transloco
+            }}</a>
+            <a routerLink="/admin/account">{{ 'admin.shell.nav.account' | transloco }}</a>
+          }
+          <a class="mr-header__link--active" routerLink="/espace-responsable">{{
+            'admin.shell.nav.managerSpace' | transloco
           }}</a>
-        }
-        <button type="button" class="my-registrations-page__logout" (click)="logout()">
+        </nav>
+      </div>
+      <div class="mr-header__end">
+        <button type="button" class="mr-header__logout" (click)="logout()">
           {{ 'myRegistrations.logout' | transloco }}
+        </button>
+        <ap-language-switcher
+          [language]="language()"
+          [languages]="languages"
+          (languageChange)="onLanguageChange($event)"
+        />
+        <button
+          type="button"
+          class="mr-header__toggle"
+          (click)="menuOpen.set(!menuOpen())"
+          [attr.aria-expanded]="menuOpen()"
+          aria-controls="mr-header-menu"
+          [attr.aria-label]="'admin.shell.menu' | transloco"
+        >
+          @if (menuOpen()) {
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 4 L16 16 M16 4 L4 16" /></svg>
+          } @else {
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M3 5 L17 5 M3 10 L17 10 M3 15 L17 15" />
+            </svg>
+          }
         </button>
       </div>
     </div>
+    @if (menuOpen()) {
+      <div class="mr-header__menu" id="mr-header-menu">
+        @if (organizes()) {
+          <a routerLink="/admin/tournaments">{{ 'admin.shell.nav.tournaments' | transloco }}</a>
+          <a routerLink="/admin/organization/subscription">{{
+            'admin.shell.nav.subscription' | transloco
+          }}</a>
+          <a routerLink="/admin/account">{{ 'admin.shell.nav.account' | transloco }}</a>
+        }
+        <a class="mr-header__link--active" routerLink="/espace-responsable">{{
+          'admin.shell.nav.managerSpace' | transloco
+        }}</a>
+        <button type="button" class="mr-header__logout" (click)="logout()">
+          {{ 'myRegistrations.logout' | transloco }}
+        </button>
+      </div>
+    }
+    <div class="mr-header__title-row">
+      <a class="mr-header__back" [routerLink]="organizes() ? '/admin/tournaments' : '/'"
+        >← {{ 'myRegistrations.back' | transloco }}</a
+      >
+      <h1 class="mr-header__title">{{ 'myRegistrations.title' | transloco }}</h1>
+    </div>
   </header>
+
+  <p class="my-registrations-page__lede">
+    @if (player(); as p) {
+      {{ 'myRegistrations.hello' | transloco: { name: p.firstName } }}
+    }
+    {{ 'myRegistrations.lede' | transloco }}
+  </p>
 
   <div class="my-registrations-page__body">
     @if (loading()) {

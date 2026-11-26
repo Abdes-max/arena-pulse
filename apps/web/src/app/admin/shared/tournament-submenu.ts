@@ -53,6 +53,8 @@ export class TournamentSubmenu {
   // alongside the theme, already resolved to an absolute URL (or null).
   readonly name = input<string | null>(null);
   readonly logoUrl = input<string | null>(null);
+  // "← Retour" left of the name, like the other admin pages' title line.
+  readonly back = input<string | null>(null);
 
   protected readonly publicUrl = computed(() => {
     const slug = this.slug();
