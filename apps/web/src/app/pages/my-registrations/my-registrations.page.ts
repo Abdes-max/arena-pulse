@@ -3,25 +3,11 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { Router, RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { PublicApiService } from 'api-client';
-import {
-  Button,
-  LanguageSwitcher,
-  Logo,
-  StatsDatum,
-  StatsSegments,
-  ThemeModeToggle,
-} from 'design-system';
-import {
-  LanguageCode,
-  LanguageService,
-  SUPPORTED_LANGUAGES,
-  ThemeMode,
-  ThemeService,
-} from 'design-tokens';
+import { Button, Logo, StatsDatum, StatsSegments } from 'design-system';
 import { PlayerRegistration, PlayerRegistrationStats } from 'shared-models';
 import { showErrorsInSnackbar } from '../../core/error-snackbar';
 import { AuthService } from '../../admin/core/auth.service';
-import { AdminUiMode } from '../../admin/core/models';
+import { SettingsMenu } from '../../admin/shared/settings-menu';
 
 /**
  * The team manager's space: how the teams they registered did (same tiles
@@ -30,15 +16,7 @@ import { AdminUiMode } from '../../admin/core/models';
  */
 @Component({
   selector: 'app-my-registrations-page',
-  imports: [
-    Button,
-    LanguageSwitcher,
-    Logo,
-    RouterLink,
-    StatsSegments,
-    ThemeModeToggle,
-    TranslocoPipe,
-  ],
+  imports: [Button, Logo, RouterLink, SettingsMenu, StatsSegments, TranslocoPipe],
   templateUrl: './my-registrations.page.html',
   styleUrls: ['../../admin/shared/stats-dashboard.scss', './my-registrations.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -49,14 +27,7 @@ export class MyRegistrationsPage {
   private readonly router = inject(Router);
   private readonly transloco = inject(TranslocoService);
 
-  private readonly languageService = inject(LanguageService);
-
   protected readonly player = this.authService.currentUser;
-  protected readonly language = this.languageService.language;
-  protected readonly languages = SUPPORTED_LANGUAGES;
-  private readonly themeService = inject(ThemeService);
-  protected readonly mode = this.themeService.mode;
-  protected readonly simpleMode = this.authService.simpleMode;
   // Phone width: the menu behind the hamburger, as in the admin shell.
   protected readonly menuOpen = signal(false);
   // Same account may also organize: a way to its admin (or to create the organization).
@@ -133,18 +104,6 @@ export class MyRegistrationsPage {
     } finally {
       this.busyId.set(null);
     }
-  }
-
-  protected setUiMode(mode: AdminUiMode): void {
-    void this.authService.setAdminUiMode(mode);
-  }
-
-  protected onModeChange(next: ThemeMode): void {
-    this.themeService.setMode(document.documentElement, next, true);
-  }
-
-  protected onLanguageChange(code: string): void {
-    this.languageService.setLanguage(code as LanguageCode);
   }
 
   protected async logout(): Promise<void> {
