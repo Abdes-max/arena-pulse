@@ -1,10 +1,10 @@
 @if (loading()) {
   <ion-content class="tournament-shell__status">
-    <p>Chargement…</p>
+    <p>{{ 'shell.loading' | transloco }}</p>
   </ion-content>
 } @else if (errorMessage(); as message) {
   <ion-content class="tournament-shell__status">
-    <p role="alert">{{ message }}</p>
+    <p role="alert">{{ message | transloco }}</p>
   </ion-content>
 } @else if (tournament(); as t) {
   <!-- One night band in the tournament's colors, as on the website
@@ -19,7 +19,11 @@
   >
     <ion-toolbar>
       <div class="tournament-shell__start" slot="start">
-        <a class="tournament-shell__back" routerLink="/" aria-label="Rechercher un autre tournoi">
+        <a
+          class="tournament-shell__back"
+          routerLink="/"
+          [attr.aria-label]="'shell.backAria' | transloco"
+        >
           <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
             <path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
           </svg>
@@ -68,8 +72,8 @@
             <button
               type="button"
               class="tournament-shell__venue-link"
-              [attr.aria-label]="venueLabel(t.venues[0]) + ' - ' + venueMapsLabel"
-              [title]="venueMapsLabel"
+              [attr.aria-label]="venueLabel(t.venues[0]) + ' - ' + ('shell.openInMaps' | transloco)"
+              [title]="'shell.openInMaps' | transloco"
               (click)="openVenueInMaps(t.venues[0])"
             >
               {{ venueLabel(t.venues[0]) }}
@@ -102,8 +106,12 @@
     </div>
     @if (cachedAt(); as cachedAt) {
       <div class="tournament-shell__offline-banner" role="status">
-        <span>Dernières données du {{ cache.formatTimestamp(cachedAt) }}</span>
-        <ion-button size="small" fill="clear" (click)="retry()">Réessayer</ion-button>
+        <span>{{
+          'publicApp.lastData' | transloco: { time: cache.formatTimestamp(cachedAt) }
+        }}</span>
+        <ion-button size="small" fill="clear" (click)="retry()">{{
+          'publicApp.retry' | transloco
+        }}</ion-button>
       </div>
     }
   </ion-header>
@@ -114,14 +122,18 @@
 
   @if (!onRegistration()) {
     <ion-tab-bar>
-      <ion-tab-button routerLink="home" routerLinkActive="tab-selected"> Tournoi </ion-tab-button>
-      <ion-tab-button routerLink="team" routerLinkActive="tab-selected"> Équipes </ion-tab-button>
-      <ion-tab-button routerLink="standings" routerLinkActive="tab-selected">
-        Classements
-      </ion-tab-button>
-      <ion-tab-button routerLink="schedule" routerLinkActive="tab-selected">
-        Matchs
-      </ion-tab-button>
+      <ion-tab-button routerLink="home" routerLinkActive="tab-selected">{{
+        'shell.nav.tournament' | transloco
+      }}</ion-tab-button>
+      <ion-tab-button routerLink="team" routerLinkActive="tab-selected">{{
+        'shell.nav.teams' | transloco
+      }}</ion-tab-button>
+      <ion-tab-button routerLink="standings" routerLinkActive="tab-selected">{{
+        'shell.nav.standings' | transloco
+      }}</ion-tab-button>
+      <ion-tab-button routerLink="schedule" routerLinkActive="tab-selected">{{
+        'shell.nav.schedule' | transloco
+      }}</ion-tab-button>
     </ion-tab-bar>
   }
 }

@@ -936,5 +936,179 @@
     },
     "myTournaments": "Os meus torneios",
     "organize": "Organizar um torneio"
+  },
+  "shell": {
+    "loading": "A carregar…",
+    "error": {
+      "notFound": "Este torneio não existe ou não está publicado.",
+      "title": "Torneio não encontrado",
+      "cta": "Descobrir torneios"
+    },
+    "skipLink": "Ir para o conteúdo principal",
+    "backAria": "Procurar outro torneio",
+    "venue": "local",
+    "venues": "locais",
+    "shareText": "Siga {{name}} na TournArena",
+    "dates": {
+      "startWithTime": "{{date}} às {{time}}"
+    },
+    "nav": {
+      "tournament": "Torneio",
+      "teams": "Equipas",
+      "standings": "Classificação",
+      "schedule": "Jogos",
+      "wrapped": "Estatísticas"
+    },
+    "menu": "Menu",
+    "openInMaps": "Abrir na app de navegação",
+    "navigationTitle": "Abrir o percurso com",
+    "navigationCancel": "Cancelar"
+  },
+  "home": {
+    "sections": {
+      "venues": "Locais",
+      "description": "Descrição",
+      "upcomingMatches": "Próximos jogos",
+      "categories": "Categorias",
+      "rules": "Regulamento",
+      "practicalInfo": "Informações práticas",
+      "sponsors": "Patrocinadores",
+      "recentResults": "Últimos resultados",
+      "fullStandings": "Ver a classificação completa →"
+    },
+    "competition": {
+      "thirdPlace": "Pelo 3.º lugar",
+      "final": "Fase final",
+      "round": "Ronda {{round}}"
+    },
+    "overview": {
+      "location": "Local",
+      "online": "Online",
+      "poster": "Cartaz do evento"
+    },
+    "registration": {
+      "title": "Inscrições abertas",
+      "cta": "Pré-inscrever",
+      "unlimited": "Lugares disponíveis",
+      "full": "Completo · lista de espera",
+      "places": "{{remaining}} lugar(es) de {{total}}",
+      "payment": "Pagamento",
+      "mySpace": "Meu espaço de responsável",
+      "alreadyRegistered": "Já inscrito · {{count}} equipa(s)",
+      "another": "Inscrever outra equipa",
+      "barLabel": "Inscrições {{name}}",
+      "left": "{{remaining}} vaga(s) restante(s)",
+      "closes": "fecha a {{date}}"
+    }
+  },
+  "schedule": {
+    "statusFilter": {
+      "label": "Filtrar por estado",
+      "upcoming": "Próximos",
+      "live": "A decorrer",
+      "finished": "Terminados",
+      "empty": {
+        "upcoming": "Nenhum jogo por disputar.",
+        "live": "Nenhum jogo a decorrer.",
+        "finished": "Nenhum jogo terminado."
+      }
+    },
+    "noCategories": "Nenhuma categoria para este torneio.",
+    "categoryLabel": "Categoria",
+    "phaseLabel": "Fase",
+    "searchLabel": "Procurar uma equipa ou um árbitro",
+    "searchPlaceholder": "Procurar uma equipa ou um árbitro…",
+    "noMatches": "Nenhum jogo para esta fase.",
+    "unscheduled": "Por agendar",
+    "forfeit": "desistência",
+    "knockoutTab": "Fase final"
+  },
+  "standings": {
+    "noPhase": "Nenhuma fase para esta categoria.",
+    "provisional": "provisório",
+    "bracketNotGenerated": "O quadro ainda não foi gerado para esta fase.",
+    "roundLabel": "Ronda",
+    "previousRound": "Ronda anterior",
+    "nextRound": "Ronda seguinte",
+    "finalRankingTab": "Classificação final",
+    "fullView": "Vista completa",
+    "finalRankingEmpty": "A classificação final estará disponível assim que os quadros da fase final estiverem completos.",
+    "table": {
+      "team": "Equipa",
+      "played": "J",
+      "playedFull": "Jogos",
+      "won": "V",
+      "wonFull": "Vitórias",
+      "drawn": "E",
+      "drawnFull": "Empates",
+      "lost": "D",
+      "lostFull": "Derrotas",
+      "goalsFor": "GM",
+      "goalsForFull": "Golos marcados",
+      "goalsAgainst": "GS",
+      "goalsAgainstFull": "Golos sofridos",
+      "points": "Pts",
+      "pointsFull": "Pontos",
+      "bracket": "Quadro",
+      "result": "Resultado",
+      "setsFor": "S+",
+      "setsForFull": "Sets ganhos",
+      "setsAgainst": "S-",
+      "setsAgainstFull": "Sets perdidos",
+      "gameDiff": "Dif. jogos",
+      "gameDiffFull": "Diferença de jogos",
+      "pointDiff": "Dif. pts",
+      "pointDiffFull": "Diferença de pontos"
+    }
+  },
+  "teamSearch": {
+    "allCategories": "Todas",
+    "searchLabel": "Procurar uma equipa",
+    "searchPlaceholder": "Procurar uma equipa…",
+    "noTeams": "Nenhuma equipa encontrada.",
+    "addFavorite": "Adicionar aos favoritos",
+    "removeFavorite": "Remover dos favoritos"
+  },
+  "teamDetail": {
+    "loadError": "Não foi possível carregar esta equipa.",
+    "groupStanding": "Classificação do grupo",
+    "position": "Posição",
+    "wdl": "V / E / D",
+    "goals": "Golos",
+    "upcoming": "Próximos",
+    "noMatches": "Nenhum jogo agendado para esta equipa.",
+    "poolRound": "Grupo (ronda {{round}})",
+    "favorite": "Favorita",
+    "allTeams": "Todas as equipas"
+  },
+  "publicApp": {
+    "retry": "Tentar novamente",
+    "lastData": "Últimos dados às {{time}}",
+    "poolStage": "Fase de grupos",
+    "noStandings": "Ainda não há classificação para esta categoria.",
+    "noKnockout": "Ainda não há fase final para esta categoria.",
+    "loadStandings": "Não foi possível carregar a classificação.",
+    "noFavorites": "Ainda não há equipas favoritas neste torneio. Adicione-as a partir da ficha ou da pesquisa.",
+    "forfeitLine": "{{home}} vs {{away}}, desistência: {{team}}",
+    "forfeitBy": "Desistência: {{team}}"
+  },
+  "designSystem": {
+    "upcoming": "A seguir",
+    "live": "Ao vivo",
+    "finished": "Terminado",
+    "postponed": "Adiado",
+    "cancelled": "Cancelado",
+    "qualified": "Qualificado",
+    "eliminated": "Eliminado",
+    "draft": "Rascunho",
+    "published": "Publicado",
+    "unpublished": "Despublicado",
+    "archived": "Arquivado",
+    "forfeit": "Desistência",
+    "share": "Partilhar",
+    "linkCopied": "Link copiado",
+    "shareFailed": "Falha ao partilhar",
+    "copied": "Copiado",
+    "failed": "Falhou"
   }
 }

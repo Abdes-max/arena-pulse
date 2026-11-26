@@ -16,6 +16,7 @@ import {
   PublicApiService,
   clubDirectorySport,
 } from 'api-client';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { AutocompleteField, Button, Select, SelectOption, TextField } from 'design-system';
 import {
   Category,
@@ -27,11 +28,11 @@ import { AuthService } from '../../admin/core/auth.service';
 import { TournamentContextService } from '../../core/tournament-context.service';
 import { showErrorsInSnackbar } from '../../core/error-snackbar';
 
-function formatFee(category: Category): string {
+function formatFee(category: Category, free: string, lang: string): string {
   if (category.registrationFeeCents === null || category.registrationFeeCents === 0) {
-    return 'Gratuit';
+    return free;
   }
-  const amount = (category.registrationFeeCents / 100).toLocaleString('fr-FR', {
+  const amount = (category.registrationFeeCents / 100).toLocaleString(lang, {
     style: 'currency',
     currency: category.registrationFeeCurrency ?? 'eur',
   });
@@ -40,7 +41,15 @@ function formatFee(category: Category): string {
 
 @Component({
   selector: 'app-register-page',
-  imports: [ReactiveFormsModule, AutocompleteField, Button, RouterLink, Select, TextField],
+  imports: [
+    ReactiveFormsModule,
+    AutocompleteField,
+    Button,
+    RouterLink,
+    Select,
+    TextField,
+    TranslocoPipe,
+  ],
   templateUrl: './register.page.html',
   styleUrl: './register.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -55,9 +64,11 @@ export class RegisterPage {
 
   protected readonly loading = signal(true);
   protected readonly submitting = signal(false);
+  private readonly transloco = inject(TranslocoService);
   protected readonly errorMessage = signal<string | null>(null);
   // Anomalies show in the red snackbar, not inline (see showErrorsInSnackbar).
-  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage, { translate: false });
+  // Transloco keys (a server message passes through as is).
+  private readonly errorSnackbar = showErrorsInSnackbar(this.errorMessage);
 
   protected readonly categories = signal<Category[]>([]);
   protected readonly info = signal<PublicRegistrationInfo | null>(null);
@@ -89,13 +100,17 @@ export class RegisterPage {
       : '';
   });
 
-  protected readonly categoryOptions = computed<SelectOption[]>(() => [
-    { value: '', label: 'Choisir une catégorie', disabled: true },
-    ...this.categories().map((category) => ({
-      value: category.id,
-      label: `${category.name} · ${formatFee(category)}`,
-    })),
-  ]);
+  protected readonly categoryOptions = computed<SelectOption[]>(() => {
+    const lang = this.transloco.getActiveLang();
+    const free = this.transloco.translate('registerForm.free');
+    return [
+      { value: '', label: this.transloco.translate('registerForm.chooseCategory'), disabled: true },
+      ...this.categories().map((category) => ({
+        value: category.id,
+        label: `${category.name} · ${formatFee(category, free, lang)}`,
+      })),
+    ];
+  });
 
   protected readonly selectedCategory = computed(
     () => this.categories().find((category) => category.id === this.selectedCategoryId()) ?? null,
@@ -223,7 +238,7 @@ export class RegisterPage {
         }
       }
     } catch {
-      this.errorMessage.set('Impossible de charger les catégories de ce tournoi.');
+      this.errorMessage.set('registerForm.errorLoad');
     } finally {
       this.loading.set(false);
     }
@@ -260,11 +275,9 @@ export class RegisterPage {
     } catch (error) {
       if (error instanceof HttpErrorResponse && error.status === 409) {
         const message = (error.error as { message?: unknown } | null)?.message;
-        this.errorMessage.set(
-          typeof message === 'string' ? message : 'Une équipe porte déjà ce nom pour ce tournoi.',
-        );
+        this.errorMessage.set(typeof message === 'string' ? message : 'registerForm.duplicateName');
       } else {
-        this.errorMessage.set("Impossible d'envoyer cette inscription, réessayez.");
+        this.errorMessage.set('registerForm.error');
       }
     } finally {
       this.submitting.set(false);

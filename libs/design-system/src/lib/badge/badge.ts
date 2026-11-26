@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { DESIGN_SYSTEM_LABEL } from 'design-tokens';
 
 /**
  * Match/tournament statuses (docs/design/colors.md -- "sports-statuses" tokens).
@@ -48,5 +49,9 @@ export class Badge {
   /** Overrides the default French label -- the status itself always drives the visuals. */
   readonly label = input<string>();
 
-  protected readonly resolvedLabel = computed(() => this.label() ?? DEFAULT_LABELS[this.status()]);
+  private readonly appLabel = inject(DESIGN_SYSTEM_LABEL, { optional: true });
+
+  protected readonly resolvedLabel = computed(
+    () => this.label() ?? this.appLabel?.(this.status()) ?? DEFAULT_LABELS[this.status()],
+  );
 }

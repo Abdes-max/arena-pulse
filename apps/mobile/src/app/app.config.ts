@@ -10,7 +10,12 @@ import { provideRouter } from '@angular/router';
 import { provideApiClient } from 'api-client';
 import { provideIonicAngular } from '@ionic/angular/standalone';
 import { provideTransloco } from '@jsverse/transloco';
-import { SUPPORTED_LANGUAGES, TranslocoHttpLoader, resolveInitialLanguage } from 'design-tokens';
+import {
+  SUPPORTED_LANGUAGES,
+  TranslocoHttpLoader,
+  resolveInitialLanguage,
+  provideDesignSystemLabels,
+} from 'design-tokens';
 
 import { environment } from '../environments/environment';
 import { routes } from './app.routes';
@@ -69,6 +74,8 @@ export const appConfig: ApplicationConfig = {
     // Same reasoning as apps/web's own provideTransloco (see its comment):
     // resolveInitialLanguage() so the app boots straight into the right
     // language instead of flashing fr first.
+    // The design-system labels in the active language (design-tokens).
+    ...provideDesignSystemLabels(),
     provideTransloco({
       config: {
         availableLangs: SUPPORTED_LANGUAGES.map((language) => language.code),

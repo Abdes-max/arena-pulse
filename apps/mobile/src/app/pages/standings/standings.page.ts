@@ -17,7 +17,9 @@ import {
   IonSegment,
   IonSegmentButton,
 } from '@ionic/angular/standalone';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Badge, MatchCard, MatchCardTeam, MatchCardVariant } from 'design-system';
+import { LanguageService } from 'design-tokens';
 import {
   BracketView,
   Category,
@@ -26,6 +28,7 @@ import {
   Match,
   Qualification,
   QualificationTierColor,
+  RoundLabelLang,
   Standings,
   buildBracketView,
   computeFinalRanking,
@@ -88,6 +91,7 @@ interface CachedStandingsSnapshot {
 @Component({
   selector: 'app-standings-page',
   imports: [
+    TranslocoPipe,
     IonContent,
     IonSegment,
     IonSegmentButton,
@@ -106,6 +110,8 @@ export class StandingsPage {
   private readonly api = inject(PublicApiService);
   private readonly context = inject(TournamentContextService);
   private readonly assetUrl = inject(AssetUrlService);
+  private readonly transloco = inject(TranslocoService);
+  private readonly language = inject(LanguageService).language;
   private readonly elementRef = inject<ElementRef<HTMLElement>>(ElementRef);
   protected readonly cache = inject(OfflineCacheService);
 
@@ -262,7 +268,7 @@ export class StandingsPage {
           this.syncActiveTabToAvailability();
         }
       } else {
-        this.errorMessage.set('Impossible de charger les classements.');
+        this.errorMessage.set('publicApp.loadStandings');
       }
     } finally {
       this.loading.set(false);
@@ -305,7 +311,7 @@ export class StandingsPage {
     if (bracket.thirdPlaceMatch && pages.length > 0) {
       pages[pages.length - 1].cards.push({
         match: bracket.thirdPlaceMatch,
-        cardLabel: 'Pour la 3e place',
+        cardLabel: this.transloco.translate('home.competition.thirdPlace'),
       });
     }
     return pages;
@@ -413,7 +419,10 @@ export class StandingsPage {
   }
 
   protected formatKickoff(startTime: string): string {
-    return new Date(startTime).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' });
+    return new Date(startTime).toLocaleString(this.language(), {
+      dateStyle: 'short',
+      timeStyle: 'short',
+    });
   }
 
   protected teamCardInput(
@@ -463,7 +472,10 @@ export class StandingsPage {
       for (const phase of knockoutPhases) {
         const matches = await this.api.listBracketMatches(slug, phase.knockoutBracket!.id);
         const totalRounds = Math.log2(phase.knockoutBracket!.size);
-        bracketByPhase.set(phase.id, buildBracketView(matches, totalRounds));
+        bracketByPhase.set(
+          phase.id,
+          buildBracketView(matches, totalRounds, this.language() as RoundLabelLang),
+        );
       }
 
       let finalRanking: FinalRankingRow[] = [];
@@ -474,7 +486,7 @@ export class StandingsPage {
             matches: await this.api.listBracketMatches(slug, phase.knockoutBracket!.id),
           })),
         );
-        finalRanking = computeFinalRanking(allBracketMatches);
+        finalRanking = computeFinalRanking(allBracketMatches, this.language() as RoundLabelLang);
       }
 
       this.phases.set(phases);
@@ -499,7 +511,7 @@ export class StandingsPage {
         this.finalRanking.set(cached.data.finalRanking);
         this.cachedAt.set(cached.cachedAt);
       } else if (!cached) {
-        this.errorMessage.set('Impossible de charger les classements pour cette catégorie.');
+        this.errorMessage.set('publicApp.loadStandings');
       }
     }
   }

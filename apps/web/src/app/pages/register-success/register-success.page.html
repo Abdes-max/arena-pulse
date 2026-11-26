@@ -1,60 +1,67 @@
 <main class="register-success-page">
   <section class="register-success-page__block">
     @if (loading()) {
-      <p class="register-success-page__muted">Chargement…</p>
+      <p class="register-success-page__muted">{{ 'shell.loading' | transloco }}</p>
     } @else if (registration(); as registration) {
       @if (registration.status === 'PENDING') {
-        <h2>Pré-inscription envoyée</h2>
+        <h2>{{ 'registerSuccess.pendingTitle' | transloco }}</h2>
         <p>
-          Votre demande pour <strong>{{ registration.teamName }}</strong> ({{
-            registration.category.name
-          }}) est en attente de validation par l'organisateur. Vous recevrez un e-mail dès qu'elle
-          sera traitée.
+          {{
+            'registerSuccess.pendingBody'
+              | transloco: { team: registration.teamName, category: registration.category.name }
+          }}
         </p>
       } @else if (registration.status === 'WAITLIST') {
-        <h2>Sur liste d'attente</h2>
+        <h2>{{ 'registerSuccess.waitlistTitle' | transloco }}</h2>
         <p>
-          La catégorie {{ registration.category.name }} est complète : la demande pour
-          <strong>{{ registration.teamName }}</strong> est en liste d'attente. L'organisateur vous
-          préviendra si une place se libère.
+          {{
+            'registerSuccess.waitlistBody'
+              | transloco: { team: registration.teamName, category: registration.category.name }
+          }}
         </p>
       } @else if (registration.status === 'CONFIRMED') {
-        <h2>Inscription confirmée</h2>
+        <h2>{{ 'registerSuccess.confirmedTitle' | transloco }}</h2>
         <p>
-          <strong>{{ registration.teamName }}</strong> est inscrit(e) en
-          {{ registration.category.name }}.
+          {{
+            'registerSuccess.confirmedBody'
+              | transloco: { team: registration.teamName, category: registration.category.name }
+          }}
         </p>
       } @else if (registration.status === 'PAID') {
-        <h2>Inscription confirmée</h2>
+        <h2>{{ 'registerSuccess.confirmedTitle' | transloco }}</h2>
         <p>
-          L'équipe <strong>{{ registration.teamName }}</strong> est inscrite en
-          {{ registration.category.name }}.
+          {{
+            'registerSuccess.confirmedBody'
+              | transloco: { team: registration.teamName, category: registration.category.name }
+          }}
         </p>
       } @else if (registration.status === 'PENDING_PAYMENT') {
-        <h2>Paiement en cours de confirmation</h2>
+        <h2>{{ 'registerSuccess.paymentTitle' | transloco }}</h2>
         <p>
-          Votre inscription pour <strong>{{ registration.teamName }}</strong> sera confirmée dès que
-          le paiement sera validé. Vous pouvez recharger cette page dans quelques instants.
+          {{
+            'registerSuccess.paymentBody'
+              | transloco: { team: registration.teamName, category: registration.category.name }
+          }}
         </p>
       } @else {
-        <h2>Inscription annulée</h2>
+        <h2>{{ 'registerSuccess.cancelledTitle' | transloco }}</h2>
       }
       <div class="register-success-page__actions">
         <a
           class="register-success-page__btn register-success-page__btn--primary"
           routerLink="/espace-responsable"
-          >Mon espace responsable</a
+          >{{ 'myRegistrations.title' | transloco }}</a
         >
-        <a class="register-success-page__btn" [routerLink]="['/', context.slug()]"
-          >Retour au tournoi</a
-        >
+        <a class="register-success-page__btn" [routerLink]="['/', context.slug()]">{{
+          'registerSuccess.backToTournament' | transloco
+        }}</a>
       </div>
     } @else {
-      <h2>Inscription introuvable</h2>
+      <h2>{{ 'registerSuccess.notFound' | transloco }}</h2>
       <div class="register-success-page__actions">
-        <a class="register-success-page__btn" [routerLink]="['/', context.slug()]"
-          >Retour au tournoi</a
-        >
+        <a class="register-success-page__btn" [routerLink]="['/', context.slug()]">{{
+          'registerSuccess.backToTournament' | transloco
+        }}</a>
       </div>
     }
   </section>

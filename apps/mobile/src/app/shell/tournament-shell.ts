@@ -23,7 +23,15 @@ import {
   RouterOutlet,
 } from '@angular/router';
 import { filter, map } from 'rxjs';
-import { DEFAULT_THEME, ThemeMode, ThemeName, ThemeService, preferredMode } from 'design-tokens';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import {
+  DEFAULT_THEME,
+  LanguageService,
+  ThemeMode,
+  ThemeName,
+  ThemeService,
+  preferredMode,
+} from 'design-tokens';
 import {
   ActionSheetController,
   IonButton,
@@ -50,9 +58,6 @@ const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
   year: 'numeric',
 };
 
-// This shell renders hardcoded French throughout (no Transloco/LanguageService
-// wiring here yet, unlike apps/web's own TournamentShell) -- 'fr-FR' matches
-// that existing convention rather than introducing a lone localized piece.
 function capitalizeFirst(value: string): string {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
@@ -69,6 +74,7 @@ const THEME_MAP: Record<PublicTheme, ThemeName> = {
 @Component({
   selector: 'app-tournament-shell',
   imports: [
+    TranslocoPipe,
     RouterOutlet,
     RouterLink,
     RouterLinkActive,
@@ -103,6 +109,9 @@ export class TournamentShell {
   );
   private readonly actionSheet = inject(ActionSheetController);
   private readonly themeService = inject(ThemeService);
+  private readonly transloco = inject(TranslocoService);
+  // The phone's language (or the one chosen in Paramètres).
+  protected readonly language = inject(LanguageService).language;
   private readonly destroyRef = inject(DestroyRef);
   private readonly favorites = inject(FavoritesService);
   private readonly notifications = inject(NotificationsService);
@@ -136,7 +145,10 @@ export class TournamentShell {
   protected readonly shareUrl = computed(() => `${environment.webUrl}/${this.context.slug()}`);
   protected readonly shareText = computed(() => {
     const tournament = this.tournament();
-    return tournament ? `Suivez ${tournament.name} sur TournArena` : '';
+    const lang = this.language();
+    return tournament
+      ? this.transloco.translate('shell.shareText', { name: tournament.name }, lang)
+      : '';
   });
 
   // The hero is always the night band, lit by the theme's own color (see
@@ -169,21 +181,32 @@ export class TournamentShell {
     if (!tournament?.startDate) {
       return null;
     }
+    const lang = this.language();
     const startDate = capitalizeFirst(
-      new Date(tournament.startDate).toLocaleDateString('fr-FR', DATE_FORMAT_OPTIONS),
+      new Date(tournament.startDate).toLocaleDateString(lang, DATE_FORMAT_OPTIONS),
     );
     // startDate itself carries no real time-of-day (always set at UTC
     // midnight by Général) -- firstMatchTime is the actual kickoff time,
     // appended right after the start date only when there's a real
     // schedule to read one from.
     const start = tournament.firstMatchTime
-      ? `${startDate} à ${new Date(tournament.firstMatchTime).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`
+      ? this.transloco.translate(
+          'shell.dates.startWithTime',
+          {
+            date: startDate,
+            time: new Date(tournament.firstMatchTime).toLocaleTimeString(lang, {
+              hour: '2-digit',
+              minute: '2-digit',
+            }),
+          },
+          lang,
+        )
       : startDate;
     if (!tournament.endDate || tournament.endDate === tournament.startDate) {
       return start;
     }
     const end = capitalizeFirst(
-      new Date(tournament.endDate).toLocaleDateString('fr-FR', DATE_FORMAT_OPTIONS),
+      new Date(tournament.endDate).toLocaleDateString(lang, DATE_FORMAT_OPTIONS),
     );
     // A plain hyphen, not an em/en dash -- see docs/design/content-guidelines.md.
     return `${start} - ${end}`;
@@ -250,15 +273,13 @@ export class TournamentShell {
    * (Plans on iOS, the Android chooser -- Maps, Waze... -- via geo:) or
    * Google Maps in a new tab on a computer. Same in the native app.
    */
-  // Public pages are French-only in the app (same as their other labels).
-  protected readonly venueMapsLabel = 'Ouvrir dans l’application de navigation';
 
   private async chooseNavigationApp(venue: {
     name: string;
     address: string | null;
   }): Promise<void> {
     const sheet = await this.actionSheet.create({
-      header: 'Ouvrir l’itinéraire avec',
+      header: this.transloco.translate('shell.navigationTitle'),
       buttons: [
         ...venueNavigationApps(venue).map((app) => ({
           text: app.label,
@@ -266,7 +287,7 @@ export class TournamentShell {
             window.location.href = app.url;
           },
         })),
-        { text: 'Annuler', role: 'cancel' },
+        { text: this.transloco.translate('shell.navigationCancel'), role: 'cancel' },
       ],
     });
     await sheet.present();

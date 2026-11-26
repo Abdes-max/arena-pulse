@@ -100,7 +100,10 @@ export class HomePage {
   }
 
   protected formatKickoff(startTime: string): string {
-    return new Date(startTime).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' });
+    return new Date(startTime).toLocaleString(this.transloco.getActiveLang(), {
+      dateStyle: 'short',
+      timeStyle: 'short',
+    });
   }
 
   // Resolves the logo's relative API path into a URL fetchable from
@@ -129,11 +132,11 @@ export class HomePage {
 
   protected competitionLabel(match: Match): string {
     if (match.isThirdPlaceMatch) {
-      return 'Match pour la 3e place';
+      return this.transloco.translate('home.competition.thirdPlace');
     }
     if (match.knockoutBracketId) {
-      return 'Phase finale';
+      return this.transloco.translate('home.competition.final');
     }
-    return `Round ${match.round}`;
+    return this.transloco.translate('home.competition.round', { round: match.round });
   }
 }

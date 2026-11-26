@@ -1,30 +1,36 @@
 <main class="register-page">
   <section class="register-page__block">
-    <h2>{{ individual() ? 'Pré-inscription' : 'Pré-inscrire une équipe' }}</h2>
+    <h2>
+      {{ (individual() ? 'registerForm.titleIndividual' : 'registerForm.title') | transloco }}
+    </h2>
 
     @if (loading()) {
-      <p class="register-page__muted">Chargement…</p>
+      <p class="register-page__muted">{{ 'shell.loading' | transloco }}</p>
     } @else {
       @if (info(); as i) {
         @if (!i.open) {
-          <p class="register-page__muted">Les inscriptions ne sont pas ouvertes pour ce tournoi.</p>
+          <p class="register-page__muted">{{ 'registerForm.closed' | transloco }}</p>
         } @else {
-          <p class="register-page__intro">Votre demande sera validée par l'organisateur.</p>
+          <p class="register-page__intro">{{ 'registerForm.intro' | transloco }}</p>
           @if (i.paymentInfo) {
-            <p class="register-page__note"><strong>Paiement :</strong> {{ i.paymentInfo }}</p>
+            <p class="register-page__note">
+              <strong>{{ 'registerForm.payment' | transloco }}</strong> {{ i.paymentInfo }}
+            </p>
           }
         }
       }
 
       @if (info()?.open && remainingAllowed() <= 0) {
         <p class="register-page__note">
-          Vous avez déjà inscrit {{ alreadyMine() }} équipe(s) : c'est le maximum pour ce tournoi.
+          {{ 'registerForm.limitReached' | transloco: { count: alreadyMine() } }}
         </p>
-        <a class="register-page__space" routerLink="/espace-responsable">Mon espace responsable</a>
+        <a class="register-page__space" routerLink="/espace-responsable">{{
+          'myRegistrations.title' | transloco
+        }}</a>
       } @else if (info()?.open) {
         <form class="register-page__form" [formGroup]="form" (ngSubmit)="submit()">
           <ap-select
-            label="Catégorie"
+            [label]="'registerForm.category' | transloco"
             [options]="categoryOptions()"
             [value]="selectedCategoryId()"
             (valueChange)="onCategoryChange($event)"
@@ -32,17 +38,17 @@
 
           @if (selectedCategory()) {
             @if (remaining() === 0) {
-              <p class="register-page__warning">Catégorie complète : liste d'attente.</p>
+              <p class="register-page__warning">{{ 'registerForm.full' | transloco }}</p>
             }
 
             @if (individual()) {
               <ap-text-field
-                label="Prénom du joueur"
+                [label]="'registerForm.playerFirstName' | transloco"
                 formControlName="playerFirstName"
                 autocomplete="given-name"
               />
               <ap-text-field
-                label="Nom du joueur"
+                [label]="'registerForm.playerLastName' | transloco"
                 formControlName="playerLastName"
                 autocomplete="family-name"
               />
@@ -54,64 +60,73 @@
                     [checked]="useClubSearch()"
                     (change)="toggleClubSearch($event)"
                   />
-                  Rechercher le club dans l'annuaire
+                  {{ 'registerForm.clubSearch' | transloco }}
                 </label>
               }
               @if (clubSearchAvailable() && useClubSearch()) {
                 <ap-autocomplete-field
-                  label="Nom de l'équipe"
-                  placeholder="Nom du club, ex. Septèmes"
+                  [label]="'registerForm.teamName' | transloco"
+                  [placeholder]="'registerForm.clubPlaceholder' | transloco"
                   [value]="form.controls.teamName.value"
                   [suggestions]="clubSuggestions()"
                   [loading]="clubSearch.loading()"
                   [hint]="
-                    clubSearch.failed()
-                      ? 'Recherche de clubs indisponible : saisissez le nom à la main.'
-                      : null
+                    clubSearch.failed() ? ('registerForm.clubSearchFailed' | transloco) : null
                   "
                   (valueChange)="onTeamNameInput($event)"
                   (suggestionSelect)="onClubSelect($event)"
                 />
               } @else {
-                <ap-text-field label="Nom de l'équipe" formControlName="teamName" />
+                <ap-text-field
+                  [label]="'registerForm.teamName' | transloco"
+                  formControlName="teamName"
+                />
               }
               @if (externalClubId()) {
                 <p class="register-page__club-linked">
                   @if (clubLogo(); as logo) {
                     <img [src]="logo" alt="" />
                   }
-                  <span>Club lié : {{ clubLabel() }}</span>
-                  <button type="button" (click)="unlinkClub()">Délier</button>
+                  <span>{{ 'registerForm.clubLinked' | transloco: { club: clubLabel() } }}</span>
+                  <button type="button" (click)="unlinkClub()">
+                    {{ 'registerForm.unlink' | transloco }}
+                  </button>
                 </p>
               }
             }
             @if (!individual() && remainingAllowed() > 1) {
               <ap-select
-                label="Nombre d'équipes"
+                [label]="'registerForm.teamCount' | transloco"
                 [options]="teamCountOptions()"
                 [value]="teamCount()"
                 (valueChange)="teamCount.set($event)"
               />
               @if (numberedNames(); as names) {
-                <p class="register-page__hint">Équipes inscrites : {{ names }}</p>
+                <p class="register-page__hint">
+                  {{ 'registerForm.teamCountHint' | transloco: { names: names } }}
+                </p>
               }
             }
             <ap-text-field
-              [label]="individual() ? 'Email' : 'Email du responsable'"
+              [label]="
+                (individual() ? 'registerForm.emailShort' : 'registerForm.email') | transloco
+              "
               type="email"
               formControlName="managerEmail"
               autocomplete="email"
             />
             <ap-text-field
-              [label]="individual() ? 'Téléphone' : 'Téléphone du responsable'"
+              [label]="
+                (individual() ? 'registerForm.phoneShort' : 'registerForm.phone') | transloco
+              "
               type="tel"
               formControlName="managerPhone"
               autocomplete="tel"
             />
-            <p class="register-page__hint">L'organisateur vous contactera à ce numéro.</p>
+            <p class="register-page__hint">{{ 'registerForm.phoneHint' | transloco }}</p>
 
             <ap-button type="submit" [disabled]="form.invalid || submitting()">
-              Envoyer la pré-inscription
+              {{ 'registerForm.submit' | transloco }}
             </ap-button>
           }
         </form>

@@ -1,4 +1,21 @@
-import { ChangeDetectionStrategy, Component, WritableSignal, input, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  WritableSignal,
+  computed,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
+import { DESIGN_SYSTEM_LABEL, DesignSystemLabelKey } from 'design-tokens';
+
+const DEFAULT_LABELS: Partial<Record<DesignSystemLabelKey, string>> = {
+  share: 'Partager',
+  linkCopied: 'Lien copié',
+  shareFailed: 'Échec du partage',
+  copied: 'Copié',
+  failed: 'Échec',
+};
 import { Clipboard } from '@capacitor/clipboard';
 import { Share } from '@capacitor/share';
 
@@ -43,6 +60,19 @@ export class ShareButton {
   readonly title = input.required<string>();
   readonly text = input<string>();
   readonly url = input.required<string>();
+
+  private readonly appLabel = inject(DESIGN_SYSTEM_LABEL, { optional: true });
+  /** The app's translation, else the French default. */
+  protected readonly labels = computed(() => {
+    const label = (key: DesignSystemLabelKey) => this.appLabel?.(key) ?? DEFAULT_LABELS[key] ?? '';
+    return {
+      share: label('share'),
+      linkCopied: label('linkCopied'),
+      shareFailed: label('shareFailed'),
+      copied: label('copied'),
+      failed: label('failed'),
+    };
+  });
 
   protected readonly copied = signal(false);
   protected readonly failed = signal(false);
