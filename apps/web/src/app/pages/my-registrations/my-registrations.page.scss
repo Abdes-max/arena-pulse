@@ -1,10 +1,170 @@
-@use '../../admin/pages/auth-shell';
 @use '../../admin/section-card';
 
-// Hero of the login pages (_auth-shell.scss), then the admin's block cards.
+.my-registrations-page {
+  display: block;
+  min-height: 100dvh;
+  background: var(--ap-color-bg);
+  color: var(--ap-color-fg);
+}
+
+// Same band as the admin shell's header (app-shell.scss): the vitrine's
+// floodlights, logo and menu on top, then back and the title.
+.mr-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--ap-z-sticky);
+  background-color: var(--ap-color-bg);
+  background-image:
+    radial-gradient(40rem 20rem at 0% 0%, rgb(14 165 201 / 40%), transparent 70%),
+    radial-gradient(34rem 18rem at 100% 0%, rgb(245 185 66 / 14%), transparent 70%);
+  color: var(--ap-color-fg);
+  border-bottom: var(--ap-border-width) solid var(--ap-color-border);
+}
+
+.mr-header__topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--ap-space-4) var(--ap-space-6);
+}
+
+.mr-header__left {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-6);
+}
+
+.mr-header__brand {
+  display: inline-flex;
+}
+
+.mr-header__nav {
+  display: flex;
+  gap: var(--ap-space-6);
+}
+
+.mr-header__nav a,
+.mr-header__menu a {
+  color: var(--ap-color-fg);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.mr-header__nav .mr-header__link--active,
+.mr-header__menu .mr-header__link--active {
+  color: var(--ap-color-primary);
+}
+
+.mr-header__end {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-3);
+}
+
+.mr-header__logout {
+  padding: var(--ap-space-2) var(--ap-space-3);
+  border: none;
+  background: transparent;
+  color: var(--ap-color-fg);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.mr-header__toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  background: transparent;
+  color: var(--ap-color-fg);
+  cursor: pointer;
+
+  svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+  }
+}
+
+.mr-header__menu {
+  display: none;
+}
+
+// Back on the title's left (app-shell.scss's __title-row).
+.mr-header__title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--ap-space-3);
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 var(--ap-space-6) var(--ap-space-4);
+}
+
+.mr-header__back {
+  flex: none;
+  padding: var(--ap-space-1) var(--ap-space-3);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  color: var(--ap-color-fg);
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover {
+    border-color: var(--ap-color-signal);
+  }
+}
+
+.mr-header__title {
+  margin: 0;
+  min-width: 0;
+  font-family: var(--ap-font-heading);
+  font-size: clamp(1.5rem, 3.5vw, 2.1rem);
+  letter-spacing: var(--ap-tracking-tight);
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 720px) {
+  .mr-header__nav,
+  .mr-header__end > .mr-header__logout {
+    display: none;
+  }
+
+  .mr-header__toggle {
+    display: inline-flex;
+  }
+
+  .mr-header__menu {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--ap-space-1);
+    padding: 0 var(--ap-space-6) var(--ap-space-4);
+
+    a {
+      padding: var(--ap-space-2) 0;
+    }
+  }
+}
+
+.my-registrations-page__lede {
+  max-width: 900px;
+  margin: var(--ap-space-6) auto 0;
+  padding: 0 var(--ap-space-4);
+  color: var(--ap-color-muted);
+}
+
 .my-registrations-page__body {
   max-width: 900px;
-  margin: calc(-1 * var(--ap-space-16)) auto 0;
+  margin: var(--ap-space-6) auto 0;
   padding: 0 var(--ap-space-4) var(--ap-space-12);
   position: relative;
 }
@@ -22,26 +182,6 @@
   > h2 {
     margin-bottom: 0;
   }
-}
-
-.my-registrations-page__hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: var(--ap-space-2);
-}
-
-.my-registrations-page__logout {
-  text-decoration: none;
-  margin-top: var(--ap-space-4);
-  padding: var(--ap-space-2) var(--ap-space-4);
-  font: inherit;
-  font-weight: 600;
-  color: var(--ap-color-fg);
-  background: transparent;
-  border: var(--ap-border-width) solid var(--ap-color-border);
-  border-radius: 999px;
-  cursor: pointer;
 }
 
 .my-registrations-page__subheading {

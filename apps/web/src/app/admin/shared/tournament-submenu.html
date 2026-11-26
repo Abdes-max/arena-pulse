@@ -1,5 +1,10 @@
 @if (name(); as tournamentName) {
   <div class="tournament-submenu__identity">
+    @if (back(); as backLink) {
+      <a class="tournament-submenu__back" [routerLink]="backLink"
+        >← {{ 'admin.shell.back' | transloco }}</a
+      >
+    }
     @if (logoUrl(); as logo) {
       <img class="tournament-submenu__logo" [src]="logo" alt="" />
     }

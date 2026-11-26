@@ -3,7 +3,8 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { Router, RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { PublicApiService } from 'api-client';
-import { Button, Logo, StatsDatum, StatsSegments } from 'design-system';
+import { Button, LanguageSwitcher, Logo, StatsDatum, StatsSegments } from 'design-system';
+import { LanguageCode, LanguageService, SUPPORTED_LANGUAGES } from 'design-tokens';
 import { PlayerRegistration, PlayerRegistrationStats } from 'shared-models';
 import { showErrorsInSnackbar } from '../../core/error-snackbar';
 import { AuthService } from '../../admin/core/auth.service';
@@ -15,7 +16,7 @@ import { AuthService } from '../../admin/core/auth.service';
  */
 @Component({
   selector: 'app-my-registrations-page',
-  imports: [Button, Logo, RouterLink, StatsSegments, TranslocoPipe],
+  imports: [Button, LanguageSwitcher, Logo, RouterLink, StatsSegments, TranslocoPipe],
   templateUrl: './my-registrations.page.html',
   styleUrls: ['../../admin/shared/stats-dashboard.scss', './my-registrations.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -26,7 +27,13 @@ export class MyRegistrationsPage {
   private readonly router = inject(Router);
   private readonly transloco = inject(TranslocoService);
 
+  private readonly languageService = inject(LanguageService);
+
   protected readonly player = this.authService.currentUser;
+  protected readonly language = this.languageService.language;
+  protected readonly languages = SUPPORTED_LANGUAGES;
+  // Phone width: the menu behind the hamburger, as in the admin shell.
+  protected readonly menuOpen = signal(false);
   // Same account may also organize: a way to its admin (or to create the organization).
   protected readonly organizes = computed(() => this.authService.organizations().length > 0);
   protected readonly loading = signal(true);
@@ -101,6 +108,10 @@ export class MyRegistrationsPage {
     } finally {
       this.busyId.set(null);
     }
+  }
+
+  protected onLanguageChange(code: string): void {
+    this.languageService.setLanguage(code as LanguageCode);
   }
 
   protected async logout(): Promise<void> {

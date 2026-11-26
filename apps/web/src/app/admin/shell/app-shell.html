@@ -7,7 +7,6 @@
        tournament's own theme on its pages, the vitrine's blue elsewhere. -->
   <header
     class="app-shell__header"
-    [class.app-shell__header--with-hero]="!!hero()"
     [class.app-shell__header--vitrine]="!tournamentId()"
     [attr.data-theme]="headerTheme()"
     data-mode="dark"
@@ -26,18 +25,6 @@
     }
     <div class="app-shell__topbar">
       <div class="app-shell__topbar-left">
-        @if (tournamentId()) {
-          <a
-            class="app-shell__back"
-            routerLink="/admin/tournaments"
-            [attr.aria-label]="'admin.shell.backToTournaments' | transloco"
-            [title]="'admin.shell.backToTournaments' | transloco"
-          >
-            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-              <path fill="currentColor" d="M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
-            </svg>
-          </a>
-        }
         <a
           class="app-shell__brand"
           routerLink="/"
@@ -213,41 +200,38 @@
         [published]="tournamentPublished()"
         [name]="tournamentName()"
         [logoUrl]="tournamentLogoUrl()"
+        back="/admin/tournaments"
       />
     }
-  </header>
-  <!-- Page title in the night band, as on the login pages: back on the left,
-       the cancel cross on the right of a creation form (route data). -->
-  @if (hero(); as h) {
-    <div class="app-shell__hero" data-theme="ink-signal" data-mode="dark">
-      <div class="app-shell__hero-inner">
-        <div class="app-shell__hero-bar">
-          @if (h.back) {
-            <a class="app-shell__hero-back" [routerLink]="h.back"
-              >← {{ 'admin.shell.back' | transloco }}</a
-            >
-          }
-          @if (h.cancel) {
-            <a
-              class="app-shell__hero-cancel"
-              [routerLink]="h.cancel"
-              [attr.aria-label]="'admin.shell.cancel' | transloco"
-              [title]="'admin.shell.cancel' | transloco"
-            >
-              <svg viewBox="0 0 20 20" aria-hidden="true">
-                <path d="M5 5 L15 15 M15 5 L5 15" />
-              </svg>
-            </a>
-          }
-        </div>
-        <h1>{{ h.title | transloco }}</h1>
-        @if (h.lede) {
-          <p class="app-shell__hero-lede">{{ h.lede | transloco }}</p>
+    <!-- One band: the page title sits in the header, back on its left, the
+         cancel cross of a creation form on the right (route data). -->
+    @if (hero(); as h) {
+      <div class="app-shell__title-row">
+        @if (h.back) {
+          <a class="app-shell__title-back" [routerLink]="h.back"
+            >← {{ 'admin.shell.back' | transloco }}</a
+          >
+        }
+        <h1 class="app-shell__title">{{ h.title | transloco }}</h1>
+        @if (h.cancel) {
+          <a
+            class="app-shell__title-cancel"
+            [routerLink]="h.cancel"
+            [attr.aria-label]="'admin.shell.cancel' | transloco"
+            [title]="'admin.shell.cancel' | transloco"
+          >
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <path d="M5 5 L15 15 M15 5 L5 15" />
+            </svg>
+          </a>
         }
       </div>
-    </div>
-  }
+    }
+  </header>
   <main class="app-shell__content" id="main-content" tabindex="-1">
+    @if (hero()?.lede; as lede) {
+      <p class="app-shell__lede">{{ lede | transloco }}</p>
+    }
     <router-outlet />
   </main>
 </div>
