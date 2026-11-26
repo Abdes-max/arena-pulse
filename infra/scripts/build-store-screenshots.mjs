@@ -49,6 +49,14 @@ const DEVICES = {
     frameWidth: 760,
     radius: 36,
   },
+  // App Store's main iPhone size (6.9"): the same captures, recomposed.
+  iphone69: {
+    rawFrom: 'iphone',
+    canvas: { width: 440, height: 956, deviceScaleFactor: 3 }, // 1320x2868
+    outDir: join(STORE, 'screenshots-6.9in'),
+    frameWidth: 336,
+    radius: 46,
+  },
   // Google Play phone screenshots: the iPhone captures, recomposed at 1080x2400.
   play: {
     rawFrom: 'iphone',
