@@ -414,7 +414,10 @@
       },
       "back": "Volver",
       "cancel": "Cancelar",
-      "backToTournaments": "Volver a los torneos"
+      "backToTournaments": "Volver a los torneos",
+      "settings": "Ajustes",
+      "theme": "Tema",
+      "language": "Idioma"
     },
     "submenu": {
       "live": "Match day",

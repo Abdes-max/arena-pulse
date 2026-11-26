@@ -516,7 +516,10 @@
       },
       "back": "Retour",
       "cancel": "Annuler",
-      "backToTournaments": "Retour aux tournois"
+      "backToTournaments": "Retour aux tournois",
+      "settings": "Paramètres",
+      "theme": "Thème",
+      "language": "Langue"
     },
     "submenu": {
       "live": "Jour J",

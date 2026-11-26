@@ -61,51 +61,6 @@
   gap: var(--ap-space-3);
 }
 
-// Simple / complet, as in the admin shell (app-shell.scss's __ui-mode).
-.mr-header__ui-mode {
-  display: inline-flex;
-  padding: 2px;
-  border: var(--ap-border-width) solid var(--ap-color-border);
-  border-radius: var(--ap-radius-pill);
-}
-
-.mr-header__ui-mode-option {
-  padding: var(--ap-space-1) var(--ap-space-3);
-  border: none;
-  border-radius: var(--ap-radius-pill);
-  background: transparent;
-  color: var(--ap-color-muted);
-  font: inherit;
-  font-size: 0.8rem;
-  cursor: pointer;
-
-  &:focus-visible {
-    outline: 2px solid var(--ap-color-focus);
-    outline-offset: 2px;
-  }
-}
-
-.mr-header__ui-mode-option--active {
-  background: var(--ap-color-primary);
-  color: var(--ap-color-on-primary);
-}
-
-.mr-header__controls {
-  display: flex;
-  align-items: center;
-  gap: var(--ap-space-3);
-}
-
-.mr-header__logout {
-  padding: var(--ap-space-2) var(--ap-space-3);
-  border: none;
-  background: transparent;
-  color: var(--ap-color-fg);
-  font: inherit;
-  font-weight: 700;
-  cursor: pointer;
-}
-
 .mr-header__toggle {
   display: none;
   align-items: center;
@@ -174,8 +129,7 @@
 }
 
 @media (max-width: 720px) {
-  .mr-header__nav,
-  .mr-header__end > .mr-header__controls {
+  .mr-header__nav {
     display: none;
   }
 

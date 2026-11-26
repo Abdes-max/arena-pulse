@@ -56,54 +56,18 @@
         </nav>
       </div>
       <div class="app-shell__nav-end">
-        <div class="app-shell__controls">
-          <div
-            class="app-shell__ui-mode"
-            role="group"
-            [attr.aria-label]="'admin.shell.uiMode.label' | transloco"
-          >
-            <button
-              type="button"
-              class="app-shell__ui-mode-option"
-              [class.app-shell__ui-mode-option--active]="authService.simpleMode()"
-              [attr.aria-pressed]="authService.simpleMode()"
-              (click)="setUiMode('SIMPLE')"
-            >
-              {{ 'admin.shell.uiMode.simple' | transloco }}
-            </button>
-            <button
-              type="button"
-              class="app-shell__ui-mode-option"
-              [class.app-shell__ui-mode-option--active]="!authService.simpleMode()"
-              [attr.aria-pressed]="!authService.simpleMode()"
-              (click)="setUiMode('FULL')"
-            >
-              {{ 'admin.shell.uiMode.full' | transloco }}
-            </button>
-          </div>
-          <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
-          <ap-button type="button" variant="ghost" (click)="logout()">{{
-            'admin.shell.logout' | transloco
-          }}</ap-button>
-        </div>
-
-        <!-- Always visible, at every viewport width -- not hidden inside
-             the mobile menu below with the rest of app-shell__controls, so
-             switching language never requires opening that menu first.
-             Grouped with the toggle button in this shared wrapper (not a
-             sibling of it directly in __topbar) so justify-content:
-             space-between there keeps treating "the right-hand side" as a
-             single block. -->
-        <ap-language-switcher
-          [language]="language()"
-          [languages]="languages"
-          (languageChange)="onLanguageChange($event)"
+        <!-- Simple/Complet, light/dark, language and sign-out behind the gear. -->
+        <app-settings-menu
+          #settings
+          [showUiMode]="true"
+          (logout)="logout()"
+          (opened)="closeMobileMenu()"
         />
 
         <button
           type="button"
           class="app-shell__nav-toggle"
-          (click)="toggleMobileMenu()"
+          (click)="settings.close(); toggleMobileMenu()"
           [attr.aria-expanded]="mobileMenuOpen()"
           aria-controls="app-shell-mobile-menu"
           [attr.aria-label]="'admin.shell.menu' | transloco"
@@ -126,7 +90,7 @@
         <a
           class="app-shell__mobile-menu-link"
           routerLink="/admin/tournaments"
-          routerLinkActive="app-shell__link--active"
+          routerLinkActive="app-shell__mobile-menu-link--current"
           (click)="closeMobileMenu()"
           >{{ 'admin.shell.nav.tournaments' | transloco }}</a
         >
@@ -134,7 +98,7 @@
           <a
             class="app-shell__mobile-menu-link"
             routerLink="/admin/collaborators"
-            routerLinkActive="app-shell__link--active"
+            routerLinkActive="app-shell__mobile-menu-link--current"
             (click)="closeMobileMenu()"
             >{{ 'admin.shell.nav.collaborators' | transloco }}</a
           >
@@ -142,14 +106,14 @@
         <a
           class="app-shell__mobile-menu-link"
           routerLink="/admin/organization/subscription"
-          routerLinkActive="app-shell__link--active"
+          routerLinkActive="app-shell__mobile-menu-link--current"
           (click)="closeMobileMenu()"
           >{{ 'admin.shell.nav.subscription' | transloco }}</a
         >
         <a
           class="app-shell__mobile-menu-link"
           routerLink="/admin/account"
-          routerLinkActive="app-shell__link--active"
+          routerLinkActive="app-shell__mobile-menu-link--current"
           (click)="closeMobileMenu()"
           >{{ 'admin.shell.nav.account' | transloco }}</a
         >
@@ -157,40 +121,11 @@
           <a
             class="app-shell__mobile-menu-link"
             routerLink="/espace-responsable"
+            routerLinkActive="app-shell__mobile-menu-link--current"
             (click)="closeMobileMenu()"
             >{{ 'admin.shell.nav.managerSpace' | transloco }}</a
           >
         }
-        <div class="app-shell__mobile-menu-controls">
-          <div
-            class="app-shell__ui-mode"
-            role="group"
-            [attr.aria-label]="'admin.shell.uiMode.label' | transloco"
-          >
-            <button
-              type="button"
-              class="app-shell__ui-mode-option"
-              [class.app-shell__ui-mode-option--active]="authService.simpleMode()"
-              [attr.aria-pressed]="authService.simpleMode()"
-              (click)="setUiMode('SIMPLE')"
-            >
-              {{ 'admin.shell.uiMode.simple' | transloco }}
-            </button>
-            <button
-              type="button"
-              class="app-shell__ui-mode-option"
-              [class.app-shell__ui-mode-option--active]="!authService.simpleMode()"
-              [attr.aria-pressed]="!authService.simpleMode()"
-              (click)="setUiMode('FULL')"
-            >
-              {{ 'admin.shell.uiMode.full' | transloco }}
-            </button>
-          </div>
-          <ap-theme-mode-toggle [mode]="mode()" (modeChange)="onModeChange($event)" />
-          <ap-button type="button" variant="ghost" (click)="logout()">{{
-            'admin.shell.logout' | transloco
-          }}</ap-button>
-        </div>
       </div>
     }
     @if (tournamentId(); as id) {

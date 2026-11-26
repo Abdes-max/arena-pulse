@@ -516,7 +516,10 @@
       },
       "back": "Back",
       "cancel": "Cancel",
-      "backToTournaments": "Back to tournaments"
+      "backToTournaments": "Back to tournaments",
+      "settings": "Settings",
+      "theme": "Theme",
+      "language": "Language"
     },
     "submenu": {
       "live": "Match day",
