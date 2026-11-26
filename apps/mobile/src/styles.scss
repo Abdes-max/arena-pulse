@@ -161,3 +161,20 @@ ion-segment-button ion-label {
     letter-spacing: -0.01em;
   }
 }
+
+// Standings and other score tables in a rounded card, as on the website
+// (web standings.page.scss's __table-scroll): scrolls sideways when wide.
+.ap-table-card {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-top: var(--ap-space-3);
+  padding: var(--ap-space-1) var(--ap-space-3);
+  background: var(--ap-color-surface);
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-lg);
+  box-shadow: var(--ap-shadow-sm);
+
+  table tr:last-child td {
+    border-bottom: none;
+  }
+}
