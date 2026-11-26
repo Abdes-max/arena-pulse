@@ -9,6 +9,8 @@ import { join } from 'node:path';
 
 // Folder -> App Store Connect display type.
 const SETS = [
+  // 6.9" -- the size the product page shows first (APP_IPHONE_67 covers 6.7"/6.9").
+  { folder: 'screenshots-6.9in', displayType: 'APP_IPHONE_67' },
   { folder: 'screenshots-6.5in', displayType: 'APP_IPHONE_65' },
   { folder: 'screenshots-ipad-13in', displayType: 'APP_IPAD_PRO_3GEN_129' },
 ];
@@ -144,6 +146,21 @@ export async function replaceScreenshots(api, localizationIds, dir) {
       });
       console.log(`  → ${displayType}: ${ids.length} screenshot(s) uploaded.`);
       uploaded.push(...ids);
+    }
+    // Any other iPhone size still holding older screenshots (sent by hand
+    // before this script existed) is emptied: App Store Connect then derives
+    // those sizes from the ones above instead of showing stale visuals.
+    const managed = new Set(SETS.map((s) => s.displayType));
+    for (const stale of existingSets.data) {
+      const type = stale.attributes.screenshotDisplayType;
+      if (!type.startsWith('APP_IPHONE') || managed.has(type)) {
+        continue;
+      }
+      const old = await api('GET', `/appScreenshotSets/${stale.id}/appScreenshots`);
+      for (const shot of old.data) {
+        await api('DELETE', `/appScreenshots/${shot.id}`);
+      }
+      console.log(`  → ${type}: ${old.data.length} old screenshot(s) removed.`);
     }
   }
   console.log('Waiting for App Store Connect to process the screenshots...');
