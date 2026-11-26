@@ -9,7 +9,9 @@ import {
 import { AssetUrlService, PublicApiService } from 'api-client';
 import { IonContent, IonLabel, IonSegment, IonSegmentButton } from '@ionic/angular/standalone';
 import { MatchCard, MatchCardTeam, MatchCardVariant, TextField } from 'design-system';
-import { Category, CompetitionPhase, Match, roundLabel } from 'shared-models';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
+import { LanguageService } from 'design-tokens';
+import { Category, CompetitionPhase, Match, RoundLabelLang, roundLabel } from 'shared-models';
 import { TournamentContextService } from '../../core/tournament-context.service';
 import {
   MATCH_STATUS_FILTERS,
@@ -21,7 +23,15 @@ const KNOCKOUT_TAB = 'knockout';
 
 @Component({
   selector: 'app-schedule-page',
-  imports: [IonContent, IonSegment, IonSegmentButton, IonLabel, MatchCard, TextField],
+  imports: [
+    IonContent,
+    IonSegment,
+    IonSegmentButton,
+    IonLabel,
+    MatchCard,
+    TextField,
+    TranslocoPipe,
+  ],
   templateUrl: './schedule.page.html',
   styleUrl: './schedule.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,6 +40,8 @@ export class SchedulePage {
   private readonly api = inject(PublicApiService);
   private readonly context = inject(TournamentContextService);
   private readonly assetUrl = inject(AssetUrlService);
+  private readonly transloco = inject(TranslocoService);
+  private readonly language = inject(LanguageService).language;
 
   protected readonly loading = signal(true);
   protected readonly categories = signal<Category[]>([]);
@@ -57,16 +69,6 @@ export class SchedulePage {
   /** Null = every match; otherwise only the matches under that button. */
   protected readonly statusFilter = signal<MatchStatusFilter | null>(null);
   protected readonly statusFilters = MATCH_STATUS_FILTERS;
-  protected readonly statusLabels: Record<MatchStatusFilter, string> = {
-    upcoming: 'À venir',
-    live: 'En cours',
-    finished: 'Terminés',
-  };
-  protected readonly emptyLabels: Record<MatchStatusFilter, string> = {
-    upcoming: 'Aucun match à venir.',
-    live: 'Aucun match en cours.',
-    finished: 'Aucun match terminé.',
-  };
 
   /** How many matches each button would show, given the current search. */
   protected readonly statusCounts = computed(() => {
@@ -129,7 +131,11 @@ export class SchedulePage {
       // for why UTC-day grouping would misfile matches near local midnight.
       const key = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
       const entry = days.get(key) ?? {
-        label: date.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }),
+        label: date.toLocaleDateString(this.language(), {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'long',
+        }),
         matches: [],
       };
       entry.matches.push(match);
@@ -234,7 +240,10 @@ export class SchedulePage {
   }
 
   protected formatKickoff(startTime: string): string {
-    return new Date(startTime).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' });
+    return new Date(startTime).toLocaleString(this.language(), {
+      dateStyle: 'short',
+      timeStyle: 'short',
+    });
   }
 
   protected teamCardInput(
@@ -247,13 +256,14 @@ export class SchedulePage {
   }
 
   protected competitionLabel(match: Match): string {
+    const lang = this.language() as RoundLabelLang;
     if (match.isThirdPlaceMatch) {
-      return 'Match pour la 3e place';
+      return this.transloco.translate('home.competition.thirdPlace', {}, lang);
     }
     const totalRounds = this.selectedPhaseTotalRounds();
     if (match.knockoutBracketId && totalRounds !== null) {
-      return roundLabel(totalRounds - match.round);
+      return roundLabel(totalRounds - match.round, lang);
     }
-    return `Round ${match.round}`;
+    return this.transloco.translate('home.competition.round', { round: match.round }, lang);
   }
 }

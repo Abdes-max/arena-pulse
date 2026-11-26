@@ -9,7 +9,12 @@ import {
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import { provideApiClient } from 'api-client';
 import { provideTransloco } from '@jsverse/transloco';
-import { SUPPORTED_LANGUAGES, TranslocoHttpLoader, resolveInitialLanguage } from 'design-tokens';
+import {
+  SUPPORTED_LANGUAGES,
+  TranslocoHttpLoader,
+  resolveInitialLanguage,
+  provideDesignSystemLabels,
+} from 'design-tokens';
 
 import { environment } from '../environments/environment';
 import { routes } from './app.routes';
@@ -57,6 +62,8 @@ export const appConfig: ApplicationConfig = {
     // immediately switching, which would fetch (and briefly flash) two
     // translation files instead of one. See LanguageService for the
     // reactive side of this (setLanguage() switches + persists later).
+    // The design-system labels in the active language (design-tokens).
+    ...provideDesignSystemLabels(),
     provideTransloco({
       config: {
         availableLangs: SUPPORTED_LANGUAGES.map((language) => language.code),

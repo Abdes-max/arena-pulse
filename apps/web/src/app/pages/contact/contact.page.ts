@@ -3,13 +3,14 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { PublicApiService } from 'api-client';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { Button, Logo } from 'design-system';
 
 type PageState = 'form' | 'sent';
 
 @Component({
   selector: 'app-contact-page',
-  imports: [ReactiveFormsModule, RouterLink, Button, Logo],
+  imports: [ReactiveFormsModule, RouterLink, Button, Logo, TranslocoPipe],
   templateUrl: './contact.page.html',
   styleUrl: './contact.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -40,9 +41,9 @@ export class ContactPage {
       this.state.set('sent');
     } catch (error) {
       if (error instanceof HttpErrorResponse && error.status === 429) {
-        this.errorMessage.set('Trop de messages envoyés, réessayez dans quelques minutes.');
+        this.errorMessage.set('contact.tooMany');
       } else {
-        this.errorMessage.set('Une erreur est survenue, réessayez.');
+        this.errorMessage.set('contact.error');
       }
     } finally {
       this.submitting.set(false);

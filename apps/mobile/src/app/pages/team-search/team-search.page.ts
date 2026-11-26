@@ -8,6 +8,7 @@ import {
   IonSegment,
   IonSegmentButton,
 } from '@ionic/angular/standalone';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { TextField } from 'design-system';
 import { Category, PublicTeam } from 'shared-models';
 import { FavoritesService } from '../../core/favorites.service';
@@ -15,7 +16,15 @@ import { TournamentContextService } from '../../core/tournament-context.service'
 
 @Component({
   selector: 'app-team-search-page',
-  imports: [IonContent, IonSegment, IonSegmentButton, IonLabel, IonButton, TextField],
+  imports: [
+    IonContent,
+    IonSegment,
+    IonSegmentButton,
+    IonLabel,
+    IonButton,
+    TextField,
+    TranslocoPipe,
+  ],
   templateUrl: './team-search.page.html',
   styleUrl: './team-search.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

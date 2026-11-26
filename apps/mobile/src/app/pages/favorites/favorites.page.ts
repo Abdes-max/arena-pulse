@@ -1,12 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { IonButton, IonContent, IonItem, IonLabel, IonList } from '@ionic/angular/standalone';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { FavoritesService } from '../../core/favorites.service';
 import { TournamentContextService } from '../../core/tournament-context.service';
 
 @Component({
   selector: 'app-favorites-page',
-  imports: [IonContent, IonList, IonItem, IonLabel, IonButton],
+  imports: [IonContent, IonList, IonItem, IonLabel, IonButton, TranslocoPipe],
   templateUrl: './favorites.page.html',
   styleUrl: './favorites.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

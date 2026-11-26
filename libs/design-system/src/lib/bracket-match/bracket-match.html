@@ -14,7 +14,7 @@
 
   @if (forfeitedTeamName(); as name) {
     <div class="ap-bracket-match__forfeit">
-      <ap-badge status="cancelled" label="Forfait" />
+      <ap-badge status="cancelled" [label]="forfeitLabel()" />
       <span>{{ name }}</span>
     </div>
   }

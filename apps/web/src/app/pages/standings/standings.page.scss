@@ -158,6 +158,36 @@
     td:nth-child(12) {
       display: none;
     }
+
+    // Tighter number columns: the room goes to the team names, which used
+    // to wrap over three lines.
+    th:nth-child(3),
+    td:nth-child(3) {
+      width: 88px;
+    }
+
+    th:nth-child(n + 4):nth-child(-n + 10),
+    td:nth-child(n + 4):nth-child(-n + 10) {
+      width: 30px;
+    }
+
+    th:nth-child(11),
+    td:nth-child(11) {
+      width: 36px;
+    }
+
+    .standings-page__tier-badge {
+      padding: 2px 6px;
+      font-size: 0.62rem;
+    }
+  }
+
+  // No team qualified yet in this pool: no empty badge column.
+  &:not(:has(ap-badge, .standings-page__tier-badge)) {
+    th:nth-child(3),
+    td:nth-child(3) {
+      display: none;
+    }
   }
 }
 

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { PublicApiService } from 'api-client';
 import { PlayerRegistration } from 'shared-models';
 import { TournamentContextService } from '../../core/tournament-context.service';
@@ -17,7 +18,7 @@ const POLL_INTERVAL_MS = 2000;
 
 @Component({
   selector: 'app-register-success-page',
-  imports: [RouterLink],
+  imports: [RouterLink, TranslocoPipe],
   templateUrl: './register-success.page.html',
   styleUrl: './register-success.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

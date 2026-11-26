@@ -50,7 +50,7 @@ export class TournamentContextService implements OnDestroy {
         this.cachedAt.set(cached.cachedAt);
       } else {
         this.tournament.set(null);
-        this.errorMessage.set("Ce tournoi n'existe pas ou n'est pas publié.");
+        this.errorMessage.set('shell.error.notFound');
       }
     } finally {
       this.loading.set(false);

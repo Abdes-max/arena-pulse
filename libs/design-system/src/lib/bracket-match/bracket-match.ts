@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, inject } from '@angular/core';
+import { DESIGN_SYSTEM_LABEL } from 'design-tokens';
 import { Badge } from '../badge/badge';
 
 export interface BracketMatchTeam {
@@ -19,6 +20,9 @@ export interface BracketMatchTeam {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BracketMatch {
+  private readonly appLabel = inject(DESIGN_SYSTEM_LABEL, { optional: true });
+  protected readonly forfeitLabel = computed(() => this.appLabel?.('forfeit') ?? 'Forfait');
+
   readonly homeTeam = input.required<BracketMatchTeam>();
   readonly awayTeam = input.required<BracketMatchTeam>();
   readonly homeScore = input<number>();

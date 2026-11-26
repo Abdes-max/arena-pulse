@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
+import { DESIGN_SYSTEM_LABEL } from 'design-tokens';
 import { Badge, BadgeStatus } from '../badge/badge';
 
 export type MatchCardVariant = 'featured' | 'live' | 'upcoming' | 'result' | 'compact';
@@ -48,6 +49,9 @@ export class MatchCard {
   // winning row picked out; a dense schedule/calendar list of many cards
   // would look noisy with a tinted row on every completed match).
   readonly highlightWinner = input<boolean>(false);
+
+  private readonly appLabel = inject(DESIGN_SYSTEM_LABEL, { optional: true });
+  protected readonly forfeitLabel = computed(() => this.appLabel?.('forfeit') ?? 'Forfait');
 
   // '' (not just true) so the attribute reflects HTML's own boolean-attribute
   // convention (present with an empty value, absent otherwise) -- attr.

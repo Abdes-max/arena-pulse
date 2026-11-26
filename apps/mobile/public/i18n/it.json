@@ -936,5 +936,179 @@
     },
     "myTournaments": "I miei tornei",
     "organize": "Organizza un torneo"
+  },
+  "shell": {
+    "loading": "Caricamento…",
+    "error": {
+      "notFound": "Questo torneo non esiste o non è pubblicato.",
+      "title": "Torneo non trovato",
+      "cta": "Scopri i tornei"
+    },
+    "skipLink": "Vai al contenuto principale",
+    "backAria": "Cerca un altro torneo",
+    "venue": "sede",
+    "venues": "sedi",
+    "shareText": "Segui {{name}} su TournArena",
+    "dates": {
+      "startWithTime": "{{date}} alle {{time}}"
+    },
+    "nav": {
+      "tournament": "Torneo",
+      "teams": "Squadre",
+      "standings": "Classifica",
+      "schedule": "Partite",
+      "wrapped": "Statistiche"
+    },
+    "menu": "Menu",
+    "openInMaps": "Apri nell'app di navigazione",
+    "navigationTitle": "Apri il percorso con",
+    "navigationCancel": "Annulla"
+  },
+  "home": {
+    "sections": {
+      "venues": "Sedi",
+      "description": "Descrizione",
+      "upcomingMatches": "Prossime partite",
+      "categories": "Categorie",
+      "rules": "Regolamento",
+      "practicalInfo": "Informazioni pratiche",
+      "sponsors": "Sponsor",
+      "recentResults": "Ultimi risultati",
+      "fullStandings": "Vedi la classifica completa →"
+    },
+    "competition": {
+      "thirdPlace": "Per il 3° posto",
+      "final": "Fase finale",
+      "round": "Turno {{round}}"
+    },
+    "overview": {
+      "location": "Luogo",
+      "online": "Online",
+      "poster": "Locandina dell'evento"
+    },
+    "registration": {
+      "title": "Iscrizioni aperte",
+      "cta": "Preiscriviti",
+      "unlimited": "Posti disponibili",
+      "full": "Completo · lista d’attesa",
+      "places": "{{remaining}} posto/i su {{total}}",
+      "payment": "Pagamento",
+      "mySpace": "Il mio spazio responsabile",
+      "alreadyRegistered": "Già iscritto · {{count}} squadra/e",
+      "another": "Iscrivi un'altra squadra",
+      "barLabel": "Iscrizioni {{name}}",
+      "left": "{{remaining}} posto/i rimasto/i",
+      "closes": "chiusura il {{date}}"
+    }
+  },
+  "schedule": {
+    "statusFilter": {
+      "label": "Filtra per stato",
+      "upcoming": "In programma",
+      "live": "In corso",
+      "finished": "Terminate",
+      "empty": {
+        "upcoming": "Nessuna partita in programma.",
+        "live": "Nessuna partita in corso.",
+        "finished": "Nessuna partita terminata."
+      }
+    },
+    "noCategories": "Nessuna categoria per questo torneo.",
+    "categoryLabel": "Categoria",
+    "phaseLabel": "Fase",
+    "searchLabel": "Cerca una squadra o un arbitro",
+    "searchPlaceholder": "Cerca una squadra o un arbitro…",
+    "noMatches": "Nessuna partita per questa fase.",
+    "unscheduled": "Non pianificato",
+    "forfeit": "a tavolino",
+    "knockoutTab": "Fase finale"
+  },
+  "standings": {
+    "noPhase": "Nessuna fase per questa categoria.",
+    "provisional": "provvisorio",
+    "bracketNotGenerated": "Il tabellone non è ancora stato generato per questa fase.",
+    "roundLabel": "Turno",
+    "previousRound": "Turno precedente",
+    "nextRound": "Turno successivo",
+    "finalRankingTab": "Classifica finale",
+    "fullView": "Vista completa",
+    "finalRankingEmpty": "La classifica finale sarà disponibile una volta completati i tabelloni della fase finale.",
+    "table": {
+      "team": "Squadra",
+      "played": "G",
+      "playedFull": "Giocate",
+      "won": "V",
+      "wonFull": "Vinte",
+      "drawn": "N",
+      "drawnFull": "Pareggiate",
+      "lost": "P",
+      "lostFull": "Perse",
+      "goalsFor": "GF",
+      "goalsForFull": "Gol fatti",
+      "goalsAgainst": "GS",
+      "goalsAgainstFull": "Gol subiti",
+      "points": "Pt",
+      "pointsFull": "Punti",
+      "bracket": "Tabellone",
+      "result": "Risultato",
+      "setsFor": "S+",
+      "setsForFull": "Set vinti",
+      "setsAgainst": "S-",
+      "setsAgainstFull": "Set persi",
+      "gameDiff": "Diff. game",
+      "gameDiffFull": "Differenza game",
+      "pointDiff": "Diff. pt",
+      "pointDiffFull": "Differenza punti"
+    }
+  },
+  "teamSearch": {
+    "allCategories": "Tutte",
+    "searchLabel": "Cerca una squadra",
+    "searchPlaceholder": "Cerca una squadra…",
+    "noTeams": "Nessuna squadra trovata.",
+    "addFavorite": "Aggiungi ai preferiti",
+    "removeFavorite": "Rimuovi dai preferiti"
+  },
+  "teamDetail": {
+    "loadError": "Impossibile caricare questa squadra.",
+    "groupStanding": "Classifica del girone",
+    "position": "Posizione",
+    "wdl": "V / N / P",
+    "goals": "Gol",
+    "upcoming": "Prossime",
+    "noMatches": "Nessuna partita programmata per questa squadra.",
+    "poolRound": "Girone (turno {{round}})",
+    "favorite": "Preferita",
+    "allTeams": "Tutte le squadre"
+  },
+  "publicApp": {
+    "retry": "Riprova",
+    "lastData": "Ultimi dati alle {{time}}",
+    "poolStage": "Fase a gironi",
+    "noStandings": "Nessuna classifica ancora per questa categoria.",
+    "noKnockout": "Nessuna fase finale ancora per questa categoria.",
+    "loadStandings": "Impossibile caricare la classifica.",
+    "noFavorites": "Nessuna squadra preferita per questo torneo. Aggiungine dalla loro scheda o dalla ricerca.",
+    "forfeitLine": "{{home}} vs {{away}}, a tavolino: {{team}}",
+    "forfeitBy": "A tavolino: {{team}}"
+  },
+  "designSystem": {
+    "upcoming": "In programma",
+    "live": "In diretta",
+    "finished": "Terminata",
+    "postponed": "Rinviata",
+    "cancelled": "Annullata",
+    "qualified": "Qualificata",
+    "eliminated": "Eliminata",
+    "draft": "Bozza",
+    "published": "Pubblicato",
+    "unpublished": "Non pubblicato",
+    "archived": "Archiviato",
+    "forfeit": "A tavolino",
+    "share": "Condividi",
+    "linkCopied": "Link copiato",
+    "shareFailed": "Condivisione non riuscita",
+    "copied": "Copiato",
+    "failed": "Non riuscito"
   }
 }

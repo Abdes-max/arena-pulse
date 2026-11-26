@@ -10,13 +10,16 @@ import {
 import { ActivatedRoute, Router } from '@angular/router';
 import { AssetUrlService, PublicApiService } from 'api-client';
 import { IonButton, IonContent } from '@ionic/angular/standalone';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Badge, MatchCard, MatchCardTeam, MatchCardVariant } from 'design-system';
+import { LanguageService } from 'design-tokens';
 import {
   CompetitionPhase,
   PublicTeamDetail,
   Qualification,
   QualificationTierColor,
   qualificationTierColor,
+  RoundLabelLang,
   roundLabel,
   Standings,
 } from 'shared-models';
@@ -26,7 +29,7 @@ import { TournamentContextService } from '../../core/tournament-context.service'
 
 @Component({
   selector: 'app-team-detail-page',
-  imports: [Badge, DecimalPipe, IonContent, MatchCard, IonButton],
+  imports: [Badge, DecimalPipe, IonContent, MatchCard, IonButton, TranslocoPipe],
   templateUrl: './team-detail.page.html',
   styleUrl: './team-detail.page.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -39,6 +42,8 @@ export class TeamDetailPage {
   private readonly router = inject(Router);
   protected readonly cache = inject(OfflineCacheService);
   protected readonly assetUrl = inject(AssetUrlService);
+  private readonly transloco = inject(TranslocoService);
+  private readonly language = inject(LanguageService).language;
 
   protected readonly loading = signal(true);
   protected readonly errorMessage = signal<string | null>(null);
@@ -144,7 +149,7 @@ export class TeamDetailPage {
         this.team.set(cached.data);
         this.cachedAt.set(cached.cachedAt);
       } else {
-        this.errorMessage.set('Impossible de charger cette équipe.');
+        this.errorMessage.set('teamDetail.loadError');
       }
     } finally {
       this.loading.set(false);
@@ -193,16 +198,20 @@ export class TeamDetailPage {
   }
 
   protected formatKickoff(startTime: string): string {
-    return new Date(startTime).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' });
+    return new Date(startTime).toLocaleString(this.language(), {
+      dateStyle: 'short',
+      timeStyle: 'short',
+    });
   }
 
   protected competitionLabel(match: PublicTeamDetail['matches'][number]): string {
+    const lang = this.language() as RoundLabelLang;
     if (match.isThirdPlaceMatch) {
-      return 'Match pour la 3e place';
+      return this.transloco.translate('home.competition.thirdPlace', {}, lang);
     }
     if (match.knockoutBracketId && match.knockoutTotalRounds !== null) {
-      return roundLabel(match.knockoutTotalRounds - match.round);
+      return roundLabel(match.knockoutTotalRounds - match.round, lang);
     }
-    return `Poule, round ${match.round}`;
+    return this.transloco.translate('teamDetail.poolRound', { round: match.round }, lang);
   }
 }

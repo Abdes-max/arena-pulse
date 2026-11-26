@@ -1,6 +1,6 @@
 @if (loading()) {
   <ion-content class="team-search-page__status">
-    <p>Chargement…</p>
+    <p>{{ 'shell.loading' | transloco }}</p>
   </ion-content>
 } @else {
   <ion-content class="team-search-page">
@@ -13,7 +13,7 @@
         scrollable
       >
         <ion-segment-button value="">
-          <ion-label>Toutes</ion-label>
+          <ion-label>{{ 'teamSearch.allCategories' | transloco }}</ion-label>
         </ion-segment-button>
         @for (category of categories(); track category.id) {
           <ion-segment-button [value]="category.id">
@@ -26,15 +26,15 @@
     <ap-text-field
       class="team-search-page__search"
       type="search"
-      label="Rechercher une équipe"
-      placeholder="Rechercher une équipe…"
+      [label]="'teamSearch.searchLabel' | transloco"
+      [placeholder]="'teamSearch.searchPlaceholder' | transloco"
       [hideLabel]="true"
       [value]="query()"
       (valueChange)="onQueryChange($event)"
     />
 
     @if (filteredTeams().length === 0) {
-      <p class="team-search-page__empty">Aucune équipe trouvée.</p>
+      <p class="team-search-page__empty">{{ 'teamSearch.noTeams' | transloco }}</p>
     } @else {
       <div class="team-search-page__grid">
         @for (team of filteredTeams(); track team.id) {
@@ -53,7 +53,10 @@
             </button>
             <ion-button
               fill="clear"
-              [attr.aria-label]="isFavorite(team) ? 'Retirer des favoris' : 'Ajouter aux favoris'"
+              [attr.aria-label]="
+                (isFavorite(team) ? 'teamSearch.removeFavorite' : 'teamSearch.addFavorite')
+                  | transloco
+              "
               (click)="toggleFavorite($event, team)"
             >
               {{ isFavorite(team) ? '★' : '☆' }}

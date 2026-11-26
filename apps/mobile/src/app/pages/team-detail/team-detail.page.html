@@ -1,21 +1,25 @@
 @if (loading()) {
   <ion-content class="team-detail-page__status">
-    <p>Chargement…</p>
+    <p>{{ 'shell.loading' | transloco }}</p>
   </ion-content>
 } @else if (errorMessage(); as message) {
   <ion-content class="team-detail-page__status">
-    <p role="alert">{{ message }}</p>
+    <p role="alert">{{ message | transloco }}</p>
   </ion-content>
 } @else if (team(); as t) {
   <ion-content class="team-detail-page">
     @if (cachedAt(); as cachedAt) {
       <div class="team-detail-page__offline-banner" role="status">
-        <span>Dernières données du {{ cache.formatTimestamp(cachedAt) }}</span>
-        <ion-button size="small" fill="clear" (click)="retry()">Réessayer</ion-button>
+        <span>{{
+          'publicApp.lastData' | transloco: { time: cache.formatTimestamp(cachedAt) }
+        }}</span>
+        <ion-button size="small" fill="clear" (click)="retry()">{{
+          'publicApp.retry' | transloco
+        }}</ion-button>
       </div>
     }
     <button type="button" class="team-detail-page__back" (click)="backToTeams()">
-      ‹ Toutes les équipes
+      ‹ {{ 'teamDetail.allTeams' | transloco }}
     </button>
     <div class="team-detail-page__header">
       <div class="team-detail-page__title">
@@ -35,17 +39,19 @@
       <ion-button
         class="team-detail-page__favorite"
         fill="clear"
-        [attr.aria-label]="isFavorite() ? 'Retirer des favoris' : 'Ajouter aux favoris'"
+        [attr.aria-label]="
+          (isFavorite() ? 'teamSearch.removeFavorite' : 'teamSearch.addFavorite') | transloco
+        "
         (click)="toggleFavorite()"
       >
-        {{ isFavorite() ? '★ Favori' : '☆ Favori' }}
+        {{ isFavorite() ? '★' : '☆' }} {{ 'teamDetail.favorite' | transloco }}
       </ion-button>
     </div>
 
     @if (groupStandings()?.rows?.length) {
       <section class="team-detail-page__section">
         <h3 class="team-detail-page__section-title">
-          Classement de poule
+          {{ 'teamDetail.groupStanding' | transloco }}
           @if (t.groupName) {
             · {{ t.groupName }}
           }
@@ -55,16 +61,30 @@
             <thead>
               <tr>
                 <th>#</th>
-                <th>Équipe</th>
+                <th>{{ 'standings.table.team' | transloco }}</th>
                 <th></th>
-                <th title="Joués">J</th>
-                <th title="Gagnés">G</th>
-                <th title="Nuls">N</th>
-                <th title="Perdus">P</th>
-                <th title="Buts pour">BP</th>
-                <th title="Buts contre">BC</th>
+                <th [title]="'standings.table.playedFull' | transloco">
+                  {{ 'standings.table.played' | transloco }}
+                </th>
+                <th [title]="'standings.table.wonFull' | transloco">
+                  {{ 'standings.table.won' | transloco }}
+                </th>
+                <th [title]="'standings.table.drawnFull' | transloco">
+                  {{ 'standings.table.drawn' | transloco }}
+                </th>
+                <th [title]="'standings.table.lostFull' | transloco">
+                  {{ 'standings.table.lost' | transloco }}
+                </th>
+                <th [title]="'standings.table.goalsForFull' | transloco">
+                  {{ 'standings.table.goalsFor' | transloco }}
+                </th>
+                <th [title]="'standings.table.goalsAgainstFull' | transloco">
+                  {{ 'standings.table.goalsAgainst' | transloco }}
+                </th>
                 <th>+/-</th>
-                <th title="Points">Pts</th>
+                <th [title]="'standings.table.pointsFull' | transloco">
+                  {{ 'standings.table.points' | transloco }}
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -114,38 +134,50 @@
       </section>
     } @else if (t.standing; as standing) {
       <section class="team-detail-page__section">
-        <h3 class="team-detail-page__section-title">Classement de poule</h3>
+        <h3 class="team-detail-page__section-title">
+          {{ 'teamDetail.groupStanding' | transloco }}
+        </h3>
         <div class="team-detail-page__stats">
           <div class="team-detail-page__stat">
             <span class="team-detail-page__stat-value">{{ standing.position }}</span>
-            <span class="team-detail-page__stat-label">Position</span>
+            <span class="team-detail-page__stat-label">{{
+              'teamDetail.position' | transloco
+            }}</span>
           </div>
           <div class="team-detail-page__stat">
             <span class="team-detail-page__stat-value">{{ standing.played }}</span>
-            <span class="team-detail-page__stat-label">Joués</span>
+            <span class="team-detail-page__stat-label">{{
+              'standings.table.playedFull' | transloco
+            }}</span>
           </div>
           <div class="team-detail-page__stat">
             <span class="team-detail-page__stat-value"
               >{{ standing.won }} / {{ standing.drawn }} / {{ standing.lost }}</span
             >
-            <span class="team-detail-page__stat-label">V / N / D</span>
+            <span class="team-detail-page__stat-label">{{ 'teamDetail.wdl' | transloco }}</span>
           </div>
           <div class="team-detail-page__stat">
             <span class="team-detail-page__stat-value"
               >{{ standing.goalsFor }} - {{ standing.goalsAgainst }}</span
             >
-            <span class="team-detail-page__stat-label">Buts ({{ standing.goalDifference }})</span>
+            <span class="team-detail-page__stat-label"
+              >{{ 'teamDetail.goals' | transloco }} ({{ standing.goalDifference }})</span
+            >
           </div>
           <div class="team-detail-page__stat team-detail-page__stat--highlight">
             <span class="team-detail-page__stat-value">{{ standing.points }}</span>
-            <span class="team-detail-page__stat-label">Points</span>
+            <span class="team-detail-page__stat-label">{{
+              'standings.table.pointsFull' | transloco
+            }}</span>
           </div>
           <div class="team-detail-page__stat">
             <span class="team-detail-page__stat-value">{{
               standing.rating | number: '1.0-0'
             }}</span>
             <span class="team-detail-page__stat-label"
-              >Rating{{ standing.isProvisional ? ' (provisoire)' : '' }}</span
+              >Rating{{
+                standing.isProvisional ? ' (' + ('standings.provisional' | transloco) + ')' : ''
+              }}</span
             >
           </div>
         </div>
@@ -154,7 +186,7 @@
 
     @if (upcomingMatches().length > 0) {
       <section class="team-detail-page__section">
-        <h3 class="team-detail-page__section-title">À venir</h3>
+        <h3 class="team-detail-page__section-title">{{ 'teamDetail.upcoming' | transloco }}</h3>
         <div class="team-detail-page__upcoming">
           @for (match of upcomingMatches(); track match.id) {
             <ap-match-card
@@ -172,12 +204,16 @@
 
     @if (playedMatches().length > 0) {
       <section class="team-detail-page__section">
-        <h3 class="team-detail-page__section-title">Joués</h3>
+        <h3 class="team-detail-page__section-title">
+          {{ 'standings.table.playedFull' | transloco }}
+        </h3>
         <div class="team-detail-page__grid">
           @for (match of playedMatches(); track match.id) {
             @if (match.status === 'FORFEITED') {
               <p class="team-detail-page__forfeit">
-                Forfait : {{ match.forfeitedTeam?.name }} ({{ competitionLabel(match) }})
+                {{ 'publicApp.forfeitBy' | transloco: { team: match.forfeitedTeam?.name } }} ({{
+                  competitionLabel(match)
+                }})
               </p>
             } @else {
               <ap-match-card
@@ -197,7 +233,7 @@
     }
 
     @if (upcomingMatches().length === 0 && playedMatches().length === 0) {
-      <p class="team-detail-page__empty">Aucun match planifié pour cette équipe.</p>
+      <p class="team-detail-page__empty">{{ 'teamDetail.noMatches' | transloco }}</p>
     }
   </ion-content>
 }

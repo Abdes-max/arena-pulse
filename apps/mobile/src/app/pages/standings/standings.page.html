@@ -1,22 +1,26 @@
 @if (loading()) {
   <ion-content class="standings-page__status">
-    <p>Chargement…</p>
+    <p>{{ 'shell.loading' | transloco }}</p>
   </ion-content>
 } @else if (errorMessage(); as message) {
   <ion-content class="standings-page__status">
-    <p role="alert">{{ message }}</p>
-    <ion-button (click)="retry()">Réessayer</ion-button>
+    <p role="alert">{{ message | transloco }}</p>
+    <ion-button (click)="retry()">{{ 'publicApp.retry' | transloco }}</ion-button>
   </ion-content>
 } @else if (categories().length === 0) {
   <ion-content class="standings-page__status">
-    <p>Aucune catégorie pour ce tournoi.</p>
+    <p>{{ 'schedule.noCategories' | transloco }}</p>
   </ion-content>
 } @else {
   <ion-content class="standings-page">
     @if (cachedAt(); as cachedAt) {
       <div class="standings-page__offline-banner" role="status">
-        <span>Dernières données du {{ cache.formatTimestamp(cachedAt) }}</span>
-        <ion-button size="small" fill="clear" (click)="retry()">Réessayer</ion-button>
+        <span>{{
+          'publicApp.lastData' | transloco: { time: cache.formatTimestamp(cachedAt) }
+        }}</span>
+        <ion-button size="small" fill="clear" (click)="retry()">{{
+          'publicApp.retry' | transloco
+        }}</ion-button>
       </div>
     }
 
@@ -44,29 +48,26 @@
     >
       @if (hasGroupStagePhase()) {
         <ion-segment-button value="pools">
-          <ion-label>Phase de poules</ion-label>
+          <ion-label>{{ 'publicApp.poolStage' | transloco }}</ion-label>
         </ion-segment-button>
       }
       @if (hasFinalPhase()) {
         <ion-segment-button value="final">
-          <ion-label>Phases finales</ion-label>
+          <ion-label>{{ 'schedule.knockoutTab' | transloco }}</ion-label>
         </ion-segment-button>
         <ion-segment-button value="ranking">
-          <ion-label>Classement</ion-label>
+          <ion-label>{{ 'shell.nav.standings' | transloco }}</ion-label>
         </ion-segment-button>
       }
     </ion-segment>
 
     @if (hasNoTabsYet()) {
-      <p class="standings-page__empty">Pas encore de classement pour cette catégorie.</p>
+      <p class="standings-page__empty">{{ 'publicApp.noStandings' | transloco }}</p>
     }
 
     @if (activeTab() === 'pools') {
       @if (!hasGroupStagePhase()) {
-        <p class="standings-page__empty">
-          Pas encore de classement pour cette catégorie, ou tableau à élimination uniquement (non
-          affiché ici, consultez le site public complet).
-        </p>
+        <p class="standings-page__empty">{{ 'publicApp.noStandings' | transloco }}</p>
       } @else {
         @for (group of groupStandings(); track group.groupId) {
           <section class="standings-page__group">
@@ -75,10 +76,12 @@
               <table class="standings-page__table">
                 <thead>
                   <tr>
-                    <th class="standings-page__table-team">Équipe</th>
+                    <th class="standings-page__table-team">
+                      {{ 'standings.table.team' | transloco }}
+                    </th>
                     <th class="standings-page__table-qualified"></th>
-                    <th>J</th>
-                    <th>Pts</th>
+                    <th>{{ 'standings.table.played' | transloco }}</th>
+                    <th>{{ 'standings.table.points' | transloco }}</th>
                     <th>+/-</th>
                   </tr>
                 </thead>
@@ -125,7 +128,7 @@
 
     @if (activeTab() === 'final') {
       @if (!hasFinalPhase()) {
-        <p class="standings-page__empty">Pas encore de phase finale pour cette catégorie.</p>
+        <p class="standings-page__empty">{{ 'publicApp.noKnockout' | transloco }}</p>
       } @else {
         @for (phase of knockoutPhases(); track phase.id) {
           @let bracket = bracketByPhase().get(phase.id);
@@ -135,7 +138,7 @@
 
               @if (bracket.rounds.length === 0) {
                 <p class="standings-page__empty">
-                  Le tableau n'a pas encore été généré pour cette phase.
+                  {{ 'standings.bracketNotGenerated' | transloco }}
                 </p>
               } @else {
                 @let pages = pagesFor(bracket);
@@ -147,7 +150,7 @@
                     class="standings-page__pager-nav"
                     [disabled]="pageIndex === 0"
                     (click)="goToPage(phase.id, -1, pages.length)"
-                    aria-label="Tour précédent"
+                    [attr.aria-label]="'standings.previousRound' | transloco"
                   >
                     ‹
                   </button>
@@ -157,7 +160,7 @@
                     class="standings-page__pager-nav"
                     [disabled]="pageIndex === pages.length - 1"
                     (click)="goToPage(phase.id, 1, pages.length)"
-                    aria-label="Tour suivant"
+                    [attr.aria-label]="'standings.nextRound' | transloco"
                   >
                     ›
                   </button>
@@ -224,9 +227,7 @@
 
     @if (activeTab() === 'ranking') {
       @if (finalRanking().length === 0) {
-        <p class="standings-page__empty">
-          Le classement final sera disponible une fois les tableaux de phase finale complétés.
-        </p>
+        <p class="standings-page__empty">{{ 'standings.finalRankingEmpty' | transloco }}</p>
       } @else {
         @if (podium(); as p) {
           <div class="standings-page__podium">
