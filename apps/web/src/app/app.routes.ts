@@ -180,6 +180,7 @@ export const routes: Routes = [
       { path: '', pathMatch: 'full', redirectTo: 'tournaments' },
       {
         path: 'tournaments',
+        data: { hero: { title: 'admin.tournamentList.title' } },
         loadComponent: () =>
           import('./admin/pages/tournaments/tournament-list.page').then(
             (m) => m.TournamentListPage,
@@ -187,11 +188,19 @@ export const routes: Routes = [
       },
       {
         path: 'tournaments/new-plateau',
+        data: {
+          hero: {
+            title: 'admin.quickPlateau.title',
+            lede: 'admin.quickPlateau.intro',
+            cancel: '/admin/tournaments',
+          },
+        },
         loadComponent: () =>
           import('./admin/pages/tournaments/quick-plateau.page').then((m) => m.QuickPlateauPage),
       },
       {
         path: 'tournaments/new',
+        data: { hero: { title: 'admin.tournamentForm.createTitle', cancel: '/admin/tournaments' } },
         loadComponent: () =>
           import('./admin/pages/tournaments/tournament-form.page').then(
             (m) => m.TournamentFormPage,
@@ -267,16 +276,25 @@ export const routes: Routes = [
       },
       {
         path: 'collaborators',
+        data: { hero: { title: 'admin.collaborators.title', back: '/admin/tournaments' } },
         loadComponent: () =>
           import('./admin/pages/collaborators/collaborators.page').then((m) => m.CollaboratorsPage),
       },
       {
         path: 'account',
+        data: { hero: { title: 'admin.account.title', back: '/admin/tournaments' } },
         loadComponent: () =>
           import('./admin/pages/account/account.page').then((m) => m.AccountPage),
       },
       {
         path: 'organization/subscription',
+        data: {
+          hero: {
+            title: 'admin.subscription.title',
+            lede: 'admin.subscription.intro',
+            back: '/admin/tournaments',
+          },
+        },
         loadComponent: () =>
           import('./admin/pages/subscription/organization-subscription.page').then(
             (m) => m.OrganizationSubscriptionPage,

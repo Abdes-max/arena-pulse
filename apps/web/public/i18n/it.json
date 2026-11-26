@@ -411,7 +411,10 @@
         "label": "Modalità di visualizzazione",
         "simple": "Semplice",
         "full": "Completa"
-      }
+      },
+      "back": "Indietro",
+      "cancel": "Annulla",
+      "backToTournaments": "Torna ai tornei"
     },
     "submenu": {
       "live": "Match day",
@@ -1807,7 +1810,8 @@
     "deleted": "Eliminato",
     "error": "Si è verificato un errore, riprova.",
     "offline": "Connessione impossibile: controlla la rete.",
-    "close": "Chiudi"
+    "close": "Chiudi",
+    "scrollTop": "Torna su"
   },
   "registrationCard": {
     "open": "Iscrizioni aperte ({{taken}}/{{total}})",
@@ -1864,7 +1868,8 @@
       "lostLong": "Sconfitte"
     },
     "myTournaments": "I miei tornei",
-    "organize": "Organizza un torneo"
+    "organize": "Organizza un torneo",
+    "back": "Indietro"
   },
   "notFound": {
     "title": "Pagina non trovata",

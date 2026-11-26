@@ -3,12 +3,10 @@
     <p>{{ 'admin.tournamentForm.loading' | transloco }}</p>
   } @else {
     <div class="tournament-form-page__no-print">
-      <h1>
-        {{
-          (isEditMode() ? 'admin.tournamentForm.generalTitle' : 'admin.tournamentForm.createTitle')
-            | transloco
-        }}
-      </h1>
+      <!-- Creating: the title is in the shell's band (route data). -->
+      @if (isEditMode()) {
+        <h1>{{ 'admin.tournamentForm.generalTitle' | transloco }}</h1>
+      }
 
       @if (isEditMode() && simpleMode()) {
         <p class="tournament-form-page__simple-notice">

@@ -32,6 +32,14 @@ import { AdminUiMode } from '../core/models';
 import { SessionTimeoutService } from '../core/session-timeout.service';
 import { TournamentSubmenu } from '../shared/tournament-submenu';
 import { THEME_MAP } from '../core/theme-map';
+
+/** Route data `hero`: the page title shown in the night band under the header. */
+export interface AdminHero {
+  title: string;
+  lede?: string;
+  back?: string;
+  cancel?: string;
+}
 import { TournamentsService } from '../core/tournaments.service';
 
 @Component({
@@ -95,22 +103,19 @@ export class AppShell {
     { initialValue: null },
   );
 
-  // The "new tournament" route has no tournamentId yet (nothing saved to
-  // link a submenu to), but is still tournament-scoped in spirit -- you're
-  // already personalizing one organization's tournament, not looking at the
-  // product's own brand mark, so it should hide the logo the same way an
-  // existing tournament's pages do.
-  private readonly isCreatingTournament = toSignal(
+  protected readonly hero = toSignal(
     this.router.events.pipe(
       filter((event): event is NavigationEnd => event instanceof NavigationEnd),
-      map(() => this.route.snapshot.firstChild?.routeConfig?.path === 'tournaments/new'),
-      startWith(this.route.snapshot.firstChild?.routeConfig?.path === 'tournaments/new'),
+      map(() => this.currentHero()),
+      startWith(this.currentHero()),
     ),
-    { initialValue: false },
+    { initialValue: null },
   );
 
-  protected readonly showBrandMark = computed(
-    () => this.tournamentId() === null && !this.isCreatingTournament(),
+  // The public site's header colors on a tournament's pages, the vitrine's
+  // blue night everywhere else.
+  protected readonly headerTheme = computed(() =>
+    this.tournamentId() ? this.themeService.theme() : 'ink-signal',
   );
 
   // Mobile nav (< 720px, same breakpoint as the landing page's own
@@ -119,6 +124,10 @@ export class AppShell {
   // hamburger toggle instead of just wrapping/overflowing, which is what
   // this header did before (no responsive treatment at all).
   protected readonly mobileMenuOpen = signal(false);
+
+  private currentHero(): AdminHero | null {
+    return (this.route.snapshot.firstChild?.data['hero'] as AdminHero | undefined) ?? null;
+  }
 
   protected setUiMode(mode: AdminUiMode): void {
     void this.authService.setAdminUiMode(mode);
