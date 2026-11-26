@@ -54,6 +54,19 @@ export class LanguageService {
   // language -- no need to re-derive one via toSignal(langChanges$, ...).
   readonly language: Signal<string> = this.transloco.activeLang;
 
+  /**
+   * The visitor's browser language (else the default), without saving it as
+   * their choice -- the public tournament sites have no language picker.
+   */
+  useBrowserLanguage(): void {
+    this.transloco.setActiveLang(detectBrowserLanguage() ?? DEFAULT_LANGUAGE);
+  }
+
+  /** Back to the saved choice (or the browser's) after useBrowserLanguage(). */
+  restoreLanguage(): void {
+    this.transloco.setActiveLang(resolveInitialLanguage());
+  }
+
   setLanguage(code: LanguageCode): void {
     this.transloco.setActiveLang(code);
     try {

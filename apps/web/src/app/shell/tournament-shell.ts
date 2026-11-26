@@ -29,16 +29,8 @@ import {
 import { filter, map } from 'rxjs';
 import { AssetUrlService } from 'api-client';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { LanguageSwitcher, ShareButton, ThemeModeToggle } from 'design-system';
-import {
-  DEFAULT_THEME,
-  LanguageCode,
-  LanguageService,
-  SUPPORTED_LANGUAGES,
-  ThemeMode,
-  ThemeName,
-  ThemeService,
-} from 'design-tokens';
+import { ShareButton, ThemeModeToggle } from 'design-system';
+import { DEFAULT_THEME, LanguageService, ThemeMode, ThemeName, ThemeService } from 'design-tokens';
 import { PageMeta, PageMetaService } from '../core/page-meta.service';
 import { TournamentContextService } from '../core/tournament-context.service';
 import { PublicTheme } from 'shared-models';
@@ -71,7 +63,6 @@ const THEME_MAP: Record<PublicTheme, ThemeName> = {
     RouterLinkActive,
     ThemeModeToggle,
     ShareButton,
-    LanguageSwitcher,
     TranslocoPipe,
   ],
   providers: [TournamentContextService],
@@ -122,22 +113,6 @@ export class TournamentShell {
   protected readonly errorMessage = this.context.errorMessage;
   protected readonly mode = this.themeService.mode;
   protected readonly language = this.languageService.language;
-  protected readonly languages = SUPPORTED_LANGUAGES;
-
-  // Mobile-only hamburger (< 720px, same breakpoint/pattern as the admin
-  // shell's own AppShell -- see apps/web/src/app/admin/shell/app-shell.ts):
-  // the language switcher, share button and theme toggle move from the
-  // header row into this slide-down panel instead of crowding the row next
-  // to the sport name/back button.
-  protected readonly mobileMenuOpen = signal(false);
-
-  protected toggleMobileMenu(): void {
-    this.mobileMenuOpen.update((open) => !open);
-  }
-
-  protected closeMobileMenu(): void {
-    this.mobileMenuOpen.set(false);
-  }
 
   protected logoUrl(url: string | null | undefined): string | null {
     return this.assetUrl.resolve(url ?? null);
@@ -194,10 +169,6 @@ export class TournamentShell {
     this.themeService.setMode(document.documentElement, next, true);
   }
 
-  protected onLanguageChange(code: string): void {
-    this.languageService.setLanguage(code as LanguageCode);
-  }
-
   // index.html sets <base href="/">, so a plain href="#main-content" resolves
   // against that base (i.e. navigates to "/") instead of jumping within the
   // current route -- handled manually here instead.
@@ -247,6 +218,11 @@ export class TournamentShell {
   });
 
   constructor() {
+    // No language picker on a public tournament site: the visitor's browser
+    // language, back to the saved choice on the way out (admin, vitrine).
+    this.languageService.useBrowserLanguage();
+    this.destroyRef.onDestroy(() => this.languageService.restoreLanguage());
+
     this.route.paramMap.pipe(takeUntilDestroyed()).subscribe((params) => {
       const slug = params.get('slug');
       if (slug) {

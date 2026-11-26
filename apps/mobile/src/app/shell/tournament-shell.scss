@@ -23,11 +23,11 @@ ion-toolbar {
   --padding-end: var(--ap-space-4);
 }
 
-// The night band: dark whatever the page mode (data-mode="dark" in the
-// template), with a soft glow in the theme's primary color as its only touch
-// -- same as apps/web's .tournament-shell__hero.
-.tournament-shell__hero {
-  padding: var(--ap-space-2) var(--ap-space-4) var(--ap-space-4);
+// The night band, toolbar and hero together: dark whatever the page mode
+// (data-mode="dark" in the template), with a soft glow in the theme's
+// primary color as its only touch -- same as apps/web's
+// .tournament-shell__hero.
+.tournament-shell__band {
   background-color: var(--ap-color-bg);
   background-image:
     radial-gradient(
@@ -41,9 +41,19 @@ ion-toolbar {
       transparent 70%
     );
   color: var(--ap-color-fg);
+  border-bottom: var(--ap-border-width) solid var(--ap-color-border);
   transition:
     background-color var(--ap-motion-fast) var(--ap-easing-standard),
     color var(--ap-motion-fast) var(--ap-easing-standard);
+
+  // No md drop shadow under the band.
+  &::after {
+    display: none;
+  }
+}
+
+.tournament-shell__hero {
+  padding: 0 var(--ap-space-4) var(--ap-space-4);
 }
 
 // The organizer's own header photo -- background-image itself is set inline
@@ -51,7 +61,7 @@ ion-toolbar {
 // color matches which of these two variants is active), this just adds the
 // sizing/position that can't come from an inline style binding. Mirrors
 // apps/web's own TournamentShell treatment.
-.tournament-shell__hero--has-background {
+.tournament-shell__band--has-background {
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -69,21 +79,24 @@ ion-toolbar {
 // icon-only (unlike apps/web's equivalent, which also shows a text label):
 // less horizontal room here, and the toolbar already carries the sport name
 // and the mode toggle alongside it.
+// A round bordered button, as on the website.
 .tournament-shell__back {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: var(--ap-space-2);
-  margin-left: calc(var(--ap-space-2) * -1);
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: 50%;
   color: var(--ap-color-muted);
 }
 
 .tournament-shell__sport {
   margin: 0;
   color: var(--ap-color-signal-text);
-  font-family: var(--ap-font-heading);
-  font-weight: 800;
-  font-size: 0.85rem;
+  font-weight: 700;
+  font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
@@ -91,34 +104,63 @@ ion-toolbar {
 .tournament-shell__title-row {
   display: flex;
   align-items: center;
-  gap: var(--ap-space-2);
-  margin: var(--ap-space-1) 0 0;
+  gap: var(--ap-space-4);
+  margin: var(--ap-space-2) 0 0;
 }
 
+// The club crest on a white tile, like a badge pinned to the cover.
 .tournament-shell__logo {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--ap-radius-md);
-  object-fit: cover;
+  width: 56px;
+  height: 56px;
+  padding: 5px;
+  border-radius: 16px;
+  background: #fff;
+  object-fit: contain;
   flex: none;
+  box-shadow: 0 14px 30px -12px rgb(0 0 0 / 55%);
+}
+
+.tournament-shell__title-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ap-space-2);
+  min-width: 0;
 }
 
 .tournament-shell__title {
   margin: 0;
   font-family: var(--ap-font-heading);
-  font-size: 1.4rem;
-  letter-spacing: var(--ap-tracking-tight);
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.02em;
   text-transform: var(--ap-title-case);
+  text-wrap: balance;
   color: var(--ap-color-fg);
+}
+
+.tournament-shell__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ap-space-2);
+}
+
+.tournament-shell__chip {
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  background: color-mix(in srgb, var(--ap-color-surface) 60%, transparent);
+  font-size: 0.78rem;
+  font-weight: 700;
 }
 
 .tournament-shell__meta {
   display: flex;
   flex-wrap: wrap;
   gap: var(--ap-space-1) var(--ap-space-3);
-  margin: var(--ap-space-1) 0 0;
+  margin: var(--ap-space-2) 0 0;
   color: var(--ap-color-muted);
-  font-size: 0.75rem;
+  font-size: 0.9rem;
 }
 
 .tournament-shell__meta-item {
@@ -135,14 +177,6 @@ ion-toolbar {
 .tournament-shell__meta-more {
   color: var(--ap-color-muted);
   font-weight: 600;
-}
-
-.tournament-shell__dates {
-  display: block;
-  margin: var(--ap-space-1) 0 0;
-  font-size: 0.75rem;
-  font-weight: 400;
-  color: var(--ap-color-muted);
 }
 
 // Mirrors apps/web's .tournament-shell__nav treatment: muted by default,

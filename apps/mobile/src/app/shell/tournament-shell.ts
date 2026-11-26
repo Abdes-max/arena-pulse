@@ -35,7 +35,7 @@ import {
   IonToolbar,
 } from '@ionic/angular/standalone';
 import { AssetUrlService } from 'api-client';
-import { Logo, ShareButton, ThemeModeToggle } from 'design-system';
+import { ShareButton, ThemeModeToggle } from 'design-system';
 import { PublicTheme } from 'shared-models';
 import { environment } from '../../environments/environment';
 import { FavoritesService } from '../core/favorites.service';
@@ -69,7 +69,6 @@ const THEME_MAP: Record<PublicTheme, ThemeName> = {
 @Component({
   selector: 'app-tournament-shell',
   imports: [
-    Logo,
     RouterOutlet,
     RouterLink,
     RouterLinkActive,
