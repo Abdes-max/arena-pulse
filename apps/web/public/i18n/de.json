@@ -439,7 +439,10 @@
       "premiumLocked": "Nur für Turniere mit mehr als {{count}} Teams oder mit aktivem Jahresabonnement.",
       "stats": "Statistiken",
       "slideshow": "Diashow (TV-Bildschirm)",
-      "registrations": "Anmeldungen"
+      "registrations": "Anmeldungen",
+      "shareLink": "Link teilen",
+      "shareCopied": "Link mit Nachricht kopiert, bereit zum Einfügen.",
+      "shareFailed": "Der Link konnte nicht geteilt werden."
     },
     "auth": {
       "login": {

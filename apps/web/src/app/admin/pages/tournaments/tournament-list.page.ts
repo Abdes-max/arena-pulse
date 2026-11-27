@@ -15,6 +15,7 @@ import { isTournamentPast } from 'shared-models';
 import { AuthService } from '../../core/auth.service';
 import { Tournament, TournamentStatus } from '../../core/models';
 import { TournamentsService } from '../../core/tournaments.service';
+import { injectShareTournament } from '../../core/share-tournament';
 import { OrganizationDashboard } from './organization-dashboard';
 import { SetupGuide } from './setup-guide';
 import { QrPosterDialog } from '../../shared/qr-poster-dialog/qr-poster-dialog';
@@ -243,6 +244,13 @@ export class TournamentListPage {
 
   protected closeShareMenu(): void {
     this.shareMenuFor.set(null);
+  }
+
+  private readonly shareTournament = injectShareTournament();
+
+  protected shareLink(tournament: Tournament): void {
+    this.closeShareMenu();
+    void this.shareTournament(tournament.name, this.publicAbsoluteUrl(tournament));
   }
 
   protected openQr(tournament: Tournament): void {

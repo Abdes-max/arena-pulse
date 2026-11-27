@@ -541,7 +541,10 @@
       "premiumLocked": "Réservé aux tournois de plus de {{count}} équipes ou à un abonnement annuel actif.",
       "stats": "Statistiques",
       "slideshow": "Diaporama (écran TV)",
-      "registrations": "Inscriptions"
+      "registrations": "Inscriptions",
+      "shareLink": "Partager le lien",
+      "shareCopied": "Lien copié avec son message, prêt à coller.",
+      "shareFailed": "Impossible de partager le lien."
     },
     "auth": {
       "login": {
