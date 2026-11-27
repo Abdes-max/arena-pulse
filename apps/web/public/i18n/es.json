@@ -439,7 +439,10 @@
       "premiumLocked": "Reservado a torneos con más de {{count}} equipos o con una suscripción anual activa.",
       "stats": "Estadísticas",
       "slideshow": "Presentación (pantalla TV)",
-      "registrations": "Inscripciones"
+      "registrations": "Inscripciones",
+      "shareLink": "Compartir el enlace",
+      "shareCopied": "Enlace copiado con su mensaje, listo para pegar.",
+      "shareFailed": "No se pudo compartir el enlace."
     },
     "auth": {
       "login": {

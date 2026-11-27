@@ -16,6 +16,7 @@ import { filter } from 'rxjs';
 import { TranslocoPipe } from '@jsverse/transloco';
 import { Button } from 'design-system';
 import { QrPosterDialog } from './qr-poster-dialog/qr-poster-dialog';
+import { injectShareTournament } from '../core/share-tournament';
 import { AuthService } from '../core/auth.service';
 import { TournamentsService } from '../core/tournaments.service';
 
@@ -91,6 +92,13 @@ export class TournamentSubmenu {
 
   protected toggleShareMenu(): void {
     this.shareMenuOpen.update((open) => !open);
+  }
+
+  private readonly shareTournament = injectShareTournament();
+
+  protected shareLink(path: string): void {
+    this.closeShareMenu();
+    void this.shareTournament(this.name() ?? '', new URL(path, window.location.origin).href);
   }
 
   protected closeShareMenu(): void {
