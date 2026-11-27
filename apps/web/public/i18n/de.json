@@ -1176,7 +1176,8 @@
         "levelPlaceholder": "z. B. Elite",
         "placesHint": "Plätze und Preis pro Kategorie unter Allgemein › Kategorien › Optionen.",
         "save": "Speichern",
-        "maxTeams": "Max. Teams pro Verantwortlichem (Verein)"
+        "maxTeams": "Max. Teams pro Verantwortlichem (Verein)",
+        "started": "Anmeldung automatisch geschlossen: Das erste Spiel hat begonnen."
       },
       "filters": {
         "PENDING": "Offen",
@@ -1984,7 +1985,8 @@
     "limitReached": "Du hast bereits {{count}} Team(s) angemeldet: das Maximum für dieses Turnier.",
     "emailShort": "E-Mail",
     "phoneShort": "Telefon",
-    "duplicateName": "Ein Team mit diesem Namen gibt es in diesem Turnier schon."
+    "duplicateName": "Ein Team mit diesem Namen gibt es in diesem Turnier schon.",
+    "started": "Die Anmeldung ist geschlossen: Das Turnier hat begonnen."
   },
   "registerSuccess": {
     "pendingTitle": "Voranmeldung gesendet",

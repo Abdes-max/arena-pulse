@@ -5,11 +5,13 @@
     @if (settings(); as s) {
       <p class="registration-list-page__hint">
         {{
-          (s.open
-            ? s.openNow
-              ? 'admin.registrationList.settings.openNow'
-              : 'admin.registrationList.settings.closedNow'
-            : 'admin.tournamentForm.registrations.offHint'
+          (s.started
+            ? 'admin.registrationList.settings.started'
+            : s.open
+              ? s.openNow
+                ? 'admin.registrationList.settings.openNow'
+                : 'admin.registrationList.settings.closedNow'
+              : 'admin.tournamentForm.registrations.offHint'
           ) | transloco
         }}
         ·

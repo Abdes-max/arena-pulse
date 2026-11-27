@@ -9,7 +9,9 @@
     } @else {
       @if (info(); as i) {
         @if (!i.open) {
-          <p class="register-page__muted">{{ 'registerForm.closed' | transloco }}</p>
+          <p class="register-page__muted">
+            {{ (i.started ? 'registerForm.started' : 'registerForm.closed') | transloco }}
+          </p>
         } @else {
           <p class="register-page__intro">{{ 'registerForm.intro' | transloco }}</p>
           @if (i.paymentInfo) {

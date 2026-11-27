@@ -1278,7 +1278,8 @@
         "levelPlaceholder": "e.g. Elite",
         "placesHint": "Places and price are set per category in General › Categories › Options.",
         "save": "Save",
-        "maxTeams": "Max teams per manager (club)"
+        "maxTeams": "Max teams per manager (club)",
+        "started": "Registrations closed automatically: the first match has started."
       },
       "filters": {
         "PENDING": "Pending",
@@ -2086,7 +2087,8 @@
     "limitReached": "You've already registered {{count}} team(s): the maximum for this tournament.",
     "emailShort": "Email",
     "phoneShort": "Phone",
-    "duplicateName": "A team already has this name in this tournament."
+    "duplicateName": "A team already has this name in this tournament.",
+    "started": "Registrations are closed: the tournament has started."
   },
   "registerSuccess": {
     "pendingTitle": "Pre-registration sent",

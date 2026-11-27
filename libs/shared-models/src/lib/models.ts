@@ -453,6 +453,8 @@ export type ParticipantType = 'TEAM' | 'INDIVIDUAL';
 /** GET /public/tournaments/:slug/registration-info */
 export interface PublicRegistrationInfo {
   open: boolean;
+  /** Closed because the first match has kicked off. */
+  started: boolean;
   opensAt: string | null;
   closesAt: string | null;
   paymentInfo: string | null;
@@ -483,6 +485,8 @@ export interface RegistrationSettings {
   paymentInfo: string | null;
   maxTeamsPerRegistrant: number;
   participantType: ParticipantType;
+  /** Closed because the first match has kicked off. */
+  started: boolean;
 }
 
 export interface CreateRegistrationResult {

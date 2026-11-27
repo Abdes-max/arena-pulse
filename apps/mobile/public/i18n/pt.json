@@ -745,7 +745,8 @@
         "publish": "Publicar o torneio",
         "share": "Partilhar",
         "shareText": "As inscrições para {{name}} estão abertas! Faça a pré-inscrição online, o organizador validará o seu pedido."
-      }
+      },
+      "started": "Inscrições encerradas automaticamente: o primeiro jogo já começou."
     },
     "schedule": {
       "hint": "Mantenha premido um jogo ou um horário e arraste-o: um espaço mostra onde vai ficar e a que horas. Os horários seguintes são deslocados; as pausas entre fases mantêm-se. Uma equipa não pode jogar dois jogos ao mesmo tempo.",
@@ -870,7 +871,8 @@
       "errorLoad": "Não foi possível carregar as categorias do torneio.",
       "teamCount": "Número de equipas",
       "teamCountHint": "Equipas inscritas: {{names}}",
-      "limitReached": "Já inscreveu {{count}} equipa(s): é o máximo para este torneio."
+      "limitReached": "Já inscreveu {{count}} equipa(s): é o máximo para este torneio.",
+      "started": "As inscrições estão encerradas: o torneio já começou."
     },
     "home": {
       "title": "Inscrições abertas",

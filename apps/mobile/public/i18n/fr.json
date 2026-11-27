@@ -745,7 +745,8 @@
         "publish": "Publier le tournoi",
         "share": "Partager",
         "shareText": "Les inscriptions sont ouvertes pour {{name}} ! Pré-inscrivez-vous en ligne, l'organisateur validera votre demande."
-      }
+      },
+      "started": "Inscriptions closes automatiquement : le premier match a commencé."
     },
     "schedule": {
       "hint": "Restez appuyé sur un match ou un créneau puis glissez-le : un emplacement montre où il va se placer et à quelle heure. Les créneaux suivants sont décalés, les pauses entre phases conservées. Une équipe ne peut pas jouer deux matchs en même temps.",
@@ -870,7 +871,8 @@
       "errorLoad": "Impossible de charger les catégories de ce tournoi.",
       "teamCount": "Nombre d'équipes",
       "teamCountHint": "Équipes inscrites : {{names}}",
-      "limitReached": "Vous avez déjà inscrit {{count}} équipe(s) : c'est le maximum pour ce tournoi."
+      "limitReached": "Vous avez déjà inscrit {{count}} équipe(s) : c'est le maximum pour ce tournoi.",
+      "started": "Les inscriptions sont closes : le tournoi a commencé."
     },
     "home": {
       "title": "Inscriptions ouvertes",

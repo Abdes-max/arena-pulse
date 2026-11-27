@@ -745,7 +745,8 @@
         "publish": "Publish the tournament",
         "share": "Share",
         "shareText": "Registrations are open for {{name}}! Pre-register online, the organizer will approve your request."
-      }
+      },
+      "started": "Registrations closed automatically: the first match has started."
     },
     "schedule": {
       "hint": "Press and hold a match or a slot, then drag it: a space shows where it will land and at what time. The following slots shift; breaks between phases are kept. A team cannot play two matches at the same time.",
@@ -870,7 +871,8 @@
       "errorLoad": "Could not load this tournament’s categories.",
       "teamCount": "Number of teams",
       "teamCountHint": "Teams registered: {{names}}",
-      "limitReached": "You've already registered {{count}} team(s): the maximum for this tournament."
+      "limitReached": "You've already registered {{count}} team(s): the maximum for this tournament.",
+      "started": "Registrations are closed: the tournament has started."
     },
     "home": {
       "title": "Registrations open",

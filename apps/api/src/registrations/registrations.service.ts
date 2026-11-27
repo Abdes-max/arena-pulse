@@ -70,9 +70,14 @@ export class RegistrationsService {
       where: { id: published.tournamentId },
       include: { sport: true, categories: { orderBy: { position: 'asc' } } },
     });
-    const taken = await this.placesTaken(tournament.id);
+    const [taken, firstMatchStart] = await Promise.all([
+      this.placesTaken(tournament.id),
+      this.firstMatchStart(tournament.id),
+    ]);
     return {
-      open: this.isOpen(tournament),
+      open: this.isOpen(tournament, firstMatchStart),
+      // Closed because the first match has kicked off (see firstMatchStart).
+      started: this.hasStarted(firstMatchStart),
       registrationsOpen: tournament.registrationsOpen,
       opensAt: tournament.registrationOpensAt,
       closesAt: tournament.registrationClosesAt,
@@ -104,7 +109,13 @@ export class RegistrationsService {
       where: { id: published.tournamentId },
       include: { sport: true, organization: true },
     });
-    if (!this.isOpen(tournament)) {
+    const firstMatchStart = await this.firstMatchStart(tournament.id);
+    if (this.hasStarted(firstMatchStart)) {
+      throw new ConflictException(
+        'Les inscriptions sont closes : le tournoi a commencé.',
+      );
+    }
+    if (!this.isOpen(tournament, firstMatchStart)) {
       throw new ConflictException(
         'Les inscriptions ne sont pas ouvertes pour ce tournoi.',
       );
@@ -310,7 +321,10 @@ export class RegistrationsService {
       where: { id: tournamentId },
       include: { sport: true },
     });
-    return this.toSettings(tournament);
+    return this.toSettings(
+      tournament,
+      await this.firstMatchStart(tournamentId),
+    );
   }
 
   async updateSettings(
@@ -339,7 +353,10 @@ export class RegistrationsService {
       },
       include: { sport: true },
     });
-    return this.toSettings(tournament);
+    return this.toSettings(
+      tournament,
+      await this.firstMatchStart(tournamentId),
+    );
   }
 
   async listForOrganizer(organizationId: string, tournamentId: string) {
@@ -697,14 +714,36 @@ export class RegistrationsService {
   // --------------------------------------------------------------- helpers
 
   /** Open now: the switch is on and today is within the optional dates. */
-  private isOpen(tournament: {
-    registrationsOpen: boolean;
-    registrationOpensAt: Date | null;
-    registrationClosesAt: Date | null;
-  }): boolean {
+  /**
+   * Kickoff of the tournament's first scheduled match (earliest time slot
+   * holding a match), or null while nothing is scheduled -- from then on,
+   * nobody can register any more.
+   */
+  private async firstMatchStart(tournamentId: string): Promise<Date | null> {
+    const result = await this.prisma.timeSlot.aggregate({
+      where: { field: { venue: { tournamentId } }, match: { isNot: null } },
+      _min: { startTime: true },
+    });
+    return result._min.startTime;
+  }
+
+  /** The first match's time has come (current time >= its kickoff). */
+  private hasStarted(firstMatchStart: Date | null): boolean {
+    return firstMatchStart !== null && firstMatchStart.getTime() <= Date.now();
+  }
+
+  private isOpen(
+    tournament: {
+      registrationsOpen: boolean;
+      registrationOpensAt: Date | null;
+      registrationClosesAt: Date | null;
+    },
+    firstMatchStart: Date | null,
+  ): boolean {
     const now = Date.now();
     return (
       tournament.registrationsOpen &&
+      !this.hasStarted(firstMatchStart) &&
       (!tournament.registrationOpensAt ||
         tournament.registrationOpensAt.getTime() <= now) &&
       (!tournament.registrationClosesAt ||
@@ -729,17 +768,20 @@ export class RegistrationsService {
     return new Map(rows.map((row) => [row.categoryId, row._count._all]));
   }
 
-  private toSettings(tournament: {
-    name: string;
-    slug: string;
-    status: TournamentStatus;
-    registrationsOpen: boolean;
-    registrationOpensAt: Date | null;
-    registrationClosesAt: Date | null;
-    registrationPaymentInfo: string | null;
-    maxTeamsPerRegistrant: number;
-    sport: { participantType: ParticipantType };
-  }) {
+  private toSettings(
+    tournament: {
+      name: string;
+      slug: string;
+      status: TournamentStatus;
+      registrationsOpen: boolean;
+      registrationOpensAt: Date | null;
+      registrationClosesAt: Date | null;
+      registrationPaymentInfo: string | null;
+      maxTeamsPerRegistrant: number;
+      sport: { participantType: ParticipantType };
+    },
+    firstMatchStart: Date | null,
+  ) {
     return {
       // For the share message (« Les inscriptions sont ouvertes pour … »).
       name: tournament.name,
@@ -747,7 +789,9 @@ export class RegistrationsService {
       slug: tournament.slug,
       published: tournament.status === TournamentStatus.PUBLISHED,
       open: tournament.registrationsOpen,
-      openNow: this.isOpen(tournament),
+      openNow: this.isOpen(tournament, firstMatchStart),
+      // Closed for good: the first match has kicked off.
+      started: this.hasStarted(firstMatchStart),
       opensAt: tournament.registrationOpensAt,
       closesAt: tournament.registrationClosesAt,
       paymentInfo: tournament.registrationPaymentInfo,
