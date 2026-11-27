@@ -49,6 +49,11 @@ const BRIDGE_TIMEOUT_MS = 5000;
  * visibly does *something* (both states also console.error the underlying
  * reason, for remote debugging via Safari's Web Inspector).
  */
+/** A share message and its link, as one text to paste (link on its own line). */
+export function shareMessage(text: string | undefined, url: string): string {
+  return text ? `${text}\n${url}` : url;
+}
+
 @Component({
   selector: 'ap-share-button',
   imports: [],
@@ -148,7 +153,8 @@ export class ShareButton {
   private async copyToClipboard(): Promise<void> {
     try {
       await this.withTimeout(
-        Clipboard.write({ string: this.url() }),
+        // The message with the link, as the share sheet would send them.
+        Clipboard.write({ string: shareMessage(this.text(), this.url()) }),
         BRIDGE_TIMEOUT_MS,
         'Clipboard.write',
       );

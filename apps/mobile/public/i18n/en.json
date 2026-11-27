@@ -743,7 +743,8 @@
         "qr": "QR code",
         "unpublished": "The registration link goes live once the tournament is published.",
         "publish": "Publish the tournament",
-        "share": "Share"
+        "share": "Share",
+        "shareText": "Registrations are open for {{name}}! Pre-register online, the organizer will approve your request."
       }
     },
     "schedule": {
@@ -948,7 +949,7 @@
     "backAria": "Search for another tournament",
     "venue": "venue",
     "venues": "venues",
-    "shareText": "Follow {{name}} on TournArena",
+    "shareText": "Follow {{name}} on TournArena: matches, results and live standings.",
     "dates": {
       "startWithTime": "{{date}} at {{time}}"
     },

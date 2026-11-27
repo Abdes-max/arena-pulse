@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { ShareButton } from './share-button';
+import { ShareButton, shareMessage } from './share-button';
 
 const { shareMock, clipboardWriteMock } = vi.hoisted(() => ({
   shareMock: vi.fn(),
@@ -66,7 +66,9 @@ describe('ShareButton', () => {
     fixture.detectChanges();
 
     expect(clipboardWriteMock).toHaveBeenCalledWith({
-      string: 'https://tournarena.com/coupe-du-monde-fifa-2026',
+      // The message with the link, not the bare link.
+      string:
+        'Suivez Coupe du Monde FIFA 2026 sur TournArena\nhttps://tournarena.com/coupe-du-monde-fifa-2026',
     });
     expect(button.getAttribute('aria-label')).toBe('Lien copié');
     expect(button.textContent).toContain('Copié');
@@ -100,7 +102,9 @@ describe('ShareButton', () => {
     fixture.detectChanges();
 
     expect(clipboardWriteMock).toHaveBeenCalledWith({
-      string: 'https://tournarena.com/coupe-du-monde-fifa-2026',
+      // The message with the link, not the bare link.
+      string:
+        'Suivez Coupe du Monde FIFA 2026 sur TournArena\nhttps://tournarena.com/coupe-du-monde-fifa-2026',
     });
     expect(button.getAttribute('aria-label')).toBe('Lien copié');
   }, 10000);
@@ -150,5 +154,17 @@ describe('ShareButton', () => {
     await fixture.whenStable();
 
     expect(clipboardWriteMock).not.toHaveBeenCalled();
+  });
+});
+
+describe('shareMessage', () => {
+  it('puts the message before the link, on its own line', () => {
+    expect(shareMessage('Suivez X sur TournArena.', 'https://t.io/x')).toBe(
+      'Suivez X sur TournArena.\nhttps://t.io/x',
+    );
+  });
+
+  it('is just the link without a message', () => {
+    expect(shareMessage(undefined, 'https://t.io/x')).toBe('https://t.io/x');
   });
 });

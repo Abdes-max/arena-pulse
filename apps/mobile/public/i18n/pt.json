@@ -743,7 +743,8 @@
         "qr": "Código QR",
         "unpublished": "O link de inscrição fica ativo quando o torneio for publicado.",
         "publish": "Publicar o torneio",
-        "share": "Partilhar"
+        "share": "Partilhar",
+        "shareText": "As inscrições para {{name}} estão abertas! Faça a pré-inscrição online, o organizador validará o seu pedido."
       }
     },
     "schedule": {
@@ -948,7 +949,7 @@
     "backAria": "Procurar outro torneio",
     "venue": "local",
     "venues": "locais",
-    "shareText": "Siga {{name}} na TournArena",
+    "shareText": "Acompanhe {{name}} no TournArena: jogos, resultados e classificações em direto.",
     "dates": {
       "startWithTime": "{{date}} às {{time}}"
     },

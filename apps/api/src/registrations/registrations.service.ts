@@ -730,6 +730,7 @@ export class RegistrationsService {
   }
 
   private toSettings(tournament: {
+    name: string;
     slug: string;
     status: TournamentStatus;
     registrationsOpen: boolean;
@@ -740,6 +741,8 @@ export class RegistrationsService {
     sport: { participantType: ParticipantType };
   }) {
     return {
+      // For the share message (« Les inscriptions sont ouvertes pour … »).
+      name: tournament.name,
       // The public sign-up page (/:slug/register) only answers once published.
       slug: tournament.slug,
       published: tournament.status === TournamentStatus.PUBLISHED,

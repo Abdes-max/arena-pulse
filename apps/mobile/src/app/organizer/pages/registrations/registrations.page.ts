@@ -2,9 +2,9 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
-import { TranslocoPipe } from '@jsverse/transloco';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { Clipboard } from '@capacitor/clipboard';
-import { Button, Logo, QrCode, ShareButton, TextField } from 'design-system';
+import { Button, Logo, QrCode, ShareButton, TextField, shareMessage } from 'design-system';
 import { firstValueFrom } from 'rxjs';
 import type {
   OrganizerRegistration,
@@ -53,6 +53,7 @@ export class OrganizerRegistrationsPage {
   private readonly http = inject(HttpClient);
   private readonly auth = inject(OrganizerAuthService);
   private readonly router = inject(Router);
+  private readonly transloco = inject(TranslocoService);
   private readonly tournamentId = inject(ActivatedRoute).snapshot.paramMap.get('id') ?? '';
 
   protected readonly loading = signal(true);
@@ -80,6 +81,13 @@ export class OrganizerRegistrationsPage {
     return slug ? `${environment.webUrl}/${slug}/register` : '';
   });
   protected readonly linkCopied = signal(false);
+  // Sent with the link (share sheet, or pasted from "Copier") so whoever
+  // receives it knows what it's for.
+  protected readonly registrationShareText = computed(() =>
+    this.transloco.translate('organizer.registrations.link.shareText', {
+      name: this.settings()?.name ?? '',
+    }),
+  );
 
   protected readonly counts = computed(() => {
     const counts: Record<Filter, number> = {
@@ -120,7 +128,9 @@ export class OrganizerRegistrationsPage {
 
   protected async copyLink(): Promise<void> {
     try {
-      await Clipboard.write({ string: this.registrationUrl() });
+      await Clipboard.write({
+        string: shareMessage(this.registrationShareText(), this.registrationUrl()),
+      });
       this.linkCopied.set(true);
       setTimeout(() => this.linkCopied.set(false), 2000);
     } catch {

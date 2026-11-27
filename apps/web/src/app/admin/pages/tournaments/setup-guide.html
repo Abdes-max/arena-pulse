@@ -98,6 +98,7 @@
           #shareButton
           class="setup-guide__share"
           [title]="t.name"
+          [text]="'shell.shareText' | transloco: { name: t.name }"
           [url]="publicUrl()"
         />
       }

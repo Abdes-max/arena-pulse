@@ -471,6 +471,8 @@ export interface PublicRegistrationInfo {
 
 /** Organizer side: GET/PATCH …/registrations/settings */
 export interface RegistrationSettings {
+  /** The tournament's name, for the share message. */
+  name: string;
   /** The public sign-up page is /:slug/register, reachable once published. */
   slug: string;
   published: boolean;

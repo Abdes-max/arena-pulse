@@ -9,7 +9,15 @@ import {
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
-import { Badge, BadgeStatus, Button, QrCode, ShareButton, TextField } from 'design-system';
+import {
+  Badge,
+  BadgeStatus,
+  Button,
+  QrCode,
+  ShareButton,
+  TextField,
+  shareMessage,
+} from 'design-system';
 import { LanguageService } from 'design-tokens';
 import {
   OrganizerRegistration,
@@ -83,6 +91,16 @@ export class RegistrationListPage {
     return slug ? `${window.location.origin}/${slug}/register` : '';
   });
   protected readonly linkCopied = signal(false);
+  // Sent with the link (share sheet, or pasted from "Copier") so whoever
+  // receives it knows what it's for.
+  protected readonly registrationShareText = computed(() => {
+    const name = this.settings()?.name ?? '';
+    return this.transloco.translate(
+      'admin.registrationList.link.shareText',
+      { name },
+      this.languageService.language(),
+    );
+  });
 
   protected readonly individual = computed(() => this.settings()?.participantType === 'INDIVIDUAL');
 
@@ -155,7 +173,9 @@ export class RegistrationListPage {
 
   protected async copyLink(): Promise<void> {
     try {
-      await navigator.clipboard.writeText(this.registrationUrl());
+      await navigator.clipboard.writeText(
+        shareMessage(this.registrationShareText(), this.registrationUrl()),
+      );
       this.linkCopied.set(true);
       setTimeout(() => this.linkCopied.set(false), 2000);
     } catch {

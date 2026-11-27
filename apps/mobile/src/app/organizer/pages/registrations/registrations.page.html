@@ -130,7 +130,8 @@
               <ap-share-button
                 #shareButton
                 class="reg-page__share"
-                [title]="s.slug"
+                [title]="s.name"
+                [text]="registrationShareText()"
                 [url]="registrationUrl()"
               />
               <details class="reg-page__qr">
