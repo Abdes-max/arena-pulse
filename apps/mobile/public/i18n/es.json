@@ -278,7 +278,10 @@
         "edit": "Editar {{name}}",
         "save": "Guardar",
         "cancelEdit": "Cancelar la edición",
-        "errorRename": "No se pudo renombrar este equipo, inténtalo de nuevo."
+        "errorRename": "No se pudo renombrar este equipo, inténtalo de nuevo.",
+        "registrationsOpen": "Inscripciones posibles",
+        "registrationsOffHint": "Los jugadores aún no pueden preinscribirse.",
+        "registrationsError": "No se pudieron cambiar las inscripciones, inténtalo de nuevo."
       },
       "structure": {
         "title": "Formato de la competición",
@@ -302,7 +305,25 @@
           "knockoutOnly": "Eliminación directa simple."
         },
         "editOnWebHint": "Para cambiar la estructura, usa el panel de administración web (Estructura).",
-        "editStructure": "Modificar la estructura"
+        "editStructure": "Modificar la estructura",
+        "multiTierLabel": "Clasificar hacia varias competiciones",
+        "bestOfPositionLabel": "Incluir a los mejores clasificados en una posición",
+        "tierNameLabel": "Nombre del nivel",
+        "addTier": "Añadir un nivel",
+        "removeTier": "Quitar",
+        "defaultTierNameIndexed": "Nivel {{index}}",
+        "positionLabel": "Posición",
+        "bestCountLabel": "Número de mejores clasificados",
+        "bestOfPositionHint": "Los {{count}} mejores equipos clasificados {{position}}.º de su grupo, comparados entre sí, se unen al cuadro del primer nivel.",
+        "errors": {
+          "poolsExceedTeams": "El número de grupos no puede superar el número de equipos.",
+          "tooManyQualifiersForSmallestPool": "Con {{teamCount}} equipos repartidos en {{poolCount}} grupos, el grupo más pequeño solo tiene {{smallestPoolSize}} equipo(s). Imposible clasificar a {{totalQualifiers}} en total sumando los niveles.",
+          "bestOfPositionExceedsPools": "No se puede clasificar a {{bestCount}} mejor(es) clasificado(s) en la posición {{bestPosition}}: solo hay {{poolCount}} grupo(s).",
+          "bestOfPositionOverlapsDirect": "La posición {{bestPosition}} de los mejores clasificados se solapa con los clasificados directos (posiciones 1 a {{totalQualifiers}}). Elige una posición estrictamente superior.",
+          "bestOfPositionNotInSmallestPool": "La posición {{bestPosition}} no existe en todos los grupos: el grupo más pequeño solo tiene {{smallestPoolSize}} equipo(s).",
+          "tierBracketNotPowerOfTwo": "Nivel «{{tierName}}»: {{poolCount}} grupo(s) × {{qualifiers}} clasificado(s) = {{bracketSize}} equipo(s) clasificado(s). Este número debe ser una potencia de 2 (2, 4, 8, 16…) para formar un cuadro de eliminación directa.",
+          "tierBracketNotPowerOfTwoWithBest": "Nivel «{{tierName}}»: {{poolCount}} grupo(s) × {{qualifiers}} clasificado(s) + {{bestCount}} mejor(es) clasificado(s) = {{bracketSize}} equipo(s) clasificado(s). Este número debe ser una potencia de 2 (2, 4, 8, 16…) para formar un cuadro de eliminación directa."
+        }
       },
       "calendar": {
         "title": "Calendario de partidos",

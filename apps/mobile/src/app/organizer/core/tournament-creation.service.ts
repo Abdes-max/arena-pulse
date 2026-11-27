@@ -93,12 +93,7 @@ export class TournamentCreationService {
     organizationId: string,
     tournamentId: string,
     categoryId: string,
-    options: {
-      format: WizardStructureFormat;
-      teamCount: number;
-      poolCount: number;
-      qualifiersPerPool: number;
-    },
+    options: StructurePresetOptions,
   ): Promise<StructurePresetResult> {
     return firstValueFrom(
       this.http.post<StructurePresetResult>(
@@ -213,13 +208,20 @@ export class TournamentCreationService {
 // pool -- every team lands in the same group, so the pool phase's own
 // round-robin fixture generator (see the Calendrier step) already produces
 // exactly a championship schedule, no separate code path needed.
-function buildStructurePresetPayload(options: {
+/** The wizard's Structure step, as sent to structure-presets. */
+export interface StructurePresetOptions {
   format: WizardStructureFormat;
   teamCount: number;
   poolCount: number;
   qualifiersPerPool: number;
-}): Record<string, unknown> {
-  const { format, teamCount, poolCount, qualifiersPerPool } = options;
+  /** « Qualifier vers plusieurs compétitions »: one knockout per tier (else one « Phase finale »). */
+  tiers?: { name: string; qualifiersPerPool: number }[];
+  /** « Inclure les meilleurs classés à une position »: they join the first tier. */
+  bestOfPosition?: { position: number; bestCount: number };
+}
+
+function buildStructurePresetPayload(options: StructurePresetOptions): Record<string, unknown> {
+  const { format, teamCount, poolCount, qualifiersPerPool, tiers, bestOfPosition } = options;
   if (format === 'knockout-only') {
     return { format: 'KNOCKOUT_ONLY', teamCount };
   }
@@ -230,6 +232,7 @@ function buildStructurePresetPayload(options: {
     format: 'POOLS_AND_KNOCKOUT',
     teamCount,
     poolCount,
-    tiers: [{ name: 'Phase finale', qualifiersPerPool }],
+    tiers: tiers?.length ? tiers : [{ name: 'Phase finale', qualifiersPerPool }],
+    ...(bestOfPosition && { bestOfPosition }),
   };
 }

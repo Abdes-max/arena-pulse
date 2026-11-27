@@ -278,7 +278,10 @@
         "edit": "{{name}} bearbeiten",
         "save": "Speichern",
         "cancelEdit": "Bearbeitung abbrechen",
-        "errorRename": "Team konnte nicht umbenannt werden, bitte erneut versuchen."
+        "errorRename": "Team konnte nicht umbenannt werden, bitte erneut versuchen.",
+        "registrationsOpen": "Anmeldung möglich",
+        "registrationsOffHint": "Spieler können sich noch nicht voranmelden.",
+        "registrationsError": "Die Anmeldung konnte nicht geändert werden, versuche es erneut."
       },
       "structure": {
         "title": "Wettbewerbsformat",
@@ -302,7 +305,25 @@
           "knockoutOnly": "Einfaches K.-o.-System."
         },
         "editOnWebHint": "Um die Struktur zu ändern, nutzen Sie das Web-Admin (Struktur).",
-        "editStructure": "Struktur bearbeiten"
+        "editStructure": "Struktur bearbeiten",
+        "multiTierLabel": "Für mehrere Wettbewerbe qualifizieren",
+        "bestOfPositionLabel": "Die bestplatzierten Teams an einer Position einbeziehen",
+        "tierNameLabel": "Name der Stufe",
+        "addTier": "Stufe hinzufügen",
+        "removeTier": "Entfernen",
+        "defaultTierNameIndexed": "Stufe {{index}}",
+        "positionLabel": "Position",
+        "bestCountLabel": "Anzahl der bestplatzierten Teams",
+        "bestOfPositionHint": "Die {{count}} besten Teams auf Platz {{position}} ihrer Gruppe, untereinander verglichen, kommen in den Turnierbaum der ersten Stufe.",
+        "errors": {
+          "poolsExceedTeams": "Die Anzahl der Gruppen darf die Anzahl der Teams nicht überschreiten.",
+          "tooManyQualifiersForSmallestPool": "Bei {{teamCount}} Teams, aufgeteilt in {{poolCount}} Gruppen, hat die kleinste Gruppe nur {{smallestPoolSize}} Team(s). Es ist unmöglich, insgesamt {{totalQualifiers}} über alle Stufen hinweg zu qualifizieren.",
+          "bestOfPositionExceedsPools": "Es können nicht {{bestCount}} bestplatzierte(s) Team(s) auf Position {{bestPosition}} qualifiziert werden: Es gibt nur {{poolCount}} Gruppe(n).",
+          "bestOfPositionOverlapsDirect": "Position {{bestPosition}} der bestplatzierten Teams überschneidet sich mit den direkten Qualifikanten (Positionen 1 bis {{totalQualifiers}}). Wählen Sie eine strikt höhere Position.",
+          "bestOfPositionNotInSmallestPool": "Position {{bestPosition}} existiert nicht in jeder Gruppe: die kleinste Gruppe hat nur {{smallestPoolSize}} Team(s).",
+          "tierBracketNotPowerOfTwo": "Stufe „{{tierName}}“: {{poolCount}} Gruppe(n) × {{qualifiers}} Qualifikant(en) = {{bracketSize}} qualifizierte(s) Team(s). Diese Zahl muss eine Zweierpotenz sein (2, 4, 8, 16…), um einen K.-o.-Turnierbaum zu bilden.",
+          "tierBracketNotPowerOfTwoWithBest": "Stufe „{{tierName}}“: {{poolCount}} Gruppe(n) × {{qualifiers}} Qualifikant(en) + {{bestCount}} bestplatzierte(s) Team(s) = {{bracketSize}} qualifizierte(s) Team(s). Diese Zahl muss eine Zweierpotenz sein (2, 4, 8, 16…), um einen K.-o.-Turnierbaum zu bilden."
+        }
       },
       "calendar": {
         "title": "Spielplan",

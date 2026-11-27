@@ -300,6 +300,32 @@
           }
         }
         @case (2) {
+          <!-- « Inscriptions possibles », as in Général > Inscriptions on the web. -->
+          @if (registrationSettings(); as reg) {
+            <label class="wizard-page__switchrow">
+              <span>
+                <span class="wizard-page__switchrow-label">{{
+                  'organizer.wizard.teams.registrationsOpen' | transloco
+                }}</span>
+                <span class="wizard-page__switchrow-hint">{{
+                  (reg.started
+                    ? 'organizer.registrations.started'
+                    : reg.open
+                      ? reg.openNow
+                        ? 'organizer.registrations.openNow'
+                        : 'organizer.registrations.closedNow'
+                      : 'organizer.wizard.teams.registrationsOffHint'
+                  ) | transloco
+                }}</span>
+              </span>
+              <input
+                type="checkbox"
+                [checked]="reg.open"
+                [disabled]="savingRegistrations()"
+                (change)="toggleRegistrations($event)"
+              />
+            </label>
+          }
           @if (pendingRegistrations().length > 0) {
             <!-- Pre-registrations waiting for a decision: validating one adds its team below. -->
             <section class="wizard-page__pending">
@@ -597,13 +623,95 @@
                 [value]="poolCount()"
                 (valueChange)="poolCount.set($event)"
               />
-              <ap-text-field
-                type="number"
-                min="1"
-                [label]="'organizer.wizard.structure.qualifiersLabel' | transloco"
-                [value]="qualifiersPerPool()"
-                (valueChange)="qualifiersPerPool.set($event)"
-              />
+              <label class="wizard-page__switchrow">
+                <span class="wizard-page__switchrow-label">{{
+                  'organizer.wizard.structure.multiTierLabel' | transloco
+                }}</span>
+                <input type="checkbox" [checked]="multiTier()" (change)="toggleMultiTier()" />
+              </label>
+              <label class="wizard-page__switchrow">
+                <span class="wizard-page__switchrow-label">{{
+                  'organizer.wizard.structure.bestOfPositionLabel' | transloco
+                }}</span>
+                <input
+                  type="checkbox"
+                  [checked]="bestOfPositionEnabled()"
+                  (change)="toggleBestOfPosition()"
+                />
+              </label>
+
+              @if (!multiTier()) {
+                <ap-text-field
+                  type="number"
+                  min="1"
+                  [label]="'organizer.wizard.structure.qualifiersLabel' | transloco"
+                  [value]="qualifiersPerPool()"
+                  (valueChange)="qualifiersPerPool.set($event)"
+                />
+              } @else {
+                <!-- One knockout per tier (Or, Argent...): name and qualifiers per pool. -->
+                @for (tier of tiers(); track $index) {
+                  <div class="ap-field-row">
+                    <ap-text-field
+                      [label]="'organizer.wizard.structure.tierNameLabel' | transloco"
+                      [placeholder]="tierName($index)"
+                      [value]="tier.name"
+                      (valueChange)="setTier($index, { name: $event })"
+                    />
+                    <ap-text-field
+                      type="number"
+                      min="1"
+                      [label]="'organizer.wizard.structure.qualifiersLabel' | transloco"
+                      [value]="tier.qualifiersPerPool"
+                      (valueChange)="setTier($index, { qualifiersPerPool: $event })"
+                    />
+                    @if (tiers().length > 2) {
+                      <button
+                        type="button"
+                        class="ap-field-row__remove"
+                        [attr.aria-label]="'organizer.wizard.structure.removeTier' | transloco"
+                        (click)="removeTier($index)"
+                      >
+                        ×
+                      </button>
+                    }
+                  </div>
+                }
+                <ap-button type="button" variant="secondary" size="sm" (click)="addTier()">
+                  {{ 'organizer.wizard.structure.addTier' | transloco }}
+                </ap-button>
+              }
+
+              @if (bestOfPositionEnabled()) {
+                <div class="ap-field-row">
+                  <ap-text-field
+                    type="number"
+                    min="1"
+                    [label]="'organizer.wizard.structure.positionLabel' | transloco"
+                    [value]="bestPosition()"
+                    (valueChange)="bestPosition.set($event)"
+                  />
+                  <ap-text-field
+                    type="number"
+                    min="1"
+                    [label]="'organizer.wizard.structure.bestCountLabel' | transloco"
+                    [value]="bestCount()"
+                    (valueChange)="bestCount.set($event)"
+                  />
+                </div>
+                <p class="wizard-page__hint">
+                  {{
+                    'organizer.wizard.structure.bestOfPositionHint'
+                      | transloco: { count: bestCount() || 'N', position: bestPosition() || 'X' }
+                  }}
+                </p>
+              }
+
+              @if (structureError(); as error) {
+                <p class="wizard-page__error" role="alert">
+                  {{ 'organizer.wizard.structure.errors.' + error.key | transloco: error.params }}
+                </p>
+              }
             }
           }
         }

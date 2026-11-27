@@ -278,7 +278,10 @@
         "edit": "Edit {{name}}",
         "save": "Save",
         "cancelEdit": "Cancel editing",
-        "errorRename": "Could not rename this team, please try again."
+        "errorRename": "Could not rename this team, please try again.",
+        "registrationsOpen": "Registrations open",
+        "registrationsOffHint": "Players cannot pre-register yet.",
+        "registrationsError": "Couldn't change registrations, try again."
       },
       "structure": {
         "title": "Competition format",
@@ -302,7 +305,25 @@
           "knockoutOnly": "Single-elimination knockout."
         },
         "editOnWebHint": "To change the structure, use the web admin (Structure).",
-        "editStructure": "Edit the structure"
+        "editStructure": "Edit the structure",
+        "multiTierLabel": "Qualify to several competitions",
+        "bestOfPositionLabel": "Include the best-ranked teams at one position",
+        "tierNameLabel": "Tier name",
+        "addTier": "Add a tier",
+        "removeTier": "Remove",
+        "defaultTierNameIndexed": "Tier {{index}}",
+        "positionLabel": "Position",
+        "bestCountLabel": "Number of best-ranked teams",
+        "bestOfPositionHint": "The {{count}} best teams ranked {{position}}th in their pool, compared against each other, join the first tier's bracket.",
+        "errors": {
+          "poolsExceedTeams": "The number of pools can't exceed the number of teams.",
+          "tooManyQualifiersForSmallestPool": "With {{teamCount}} teams split into {{poolCount}} pools, the smallest pool only has {{smallestPoolSize}} team(s). Impossible to qualify {{totalQualifiers}} in total across the tiers.",
+          "bestOfPositionExceedsPools": "Unable to qualify {{bestCount}} best-ranked team(s) at position {{bestPosition}}: there are only {{poolCount}} pool(s).",
+          "bestOfPositionOverlapsDirect": "Position {{bestPosition}} for the best-ranked teams overlaps the direct qualifiers (positions 1 to {{totalQualifiers}}). Choose a strictly higher position.",
+          "bestOfPositionNotInSmallestPool": "Position {{bestPosition}} doesn't exist in every pool: the smallest pool only has {{smallestPoolSize}} team(s).",
+          "tierBracketNotPowerOfTwo": "Tier \"{{tierName}}\": {{poolCount}} pool(s) × {{qualifiers}} qualifier(s) = {{bracketSize}} qualified team(s). This number must be a power of 2 (2, 4, 8, 16…) to form a knockout bracket.",
+          "tierBracketNotPowerOfTwoWithBest": "Tier \"{{tierName}}\": {{poolCount}} pool(s) × {{qualifiers}} qualifier(s) + {{bestCount}} best-ranked team(s) = {{bracketSize}} qualified team(s). This number must be a power of 2 (2, 4, 8, 16…) to form a knockout bracket."
+        }
       },
       "calendar": {
         "title": "Match schedule",

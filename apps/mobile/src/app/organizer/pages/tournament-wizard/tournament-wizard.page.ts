@@ -46,6 +46,7 @@ import {
   CompetitionPhase,
   Match,
   OrganizerRegistration,
+  RegistrationSettings,
   RoundLabelLang,
   matchRoundLabel as boardRoundLabel,
 } from 'shared-models';
@@ -63,6 +64,7 @@ import {
   OrganizerOrganizationsService,
 } from '../../core/organizations.service';
 import { MatchSummary, TournamentCreationService } from '../../core/tournament-creation.service';
+import { PresetTierDraft, poolsKnockoutPresetError } from '../../core/structure-preset';
 import { assignPastedNames, isPlaceholderTeamName } from '../../core/placeholder-teams';
 import { OrganizerTeamsService } from '../../core/teams.service';
 import { OrganizerTournamentsService } from '../../core/tournaments.service';
@@ -360,6 +362,125 @@ export class OrganizerTournamentWizardPage {
   protected readonly format = signal<WizardStructureFormat>('pools-knockout');
   protected readonly poolCount = signal('4');
   protected readonly qualifiersPerPool = signal('2');
+  // « Qualifier vers plusieurs compétitions »: one bracket per tier (Or, Argent...).
+  protected readonly multiTier = signal(false);
+  protected readonly tiers = signal<PresetTierDraft[]>([]);
+  // « Inclure les meilleurs classés à une position » (e.g. the 2 best 3rds).
+  protected readonly bestOfPositionEnabled = signal(false);
+  protected readonly bestPosition = signal('');
+  protected readonly bestCount = signal('');
+
+  /** Why this structure can't be generated (same checks as the web), or null. */
+  protected readonly structureError = computed(() => {
+    if (this.format() !== 'pools-knockout') {
+      return null;
+    }
+    return poolsKnockoutPresetError({
+      teamCount: this.teams().length,
+      poolCount: Number(this.poolCount()) || 0,
+      tiers: this.presetTiers(),
+      bestOfPosition: this.bestOfPositionEnabled()
+        ? { position: Number(this.bestPosition()) || 0, count: Number(this.bestCount()) || 0 }
+        : null,
+      tierName: (index) => this.tierName(index),
+    });
+  });
+
+  /** The tiers sent: the list when several, else the single « Qualifiés par poule ». */
+  private presetTiers(): PresetTierDraft[] {
+    return this.multiTier()
+      ? this.tiers()
+      : [{ name: '', qualifiersPerPool: this.qualifiersPerPool() }];
+  }
+
+  protected tierName(index: number): string {
+    return this.transloco.translate('organizer.wizard.structure.defaultTierNameIndexed', {
+      index: index + 1,
+    });
+  }
+
+  protected toggleMultiTier(): void {
+    const on = !this.multiTier();
+    this.multiTier.set(on);
+    if (on && this.tiers().length === 0) {
+      this.tiers.set([
+        { name: '', qualifiersPerPool: this.qualifiersPerPool() },
+        { name: '', qualifiersPerPool: '' },
+      ]);
+    }
+  }
+
+  protected setTier(index: number, patch: Partial<PresetTierDraft>): void {
+    this.tiers.update((tiers) =>
+      tiers.map((tier, i) => (i === index ? { ...tier, ...patch } : tier)),
+    );
+  }
+
+  protected addTier(): void {
+    this.tiers.update((tiers) => [...tiers, { name: '', qualifiersPerPool: '' }]);
+  }
+
+  protected removeTier(index: number): void {
+    this.tiers.update((tiers) => (tiers.length > 2 ? tiers.filter((_, i) => i !== index) : tiers));
+  }
+
+  protected toggleBestOfPosition(): void {
+    const on = !this.bestOfPositionEnabled();
+    this.bestOfPositionEnabled.set(on);
+    // Pre-filled with the first position not already qualified directly.
+    if (on && !this.bestPosition()) {
+      const direct = this.presetTiers().reduce(
+        (sum, t) => sum + (Number(t.qualifiersPerPool) || 0),
+        0,
+      );
+      this.bestPosition.set(String(direct + 1));
+    }
+  }
+
+  // ---- Step 2: « Inscriptions possibles » (Général > Inscriptions on the web) ----
+  protected readonly registrationSettings = signal<RegistrationSettings | null>(null);
+  protected readonly savingRegistrations = signal(false);
+
+  private registrationsBase(): string | null {
+    return this.organizationId && this.tournamentId
+      ? `${environment.apiUrl}/organizations/${this.organizationId}/tournaments/${this.tournamentId}/registrations`
+      : null;
+  }
+
+  private async loadRegistrationSettings(): Promise<void> {
+    const base = this.registrationsBase();
+    if (!base) {
+      return;
+    }
+    try {
+      this.registrationSettings.set(
+        await firstValueFrom(this.http.get<RegistrationSettings>(`${base}/settings`)),
+      );
+    } catch {
+      this.registrationSettings.set(null);
+    }
+  }
+
+  protected async toggleRegistrations(event: Event): Promise<void> {
+    const base = this.registrationsBase();
+    const input = event.target as HTMLInputElement;
+    if (!base || this.savingRegistrations()) {
+      return;
+    }
+    this.savingRegistrations.set(true);
+    try {
+      this.registrationSettings.set(
+        await firstValueFrom(
+          this.http.patch<RegistrationSettings>(`${base}/settings`, { open: input.checked }),
+        ),
+      );
+    } catch {
+      input.checked = !input.checked;
+      this.errorMessage.set('organizer.wizard.teams.registrationsError');
+    } finally {
+      this.savingRegistrations.set(false);
+    }
+  }
 
   // ---- Step 4: Calendrier ----
   protected readonly matches = signal<MatchSummary[] | null>(null);
@@ -808,6 +929,7 @@ export class OrganizerTournamentWizardPage {
         tournament.organizerClubId ? this.assetUrl.resolve(tournament.logoUrl) : null,
       );
       void this.loadPendingRegistrations(organizationId, tournamentId);
+      void this.loadRegistrationSettings();
       this.currentStatus.set(tournament.status);
       if (tournament.startDate) {
         this.startDate.set(tournament.startDate.slice(0, 10));
@@ -1402,6 +1524,17 @@ export class OrganizerTournamentWizardPage {
         // from scratch -- an existing one may legitimately have any team
         // count already (or the organizer may just be here to remove one).
         return this.mode() === 'edit' || this.teams().length >= 3;
+      case 3:
+        // A structure still to generate: every field filled, and a valid one.
+        if (this.structureSummary() || this.format() !== 'pools-knockout') {
+          return true;
+        }
+        return (
+          this.presetTiers().every((tier) => Number(tier.qualifiersPerPool) > 0) &&
+          (!this.bestOfPositionEnabled() ||
+            (Number(this.bestPosition()) > 0 && Number(this.bestCount()) > 0)) &&
+          this.structureError() === null
+        );
       default:
         return true;
     }
@@ -1492,6 +1625,7 @@ export class OrganizerTournamentWizardPage {
       format: this.gameFormat(),
     });
     this.tournamentId = tournament.id;
+    void this.loadRegistrationSettings();
     this.scheduleDate.set(this.startDate());
     if (this.theme() !== DEFAULT_THEME) {
       try {
@@ -1605,6 +1739,18 @@ export class OrganizerTournamentWizardPage {
         teamCount: this.teams().length,
         poolCount: Number(this.poolCount()) || 1,
         qualifiersPerPool: Number(this.qualifiersPerPool()) || 1,
+        ...(this.multiTier() && {
+          tiers: this.tiers().map((tier, index) => ({
+            name: tier.name.trim() || this.tierName(index),
+            qualifiersPerPool: Number(tier.qualifiersPerPool),
+          })),
+        }),
+        ...(this.bestOfPositionEnabled() && {
+          bestOfPosition: {
+            position: Number(this.bestPosition()),
+            bestCount: Number(this.bestCount()),
+          },
+        }),
       },
     );
     this.groupPhaseId = result.groupPhaseId;
