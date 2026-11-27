@@ -524,6 +524,75 @@ describe('Registrations & payments (e2e)', () => {
     ).toBe('REJECTED');
   });
 
+  it("leaves a quick plateau's « Équipe N » slots free for real teams, which take them over", async () => {
+    const { slug, categoryId, auth, base, tournamentId } =
+      await setupPublishedTournament(app, { maxTeams: 2 });
+    // The quick plateau's placeholders, already in a pool.
+    const phase = await prisma.competitionPhase.create({
+      data: { categoryId, name: 'Poules', type: 'GROUP_STAGE' },
+    });
+    const group = await prisma.group.create({
+      data: { phaseId: phase.id, name: 'Poule A' },
+    });
+    for (const name of ['Équipe 1', 'Équipe 2']) {
+      await prisma.team.create({
+        data: { tournamentId, categoryId, name, groupId: group.id },
+      });
+    }
+
+    const info = await request(app.getHttpServer())
+      .get(`/api/v1/public/tournaments/${slug}/registration-info`)
+      .expect(200);
+    expect(
+      (info.body as { categories: { remaining: number }[] }).categories[0]
+        .remaining,
+    ).toBe(2);
+
+    const { accessToken } = await registerPlayer(app);
+    const sent = await register(slug, categoryId, accessToken, roster).expect(
+      201,
+    );
+    const registrationId = (sent.body as RegistrationResponseBody)
+      .registrationId;
+    expect(
+      (
+        await prisma.registration.findUniqueOrThrow({
+          where: { id: registrationId },
+        })
+      ).status,
+    ).toBe('PENDING');
+    await auth(
+      request(app.getHttpServer()).post(
+        `${base}/${tournamentId}/registrations/${registrationId}/confirm`,
+      ),
+    ).expect(200);
+
+    // « Équipe 1 » became the registered team, in its pool: still 2 teams.
+    const teams = await prisma.team.findMany({
+      where: { tournamentId },
+      orderBy: { name: 'asc' },
+    });
+    expect(teams.map((team) => team.name).sort()).toEqual(
+      ['Équipe 2', roster.teamName].sort(),
+    );
+    const taken = teams.find((team) => team.name === roster.teamName)!;
+    expect(taken.groupId).toBe(group.id);
+
+    // Refused afterwards: the slot goes back to « Équipe 1 », still in its pool.
+    await auth(
+      request(app.getHttpServer()).post(
+        `${base}/${tournamentId}/registrations/${registrationId}/reject`,
+      ),
+    )
+      .send({})
+      .expect(200);
+    const back = await prisma.team.findUniqueOrThrow({
+      where: { id: taken.id },
+    });
+    expect(back.name).toBe('Équipe 1');
+    expect(back.groupId).toBe(group.id);
+  });
+
   it('registers a single player, named after them, for an individual sport', async () => {
     const { slug, categoryId } = await setupPublishedTournament(
       app,

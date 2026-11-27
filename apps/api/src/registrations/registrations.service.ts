@@ -9,6 +9,10 @@ import {
 import Stripe from 'stripe';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from '../prisma/prisma.service';
+import {
+  PLACEHOLDER_TEAM_NAME_PREFIX,
+  placeholderTeamNumber,
+} from '../tournaments/quick-plateau.service';
 import { CategoriesService } from '../tournaments/categories.service';
 import { TournamentsService } from '../tournaments/tournaments.service';
 import { StripeService } from '../payments/stripe.service';
@@ -18,6 +22,7 @@ import { CreateRegistrationDto } from './dto/create-registration.dto';
 import { RegistrationSettingsDto } from './dto/registration-settings.dto';
 import {
   ParticipantType,
+  Prisma,
   RegistrationPaymentStatus,
   RegistrationStatus,
   TournamentStatus,
@@ -760,12 +765,41 @@ export class RegistrationsService {
   private async placesTaken(
     tournamentId: string,
   ): Promise<Map<string, number>> {
-    const rows = await this.prisma.team.groupBy({
-      by: ['categoryId'],
+    // The quick plateau's « Équipe N » slots hold no place: they are there
+    // to be taken by the teams that register (see materialize).
+    const teams = await this.prisma.team.findMany({
       where: { tournamentId },
-      _count: { _all: true },
+      select: { categoryId: true, name: true },
     });
-    return new Map(rows.map((row) => [row.categoryId, row._count._all]));
+    const taken = new Map<string, number>();
+    for (const team of teams) {
+      if (placeholderTeamNumber(team.name) === null) {
+        taken.set(team.categoryId, (taken.get(team.categoryId) ?? 0) + 1);
+      }
+    }
+    return taken;
+  }
+
+  /** The category's first free « Équipe N » slot (lowest N), if any. */
+  private async freePlaceholderTeam(
+    tx: Prisma.TransactionClient,
+    tournamentId: string,
+    categoryId: string,
+  ): Promise<{ id: string } | null> {
+    const teams = await tx.team.findMany({
+      where: { tournamentId, categoryId, registration: null },
+      select: { id: true, name: true },
+    });
+    const slots = teams
+      .map((team) => ({
+        id: team.id,
+        number: placeholderTeamNumber(team.name),
+      }))
+      .filter(
+        (slot): slot is { id: string; number: number } => slot.number !== null,
+      )
+      .sort((a, b) => a.number - b.number);
+    return slots[0] ?? null;
   }
 
   private toSettings(
@@ -826,6 +860,10 @@ export class RegistrationsService {
     if (!registration.teamId) {
       return;
     }
+    const team = await this.prisma.team.findUniqueOrThrow({
+      where: { id: registration.teamId },
+      select: { tournamentId: true, categoryId: true, groupId: true },
+    });
     const matches = await this.prisma.match.count({
       where: {
         OR: [
@@ -834,10 +872,39 @@ export class RegistrationsService {
         ],
       },
     });
-    if (matches > 0) {
-      throw new ConflictException(
-        "Cette équipe a déjà des matchs au calendrier : retirez-la d'abord du calendrier.",
-      );
+    if (matches > 0 || team.groupId) {
+      // A place in the structure (pool, matches): it goes back to an
+      // anonymous « Équipe N » slot, free for another team to take.
+      await this.prisma.$transaction(async (tx) => {
+        const names = await tx.team.findMany({
+          where: {
+            tournamentId: team.tournamentId,
+            categoryId: team.categoryId,
+          },
+          select: { name: true },
+        });
+        const used = new Set(names.map((t) => placeholderTeamNumber(t.name)));
+        let number = 1;
+        while (used.has(number)) {
+          number += 1;
+        }
+        await tx.registration.update({
+          where: { id: registration.id },
+          data: { teamId: null },
+        });
+        await tx.player.deleteMany({ where: { teamId: registration.teamId! } });
+        await tx.team.update({
+          where: { id: registration.teamId! },
+          data: {
+            name: `${PLACEHOLDER_TEAM_NAME_PREFIX}${number}`,
+            externalClubId: null,
+            logoUrl: null,
+            managerEmail: null,
+            managerPhone: null,
+          },
+        });
+      });
+      return;
     }
     await this.prisma.$transaction([
       this.prisma.registration.update({
@@ -863,23 +930,35 @@ export class RegistrationsService {
     });
 
     const teamId = await this.prisma.$transaction(async (tx) => {
-      const team = await tx.team.create({
-        data: {
-          tournamentId: registration.tournamentId,
-          categoryId: registration.categoryId,
-          name: registration.teamName,
-          externalClubId: registration.externalClubId,
-          managerEmail: registration.managerEmail,
-          managerPhone: registration.managerPhone,
-          players: {
-            create: registration.players.map((player) => ({
-              firstName: player.firstName,
-              lastName: player.lastName,
-              jerseyNumber: player.jerseyNumber,
-            })),
-          },
+      const details = {
+        name: registration.teamName,
+        externalClubId: registration.externalClubId,
+        managerEmail: registration.managerEmail,
+        managerPhone: registration.managerPhone,
+        players: {
+          create: registration.players.map((player) => ({
+            firstName: player.firstName,
+            lastName: player.lastName,
+            jerseyNumber: player.jerseyNumber,
+          })),
         },
-      });
+      };
+      // A quick plateau's « Équipe N » slot is taken over: the team keeps its
+      // pool and its matches. Otherwise, a new team.
+      const slot = await this.freePlaceholderTeam(
+        tx,
+        registration.tournamentId,
+        registration.categoryId,
+      );
+      const team = slot
+        ? await tx.team.update({ where: { id: slot.id }, data: details })
+        : await tx.team.create({
+            data: {
+              tournamentId: registration.tournamentId,
+              categoryId: registration.categoryId,
+              ...details,
+            },
+          });
       await tx.registration.update({
         where: { id: registration.id },
         data: {

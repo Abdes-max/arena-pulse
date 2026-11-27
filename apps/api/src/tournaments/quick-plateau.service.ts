@@ -20,6 +20,12 @@ import { VenuesService } from './venues.service';
 /** Name given to every team created by the quick flow -- also how the review step spots names still to confirm. */
 export const PLACEHOLDER_TEAM_NAME_PREFIX = 'Équipe ';
 
+/** « Équipe 3 »: a slot the quick flow made, not a real team yet. */
+export function placeholderTeamNumber(name: string): number | null {
+  const match = /^Équipe (\d+)$/.exec(name.trim());
+  return match ? Number(match[1]) : null;
+}
+
 /**
  * Creates a ready-to-review plateau in one call by chaining the same
  * services the step-by-step admin pages use (so every validation they apply
