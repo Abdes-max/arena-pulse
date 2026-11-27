@@ -55,7 +55,11 @@
                 autocomplete="family-name"
               />
             } @else {
-              @if (clubSearchAvailable()) {
+              @if (clubDirectoryOnly()) {
+                <p class="register-page__hint">
+                  {{ 'registerForm.clubDirectoryOnly' | transloco }}
+                </p>
+              } @else if (clubSearchAvailable()) {
                 <label class="register-page__checkbox">
                   <input
                     type="checkbox"
@@ -65,7 +69,7 @@
                   {{ 'registerForm.clubSearch' | transloco }}
                 </label>
               }
-              @if (clubSearchAvailable() && useClubSearch()) {
+              @if (clubSearchAvailable() && (useClubSearch() || clubDirectoryOnly())) {
                 <ap-autocomplete-field
                   [label]="'registerForm.teamName' | transloco"
                   [placeholder]="'registerForm.clubPlaceholder' | transloco"
@@ -127,7 +131,7 @@
             />
             <p class="register-page__hint">{{ 'registerForm.phoneHint' | transloco }}</p>
 
-            <ap-button type="submit" [disabled]="form.invalid || submitting()">
+            <ap-button type="submit" [disabled]="form.invalid || submitting() || clubMissing()">
               {{ 'registerForm.submit' | transloco }}
             </ap-button>
           }

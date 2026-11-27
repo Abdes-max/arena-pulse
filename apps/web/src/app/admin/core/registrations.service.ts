@@ -42,6 +42,7 @@ export class RegistrationsService {
       closesAt: string | null;
       paymentInfo: string | null;
       maxTeamsPerRegistrant: number;
+      clubDirectoryOnly: boolean;
     }>,
   ): Promise<RegistrationSettings> {
     return firstValueFrom(

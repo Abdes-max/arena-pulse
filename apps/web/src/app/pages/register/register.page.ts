@@ -141,6 +141,10 @@ export class RegisterPage {
     () => this.clubSport() !== null && !this.individual(),
   );
   protected readonly useClubSearch = signal(true);
+  // The organizer accepts only clubs from the directory: a club must be picked.
+  protected readonly clubDirectoryOnly = computed(
+    () => !!this.info()?.clubDirectoryOnly && this.clubSearchAvailable(),
+  );
   protected readonly clubSearch = inject(ClubSearchService).autocomplete(
     () => this.clubSport() ?? 'football',
     'public/registrations/club-search',
@@ -155,6 +159,9 @@ export class RegisterPage {
     })),
   );
   protected readonly externalClubId = signal('');
+  protected readonly clubMissing = computed(
+    () => this.clubDirectoryOnly() && !this.externalClubId(),
+  );
   protected readonly clubLabel = signal('');
   protected readonly clubLogo = signal<string | null>(null);
 

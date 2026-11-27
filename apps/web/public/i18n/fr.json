@@ -1107,7 +1107,9 @@
         "placesFor": "Places · {{name}}",
         "fee": "Tarif par équipe (€)",
         "feeFor": "Tarif · {{name}} (€)",
-        "options": "Options (dates, tarif par catégorie, paiement…)"
+        "options": "Options (dates, tarif par catégorie, paiement…)",
+        "clubDirectoryOnly": "Uniquement des clubs de l'annuaire",
+        "clubDirectoryOnlyHint": "Les équipes choisissent leur club dans l'annuaire officiel : pas de nom saisi librement."
       }
     },
     "teamList": {
@@ -2091,7 +2093,8 @@
     "emailShort": "Email",
     "phoneShort": "Téléphone",
     "duplicateName": "Une équipe porte déjà ce nom pour ce tournoi.",
-    "started": "Les inscriptions sont closes : le tournoi a commencé."
+    "started": "Les inscriptions sont closes : le tournoi a commencé.",
+    "clubDirectoryOnly": "Ce tournoi n'accepte que des clubs de l'annuaire : choisissez le vôtre dans la recherche."
   },
   "registerSuccess": {
     "pendingTitle": "Pré-inscription envoyée",

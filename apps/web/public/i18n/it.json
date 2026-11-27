@@ -1005,7 +1005,9 @@
         "placesFor": "Posti · {{name}}",
         "fee": "Tariffa per squadra (€)",
         "feeFor": "Tariffa · {{name}} (€)",
-        "options": "Opzioni (date, tariffa per categoria, pagamento…)"
+        "options": "Opzioni (date, tariffa per categoria, pagamento…)",
+        "clubDirectoryOnly": "Solo club dell'elenco",
+        "clubDirectoryOnlyHint": "Le squadre scelgono il proprio club nell'elenco ufficiale: nessun nome inserito liberamente."
       }
     },
     "teamList": {
@@ -1989,7 +1991,8 @@
     "emailShort": "Email",
     "phoneShort": "Telefono",
     "duplicateName": "Una squadra con questo nome esiste già in questo torneo.",
-    "started": "Le iscrizioni sono chiuse: il torneo è iniziato."
+    "started": "Le iscrizioni sono chiuse: il torneo è iniziato.",
+    "clubDirectoryOnly": "Questo torneo accetta solo club dell'elenco: scegli il tuo nella ricerca."
   },
   "registerSuccess": {
     "pendingTitle": "Preiscrizione inviata",

@@ -767,7 +767,9 @@
         "share": "Compartir",
         "shareText": "¡Las inscripciones para {{name}} están abiertas! Preinscríbete en línea, el organizador validará tu solicitud."
       },
-      "started": "Inscripciones cerradas automáticamente: el primer partido ha comenzado."
+      "started": "Inscripciones cerradas automáticamente: el primer partido ha comenzado.",
+      "clubDirectoryOnly": "Solo clubes del directorio",
+      "clubDirectoryOnlyHint": "Los equipos eligen su club en el directorio oficial: sin nombre escrito libremente."
     },
     "schedule": {
       "hint": "Mantén pulsado un partido o una franja y arrástralo: un espacio muestra dónde se colocará y a qué hora. Las franjas siguientes se desplazan; se conservan las pausas entre fases. Un equipo no puede jugar dos partidos a la vez.",
@@ -893,7 +895,8 @@
       "teamCount": "Número de equipos",
       "teamCountHint": "Equipos inscritos: {{names}}",
       "limitReached": "Ya has inscrito {{count}} equipo(s): es el máximo para este torneo.",
-      "started": "Las inscripciones están cerradas: el torneo ha comenzado."
+      "started": "Las inscripciones están cerradas: el torneo ha comenzado.",
+      "clubDirectoryOnly": "Este torneo solo acepta clubes del directorio: elige el tuyo en la búsqueda."
     },
     "home": {
       "title": "Inscripciones abiertas",

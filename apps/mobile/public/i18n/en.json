@@ -767,7 +767,9 @@
         "share": "Share",
         "shareText": "Registrations are open for {{name}}! Pre-register online, the organizer will approve your request."
       },
-      "started": "Registrations closed automatically: the first match has started."
+      "started": "Registrations closed automatically: the first match has started.",
+      "clubDirectoryOnly": "Clubs from the directory only",
+      "clubDirectoryOnlyHint": "Teams pick their club from the official directory: no freely typed name."
     },
     "schedule": {
       "hint": "Press and hold a match or a slot, then drag it: a space shows where it will land and at what time. The following slots shift; breaks between phases are kept. A team cannot play two matches at the same time.",
@@ -893,7 +895,8 @@
       "teamCount": "Number of teams",
       "teamCountHint": "Teams registered: {{names}}",
       "limitReached": "You've already registered {{count}} team(s): the maximum for this tournament.",
-      "started": "Registrations are closed: the tournament has started."
+      "started": "Registrations are closed: the tournament has started.",
+      "clubDirectoryOnly": "This tournament only accepts clubs from the directory: pick yours in the search."
     },
     "home": {
       "title": "Registrations open",

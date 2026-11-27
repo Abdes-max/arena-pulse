@@ -199,6 +199,10 @@ export class OrganizerRegistrationsPage {
     await this.saveSettings({ open: (event.target as HTMLInputElement).checked });
   }
 
+  protected async toggleClubDirectoryOnly(event: Event): Promise<void> {
+    await this.saveSettings({ clubDirectoryOnly: (event.target as HTMLInputElement).checked });
+  }
+
   protected onPaymentInfo(event: Event): void {
     this.paymentInfo.set((event.target as HTMLTextAreaElement).value);
   }
@@ -281,6 +285,7 @@ export class OrganizerRegistrationsPage {
 
   private async saveSettings(patch: {
     open?: boolean;
+    clubDirectoryOnly?: boolean;
     paymentInfo?: string | null;
     maxTeamsPerRegistrant?: number;
   }): Promise<void> {

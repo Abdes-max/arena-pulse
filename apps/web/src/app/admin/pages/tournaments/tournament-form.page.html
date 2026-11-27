@@ -748,6 +748,25 @@
                 }}</small>
               </span>
             </label>
+            <!-- Team sports with a club directory: no free-typed team name. -->
+            @if (clubDirectoryAvailable()) {
+              <label class="tournament-form-page__reg-switch">
+                <input
+                  type="checkbox"
+                  [checked]="reg.clubDirectoryOnly"
+                  [disabled]="regBusy()"
+                  (change)="toggleClubDirectoryOnly($event)"
+                />
+                <span>
+                  <strong>{{
+                    'admin.tournamentForm.registrations.clubDirectoryOnly' | transloco
+                  }}</strong>
+                  <small>{{
+                    'admin.tournamentForm.registrations.clubDirectoryOnlyHint' | transloco
+                  }}</small>
+                </span>
+              </label>
+            }
 
             @if (reg.open) {
               <p class="tournament-form-page__premium-hint">
