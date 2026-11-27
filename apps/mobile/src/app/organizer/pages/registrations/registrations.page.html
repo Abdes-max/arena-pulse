@@ -34,9 +34,11 @@
             <span>
               <strong>{{ 'organizer.registrations.open' | transloco }}</strong>
               <small>{{
-                (s.openNow
-                  ? 'organizer.registrations.openNow'
-                  : 'organizer.registrations.closedNow'
+                (s.started
+                  ? 'organizer.registrations.started'
+                  : s.openNow
+                    ? 'organizer.registrations.openNow'
+                    : 'organizer.registrations.closedNow'
                 ) | transloco
               }}</small>
             </span>

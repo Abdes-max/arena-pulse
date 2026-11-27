@@ -1278,7 +1278,8 @@
         "levelPlaceholder": "ex. Elite",
         "placesHint": "Les places et le tarif se règlent par catégorie dans Général › Catégories › Options.",
         "save": "Enregistrer",
-        "maxTeams": "Équipes max par responsable (club)"
+        "maxTeams": "Équipes max par responsable (club)",
+        "started": "Inscriptions closes automatiquement : le premier match a commencé."
       },
       "filters": {
         "PENDING": "En attente",
@@ -2086,7 +2087,8 @@
     "limitReached": "Vous avez déjà inscrit {{count}} équipe(s) : c'est le maximum pour ce tournoi.",
     "emailShort": "Email",
     "phoneShort": "Téléphone",
-    "duplicateName": "Une équipe porte déjà ce nom pour ce tournoi."
+    "duplicateName": "Une équipe porte déjà ce nom pour ce tournoi.",
+    "started": "Les inscriptions sont closes : le tournoi a commencé."
   },
   "registerSuccess": {
     "pendingTitle": "Pré-inscription envoyée",

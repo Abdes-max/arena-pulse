@@ -745,7 +745,8 @@
         "publish": "Pubblica il torneo",
         "share": "Condividi",
         "shareText": "Le iscrizioni a {{name}} sono aperte! Preiscriviti online, l'organizzatore convaliderà la tua richiesta."
-      }
+      },
+      "started": "Iscrizioni chiuse automaticamente: la prima partita è iniziata."
     },
     "schedule": {
       "hint": "Tieni premuta una partita o una fascia e trascinala: uno spazio mostra dove andrà e a che ora. Le fasce successive vengono spostate; le pause tra le fasi restano. Una squadra non può giocare due partite contemporaneamente.",
@@ -870,7 +871,8 @@
       "errorLoad": "Impossibile caricare le categorie del torneo.",
       "teamCount": "Numero di squadre",
       "teamCountHint": "Squadre iscritte: {{names}}",
-      "limitReached": "Hai già iscritto {{count}} squadra/e: è il massimo per questo torneo."
+      "limitReached": "Hai già iscritto {{count}} squadra/e: è il massimo per questo torneo.",
+      "started": "Le iscrizioni sono chiuse: il torneo è iniziato."
     },
     "home": {
       "title": "Iscrizioni aperte",

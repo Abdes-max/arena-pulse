@@ -737,11 +737,13 @@
               <span>
                 <strong>{{ 'admin.tournamentForm.registrations.open' | transloco }}</strong>
                 <small>{{
-                  (reg.open
-                    ? reg.openNow
-                      ? 'admin.registrationList.settings.openNow'
-                      : 'admin.registrationList.settings.closedNow'
-                    : 'admin.tournamentForm.registrations.offHint'
+                  (reg.started
+                    ? 'admin.registrationList.settings.started'
+                    : reg.open
+                      ? reg.openNow
+                        ? 'admin.registrationList.settings.openNow'
+                        : 'admin.registrationList.settings.closedNow'
+                      : 'admin.tournamentForm.registrations.offHint'
                   ) | transloco
                 }}</small>
               </span>

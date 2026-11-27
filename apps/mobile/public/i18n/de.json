@@ -745,7 +745,8 @@
         "publish": "Turnier veröffentlichen",
         "share": "Teilen",
         "shareText": "Die Anmeldung für {{name}} ist offen! Melde dich online an, der Veranstalter bestätigt deine Anfrage."
-      }
+      },
+      "started": "Anmeldung automatisch geschlossen: Das erste Spiel hat begonnen."
     },
     "schedule": {
       "hint": "Halten Sie ein Spiel oder ein Zeitfenster gedrückt und ziehen Sie es: Eine Lücke zeigt, wo es landet und zu welcher Uhrzeit. Die folgenden Zeitfenster verschieben sich; Pausen zwischen Phasen bleiben. Eine Mannschaft kann nicht zwei Spiele gleichzeitig bestreiten.",
@@ -870,7 +871,8 @@
       "errorLoad": "Kategorien des Turniers konnten nicht geladen werden.",
       "teamCount": "Anzahl der Teams",
       "teamCountHint": "Angemeldete Teams: {{names}}",
-      "limitReached": "Du hast bereits {{count}} Team(s) angemeldet: das Maximum für dieses Turnier."
+      "limitReached": "Du hast bereits {{count}} Team(s) angemeldet: das Maximum für dieses Turnier.",
+      "started": "Die Anmeldung ist geschlossen: Das Turnier hat begonnen."
     },
     "home": {
       "title": "Anmeldungen offen",

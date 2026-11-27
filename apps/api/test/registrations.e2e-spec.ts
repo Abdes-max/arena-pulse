@@ -370,6 +370,67 @@ describe('Registrations & payments (e2e)', () => {
     expect(info.body).toMatchObject({ open: false, participantType: 'TEAM' });
   });
 
+  it('closes registrations once the first match has kicked off', async () => {
+    const { slug, categoryId, tournamentId } =
+      await setupPublishedTournament(app);
+    const { accessToken: playerToken } = await registerPlayer(app);
+    // First match scheduled a minute ago (current time >= its kickoff).
+    const venue = await prisma.venue.create({
+      data: { tournamentId, name: 'Stade' },
+    });
+    const field = await prisma.field.create({
+      data: { venueId: venue.id, name: 'Terrain 1' },
+    });
+    const kickoff = new Date(Date.now() - 60_000);
+    const slot = await prisma.timeSlot.create({
+      data: {
+        fieldId: field.id,
+        startTime: kickoff,
+        endTime: new Date(kickoff.getTime() + 600_000),
+      },
+    });
+    await prisma.match.create({ data: { round: 1, timeSlotId: slot.id } });
+
+    const refused = await register(
+      slug,
+      categoryId,
+      playerToken,
+      roster,
+    ).expect(409);
+    expect((refused.body as { message: string }).message).toContain(
+      'a commencé',
+    );
+
+    const info = await request(app.getHttpServer())
+      .get(`/api/v1/public/tournaments/${slug}/registration-info`)
+      .expect(200);
+    expect(info.body).toMatchObject({ open: false, started: true });
+  });
+
+  it('keeps registrations open while the first match is still to come', async () => {
+    const { slug, tournamentId } = await setupPublishedTournament(app);
+    const venue = await prisma.venue.create({
+      data: { tournamentId, name: 'Stade' },
+    });
+    const field = await prisma.field.create({
+      data: { venueId: venue.id, name: 'Terrain 1' },
+    });
+    const kickoff = new Date(Date.now() + 3_600_000);
+    const slot = await prisma.timeSlot.create({
+      data: {
+        fieldId: field.id,
+        startTime: kickoff,
+        endTime: new Date(kickoff.getTime() + 600_000),
+      },
+    });
+    await prisma.match.create({ data: { round: 1, timeSlotId: slot.id } });
+
+    const info = await request(app.getHttpServer())
+      .get(`/api/v1/public/tournaments/${slug}/registration-info`)
+      .expect(200);
+    expect(info.body).toMatchObject({ open: true, started: false });
+  });
+
   it('puts requests on the waiting list once the category is full', async () => {
     const { slug, categoryId, auth, base, tournamentId } =
       await setupPublishedTournament(app, {

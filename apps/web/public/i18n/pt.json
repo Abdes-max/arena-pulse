@@ -1176,7 +1176,8 @@
         "levelPlaceholder": "ex. Elite",
         "placesHint": "Lugares e preço definem-se por categoria em Geral › Categorias › Opções.",
         "save": "Guardar",
-        "maxTeams": "Equipas máx. por responsável (clube)"
+        "maxTeams": "Equipas máx. por responsável (clube)",
+        "started": "Inscrições encerradas automaticamente: o primeiro jogo já começou."
       },
       "filters": {
         "PENDING": "Pendentes",
@@ -1984,7 +1985,8 @@
     "limitReached": "Já inscreveu {{count}} equipa(s): é o máximo para este torneio.",
     "emailShort": "E-mail",
     "phoneShort": "Telefone",
-    "duplicateName": "Já existe uma equipa com este nome neste torneio."
+    "duplicateName": "Já existe uma equipa com este nome neste torneio.",
+    "started": "As inscrições estão encerradas: o torneio já começou."
   },
   "registerSuccess": {
     "pendingTitle": "Pré-inscrição enviada",

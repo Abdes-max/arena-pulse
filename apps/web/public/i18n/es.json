@@ -1176,7 +1176,8 @@
         "levelPlaceholder": "p. ej. Élite",
         "placesHint": "Las plazas y el precio se ajustan por categoría en General › Categorías › Opciones.",
         "save": "Guardar",
-        "maxTeams": "Equipos máx. por responsable (club)"
+        "maxTeams": "Equipos máx. por responsable (club)",
+        "started": "Inscripciones cerradas automáticamente: el primer partido ha comenzado."
       },
       "filters": {
         "PENDING": "Pendientes",
@@ -1984,7 +1985,8 @@
     "limitReached": "Ya has inscrito {{count}} equipo(s): es el máximo para este torneo.",
     "emailShort": "Correo electrónico",
     "phoneShort": "Teléfono",
-    "duplicateName": "Ya hay un equipo con este nombre en este torneo."
+    "duplicateName": "Ya hay un equipo con este nombre en este torneo.",
+    "started": "Las inscripciones están cerradas: el torneo ha comenzado."
   },
   "registerSuccess": {
     "pendingTitle": "Preinscripción enviada",
