@@ -37,4 +37,9 @@ export class RegistrationSettingsDto {
   @Min(1)
   @Max(50)
   maxTeamsPerRegistrant?: number;
+
+  /** Team sports: only clubs picked from the club directory. */
+  @IsOptional()
+  @IsBoolean()
+  clubDirectoryOnly?: boolean;
 }

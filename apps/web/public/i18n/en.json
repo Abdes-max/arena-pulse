@@ -1107,7 +1107,9 @@
         "placesFor": "Places · {{name}}",
         "fee": "Price per team (€)",
         "feeFor": "Price · {{name}} (€)",
-        "options": "Options (dates, price per category, payment…)"
+        "options": "Options (dates, price per category, payment…)",
+        "clubDirectoryOnly": "Clubs from the directory only",
+        "clubDirectoryOnlyHint": "Teams pick their club from the official directory: no freely typed name."
       }
     },
     "teamList": {
@@ -2091,7 +2093,8 @@
     "emailShort": "Email",
     "phoneShort": "Phone",
     "duplicateName": "A team already has this name in this tournament.",
-    "started": "Registrations are closed: the tournament has started."
+    "started": "Registrations are closed: the tournament has started.",
+    "clubDirectoryOnly": "This tournament only accepts clubs from the directory: pick yours in the search."
   },
   "registerSuccess": {
     "pendingTitle": "Pre-registration sent",

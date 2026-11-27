@@ -84,6 +84,7 @@ export class RegistrationsService {
       // Closed because the first match has kicked off (see firstMatchStart).
       started: this.hasStarted(firstMatchStart),
       registrationsOpen: tournament.registrationsOpen,
+      clubDirectoryOnly: tournament.registrationClubDirectoryOnly,
       opensAt: tournament.registrationOpensAt,
       closesAt: tournament.registrationClosesAt,
       paymentInfo: tournament.registrationPaymentInfo,
@@ -133,6 +134,15 @@ export class RegistrationsService {
     // Individual sport: one player, the "team" is named after them.
     const individual =
       tournament.sport.participantType === ParticipantType.INDIVIDUAL;
+    if (
+      !individual &&
+      tournament.registrationClubDirectoryOnly &&
+      !dto.externalClubId
+    ) {
+      throw new BadRequestException(
+        "Ce tournoi n'accepte que des clubs de l'annuaire : choisissez le vôtre dans la recherche.",
+      );
+    }
     const players = dto.players ?? [];
     if (individual && players.length !== 1) {
       throw new BadRequestException(
@@ -355,6 +365,7 @@ export class RegistrationsService {
           registrationPaymentInfo: dto.paymentInfo?.trim() || null,
         }),
         maxTeamsPerRegistrant: dto.maxTeamsPerRegistrant,
+        registrationClubDirectoryOnly: dto.clubDirectoryOnly,
       },
       include: { sport: true },
     });
@@ -812,6 +823,7 @@ export class RegistrationsService {
       registrationClosesAt: Date | null;
       registrationPaymentInfo: string | null;
       maxTeamsPerRegistrant: number;
+      registrationClubDirectoryOnly: boolean;
       sport: { participantType: ParticipantType };
     },
     firstMatchStart: Date | null,
@@ -831,6 +843,7 @@ export class RegistrationsService {
       paymentInfo: tournament.registrationPaymentInfo,
       maxTeamsPerRegistrant: tournament.maxTeamsPerRegistrant,
       participantType: tournament.sport.participantType,
+      clubDirectoryOnly: tournament.registrationClubDirectoryOnly,
     };
   }
 

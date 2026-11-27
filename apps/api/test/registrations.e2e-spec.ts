@@ -593,6 +593,31 @@ describe('Registrations & payments (e2e)', () => {
     expect(back.groupId).toBe(group.id);
   });
 
+  it('accepts only clubs from the directory when the organizer asks for it', async () => {
+    const { slug, categoryId, auth, base, tournamentId } =
+      await setupPublishedTournament(app);
+    await auth(
+      request(app.getHttpServer()).patch(
+        `${base}/${tournamentId}/registrations/settings`,
+      ),
+    )
+      .send({ clubDirectoryOnly: true })
+      .expect(200);
+    const info = await request(app.getHttpServer())
+      .get(`/api/v1/public/tournaments/${slug}/registration-info`)
+      .expect(200);
+    expect(info.body).toMatchObject({ clubDirectoryOnly: true });
+
+    const { accessToken } = await registerPlayer(app);
+    // A freely typed team name: refused.
+    await register(slug, categoryId, accessToken, roster).expect(400);
+    // A club picked from the directory: accepted.
+    await register(slug, categoryId, accessToken, {
+      ...roster,
+      externalClubId: 'fff:500123',
+    }).expect(201);
+  });
+
   it('registers a single player, named after them, for an individual sport', async () => {
     const { slug, categoryId } = await setupPublishedTournament(
       app,

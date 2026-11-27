@@ -43,6 +43,21 @@
               }}</small>
             </span>
           </label>
+          <!-- Team sports: no free-typed team name. -->
+          @if (s.participantType === 'TEAM') {
+            <label class="reg-page__switch">
+              <input
+                type="checkbox"
+                [checked]="s.clubDirectoryOnly"
+                [disabled]="busy()"
+                (change)="toggleClubDirectoryOnly($event)"
+              />
+              <span>
+                <strong>{{ 'organizer.registrations.clubDirectoryOnly' | transloco }}</strong>
+                <small>{{ 'organizer.registrations.clubDirectoryOnlyHint' | transloco }}</small>
+              </span>
+            </label>
+          }
           <!-- Essentials, always shown: places, teams per manager, price (0 = free). -->
           @for (category of categories(); track category.id) {
             <ap-text-field

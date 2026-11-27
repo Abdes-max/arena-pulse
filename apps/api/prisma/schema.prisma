@@ -334,6 +334,9 @@ model Tournament {
   // Teams one team manager (account) may register for this tournament --
   // set by the organizer; 1 unless raised.
   maxTeamsPerRegistrant Int @default(1)
+  // Team sports: only clubs picked from the club directory may register
+  // (no free-typed team name).
+  registrationClubDirectoryOnly Boolean @default(false)
   // Shown on the tournament card (e.g. "5 contre 5", "Elite"); free text.
   format              String?
   level               String?

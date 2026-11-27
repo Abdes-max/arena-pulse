@@ -1005,7 +1005,9 @@
         "placesFor": "Plätze · {{name}}",
         "fee": "Preis pro Team (€)",
         "feeFor": "Preis · {{name}} (€)",
-        "options": "Optionen (Daten, Preis pro Kategorie, Zahlung…)"
+        "options": "Optionen (Daten, Preis pro Kategorie, Zahlung…)",
+        "clubDirectoryOnly": "Nur Vereine aus dem Verzeichnis",
+        "clubDirectoryOnlyHint": "Teams wählen ihren Verein im offiziellen Verzeichnis: kein frei eingegebener Name."
       }
     },
     "teamList": {
@@ -1989,7 +1991,8 @@
     "emailShort": "E-Mail",
     "phoneShort": "Telefon",
     "duplicateName": "Ein Team mit diesem Namen gibt es in diesem Turnier schon.",
-    "started": "Die Anmeldung ist geschlossen: Das Turnier hat begonnen."
+    "started": "Die Anmeldung ist geschlossen: Das Turnier hat begonnen.",
+    "clubDirectoryOnly": "Dieses Turnier akzeptiert nur Vereine aus dem Verzeichnis: wähle deinen in der Suche."
   },
   "registerSuccess": {
     "pendingTitle": "Voranmeldung gesendet",

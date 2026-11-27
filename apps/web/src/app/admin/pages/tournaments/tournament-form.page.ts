@@ -1237,6 +1237,32 @@ export class TournamentFormPage {
     this.regPaymentInfo.set((event.target as HTMLTextAreaElement).value);
   }
 
+  /** Team sport with a club directory: « Uniquement des clubs de l'annuaire » applies. */
+  protected readonly clubDirectoryAvailable = computed(
+    () => !this.regIndividual() && clubDirectorySport(this.selectedSportName()) !== null,
+  );
+
+  protected async toggleClubDirectoryOnly(event: Event): Promise<void> {
+    const organizationId = this.organization()?.id;
+    const tournamentId = this.tournamentId();
+    if (!organizationId || !tournamentId) {
+      return;
+    }
+    const input = event.target as HTMLInputElement;
+    this.regBusy.set(true);
+    try {
+      this.applyRegSettings(
+        await this.registrationsService.updateSettings(organizationId, tournamentId, {
+          clubDirectoryOnly: input.checked,
+        }),
+      );
+    } catch {
+      input.checked = !input.checked;
+    } finally {
+      this.regBusy.set(false);
+    }
+  }
+
   protected async toggleRegistrations(event: Event): Promise<void> {
     const organizationId = this.organization()?.id;
     const tournamentId = this.tournamentId();

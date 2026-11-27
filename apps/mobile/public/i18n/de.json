@@ -767,7 +767,9 @@
         "share": "Teilen",
         "shareText": "Die Anmeldung für {{name}} ist offen! Melde dich online an, der Veranstalter bestätigt deine Anfrage."
       },
-      "started": "Anmeldung automatisch geschlossen: Das erste Spiel hat begonnen."
+      "started": "Anmeldung automatisch geschlossen: Das erste Spiel hat begonnen.",
+      "clubDirectoryOnly": "Nur Vereine aus dem Verzeichnis",
+      "clubDirectoryOnlyHint": "Teams wählen ihren Verein im offiziellen Verzeichnis: kein frei eingegebener Name."
     },
     "schedule": {
       "hint": "Halten Sie ein Spiel oder ein Zeitfenster gedrückt und ziehen Sie es: Eine Lücke zeigt, wo es landet und zu welcher Uhrzeit. Die folgenden Zeitfenster verschieben sich; Pausen zwischen Phasen bleiben. Eine Mannschaft kann nicht zwei Spiele gleichzeitig bestreiten.",
@@ -893,7 +895,8 @@
       "teamCount": "Anzahl der Teams",
       "teamCountHint": "Angemeldete Teams: {{names}}",
       "limitReached": "Du hast bereits {{count}} Team(s) angemeldet: das Maximum für dieses Turnier.",
-      "started": "Die Anmeldung ist geschlossen: Das Turnier hat begonnen."
+      "started": "Die Anmeldung ist geschlossen: Das Turnier hat begonnen.",
+      "clubDirectoryOnly": "Dieses Turnier akzeptiert nur Vereine aus dem Verzeichnis: wähle deinen in der Suche."
     },
     "home": {
       "title": "Anmeldungen offen",
