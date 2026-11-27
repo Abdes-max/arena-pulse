@@ -178,3 +178,22 @@ ion-segment-button ion-label {
     border-bottom: none;
   }
 }
+
+// Two fields side by side (e.g. a tier name + its qualifiers), with an
+// optional small remove button at the end.
+.ap-field-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  align-items: end;
+  gap: var(--ap-space-2);
+  margin-bottom: var(--ap-space-2);
+}
+
+.ap-field-row__remove {
+  width: 40px;
+  height: 44px;
+  border: var(--ap-border-width) solid var(--ap-color-border);
+  border-radius: var(--ap-radius-md);
+  background: none;
+  color: var(--ap-color-muted);
+}

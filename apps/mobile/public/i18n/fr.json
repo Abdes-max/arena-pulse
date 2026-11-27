@@ -278,7 +278,10 @@
         "edit": "Modifier {{name}}",
         "save": "Enregistrer",
         "cancelEdit": "Annuler la modification",
-        "errorRename": "Impossible de renommer cette équipe, réessayez."
+        "errorRename": "Impossible de renommer cette équipe, réessayez.",
+        "registrationsOpen": "Inscriptions possibles",
+        "registrationsOffHint": "Les joueurs ne peuvent pas encore se pré-inscrire.",
+        "registrationsError": "Impossible de modifier les inscriptions, réessayez."
       },
       "structure": {
         "title": "Format de la compétition",
@@ -302,7 +305,25 @@
           "knockoutOnly": "Élimination directe simple."
         },
         "editOnWebHint": "Pour modifier la structure, utilisez l'admin web (Structure).",
-        "editStructure": "Modifier la structure"
+        "editStructure": "Modifier la structure",
+        "multiTierLabel": "Qualifier vers plusieurs compétitions",
+        "bestOfPositionLabel": "Inclure les meilleurs classés à une position",
+        "tierNameLabel": "Nom du palier",
+        "addTier": "Ajouter un palier",
+        "removeTier": "Retirer",
+        "defaultTierNameIndexed": "Palier {{index}}",
+        "positionLabel": "Position",
+        "bestCountLabel": "Nombre de meilleurs classés",
+        "bestOfPositionHint": "Les {{count}} meilleures équipes classées {{position}}ᵉ de leur poule, comparées entre elles, rejoignent le tableau du premier palier.",
+        "errors": {
+          "poolsExceedTeams": "Le nombre de poules ne peut pas dépasser le nombre d'équipes.",
+          "tooManyQualifiersForSmallestPool": "Avec {{teamCount}} équipes réparties en {{poolCount}} poules, la plus petite poule ne compte que {{smallestPoolSize}} équipe(s). Impossible d'en qualifier {{totalQualifiers}} au total en cumulant les paliers.",
+          "bestOfPositionExceedsPools": "Impossible de qualifier {{bestCount}} meilleur(s) classé(s) à la position {{bestPosition}} : il n'y a que {{poolCount}} poule(s).",
+          "bestOfPositionOverlapsDirect": "La position {{bestPosition}} des meilleurs classés chevauche les qualifiés directs (positions 1 à {{totalQualifiers}}). Choisissez une position strictement supérieure.",
+          "bestOfPositionNotInSmallestPool": "La position {{bestPosition}} n'existe pas dans toutes les poules : la plus petite poule ne compte que {{smallestPoolSize}} équipe(s).",
+          "tierBracketNotPowerOfTwo": "Palier \"{{tierName}}\" : {{poolCount}} poule(s) × {{qualifiers}} qualifié(s) = {{bracketSize}} équipe(s) qualifiée(s). Ce nombre doit être une puissance de 2 (2, 4, 8, 16…) pour former un tableau à élimination directe.",
+          "tierBracketNotPowerOfTwoWithBest": "Palier \"{{tierName}}\" : {{poolCount}} poule(s) × {{qualifiers}} qualifié(s) + {{bestCount}} meilleur(s) classé(s) = {{bracketSize}} équipe(s) qualifiée(s). Ce nombre doit être une puissance de 2 (2, 4, 8, 16…) pour former un tableau à élimination directe."
+        }
       },
       "calendar": {
         "title": "Calendrier des matchs",
