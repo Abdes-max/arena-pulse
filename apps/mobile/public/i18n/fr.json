@@ -743,7 +743,8 @@
         "qr": "QR code",
         "unpublished": "Le lien d'inscription sera actif une fois le tournoi publié.",
         "publish": "Publier le tournoi",
-        "share": "Partager"
+        "share": "Partager",
+        "shareText": "Les inscriptions sont ouvertes pour {{name}} ! Pré-inscrivez-vous en ligne, l'organisateur validera votre demande."
       }
     },
     "schedule": {
@@ -948,7 +949,7 @@
     "backAria": "Rechercher un autre tournoi",
     "venue": "lieu",
     "venues": "lieux",
-    "shareText": "Suivez {{name}} sur TournArena",
+    "shareText": "Suivez {{name}} sur TournArena : matchs, résultats et classements en direct.",
     "dates": {
       "startWithTime": "{{date}} à {{time}}"
     },

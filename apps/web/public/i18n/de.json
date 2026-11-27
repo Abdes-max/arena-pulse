@@ -256,7 +256,7 @@
     "backAria": "Ein anderes Turnier suchen",
     "venue": "Austragungsort",
     "venues": "Austragungsorte",
-    "shareText": "Verfolgen Sie {{name}} auf TournArena",
+    "shareText": "Verfolge {{name}} auf TournArena: Spiele, Ergebnisse und Tabellen live.",
     "dates": {
       "startWithTime": "{{date}} um {{time}}"
     },
@@ -1209,7 +1209,8 @@
         "qr": "QR-Code",
         "download": "QR-Code herunterladen",
         "unpublished": "Der Anmeldelink ist aktiv, sobald das Turnier veröffentlicht ist.",
-        "publish": "Turnier veröffentlichen"
+        "publish": "Turnier veröffentlichen",
+        "shareText": "Die Anmeldung für {{name}} ist offen! Melde dich online an, der Veranstalter bestätigt deine Anfrage."
       }
     },
     "structure": {

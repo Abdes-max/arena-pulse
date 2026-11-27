@@ -256,7 +256,7 @@
     "backAria": "Cerca un altro torneo",
     "venue": "sede",
     "venues": "sedi",
-    "shareText": "Segui {{name}} su TournArena",
+    "shareText": "Segui {{name}} su TournArena: partite, risultati e classifiche in diretta.",
     "dates": {
       "startWithTime": "{{date}} alle {{time}}"
     },
@@ -1209,7 +1209,8 @@
         "qr": "Codice QR",
         "download": "Scarica il codice QR",
         "unpublished": "Il link di iscrizione sarà attivo una volta pubblicato il torneo.",
-        "publish": "Pubblica il torneo"
+        "publish": "Pubblica il torneo",
+        "shareText": "Le iscrizioni a {{name}} sono aperte! Preiscriviti online, l'organizzatore convaliderà la tua richiesta."
       }
     },
     "structure": {
