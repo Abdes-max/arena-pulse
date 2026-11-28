@@ -58,11 +58,11 @@ env:
   # one marketing version and happily accepts many build numbers under it,
   # only rejecting uploads once that train is closed (e.g. after a build
   # under it reached production/App Store review). Bump this by hand only
-  # when that happens -- last bumped 1.7 -> 1.8 on 2026-11-26 after Apple
-  # approved 1.7 (a live version's screenshots can't change any more)
-  # (previously 1.6 -> 1.7 on 2026-11-21, 1.5 -> 1.6 on 2026-11-18 and
-  # 1.4 -> 1.5 on 2026-11-06).
-  MARKETING_VERSION: '1.8'
+  # when that happens -- last bumped 1.8 -> 1.9 on 2026-11-28 after Apple
+  # approved 1.8 ("train version '1.8' is closed" on upload)
+  # (previously 1.7 -> 1.8 on 2026-11-26, 1.6 -> 1.7 on 2026-11-21,
+  # 1.5 -> 1.6 on 2026-11-18 and 1.4 -> 1.5 on 2026-11-06).
+  MARKETING_VERSION: '1.9'
 
 jobs:
   ios:
