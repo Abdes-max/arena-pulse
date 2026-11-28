@@ -1,4 +1,4 @@
-# Manual: replaces the Google Play listing's phone screenshots with the ones
+# Manual: replaces the Google Play listing's phone and tablet screenshots with the ones
 # committed in apps/mobile/store-assets/play/screenshots (see
 # infra/scripts/build-store-screenshots.mjs). Listing images only -- no
 # track or release is touched, so a running closed test keeps its 14 days.
@@ -17,7 +17,7 @@ on:
 
 jobs:
   upload:
-    name: Replace phone screenshots
+    name: Replace phone and tablet screenshots
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
